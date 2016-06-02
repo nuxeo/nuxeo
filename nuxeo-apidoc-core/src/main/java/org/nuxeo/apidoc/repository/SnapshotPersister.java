@@ -220,7 +220,9 @@ public class SnapshotPersister {
 
     public void persistBundleGroup(DistributionSnapshot snapshot, BundleGroup bundleGroup, CoreSession session,
             String label, DocumentModel parent) {
-        log.info("Persist bundle group " + bundleGroup.getId());
+        if (log.isTraceEnabled()) {
+            log.trace("Persist bundle group " + bundleGroup.getId());
+        }
 
         DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup, session, label, parent);
 
@@ -274,8 +276,9 @@ public class SnapshotPersister {
 
     public void persistBundle(DistributionSnapshot snapshot, BundleInfo bundleInfo, CoreSession session, String label,
             DocumentModel parent) {
-        log.info("Persist bundle " + bundleInfo.getId());
-
+        if (log.isTraceEnabled()) {
+            log.trace("Persist bundle " + bundleInfo.getId());
+        }
         DocumentModel bundleDoc = createBundleDoc(snapshot, session, label, bundleInfo, parent);
 
         // save GitHub doc

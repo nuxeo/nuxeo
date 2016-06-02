@@ -37,19 +37,12 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.apidoc.core", //
-})
+@Features({ RuntimeSnaphotFeature.class })
 public class TestSnapshotWithDocPersist {
 
     @Inject
@@ -58,12 +51,15 @@ public class TestSnapshotWithDocPersist {
     @Inject
     protected SnapshotManager snapshotManager;
 
+    @Inject
+    TransactionalFeature tx;
+
     @Test
     public void testPersistWithLiveDoc() throws Exception {
 
         DistributionSnapshot runtimeSnapshot = snapshotManager.getRuntimeSnapshot();
 
-        Map<String, ResourceDocumentationItem> liveDoc = new HashMap<String, ResourceDocumentationItem>();
+        Map<String, ResourceDocumentationItem> liveDoc = new HashMap<>();
         BundleInfoImpl bi = (BundleInfoImpl) runtimeSnapshot.getBundle("org.nuxeo.ecm.core.api");
 
         ResourceDocumentationItem desc = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core API</p>",
@@ -76,7 +72,7 @@ public class TestSnapshotWithDocPersist {
 
         bi.setLiveDoc(liveDoc);
 
-        Map<String, ResourceDocumentationItem> liveDocP = new HashMap<String, ResourceDocumentationItem>();
+        Map<String, ResourceDocumentationItem> liveDocP = new HashMap<>();
         ResourceDocumentationItem descP = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core</p>", bi,
                 DefaultDocumentationType.DESCRIPTION.toString());
         ResourceDocumentationItem htP = new ResourceDocumentationItem("HowTo.md", "This is simple !", bi,
@@ -92,8 +88,6 @@ public class TestSnapshotWithDocPersist {
         DistributionSnapshot persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
 
-        session.save();
-
         DocumentModelList docs = session.query("select * from NXDocumentation");
         int nbDocs = docs.size();
         // number actually depends on the content of the jar
@@ -103,7 +97,6 @@ public class TestSnapshotWithDocPersist {
         // save an other time
         persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
-        session.save();
 
         docs = session.query("select * from NXDocumentation");
         assertEquals(nbDocs, docs.size());
@@ -120,9 +113,6 @@ public class TestSnapshotWithDocPersist {
         assertNotNull(docItems);
         assertEquals(2, docItems.getDocumentationItems(session).size());
         assertEquals("<p>Hello this is core</p>", docItems.getDescription(session).getContent().trim());
-
-        session.save();
-
     }
 
 }

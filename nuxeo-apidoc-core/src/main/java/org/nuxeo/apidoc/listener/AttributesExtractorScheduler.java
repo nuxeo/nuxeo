@@ -19,7 +19,7 @@
 
 package org.nuxeo.apidoc.listener;
 
-import static org.nuxeo.apidoc.listener.AttributesExtractorFlagListener.DOC_TYPES;
+import static org.nuxeo.apidoc.listener.AttributesExtractorStater.DOC_TYPES;
 
 import org.nuxeo.apidoc.worker.ExtractXmlAttributesWorker;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.3
  */
-public class AttributeExtractorWorkerListener implements EventListener {
+public class AttributesExtractorScheduler implements EventListener {
 
     public static final String EXTRACT_XML_ATTRIBUTES_NEEDED = "extractXmlAttributesNeeded";
 

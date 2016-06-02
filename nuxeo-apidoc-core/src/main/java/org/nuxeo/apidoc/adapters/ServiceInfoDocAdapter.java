@@ -48,6 +48,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
         doc.setPropertyValue(PROP_CLASS_NAME, si.getId());
         doc.setPropertyValue(PROP_COMPONENT_ID, si.getComponentId());
+        doc.setPropertyValue(PROP_OVERRIDEN, si.isOverriden());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -63,6 +64,10 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         return safeGet(PROP_CLASS_NAME, "unknown_service");
     }
 
+    @Override
+    public boolean isOverriden() {
+        return safeGet(Boolean.class, PROP_OVERRIDEN, false);
+    }
     @Override
     public String getArtifactType() {
         return TYPE_NAME;

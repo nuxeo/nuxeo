@@ -29,13 +29,15 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.nuxeo.apidoc.listener.AttributesExtractorFlagListener;
+import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -48,11 +50,7 @@ public class ExtractXmlAttributesWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String CATEGORY = "extractXmlAttributes";
-
-    protected ExtractXmlAttributesWorker() {
-        // Empty constructor for unit test.
-    }
+    public static final String CATEGORY = "apidoc-xml-extractor";
 
     protected ExtractXmlAttributesWorker(String repositoryName, String docId) {
         super(String.format("%s:%s:xml:extractor", repositoryName, docId));
@@ -67,26 +65,30 @@ public class ExtractXmlAttributesWorker extends AbstractWork {
     @Override
     public void work() {
         setStatus("Extracting");
-        if (!Framework.isTestModeSet()) {
-            openUserSession();
-        } else {
-            openSystemSession();
-        }
-
-        DocumentModel doc = session.getDocument(getDocument().getDocRef());
-        BlobHolder adapter = doc.getAdapter(BlobHolder.class);
+        openSystemSession();
 
         try {
+            DocumentModel doc = loadDocument();
+            BlobHolder adapter = doc.getAdapter(BlobHolder.class);
             String attributes = extractAttributes(adapter.getBlob());
-            doc.setPropertyValue(AttributesExtractorFlagListener.ATTRIBUTES_PROPERTY, attributes);
+            doc.setPropertyValue(AttributesExtractorStater.ATTRIBUTES_PROPERTY, attributes);
 
             session.saveDocument(doc);
 
             setStatus("Done");
+        } catch (DocumentNotFoundException cause) {
+            ;
         } catch (IOException | ParserConfigurationException | SAXException e) {
             setStatus("Failed");
             throw new NuxeoException(e);
         }
+    }
+
+    protected DocumentModel loadDocument() throws DocumentNotFoundException {
+        final DocumentRef docRef = getDocument().getDocRef();
+        DocumentModel doc = session.getDocument(docRef);
+        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+        return doc;
     }
 
     public String extractAttributes(Blob blob) throws ParserConfigurationException, SAXException, IOException {
@@ -126,4 +128,5 @@ public class ExtractXmlAttributesWorker extends AbstractWork {
             IntStream.range(0, attributes.getLength()).forEach(i -> attributesSet.add(attributes.getValue(i)));
         }
     }
+
 }

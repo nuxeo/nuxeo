@@ -19,7 +19,7 @@
 
 package org.nuxeo.apidoc.listener;
 
-import static org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener.EXTRACT_XML_ATTRIBUTES_NEEDED;
+import static org.nuxeo.apidoc.listener.AttributesExtractorScheduler.EXTRACT_XML_ATTRIBUTES_NEEDED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
 
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.3
  */
-public class AttributesExtractorFlagListener implements EventListener {
+public class AttributesExtractorStater implements EventListener {
 
     public static final String ATTRIBUTES_PROPERTY = "adc:attributes";
 
@@ -74,12 +74,9 @@ public class AttributesExtractorFlagListener implements EventListener {
         } else {
             // Property will be read by
             // org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to
-            // trigger worker
-            // when
-            // everything is good.
+            // trigger worker when everything is good.
             // Worker cannot be triggered on "aboutTo*" events, and dirty props
-            // cannont be checked post "aboutTo*"
-            // events
+            // cannot be checked post "aboutTo*" events
             ctx.setProperty(EXTRACT_XML_ATTRIBUTES_NEEDED, true);
         }
     }

@@ -128,8 +128,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                         javaComponentsIds.add(cInfo.getId());
                     }
 
-                    for (String serviceName : cInfo.getServiceNames()) {
-                        services2Components.put(serviceName, cInfo.getId());
+                    for (ServiceInfo sInfo : cInfo.getServices()) {
+                        if (sInfo.isOverriden()) {
+                            continue;
+                        }
+                        services2Components.put(sInfo.getId(), cInfo.getId());
                     }
 
                     for (ExtensionPointInfo epi : cInfo.getExtensionPoints()) {

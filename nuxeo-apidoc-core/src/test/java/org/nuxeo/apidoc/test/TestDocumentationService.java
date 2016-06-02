@@ -38,17 +38,11 @@ import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.apidoc.core")
+@Features(RuntimeSnaphotFeature.class)
 public class TestDocumentationService {
 
     @Inject
@@ -83,7 +77,7 @@ public class TestDocumentationService {
     }
 
     protected void doTestDocumentationOnArtifact(NuxeoArtifact artifact) throws Exception {
-        List<String> applicableVersions = new ArrayList<String>();
+        List<String> applicableVersions = new ArrayList<>();
         applicableVersions.add(artifact.getVersion());
 
         // create and verify

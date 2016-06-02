@@ -9,14 +9,14 @@
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="attributesExtractorFlagListener" async="false" postCommit="false"
-      class="org.nuxeo.apidoc.listener.AttributesExtractorFlagListener">
+    <listener name="AttributesExtractorStater" async="false" postCommit="false"
+      class="org.nuxeo.apidoc.listener.AttributesExtractorStater">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="attributeExtractorWorkerListener" async="false" postCommit="false"
-      class="org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener" priority="20">
+    <listener name="AttributesExtractorScheduler" async="false" postCommit="false"
+      class="org.nuxeo.apidoc.listener.AttributesExtractorScheduler" priority="20">
       <event>documentCreated</event>
       <event>documentModified</event>
     </listener>

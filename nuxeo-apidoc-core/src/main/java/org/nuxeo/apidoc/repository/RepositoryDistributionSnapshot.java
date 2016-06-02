@@ -22,8 +22,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -244,16 +246,17 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public List<String> getServiceIds() {
-        List<String> ids = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
         String query = QueryHelper.select(ComponentInfo.TYPE_NAME, doc);
         DocumentModelList components = getCoreSession().query(query);
         for (DocumentModel componentDoc : components) {
             ComponentInfo ci = componentDoc.getAdapter(ComponentInfo.class);
-            if (ci != null) {
-                ids.addAll(ci.getServiceNames());
+            if (ci == null) {
+                continue;
             }
+            ids.addAll(ci.getServiceNames());
         }
-        return ids;
+        return new ArrayList<>(ids);
     }
 
     @Override
@@ -304,14 +307,12 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public ServiceInfo getService(String id) {
         String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc()) + " AND " + ServiceInfo.PROP_CLASS_NAME
-                + " = " + NXQL.escapeString(id);
+                + " = " + NXQL.escapeString(id) + " AND " + ServiceInfo.PROP_OVERRIDEN + " = 0";
         DocumentModelList docs = getCoreSession().query(query);
-        if (docs.size() == 1) {
-            return docs.get(0).getAdapter(ServiceInfo.class);
-        } else {
-            log.error("Multiple services found");
-            return null;
+        if (docs.size() > 1) {
+            throw new AssertionError("Multiple services found for " + id);
         }
+        return docs.get(0).getAdapter(ServiceInfo.class);
     }
 
     @Override

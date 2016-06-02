@@ -121,9 +121,9 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         this.documentation = documentation;
     }
 
-    public void addService(String serviceName) {
+    public void addService(String serviceName, boolean overriden) {
         serviceNames.add(serviceName);
-        ServiceInfo si = new ServiceInfoImpl(serviceName, this);
+        ServiceInfo si = new ServiceInfoImpl(serviceName, overriden, this);
         services.add(si);
     }
 

@@ -58,7 +58,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
-import org.nuxeo.apidoc.listener.AttributesExtractorFlagListener;
+import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
@@ -518,7 +518,7 @@ public class Distribution extends ModuleRoot {
         CoreSession coreSession = getContext().getCoreSession();
         String query = String.format(
                 "SELECT ecm:uuid FROM Document WHERE ecm:primaryType in ('%s') AND ecm:isProxy = 0 AND ecm:currentLifeCycleState <> 'deleted'",
-                StringUtils.join(AttributesExtractorFlagListener.DOC_TYPES, "','"));
+                StringUtils.join(AttributesExtractorStater.DOC_TYPES, "','"));
 
         try (IterableQueryResult it = coreSession.queryAndFetch(query, NXQL.NXQL, QueryFilter.EMPTY);) {
             for (Map<String, Serializable> map : it) {

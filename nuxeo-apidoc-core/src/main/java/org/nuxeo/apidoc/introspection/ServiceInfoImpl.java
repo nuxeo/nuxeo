@@ -29,8 +29,11 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     protected final ComponentInfo component;
 
-    public ServiceInfoImpl(String serviceClassName, ComponentInfo component) {
+    protected final boolean overriden;
+
+    public ServiceInfoImpl(String serviceClassName, boolean overriden, ComponentInfo component) {
         this.serviceClassName = serviceClassName;
+        this.overriden = overriden;
         this.component = component;
     }
 
@@ -56,7 +59,11 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     @Override
     public String getHierarchyPath() {
-        return component.getHierarchyPath() + "/" + VirtualNodesConsts.Services_VNODE_NAME + "/" + this.getId();
+        return component.getHierarchyPath() + "/" + VirtualNodesConsts.Services_VNODE_NAME + "/" + getId();
     }
 
+    @Override
+    public boolean isOverriden() {
+        return overriden;
+    }
 }

@@ -26,6 +26,10 @@ public interface ServiceInfo extends NuxeoArtifact {
 
     String PROP_COMPONENT_ID = "nxservice:componentId";
 
+    String PROP_OVERRIDEN = "nxservice:overriden";
+
     String getComponentId();
+
+    boolean isOverriden();
 
 }

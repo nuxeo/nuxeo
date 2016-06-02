@@ -34,6 +34,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jdt.internal.core.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -46,18 +47,13 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.apidoc.core" })
+@Features({ RuntimeSnaphotFeature.class })
 public class TestSnapshotPersist {
 
     private static final Log log = LogFactory.getLog(TestSnapshotPersist.class);
@@ -142,25 +138,19 @@ public class TestSnapshotPersist {
     public void testPersist() throws Exception {
         DistributionSnapshot runtimeSnapshot = snapshotManager.getRuntimeSnapshot();
         String rtDump = dumpSnapshot(runtimeSnapshot);
-        log.info("Live Dump:");
-        log.info(rtDump);
 
         DistributionSnapshot persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
-        session.save();
-        testExportImport(persistent);
 
         persistent = snapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
-        session.save();
 
         // DocumentModelList docs = session.query("select * from NXBundle");
         // for (DocumentModel doc : docs) {
-        // log.info("Bundle : " + doc.getTitle() + " --- " + doc.getPathAsString());
+        // log.info("Bundle : " + doc.getTitle() + " --- " +
+        // doc.getPathAsString());
         // }
         String pDump = dumpSnapshot(persistent);
-        log.info("Persisted Dump:");
-        log.info(pDump);
 
         // String[] rtDumpLines = rtDump.trim().split("\n");
         // String[] pDumpLines = pDump.trim().split("\n");
@@ -170,19 +160,18 @@ public class TestSnapshotPersist {
         // }
         assertEquals(rtDump, pDump);
 
-        testExportImport(persistent);
     }
 
-    /**
-     * @since 8.1
-     */
-    protected void testExportImport(DistributionSnapshot snapshot) throws IOException {
+    @Test
+    public void testExportImport() throws IOException {
+        DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
         File tempFile = Framework.createTempFile("testExportImport", snapshot.getKey());
         try (OutputStream out = new FileOutputStream(tempFile)) {
             snapshotManager.exportSnapshot(session, snapshot.getKey(), out);
         }
         try (InputStream in = new FileInputStream(tempFile)) {
-            snapshotManager.importTmpSnapshot(session, in);
+            DocumentModel doc = snapshotManager.importTmpSnapshot(session, in);
+            Assert.isNotNull(doc);
         }
         tempFile.delete();
     }

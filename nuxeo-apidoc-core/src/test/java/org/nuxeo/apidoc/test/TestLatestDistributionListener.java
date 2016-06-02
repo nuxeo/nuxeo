@@ -33,10 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -45,13 +42,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.apidoc.core")
+@Features(RuntimeSnaphotFeature.class)
 public class TestLatestDistributionListener {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    TransactionalFeature txFeature;
 
     @Test
     public void testLatestFlagAtomicity() {
@@ -63,15 +61,15 @@ public class TestLatestDistributionListener {
         DocumentModel dis1 = session.createDocumentModel("/", "distrib1", TYPE_NAME);
         dis1.setPropertyValue(flag, true);
         dis1 = session.createDocument(dis1);
+        txFeature.nextTransaction();
 
         assertTrue((Boolean) dis1.getPropertyValue(flag));
-        session.save();
 
         // Create a new distribution with the flag sets to true
         DocumentModel dis2 = session.createDocumentModel("/", "distrib2", TYPE_NAME);
         dis2.setPropertyValue(flag, true);
         dis2 = session.createDocument(dis2);
-        session.save();
+        txFeature.nextTransaction();
 
         assertTrue((Boolean) dis2.getPropertyValue(flag));
         dis1 = session.getDocument(dis1.getRef());
@@ -81,7 +79,8 @@ public class TestLatestDistributionListener {
         // Reset flag on the first distribution
         dis1.setPropertyValue(flag, true);
         session.saveDocument(dis1);
-        session.save();
+        txFeature.nextTransaction();
+
         assertFalse((Boolean) session.getDocument(dis2.getRef()).getPropertyValue(flag));
     }
 }

@@ -337,7 +337,7 @@ public class ServerInfo {
 
             if (ri.getProvidedServiceNames() != null) {
                 for (String serviceName : ri.getProvidedServiceNames()) {
-                    component.addService(serviceName);
+                    component.addService(serviceName, isServiceOverriden(ri, serviceName));
                 }
             }
 
@@ -381,6 +381,22 @@ public class ServerInfo {
         }
 
         return server;
+    }
+
+    protected static boolean isServiceOverriden(RegistrationInfo ri, String serviceName) {
+        try {
+            Class<?> typeof = Class.forName(serviceName);
+            final Object adapter = ri.getComponent().getAdapter(typeof);
+            final Object service = Framework.getService(typeof);
+            if (adapter == service) {
+                return false;
+            }
+            return service.getClass() != adapter.getClass();
+        } catch (ClassNotFoundException cause) {
+            return false;
+        } catch (NullPointerException cause) {
+            return false;
+        }
     }
 
     public void toXML(Writer writer) throws IOException {
