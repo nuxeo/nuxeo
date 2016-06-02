@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.download.DownloadService.test">
+
+  <extension target="org.nuxeo.ecm.core.io.download.DownloadService" point="redirectResolver">
+    <redirectResolver class="org.nuxeo.ecm.core.io.download.FakeRedirectResolver"></redirectResolver>
+  </extension>
+
+</component>

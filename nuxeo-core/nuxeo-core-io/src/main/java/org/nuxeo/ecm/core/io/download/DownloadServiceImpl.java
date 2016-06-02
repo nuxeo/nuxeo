@@ -87,12 +87,16 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     private static final String XP = "permissions";
+    
+    private static final String REDIRECT_RESOLVER = "redirectResolver";
 
     private static final String RUN_FUNCTION = "run";
 
     private DownloadPermissionRegistry registry = new DownloadPermissionRegistry();
 
     private ScriptEngineManager scriptEngineManager;
+
+    protected RedirectResolver redirectResolver = new DefaultRedirectResolver();
 
     public static class DownloadPermissionRegistry extends SimpleContributionRegistry<DownloadPermissionDescriptor> {
 
@@ -134,11 +138,17 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (!XP.equals(extensionPoint)) {
+        if (XP.equals(extensionPoint)) {
+            DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
+            registry.addContribution(descriptor);
+        } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
+            RedirectResolver resolver = ((RedirectResolverDescriptor) contribution).getObject();
+            if (resolver != null) {
+                this.redirectResolver = resolver;
+            }
+        } else {
             throw new UnsupportedOperationException(extensionPoint);
         }
-        DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
-        registry.addContribution(descriptor);
     }
 
     @Override
@@ -215,8 +225,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         // check Blob Manager download link
-        BlobManager blobManager = Framework.getService(BlobManager.class);
-        URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD, request);
+        URI uri = redirectResolver.getURI(blob, UsageHint.DOWNLOAD, request);
         if (uri != null) {
             try {
                 Map<String, Serializable> ei = new HashMap<>();

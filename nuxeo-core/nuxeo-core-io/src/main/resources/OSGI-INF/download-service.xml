@@ -61,4 +61,18 @@
 
   </extension-point>
 
+  <extension-point name="redirectResolver">
+
+    <documentation>
+      Defines the redirect resolver associated to blob download. Contributions are of the form:
+      <code>
+        <redirectResolver class="org.nuxeo.ecm.core.io.download.DefaultRedirectResolver"></redirectResolver>
+      </code>
+      This allows you to redirect to a specific cache server or by default the blobManager redirect mechanism
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.io.download.RedirectResolverDescriptor"/>
+
+  </extension-point>
+
 </component>
