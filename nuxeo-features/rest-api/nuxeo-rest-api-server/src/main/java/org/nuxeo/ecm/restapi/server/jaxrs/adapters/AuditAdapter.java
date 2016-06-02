@@ -78,14 +78,13 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
         searchDocument.setPropertyValue("bas:eventIds", request.getParameterValues(EVENT_ID_PARAMETER_NAME));
         searchDocument.setPropertyValue("bas:eventCategories", request.getParameterValues(CATEGORY_PARAMETER_NAME));
         searchDocument.setPropertyValue("bas:principalNames", request.getParameterValues(PRINCIPAL_NAME_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:startDate", getCalendarParameter(request, START_EVENT_DATE_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:endDate", getCalendarParameter(request, END_EVENT_DATE_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:startDate", getCalendarParameter(request.getParameter(START_EVENT_DATE_PARAMETER_NAME)));
+        searchDocument.setPropertyValue("bas:endDate", getCalendarParameter(request.getParameter(END_EVENT_DATE_PARAMETER_NAME)));
 
         return searchDocument;
     }
 
-    protected Calendar getCalendarParameter(HttpServletRequest request, String paramName) {
-        String param = request.getParameter(paramName);
+    public static Calendar getCalendarParameter(String param) {
         if (param != null) {
             DateTime date = ISODateTimeFormat.date().parseDateTime(param);
             if (date != null) {
