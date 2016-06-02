@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.io.download;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -44,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
@@ -208,6 +211,37 @@ public class TestDownloadService {
             assertEquals(blobValue, out.toString());
         } finally {
             loginStack.pop();
+        }
+    }
+
+    @Test
+    public void testDigestMissingError() throws Exception {
+        // blob to download
+        Blob blob = mock(Blob.class);
+        when(blob.getDigest()).thenReturn(null);
+
+        // prepare mocks
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        try {
+            // send download request
+            downloadService.downloadBlob(request, response, null, null, blob, null, null);
+            fail("should fail because blob has no digest");
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Blob doesn't have digest"));
         }
     }
 
