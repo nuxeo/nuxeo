@@ -314,6 +314,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected void completeTask(final String routeId, final String nodeId, final Task task,
             final Map<String, Object> data, final String status, CoreSession session) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Completing task %s associated to node %s for workflow instance %s",
+                    task != null ? task.getId() : null, nodeId, routeId));
+        }
         CompleteTaskRunner runner = new CompleteTaskRunner(routeId, nodeId, task, data, status, session);
         runner.runUnrestricted();
     }
