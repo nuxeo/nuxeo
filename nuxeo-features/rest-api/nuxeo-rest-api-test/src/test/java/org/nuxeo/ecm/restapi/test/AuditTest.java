@@ -22,26 +22,34 @@ package org.nuxeo.ecm.restapi.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.AuditAdapter;
+import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.AuditJsonEnricher;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -393,6 +401,25 @@ public class AuditTest extends BaseTest {
         nodes = getLogEntries(node);
         assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(0, nodes.size());
+    }
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void shouldEnrichWithLatestDocumentLogEntries() throws JsonProcessingException, IOException {
+        DocumentModel doc = RestServerInit.getFile(1, session);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", AuditJsonEnricher.NAME);
+        ClientResponse response = getResponse(BaseTest.RequestType.GET, "id/" + doc.getId(), headers);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode auditNodes =  (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(AuditJsonEnricher.NAME);
+        assertEquals(2, auditNodes.size());
+        assertEquals("documentModified", auditNodes.get(0).get("eventId").getValueAsText());
+        assertEquals("documentCreated", auditNodes.get(1).get("eventId").getValueAsText());
     }
 
     @Override
