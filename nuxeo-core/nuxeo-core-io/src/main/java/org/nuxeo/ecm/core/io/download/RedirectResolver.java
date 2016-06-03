@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 /**
  * 
  * @since 8.3
+ * Return a URI to redirect client to for a specified blob if possible
  */
 public interface RedirectResolver {
 

@@ -98,6 +98,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     protected RedirectResolver redirectResolver = new DefaultRedirectResolver();
 
+    protected List<RedirectResolverDescriptor> redirectResolverContributions = new ArrayList<RedirectResolverDescriptor>();
+
     public static class DownloadPermissionRegistry extends SimpleContributionRegistry<DownloadPermissionDescriptor> {
 
         @Override
@@ -142,10 +144,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
             registry.addContribution(descriptor);
         } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
-            RedirectResolver resolver = ((RedirectResolverDescriptor) contribution).getObject();
-            if (resolver != null) {
-                this.redirectResolver = resolver;
-            }
+            this.redirectResolver = ((RedirectResolverDescriptor) contribution).getObject();
+            // Save contribution
+            redirectResolverContributions.add((RedirectResolverDescriptor) contribution);
         } else {
             throw new UnsupportedOperationException(extensionPoint);
         }
@@ -153,8 +154,21 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
-        registry.removeContribution(descriptor);
+        if (XP.equals(extensionPoint)) {
+            DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
+            registry.removeContribution(descriptor);
+        } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
+            redirectResolverContributions.remove((DownloadPermissionDescriptor) contribution);
+            if (redirectResolverContributions.size() == 0) {
+                // If no more custom contribution go back to the default one
+                redirectResolver = new DefaultRedirectResolver();
+            } else {
+                // Go back to the last contribution added
+                redirectResolver = redirectResolverContributions.get(redirectResolverContributions.size()-1).getObject();
+            }
+        } else {
+            throw new UnsupportedOperationException(extensionPoint);
+        }
     }
 
     @Override

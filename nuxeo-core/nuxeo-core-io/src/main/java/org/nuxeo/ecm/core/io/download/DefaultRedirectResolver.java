@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author Remi Cattiau
  * @since 8.3
- * Use the BlobManager getURI method to redirect if found
+ * Use the BlobManager getURI method for redirect
  */
 public class DefaultRedirectResolver implements RedirectResolver {
 

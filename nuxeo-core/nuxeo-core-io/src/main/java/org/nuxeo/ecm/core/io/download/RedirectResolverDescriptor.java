@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.io.download;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -30,7 +28,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
  */
 @XObject("redirectResolver")
 public class RedirectResolverDescriptor {
-    private static final Log log = LogFactory.getLog(RedirectResolverDescriptor.class);
 
     @XNode("@class")
     protected Class<? extends RedirectResolver> clazz;
@@ -43,8 +40,7 @@ public class RedirectResolverDescriptor {
         try {
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            log.error(e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
 }
