@@ -17,9 +17,6 @@
       <category>permissions</category>
       <parameter name="permissions">Read,Write,Everything</parameter>
     </enricher>
-    <enricher name="thumbnail" class="org.nuxeo.ecm.automation.io.services.enricher.ThumbnailContentEnricher">
-      <category>thumbnail</category>
-    </enricher>
     <enricher name="preview" class="org.nuxeo.ecm.automation.io.services.enricher.PreviewContentEnricher">
       <category>preview</category>
     </enricher>

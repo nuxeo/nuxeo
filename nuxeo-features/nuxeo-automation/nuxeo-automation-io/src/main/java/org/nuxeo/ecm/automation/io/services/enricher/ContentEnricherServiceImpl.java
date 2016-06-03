@@ -71,7 +71,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements Cont
     public static final String ENRICHER = "enricher";
 
     public static List<Class<?>> DEPRECATED_KNOWN_ENRICHERS = Arrays.asList(ACLContentEnricher.class,
-            PreviewContentEnricher.class, ThumbnailContentEnricher.class, UserPermissionsContentEnricher.class);
+            PreviewContentEnricher.class, UserPermissionsContentEnricher.class);
 
     private Map<String, ContentEnricherDescriptor> descriptorRegistry = new ConcurrentHashMap<>();
 
@@ -82,7 +82,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements Cont
         super.activate(context);
         List<String> customDeprecated = new ArrayList<>();
         List<Class<?>> deprecatedKnown = Arrays.asList(ACLContentEnricher.class, PreviewContentEnricher.class,
-                ThumbnailContentEnricher.class, UserPermissionsContentEnricher.class);
+                UserPermissionsContentEnricher.class);
         for (ContentEnricherDescriptor descriptor : descriptorRegistry.values()) {
             if (!deprecatedKnown.contains(descriptor.klass)) {
                 customDeprecated.add(descriptor.klass.getSimpleName());
