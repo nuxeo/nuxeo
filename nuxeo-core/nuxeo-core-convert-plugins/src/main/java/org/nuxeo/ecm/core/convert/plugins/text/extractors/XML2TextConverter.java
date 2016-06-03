@@ -26,40 +26,31 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.xml.sax.SAXException;
 
 public class XML2TextConverter implements Converter {
 
-    private static final Log log = LogFactory.getLog(XML2TextConverter.class);
-
     @Override
-    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder holder, Map<String, Serializable> parameters) throws ConversionException {
+        return new SimpleBlobHolder(new StringBlob(convert(holder.getBlob(), parameters)));
+    }
 
-        InputStream stream = null;
-        try {
-            stream = blobHolder.getBlob().getStream();
+    String convert(Blob blob, Map<String, Serializable> parameters) {
+        if (blob.getLength() == 0L) {
+            return "";
+        }
+        try (InputStream stream = blob.getStream()) {
             Xml2TextHandler xml2text = new Xml2TextHandler();
-            String text = xml2text.parse(stream);
-
-            return new SimpleCachableBlobHolder(Blobs.createBlob(text));
+            return xml2text.parse(stream);
         } catch (IOException | SAXException | ParserConfigurationException e) {
             throw new ConversionException("Error during XML2Text conversion", e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    log.error("Error while closing Blob stream", e);
-                }
-            }
         }
     }
 
