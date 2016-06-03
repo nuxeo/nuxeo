@@ -139,7 +139,6 @@
         <property name="minChars">0</property>
         <property name="hideHelpLabel">true</property>
         <property name="directoryName">l10nsubjects</property>
-        <property name="closeOnSelect">false</property>
       </properties>
     </widget>
 
