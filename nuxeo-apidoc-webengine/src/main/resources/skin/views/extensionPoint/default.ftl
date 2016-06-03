@@ -43,6 +43,7 @@
   function searchContrib(text) {
 
     $('#highlight-plugin').removeHighlight();
+    $('#highlight-plugin').find('li').show();
     $('#searchMatchResult').html("");
 
     if (text.trim().length==0) {
@@ -54,6 +55,13 @@
     if (elems.size()>0) {
       $('div.searchableText').highlight(text);
       $('#searchMatchResult').html(elems.size() + " matching contribution(s)");
+
+      $('#highlight-plugin').find('li').hide();
+      elems.each(function(i, elt) {
+        console.log(elt);
+        console.log($(elt).parent('li'));
+        $(elt).parent('li').show();
+      });
     } else {
       $('#searchMatchResult').html("no match found");
     }
