@@ -38,7 +38,6 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -228,15 +227,15 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     @Test
     public void testQuery1() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put("username", "user");
-            Set<String> fulltext = new HashSet<String>();
+            Set<String> fulltext = new HashSet<>();
             fulltext.add("username");
             DocumentModelList entries = session.query(filter, fulltext);
             assertNotNull(entries);
             assertEquals(2, entries.size());
 
-            List<String> entryIds = new ArrayList<String>();
+            List<String> entryIds = new ArrayList<>();
             for (DocumentModel entry : entries) {
                 entryIds.add(entry.getId());
             }

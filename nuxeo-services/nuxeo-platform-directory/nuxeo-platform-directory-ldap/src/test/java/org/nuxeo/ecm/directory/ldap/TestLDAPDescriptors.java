@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.naming.directory.SearchControls;
 
-import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

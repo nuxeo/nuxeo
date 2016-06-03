@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.directory.ldap;
@@ -119,15 +118,13 @@ public class LDAPFilterMatcher {
             try {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
-                    if (isCaseSensitive || !(rawValue instanceof String)
-                            || !(simpleElement.getValue() instanceof String)) {
+                    if (isCaseSensitive || !(simpleElement.getValue() instanceof String)) {
                         if (simpleElement.getValue().equals(rawValue)) {
                             return true;
                         }
                     } else {
-                        String stringValue = (String) rawValue;
                         String stringElementValue = (String) simpleElement.getValue();
-                        if (stringElementValue.equalsIgnoreCase(stringValue)) {
+                        if (stringElementValue.equalsIgnoreCase(rawValue)) {
                             return true;
                         }
                     }
@@ -175,7 +172,7 @@ public class LDAPFilterMatcher {
             try {
                 while (rawValues.hasMore()) {
                     String rawValue = rawValues.next().toString();
-                    Normalizer normalizer = getNormalizer();
+                    getNormalizer();
                     StringBuffer sb = new StringBuffer();
                     String initial = substringElement.getInitial();
                     String finalSegment = substringElement.getFinal();

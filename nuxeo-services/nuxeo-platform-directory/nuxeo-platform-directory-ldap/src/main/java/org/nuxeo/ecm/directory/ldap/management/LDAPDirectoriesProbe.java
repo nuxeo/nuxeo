@@ -35,7 +35,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectory;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor;
-import org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory;
 import org.nuxeo.runtime.api.Framework;
 
 public class LDAPDirectoriesProbe implements Probe {
@@ -44,7 +43,7 @@ public class LDAPDirectoriesProbe implements Probe {
     public ProbeStatus run() {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         boolean success = true;
-        Map<String, String> infos = new HashMap<String, String>();
+        Map<String, String> infos = new HashMap<>();
         for (String id : directoryService.getDirectoryNames()) {
             BaseDirectoryDescriptor descriptor = directoryService.getDirectoryDescriptor(id);
             if (!(descriptor instanceof LDAPDirectoryDescriptor)) {

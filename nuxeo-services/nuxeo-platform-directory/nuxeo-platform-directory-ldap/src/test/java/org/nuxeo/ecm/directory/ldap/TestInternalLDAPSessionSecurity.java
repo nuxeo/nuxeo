@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.security.auth.login.LoginException;
 
@@ -103,7 +102,7 @@ public class TestInternalLDAPSessionSecurity {
     }
 
     @After
-    public void tearDown() throws NamingException {
+    public void tearDown() {
         userDirSession.close();
         groupDirSession.close();
         if (embeddedLDAPserver != null) {
@@ -124,7 +123,7 @@ public class TestInternalLDAPSessionSecurity {
     @Test
     public void readerUserCanQuery() throws LoginException {
         dummyLogin.loginAs(READER_USER);
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put("lastName", "Manager");
         DocumentModelList entries = userDirSession.query(filter);
         assertEquals(1, entries.size());

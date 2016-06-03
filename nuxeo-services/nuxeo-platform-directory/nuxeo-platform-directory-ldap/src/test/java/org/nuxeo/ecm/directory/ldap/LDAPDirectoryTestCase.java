@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.directory.ldap;
@@ -56,7 +55,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -113,7 +111,7 @@ public abstract class LDAPDirectoryTestCase {
     protected RuntimeHarness runtimeHarness;
 
     public List<String> getLdifFiles() {
-        List<String> ldifFiles = new ArrayList<String>();
+        List<String> ldifFiles = new ArrayList<>();
         ldifFiles.add("sample-users.ldif");
         ldifFiles.add("sample-groups.ldif");
         if (HAS_DYNGROUP_SCHEMA) {
@@ -131,7 +129,8 @@ public abstract class LDAPDirectoryTestCase {
             server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
-        };
+        }
+        ;
         try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : getLdifFiles()) {
@@ -163,7 +162,7 @@ public abstract class LDAPDirectoryTestCase {
     }
 
     protected static void loadDataFromLdif(String ldif, DirContext ctx) {
-        List<LdifLoadFilter> filters = new ArrayList<LdifLoadFilter>();
+        List<LdifLoadFilter> filters = new ArrayList<>();
         LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
                                                                                        .getContextClassLoader());
         loader.execute();

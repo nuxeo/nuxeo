@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,7 @@
 package org.nuxeo.ecm.directory.ldap;
 
 import java.io.File;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -82,7 +72,7 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
     DirectoryService dirService;
 
     public List<String> getLdifFiles() {
-        List<String> ldifFiles = new ArrayList<String>();
+        List<String> ldifFiles = new ArrayList<>();
         ldifFiles.add("sample-users.ldif");
         ldifFiles.add("sample-groups.ldif");
         if (HAS_DYNGROUP_SCHEMA) {
@@ -92,9 +82,9 @@ public class ExternalLDAPDirectoryFeature extends SimpleFeature {
     }
 
     protected void loadDataFromLdif(String ldif, DirContext ctx) {
-        List<LdifLoadFilter> filters = new ArrayList<LdifLoadFilter>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
-                Thread.currentThread().getContextClassLoader());
+        List<LdifLoadFilter> filters = new ArrayList<>();
+        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
+                                                                                       .getContextClassLoader());
         loader.execute();
     }
 

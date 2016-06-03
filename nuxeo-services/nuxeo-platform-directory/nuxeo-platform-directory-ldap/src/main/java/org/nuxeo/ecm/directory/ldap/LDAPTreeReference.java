@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.AbstractReference;
@@ -161,7 +162,7 @@ public class LDAPTreeReference extends AbstractReference {
      */
     @Override
     public List<String> getSourceIdsForTarget(String targetId) throws DirectoryException {
-        Set<String> sourceIds = new TreeSet<String>();
+        Set<String> sourceIds = new TreeSet<>();
         String targetDn = null;
 
         // step #1: fetch the dn of the targetId entry in the target
@@ -180,15 +181,15 @@ public class LDAPTreeReference extends AbstractReference {
 
         // step #2: search for entries that reference parent dn in the
         // source directory and collect its id
-        LDAPDirectory sourceDirectory = getSourceLDAPDirectory();
+        LDAPDirectory ldapSourceDirectory = getSourceLDAPDirectory();
         String parentDn = getParentDn(targetDn);
-        String filterExpr = String.format("(&%s)", sourceDirectory.getBaseFilter());
+        String filterExpr = String.format("(&%s)", ldapSourceDirectory.getBaseFilter());
         String[] filterArgs = {};
 
         // get a copy of original search controls
-        SearchControls sctls = sourceDirectory.getSearchControls(true);
+        SearchControls sctls = ldapSourceDirectory.getSearchControls(true);
         sctls.setSearchScope(SearchControls.OBJECT_SCOPE);
-        try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
+        try (LDAPSession sourceSession = (LDAPSession) ldapSourceDirectory.getSession()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
                         + " filter='%s' args='%s' scope='%s' [%s]", targetId, parentDn, filterExpr,
@@ -218,7 +219,7 @@ public class LDAPTreeReference extends AbstractReference {
             throw new DirectoryException("error during reference search for " + targetDn, e);
         }
 
-        return new ArrayList<String>(sourceIds);
+        return new ArrayList<>(sourceIds);
     }
 
     /**
@@ -232,7 +233,7 @@ public class LDAPTreeReference extends AbstractReference {
     // method)
     @Override
     public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
-        Set<String> targetIds = new TreeSet<String>();
+        Set<String> targetIds = new TreeSet<>();
         String sourceDn = null;
 
         // step #1: fetch the dn of the sourceId entry in the source
@@ -250,15 +251,15 @@ public class LDAPTreeReference extends AbstractReference {
 
         // step #2: search for entries with sourceDn as base dn and collect
         // their ids
-        LDAPDirectory targetDirectory = getTargetLDAPDirectory();
+        LDAPDirectory ldapTargetDirectory = getTargetLDAPDirectory();
 
-        String filterExpr = String.format("(&%s)", targetDirectory.getBaseFilter());
+        String filterExpr = String.format("(&%s)", ldapTargetDirectory.getBaseFilter());
         String[] filterArgs = {};
 
         // get a copy of original search controls
-        SearchControls sctls = targetDirectory.getSearchControls(true);
+        SearchControls sctls = ldapTargetDirectory.getSearchControls(true);
         sctls.setSearchScope(getScope());
-        try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
+        try (LDAPSession targetSession = (LDAPSession) ldapTargetDirectory.getSession()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("LDAPReference.getTargetIdsForSource(%s): LDAP search search base='%s'"
                         + " filter='%s' args='%s' scope='%s' [%s]", sourceId, sourceDn, filterExpr,
@@ -290,7 +291,7 @@ public class LDAPTreeReference extends AbstractReference {
             throw new DirectoryException("error during reference search for " + sourceDn, e);
         }
 
-        return new ArrayList<String>(targetIds);
+        return new ArrayList<>(targetIds);
     }
 
     /**
@@ -302,7 +303,7 @@ public class LDAPTreeReference extends AbstractReference {
      */
     protected static String pseudoNormalizeDn(String dn) throws InvalidNameException {
         LdapName ldapName = new LdapName(dn);
-        List<String> rdns = new ArrayList<String>();
+        List<String> rdns = new ArrayList<>();
         for (Rdn rdn : ldapName.getRdns()) {
             String value = rdn.getValue().toString().toLowerCase().replaceAll(",", "\\\\,");
             String rdnStr = rdn.getType().toLowerCase() + "=" + value;

@@ -24,9 +24,10 @@ package org.nuxeo.ecm.directory.ldap;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jdt.internal.core.Assert;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -73,11 +74,11 @@ public class TestCachedLDAPSession extends TestLDAPSession {
 
         // First call will update cache
         DocumentModel entry = ldapSession.getEntry("user1");
-        Assert.isNotNull(entry);
+        Assert.assertNotNull(entry);
 
         // Second call will use the cache
         entry = ldapSession.getEntry("user1");
-        Assert.isNotNull(entry);
+        Assert.assertNotNull(entry);
     }
 
 }

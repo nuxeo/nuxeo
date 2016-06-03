@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
     /**
      * Create a cache to hold the at most 100 recent DNS lookups for a period of 10 minutes.
      */
-    protected Map<String, List<DNSServiceEntry>> cache = new HashMap<String, List<DNSServiceEntry>>();
+    protected Map<String, List<DNSServiceEntry>> cache = new HashMap<>();
 
     protected long lastCacheUpdate = System.currentTimeMillis();
 
@@ -101,7 +101,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
      */
     protected List<DNSServiceEntry> resolveDnsServiceRecord(final String service, final String domain)
             throws NamingException {
-        List<DNSServiceEntry> addresses = new ArrayList<DNSServiceEntry>();
+        List<DNSServiceEntry> addresses = new ArrayList<>();
 
         if (context == null) {
             return addresses;
@@ -115,9 +115,9 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
             cache.clear();
         }
         if (cache.containsKey(key)) {
-            addresses = cache.get(key);
-            if (addresses != null) {
-                return addresses;
+            List<DNSServiceEntry> cachedAddresses = cache.get(key);
+            if (cachedAddresses != null) {
+                return cachedAddresses;
             }
         }
 
