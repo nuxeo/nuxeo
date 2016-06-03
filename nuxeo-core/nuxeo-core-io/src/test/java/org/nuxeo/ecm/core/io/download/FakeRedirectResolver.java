@@ -32,9 +32,6 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
  */
 public class FakeRedirectResolver implements RedirectResolver {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.io.download.RedirectResolver#getURI(org.nuxeo.ecm.core.api.Blob, org.nuxeo.ecm.core.blob.BlobManager.UsageHint, javax.servlet.http.HttpServletRequest)
-     */
     @Override
     public URI getURI(Blob blob, UsageHint usage, HttpServletRequest request) throws IOException {
         return URI.create("http://www.nuxeo.org");

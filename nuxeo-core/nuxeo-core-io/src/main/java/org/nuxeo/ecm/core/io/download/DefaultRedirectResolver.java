@@ -35,9 +35,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultRedirectResolver implements RedirectResolver {
 
-    /* (non-Javadoc)
-     * @see org.nuxeo.ecm.core.io.download.RedirectResolver#getURI(org.nuxeo.ecm.core.api.Blob, org.nuxeo.ecm.core.blob.BlobManager.UsageHint, javax.servlet.http.HttpServletRequest)
-     */
     @Override
     public URI getURI(Blob blob, UsageHint usage, HttpServletRequest request) throws IOException {
         BlobManager blobManager = Framework.getService(BlobManager.class);
