@@ -375,6 +375,9 @@
                   <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_closeOnSelect</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>

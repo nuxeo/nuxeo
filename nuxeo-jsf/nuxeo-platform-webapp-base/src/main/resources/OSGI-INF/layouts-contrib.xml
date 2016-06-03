@@ -186,6 +186,25 @@
       </fields>
     </widget>
 
+    <widget name="select2_closeOnSelect" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Select2 closeOnSelect</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+         If set to false the dropdown is not closed after a selection is made,
+         allowing for rapid selection of multiple items.
+         By default this option is set to true.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>closeOnSelect</field>
+      </fields>
+    </widget>
+
     <widget name="select2_directory_labelFieldName" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -1345,6 +1364,9 @@
                   <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_closeOnSelect</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
@@ -1656,6 +1678,9 @@
                   <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_closeOnSelect</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
@@ -1864,6 +1889,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_frequency</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_closeOnSelect</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>

@@ -385,6 +385,11 @@
       select2_params.separator = params.separator;
     }
 
+    // close on select
+    if (params.closeOnSelect) {
+      select2_params.closeOnSelect = params.closeOnSelect === 'true';
+    }
+
     // init select2
     el.select2(select2_params);
 
