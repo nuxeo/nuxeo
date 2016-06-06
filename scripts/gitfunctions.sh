@@ -37,8 +37,8 @@ gitfa() {
   else
     from_root=false
   fi
-  ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
-  $from_root || ADDONS=". $ADDONS"
+  ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1|tr '\n' ' ')
+  $from_root || ADDONS=("." $ADDONS)
   for dir in $ADDONS; do
     if [ -e "$dir"/.git ]; then
       echo "[$dir]"
