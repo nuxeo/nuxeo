@@ -291,16 +291,16 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         getCache().put(key, object);
     }
 
-    protected final void invalidateInCache(String key) {
-        getCache().invalidate(key);
+    protected final void invalidateInCache(LiveConnectFileInfo fileInfo) {
+        getCache().invalidate(FILE_CACHE_PREFIX + buildBlobKey(fileInfo));
     }
 
     protected final LiveConnectFile getFileFromCache(LiveConnectFileInfo fileInfo) {
-        return getFromCache(FILE_CACHE_PREFIX + fileInfo.getFileId());
+        return getFromCache(FILE_CACHE_PREFIX + buildBlobKey(fileInfo));
     }
 
     protected final void putFileInCache(LiveConnectFile file) {
-        putInCache(FILE_CACHE_PREFIX + file.getInfo().getFileId(), file);
+        putInCache(FILE_CACHE_PREFIX + buildBlobKey(file.getInfo()), file);
     }
 
     /**
