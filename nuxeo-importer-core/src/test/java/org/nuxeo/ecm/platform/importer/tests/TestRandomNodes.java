@@ -19,8 +19,12 @@
 
 package org.nuxeo.ecm.platform.importer.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.io.registry.context.DepthValues.root;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,6 +54,21 @@ public class TestRandomNodes {
     protected boolean isBigNbNodes = false;
 
     @Test
+    public void testRandomWithProperties() throws Exception {
+        RandomTextSourceNode root = RandomTextSourceNode.init(1000, 0, true, false, true);
+        List<SourceNode> children = root.getChildren();
+        for (SourceNode child: children) {
+            if (child.isFolderish()) {
+                assertNull(child.getBlobHolder().getBlob());
+            } else {
+                assertEquals(0, child.getBlobHolder().getBlob().getLength());
+            }
+            assertNotNull(child.getBlobHolder().getProperty("dc:source"));
+            assertNotNull(child.getBlobHolder().getProperty("dc:coverage"));
+        }
+    }
+
+    @Test
     public void testBrowse() throws Exception {
 
         int target = 500 * 1000;
@@ -63,12 +82,13 @@ public class TestRandomNodes {
         assertFalse(isBigNbNodes);
     }
 
+
     @Test
     public void testNonUniformDistribution() throws IOException {
 
         int target = 500 * 1000;
 
-        RandomTextSourceNode root = RandomTextSourceNode.init(target, null, true, true);
+        RandomTextSourceNode root = RandomTextSourceNode.init(target, null, true, true, false);
         browse(root);
         logReport();
         assertTrue(isSmallNbNodes);

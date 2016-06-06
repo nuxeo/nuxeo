@@ -21,8 +21,12 @@
 
 package org.nuxeo.ecm.platform.importer.source;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -31,9 +35,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.platform.importer.random.DictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
+
 
 /**
  * Random {@link SourceNode} to be used for load testing
@@ -97,12 +103,38 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected boolean onlyText = true;
 
-    public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText) {
+    protected boolean withProperties = false;
+
+    static protected String[] DC_NATURE = { "article", "acknowledgement", "assessment", "application", "order",
+            "contract", "quotation", "fax", "worksheet", "letter", "memo", "note", "notification", "procedure",
+            "report", "internshipReport", "pressReview"};
+
+    static protected String[] DC_SUBJECTS = {"art/architecture", "art/comics", "art/cinema", "art/culture","art/danse",
+            "art/music", "sciences/astronomy", "sciences/biology", "sciences/chemistry", "sciences/math",
+            "sciences/physic", "society/ecology", "daily life/gastronomy", "daily life/gardening", "daily life/sport",
+            "technology/it" };
+
+    static protected String[] DC_RIGHTS = { "OpenContentL", "CC-BY-NC", "CC-BY-ND", "FreeArt", "ODbi", "GNUGPL",
+            "FreeBSD", "CC0"};
+
+    static protected String[] DC_LANGUAGE = { "IT", "DE", "FR", "US", "EN"};
+
+    static protected String[] DC_SOURCE = { "internal", "external", "unknown" };
+
+    static protected String[] DC_COVERAGE = { "europe/France", "europe/Germany", "europe/Italy", "europe/Spain",
+            "oceania/Tonga", "africa/Mali", "asia/Japan", "north-america/United_States_of_America" };
+
+    public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText, boolean withProperties) {
         this.folderish = folderish;
         hazard = new Random();
         this.level = level;
         this.idx = idx;
         this.onlyText = onlyText;
+        this.withProperties = withProperties;
+    }
+
+    public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText) {
+        this(folderish, level, idx, onlyText, false);
     }
 
     public static RandomTextSourceNode init(int maxSize) {
@@ -110,15 +142,17 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) {
-        return init(maxSize, blobSizeInKB, onlyText, false);
+        return init(maxSize, blobSizeInKB, onlyText, false, false);
     }
 
-    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText, boolean nonUniform) {
-        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"), nonUniform);
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText, boolean nonUniform,
+                                            boolean withProperties) {
+        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"), nonUniform,
+                withProperties);
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText,
-            DictionaryHolder dictionaryHolder, boolean nonUniform) {
+            DictionaryHolder dictionaryHolder, boolean nonUniform, boolean withProperties) {
         gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;
@@ -130,7 +164,7 @@ public class RandomTextSourceNode implements SourceNode {
         minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
         minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0 / maxDepth));
         nonUniformRepartition = nonUniform;
-        return new RandomTextSourceNode(true, 0, 0, onlyText);
+        return new RandomTextSourceNode(true, 0, 0, onlyText, withProperties);
     }
 
     protected String getBlobMimeType() {
@@ -141,13 +175,19 @@ public class RandomTextSourceNode implements SourceNode {
         }
     }
 
+    private String capitalize(final String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
+    }
+
     @Override
     public BlobHolder getBlobHolder() {
+        String content = null;
         if (folderish) {
+            if (withProperties) {
+                return new SimpleBlobHolderWithProperties((Blob) null, getRandomProperties(content));
+            }
             return null;
         }
-        String content = null;
-
         if (blobSizeInKB == null) {
             content = gen.getRandomText();
         } else {
@@ -157,7 +197,40 @@ public class RandomTextSourceNode implements SourceNode {
             size += content.length();
         }
         Blob blob = Blobs.createBlob(content, getBlobMimeType(), null, getName() + ".txt");
+        if (withProperties) {
+            return new SimpleBlobHolderWithProperties(blob, getRandomProperties(content));
+        }
         return new SimpleBlobHolder(blob);
+    }
+
+    protected Map<String, Serializable> getRandomProperties(String content) {
+        Map<String, Serializable> ret = new HashMap<>();
+        ret.put("dc:title", capitalize(getName()));
+        if (hazard.nextInt(10) == 1) {
+            String description;
+            if (content != null && ! content.isEmpty()) {
+                description = content.substring(0, content.indexOf(' ', 40));
+            } else {
+                description = gen.getRandomTitle(hazard.nextInt(5)+1);
+            }
+            ret.put("dc:description", capitalize(description));
+        }
+        ret.put("dc:nature", getGaussian(DC_NATURE));
+        ret.put("dc:subjects", (Serializable) Arrays.asList(getGaussian(DC_SUBJECTS)));
+        ret.put("dc:rights", getGaussian(DC_RIGHTS));
+        ret.put("dc:language", getGaussian(DC_LANGUAGE));
+        ret.put("dc:coverage", getGaussian(DC_COVERAGE));
+        ret.put("dc:source", getGaussian(DC_SOURCE));
+        // validation contraint violation
+        // ret.put("dc:creator", String.format("user%03d", hazard.nextInt(500)));
+        return ret;
+    }
+
+    protected String getGaussian(String[] words) {
+        double g = Math.abs(hazard.nextGaussian() / 4);
+        g = Math.min(g, 1);
+        int i = (int) Math.floor(g * (words.length - 1));
+        return words[ i ];
     }
 
     protected int getMidRandom(int target) {
@@ -258,7 +331,7 @@ public class RandomTextSourceNode implements SourceNode {
 
         int nbChildren = getMaxChildren();
         for (int i = 0; i < nbChildren; i++) {
-            children.add(new RandomTextSourceNode(false, level, i, onlyText));
+            children.add(new RandomTextSourceNode(false, level, i, onlyText, withProperties));
         }
         synchronized (nbNodes) {
             nbNodes = nbNodes + nbChildren;
@@ -280,7 +353,7 @@ public class RandomTextSourceNode implements SourceNode {
             if (!nonUniformRepartition || nbChildren > 0) {
                 int nbFolderish = getMaxFolderish();
                 for (int i = 0; i < nbFolderish; i++) {
-                    children.add(new RandomTextSourceNode(true, level + 1, i, onlyText));
+                    children.add(new RandomTextSourceNode(true, level + 1, i, onlyText, withProperties));
                 }
                 synchronized (nbFolders) {
                     nbFolders = nbFolders + nbFolderish;
@@ -320,15 +393,20 @@ public class RandomTextSourceNode implements SourceNode {
     @Override
     public String getName() {
         if (name == null) {
-            if (folderish) {
-                name = "folder";
-            } else {
-                name = "file";
+            if (withProperties) {
+                name = gen.getRandomTitle(hazard.nextInt(3)+1);
             }
-            if (level == 0 && folderish) {
-                name = name + "-" + (System.currentTimeMillis() % 10000) + hazard.nextInt(100);
-            } else {
-                name = name + "-" + level + "-" + idx;
+            else {
+                if (folderish) {
+                    name = "folder";
+                } else {
+                    name = "file";
+                }
+                if (level == 0 && folderish) {
+                    name = name + "-" + (System.currentTimeMillis() % 10000) + hazard.nextInt(100);
+                } else {
+                    name = name + "-" + level + "-" + idx;
+                }
             }
         }
         return name;

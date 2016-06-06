@@ -25,11 +25,11 @@ package org.nuxeo.ecm.platform.importer.factories;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -100,7 +100,6 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         }
         doc.setProperty("dublincore", "title", node.getName());
         doc = session.createDocument(doc);
-
         if (bh != null) {
             doc = setDocumentProperties(session, bh.getProperties(), doc);
         }
@@ -122,35 +121,33 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     protected DocumentModel defaultCreateLeafNode(CoreSession session, DocumentModel parent, SourceNode node)
             throws IOException {
 
+        Blob blob = null;
+        Map<String, Serializable> props = null;
+        String leafTypeToUse = leafType;
         BlobHolder bh = node.getBlobHolder();
-        String leafTypeToUse = getDocTypeToUse(bh);
-        if (leafTypeToUse == null) {
-            leafTypeToUse = leafType;
+        if (bh != null) {
+            blob = bh.getBlob();
+            props = bh.getProperties();
+            String bhType = getDocTypeToUse(bh);
+            if (bhType != null) {
+                leafTypeToUse = bhType;
+            }
         }
-        List<String> facets = getFacetsToUse(bh);
-
-        String mimeType = bh.getBlob().getMimeType();
-        if (mimeType == null) {
-            mimeType = getMimeType(node.getName());
-        }
-
-        String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
-
+        String name = getValidNameFromFileName(fileName);
         DocumentModel doc = session.createDocumentModel(parent.getPathAsString(), name, leafTypeToUse);
-        for (String facet : facets) {
+        for (String facet : getFacetsToUse(bh)) {
             doc.addFacet(facet);
         }
         doc.setProperty("dublincore", "title", node.getName());
-        doc.setProperty("file", "filename", fileName);
-        doc.setProperty("file", "content", bh.getBlob());
-
-        doc = session.createDocument(doc);
-
-        if (bh != null) {
-            doc = setDocumentProperties(session, bh.getProperties(), doc);
+        if (blob != null && blob.getLength() > 0 ) {
+            doc.setProperty("file", "filename", fileName);
+            doc.setProperty("file", "content", blob);
         }
-
+        doc = session.createDocument(doc);
+        if (props != null) {
+            doc = setDocumentProperties(session, props, doc);
+        }
         return doc;
     }
 

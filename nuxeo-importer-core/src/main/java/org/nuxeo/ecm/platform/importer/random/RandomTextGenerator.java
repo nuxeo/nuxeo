@@ -80,6 +80,15 @@ public class RandomTextGenerator {
         return (int) (1.2 * (getTargetPageMaxSizeB() / NB_PARAGRAPH_PER_PAGE));
     }
 
+    public String getRandomTitle(int nbWord) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < nbWord; i++) {
+            sb.append(dictionaryHolder.getRandomWord());
+        }
+        return sb.toString();
+
+    }
+
     public String getRandomLine() {
         int nbW = 10 + generator.nextInt(NB_WORDS_PER_LINE);
         StringBuffer sb = new StringBuffer();
@@ -198,6 +207,9 @@ public class RandomTextGenerator {
     }
 
     public String getRandomText(int avSizeInK) {
+        if (avSizeInK == 0) {
+            return "";
+        }
         StringBuffer sb = new StringBuffer();
         int minSize = (int) (avSizeInK * 1024 * (0.8 + 0.4 * generator.nextFloat()));
         while (sb.length() < (minSize - BLOC_SIZE)) {
