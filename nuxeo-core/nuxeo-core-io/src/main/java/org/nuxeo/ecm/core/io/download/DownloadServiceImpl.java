@@ -87,12 +87,18 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     private static final String XP = "permissions";
+    
+    private static final String REDIRECT_RESOLVER = "redirectResolver";
 
     private static final String RUN_FUNCTION = "run";
 
     private DownloadPermissionRegistry registry = new DownloadPermissionRegistry();
 
     private ScriptEngineManager scriptEngineManager;
+
+    protected RedirectResolver redirectResolver = new DefaultRedirectResolver();
+
+    protected List<RedirectResolverDescriptor> redirectResolverContributions = new ArrayList<RedirectResolverDescriptor>();
 
     public static class DownloadPermissionRegistry extends SimpleContributionRegistry<DownloadPermissionDescriptor> {
 
@@ -134,17 +140,35 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (!XP.equals(extensionPoint)) {
+        if (XP.equals(extensionPoint)) {
+            DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
+            registry.addContribution(descriptor);
+        } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
+            this.redirectResolver = ((RedirectResolverDescriptor) contribution).getObject();
+            // Save contribution
+            redirectResolverContributions.add((RedirectResolverDescriptor) contribution);
+        } else {
             throw new UnsupportedOperationException(extensionPoint);
         }
-        DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
-        registry.addContribution(descriptor);
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
-        registry.removeContribution(descriptor);
+        if (XP.equals(extensionPoint)) {
+            DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
+            registry.removeContribution(descriptor);
+        } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
+            redirectResolverContributions.remove((DownloadPermissionDescriptor) contribution);
+            if (redirectResolverContributions.size() == 0) {
+                // If no more custom contribution go back to the default one
+                redirectResolver = new DefaultRedirectResolver();
+            } else {
+                // Go back to the last contribution added
+                redirectResolver = redirectResolverContributions.get(redirectResolverContributions.size()-1).getObject();
+            }
+        } else {
+            throw new UnsupportedOperationException(extensionPoint);
+        }
     }
 
     @Override
@@ -215,8 +239,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         // check Blob Manager download link
-        BlobManager blobManager = Framework.getService(BlobManager.class);
-        URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD, request);
+        URI uri = redirectResolver.getURI(blob, UsageHint.DOWNLOAD, request);
         if (uri != null) {
             try {
                 Map<String, Serializable> ei = new HashMap<>();
