@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.web.common;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +36,8 @@ public class ServletHelper {
     private static final Log log = LogFactory.getLog(ServletHelper.class);
 
     public static final String TX_TIMEOUT_HEADER_KEY = "Nuxeo-Transaction-Timeout";
+
+    private static final ThreadLocal<ServletContext> SERVLET_CONTEXT = new ThreadLocal<>();
 
     private ServletHelper() {
         // utility class
@@ -65,6 +68,27 @@ public class ServletHelper {
      */
     public static String getRFC2231ContentDisposition(HttpServletRequest request, String filename) {
         return DownloadHelper.getRFC2231ContentDisposition(request, filename);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public static void setServletContext(ServletContext servletContext) {
+        SERVLET_CONTEXT.set(servletContext);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public static ServletContext getServletContext() {
+        return SERVLET_CONTEXT.get();
+    }
+
+    /**
+     * @since 8.3
+     */
+    public static void removeServletContext() {
+        SERVLET_CONTEXT.remove();
     }
 
 }

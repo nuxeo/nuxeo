@@ -161,6 +161,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-thumbnail</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-cache</artifactId>
       <type>test-jar</type>

@@ -22,13 +22,13 @@ package org.nuxeo.ecm.platform.thumbnail.factories;
 
 import static org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants.ANY_TO_THUMBNAIL_CONVERTER_NAME;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,8 +41,10 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -112,19 +114,27 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
         if (iconPath == null) {
             return null;
         }
-        FacesContext ctx = FacesContext.getCurrentInstance();
-        if (ctx == null) {
+
+        ServletContext servletContext = ServletHelper.getServletContext();
+        String path = servletContext.getRealPath(iconPath);
+        if (path == null) {
             return null;
         }
+
         try {
-            try (InputStream iconStream = ctx.getExternalContext().getResourceAsStream(iconPath)) {
-                if (iconStream != null) {
-                    return Blobs.createBlob(iconStream);
+            File iconFile = new File(path);
+            if (iconFile.exists()) {
+                String mimeType = servletContext.getMimeType(path);
+                if (mimeType == null) {
+                    MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+                    mimeType = mimetypeRegistry.getMimetypeFromFilename(iconPath);
                 }
+                return Blobs.createBlob(iconFile, mimeType);
             }
         } catch (IOException e) {
             log.warn(String.format("Could not fetch the thumbnail blob from icon path '%s'", iconPath), e);
         }
+
         return null;
     }
 
