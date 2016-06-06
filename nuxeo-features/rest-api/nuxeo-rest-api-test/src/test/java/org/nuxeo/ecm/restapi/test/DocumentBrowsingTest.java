@@ -55,7 +55,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.permissions.ACLJsonEnricher;
 import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
-import org.nuxeo.ecm.platform.ui.web.io.ThumbnailJsonEnricher;
+import org.nuxeo.ecm.platform.thumbnail.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
 import org.nuxeo.runtime.api.Framework;
@@ -77,7 +77,7 @@ import com.sun.jersey.api.client.WebResource;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/marshallers-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.platform.thumbnail:OSGI-INF/marshallers-contrib.xml",
         "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
         "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml",
         "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.userworkspace.core",
@@ -412,8 +412,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // thumbnail entry from the contributor
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(null,
-                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
+        assertNotNull(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
     }
 
     /**

@@ -15,41 +15,55 @@
  *
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
+ *     Thomas Roger
+ *
  */
 
-package org.nuxeo.ecm.platform.ui.web.io;
+package org.nuxeo.ecm.platform.thumbnail.test;
 
-import javax.inject.Inject;
+import static org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder.enrichDoc;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
-import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@Deploy({ "org.nuxeo.ecm.platform.ui" })
-public class ThumbnailJsonEnricherTest extends AbstractJsonWriterTest.External<DocumentModelJsonWriter, DocumentModel> {
+import com.google.inject.Inject;
+
+/**
+ * @since 8.3
+ */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.platform.thumbnail" })
+public class ThumbnailJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
+
+    @Inject
+    protected CoreSession session;
 
     public ThumbnailJsonEnricherTest() {
         super(DocumentModelJsonWriter.class, DocumentModel.class);
     }
 
-    @Inject
-    private CoreSession session;
-
     @Test
-    public void test() throws Exception {
+    public void testThumbnailURL() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("thumbnail").get());
+        JsonAssert json = jsonAssert(root, enrichDoc("thumbnail").get());
         json = json.has("contextParameters").isObject();
         json.properties(1);
         json = json.has("thumbnail").isObject();
-        json.properties(1);
-        json = json.has("url").isNull();
+        json = json.has("url").isText();
+        json.isEquals(String.format("http://fake-url.nuxeo.com/api/v1/id/%s/@rendition/thumbnail", root.getId()));
     }
-
 }
