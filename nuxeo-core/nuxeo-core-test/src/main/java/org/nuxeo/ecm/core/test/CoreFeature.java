@@ -16,13 +16,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -243,21 +245,26 @@ public class CoreFeature extends SimpleFeature {
         }
         try {
             log.trace("remove everything except root");
+            // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
+            IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1",
+                    NXQL.NXQL);
+            try {
+                batchRemoveDocuments(results);
+            } catch (QueryParseException e) {
+                // ignore, proxies disabled
+            } finally {
+                results.close();
+            }
+            // remove non-proxies
             session.removeChildren(new PathRef("/"));
             log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
-            String rootDocumentId = session.getRootDocument().getId();
-            IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
-            for (Map<String, Serializable> result : results) {
-                String uuid = result.get("ecm:uuid").toString();
-                if (rootDocumentId != uuid) {
-                    try {
-                        session.removeDocument(new IdRef(uuid));
-                    } catch (DocumentNotFoundException e) {
-                        // could have unknown type in db, ignore
-                    }
-                }
+            // remove remaining placeless documents
+            results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation", NXQL.NXQL);
+            try {
+                batchRemoveDocuments(results);
+            } finally {
+                results.close();
             }
-            results.close();
             session.save();
             waitForAsyncCompletion();
             if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
@@ -271,6 +278,29 @@ public class CoreFeature extends SimpleFeature {
         releaseCoreSession();
         cleaned = true;
         CoreInstance.getInstance().cleanupThisThread();
+    }
+
+    protected void batchRemoveDocuments(IterableQueryResult results) {
+        String rootDocumentId = session.getRootDocument().getId();
+        List<DocumentRef> ids = new ArrayList<>();
+        for (Map<String, Serializable> result : results) {
+            String id = (String) result.get("ecm:uuid");
+            if (id.equals(rootDocumentId)) {
+                continue;
+            }
+            ids.add(new IdRef(id));
+            if (ids.size() >= 100) {
+                batchRemoveDocuments(ids);
+                ids.clear();
+            }
+        }
+        if (!ids.isEmpty()) {
+            batchRemoveDocuments(ids);
+        }
+    }
+
+    protected void batchRemoveDocuments(List<DocumentRef> ids) {
+        session.removeDocuments(ids.toArray(new DocumentRef[0]));
     }
 
     protected void initializeSession(FeaturesRunner runner) {

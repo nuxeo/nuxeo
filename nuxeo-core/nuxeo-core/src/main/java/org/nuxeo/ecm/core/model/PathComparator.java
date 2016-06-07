@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
+ * Compares documents by paths. Placeless documents (null path) are sorted first, and compared by id between themselves.
+ *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  */
 public class PathComparator implements Comparator<Document>, Serializable {
@@ -26,10 +28,20 @@ public class PathComparator implements Comparator<Document>, Serializable {
 
     @Override
     public int compare(Document o1, Document o2) {
+        String p1 = o1.getPath();
+        String p2 = o2.getPath();
+        if (p1 == null && p2 == null) {
+            return o1.getUUID().compareTo(o2.getUUID());
+        }
+        if (p1 == null) {
+            return -1;
+        }
+        if (p2 == null) {
+            return 1;
+        }
         // The character "/" should be considered as the highest discriminant to
         // sort paths. So we replace it with the first unicode character
-        String path1 = o1.getPath().replace("/", "\u0000");
-        return path1.compareTo(o2.getPath().replace("/", "\u0000"));
+        return p1.replace("/", "\u0000").compareTo(p2.replace("/", "\u0000"));
     }
 
 }
