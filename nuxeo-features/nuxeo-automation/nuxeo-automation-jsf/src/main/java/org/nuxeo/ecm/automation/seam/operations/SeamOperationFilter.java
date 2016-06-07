@@ -30,6 +30,7 @@ import org.jboss.seam.core.ConversationPropagation;
 import org.jboss.seam.core.Manager;
 import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.operations.services.GetActions;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -148,7 +149,7 @@ public class SeamOperationFilter {
         seamActionContext.putLocalVariable("SeamContext", new SeamContextHelper());
         seamActionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
 
-        context.put("seamActionContext", seamActionContext);
+        context.put(GetActions.SEAM_ACTION_CONTEXT, seamActionContext);
     }
 
 }

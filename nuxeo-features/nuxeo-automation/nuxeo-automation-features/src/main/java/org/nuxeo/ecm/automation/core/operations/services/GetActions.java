@@ -29,7 +29,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.LocaleUtils;
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -48,7 +47,6 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 
 /**
  * Queries {@link ActionManager} for available actions in the given context
@@ -58,7 +56,7 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
 @Operation(id = GetActions.ID, category = Constants.CAT_SERVICES, label = "List available actions", description = "Retrieve list of available actions for a given category. Action context is built based on the Operation context (currentDocument will be fetched from Context if not provided as input). If this operation is executed in a chain that initialized the Seam context, it will be used for Action context", addToStudio = false)
 public class GetActions {
 
-    private static final String SEAM_ACTION_CONTEXT = "seamActionContext";
+    public static final String SEAM_ACTION_CONTEXT = "seamActionContext";
 
     public static final String ID = "Actions.GET";
 
@@ -90,7 +88,7 @@ public class GetActions {
             // if Seam Context has been initialized, use it
             return (ActionContext) ctx.get(SEAM_ACTION_CONTEXT);
         }
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext();
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
         if (currentDocument != null) {

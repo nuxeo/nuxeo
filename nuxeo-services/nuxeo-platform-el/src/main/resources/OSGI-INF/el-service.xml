@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.el.service">
+  <documentation>
+    The action service provides extension points related to EL.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.el.ELServiceComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.el.ELService" />
+  </service>
+
+  <extension-point name="elContextFactory">
+    <documentation>
+      The class defining the ELContext factory. This is used by high-level UI components
+      like Seam/JSF that need to provided extended EL context when evaluating certain
+      expressions.
+
+      Example:
+
+      <code>
+        <factory class="com.example.ELContextFactoryImpl" />
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.el.ELContextFactoryDescriptor" />
+  </extension-point>
+
+</component>

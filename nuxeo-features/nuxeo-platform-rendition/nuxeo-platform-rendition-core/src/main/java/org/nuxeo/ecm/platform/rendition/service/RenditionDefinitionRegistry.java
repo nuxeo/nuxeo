@@ -27,12 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -81,7 +79,7 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext();
         actionContext.setCurrentDocument(doc);
         actionContext.setDocumentManager(doc.getCoreSession());
         return actionContext;

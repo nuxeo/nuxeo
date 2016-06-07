@@ -25,8 +25,10 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
 
 /**
  * Default EL action context
@@ -40,6 +42,12 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
     protected final ELContext originalContext;
 
     protected final ExpressionFactory expressionFactory;
+
+    public static final ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();
+
+    public ELActionContext() {
+        this(new ExpressionContext(), EXPRESSION_FACTORY);
+    }
 
     public ELActionContext(ELContext originalContext, ExpressionFactory expressionFactory) {
         super();

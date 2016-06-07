@@ -18,4 +18,5 @@ Import-Package: javax.annotation;version="1.0",
  org.nuxeo.ecm.core.api.model,
  org.nuxeo.ecm.core.api.model.impl,
  org.nuxeo.ecm.directory;api=split
+Nuxeo-Component: OSGI-INF/el-service.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.el;singleton:=true

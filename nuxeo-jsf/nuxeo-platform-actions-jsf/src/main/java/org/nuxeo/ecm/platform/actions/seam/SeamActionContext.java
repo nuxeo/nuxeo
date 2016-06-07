@@ -28,7 +28,6 @@ import javax.el.ListELResolver;
 import javax.el.MapELResolver;
 import javax.el.ResourceBundleELResolver;
 
-import org.jboss.el.ExpressionFactoryImpl;
 import org.jboss.el.lang.FunctionMapperImpl;
 import org.jboss.seam.el.EL;
 import org.jboss.seam.el.SeamELResolver;
@@ -60,14 +59,16 @@ public class SeamActionContext extends ELActionContext {
         return resolver;
     }
 
-    public static final ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();
-
     public SeamActionContext() {
-        super(EL.createELContext(EL_RESOLVER, new FunctionMapperImpl()), EXPRESSION_FACTORY);
+        super(createELContext(), EXPRESSION_FACTORY);
     }
 
     public SeamActionContext(ELContext originalContext, ExpressionFactory expressionFactory) {
         super(originalContext, expressionFactory);
+    }
+
+    public static ELContext createELContext() {
+        return EL.createELContext(EL_RESOLVER, new FunctionMapperImpl());
     }
 
 }

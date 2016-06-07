@@ -19,14 +19,12 @@
 
 package org.nuxeo.ecm.automation.core.operations.services.directory;
 
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,7 +47,7 @@ public class AbstractDirectoryOperation {
     }
 
     protected ActionContext createActionContext(OperationContext ctx) {
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext();
         actionContext.setDocumentManager(ctx.getCoreSession());
         actionContext.setCurrentPrincipal((NuxeoPrincipal) ctx.getPrincipal());
         return actionContext;
