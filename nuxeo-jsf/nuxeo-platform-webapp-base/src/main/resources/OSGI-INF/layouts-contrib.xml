@@ -5713,7 +5713,7 @@
         <properties widgetMode="edit">
           <property name="hideHelpLabel">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="separator">${nuxeo.userwidget.separator.char}</property>
+          <property name="separator">${nuxeo.jsf.userwidget.separator.char}</property>
         </properties>
         <widgetModes>
           <mode value="create">edit</mode>
@@ -5743,7 +5743,7 @@
           <property name="prefixed">true</property>
           <property name="hideHelpLabel">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="separator">${nuxeo.userwidget.separator.char}</property>
+          <property name="separator">${nuxeo.jsf.userwidget.separator.char}</property>
         </properties>
         <properties widgetMode="view">
           <property name="prefixed">true</property>

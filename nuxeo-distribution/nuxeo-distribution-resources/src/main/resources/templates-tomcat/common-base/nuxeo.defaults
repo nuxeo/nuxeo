@@ -77,4 +77,4 @@ elastcisearch.reindex.onStartup=false
 # Use Elasticsearch as a backend for audit logs
 audit.elasticsearch.enabled=false
 # Separator char to use in user/group widgets
-nuxeo.userwidget.separator.char=,
+nuxeo.jsf.userwidget.separator.char=,
