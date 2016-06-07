@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,11 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
     private static final Log log = LogFactory.getLog(FileWithIndividualMetadasSourceNode.class);
 
-    public static final String PROPERTY_FILE_SUFIX = ".properties";
+    public static final String PROPERTY_FILE_SUFFIX = ".properties";
+
+    /** @deprecated misspelled */
+    @Deprecated
+    public static final String PROPERTY_FILE_SUFIX = PROPERTY_FILE_SUFFIX;
 
     protected static IndividualMetadataCollector collector = new IndividualMetadataCollector();
 
@@ -51,6 +56,11 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
     public FileWithIndividualMetadasSourceNode(String path) {
         super(path);
+    }
+
+    /* convenience factory to easy subclassing */
+    protected FileWithIndividualMetadasSourceNode newInstance(File file) {
+        return new FileWithIndividualMetadasSourceNode(file);
     }
 
     @Override
@@ -67,42 +77,41 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
     public List<SourceNode> getChildren() {
         List<SourceNode> children = new ArrayList<SourceNode>();
         File[] listFiles = file.listFiles();
-        log.trace("Element " + this.getSourcePath() + " has children" + listFiles.toString());
+        log.trace("Element " + this.getSourcePath() + " has " + listFiles.length + " children");
+        // compute map from base name without extension to absolute path
+        Map<String, String> paths = new HashMap<>();
         for (File child : listFiles) {
-            if (isPropertyFile(child)) {
-                try {
-                    String propKey = getPropertyTargetKey(child, listFiles);
-                    if (propKey != null) {
-                        collector.addPropertyFile(child, propKey);
+            String name = child.getName();
+            if (child.isDirectory()) {
+                paths.put(name, child.getAbsolutePath());
+            } else if (child.isFile() && !name.endsWith(PROPERTY_FILE_SUFFIX)) {
+                String base = getFileNameNoExt(child);
+                paths.put(base, child.getAbsolutePath());
+            }
+        }
+        for (File child : listFiles) {
+            String name = child.getName();
+            if (name.endsWith(PROPERTY_FILE_SUFFIX)) {
+                String base = name.substring(0, name.length() - PROPERTY_FILE_SUFFIX.length());
+                String path = paths.get(base);
+                if (path != null) {
+                    try {
+                        collector.addPropertyFile(child, path);
+                    } catch (IOException e) {
+                        log.error("Error during properties parsing for: " + child, e);
                     }
-                } catch (IOException e) {
-                    log.error("Error during properties parsing", e);
                 }
             } else {
-                children.add(new FileWithIndividualMetadasSourceNode(child));
+                children.add(newInstance(child));
             }
         }
         return children;
     }
 
+    /** @deprecated unused. */
+    @Deprecated
     protected boolean isPropertyFile(File file) {
-        return (file.getName().contains(PROPERTY_FILE_SUFIX));
-    }
-
-    protected String getPropertyTargetKey(File propFile, File[] listFiles) {
-        String fileName = propFile.getName();
-        String absFileName = fileName.substring(0, fileName.lastIndexOf(PROPERTY_FILE_SUFIX));
-        for (File file2 : listFiles) {
-            if (file2.isDirectory() && file2.getName().equals(absFileName)) {
-                return file2.getAbsolutePath();
-            }
-        }
-        for (File file2 : listFiles) {
-            if (file2.isFile() && !isPropertyFile(file2) && getFileNameNoExt(file2).equals(absFileName)) {
-                return file2.getAbsolutePath();
-            }
-        }
-        return null;
+        return file.getName().endsWith(PROPERTY_FILE_SUFFIX);
     }
 
     public static String getFileNameNoExt(File file) {
