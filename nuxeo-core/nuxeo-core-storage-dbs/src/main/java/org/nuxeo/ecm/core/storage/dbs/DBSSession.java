@@ -87,6 +87,8 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -131,7 +133,12 @@ import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 
 /**
  * Implementation of a {@link Session} for Document-Based Storage.
@@ -139,6 +146,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.9.4
  */
 public class DBSSession implements Session {
+
+    private static final Log log = LogFactory.getLog(DBSSession.class);
 
     protected final DBSRepository repository;
 
@@ -148,11 +157,24 @@ public class DBSSession implements Session {
 
     protected boolean closed;
 
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    private final Timer saveTimer;
+
+    private final Timer queryTimer;
+
+    private static final java.lang.String LOG_MIN_DURATION_KEY = "org.nuxeo.dbs.query.log_min_duration_ms";
+
+    private static final long LOG_MIN_DURATION_NS = Long.parseLong(Framework.getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
+
     public DBSSession(DBSRepository repository) {
         this.repository = repository;
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextSearchDisabled = fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled;
+
+        saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
+        queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
     }
 
     @Override
@@ -172,9 +194,14 @@ public class DBSSession implements Session {
 
     @Override
     public void save() {
-        transaction.save();
-        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            transaction.commit();
+        final Timer.Context timerContext = saveTimer.time();
+        try {
+            transaction.save();
+            if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                transaction.commit();
+            }
+        } finally {
+            timerContext.stop();
         }
     }
 
@@ -1403,16 +1430,30 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
-        Mutable<String> idKeyHolder = new MutableObject<>();
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, countUpTo,
-                idKeyHolder);
-        String idKey = idKeyHolder.getValue();
-        List<String> ids = new ArrayList<>(pl.list.size());
-        for (Map<String, Serializable> map : pl.list) {
-            String id = (String) map.get(idKey);
-            ids.add(id);
+        final Timer.Context timerContext = queryTimer.time();
+        try {
+            Mutable<String> idKeyHolder = new MutableObject<>();
+            PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false,
+                    countUpTo, idKeyHolder);
+            String idKey = idKeyHolder.getValue();
+            List<String> ids = new ArrayList<>(pl.list.size());
+            for (Map<String, Serializable> map : pl.list) {
+                String id = (String) map.get(idKey);
+                ids.add(id);
+            }
+            return new PartialList<>(ids, pl.totalSize);
+        } finally {
+            long duration = timerContext.stop();
+            if (LOG_MIN_DURATION_NS >= 0 && duration > LOG_MIN_DURATION_NS) {
+                String msg = String.format("duration_ms:\t%.2f\t%s %s\tquery\t%s", duration / 1000000.0, queryFilter,
+                        countUpToAsString(countUpTo), query);
+                if (log.isTraceEnabled()) {
+                    log.info(msg, new Throwable("Slow query stack trace"));
+                } else {
+                    log.info(msg);
+                }
+            }
         }
-        return new PartialList<String>(ids, pl.totalSize);
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
@@ -1621,9 +1662,31 @@ public class DBSSession implements Session {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
             boolean distinctDocuments, Object[] params) {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, distinctDocuments,
-                -1, null);
-        return new DBSQueryResult(pl);
+        final Timer.Context timerContext = queryTimer.time();
+        try {
+            PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter,
+                    distinctDocuments, -1, null);
+            return new DBSQueryResult(pl);
+        } finally {
+            long duration = timerContext.stop();
+            if (LOG_MIN_DURATION_NS >= 0 && duration > LOG_MIN_DURATION_NS) {
+                String msg = String.format("duration_ms:\t%.2f\t%s\tqueryAndFetch\t%s", duration / 1000000.0,
+                        queryFilter, query);
+                if (log.isTraceEnabled()) {
+                    log.info(msg, new Throwable("Slow query stack trace"));
+                } else {
+                    log.info(msg);
+                }
+            }
+
+        }
+    }
+
+    private String countUpToAsString(long countUpTo) {
+        if (countUpTo > 0) {
+            return String.format("count total results up to %d", countUpTo);
+        }
+        return countUpTo == -1 ? "count total results UNLIMITED" : "";
     }
 
     protected static class DBSQueryResult implements IterableQueryResult, Iterator<Map<String, Serializable>> {
