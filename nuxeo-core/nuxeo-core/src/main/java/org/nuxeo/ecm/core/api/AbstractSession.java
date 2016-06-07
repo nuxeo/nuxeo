@@ -1455,16 +1455,19 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // TODO OPTIM: it's not guaranteed that getPath is cheap and
         // we call it a lot. Should use an object for pairs (document, path)
         // to call it just once per doc.
-        Arrays.sort(docs, pathComparator);
+        Arrays.sort(docs, pathComparator); // nulls first
         String[] paths = new String[docs.length];
         for (int i = 0; i < docs.length; i++) {
             paths[i] = docs[i].getPath();
         }
-        String latestRemoved = null;
+        String lastRemovedWithSlash = "\u0000";
         for (int i = 0; i < docs.length; i++) {
-            if (i == 0 || !paths[i].startsWith(latestRemoved + "/")) {
+            String path = paths[i];
+            if (i == 0 || path == null || !path.startsWith(lastRemovedWithSlash)) {
                 removeDocument(docs[i]);
-                latestRemoved = paths[i];
+                if (path != null) {
+                    lastRemovedWithSlash = path + "/";
+                }
             }
         }
     }
