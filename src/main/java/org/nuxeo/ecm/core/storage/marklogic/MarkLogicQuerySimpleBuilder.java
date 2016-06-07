@@ -19,11 +19,16 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.marklogic.client.io.StringHandle;
 import com.marklogic.client.query.QueryManager;
 import com.marklogic.client.query.RawQueryDefinition;
+import com.marklogic.client.query.RawStructuredQueryDefinition;
 import com.marklogic.client.query.StructuredQueryBuilder;
 import com.marklogic.client.query.StructuredQueryDefinition;
 
@@ -34,13 +39,19 @@ import com.marklogic.client.query.StructuredQueryDefinition;
  */
 class MarkLogicQuerySimpleBuilder {
 
+    private final QueryManager queryManager;
+
     private final StructuredQueryBuilder sqb;
 
     private final List<StructuredQueryDefinition> queries;
 
+    private final Set<String> selectKeys;
+
     public MarkLogicQuerySimpleBuilder(QueryManager queryManager) {
+        this.queryManager = queryManager;
         this.sqb = queryManager.newStructuredQueryBuilder();
         this.queries = new ArrayList<>();
+        this.selectKeys = new HashSet<>();
     }
 
     public MarkLogicQuerySimpleBuilder eq(String key, Object value) {
@@ -74,8 +85,36 @@ class MarkLogicQuerySimpleBuilder {
         return this;
     }
 
+    public MarkLogicQuerySimpleBuilder select(String key) {
+        selectKeys.add(key);
+        return this;
+    }
+
     public RawQueryDefinition build() {
-        return sqb.build(queries.toArray(new StructuredQueryDefinition[queries.size()]));
+        RawStructuredQueryDefinition query = sqb.build(queries.toArray(new StructuredQueryDefinition[queries.size()]));
+        if (selectKeys.isEmpty()) {
+            return query;
+        }
+        String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" //
+                + query.toString() //
+                + buildSelectPaths() //
+                + "</search>";
+        return queryManager.newRawCombinedQueryDefinition(new StringHandle(comboQuery));
+    }
+
+    private String buildSelectPaths() {
+        StringBuilder extract = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
+        extract.append("<extract-document-data selected=\"include-with-ancestors\">");
+        for (String selectKey : selectKeys) {
+            extract.append("<extract-path>");
+            extract.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
+                   .append('/')
+                   .append(MarkLogicHelper.serializeKey(selectKey));
+            extract.append("</extract-path>");
+        }
+        extract.append("</extract-document-data>");
+        extract.append("</options>");
+        return extract.toString();
     }
 
 }

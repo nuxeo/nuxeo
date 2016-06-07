@@ -226,10 +226,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
-        // TODO retrieve only some field
-        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
-        RawQueryDefinition query = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager()).eq(key, value)
-                                                                                                     .build();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
+        builder.eq(key, value);
+        builder.select(KEY_ID);
+        builder.select(KEY_IS_PROXY);
+        builder.select(KEY_PROXY_TARGET_ID);
+        builder.select(KEY_PROXY_IDS);
+        RawQueryDefinition query = builder.build();
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
@@ -263,7 +266,6 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(), evaluator,
                 orderByClause, distinctDocuments);
-        // TODO add select
         RawQueryDefinition query = builder.buildQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
@@ -452,7 +454,9 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, 0)) {
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        docManager.setPageLength(1);
+        try (DocumentPage page = docManager.search(query, 0)) {
             if (page.hasNext()) {
                 return page.nextContent(new StateHandle()).get();
             }
