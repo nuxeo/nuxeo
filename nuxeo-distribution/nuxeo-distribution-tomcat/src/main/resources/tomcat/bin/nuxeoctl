@@ -80,20 +80,26 @@ if [ -z "$JAVA" ]; then
   JAVA=java
 fi
 if [ -z "$JAVA_HOME" ]; then
-  JAVA=`command -v $JAVA`
-  # follow symlinks
-  while [ -h "$JAVA" ]; do
-    ls=`ls -ld "$JAVA"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
-    case "$link" in
-      /*) JAVA="$link" ;;
-      *)  JAVA=`dirname "$JAVA"`/"$link" ;;
-    esac
-  done
-  JAVA_HOME=`dirname "$JAVA"`
-  JAVA_HOME=`dirname "$JAVA_HOME"`
+  if [ -x /usr/libexec/java_home ]; then
+    JAVA_HOME=`/usr/libexec/java_home`
+  else
+    JAVA=`command -v $JAVA`
+    # follow symlinks
+    while [ -h "$JAVA" ]; do
+      ls=`ls -ld "$JAVA"`
+      link=`expr "$ls" : '.*-> \(.*\)$'`
+      case "$link" in
+        /*) JAVA="$link" ;;
+        *)  JAVA=`dirname "$JAVA"`/"$link" ;;
+      esac
+      JAVA_HOME=`dirname "$JAVA"`
+      JAVA_HOME=`dirname "$JAVA_HOME"`
+    done
+  fi
+  JAVA_TOOLS=$JAVA_HOME/lib/tools.jar
 fi
 PATH="$JAVA_HOME/bin:$PATH"
+
 
 # Check Java
 : ${REQUIRED_JAVA_VERSION:=1.8}
@@ -208,7 +214,7 @@ while true; do
   [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]] && \
            echo "Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts=\"$JAVA_OPTS\" -Dnuxeo.home=\"$NUXEO_HOME\" -Dnuxeo.conf=\"$NUXEO_CONF\" -Dnuxeo.log.dir=\"$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@"
   echo [`date`] "Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts=\"$JAVA_OPTS\" -Dnuxeo.home=\"$NUXEO_HOME\" -Dnuxeo.conf=\"$NUXEO_CONF\" -Dnuxeo.log.dir=\"$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
-  "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
+  "$JAVA" -Xbootclasspath/a:$JAVA_TOOLS $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
   rm -f "$TMPLAUNCHER"
   if [ "$exitcode" != "128" ]; then

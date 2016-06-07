@@ -55,7 +55,7 @@ public class FileEventTracker extends DefaultComponent {
 
     static class SafeFileDeleteStrategy extends FileDeleteStrategy {
 
-        protected CopyOnWriteArrayList<String> protectedPaths = new CopyOnWriteArrayList<String>();
+        protected CopyOnWriteArrayList<String> protectedPaths = new CopyOnWriteArrayList<>();
 
         protected SafeFileDeleteStrategy() {
             super("DoNotTouchNuxeoBinaries");
@@ -113,7 +113,7 @@ public class FileEventTracker extends DefaultComponent {
 
         protected final Thread owner = Thread.currentThread();
 
-        protected final Set<File> files = new HashSet<File>();
+        protected final Set<File> files = new HashSet<>();
 
         protected ThreadDelegate(boolean isLongRunning) {
             this.isLongRunning = isLongRunning;

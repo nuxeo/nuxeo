@@ -177,6 +177,7 @@ goto END
 echo Found JAVA_HOME = %JAVA_HOME%
 set PATH=%JAVA_HOME%\bin;%PATH%
 set JAVA=%JAVA_HOME%\bin\java.exe
+set JAVA_TOOLS=%JAVA_HOME%\lib\tooks.jar
 if exist "%JAVA%" goto HAS_JAVA
 echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java is properly installed.
 goto END
@@ -216,10 +217,10 @@ set LOGTIME=%LOGTIME:,=%
 set TMPLAUNCHER=%NUXEO_TMP_DIR%\nuxeo-launcher-%RANDOM%.jar
 if exist "%TMPLAUNCHER%" GOTO GETTMPLAUNCHER
 COPY /V "%NUXEO_LAUNCHER%" "%TMPLAUNCHER%"
-echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
+echo [%DATE%] Launcher command: "%JAVA%" -Xbootclasspath/a:%JAVA_TOOLS% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 echo on
 
-"%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%JAVA%" %LAUNCHER_DEBUG% -Xbootclasspath/a:%JAVA_TOOLS% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9
 @set exitcode=%ERRORLEVEL%
 @echo off
 del /F /Q "%TMPLAUNCHER%"
