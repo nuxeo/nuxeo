@@ -10,33 +10,12 @@
   <%@ page import="org.apache.commons.httpclient.HttpStatus" %>
   <%@ page import="org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService" %>
   <%
-Principal principal = request.getUserPrincipal();
-if (principal == null) {
+TokenAuthenticationService tokenAuthService = Framework.getService(TokenAuthenticationService.class);
+String token = tokenAuthService.acquireToken(request);
+if (token == null) {
     response.sendError(HttpStatus.SC_UNAUTHORIZED);
     return;
 }
-
-// Don't provide token for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
-// the authentication plugin configuration
-if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAnonymous()) {
-    PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-            PluggableAuthenticationService.NAME);
-    AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor("TOKEN_AUTH");
-    if (tokenAuthPluginDesc == null
-            || !(Boolean.valueOf(tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {
-        response.sendError(HttpStatus.SC_UNAUTHORIZED);
-        return;
-    }
-}
-
-String userName = principal.getName();
-String applicationName = request.getParameter("applicationName");
-String deviceId = request.getParameter("deviceId");
-String deviceDescription = request.getParameter("deviceDescription");
-String permission = request.getParameter("permission");
-
-TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
-String token = tokenAuthService.acquireToken(userName, applicationName, deviceId, deviceDescription, permission);
 %>
 <html>
 <head>
