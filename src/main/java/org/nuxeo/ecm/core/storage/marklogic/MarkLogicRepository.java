@@ -275,7 +275,11 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             // so we need the full state from the database
             evaluator.parse();
         }
+        if (log.isTraceEnabled()) {
+            logQuery(query, limit, offset);
+        }
         XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        docManager.setPageLength(limit == 0 ? 50 : limit);
         try (DocumentPage page = docManager.search(query, offset)) {
             List<Map<String, Serializable>> projections = new ArrayList<>((int) page.size());
             for (DocumentRecord record : page) {
@@ -486,6 +490,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     private void logQuery(RawQueryDefinition query) {
         log.trace("MarkLogic: QUERY " + query.getHandle());
+    }
+
+    private void logQuery(RawQueryDefinition query, int limit, int offset) {
+        log.trace("MarkLogic: QUERY " + query.getHandle() + " OFFSET " + offset + " LIMIT " + limit);
     }
 
 }
