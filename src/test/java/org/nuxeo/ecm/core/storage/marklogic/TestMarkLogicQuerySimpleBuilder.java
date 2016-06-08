@@ -18,13 +18,20 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
 public class TestMarkLogicQuerySimpleBuilder extends AbstractTest {
 
     @Test
@@ -32,6 +39,13 @@ public class TestMarkLogicQuerySimpleBuilder extends AbstractTest {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
         String query = builder.eq(KEY_ID, "ID").build().toString();
         assertXMLFileAgainstString("query-simple/query-eq.xml", query);
+    }
+
+    @Test
+    public void testEqWithList() throws Exception {
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
+        String query = builder.eq(KEY_ANCESTOR_IDS, "ID").build().toString();
+        assertXMLFileAgainstString("query-simple/query-eq-with-list.xml", query);
     }
 
     @Test

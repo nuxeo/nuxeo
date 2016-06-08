@@ -19,11 +19,14 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 
 import com.marklogic.client.io.StringHandle;
 import com.marklogic.client.query.QueryManager;
@@ -57,11 +60,14 @@ class MarkLogicQuerySimpleBuilder {
     public MarkLogicQuerySimpleBuilder eq(String key, Object value) {
         String serializedKey = MarkLogicHelper.serializeKey(key);
         String serializedValue = MarkLogicStateSerializer.serializeValue(value);
-        StructuredQueryDefinition queryValue = sqb.value(sqb.element(serializedKey), serializedValue);
-        StructuredQueryDefinition queryValueInArray = sqb.containerQuery(sqb.element(serializedKey),
-                sqb.value(sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY), serializedValue));
-        StructuredQueryDefinition orQuery = sqb.or(queryValue, queryValueInArray);
-        queries.add(orQuery);
+        Type type = DBSSession.getType(key);
+        // TODO check if it's enought
+        if (type instanceof ListType) {
+            queries.add(sqb.containerQuery(sqb.element(serializedKey),
+                    sqb.value(sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY), serializedValue)));
+        } else {
+            queries.add(sqb.value(sqb.element(serializedKey), serializedValue));
+        }
         return this;
     }
 
