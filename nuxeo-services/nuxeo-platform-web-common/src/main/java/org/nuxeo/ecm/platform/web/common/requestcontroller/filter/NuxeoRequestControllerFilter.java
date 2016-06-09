@@ -33,6 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -116,6 +117,9 @@ public class NuxeoRequestControllerFilter implements Filter {
             log.debug(doFormatLogMessage(httpRequest, "Entering NuxeoRequestController filter"));
         }
 
+        ServletContext servletContext = httpRequest.getServletContext();
+        ServletHelper.setServletContext(servletContext);
+
         doInitIfNeeded();
 
         RequestFilterConfig config = rcm.getConfigForRequest(httpRequest);
@@ -198,6 +202,9 @@ public class NuxeoRequestControllerFilter implements Filter {
             if (sessionSynched) {
                 simpleReleaseSyncOnSession(httpRequest);
             }
+
+            ServletHelper.removeServletContext();
+
             if (log.isDebugEnabled()) {
                 log.debug(doFormatLogMessage(httpRequest, "Exiting NuxeoRequestController filter"));
             }
