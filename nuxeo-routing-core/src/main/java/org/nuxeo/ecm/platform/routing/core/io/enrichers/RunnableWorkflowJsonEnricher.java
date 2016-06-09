@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
@@ -70,7 +68,7 @@ public class RunnableWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentM
             DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
             List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(wrapper.getSession(), "");
 
-            ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+            ActionContext actionContext = new ELActionContext();
             actionContext.setCurrentDocument(document);
             actionContext.setDocumentManager(wrapper.getSession());
             actionContext.setCurrentPrincipal((NuxeoPrincipal) wrapper.getSession().getPrincipal());

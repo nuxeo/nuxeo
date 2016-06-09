@@ -31,7 +31,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -53,7 +52,6 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
@@ -211,7 +209,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     }
 
     protected static ActionContext createActionContext(CoreSession session) {
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext();
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
         return actionContext;
