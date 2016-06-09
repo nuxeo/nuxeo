@@ -442,4 +442,11 @@ public class TestScriptRunnerInfrastructure {
         Object result = automationService.run(ctx, "Scripting.SimpleScript", null);
         assertNotNull(result);
     }
+
+    @Test
+    public void testMVELScriptResolver() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        String mvelResult = (String) automationService.run(ctx, "my-chain-with-mvelresolver", null);
+        assertEquals("Foo Bar", mvelResult);
+    }
 }

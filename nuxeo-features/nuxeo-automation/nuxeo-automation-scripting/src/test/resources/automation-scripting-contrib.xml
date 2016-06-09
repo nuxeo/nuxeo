@@ -393,6 +393,18 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.MVELResolver">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <category>Scripting</category>
+      <param name="mvel" type="string"/>
+      <script><![CDATA[
+        function run(input, params) {
+            return params.mvel;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
@@ -424,6 +436,16 @@
       <operation id="Scripting.TestLoginAsOperation">
       </operation>
       <operation id="o1">
+      </operation>
+    </chain>
+
+    <chain id="my-chain-with-mvelresolver">
+      <operation id="Context.SetVar">
+        <param type="string" name="name">myvar</param>
+        <param type="string" name="value">Bar</param>
+      </operation>
+      <operation id="Scripting.MVELResolver">
+        <param type="string" name="mvel">expr:Foo @{myvar}</param>
       </operation>
     </chain>
 
