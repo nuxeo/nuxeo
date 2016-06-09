@@ -47,7 +47,8 @@ public class ThumbnailJsonEnricherTest extends AbstractJsonWriterTest.External<D
         json.properties(1);
         json = json.has("thumbnail").isObject();
         json.properties(1);
-        json = json.has("url").isNull();
+        json = json.has("url").isText();
+        json.isEquals(String.format("http://fake-url.nuxeo.com/api/v1/id/%s/@rendition/thumbnail", root.getId()));
     }
 
 }

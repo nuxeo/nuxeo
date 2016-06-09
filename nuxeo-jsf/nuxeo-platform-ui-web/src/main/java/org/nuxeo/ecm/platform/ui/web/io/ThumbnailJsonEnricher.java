@@ -23,14 +23,9 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
-import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
  * Enrich {@link DocumentModel} Json.
@@ -55,7 +50,6 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
  *   }
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -67,9 +61,7 @@ public class ThumbnailJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public static final String THUMBNAIL_URL_LABEL = "url";
 
-    public static final String THUMB_THUMBNAIL = "thumb:thumbnail";
-
-    public static final String DOWNLOAD_THUMBNAIL = "downloadThumbnail";
+    public static final String THUMBNAIL_URL_PATTERN = "%s/api/v1/id/%s/@rendition/thumbnail";
 
     public ThumbnailJsonEnricher() {
         super(NAME);
@@ -77,29 +69,10 @@ public class ThumbnailJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
-        ThumbnailAdapter thumbnailAdapter = document.getAdapter(ThumbnailAdapter.class);
         jg.writeFieldName(NAME);
         jg.writeStartObject();
-        if (thumbnailAdapter != null) {
-            try {
-                Blob thumbnail = null;
-                try (SessionWrapper wrapper = ctx.getSession(document)) {
-                    thumbnail = thumbnailAdapter.getThumbnail(wrapper.getSession());
-                }
-                if (thumbnail != null) {
-                    String url = DocumentModelFunctions.fileUrl(ctx.getBaseUrl().replaceAll("/$", ""),
-                            DOWNLOAD_THUMBNAIL, document, THUMB_THUMBNAIL, thumbnail.getFilename());
-                    jg.writeStringField(THUMBNAIL_URL_LABEL, url);
-                } else {
-                    jg.writeNullField(THUMBNAIL_URL_LABEL);
-                }
-            } catch (NuxeoException e) {
-                // no default thumbnail factory
-                jg.writeNullField(THUMBNAIL_URL_LABEL);
-            }
-        } else {
-            jg.writeNullField(THUMBNAIL_URL_LABEL);
-        }
+        jg.writeStringField(THUMBNAIL_URL_LABEL,
+                String.format(THUMBNAIL_URL_PATTERN, ctx.getBaseUrl().replaceAll("/$", ""), document.getId()));
         jg.writeEndObject();
     }
 
