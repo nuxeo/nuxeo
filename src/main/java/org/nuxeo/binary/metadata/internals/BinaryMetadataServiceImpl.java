@@ -32,7 +32,6 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
@@ -45,7 +44,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.base.Predicate;
@@ -293,7 +291,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+        ActionContext actionContext = new ELActionContext();
         actionContext.setCurrentDocument(doc);
         return actionContext;
     }
