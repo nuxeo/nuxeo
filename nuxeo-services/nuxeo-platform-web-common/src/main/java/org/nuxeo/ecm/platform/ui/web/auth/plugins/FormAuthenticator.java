@@ -50,9 +50,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
-import org.nuxeo.ecm.platform.ui.web.auth.service
-        .PluggableAuthenticationService;
-import org.nuxeo.runtime.api.Framework;
 
 public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -131,9 +128,6 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         if (userName == null || userName.length() == 0) {
             return null;
         }
-        PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
-        service.invalidateSession(httpRequest);
         return new UserIdentificationInfo(userName, password);
     }
 
