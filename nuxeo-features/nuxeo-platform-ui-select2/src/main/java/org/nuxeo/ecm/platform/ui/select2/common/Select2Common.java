@@ -28,6 +28,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -46,11 +47,11 @@ public class Select2Common {
 
     public static final String LANG_TOKEN = "{lang}";
 
-    public static final String DEFAULT_LANG = "en";
+    public static final String DEFAULT_LANG = SuggestConstants.DEFAULT_LANG;
 
-    public static final String ID = "id";
+    public static final String ID = SuggestConstants.ID;
 
-    public static final String LABEL = "displayLabel";
+    public static final String LABEL = SuggestConstants.LABEL;
 
     public static final String DIRECTORY_DEFAULT_LABEL_COL_NAME = "label";
 
@@ -128,7 +129,7 @@ public class Select2Common {
 
     private static Boolean forceDisplayEmailInSuggestion = null;
 
-    public static final String ICON = "icon";
+    public static final String ICON = SuggestConstants.ICON;
 
     private static boolean isForceDisplayEmailInSuggestion() {
         if (forceDisplayEmailInSuggestion == null) {
