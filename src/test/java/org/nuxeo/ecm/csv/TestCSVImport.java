@@ -86,6 +86,8 @@ public class TestCSVImport {
 
     private static final String DOCS_WITH_BOM_CSV = "docs_with_bom.csv";
 
+    private static final String DOCS_WITH_INTERSPERSED_COMMENTS_CSV = "docs_with_interspersed_comments.csv";
+
     private static final String DOCS_WITH_LIFECYCLE_CSV = "docs_with_lifecycle.csv";
 
     private static final String DOCS_WITHOUT_CONTRIBUTORS_CSV = "docs_without_contributors.csv";
@@ -395,6 +397,46 @@ public class TestCSVImport {
         assertTrue(session.exists(new PathRef("/afile")));
         DocumentModel doc = session.getDocument(new PathRef("/afile"));
         assertEquals("Un été à Paris", doc.getTitle());
+    }
+
+    @Test
+    public void shouldNotImportCSVFileWithInitialCommentByDefault() throws InterruptedException {
+        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_INTERSPERSED_COMMENTS_CSV),
+                DOCS_WITH_INTERSPERSED_COMMENTS_CSV, options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(1, importLogs.size());
+        CSVImportLog importLog = importLogs.get(0);
+        assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
+    }
+
+    @Test
+    public void shouldImportCSVFileWithCommentsWhenEnabled() throws InterruptedException {
+        CSVImporterOptions options = new CSVImporterOptions.Builder().commentMarker('#').build();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_INTERSPERSED_COMMENTS_CSV),
+                DOCS_WITH_INTERSPERSED_COMMENTS_CSV, options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(2, importLogs.size());
+        CSVImportLog importLog = importLogs.get(0);
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+
+        assertTrue(session.exists(new PathRef("/myfile")));
+        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
+
+        assertTrue(session.exists(new PathRef("/myfile2")));
+        doc = session.getDocument(new PathRef("/myfile2"));
     }
 
     @Test

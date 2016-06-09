@@ -221,8 +221,9 @@ public class CSVImporterWork extends TransientStoreWork {
         store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.RUNNING));
         setStatus("Importing");
         openUserSession();
-        try (Reader in = newReader(csvFile);
-                CSVParser parser = CSVFormat.DEFAULT.withEscape(options.getEscapeCharacter()).withHeader().parse(in)) {
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
+                .withEscape(options.getEscapeCharacter()).withCommentMarker(options.getCommentMarker());
+        try (Reader in = newReader(csvFile); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
             logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
