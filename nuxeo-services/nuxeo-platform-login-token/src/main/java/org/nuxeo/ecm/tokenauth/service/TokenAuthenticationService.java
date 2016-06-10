@@ -18,6 +18,8 @@ package org.nuxeo.ecm.tokenauth.service;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
@@ -50,6 +52,25 @@ public interface TokenAuthenticationService extends Serializable {
      */
     String acquireToken(String userName, String applicationName, String deviceId, String deviceDescription,
             String permission) throws TokenAuthenticationException;
+
+    /**
+     * Acquires a unique token for the specified request.
+     * <p>
+     * Parameters needed (applicationName, deviceId, deviceDescription, permission) to acquire the token are extracted
+     * from the request itself.
+     * <p>
+     * If such a token exist in the back-end for the specified (userName, applicationName, deviceId) triplet, just
+     * returns it, else generates it and stores it in the back-end with the triplet attributes, the specified device
+     * description and permission.
+     *
+     * @return a token or null for no principal or for anonymous principal unless 'allowAnonymous' parameter is
+     *         explicitly set to true in the authentication plugin configuration.
+     * @throws TokenAuthenticationException if one of the required parameters is null or empty (all parameters are
+     *             required except for the device description)
+     * @throws NuxeoException if multiple tokens are found for the same triplet
+     * @since 8.3
+     */
+    String acquireToken(HttpServletRequest request) throws TokenAuthenticationException;
 
     /**
      * Gets the token for the specified user, application, and device.

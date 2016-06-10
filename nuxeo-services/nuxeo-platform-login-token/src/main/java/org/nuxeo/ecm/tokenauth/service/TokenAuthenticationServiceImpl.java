@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.tokenauth.service;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,9 +34,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPluginDescriptor;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -134,6 +140,35 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 throw new NuxeoException("Cannot log out system user", e);
             }
         }
+    }
+
+    @Override
+    public String acquireToken(HttpServletRequest request) throws TokenAuthenticationException {
+        Principal principal = request.getUserPrincipal();
+        if (principal == null) {
+            return null;
+        }
+
+        // Don't provide token for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
+        // the authentication plugin configuration
+        if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAnonymous()) {
+            PluggableAuthenticationService authenticationService = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                                                             .getComponent(
+                                                                                                                     PluggableAuthenticationService.NAME);
+            AuthenticationPluginDescriptor tokenAuthPluginDesc = authenticationService.getDescriptor("TOKEN_AUTH");
+            if (tokenAuthPluginDesc == null || !(Boolean.valueOf(
+                    tokenAuthPluginDesc.getParameters().get(TokenAuthenticator.ALLOW_ANONYMOUS_KEY)))) {
+                return null;
+            }
+        }
+
+        String userName = principal.getName();
+        String applicationName = request.getParameter("applicationName");
+        String deviceId = request.getParameter("deviceId");
+        String deviceDescription = request.getParameter("deviceDescription");
+        String permission = request.getParameter("permission");
+
+        return acquireToken(userName, applicationName, deviceId, deviceDescription, permission);
     }
 
     @Override
