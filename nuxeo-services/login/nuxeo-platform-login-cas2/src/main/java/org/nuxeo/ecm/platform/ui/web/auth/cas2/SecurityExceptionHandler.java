@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 import java.io.IOException;
 import java.security.Principal;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +83,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                 if (!response.isCommitted()) {
                     request.getRequestDispatcher(CAS_REDIRECTION_URL).forward(request, response);
                 }
-                FacesContext.getCurrentInstance().responseComplete();
+                parameters.getListener().responseComplete();
                 return;
             }
         }

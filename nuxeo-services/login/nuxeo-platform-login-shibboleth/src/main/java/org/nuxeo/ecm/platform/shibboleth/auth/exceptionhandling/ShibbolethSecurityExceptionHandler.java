@@ -18,56 +18,33 @@
 
 package org.nuxeo.ecm.platform.shibboleth.auth.exceptionhandling;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
-import org.nuxeo.ecm.webapp.exceptionhandling.NuxeoSecurityExceptionHandler;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHandler {
+public class ShibbolethSecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     private static final Log log = LogFactory.getLog(ShibbolethSecurityExceptionHandler.class);
 
     @Override
-    protected boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        if (getService() == null) {
-            return false;
+    public String getLoginURL(HttpServletRequest request) {
+        ShibbolethAuthenticationService shibService = Framework.getService(ShibbolethAuthenticationService.class);
+        if (shibService == null) {
+            return null;
         }
-        String loginURL = getService().getLoginURL(request);
+        String loginURL = shibService.getLoginURL(request);
         if (loginURL == null) {
             log.error("Unable to handle Shibboleth login, no loginURL registered");
-            return false;
+            return null;
         }
-        try {
-            if (!response.isCommitted()) {
-                request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                Session.instance().invalidate();
-                response.sendRedirect(loginURL);
-                responseComplete();
-            } else {
-                log.error("Cannot redirect to login page: response is already commited");
-            }
-        } catch (IOException e) {
-            String errorMessage = String.format("Unable to handle Shibboleth login on %s", loginURL);
-            log.error(errorMessage, e);
-        }
-        return true;
-    }
-
-    protected ShibbolethAuthenticationService getService() {
-        return Framework.getService(ShibbolethAuthenticationService.class);
+        return loginURL;
     }
 
 }

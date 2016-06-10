@@ -34,4 +34,21 @@ public interface NuxeoExceptionHandler {
 
     void setParameters(NuxeoExceptionHandlerParameters parameters);
 
+    /**
+     * Handles the Security Error when the user is anonymous.
+     *
+     * @return {@code true} if the Security Error is handled so that the calling method won't fallback on the default
+     *         handler, {@code false} otherwise.
+     * @since 8.3
+     */
+    boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException;
+
+    /**
+     * Gets the URL to redirect to when a login is needed for an Anonymous user.
+     *
+     * @since 8.3
+     */
+    String getLoginURL(HttpServletRequest request);
+
 }

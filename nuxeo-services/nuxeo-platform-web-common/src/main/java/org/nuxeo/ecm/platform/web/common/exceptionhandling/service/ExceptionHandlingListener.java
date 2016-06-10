@@ -51,4 +51,7 @@ public interface ExceptionHandlingListener {
 
     void afterDispatch(Throwable t, HttpServletRequest request, HttpServletResponse response) throws IOException,
             ServletException;
+
+    void responseComplete();
+
 }

@@ -33,7 +33,7 @@ import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingListener;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author arussel
  */
-public class SeamExceptionHandlingListener extends NullExceptionHandlingListener {
+public class SeamExceptionHandlingListener implements ExceptionHandlingListener {
 
     private static final Log log = LogFactory.getLog(SeamExceptionHandlingListener.class);
 
@@ -123,6 +123,12 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
         // }
     }
 
+    @Override
+    public void beforeForwardToErrorPage(Throwable t, HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        // nothing
+    }
+
     /**
      * Rollbacks transaction if necessary
      */
@@ -177,6 +183,16 @@ public class SeamExceptionHandlingListener extends NullExceptionHandlingListener
                 request.getSession().getServletContext(), request, response), new MockApplication());
         mockFacesContext.setViewRoot(new UIViewRoot());
         return mockFacesContext;
+    }
+
+    @Override
+    public void responseComplete() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            facesContext.responseComplete();
+        } else {
+            log.error("Cannot set response complete: faces context is null");
+        }
     }
 
 }
