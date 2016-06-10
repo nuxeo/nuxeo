@@ -1,11 +1,6 @@
 <?xml version="1.0"?>
 <fragment version="1">
   <install>
-    <!--  unzip the war template -->
-    <unzip from="${bundle.fileName}" to="/" prefix="web">
-      <include>web/nuxeo.war/**</include>
-    </unzip>
-
     <!--  be sure no directory with that name exists -->
     <delete path="${bundle.fileName}.tmp" />
     <!--  create a temporary directory -->

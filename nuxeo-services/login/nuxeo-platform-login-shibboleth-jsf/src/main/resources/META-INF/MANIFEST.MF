@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Shibboleth login module JSF UI
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.shibboleth.jsf;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login, org.nuxeo.ecm.webapp.base
+Nuxeo-Component: OSGI-INF/shibboleth-actions-contrib.xml,
+ OSGI-INF/shibboleth-contentview-contrib.xml,
+ OSGI-INF/shibboleth-layout-contrib.xml
