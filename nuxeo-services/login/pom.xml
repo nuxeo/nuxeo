@@ -26,6 +26,7 @@
     <module>nuxeo-platform-login-saml2</module>
     <module>nuxeo-platform-login-shibboleth</module>
     <module>nuxeo-platform-login-token</module>
+    <module>nuxeo-platform-login-token-jsf</module>
   </modules>
 
 </project>
