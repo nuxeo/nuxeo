@@ -8,11 +8,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-mod_sso</artifactId>
-  <name>Nuxeo mod_sso plugin for LoginModule</name>
-  <description>
-    Nuxeo Enterprise Platform: Login module using Apache's mod_sso plugin to
-    authenticate users.
-  </description>
+  <name>Nuxeo Login Module for Apache mod_sso</name>
 
   <dependencies>
     <dependency>

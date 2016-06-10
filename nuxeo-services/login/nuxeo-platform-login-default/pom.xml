@@ -10,8 +10,6 @@
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-default</artifactId>
   <name>Nuxeo Login Default Web Support</name>
-  <description>Nuxeo Enterprise Platform: Default web based login support.
-  Must be installed on any distribution that use the default nuxeo login stack.</description>
 
   <dependencies>
     <dependency>

@@ -8,11 +8,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-ntlm</artifactId>
-  <name>Nuxeo ntlm authentication plugin</name>
-  <description>
-    Nuxeo Enterprise Platform: Plugin for Nuxeo5 authentication system to
-    support NTLM authentication
-  </description>
+  <name>Nuxeo Login Module for NTLM</name>
 
   <dependencies>
     <dependency>

@@ -9,8 +9,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-openid</artifactId>
-  <name>OpenId / OAuth 2 authentication plugin for Nuxeo EP</name>
-  <description>Nuxeo Enterprise Platform: OpenID</description>
+  <name>Nuxeo Login Module for OpenID / OAuth 2</name>
 
   <dependencies>
     <!-- <dependency> -->

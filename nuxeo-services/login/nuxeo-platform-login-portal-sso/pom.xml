@@ -8,9 +8,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-portal-sso</artifactId>
-  <name>Nuxeo portal authentication plugin for LoginModule</name>
-  <description>Nuxeo Enterprise Platform: Login module
-    using sso headers to validate authentication of requests coming from a portal.</description>
+  <name>Nuxeo Login Module for Portals</name>
 
   <dependencies>
     <dependency>

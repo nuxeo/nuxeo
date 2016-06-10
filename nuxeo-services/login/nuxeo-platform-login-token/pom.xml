@@ -9,8 +9,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-token</artifactId>
-  <name>Nuxeo Token authentication plugin</name>
-  <description>Authentication plugin using a token to validate identity.</description>
+  <name>Nuxeo Login Module for Token Authentication</name>
 
   <dependencies>
     <dependency>

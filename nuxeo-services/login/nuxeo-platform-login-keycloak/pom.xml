@@ -8,10 +8,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-keycloak</artifactId>
-  <name>Nuxeo keycloak plugin for LoginModule</name>
-  <description>
-    Nuxeo Enterprise Platform: Login module using keycloak sso to authenticate users.
-  </description>
+  <name>Nuxeo Login Module for JBoss Keycloak</name>
   <properties>
     <keycloak.version>1.3.1.Final</keycloak.version>
   </properties>

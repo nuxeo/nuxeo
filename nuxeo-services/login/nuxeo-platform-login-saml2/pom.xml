@@ -9,8 +9,7 @@
 
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-login-saml2</artifactId>
-    <name>SAML v2 authentication plugin for Nuxeo EP</name>
-    <description>Nuxeo Enterprise Platform: SAML v2</description>
+    <name>Nuxeo Login Module for SAML v2</name>
 
     <dependencies>
         <dependency>
