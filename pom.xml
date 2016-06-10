@@ -1613,6 +1613,11 @@
         <artifactId>nuxeo-user-profile</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-user-profile-jsf</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
 
       <!-- Third parties -->
       <dependency>

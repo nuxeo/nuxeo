@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Profile JSF UI
+Bundle-SymbolicName: org.nuxeo.ecm.user.center.profile.jsf;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/layouts-contrib.xml,
+ OSGI-INF/listeners-contrib.xml,
+ OSGI-INF/theme-contrib.xml

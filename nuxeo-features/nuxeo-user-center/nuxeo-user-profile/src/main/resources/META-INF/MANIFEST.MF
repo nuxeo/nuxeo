@@ -4,11 +4,8 @@ Bundle-Name: Nuxeo User Center Profile
 Bundle-SymbolicName: org.nuxeo.ecm.user.center.profile;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/actions-contrib.xml,
- OSGI-INF/core-types-contrib.xml,
- OSGI-INF/layouts-contrib.xml,
+Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/userprofile-framework.xml,
- OSGI-INF/theme-contrib.xml,
  OSGI-INF/user-locale-contrib.xml,
  OSGI-INF/enricher-contrib.xml

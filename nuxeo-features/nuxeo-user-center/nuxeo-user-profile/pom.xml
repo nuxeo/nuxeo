@@ -7,8 +7,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>nuxeo-user-profile</artifactId>
-  <name>Nuxeo User Center Profile</name>
-  <description>Nuxeo User Center Profile</description>
+  <name>Nuxeo User Profile</name>
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -36,14 +35,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-base</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-userworkspace-api</artifactId>
     </dependency>
     <dependency>
@@ -63,20 +54,12 @@
       <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.faces</groupId>
-      <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -131,16 +114,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-admin-center</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-user-center</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

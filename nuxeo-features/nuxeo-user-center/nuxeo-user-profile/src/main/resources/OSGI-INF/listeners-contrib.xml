@@ -10,13 +10,6 @@
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="timezoneSelector"
-      class="org.nuxeo.ecm.user.center.profile.localeProvider.UserLocaleSelectorListener"
-      priority="200">
-      <event>documentModified</event>
-      <event>documentCreated</event>
-    </listener>
-
   </extension>
 
 </component>
