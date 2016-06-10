@@ -41,10 +41,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-url-api</artifactId>
     </dependency>
     <dependency>
@@ -90,11 +86,6 @@
       <artifactId>nuxeo-core-io</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>
-    <!-- 3rd party dependencies -->
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
     </dependency>
   </dependencies>
 

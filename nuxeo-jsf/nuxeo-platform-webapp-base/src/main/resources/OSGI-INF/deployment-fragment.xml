@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxthumb/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
   <extension target="web#LISTENER">
     <listener>
       <listener-class>org.nuxeo.ecm.webapp.seam.NuxeoSeamWebGate</listener-class>
