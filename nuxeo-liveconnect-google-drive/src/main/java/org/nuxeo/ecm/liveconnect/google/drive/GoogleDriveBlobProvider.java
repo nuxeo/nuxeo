@@ -505,7 +505,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
     @Override
     protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
         // First, invalidate the Drive file cache in order to force call to API
-        invalidateInCache("file_" + fileInfo.getFileId());
+        invalidateInCache(fileInfo);
         // Second, retrieve it and cache it
         return new GoogleDriveLiveConnectFile(fileInfo, getDriveFile(fileInfo));
     }
