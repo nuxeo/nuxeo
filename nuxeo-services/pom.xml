@@ -25,7 +25,6 @@
     <module>nuxeo-platform-filemanager-core</module>
     <module>nuxeo-platform-filemanager-core-listener</module>
     <module>nuxeo-platform-filemanager-api</module>
-    <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-management</module>
     <module>nuxeo-platform-types-api</module>
     <module>nuxeo-platform-types-core</module>
@@ -44,7 +43,6 @@
     <module>nuxeo-platform-url-core</module>
     <module>nuxeo-platform-api-test</module>
     <module>nuxeo-platform-search-api</module>
-    <module>nuxeo-platform-login-default</module>
     <module>nuxeo-platform-uidgen-core</module>
     <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-ws-sun-jaxws</module>
@@ -58,20 +56,8 @@
     <module>nuxeo-web-resources-wro</module>
     <module>nuxeo-permissions</module>
     <module>nuxeo-usermapper</module>
-    <module>nuxeo-platform-login-cas2</module>
-    <module>nuxeo-platform-login-mod_sso</module>
-    <module>nuxeo-platform-login-ntlm</module>
-    <module>nuxeo-platform-login-portal-sso</module>
-    <module>nuxeo-platform-login-cleartrust</module>
-    <module>nuxeo-platform-login-shibboleth</module>
-    <module>nuxeo-platform-login-digest</module>
-    <module>nuxeo-platform-login-deputy</module>
-    <module>nuxeo-platform-login-token</module>
-    <module>nuxeo-platform-login-openid</module>
-    <module>nuxeo-platform-login-kerberos</module>
-    <module>nuxeo-platform-login-saml2</module>
-    <module>nuxeo-platform-login-keycloak</module>
     <module>nuxeo-scim-server</module>
+    <module>login</module>
   </modules>
 
   <dependencies>
