@@ -37,6 +37,8 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -68,16 +70,22 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
 
     @Override
     public void doInitializeRepository(CoreSession session) {
-        boolean txStarted = false;
-        if (!TransactionHelper.isTransactionActive()) {
-            txStarted = true;
-        }
+        if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue("nuxeo.picture.migration.enabled")) {
+            if (log.isWarnEnabled()) {
+                log.warn(
+                        "Starting picture migration handler (this may take some time depending on the number of documents)");
+            }
+            boolean txStarted = false;
+            if (!TransactionHelper.isTransactionActive()) {
+                txStarted = true;
+            }
 
-        try {
-            doMigration(session);
-        } finally {
-            if (txStarted) {
-                TransactionHelper.commitOrRollbackTransaction();
+            try {
+                doMigration(session);
+            } finally {
+                if (txStarted) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
             }
         }
     }
