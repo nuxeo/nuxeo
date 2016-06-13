@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
@@ -56,7 +57,7 @@ public class IndexingCommand implements Serializable {
         INSERT, UPDATE, UPDATE_SECURITY, DELETE, UPDATE_DIRECT_CHILDREN,
     }
 
-    public static final String PREFIX = "IndexingCommand-";
+    public static final String PREFIX = "IxCd-";
 
     protected String id;
 
@@ -78,6 +79,8 @@ public class IndexingCommand implements Serializable {
 
     protected transient String sessionId;
 
+    protected transient static AtomicLong seq = new AtomicLong(0);
+
     protected IndexingCommand() {
     }
 
@@ -91,7 +94,7 @@ public class IndexingCommand implements Serializable {
      * @param recurse the command affect the document and all its descendants
      */
     public IndexingCommand(DocumentModel document, Type commandType, boolean sync, boolean recurse) {
-        id = PREFIX + UUID.randomUUID().toString();
+        id = PREFIX + seq.incrementAndGet();
         type = commandType;
         this.sync = sync;
         this.recurse = recurse;
