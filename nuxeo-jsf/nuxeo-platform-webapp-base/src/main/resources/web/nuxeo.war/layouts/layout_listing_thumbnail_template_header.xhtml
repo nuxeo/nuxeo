@@ -1,0 +1,33 @@
+<ui:fragment
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <ui:remove>select all</ui:remove>
+  <div class="detail thumbnailOptions">
+    <a4j:outputPanel id="#{layout.id}_selectAll_panel" layout="block">
+      <h:commandButton
+        id="#{layoutColumn.widgets[0].name}_selectAll"
+        onclick="javascript:handleAllCheckBoxes(this.form.name, true)"
+        disabled="#{documents.selected}"
+        value="#{messages['label.search.select.all']}">
+        <nxu:actionListenerMethod value="#{documents.setSelected(true)}" />
+        <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, true)}" />
+        <a4j:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_deselectAll #{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
+      </h:commandButton>
+      <h:commandButton
+        id="#{layoutColumn.widgets[0].name}_deselectAll"
+        onclick="javascript:handleAllCheckBoxes(this.form.name, false)"
+        disabled="#{not documents.selected}"
+        value="#{messages['label.search.deselect.all']}">
+        <nxu:actionListenerMethod value="#{documents.setSelected(false)}" />
+        <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, false)}" />
+        <a4j:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_selectAll #{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
+      </h:commandButton>
+    </a4j:outputPanel>
+  </div>
+  <div class="clear" />
+
+</ui:fragment>
