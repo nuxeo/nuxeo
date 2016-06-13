@@ -373,8 +373,15 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         if (!processEvents) {
             return;
         }
+        List<LogEntry> entries = new ArrayList<>(eventBundle.size());
         for (Event event : eventBundle) {
-            logEvent(event);
+            LogEntry entry = buildEntryFromEvent(event);
+            if (entry != null) {
+                entries.add(entry);
+            }
+        }
+        if (entries.size() > 0) {
+            addLogEntries(entries);
         }
     }
 
