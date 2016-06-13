@@ -169,21 +169,21 @@ public class EventListenerList {
         }
     }
 
-    public synchronized List<EventListenerDescriptor> getEnabledInlineListenersDescriptors() {
+    public List<EventListenerDescriptor> getEnabledInlineListenersDescriptors() {
         if (enabledInlineListenersDescriptors == null) {
             recomputeEnabledListeners();
         }
         return new ArrayList<EventListenerDescriptor>(enabledInlineListenersDescriptors);
     }
 
-    public synchronized List<EventListenerDescriptor> getEnabledSyncPostCommitListenersDescriptors() {
+    public List<EventListenerDescriptor> getEnabledSyncPostCommitListenersDescriptors() {
         if (enabledSyncPostCommitListenersDescriptors == null) {
             recomputeEnabledListeners();
         }
         return new ArrayList<EventListenerDescriptor>(enabledSyncPostCommitListenersDescriptors);
     }
 
-    public synchronized List<EventListenerDescriptor> getEnabledAsyncPostCommitListenersDescriptors() {
+    public List<EventListenerDescriptor> getEnabledAsyncPostCommitListenersDescriptors() {
         if (enabledAsyncPostCommitListenersDescriptors == null) {
             recomputeEnabledListeners();
         }
