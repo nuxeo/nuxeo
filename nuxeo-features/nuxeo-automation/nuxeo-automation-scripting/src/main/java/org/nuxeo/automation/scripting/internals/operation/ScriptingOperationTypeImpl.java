@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
+import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -110,19 +111,35 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
     @SuppressWarnings("unchecked")
     @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
-        // As org.nuxeo.ecm.automation.core.impl.OperationTypeImpl.inject() is not called in this OperationTypeImpl,
-        // we have to inject into arguments all context variables to play the fallback on chains variables.
-        if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
-            args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
-        }
-        ScriptingOperationImpl impl;
-        ScriptOperationContext sctx = new ScriptOperationContext(ctx);
         try {
-            impl = new ScriptingOperationImpl(desc.getScript(), sctx, args);
+            resolveArguments(ctx, args);
+            ScriptOperationContext sctx = new ScriptOperationContext(ctx);
+            return new ScriptingOperationImpl(desc.getScript(), sctx, args);
         } catch (ScriptException e) {
             throw new NuxeoException(e);
         }
-        return impl;
+    }
+
+    /**
+     * As
+     * {@link org.nuxeo.ecm.automation.core.impl.OperationTypeImpl#inject(org.nuxeo.ecm.automation.OperationContext, java.util.Map, java.lang.Object)}
+     * is not called in this OperationTypeImpl, we have to inject into arguments all context variables to play the
+     * fallback on chains variables and evaluate script expression like MVEL.
+     *
+     * @since 8.3
+     * @param ctx Automation Context
+     * @param args Operation Parameters
+     */
+    protected void resolveArguments(OperationContext ctx, Map<String, Object> args) {
+        for (String key : args.keySet()) {
+            if (args.get(key) instanceof Expression) {
+                Object obj = ((Expression) args.get(key)).eval(ctx);
+                args.put(key, obj);
+            }
+        }
+        if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
+            args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
+        }
     }
 
     protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
