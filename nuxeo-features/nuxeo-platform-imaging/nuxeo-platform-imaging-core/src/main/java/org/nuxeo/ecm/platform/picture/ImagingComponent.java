@@ -128,8 +128,8 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             if (file.getName() != null) {
-                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), Blobs.createBlob(file),
-                        "image/jpeg");
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(),
+                        Blobs.createBlob(file), "image/jpeg");
             } else {
                 return mimetypeRegistry.getMimetypeFromFile(file);
             }
@@ -247,8 +247,8 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     @Override
-    public List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions,
-            ImageInfo imageInfo, boolean convert) throws IOException {
+    public List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, ImageInfo imageInfo,
+            boolean convert) throws IOException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
