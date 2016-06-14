@@ -39,4 +39,10 @@ public class MultiTenantUserManager extends UserManagerWithComputedGroups {
         }
         return nuxeoPrincipal;
     }
+
+    @Override
+    protected boolean useCache() {
+        // The default UserManager cache return only NuxeoPrincipalImpl so we can not use it, see NXP-19669.
+        return false;
+    }
 }
