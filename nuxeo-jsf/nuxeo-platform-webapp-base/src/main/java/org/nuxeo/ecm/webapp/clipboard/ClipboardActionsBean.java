@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,16 @@
  *
  * $Id$
  */
-
 package org.nuxeo.ecm.webapp.clipboard;
+
+import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -73,9 +75,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.EVENT;
-import static org.jboss.seam.ScopeType.SESSION;
 
 /**
  * This is the action listener behind the copy/paste template that knows how to copy/paste the selected user data to the
@@ -141,8 +140,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             putSelectionInWorkList(
-                    documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION),
-                    forceAppend);
+                    documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION), forceAppend);
             autoSelectCurrentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
         } else {
             log.debug("No selectable Documents in context to process copy on...");
@@ -314,11 +312,10 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
-    public List<DocumentModel> moveDocumentsToNewParent(DocumentModel destFolder, List<DocumentModel> docs)
-            {
+    public List<DocumentModel> moveDocumentsToNewParent(DocumentModel destFolder, List<DocumentModel> docs) {
         DocumentRef destFolderRef = destFolder.getRef();
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
-        List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> newDocs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (DocumentModel docModel : docs) {
             DocumentRef sourceFolderRef = docModel.getParentRef();
@@ -355,7 +352,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         // Get all parent folders
-        Set<DocumentRef> parentRefs = new HashSet<DocumentRef>();
+        Set<DocumentRef> parentRefs = new HashSet<>();
         for (DocumentModel doc : docs) {
             parentRefs.add(doc.getParentRef());
         }
@@ -432,17 +429,16 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     /**
      * Creates the documents in the backend under the target parent.
      */
-    protected List<DocumentModel> recreateDocumentsWithNewParent(DocumentModel parent, List<DocumentModel> documents)
-            {
+    protected List<DocumentModel> recreateDocumentsWithNewParent(DocumentModel parent, List<DocumentModel> documents) {
 
-        List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
+        List<DocumentModel> newDocuments = new ArrayList<>();
 
         if (null == parent || null == documents) {
             log.error("Null params received, returning...");
             return newDocuments;
         }
 
-        List<DocumentModel> documentsToPast = new LinkedList<DocumentModel>();
+        List<DocumentModel> documentsToPast = new LinkedList<>();
 
         // filter list on content type
         for (DocumentModel doc : documents) {
@@ -454,8 +450,8 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         // copying proxy or document
         boolean isPublishSpace = isPublishSpace(parent);
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(parent.getCurrentLifeCycleState());
-        List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
-        List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
+        List<DocumentRef> docRefs = new ArrayList<>();
+        List<DocumentRef> proxyRefs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : documentsToPast) {
             if (destinationIsDeleted && !checkDeletedState(doc)) {
@@ -520,7 +516,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Set<String> publishSpaces = schemaManager.getDocumentTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
         if (publishSpaces == null || publishSpaces.isEmpty()) {
-            publishSpaces = new HashSet<String>();
+            publishSpaces = new HashSet<>();
         }
         return publishSpaces.contains(container.getType());
     }
@@ -576,7 +572,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     public String exportWorklistAsZip(DocumentModel document) {
-        return exportWorklistAsZip(Arrays.asList(new DocumentModel[] { document }), true);
+        return exportWorklistAsZip(Collections.singletonList(document), true);
     }
 
     /**
@@ -679,8 +675,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
                 }
                 DocumentRef sourceFolderRef = docModel.getParentRef();
                 String sourceType = docModel.getType();
-                boolean canRemoveDoc = documentManager.hasPermission(sourceFolderRef,
-                        SecurityConstants.REMOVE_CHILDREN);
+                boolean canRemoveDoc = documentManager.hasPermission(sourceFolderRef, SecurityConstants.REMOVE_CHILDREN);
                 boolean canPasteInCurrentFolder = typeManager.isAllowedSubType(sourceType, destFolder.getType(),
                         navigationContext.getCurrentDocument());
                 boolean sameFolder = sourceFolderRef.equals(destFolderRef);
@@ -777,7 +772,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     public List<DocumentsListDescriptor> getDescriptorsForAvailableLists() {
         if (descriptorsForAvailableLists == null) {
             List<String> availableLists = getAvailableLists();
-            descriptorsForAvailableLists = new ArrayList<DocumentsListDescriptor>();
+            descriptorsForAvailableLists = new ArrayList<>();
             for (String lName : availableLists) {
                 descriptorsForAvailableLists.add(documentsListsManager.getWorkingListDescriptor(lName));
             }
@@ -790,7 +785,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         if (isWorkListEmpty()) {
             // we use cache here since this is a very common case ...
             if (actionCache == null) {
-                actionCache = new HashMap<String, List<Action>>();
+                actionCache = new HashMap<>();
             }
             if (!actionCache.containsKey(lstName)) {
                 actionCache.put(lstName, webActions.getActionsList(lstName + "_LIST"));
@@ -845,8 +840,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     private boolean checkWritePerm(List<DocumentModel> selectedDocs) {
         for (DocumentModel documentModel : selectedDocs) {
-            boolean canWrite = documentManager.hasPermission(documentModel.getRef(),
-                    SecurityConstants.WRITE_PROPERTIES);
+            boolean canWrite = documentManager.hasPermission(documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES);
             if (!canWrite) {
                 return false;
             }
