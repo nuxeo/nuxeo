@@ -553,22 +553,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
-     * @deprecated Since 8.2. Use {@link #copy(DocumentRef, DocumentRef, String, CopyOption...)} instead
-     */
-    @Deprecated
-    DocumentModel copy(DocumentRef src, DocumentRef dst, String name);
-
-    /**
-     * Copies the source document to the destination folder under the given name. If the name is null the original name
-     * is preserved.
-     * <p>
-     * If the destination document is not a folder or it doesn't exists then throws an exception.
-     * <p>
-     * If the source is a proxy the destination will be a copy of the proxy.
-     *
-     * @param src the source document reference
-     * @param dst the destination folder reference
-     * @param name the new name of the file or null if the original name must be preserved
      * @param copyOptions the options for copy
      */
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions);
@@ -590,16 +574,6 @@ public interface CoreSession extends AutoCloseable {
      */
     @Deprecated
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
-
-    /**
-     * Bulk copy. Destination must be a folder document.
-     *
-     * @param src the documents to copy
-     * @param dst the destination folder
-     * @deprecated Since 8.2. Use {@link #copy(List, DocumentRef, CopyOption...)}
-     */
-    @Deprecated
-    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst);
 
     /**
      * Bulk copy. Destination must be a folder document.
@@ -630,18 +604,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
-     * @deprecated Since 8.2. Use {@link #copyProxyAsDocument(DocumentRef, DocumentRef, String, CopyOption...)} instead
-     */
-    @Deprecated
-    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name);
-
-    /**
-     * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
-     *
-     * @see CoreSession#copy(DocumentRef, DocumentRef, String, CopyOption...)
-     * @param src the source document reference
-     * @param dst the destination folder reference
-     * @param name the new name of the file or null if the original name must be preserved
      * @param copyOptions the options for copy
      * @since 8.2
      */
@@ -659,16 +621,6 @@ public interface CoreSession extends AutoCloseable {
      */
     @Deprecated
     DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
-
-    /**
-     * Bulk copyProxyAsDocument. Destination must be a folder document.
-     *
-     * @param src the documents to copy
-     * @param dst the destination folder
-     * @deprecated Since 8.2. Use {@link #copyProxyAsDocument(List, DocumentRef, CopyOption...)} instead
-     */
-    @Deprecated
-    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst);
 
     /**
      * Bulk copyProxyAsDocument. Destination must be a folder document.
@@ -1463,11 +1415,11 @@ public interface CoreSession extends AutoCloseable {
         RESET_CREATOR;
 
         public static boolean isResetLifeCycle(CopyOption... options) {
-            return options != null && Arrays.asList(options).contains(RESET_LIFE_CYCLE);
+            return Arrays.asList(options).contains(RESET_LIFE_CYCLE);
         }
 
         public static boolean isResetCreator(CopyOption... options) {
-            return options != null && Arrays.asList(options).contains(RESET_CREATOR);
+            return Arrays.asList(options).contains(RESET_CREATOR);
         }
 
     }

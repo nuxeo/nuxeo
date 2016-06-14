@@ -51,6 +51,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -466,10 +467,11 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
             }
         }
         if (!proxyRefs.isEmpty()) {
-            newDocuments.addAll(documentManager.copyProxyAsDocument(proxyRefs, parent.getRef(), true));
+            newDocuments.addAll(documentManager.copyProxyAsDocument(proxyRefs, parent.getRef(),
+                    CopyOption.RESET_LIFE_CYCLE));
         }
         if (!docRefs.isEmpty()) {
-            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef(), true));
+            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef(), CopyOption.RESET_LIFE_CYCLE));
         }
         if (destinationIsDeleted) {
             for (DocumentModel d : newDocuments) {

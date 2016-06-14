@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.EventService;
@@ -103,7 +104,7 @@ public class BulkLifeCycleChangeListenerTest {
         // Checking document copy lifecycle handler
         DocumentModel folderCopy = session.createDocumentModel("/", "folderCopy", "Folder");
         folderCopy = session.createDocument(folderCopy);
-        folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(), "folderCopy", true);
+        folderCopy = session.copy(folderDoc.getRef(), folderCopy.getRef(), "folderCopy", CopyOption.RESET_LIFE_CYCLE);
         session.save();
 
         nextTransaction();
