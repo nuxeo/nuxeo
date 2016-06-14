@@ -55,6 +55,8 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
+    protected static final String TOKEN_PARAM = "token";
+
     protected boolean allowAnonymous = false;
 
     @Override
@@ -98,6 +100,10 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
      */
     private String getTokenFromRequest(HttpServletRequest httpRequest) {
         String token = httpRequest.getHeader(TOKEN_HEADER);
+
+        if (token == null) {
+            token = httpRequest.getParameter(TOKEN_PARAM);
+        }
 
         // If we don't find the token in request header, let's check in cookies
         if (token == null && httpRequest.getCookies() != null) {
