@@ -41,7 +41,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 
-import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.Metric;
