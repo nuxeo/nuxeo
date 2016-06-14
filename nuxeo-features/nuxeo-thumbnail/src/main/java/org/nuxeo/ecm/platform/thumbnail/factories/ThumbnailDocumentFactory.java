@@ -121,8 +121,8 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                 if (mimeType == null) {
                     MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
                     mimeType = mimetypeRegistry.getMimetypeFromFilename(iconPath);
-                    return Blobs.createBlob(iconFile, mimeType);
                 }
+                return Blobs.createBlob(iconFile, mimeType);
             }
         } catch (IOException e) {
             log.warn(String.format("Could not fetch the thumbnail blob from icon path '%s'", iconPath), e);
