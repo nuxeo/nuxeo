@@ -51,6 +51,7 @@ import org.junit.rules.MethodRule;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.drivers.ChromeDriverProvider;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
+import org.nuxeo.functionaltests.drivers.RemoteFirefoxDriverProvider;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -203,6 +204,8 @@ public abstract class AbstractTest {
         // Use the same strings as command-line Selenium
         if (browser.equals("chrome") || browser.equals("firefox")) {
             initFirefoxDriver();
+        } else if (browser.equals("remotefirefox")) {
+            initRemoteFirefoxDriver();
         } else if (browser.equals("googlechrome")) {
             initChromeDriver();
         } else {
@@ -220,6 +223,17 @@ public abstract class AbstractTest {
         DesiredCapabilities dc = DesiredCapabilities.firefox();
         dc.setCapability(CapabilityType.PROXY, proxy);
         driver = new FirefoxDriverProvider().init(dc);
+    }
+
+    protected static void initRemoteFirefoxDriver() throws Exception {
+        proxyManager = new ProxyManager();
+        Proxy proxy = proxyManager.startProxy();
+        if (proxy != null) {
+            proxy.setNoProxy("");
+        }
+        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        dc.setCapability(CapabilityType.PROXY, proxy);
+        driver = new RemoteFirefoxDriverProvider().init(dc);
     }
 
     protected static void initChromeDriver() throws Exception {

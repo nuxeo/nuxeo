@@ -65,6 +65,19 @@ public class ITTestDrivers extends AbstractTest {
         super.quitDriver();
     }
 
+    @Ignore("Only for manual tests : requires a remote webdriver running")
+    @Test
+    public void testRemoteFireFox() throws Exception {
+        initRemoteFirefoxDriver();
+        watchman.setDriver(driver);
+        watchman.setServerURL(NUXEO_URL);
+        driver.get("http://google.com");
+        ScreenshotTaker taker = new ScreenshotTaker();
+        assertTrue(taker.takeScreenshot(driver, "firefox").delete());
+        assertTrue(taker.dumpPageSource(driver, "firefox").delete());
+        super.quitDriver();
+    }
+
     @Ignore("Chrome not used in tests + chromedriver being a bit too finicky")
     @Test
     public void testGoogleChrome() throws Exception {

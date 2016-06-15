@@ -45,8 +45,7 @@ public class FirefoxDriverProvider implements DriverProvider {
 
     protected FirefoxDriver driver;
 
-    @Override
-    public RemoteWebDriver init(DesiredCapabilities dc) throws Exception {
+    public static FirefoxProfile getProfile() throws Exception {
         FirefoxProfile profile = new FirefoxProfile();
         // Disable native events (makes things break on Windows)
         profile.setEnableNativeEvents(false);
@@ -126,6 +125,14 @@ public class FirefoxDriverProvider implements DriverProvider {
             profile.setPreference("webdriver.log.file", webdriverlogFile.getAbsolutePath());
             log.warn("Webdriver logs saved in " + webdriverlogFile);
         }
+
+        return profile;
+    }
+
+    @Override
+    public RemoteWebDriver init(DesiredCapabilities dc) throws Exception {
+
+        FirefoxProfile profile = getProfile();
 
         JavaScriptError.addExtension(profile);
 
