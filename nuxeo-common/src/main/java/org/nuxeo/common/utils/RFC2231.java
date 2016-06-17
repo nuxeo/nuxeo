@@ -21,9 +21,7 @@
 
 package org.nuxeo.common.utils;
 
-import static org.nuxeo.common.utils.UserAgentMatcher.isChrome;
-import static org.nuxeo.common.utils.UserAgentMatcher.isFirefox3;
-import static org.nuxeo.common.utils.UserAgentMatcher.isFirefox4OrMore;
+import static org.nuxeo.common.utils.UserAgentMatcher.isSafari5;
 import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
 
 import java.io.UnsupportedEncodingException;
@@ -86,12 +84,7 @@ public class RFC2231 {
         if (userAgent == null) {
             userAgent = "";
         }
-        if (isFirefox3(userAgent) || isFirefox4OrMore(userAgent) || isChrome(userAgent)
-                || UserAgentMatcher.isMSIE10OrMore(userAgent)) {
-            // proper RFC2231
-            buf.append("filename*=UTF-8''");
-            percentEscape(buf, filename);
-        } else {
+        if (isSafari5(userAgent) || isMSIE6or7(userAgent)) {
             buf.append("filename=");
             if (isMSIE6or7(userAgent)) {
                 // MSIE understands straight %-encoding
@@ -100,6 +93,10 @@ public class RFC2231 {
                 // Safari (maybe others) expects direct UTF-8 encoded strings
                 buf.append(filename);
             }
+        } else {
+            // proper RFC2231
+            buf.append("filename*=UTF-8''");
+            percentEscape(buf, filename);            
         }
         return buf.toString();
     }
