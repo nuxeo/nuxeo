@@ -40,12 +40,17 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImportingDocumentFilter;
 import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -232,6 +237,12 @@ public class GenericThreadedImportTask implements Runnable {
                 }
                 uploadedKO += fileSize;
             }
+
+            //
+            EventProducer service = Framework.getService(EventProducer.class);
+            EventContextImpl evctx = new DocumentEventContext(session, session.getPrincipal(),leaf);
+            Event event = evctx.newEvent("documentImportedWithPlatformImporter");
+            service.fireEvent(event);
 
             // save session if needed
             commit();
