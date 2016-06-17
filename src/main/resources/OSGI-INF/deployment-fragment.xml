@@ -35,6 +35,7 @@
       <supported-locale>ru_RU</supported-locale><!-- Russian - Russia -->
       <supported-locale>sq_AL</supported-locale><!-- Albanian -->
       <supported-locale>sr_SP</supported-locale><!-- Serbian(Cyrillic) - Serbia -->
+      <supported-locale>sv_SE</supported-locale><!-- Swedish -->
       <supported-locale>tr_TR</supported-locale><!-- Turkish - Turkey -->
       <supported-locale>vi_VN</supported-locale><!-- Vietnamese - Vietnam -->
       <supported-locale>zh_CN</supported-locale><!-- Chinese (Simplified) - China -->
