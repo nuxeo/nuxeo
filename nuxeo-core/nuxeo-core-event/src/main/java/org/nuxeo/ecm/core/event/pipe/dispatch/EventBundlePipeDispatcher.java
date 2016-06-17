@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.event.pipe.dispatch;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
@@ -55,5 +56,13 @@ public class EventBundlePipeDispatcher{
         for (EventBundlePipe pipe: pipes) {
             pipe.sendEventBundle(events);
         }
+    }
+
+    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
+        boolean res = true;
+        for (EventBundlePipe pipe: pipes) {
+            res = res && pipe.waitForCompletion(timeoutMillis);
+        }
+        return res;
     }
 }

@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundlePipeDispatcher;
-import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipe;
+import org.nuxeo.ecm.core.event.pipe.queue.QueueBaseEventBundlePipe;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -116,7 +116,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
         // XXX simulate contribs
         List<EventPipeDescriptor> pipeDescriptors = new ArrayList<EventPipeDescriptor>();
-        pipeDescriptors.add(new EventPipeDescriptor("local", LocalEventBundlePipe.class));
+        //pipeDescriptors.add(new EventPipeDescriptor("local", LocalEventBundlePipe.class));
+        pipeDescriptors.add(new EventPipeDescriptor("localqueue", QueueBaseEventBundlePipe.class));
         pipeDispatcher.init(pipeDescriptors);
     }
 
@@ -172,6 +173,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             if (!asyncExec.waitForCompletion(timeout)) {
                 throw new RuntimeException("Async event listeners thread pool is not terminated");
             }
+            pipeDispatcher.waitForCompletion(timeout);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // TODO change signature

@@ -55,4 +55,8 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
         }
     }
 
+    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
+        return asyncExec.waitForCompletion(timeoutMillis);
+    }
+
 }

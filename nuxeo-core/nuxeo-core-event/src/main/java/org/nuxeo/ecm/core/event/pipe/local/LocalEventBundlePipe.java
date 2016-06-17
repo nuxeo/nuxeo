@@ -23,7 +23,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
-import org.nuxeo.ecm.core.event.pipe.PipeConsumer;
 
 /**
  * Local In memory implementation: directly relays to WorkManager
@@ -31,7 +30,7 @@ import org.nuxeo.ecm.core.event.pipe.PipeConsumer;
  */
 public class LocalEventBundlePipe extends AbstractEventBundlePipe<EventBundle> implements EventBundlePipe {
 
-    protected PipeConsumer<EventBundle> consumer;
+    protected LocalEventBundlePipeConsumer consumer;
 
     @Override
     public void initPipe(String name, Map<String, String> params) {
@@ -52,6 +51,11 @@ public class LocalEventBundlePipe extends AbstractEventBundlePipe<EventBundle> i
         //ReconnectedEventBundle bundle = new ReconnectedEventBundleImpl(events);
         //bundle.disconnect();
         return events;
+    }
+
+    @Override
+    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
+        return consumer.waitForCompletion(timeoutMillis);
     }
 
 }

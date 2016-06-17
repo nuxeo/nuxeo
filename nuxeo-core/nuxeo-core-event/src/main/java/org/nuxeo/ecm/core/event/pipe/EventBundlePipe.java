@@ -29,4 +29,6 @@ public interface EventBundlePipe {
     void initPipe(String name, Map<String, String> params);
 
     void sendEventBundle(EventBundle events);
+
+    boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
 }
