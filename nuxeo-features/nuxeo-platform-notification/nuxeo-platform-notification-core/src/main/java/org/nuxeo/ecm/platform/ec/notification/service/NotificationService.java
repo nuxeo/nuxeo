@@ -163,7 +163,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
                 NotificationListenerHookDescriptor desc = (NotificationListenerHookDescriptor) contrib;
                 Class<? extends NotificationListenerHook> clazz = desc.hookListener;
                 try {
-                    NotificationListenerHook hookListener = (NotificationListenerHook) clazz.newInstance();
+                    NotificationListenerHook hookListener = clazz.newInstance();
                     registerHookListener(desc.name, hookListener);
                 } catch (ReflectiveOperationException e) {
                     log.error(e);
@@ -226,6 +226,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
+    @Override
     public NotificationRegistry getNotificationRegistry() {
         return notificationRegistry;
     }
@@ -238,6 +239,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
      * @deprecated since 7.3
      * @see NotificationService#getSubscribers(String, DocumentModel)
      */
+    @Deprecated
+    @Override
     public List<String> getSubscribers(String notification, String docId) {
         return getSubscribers(notification, UnrestrictedDocFetcher.fetch(docId));
     }
@@ -252,6 +255,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
      * @see NotificationService#getSubscriptionsForUserOnDocument(String, DocumentModel)
      */
 
+    @Deprecated
+    @Override
     public List<String> getSubscriptionsForUserOnDocument(String username, String docId) {
         return getSubscriptionsForUserOnDocument(username, UnrestrictedDocFetcher.fetch(docId));
     }
@@ -269,6 +274,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     }
 
+    @Override
     public void addSubscription(String username, String notification, DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal, String notificationName) {
 
@@ -291,6 +297,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
+    @Override
     public void addSubscriptions(String username, DocumentModel doc, Boolean sendConfirmationEmail,
             NuxeoPrincipal principal) {
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
@@ -310,12 +317,13 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
+    @Override
     public void removeSubscriptions(String username, List<String> notifications, String docId) {
         removeSubscriptions(username, notifications, UnrestrictedDocFetcher.fetch(docId));
     }
 
-    public void removeSubscriptions(String username, List<String> notifications, DocumentModel doc)
-            {
+    @Override
+    public void removeSubscriptions(String username, List<String> notifications, DocumentModel doc) {
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
@@ -381,8 +389,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
      * @deprecated
      * @see NotificationService#getSubscribers(String, DocumentModel)
      */
-    public List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId)
-            {
+    @Deprecated
+    @Override
+    public List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId) {
         return getSubscribers(notification, docId);
     }
 
@@ -415,6 +424,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return generalSettings.getMailSessionJndiName();
     }
 
+    @Override
     public Notification getNotificationByName(String selectedNotification) {
         List<Notification> listNotif = notificationRegistry.getNotifications();
         for (Notification notification : listNotif) {
@@ -425,8 +435,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return null;
     }
 
-    public void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal)
-            {
+    @Override
+    public void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal) {
 
         Notification notif = getNotificationByName(notificationName);
 
@@ -464,6 +474,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
+    @Override
     public void sendDocumentByMail(DocumentModel doc, String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendTo) {
         Map<String, Object> infoMap = new HashMap<String, Object>();
@@ -502,10 +513,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return docLocator;
     }
 
+    @Override
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
         return notificationRegistry.getNotificationsForSubscriptions(parentType);
     }
 
+    @Override
     public List<Notification> getNotificationsForEvents(String eventId) {
         return notificationRegistry.getNotificationsForEvent(eventId);
     }
@@ -532,8 +545,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     @Override
-    public List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc)
-            {
+    public List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc) {
         return getSubscribers(notification, doc);
     }
 
