@@ -60,6 +60,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class GenericThreadedImportTask implements Runnable {
 
+    public static final String DOC_IMPORTED_EVENT = "documentImportedWithPlatformImporter";
+
     private static final Log log = LogFactory.getLog(GenericThreadedImportTask.class);
 
     protected static int taskCounter = 0;
@@ -238,11 +240,11 @@ public class GenericThreadedImportTask implements Runnable {
                 uploadedKO += fileSize;
             }
 
-            //
-            EventProducer service = Framework.getService(EventProducer.class);
-            EventContextImpl evctx = new DocumentEventContext(session, session.getPrincipal(),leaf);
-            Event event = evctx.newEvent("documentImportedWithPlatformImporter");
-            service.fireEvent(event);
+            // send an event about the imported document
+            EventProducer eventProducer = Framework.getService(EventProducer.class);
+            EventContextImpl eventContext = new DocumentEventContext(session, session.getPrincipal(), leaf);
+            Event event = eventContext.newEvent(DOC_IMPORTED_EVENT);
+            eventProducer.fireEvent(event);
 
             // save session if needed
             commit();
