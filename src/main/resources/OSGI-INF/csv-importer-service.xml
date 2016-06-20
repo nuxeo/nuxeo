@@ -6,5 +6,13 @@
   <service>
     <provide interface="org.nuxeo.ecm.csv.CSVImporter"/>
   </service>
+  
+   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that activates import mode on CSV importer to avoid overwriting metadata.
+    </documentation>
+    <property name="nuxeo.csv.importMode">true</property>
+  </extension>
+  
 
 </component>

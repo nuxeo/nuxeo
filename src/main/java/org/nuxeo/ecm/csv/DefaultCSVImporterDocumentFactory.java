@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -58,11 +60,16 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, values.get(NXQL.ECM_LIFECYCLESTATE));
             values.remove(NXQL.ECM_LIFECYCLESTATE);
         }
-        doc = session.createDocument(doc);
-        for (Map.Entry<String, Serializable> entry : values.entrySet()) {
-            doc.setPropertyValue(entry.getKey(), entry.getValue());
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        if (cs.isBooleanPropertyTrue("nuxeo.csv.importMode")) {
+            doc = session.createDocument(doc);
+            for (Map.Entry<String, Serializable> entry : values.entrySet()) {
+                doc.setPropertyValue(entry.getKey(), entry.getValue());
+            }
+            session.saveDocument(doc);
+        } else {
+            session.importDocuments(Arrays.asList(doc));
         }
-        session.saveDocument(doc);
     }
 
     protected Map<String, Serializable> prepareValues(Map<String, Serializable> values) {
