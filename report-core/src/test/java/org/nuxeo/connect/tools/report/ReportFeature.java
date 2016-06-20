@@ -22,7 +22,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.connect.tools.api", "org.nuxeo.connect.tools.core", "org.nuxeo.apidoc.core" })
+@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.connect.tools.report.api", "org.nuxeo.connect.tools.report.core", "org.nuxeo.apidoc.core" })
 public class ReportFeature extends SimpleFeature {
 
 }

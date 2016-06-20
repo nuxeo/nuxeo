@@ -14,22 +14,25 @@
  * limitations under the License.
  *
  */
-package org.nuxeo.connect.tools.report;
+package org.nuxeo.connect.tools.report.client;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.connect.tools.report.ICanConnectTest.Given;
-import org.nuxeo.connect.tools.report.ICanConnectTest.Then;
-import org.nuxeo.connect.tools.report.ICanConnectTest.When;
+import org.nuxeo.connect.tools.report.ReportFeature;
 import org.nuxeo.connect.tools.report.client.Connector;
-import org.nuxeo.connect.tools.report.client.Provider;
+import org.nuxeo.connect.tools.report.client.ICanConnectTest.Given;
+import org.nuxeo.connect.tools.report.client.ICanConnectTest.Then;
+import org.nuxeo.connect.tools.report.client.ICanConnectTest.When;
+import org.nuxeo.ecm.core.management.statuses.NuxeoInstanceIdentifierHelper;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -38,7 +41,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ExpectedScenarioState;
 import com.tngtech.jgiven.annotation.ProvidedScenarioState;
-import com.tngtech.jgiven.annotation.ScenarioState;
 import com.tngtech.jgiven.junit.ScenarioTest;
 
 /**
@@ -71,51 +73,51 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
 
     static class When extends Stage<When> {
         @ProvidedScenarioState
-        Iterable<Provider> providers;
+        Connector connector;
 
         When i_connect_with_providers() {
-            providers = Connector.connector().connect();
+            connector = Connector.of();
             return self();
         }
 
-        When there_is_at_least_one_provider_available() {
-            Assert.assertTrue(providers.iterator().hasNext());
+        When there_is_at_least_one_server_available() {
+            Assert.assertTrue(connector.discover().iterator().hasNext());
+            return self();
+        }
+
+        @ProvidedScenarioState
+        JsonObject json;
+
+        When i_feed_a_report() throws IOException, InterruptedException, ExecutionException {
+            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                json = connector.feed(Json.createObjectBuilder()).build();
+            }
             return self();
         }
     }
 
     static class Then extends Stage<Then> {
         @ExpectedScenarioState
-        Iterable<Provider> providers;
+        JsonObject json;
 
-        @ScenarioState
-        List<String> reports = new LinkedList<>();
-
-        Then i_can_invoke_reports_remotely() throws IOException {
-            for (Provider provider : providers) {
-                reports.add(provider.snapshot("target"));
-            }
+        public Then it_contains_this_runtime_report() throws IOException {
+            Assertions.assertThat(json).containsKey(NuxeoInstanceIdentifierHelper.getServerInstanceName());
             return self();
         }
 
-        Then i_can_read_them() throws IOException {
-            for (String file : reports) {
-                Files.readAllLines(Paths.get(file));
-            }
-            return self();
-        }
     }
 
     @Test
-    public void i_can_connect() throws IOException {
+    public void i_can_report() throws IOException, InterruptedException, ExecutionException {
         given()
-            .the_runtime_is_started().and()
-            .the_connect_report_component_is_installed();
+               .the_runtime_is_started().and()
+               .the_connect_report_component_is_installed();
         when()
-            .i_connect_with_providers().and()
-            .there_is_at_least_one_provider_available();
+              .i_connect_with_providers().and()
+              .there_is_at_least_one_server_available().and()
+              .i_feed_a_report();
         then()
-            .i_can_invoke_reports_remotely().and()
-            .i_can_read_them();
+              .it_contains_this_runtime_report();
     }
+
 }

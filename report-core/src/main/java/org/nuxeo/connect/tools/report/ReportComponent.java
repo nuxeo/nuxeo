@@ -18,15 +18,15 @@ package org.nuxeo.connect.tools.report;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.json.Json;
 import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonGeneratorFactory;
 
-import org.nuxeo.connect.tools.report.client.Provider;
+import org.nuxeo.ecm.core.management.statuses.NuxeoInstanceIdentifierHelper;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -42,36 +42,38 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ReportComponent extends DefaultComponent {
 
-    /**
-     *
-     * @since 8.3
-     */
-    public class Management implements Provider {
+    public class Endpoint implements Server {
+
         @Override
-        public String snapshot(String dirpath) throws IOException {
-            Path filepath = Files.createTempFile(Paths.get(dirpath), "snapshot-", ".json");
-            Files.delete(filepath);
-            try (OutputStream out = Files.newOutputStream(filepath, StandardOpenOption.CREATE_NEW)) {
-                ReportComponent.this.snapshot(out);
+        public void run(String host, int port, String... names) throws IOException {
+            try (Socket sock = new Socket(host, port)) {
+                ReportComponent.this.run(sock.getOutputStream(), new HashSet<>(Arrays.asList(names)));
             }
-            return filepath.toString();
         }
+
     }
 
     public static ReportComponent instance;
 
     final ReportConfiguration configuration = new ReportConfiguration();
 
-    void snapshot(OutputStream out) throws IOException {
-        try (JsonGenerator json = Framework.getService(JsonGeneratorFactory.class).createGenerator(out)) {
+    void run(OutputStream out, Set<String> names) throws IOException {
+        try (JsonGenerator json = Json.createGenerator(out)) {
             json.writeStartObject();
             try {
-                for (ReportContribution contrib : configuration) {
-                    json.write(contrib.name, contrib.instance.snapshot());
+                json.writeStartObject(NuxeoInstanceIdentifierHelper.getServerInstanceName());
+                try {
+                    for (ReportContribution contrib : configuration.filter(names)) {
+                        json.write(contrib.name, contrib.instance.snapshot());
+                    }
+                } finally {
+                    json.writeEnd();
                 }
             } finally {
                 json.writeEnd();
             }
+        } catch (IOException cause) {
+            throw cause;
         }
     }
 
@@ -89,7 +91,7 @@ public class ReportComponent extends DefaultComponent {
             }
         });
         instance = this;
-        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", Provider.class, new Management());
+        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", Server.class, new Endpoint());
     }
 
     @Override

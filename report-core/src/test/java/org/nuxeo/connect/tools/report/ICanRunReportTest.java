@@ -30,6 +30,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
+import org.nuxeo.connect.tools.report.Report;
+import org.nuxeo.connect.tools.report.ReportComponent;
+import org.nuxeo.connect.tools.report.ReportContribution;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Given;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Then;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.When;
@@ -268,7 +271,7 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
                 Assertions.assertThat(json).containsKey(RuntimeSnapshot.class.getName());
             }
 
-            RuntimeSnapshotReport I_can_unmarshall() throws IOException {
+            RuntimeSnapshotReport i_can_unmarshall() throws IOException {
                 snapshot = APIDocReport.snasphotOf(json);
                 return self();
             }
@@ -348,8 +351,8 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
               .there_is_no_errors();
         then()
               .the_report_is_a_runtime_snapshot().which()
-                  .I_can_unmarshall().and()
-                  .contains_the_bundle$bundle("org.nuxeo.connect.tools.core").end();
+                  .i_can_unmarshall().and()
+                  .contains_the_bundle$bundle("org.nuxeo.connect.tools.report.core").end();
         // formatter:on
     }
 

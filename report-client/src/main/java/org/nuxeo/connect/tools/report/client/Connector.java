@@ -18,14 +18,32 @@ package org.nuxeo.connect.tools.report.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
-
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonParser;
 import javax.management.JMX;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+
+import org.nuxeo.connect.tools.report.Server;
 
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
@@ -49,149 +67,270 @@ public class Connector {
         }
     }
 
-    public static Connector connector() {
+    public static Connector of() {
         return new Connector();
     }
 
-    public Iterable<Provider> connect() {
-        return connect(VirtualMachine.list());
-    }
-
-    Iterable<Provider> connect(Iterable<VirtualMachineDescriptor> pids) {
-        return new Iterable<Provider>() {
+    public JsonGenerator feed(JsonGenerator generator) throws IOException, InterruptedException, ExecutionException {
+        class Feeder implements Consumer {
+            StreamFeeder feeder = new StreamFeeder();
 
             @Override
-            public Iterator<Provider> iterator() {
-                return new Iterator<Provider>() {
+            public void consume(JsonParser stream) {
+                feeder.feed(generator, stream);
+            }
+        }
+        connect(new Feeder());
+        return generator;
+    }
 
-                    final Iterator<VirtualMachineDescriptor> source = pids.iterator();
+    public JsonObjectBuilder feed(JsonObjectBuilder builder) throws IOException, InterruptedException, ExecutionException {
+        class Feeder implements Consumer {
+            ObjectFeeder feeder = new ObjectFeeder();
 
-                    Provider next = fetchNext();
+            @Override
+            public void consume(JsonParser stream) {
+                feeder.feed(builder, stream);
+            }
+        }
+        connect(new Feeder());
+        return builder;
+    }
 
-                    Provider fetchNext() {
-                        if (!source.hasNext()) {
-                            return null;
-                        }
-                        while (source.hasNext()) {
-                            try {
-                                VirtualMachineDescriptor pid = source.next();
-                                MBeanServerConnection connection = new Management(pid).connect();
-                                if (!connection.isRegistered(NAME)) {
-                                    continue;
-                                }
-                                return JMX.newMXBeanProxy(connection, NAME, Provider.class);
-                            } catch (IOException cause) {
-                                ;
-                            }
-                        }
+    static class Discovery implements Iterable<Server> {
+        @Override
+        public Iterator<Server> iterator() {
+            return new Iterator<Server>() {
+
+                final Iterator<VirtualMachineDescriptor> source = VirtualMachine.list().iterator();
+
+                Server next = fetchNext();
+
+                Server fetchNext() {
+                    if (!source.hasNext()) {
                         return null;
                     }
-
-                    class Management {
-
-                        Management(VirtualMachineDescriptor anIdentifier) {
-                            pid = anIdentifier;
-                        }
-
-                        final VirtualMachineDescriptor pid;
-
-                        MBeanServerConnection connect() throws IOException {
-                            VirtualMachine vm;
-                            try {
-                                vm = pid.provider().attachVirtualMachine(pid);
-                            } catch (AttachNotSupportedException cause) {
-                                throw new IOException("Cannot attach to " + pid, cause);
-                            }
-                            try {
-                                return connect(lookup(vm));
-                            } finally {
-                                vm.detach();
-                            }
-                        }
-
-                        JMXServiceURL lookup(VirtualMachine vm) throws IOException {
-                            JMXServiceURL url = lookupRemote(vm);
-                            if (url != null) {
-                                return url;
-                            }
-                            return lookupAgent(vm);
-                        }
-
-                        JMXServiceURL lookupRemote(VirtualMachine vm) throws IOException {
-                            boolean isRemote =
-                                    Boolean.valueOf(vm.getSystemProperties().getProperty("com.sun.management.jmxremote", "false")).booleanValue();
-                            if (!isRemote) {
-                                return null;
-                            }
-                            int port = Integer.valueOf(vm.getSystemProperties().getProperty("com.sun.management.jmxremote.port", "1089")).intValue();
-                            return new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
-                        }
-
-                        JMXServiceURL lookupAgent(VirtualMachine vm) throws IOException {
-                            String address = vm.getAgentProperties().getProperty("com.sun.management.jmxremote.localConnectorAddress");
-                            if (address != null) {
-                                return new JMXServiceURL(address);
-                            }
-                            startAgent(vm);
-                            return lookupAgent(vm);
-                        }
-
-                        void startAgent(VirtualMachine vm) throws IOException {
-                            String home = vm.getSystemProperties().getProperty("java.home");
-
-                            // Normally in
-                            // ${java.home}/jre/lib/management-agent.jar but
-                            // might
-                            // be in ${java.home}/lib in build environments.
-
-                            String agent = home + File.separator + "jre" + File.separator +
-                                    "lib" + File.separator + "management-agent.jar";
-                            File f = new File(agent);
-                            if (!f.exists()) {
-                                agent = home + File.separator + "lib" + File.separator +
-                                        "management-agent.jar";
-                                f = new File(agent);
-                                if (!f.exists()) {
-                                    throw new IOException("Management agent not found");
-                                }
-                            }
-
-                            agent = f.getCanonicalPath();
-                            try {
-                                vm.loadAgent(agent, "com.sun.management.jmxremote");
-                            } catch (AgentLoadException x) {
-                                IOException ioe = new IOException(x.getMessage());
-                                ioe.initCause(x);
-                                throw ioe;
-                            } catch (AgentInitializationException x) {
-                                IOException ioe = new IOException(x.getMessage());
-                                ioe.initCause(x);
-                                throw ioe;
-                            }
-                        }
-
-                        MBeanServerConnection connect(JMXServiceURL url) throws IOException {
-                            return JMXConnectorFactory.connect(url).getMBeanServerConnection();
-                        }
-                    }
-
-                    @Override
-                    public boolean hasNext() {
-                        return next != null;
-                    }
-
-                    @Override
-                    public Provider next() {
+                    while (source.hasNext()) {
                         try {
-                            return next;
+                            VirtualMachineDescriptor pid = source.next();
+                            MBeanServerConnection connection = new Management(pid).connect();
+                            if (!connection.isRegistered(NAME)) {
+                                continue;
+                            }
+                            return JMX.newMXBeanProxy(connection, NAME, Server.class);
+                        } catch (IOException cause) {
+                            ;
+                        }
+                    }
+                    return null;
+                }
+
+                class Management {
+
+                    Management(VirtualMachineDescriptor anIdentifier) {
+                        pid = anIdentifier;
+                    }
+
+                    final VirtualMachineDescriptor pid;
+
+                    MBeanServerConnection connect() throws IOException {
+                        VirtualMachine vm;
+                        try {
+                            vm = pid.provider().attachVirtualMachine(pid);
+                        } catch (AttachNotSupportedException cause) {
+                            throw new IOException("Cannot attach to " + pid, cause);
+                        }
+                        try {
+                            return connect(lookup(vm));
                         } finally {
-                            next = fetchNext();
+                            vm.detach();
                         }
                     }
 
-                };
+                    JMXServiceURL lookup(VirtualMachine vm) throws IOException {
+                        JMXServiceURL url = lookupRemote(vm);
+                        if (url != null) {
+                            return url;
+                        }
+                        return lookupAgent(vm);
+                    }
+
+                    JMXServiceURL lookupRemote(VirtualMachine vm) throws IOException {
+                        boolean isRemote =
+                                Boolean.valueOf(vm.getSystemProperties().getProperty("com.sun.management.jmxremote", "false")).booleanValue();
+                        if (!isRemote) {
+                            return null;
+                        }
+                        int port = Integer.valueOf(vm.getSystemProperties().getProperty("com.sun.management.jmxremote.port", "1089")).intValue();
+                        return new JMXServiceURL(String.format("service:jmx:rmi:///jndi/rmi://localhost:%d/jmxrmi", port));
+                    }
+
+                    JMXServiceURL lookupAgent(VirtualMachine vm) throws IOException {
+                        String address = vm.getAgentProperties().getProperty("com.sun.management.jmxremote.localConnectorAddress");
+                        if (address != null) {
+                            return new JMXServiceURL(address);
+                        }
+                        startAgent(vm);
+                        return lookupAgent(vm);
+                    }
+
+                    void startAgent(VirtualMachine vm) throws IOException {
+                        String home = vm.getSystemProperties().getProperty("java.home");
+
+                        // Normally in
+                        // ${java.home}/jre/lib/management-agent.jar but
+                        // might
+                        // be in ${java.home}/lib in build environments.
+
+                        String agent = home + File.separator + "jre" + File.separator +
+                                "lib" + File.separator + "management-agent.jar";
+                        File f = new File(agent);
+                        if (!f.exists()) {
+                            agent = home + File.separator + "lib" + File.separator +
+                                    "management-agent.jar";
+                            f = new File(agent);
+                            if (!f.exists()) {
+                                throw new IOException("Management agent not found");
+                            }
+                        }
+
+                        agent = f.getCanonicalPath();
+                        try {
+                            vm.loadAgent(agent, "com.sun.management.jmxremote");
+                        } catch (AgentLoadException x) {
+                            IOException ioe = new IOException(x.getMessage());
+                            ioe.initCause(x);
+                            throw ioe;
+                        } catch (AgentInitializationException x) {
+                            IOException ioe = new IOException(x.getMessage());
+                            ioe.initCause(x);
+                            throw ioe;
+                        }
+                    }
+
+                    MBeanServerConnection connect(JMXServiceURL url) throws IOException {
+                        return JMXConnectorFactory.connect(url).getMBeanServerConnection();
+                    }
+                }
+
+                @Override
+                public boolean hasNext() {
+                    return next != null;
+                }
+
+                @Override
+                public Server next() {
+                    try {
+                        return next;
+                    } finally {
+                        next = fetchNext();
+                    }
+                }
+
+            };
+        }
+    }
+
+    interface Consumer {
+        void consume(JsonParser stream);
+    }
+
+    <A> void connect(Consumer consumer) throws IOException, InterruptedException, ExecutionException {
+        ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+
+            @Override
+            public Thread newThread(Runnable target) {
+                Thread thread = new Thread(target, "connect-report-consumer");
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
+        // invoke servers
+        try (ServerSocket callback = new ServerSocket(0)) {
+            for (Server server : new Discovery()) {
+                final Future<?> consumed = executor.submit(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            consumer.consume(Json.createParser(callback.accept().getInputStream()));
+                        } catch (IOException cause) {
+                            throw new AssertionError("Cannot consume connect report", cause);
+                        }
+                    }
+                });
+                InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
+                server.run(address.getHostName(), address.getPort());
+                consumed.get();
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    public Iterable<Server> discover() {
+        class ToolsRunner {
+
+            @SuppressWarnings("unchecked")
+            Iterable<Server> discover() {
+                try {
+                    Connector.class.getClassLoader().loadClass("com.sun.tools.attach.VirtualMachine");
+                } catch (ClassNotFoundException cause) {
+                    class Loader extends URLClassLoader {
+                        Loader(Path path) {
+                            super(new URL[] { fileof(path) });
+                        }
+
+                        @Override
+                        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                            if (name.equals(Discovery.class.getName())) {
+                                return findClass(name);
+                            }
+                            return super.loadClass(name, resolve);
+                        }
+                    }
+                    ClassLoader previous = Thread.currentThread().getContextClassLoader();
+                    ClassLoader loader = new Loader(findTools());
+                    Thread.currentThread().setContextClassLoader(loader);
+                    try {
+                        return (Iterable<Server>) loader.loadClass(Discovery.class.getName()).newInstance();
+                    } catch (ReflectiveOperationException cause1) {
+                        throw new AssertionError("Cannot discover servers", cause1);
+                    } finally {
+                        Thread.currentThread().setContextClassLoader(previous);
+                    }
+                }
+                return new Discovery();
             }
 
-        };
+            URL fileof(Path path) {
+                try {
+                    return new URL("file://".concat(path.toString()));
+                } catch (MalformedURLException cause) {
+                    throw new AssertionError("Cannot create url for " + path, cause);
+                }
+            }
+
+            Path findTools() {
+                Path home = Paths.get(System.getProperty("java.home"));
+                for (Path path : new Path[] {
+                        Paths.get("../lib/tools.jar"),
+                        Paths.get("../Classes/classes.jar")
+                }) {
+                    Path tools = home.resolve(path);
+                    if (Files.exists(tools)) {
+                        return tools;
+                    }
+                }
+                throw new AssertionError("Cannot find tools in system");
+            }
+
+        }
+        try {
+            return new ToolsRunner().discover();
+        } catch (Exception cause) {
+            throw new AssertionError("Cannot discover servers", cause);
+        }
     }
+
 }

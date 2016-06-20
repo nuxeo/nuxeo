@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo connect tools
-Bundle-SymbolicName: org.nuxeo.connect.tools.report.core;singleton:=true
+Bundle-Name: nuxeo connect tools tests
+Bundle-SymbolicName: org.nuxeo.connect.tools.core.tests;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: 

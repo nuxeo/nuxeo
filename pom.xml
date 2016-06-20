@@ -16,6 +16,7 @@
 
   <modules>
     <module>report-client</module>
+    <module>report-api</module>
     <module>report-core</module>
   </modules>
 

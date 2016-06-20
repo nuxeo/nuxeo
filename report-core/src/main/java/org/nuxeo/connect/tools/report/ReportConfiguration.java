@@ -16,8 +16,10 @@
  */
 package org.nuxeo.connect.tools.report;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
@@ -55,41 +57,57 @@ public class ReportConfiguration extends SimpleContributionRegistry<ReportContri
 
     @Override
     public Iterator<ReportContribution> iterator() {
-        return new Iterator<ReportContribution>() {
-            final Iterator<ReportContribution> iterator = currentContribs.values().iterator();
+        return filter(Collections.emptySet()).iterator();
+    }
+
+    Iterable<ReportContribution> filter(Set<String> names) {
+        return new Iterable<ReportContribution>() {
 
             @Override
-            public boolean hasNext() {
-                return fetch();
-            }
+            public Iterator<ReportContribution> iterator() {
+                return new Iterator<ReportContribution>() {
+                    final Iterator<ReportContribution> iterator = currentContribs.values().iterator();
 
-            ReportContribution next;
-
-            boolean fetch() {
-                if (next != null) {
-                    return true;
-                }
-                while (iterator.hasNext()) {
-                    next = iterator.next();
-                    if (next.enabled) {
-                        return true;
+                    @Override
+                    public boolean hasNext() {
+                        return fetch();
                     }
-                }
-                next = null;
-                return false;
+
+                    ReportContribution next;
+
+                    boolean fetch() {
+                        if (next != null) {
+                            return true;
+                        }
+                        while (iterator.hasNext()) {
+                            next = iterator.next();
+                            if (!next.enabled) {
+                                continue;
+                            }
+                            if (!names.isEmpty() && !names.contains(next.name)) {
+                                continue;
+                            }
+                            return true;
+                        }
+                        next = null;
+                        return false;
+                    }
+
+                    @Override
+                    public ReportContribution next() {
+                        if (!fetch()) {
+                            throw new NoSuchElementException("no more reports");
+                        }
+                        try {
+                            return next;
+                        } finally {
+                            next = null;
+                        }
+                    }
+                };
+
             }
 
-            @Override
-            public ReportContribution next() {
-                if (!fetch()) {
-                    throw new NoSuchElementException("no more reports");
-                }
-                try {
-                    return next;
-                } finally {
-                    next = null;
-                }
-            }
         };
     }
 }

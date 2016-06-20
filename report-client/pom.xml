@@ -7,17 +7,53 @@
     <artifactId>nuxeo-connect-tools</artifactId>
     <version>8.3-SNAPSHOT</version>
   </parent>
-
-  <artifactId>report-client</artifactId>
+  <artifactId>nuxeo-connect-tools-report-client</artifactId>
   <name>Nuxeo Connect Tools Report Client</name>
   <description>Nuxeo Connect Tools Report API</description>
-
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.connect.tools</groupId>
+      <artifactId>nuxeo-connect-tools-report-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.json</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.github.olivergondza</groupId>
       <artifactId>maven-jdk-tools-wrapper</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>com.tngtech.jgiven</groupId>
+      <artifactId>jgiven-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.connect.tools</groupId>
+      <artifactId>nuxeo-connect-tools-report-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.connect.tools</groupId>
+      <artifactId>nuxeo-connect-tools-report-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-management</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
 </project>

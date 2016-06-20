@@ -14,28 +14,26 @@
  * Contributors:
  *     Stephane Lacoin at Nuxeo (aka matic)
  */
-package org.nuxeo.connect.tools.report.client;
+package org.nuxeo.connect.tools.report;
 
 import java.io.IOException;
-
 import javax.management.MXBean;
 
 /**
- * Invokes a report from outside
+ * Remote interface exposed through JMX which snapshots a runtime inventory.
  *
  * @since 8.3
  */
 @MXBean
-public interface Provider {
+public interface Server {
 
     /**
-     * Invokes a snapshot and stores result in the provided directory
+     * Makes a runtime inventory and serializes in the provided socket in the
+     * JSON format.
      *
      * @return the file path where the snapshot is stored
      * @throws IOException
-     * @since 8.3
      */
-    String snapshot(String path) throws IOException;
-
+    void run(String host, int port, String... names) throws IOException;
 
 }

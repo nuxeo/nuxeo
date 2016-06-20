@@ -7,7 +7,7 @@
     <version>8.3-SNAPSHOT</version>
   </parent>
 
-  <artifactId>report-core</artifactId>
+  <artifactId>nuxeo-connect-tools-report-core</artifactId>
 
   <name>Nuxeo Connect Tools Report Core</name>
   <description>Nuxeo Connect Tools Report Core</description>
@@ -16,7 +16,7 @@
 
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
-      <artifactId>report-client</artifactId>
+      <artifactId>nuxeo-connect-tools-report-api</artifactId>
     </dependency>
 
     <dependency>
@@ -107,5 +107,28 @@
     </dependency>
 
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <archive>
+                <manifestFile>
+                  src/test/resources/META-INF/MANIFEST.MF
+                </manifestFile>
+              </archive>
+            </configuration>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
