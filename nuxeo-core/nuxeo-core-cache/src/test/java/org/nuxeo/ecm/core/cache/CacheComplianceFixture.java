@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.cache;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,6 +48,15 @@ public class CacheComplianceFixture {
         String cachedVal = (String) defaultCache.get(CacheFeature.KEY);
         Assert.assertTrue(defaultCache.hasEntry(CacheFeature.KEY));
         Assert.assertEquals(CacheFeature.VAL, cachedVal);
+    }
+
+    @Test
+    public void keySet() {
+        Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
+        defaultCache.put("key2", "val2");
+        Set<String> keys = defaultCache.keySet();
+        Assert.assertEquals(2, keys.size());
+        Assert.assertTrue(keys.contains("key2"));
     }
 
     @Test

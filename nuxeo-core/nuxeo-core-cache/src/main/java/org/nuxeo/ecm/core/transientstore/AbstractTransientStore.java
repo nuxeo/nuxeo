@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -74,6 +75,9 @@ public abstract class AbstractTransientStore implements TransientStore {
 
     @Override
     public abstract boolean exists(String key);
+
+    @Override
+    public abstract Set<String> keySet();
 
     @Override
     public abstract void putParameter(String key, String parameter, Serializable value);
