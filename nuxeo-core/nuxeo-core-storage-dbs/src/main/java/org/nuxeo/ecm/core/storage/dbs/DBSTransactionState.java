@@ -232,10 +232,8 @@ public class DBSTransactionState {
     }
 
     public boolean hasChild(String parentId, String name) {
-        Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
-            seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
@@ -245,7 +243,7 @@ public class DBSTransactionState {
             return true;
         }
         // check repository
-        return repository.hasChild(parentId, name, seen);
+        return repository.hasChild(parentId, name, Collections.emptySet());
     }
 
     public List<DBSDocumentState> getChildrenStates(String parentId) {
