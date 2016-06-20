@@ -58,6 +58,7 @@ public class TemplateInitListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(TemplateInitListener.class);
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
 
         EventContext ctx = event.getContext();
@@ -139,7 +140,7 @@ public class TemplateInitListener implements EventListener {
     protected boolean isBlobDirty(DocumentModel targetDoc) throws ClientException {
         BlobHolder bh = targetDoc.getAdapter(BlobHolder.class);
         Blob mainBlob = bh.getBlob();
-        if (mainBlob.getDigest() == null) {
+        if (mainBlob != null && mainBlob.getDigest() == null) {
             // Blobs that have not changed should be SQL Blobs and have a digest
             return true;
         } else {
