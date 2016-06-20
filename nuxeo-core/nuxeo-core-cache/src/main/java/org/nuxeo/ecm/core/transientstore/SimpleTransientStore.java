@@ -22,8 +22,10 @@ package org.nuxeo.ecm.core.transientstore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
@@ -99,6 +101,14 @@ public class SimpleTransientStore extends AbstractTransientStore {
     @Override
     public boolean exists(String key) {
         return getL1Cache().hasEntry(key) || getL2Cache().hasEntry(key);
+    }
+
+    @Override
+    public Set<String> keySet() {
+        Set<String> keys = new HashSet<>();
+        keys.addAll(getL1Cache().keySet());
+        keys.addAll(getL2Cache().keySet());
+        return keys;
     }
 
     @Override

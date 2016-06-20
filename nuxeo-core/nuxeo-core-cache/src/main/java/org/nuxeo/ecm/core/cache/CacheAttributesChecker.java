@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Class to implement mandatory check attributes before calling implementation of cache This enable to have the same
@@ -49,6 +50,10 @@ public class CacheAttributesChecker extends AbstractCache {
             return null;
         }
         return cache.get(key);
+    }
+
+    @Override public Set<String> keySet() {
+        return cache.keySet();
     }
 
     @Override
