@@ -114,33 +114,6 @@ public class AzureFileStorage implements FileStorage {
         }
     }
 
-    @Override
-    public Long fetchLength(String digest) throws IOException {
-        long t0 = 0;
-        if (log.isDebugEnabled()) {
-            t0 = System.currentTimeMillis();
-            log.debug("fetching blob length " + digest + " from Azure");
-        }
-        try {
-            CloudBlockBlob blob = container.getBlockBlobReference(digest);
-            if (!(blob.exists() && isBlobDigestCorrect(digest, blob))) {
-                log.error("Invalid ETag in Azure, AzDigest=" + blob.getProperties().getContentMD5() + " digest="
-                        + digest);
-                return null;
-            }
-            return blob.getProperties().getLength();
-        } catch (URISyntaxException e) {
-            throw new IOException(e);
-        } catch (StorageException e) {
-            return null;
-        } finally {
-            if (log.isDebugEnabled()) {
-                long dtms = System.currentTimeMillis() - t0;
-                log.debug("fetched blob length " + digest + " from Azure in " + dtms + "ms");
-            }
-        }
-    }
-
     protected static boolean isMissingKey(StorageException e) {
         return e.getErrorCode().equals(StorageErrorCode.RESOURCE_NOT_FOUND.toString());
     }

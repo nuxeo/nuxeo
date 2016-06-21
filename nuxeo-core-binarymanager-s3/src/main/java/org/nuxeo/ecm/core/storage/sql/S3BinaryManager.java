@@ -500,35 +500,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             }
 
         }
-
-        @Override
-        public Long fetchLength(String digest) throws IOException {
-            long t0 = 0;
-            if (log.isDebugEnabled()) {
-                t0 = System.currentTimeMillis();
-                log.debug("fetching blob length " + digest + " from S3");
-            }
-            try {
-                ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketNamePrefix + digest);
-                // check ETag
-                String etag = metadata.getETag();
-                if (!isEncrypted && !etag.equals(digest) && !ServiceUtils.isMultipartUploadETag(etag)) {
-                    log.error("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
-                    return null;
-                }
-                return Long.valueOf(metadata.getContentLength());
-            } catch (AmazonClientException e) {
-                if (!isMissingKey(e)) {
-                    throw new IOException(e);
-                }
-                return null;
-            } finally {
-                if (log.isDebugEnabled()) {
-                    long dtms = System.currentTimeMillis() - t0;
-                    log.debug("fetched blob length " + digest + " from S3 in " + dtms + "ms");
-                }
-            }
-        }
     }
 
     /**

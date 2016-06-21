@@ -265,23 +265,6 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             }
             return true;
         }
-
-        @Override
-        public Long fetchLength(String digest) {
-            Blob remoteBlob;
-            try {
-                remoteBlob = blobStore.getBlob(container, digest);
-            } catch (Exception e) {
-                log.error("Unable to fetch binary information from remote storage");
-                return null;
-            }
-            if (remoteBlob == null) {
-                return null;
-            } else {
-                return remoteBlob.getMetadata().getContentMetadata().getContentLength();
-            }
-        }
-
     }
 
     /**

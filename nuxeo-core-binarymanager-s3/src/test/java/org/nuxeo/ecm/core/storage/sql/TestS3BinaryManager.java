@@ -96,16 +96,15 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
     @Test
     public void testS3BinaryManagerOverwrite() throws Exception {
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
+        assertEquals(CONTENT, toString(binary.getStream()));
         assertNull(Framework.getProperty("cachedBinary"));
 
         // store the same content again
         Binary binary2 = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary2);
-        assertEquals(bytes.length, binary2.getLength());
+        assertEquals(CONTENT, toString(binary.getStream()));
         // check that S3 bucked was not called for no valid reason
         assertEquals(binary2.getDigest(), Framework.getProperty("cachedBinary"));
     }

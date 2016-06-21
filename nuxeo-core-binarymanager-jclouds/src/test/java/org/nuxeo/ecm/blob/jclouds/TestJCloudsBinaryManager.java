@@ -94,14 +94,12 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // get binary (from cache)
         binary = binaryManager.getBinary(CONTENT_MD5);
         Assert.assertNotNull(binary);
-        Assert.assertEquals(bytes.length, binary.getLength());
         Assert.assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
 
         // get binary (clean cache)
         binaryManager.fileCache.clear();
         binary = binaryManager.getBinary(CONTENT_MD5);
         Assert.assertNotNull(binary);
-        Assert.assertEquals(bytes.length, binary.getLength());
         Assert.assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
     }
 
@@ -123,7 +121,6 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         Assert.assertNotNull(binary);
-        Assert.assertEquals(bytes.length, binary.getLength());
         Assert.assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
 
         // another binary we'll GC
