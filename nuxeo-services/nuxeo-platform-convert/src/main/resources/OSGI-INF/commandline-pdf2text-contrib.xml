@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.convert.commandline.pdf2text">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
+
+    <command name="pdftotext" enabled="true">
+      <commandLine>pdftotext</commandLine>
+      <parameterString>-enc UTF-8 #{sourceFilePath} #{targetFilePath}</parameterString>
+      <winParameterString>-enc UTF-8 #{sourceFilePath} #{targetFilePath}</winParameterString>
+      <installationDirective>You need to install pdftotext.</installationDirective>
+    </command>
+
+  </extension>
+
+</component>
