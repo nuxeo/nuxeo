@@ -127,9 +127,8 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
         private static final long serialVersionUID = 1L;
 
-        protected GridFSBinary(String digest, long length, String blobProviderId) {
+        protected GridFSBinary(String digest, String blobProviderId) {
             super(digest, blobProviderId);
-            this.length = length;
         }
 
         @Override
@@ -146,7 +145,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         }
         // we already have a file so can compute the length and digest efficiently
         File file = ((FileBlob) blob).getFile();
-        long length = file.length();
         String digest;
         try (InputStream in = new FileInputStream(file)) {
             digest = DigestUtils.md5Hex(in);
@@ -159,7 +157,7 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
                 inputFile.save();
             }
         }
-        return new GridFSBinary(digest, length, blobProviderId);
+        return new GridFSBinary(digest, blobProviderId);
     }
 
     @Override
@@ -168,7 +166,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         GridFSInputFile inputFile = gridFS.createFile(in, true);
         inputFile.save();
         // now we know length and digest
-        long length = inputFile.getLength();
         String digest = inputFile.getMD5();
         // if the digest is already known then reuse it instead
         GridFSDBFile dbFile = gridFS.findOne(digest);
@@ -180,14 +177,14 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
             // file already existed, no need for the temporary one
             gridFS.remove(inputFile);
         }
-        return new GridFSBinary(digest, length, blobProviderId);
+        return new GridFSBinary(digest, blobProviderId);
     }
 
     @Override
     public Binary getBinary(String digest) {
         GridFSDBFile dbFile = gridFS.findOne(digest);
         if (dbFile != null) {
-            return new GridFSBinary(digest, dbFile.getLength(), blobProviderId);
+            return new GridFSBinary(digest, blobProviderId);
         }
         return null;
     }

@@ -114,7 +114,8 @@ public class TestSQLRepositoryDirectBlob {
         Binary binary = binaryManager.getBinary(digest);
         assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
-        Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, binary.getLength());
+        long length = binary.getFile().length();
+        Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, length);
         assertEquals("MD5", blob.getDigestAlgorithm());
         assertEquals(digest, blob.getDigest());
         file.setProperty("file", "filename", filename);
@@ -163,7 +164,6 @@ public class TestSQLRepositoryDirectBlob {
         String expected = "this is a file";
         byte[] observedContent = new byte[expected.length()];
         assertEquals(digest, binary.getDigest());
-        assertEquals(expected.length(), binary.getLength());
         assertEquals(expected.length(), binary.getStream().read(observedContent));
         assertEquals(expected, new String(observedContent));
 
@@ -181,7 +181,6 @@ public class TestSQLRepositoryDirectBlob {
 
         observedContent = new byte[expected.length()];
         assertEquals(digest, binaryCopy.getDigest());
-        assertEquals(expected.length(), binaryCopy.getLength());
         assertEquals(expected.length(), binaryCopy.getStream().read(observedContent));
         assertEquals(expected, new String(observedContent));
 

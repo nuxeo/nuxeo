@@ -20,14 +20,16 @@ package org.nuxeo.ecm.core.blob.binary;
 
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.core.model.Document;
  * @since 7.3
  */
 public class BinaryBlobProvider implements BlobProvider {
+
+    private static final Log log = LogFactory.getLog(BinaryBlobProvider.class);
 
     protected final BinaryManager binaryManager;
 
@@ -87,8 +91,15 @@ public class BinaryBlobProvider implements BlobProvider {
         if (binary == null) {
             throw new IOException("Unknown binary: " + digest);
         }
-        // TODO disallow null length altogether
-        long length = blobInfo.length == null ? binary.getLength() : blobInfo.length.longValue();
+        long length;
+        if (blobInfo.length == null) {
+            log.error("Missing blob length for: " + blobInfo.key);
+            // to avoid crashing, get the length from the binary's file (may be costly)
+            File file = binary.getFile();
+            length = file == null ? -1 : file.length();
+        } else {
+            length = blobInfo.length.longValue();
+        }
         return new BinaryBlob(binary, blobInfo.key, blobInfo.filename, blobInfo.mimeType, blobInfo.encoding,
                 blobInfo.digest, length);
     }

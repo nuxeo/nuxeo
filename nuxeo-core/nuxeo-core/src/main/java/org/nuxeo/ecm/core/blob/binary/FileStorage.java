@@ -47,13 +47,4 @@ public interface FileStorage {
      */
     boolean fetchFile(String key, File file) throws IOException;
 
-    /**
-     * Fetches the length of a file based on its key.
-     *
-     * @param key the file key
-     * @return the length, or {@code null} if the file was not found
-     * @throws IOException if a storage error occurred
-     */
-    Long fetchLength(String key) throws IOException;
-
 }

@@ -139,8 +139,6 @@ public class TestGridFSBinaryManager {
         // check binary is here
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
-
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // check that there is only one entry
@@ -169,7 +167,6 @@ public class TestGridFSBinaryManager {
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // another binary we'll GC
