@@ -85,8 +85,10 @@ public class BinaryBlobProvider implements BlobProvider {
         if (binary == null) {
             throw new IOException("Unknown binary: " + digest);
         }
+        // TODO disallow null length altogether
+        long length = blobInfo.length == null ? binary.getLength() : blobInfo.length.longValue();
         return new BinaryBlob(binary, blobInfo.key, blobInfo.filename, blobInfo.mimeType, blobInfo.encoding,
-                blobInfo.digest, binary.getLength()); // use binary length, authoritative
+                blobInfo.digest, length);
     }
 
     @Override
