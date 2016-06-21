@@ -27,6 +27,7 @@ import static org.junit.Assume.assumeTrue;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,6 +35,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -72,6 +75,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 @Features(RuntimeFeature.class)
 public class TestS3BinaryManager {
 
+    private static final Log log = LogFactory.getLog(TestS3BinaryManager.class);
+
     private static final String CONTENT = "this is a file au caf\u00e9";
 
     private static final String CONTENT_MD5 = "d25ea4f4642073b7f218024d397dbaef";
@@ -101,6 +106,19 @@ public class TestS3BinaryManager {
             props.setProperty(S3BinaryManager.BUCKET_NAME_KEY, bucketName);
             props.setProperty(S3BinaryManager.AWS_ID_KEY, idKey);
             props.setProperty(S3BinaryManager.AWS_SECRET_KEY, secretKey);
+            boolean useKeyStore = false;
+            if (useKeyStore) {
+                // keytool -genkeypair -keystore /tmp/keystore.ks -alias unittest -storepass unittest -keypass unittest
+                // -dname "CN=AWS S3 Key, O=example, DC=com" -keyalg RSA
+                String keyStoreFile = "/tmp/keystore.ks";
+                String keyStorePassword = "unittest";
+                String privKeyAlias = "unittest";
+                String privKeyPassword = "unittest";
+                props.setProperty(S3BinaryManager.KEYSTORE_FILE_KEY, keyStoreFile);
+                props.setProperty(S3BinaryManager.KEYSTORE_PASS_KEY, keyStorePassword);
+                props.setProperty(S3BinaryManager.PRIVKEY_ALIAS_KEY, privKeyAlias);
+                props.setProperty(S3BinaryManager.PRIVKEY_PASS_KEY, privKeyPassword);
+            }
         }
         boolean disabled = bucketName.equals("CHANGETHIS");
         assumeTrue("No AWS credentials configured", !disabled);
@@ -116,6 +134,7 @@ public class TestS3BinaryManager {
 
     @Before
     public void setUp() throws Exception {
+        setUnlimitedJCEPolicy();
         binaryManager = new S3BinaryManager();
         binaryManager.initialize(new BinaryManagerDescriptor());
         removeObjects();
@@ -124,6 +143,29 @@ public class TestS3BinaryManager {
     @After
     public void tearDown() throws Exception {
         removeObjects();
+    }
+
+    public boolean isStorageSizeSameAsOriginalSize() {
+        return !binaryManager.isEncrypted;
+    }
+
+    /**
+     * By default the JRE may ship with restricted key length. Instead of having administrators download the Java
+     * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
+     * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
+     * using reflection.
+     */
+    protected static void setUnlimitedJCEPolicy() {
+        try {
+            Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
+            field.setAccessible(true);
+            if (Boolean.TRUE.equals(field.get(null))) {
+                log.info("Setting JCE Unlimited Strength");
+                field.set(null, Boolean.FALSE);
+            }
+        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
+            log.debug("Cannot check/set JCE Unlimited Strength", e);
+        }
     }
 
     @Test
@@ -145,7 +187,6 @@ public class TestS3BinaryManager {
         // get binary (from cache)
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // get binary (clean cache)
@@ -154,19 +195,16 @@ public class TestS3BinaryManager {
         assertNotNull(binary);
         assertTrue(binary instanceof LazyBinary);
         assertEquals(CONTENT, toString(binary.getStream()));
-        assertEquals(bytes.length, binary.getLength());
         // refetch, now in cache
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
         assertEquals(CONTENT, toString(binary.getStream()));
-        assertEquals(bytes.length, binary.getLength());
 
         // get binary (clean cache), fetch length first
         binaryManager.fileCache.clear();
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
         assertTrue(binary instanceof LazyBinary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
     }
 
@@ -187,7 +225,6 @@ public class TestS3BinaryManager {
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // another binary we'll GC
@@ -210,9 +247,13 @@ public class TestS3BinaryManager {
         assertFalse(gc.isInProgress());
         BinaryManagerStatus status = gc.getStatus();
         assertEquals(2, status.numBinaries);
-        assertEquals(bytes.length + 4, status.sizeBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length + CONTENT3.length(), status.sizeBinaries);
+        }
         assertEquals(1, status.numBinariesGC);
-        assertEquals(3, status.sizeBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT2.length(), status.sizeBinariesGC);
+        }
         assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
@@ -223,9 +264,13 @@ public class TestS3BinaryManager {
         gc.stop(true);
         status = gc.getStatus();
         assertEquals(2, status.numBinaries);
-        assertEquals(bytes.length + 4, status.sizeBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length + CONTENT3.length(), status.sizeBinaries);
+        }
         assertEquals(1, status.numBinariesGC);
-        assertEquals(3, status.sizeBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT2.length(), status.sizeBinariesGC);
+        }
         assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
@@ -235,9 +280,13 @@ public class TestS3BinaryManager {
         gc.stop(true);
         status = gc.getStatus();
         assertEquals(1, status.numBinaries);
-        assertEquals(bytes.length, status.sizeBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length, status.sizeBinaries);
+        }
         assertEquals(1, status.numBinariesGC);
-        assertEquals(4, status.sizeBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT3.length(), status.sizeBinariesGC);
+        }
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
     }
 
@@ -247,13 +296,13 @@ public class TestS3BinaryManager {
         byte[] bytes = CONTENT.getBytes("UTF-8");
         Binary binary = binaryManager.getBinary(new ByteArrayInputStream(bytes));
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
+        assertEquals(CONTENT, toString(binary.getStream()));
         assertNull(Framework.getProperty("cachedBinary"));
 
         // store the same content again
         Binary binary2 = binaryManager.getBinary(new ByteArrayInputStream(bytes));
         assertNotNull(binary2);
-        assertEquals(bytes.length, binary2.getLength());
+        assertEquals(CONTENT, toString(binary2.getStream()));
         // check that S3 bucked was not called for no valid reason
         assertEquals(binary2.getDigest(), Framework.getProperty("cachedBinary"));
     }
