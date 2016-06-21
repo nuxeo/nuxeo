@@ -45,7 +45,7 @@
 
       @since 8.2
     </documentation>
-    <property name="nuxeo.jsf.removeAliasOptimsReloaded">true</property>
+    <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService"

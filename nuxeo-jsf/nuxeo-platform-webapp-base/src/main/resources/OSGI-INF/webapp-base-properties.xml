@@ -68,7 +68,7 @@
 
       @since 8.2
     </documentation>
-    <property name="nuxeo.jsf.listings.useRepeatRenderTime">false</property>
+    <property name="nuxeo.jsf.listings.useRepeatRenderTime">true</property>
   </extension>
 
 </component>
