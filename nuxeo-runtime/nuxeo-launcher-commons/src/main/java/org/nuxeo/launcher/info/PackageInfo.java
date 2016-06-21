@@ -19,11 +19,20 @@
 
 package org.nuxeo.launcher.info;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageDependency;
@@ -31,12 +40,15 @@ import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "package")
 @XmlType(propOrder = { "id", "state", "version", "name", "type", "visibility", "targetPlatforms", "vendor",
         "supportsHotReload", "supported", "productionState", "validationState", "provides", "dependencies",
-        "conflicts", "title", "description", "homePage", "licenseType", "licenseUrl" })
+        "conflicts", "title", "description", "homePage", "licenseType", "licenseUrl", "templates" })
 public class PackageInfo {
 
     public String name;
@@ -79,6 +91,8 @@ public class PackageInfo {
 
     public boolean supported;
 
+    public Set<String> templates;
+
     public PackageInfo() {
     }
 
@@ -120,6 +134,34 @@ public class PackageInfo {
         conflicts = pkg.getConflicts();
         supportsHotReload = pkg.supportsHotReload();
         supported = pkg.isSupported();
+        templates = templates(pkg);
     }
 
+    Set<String> templates(Package pkg) {
+        if (!(pkg instanceof LocalPackage)) {
+            return null;
+        }
+        Set<String> templates = new HashSet<>();
+        try {
+            File installFile = ((LocalPackage) pkg).getInstallFile();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document dom = db.parse(installFile);
+            NodeList nodes = dom.getDocumentElement().getElementsByTagName("config");
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element node = (Element) nodes.item(i);
+                if (!node.hasAttribute("addtemplate")) {
+                    continue;
+                }
+                StringTokenizer tokenizer = new StringTokenizer(node.getAttribute("addtemplate"), ",");
+                while (tokenizer.hasMoreTokens()) {
+                    templates.add(tokenizer.nextToken());
+                }
+
+            }
+        } catch (Exception e) {
+            LogFactory.getLog(PackageInfo.class).warn("Could not parse install file for " + pkg.getName(), e);
+        }
+        return templates;
+    }
 }

@@ -140,6 +140,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     @Override
     @Before
     public void setUp() throws Exception {
+        Environment.setDefault(null);
         nuxeoHome = new File("target/launcher");
         FileUtils.deleteQuietly(nuxeoHome);
         nuxeoHome.mkdirs();
@@ -149,20 +150,20 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
         System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
     }
 
     @Test
     public void testClidOption() throws ConfigurationException, ParseException, IOException, PackageException,
             InvalidCLID {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         Path instanceClid = Paths.get(TEST_INSTANCE_CLID);
         if (!Files.exists(instanceClid)) {
             throw new AssumptionViolatedException("No test CLID available");
         }
         String[] args = new String[] { "--clid", instanceClid.toString(), "showconf" };
         final NuxeoLauncher launcher = NuxeoLauncher.createLauncher(args);
-        InstanceInfo info = launcher.showConfig();
+        InstanceInfo info = launcher.getInfo();
         assertNotNull("Failed to get instance info", info);
         List<String> clidLines = Files.readAllLines(instanceClid, Charsets.UTF_8);
         LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(clidLines.get(0)
@@ -179,11 +180,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
      */
     @Test
     public void testParamSeparator() throws Exception {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
-        NuxeoLauncher launcher;
         // failing syntax: "value1" is parsed as an argument to "--encrypt" option
-        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "value1", "value2" });
+        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "value1", "value2" });
         assertTrue(launcher.commandIs("encrypt"));
         assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_ENCRYPT));
         assertEquals("value1", launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT));

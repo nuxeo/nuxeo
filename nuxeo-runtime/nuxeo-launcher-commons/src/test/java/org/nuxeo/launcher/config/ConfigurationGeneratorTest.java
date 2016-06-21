@@ -44,6 +44,9 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         super.setUp();
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        log.debug("Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
     }
 
     @Override
@@ -57,8 +60,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testEvalDynamicProperties() {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         assertEquals("Bad loop back URL", "http://127.0.0.1:8080/nuxeo",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
         try {
@@ -125,8 +126,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
      */
     @Test
     public void testSetSpecialProperties() throws ConfigurationException {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         String oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, null);
         assertEquals("Wrong old value", "default,common,testinclude", oldValue);
         assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
@@ -171,7 +170,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testSetSampledCommentedProperty() throws ConfigurationException {
         final String testProperty = "test.sampled.prop";
-        configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         String oldValue = configGenerator.setProperty(testProperty, "anotherValue");
         assertEquals("Wrong old value", null, oldValue);
@@ -198,8 +196,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testSetSampledActiveProperty() throws ConfigurationException {
         final String testProperty = "test.sampled.prop2";
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         String oldValue = configGenerator.setProperty(testProperty, "anotherValue");
         assertEquals("Wrong old value", "someValue", oldValue);
         assertEquals("Property not set", "anotherValue", configGenerator.getUserConfig().getProperty(testProperty));
@@ -217,8 +213,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testAddRmTemplate() throws ConfigurationException {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         assertEquals("Error calculating db template", "default",
@@ -237,8 +231,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testSetWizardDone() throws ConfigurationException {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         Map<String, String> changedParameters = new HashMap<>();
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         configGenerator.saveFilteredConfiguration(changedParameters);
@@ -249,8 +241,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testFreemarkerTemplate() throws ConfigurationException, IOException {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         configGenerator.addTemplate("fmtest");
         configGenerator.setProperty("test.freemarker.part1", "tr");
         configGenerator.setProperty("test.freemarker.part2", "ue");
@@ -266,8 +256,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testChangeDatabase() throws Exception {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
@@ -277,8 +265,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testChangeDatabaseFromCustom() throws Exception {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         configGenerator.changeTemplates("testinclude2");
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
@@ -300,8 +286,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testChangeNoSqlDatabase() throws Exception {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("mongodb");
@@ -311,8 +295,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testChangeNoSqlDatabaseFromCustom() throws Exception {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
         configGenerator.changeTemplates("testinclude2");
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");

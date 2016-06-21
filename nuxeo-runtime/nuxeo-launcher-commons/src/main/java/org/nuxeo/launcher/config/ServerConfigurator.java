@@ -34,9 +34,13 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -44,9 +48,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
-
+import org.nuxeo.common.Environment;
+import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.utils.TextTemplate;
+import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.launcher.info.ConfigurationInfo;
+import org.nuxeo.launcher.info.DistributionInfo;
+import org.nuxeo.launcher.info.InstanceInfo;
+import org.nuxeo.launcher.info.KeyValueInfo;
+import org.nuxeo.launcher.info.PackageInfo;
 
 import freemarker.template.TemplateException;
 
@@ -612,4 +623,73 @@ public abstract class ServerConfigurator {
         return org.nuxeo.common.Environment.DEFAULT_MP_DIR;
     }
 
+    /**
+     * Introspect the server and builds the instance info
+     *
+     * @since 8.3
+     */
+    public InstanceInfo getInfo(String clid, List<LocalPackage> pkgs) {
+        InstanceInfo nxInstance = new InstanceInfo();
+        nxInstance.NUXEO_CONF = generator.getNuxeoConf().getPath();
+        nxInstance.NUXEO_HOME = generator.getNuxeoHome().getPath();
+        // distribution
+        File distFile = new File(generator.getConfigDir(), "distribution.properties");
+        if (!distFile.exists()) {
+            // fallback in the file in templates
+            distFile = new File(generator.getNuxeoHome(), "templates");
+            distFile = new File(distFile, "common");
+            distFile = new File(distFile, "config");
+            distFile = new File(distFile, "distribution.properties");
+        }
+        try {
+            nxInstance.distribution = new DistributionInfo(distFile);
+        } catch (IOException e) {
+            nxInstance.distribution = new DistributionInfo();
+        }
+        // packages
+        nxInstance.clid = clid;
+        Set<String> pkgTemplates = new HashSet<>();
+        for (LocalPackage pkg : pkgs) {
+            final PackageInfo info = new PackageInfo(pkg);
+            nxInstance.packages.add(info);
+            pkgTemplates.addAll(info.templates);
+        }
+        // templates
+        nxInstance.config = new ConfigurationInfo();
+        nxInstance.config.dbtemplate = generator.extractDatabaseTemplateName();
+        String userTemplates = generator.getUserTemplates();
+        StringTokenizer st = new StringTokenizer(userTemplates, ",");
+        while (st.hasMoreTokens()) {
+            String template = st.nextToken();
+            if (template.equals(nxInstance.config.dbtemplate)) {
+                continue;
+            }
+            if (pkgTemplates.contains(template)) {
+                nxInstance.config.pkgtemplates.add(template);
+            } else {
+                File testBase = new File(generator.getNuxeoHome(), ConfigurationGenerator.TEMPLATES
+                        + File.separator + template);
+                if (testBase.exists()) {
+                    nxInstance.config.basetemplates.add(template);
+                } else {
+                    nxInstance.config.usertemplates.add(template);
+                }
+            }
+        }
+        // Settings from nuxeo.conf
+        CryptoProperties userConfig = generator.getUserConfig();
+        for (Object item : new TreeSet<>(userConfig.keySet())) {
+            String key = (String) item;
+            String value = userConfig.getRawProperty(key);
+            if (key.equals("JAVA_OPTS")) {
+                value = generator.getJavaOpts("JAVA_OPTS", "-Xms512m -Xmx1024m");
+            }
+            if (ConfigurationGenerator.SECRET_KEYS.contains(key) || key.contains("password")
+                    || key.equals(Environment.SERVER_STATUS_KEY) || Crypto.isEncrypted(value)) {
+                value = "********";
+            }
+            nxInstance.config.keyvals.add(new KeyValueInfo(key, value));
+        }
+        return nxInstance;
+    }
 }

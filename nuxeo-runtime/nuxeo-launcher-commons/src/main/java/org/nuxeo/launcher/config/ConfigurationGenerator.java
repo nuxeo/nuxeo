@@ -65,6 +65,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1934,6 +1935,16 @@ public class ConfigurationGenerator {
             throw new ConfigurationException("Template not found: " + template);
         }
         return new File(templateDir, NUXEO_DEFAULT_CONF);
+    }
+
+    /**
+     * Gets the Java options with 'nuxeo.*' properties substituted. It enables
+     * usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
+     *
+     * @return the java options string.
+     */
+    protected String getJavaOpts(String key, String value) {
+        return StrSubstitutor.replace(System.getProperty(key, value), getUserConfig());
     }
 
 }

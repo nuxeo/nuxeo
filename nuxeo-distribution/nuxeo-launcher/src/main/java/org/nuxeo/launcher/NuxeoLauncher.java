@@ -30,14 +30,20 @@ import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_TERMSNCONDITIONS;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_USERNAME_REGEX;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Console;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.SocketTimeoutException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,20 +54,24 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -87,8 +97,6 @@ import org.artofsolving.jodconverter.process.PureJavaProcessManager;
 import org.artofsolving.jodconverter.process.UnixProcessManager;
 import org.artofsolving.jodconverter.process.WindowsProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
-import org.json.JSONException;
-import org.json.XML;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -96,7 +104,8 @@ import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.registration.RegistrationException;
-import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.tools.report.client.Connector;
+import org.nuxeo.connect.tools.report.client.StreamFeeder;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
@@ -116,9 +125,9 @@ import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.json.impl.writer.JsonXmlStreamWriter;
 
 /**
  * @author jcarsique
@@ -298,6 +307,27 @@ public abstract class NuxeoLauncher {
 
     private static final String OPTION_GET_REGEXP_DESC = "Get the value for all keys matching the given regular expression(s).";
 
+    /**
+     * @since 8.3
+     */
+    protected static final String OPTION_GZIP_OUTPUT = "gzip";
+
+    private static final String OPTION_GZIP_DESC = "Compress the output.";
+
+    /**
+     * @since 8.3
+     */
+    protected static final String OPTION_OUTPUT = "output";
+
+    private static final String OPTION_OUTPUT_DESC = "Write output in specified file.";
+
+    /**
+     * @since 8.3
+     */
+    protected static final String OPTION_PRETTY_PRINTING = "pretty-print";
+
+    private static final String OPTION_PRETTY_PRINT_DESC = "Pretty print the output.";
+
     // Fallback to avoid an error when the log dir is not initialized
     static {
         if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
@@ -312,7 +342,7 @@ public abstract class NuxeoLauncher {
 
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
-    private static Options launcherOptions = null;
+    private static Options options = initParserOptions();;
 
     private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
@@ -327,7 +357,8 @@ public abstract class NuxeoLauncher {
     private static final String STOP_MAX_WAIT_PARAM = "launcher.stop.max.wait";
 
     /**
-     * Default maximum time to wait for server startup summary in logs (in seconds).
+     * Default maximum time to wait for server startup summary in logs (in
+     * seconds).
      */
     private static final String START_MAX_WAIT_DEFAULT = "300";
 
@@ -540,7 +571,8 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
             + "OPTIONS";
 
-    private static final String OPTION_HELP_FOOTER = "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
+    private static final String OPTION_HELP_FOOTER =
+            "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
 
     private static final int PAGE_SIZE = 20;
 
@@ -611,7 +643,11 @@ public abstract class NuxeoLauncher {
 
     private ConnectBroker connectBroker = null;
 
+    private String clid = null;
+
     private ConnectRegistrationBroker connectRegistrationBroker = null;
+
+    private InstanceInfo info;
 
     CommandLine cmdLine;
 
@@ -664,7 +700,6 @@ public abstract class NuxeoLauncher {
         processManager = getOSProcessManager();
         processRegex = "^(?!/bin/sh).*" + Pattern.quote(configurationGenerator.getNuxeoConf().getPath()) + ".*"
                 + Pattern.quote(getServerPrint()) + ".*$";
-
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "NuxeoCtl");
@@ -768,11 +803,14 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Do not directly call this method without a call to {@link #checkNoRunningServer()}
+     * Do not directly call this method without a call to
+     * {@link #checkNoRunningServer()}
      *
      * @see #doStart()
-     * @throws IOException In case of issue with process.
-     * @throws InterruptedException If any thread has interrupted the current thread.
+     * @throws IOException
+     *             In case of issue with process.
+     * @throws InterruptedException
+     *             If any thread has interrupted the current thread.
      */
     protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
         List<String> startCommand = new ArrayList<>();
@@ -821,8 +859,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Gets the Java options with 'nuxeo.*' properties substituted. It enables usage of property like ${nuxeo.log.dir}
-     * inside JAVA_OPTS.
+     * Gets the Java options with 'nuxeo.*' properties substituted. It enables
+     * usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
      *
      * @return the java options string.
      */
@@ -833,7 +871,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @return Java OPTS split on spaces followed by an even number of quotes (or zero)
+     * @return Java OPTS split on spaces followed by an even number of quotes
+     *         (or zero)
      * @since 7.10
      */
     protected List<String> getJavaOptsPropertyAsList() {
@@ -843,10 +882,12 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Check if some server is already running (from another thread) and throw a Runtime exception if it finds one. That
-     * method will work where {@link #isRunning()} won't.
+     * Check if some server is already running (from another thread) and throw a
+     * Runtime exception if it finds one. That method will work where
+     * {@link #isRunning()} won't.
      *
-     * @throws IllegalThreadStateException Thrown if a server is already running.
+     * @throws IllegalThreadStateException
+     *             Thrown if a server is already running.
      */
     public void checkNoRunningServer() throws IllegalStateException {
         try {
@@ -885,7 +926,8 @@ public abstract class NuxeoLauncher {
     /**
      * Will wrap, if necessary, the command within a Shell command
      *
-     * @param roughCommand Java command which will be run
+     * @param roughCommand
+     *            Java command which will be run
      * @return wrapped command depending on the OS
      */
     private List<String> getOSCommand(List<String> roughCommand) {
@@ -934,7 +976,7 @@ public abstract class NuxeoLauncher {
     protected Collection<? extends String> getNuxeoProperties() {
         ArrayList<String> nuxeoProperties = new ArrayList<>();
         nuxeoProperties.add(String.format("-D%s=%s", Environment.NUXEO_HOME, configurationGenerator.getNuxeoHome()
-                                                                                                   .getPath()));
+                .getPath()));
         nuxeoProperties.add(String.format("-D%s=%s", ConfigurationGenerator.NUXEO_CONF,
                 configurationGenerator.getNuxeoConf().getPath()));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
@@ -970,125 +1012,146 @@ public abstract class NuxeoLauncher {
     /**
      * @since 5.6
      */
-    protected static void initParserOptions() {
-        if (launcherOptions == null) {
-            launcherOptions = new Options();
-            // help option
-            launcherOptions.addOption(Option.builder("h").longOpt(OPTION_HELP).desc(OPTION_HELP_DESC).build());
-            // Quiet option
-            launcherOptions.addOption(Option.builder("q").longOpt(OPTION_QUIET).desc(OPTION_QUIET_DESC).build());
-            { // Debug options (mutually exclusive)
-                OptionGroup debugOptions = new OptionGroup();
-                // Debug option
-                debugOptions.addOption(Option.builder("d")
-                                             .longOpt(OPTION_DEBUG)
-                                             .desc(OPTION_DEBUG_DESC)
-                                             .hasArgs()
-                                             .argName(OPTION_DEBUG_CATEGORY_ARG_NAME)
-                                             .optionalArg(true)
-                                             .valueSeparator(',')
-                                             .build());
-                // Debug category option
-                debugOptions.addOption(Option.builder(OPTION_DEBUG_CATEGORY)
-                                             .desc(OPTION_DEBUG_CATEGORY_DESC)
-                                             .hasArgs()
-                                             .argName(OPTION_DEBUG_CATEGORY_ARG_NAME)
-                                             .optionalArg(true)
-                                             .valueSeparator(',')
-                                             .build());
-                launcherOptions.addOptionGroup(debugOptions);
-            }
-            // For help output purpose only: that option is managed and swallowed by the nuxeoctl Shell script
-            launcherOptions.addOption(Option.builder()
-                                            .longOpt("debug-launcher")
-                                            .desc("Linux-only. Activate Java debugging mode on the Launcher.")
-                                            .build());
-            // Instance CLID option
-            launcherOptions.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
-            { // Output options (mutually exclusive)
-                OptionGroup outputOptions = new OptionGroup();
-                // XML option
-                outputOptions.addOption(Option.builder().longOpt(OPTION_XML).desc(OPTION_XML_DESC).build());
-                // JSON option
-                outputOptions.addOption(Option.builder().longOpt(OPTION_JSON).desc(OPTION_JSON_DESC).build());
-                launcherOptions.addOptionGroup(outputOptions);
-            }
-            // GUI option
-            launcherOptions.addOption(Option.builder()
-                                            .longOpt(OPTION_GUI)
-                                            .desc(OPTION_GUI_DESC)
-                                            .hasArg()
-                                            .argName("true|false|yes|no")
-                                            .build());
-            // Package management option
-            launcherOptions.addOption(Option.builder().longOpt(OPTION_NODEPS).desc(OPTION_NODEPS_DESC).build());
-            // Relax on target platform option
-            launcherOptions.addOption(Option.builder()
-                                            .longOpt(OPTION_RELAX)
-                                            .desc(OPTION_RELAX_DESC)
-                                            .hasArg()
-                                            .argName("true|false|yes|no|ask")
-                                            .build());
-            // Accept option
-            launcherOptions.addOption(Option.builder()
-                                            .longOpt(OPTION_ACCEPT)
-                                            .desc(OPTION_ACCEPT_DESC)
-                                            .hasArg()
-                                            .argName("true|false|yes|no|ask")
-                                            .build());
-            // Allow SNAPSHOT option
-            launcherOptions.addOption(Option.builder("s").longOpt(OPTION_SNAPSHOT).desc(OPTION_SNAPSHOT_DESC).build());
-            // Force option
-            launcherOptions.addOption(Option.builder("f").longOpt(OPTION_FORCE).desc(OPTION_FORCE_DESC).build());
-            // Strict option
-            launcherOptions.addOption(Option.builder().longOpt(OPTION_STRICT).desc(OPTION_STRICT_DESC).build());
-
-            // Ignore missing option
-            launcherOptions.addOption(Option.builder("im")
-                                            .longOpt(OPTION_IGNORE_MISSING)
-                                            .desc(OPTION_IGNORE_MISSING_DESC)
-                                            .build());
-            // Hide deprecation warnings option
-            launcherOptions.addOption(Option.builder("hdw")
-                                            .longOpt(OPTION_HIDE_DEPRECATION)
-                                            .desc(OPTION_HIDE_DEPRECATION_DESC)
-                                            .build());
-            // Encrypt option
-            launcherOptions.addOption(Option.builder()
-                                            .longOpt(OPTION_ENCRYPT)
-                                            .desc(OPTION_ENCRYPT_DESC)
-                                            .hasArg()
-                                            .argName(OPTION_ENCRYPT_ARG_NAME)
-                                            .optionalArg(true)
-                                            .build());
-            { // Config options (mutually exclusive)
-                OptionGroup configOptions = new OptionGroup();
-                // Set option
-                configOptions.addOption(Option.builder()
-                                              .longOpt(OPTION_SET)
-                                              .desc(OPTION_SET_DESC)
-                                              .hasArg()
-                                              .argName(OPTION_SET_ARG_NAME)
-                                              .optionalArg(true)
-                                              .build());
-                configOptions.addOption(Option.builder().longOpt(OPTION_GET).desc(OPTION_GET_DESC).build());
-                configOptions.addOption(Option.builder()
-                                              .longOpt(OPTION_GET_REGEXP)
-                                              .desc(OPTION_GET_REGEXP_DESC)
-                                              .build());
-                launcherOptions.addOptionGroup(configOptions);
-            }
+    protected static Options initParserOptions() {
+        Options options = new Options();
+        // help option
+        options.addOption(Option.builder("h").longOpt(OPTION_HELP).desc(OPTION_HELP_DESC).build());
+        // Quiet option
+        options.addOption(Option.builder("q").longOpt(OPTION_QUIET).desc(OPTION_QUIET_DESC).build());
+        { // Debug options (mutually exclusive)
+            OptionGroup debugOptions = new OptionGroup();
+            // Debug option
+            debugOptions.addOption(Option.builder("d")
+                    .longOpt(OPTION_DEBUG)
+                    .desc(OPTION_DEBUG_DESC)
+                    .hasArgs()
+                    .argName(OPTION_DEBUG_CATEGORY_ARG_NAME)
+                    .optionalArg(true)
+                    .valueSeparator(',')
+                    .build());
+            // Debug category option
+            debugOptions.addOption(Option.builder(OPTION_DEBUG_CATEGORY)
+                    .desc(OPTION_DEBUG_CATEGORY_DESC)
+                    .hasArgs()
+                    .argName(OPTION_DEBUG_CATEGORY_ARG_NAME)
+                    .optionalArg(true)
+                    .valueSeparator(',')
+                    .build());
+            options.addOptionGroup(debugOptions);
         }
+        // For help output purpose only: that option is managed and
+        // swallowed by the nuxeoctl Shell script
+        options.addOption(Option.builder()
+                .longOpt("debug-launcher")
+                .desc("Linux-only. Activate Java debugging mode on the Launcher.")
+                .build());
+        // Instance CLID option
+        options.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
+        { // Output options (mutually exclusive)
+            OptionGroup outputOptions = new OptionGroup();
+            // XML option
+            outputOptions.addOption(Option.builder().longOpt(OPTION_XML).desc(OPTION_XML_DESC).build());
+            // JSON option
+            outputOptions.addOption(Option.builder().longOpt(OPTION_JSON).desc(OPTION_JSON_DESC).build());
+            options.addOptionGroup(outputOptions);
+        }
+        // GUI option
+        options.addOption(Option.builder()
+                .longOpt(OPTION_GUI)
+                .desc(OPTION_GUI_DESC)
+                .hasArg()
+                .argName("true|false|yes|no")
+                .build());
+        // Package management option
+        options.addOption(Option.builder().longOpt(OPTION_NODEPS).desc(OPTION_NODEPS_DESC).build());
+        // Relax on target platform option
+        options.addOption(Option.builder()
+                .longOpt(OPTION_RELAX)
+                .desc(OPTION_RELAX_DESC)
+                .hasArg()
+                .argName("true|false|yes|no|ask")
+                .build());
+        // Accept option
+        options.addOption(Option.builder()
+                .longOpt(OPTION_ACCEPT)
+                .desc(OPTION_ACCEPT_DESC)
+                .hasArg()
+                .argName("true|false|yes|no|ask")
+                .build());
+        // Allow SNAPSHOT option
+        options.addOption(Option.builder("s").longOpt(OPTION_SNAPSHOT).desc(OPTION_SNAPSHOT_DESC).build());
+        // Force option
+        options.addOption(Option.builder("f").longOpt(OPTION_FORCE).desc(OPTION_FORCE_DESC).build());
+        // Strict option
+        options.addOption(Option.builder().longOpt(OPTION_STRICT).desc(OPTION_STRICT_DESC).build());
+
+        // Ignore missing option
+        options.addOption(Option.builder("im")
+                .longOpt(OPTION_IGNORE_MISSING)
+                .desc(OPTION_IGNORE_MISSING_DESC)
+                .build());
+        // Hide deprecation warnings option
+        options.addOption(Option.builder("hdw")
+                .longOpt(OPTION_HIDE_DEPRECATION)
+                .desc(OPTION_HIDE_DEPRECATION_DESC)
+                .build());
+        // Encrypt option
+        options.addOption(Option.builder()
+                .longOpt(OPTION_ENCRYPT)
+                .desc(OPTION_ENCRYPT_DESC)
+                .hasArg()
+                .argName(OPTION_ENCRYPT_ARG_NAME)
+                .optionalArg(true)
+                .build());
+        // Output options
+        options.addOption(Option.builder()
+                .longOpt(OPTION_GZIP_OUTPUT)
+                .argName("true|false")
+                .optionalArg(true)
+                .desc(OPTION_GZIP_DESC)
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(OPTION_PRETTY_PRINTING)
+                .argName("true|false")
+                .optionalArg(true)
+                .desc(OPTION_PRETTY_PRINT_DESC)
+                .build());
+        options.addOption(Option.builder()
+                .longOpt(OPTION_OUTPUT)
+                .hasArg()
+                .argName("file")
+                .desc(OPTION_OUTPUT_DESC)
+                .build());
+        { // Config options (mutually exclusive)
+            OptionGroup configOptions = new OptionGroup();
+            // Set option
+            configOptions.addOption(Option.builder()
+                    .longOpt(OPTION_SET)
+                    .desc(OPTION_SET_DESC)
+                    .hasArg()
+                    .argName(OPTION_SET_ARG_NAME)
+                    .optionalArg(true)
+                    .build());
+            configOptions.addOption(Option.builder()
+                    .longOpt(OPTION_GET)
+                    .desc(OPTION_GET_DESC)
+                    .build());
+            configOptions.addOption(Option.builder()
+                    .longOpt(OPTION_GET_REGEXP)
+                    .desc(OPTION_GET_REGEXP_DESC)
+                    .build());
+            options.addOptionGroup(configOptions);
+        }
+        return options;
     }
 
     /**
      * @since 5.6
      */
     protected static CommandLine parseOptions(String[] args) throws ParseException {
-        initParserOptions();
         CommandLineParser parser = new DefaultParser();
         CommandLine cmdLine = null;
-        cmdLine = parser.parse(launcherOptions, args);
+        cmdLine = parser.parse(options, args);
         if (cmdLine.hasOption(OPTION_HELP)) {
             cmdLine.getArgList().add(OPTION_HELP);
             setQuiet();
@@ -1134,7 +1197,7 @@ public abstract class NuxeoLauncher {
             System.exit(launcher == null || launcher.errorValue == EXIT_CODE_OK ? EXIT_CODE_INVALID
                     : launcher.errorValue);
         } catch (Exception e) {
-            log.error("Cannot execute command. " + e.getMessage());
+            log.error("Cannot execute command. " + e.getMessage(), e);
             log.debug(e, e);
             System.exit(EXIT_CODE_ERROR);
         }
@@ -1278,6 +1341,24 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.registerRemoteInstance();
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
+        } else if (launcher.commandIs("connect-report")) {
+            boolean gzip = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true")).booleanValue();
+            boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT_DESC, "false"));
+            Path outputpath;
+            if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
+                outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
+            } else {
+                Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
+                outputpath = Files.createTempFile(dir,
+                        "connect-report",
+                        gzip ? ".json.gz" : ".json");
+            }
+            log.info("Dumping connect report in " + outputpath);
+            OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING);
+            if (gzip) {
+                output = new GZIPOutputStream(output, 512, true);
+            }
+            commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
         } else {
             log.error("Unknown command " + launcher.command);
             printLongHelp();
@@ -1296,12 +1377,14 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Prompts for a valid email address according to RFC 822 standards. The remote service may apply stricter
-     * constraints on email validation such as some black listed domains.
+     * Prompts for a valid email address according to RFC 822 standards. The
+     * remote service may apply stricter constraints on email validation such as
+     * some black listed domains.
      *
      * @return the user input. Never null.
-     * @throws ConfigurationException If the user input is read from stdin and is {@code null} or does not match the
-     *             {@code regex}
+     * @throws ConfigurationException
+     *             If the user input is read from stdin and is {@code null} or
+     *             does not match the {@code regex}
      * @since 8.3
      */
     public String promptEmail() throws IOException, ConfigurationException {
@@ -1321,13 +1404,18 @@ public abstract class NuxeoLauncher {
     /**
      * Prompt for a value read from the console or stdin.
      *
-     * @param message message to display at prompt
-     * @param predicate a predicate that must match a correct user input. Ignored if {@code null}.
-     * @param error an error message to display or raise when the user input is {@code null} or does not match the
-     *            {@code regex}
+     * @param message
+     *            message to display at prompt
+     * @param predicate
+     *            a predicate that must match a correct user input. Ignored if
+     *            {@code null}.
+     * @param error
+     *            an error message to display or raise when the user input is
+     *            {@code null} or does not match the {@code regex}
      * @return the user input. Never null.
-     * @throws ConfigurationException If the user input is read from stdin and is {@code null} or does not match the
-     *             {@code regex}
+     * @throws ConfigurationException
+     *             If the user input is read from stdin and is {@code null} or
+     *             does not match the {@code regex}
      * @since 8.3
      */
     public String prompt(String message, Predicate<String> predicate, String error) throws IOException,
@@ -1351,7 +1439,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param message message to display at prompt
+     * @param message
+     *            message to display at prompt
      * @since 8.3
      */
     public char[] promptPassword(String message) throws IOException {
@@ -1364,7 +1453,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param confirmation if true, password is asked twice.
+     * @param confirmation
+     *            if true, password is asked twice.
      * @since 8.3
      */
     public char[] promptPassword(boolean confirmation) throws IOException, ConfigurationException {
@@ -1424,10 +1514,12 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param projects available projects the user must choose one amongst.
+     * @param projects
+     *            available projects the user must choose one amongst.
      * @return a project. Never null.
-     * @throws ConfigurationException If {@code projects} is empty or if there is not such a project named as the
-     *             parameter read from stdin.
+     * @throws ConfigurationException
+     *             If {@code projects} is empty or if there is not such a
+     *             project named as the parameter read from stdin.
      * @since 8.3
      */
     public ConnectProject promptProject(@NotNull List<ConnectProject> projects) throws ConfigurationException,
@@ -1699,7 +1791,8 @@ public abstract class NuxeoLauncher {
         if (cmdLine.hasOption(OPTION_SET) || !cmdLine.hasOption(OPTION_GET) && !cmdLine.hasOption(OPTION_GET_REGEXP)
                 && params.length == 2) {
             setConfigProperties();
-        } else { // OPTION_GET || OPTION_GET_REGEXP || !OPTION_SET && params.length != 2
+        } else { // OPTION_GET || OPTION_GET_REGEXP || !OPTION_SET &&
+                 // params.length != 2
             getConfigProperties();
         }
     }
@@ -1928,10 +2021,12 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Whereas {@link #doStart()} considers the server as started when the process is running, {@link #doStartAndWait()}
-     * waits for effective start by watching the logs
+     * Whereas {@link #doStart()} considers the server as started when the
+     * process is running, {@link #doStartAndWait()} waits for effective start
+     * by watching the logs
      *
-     * @param logProcessOutput Must process output stream must be logged or not.
+     * @param logProcessOutput
+     *            Must process output stream must be logged or not.
      * @return true if the server started successfully
      * @throws PackageException
      */
@@ -2156,24 +2251,32 @@ public abstract class NuxeoLauncher {
      */
     protected void printXMLOutput(JAXBContext jaxbContext, Object objectToOutput) {
         try {
-            Writer xml = new StringWriter();
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(objectToOutput, xml);
-            if (!jsonOutput) {
-                System.out.println(xml.toString());
-            } else {
-                try {
-                    System.out.println(XML.toJSONObject(xml.toString()).toString(2));
-                } catch (JSONException e) {
-                    log.error(String.format("XML to JSON conversion failed: %s\nOutput was:\n%s", e.getMessage(),
-                            xml.toString()));
-                }
-            }
-        } catch (JAXBException e) {
+            printXMLOutput(jaxbContext, objectToOutput, System.out);
+        } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
             log.error("Output serialization failed: " + e.getMessage(), e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
+    }
+
+    /**
+     * @since 8.3
+     */
+    protected void printXMLOutput(JAXBContext context, Object object, OutputStream out)
+            throws XMLStreamException, FactoryConfigurationError, JAXBException {
+        XMLStreamWriter writer = jsonOutput ? jsonWriter(context, out) : xmlWriter(context, out);
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(object, writer);
+    }
+
+    protected XMLStreamWriter jsonWriter(JAXBContext context, OutputStream out) {
+        JSONConfiguration config = JSONConfiguration.mapped().rootUnwrapping(true).attributeAsElement("key", "value").build();
+        config = JSONConfiguration.createJSONConfigurationWithFormatted(config, true);
+        return JsonXmlStreamWriter.createWriter(new OutputStreamWriter(out), config, "");
+    }
+
+    protected XMLStreamWriter xmlWriter(JAXBContext context, OutputStream out) throws XMLStreamException, FactoryConfigurationError {
+        return XMLOutputFactory.newInstance().createXMLStreamWriter(out);
     }
 
     /**
@@ -2249,8 +2352,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Stops the server. Will try to call specific class for a clean stop, retry, waiting between each try, then kill
-     * the process if still running.
+     * Stops the server. Will try to call specific class for a clean stop,
+     * retry, waiting between each try, then kill the process if still running.
      */
     public void stop(boolean logProcessOutput) {
         long startTime = new Date().getTime();
@@ -2354,7 +2457,9 @@ public abstract class NuxeoLauncher {
     /**
      * Configure the server after checking installation
      *
-     * @throws ConfigurationException If an installation error is detected or if configuration fails
+     * @throws ConfigurationException
+     *             If an installation error is detected or if configuration
+     *             fails
      */
     public void configure() throws ConfigurationException {
         try {
@@ -2370,15 +2475,18 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @return Default max wait depending on server (ie JBoss takes much more time than Tomcat)
+     * @return Default max wait depending on server (ie JBoss takes much more
+     *         time than Tomcat)
      */
     private String getDefaultMaxWait() {
         return START_MAX_WAIT_DEFAULT;
     }
 
     /**
-     * Return process status (running or not) as String, depending on OS capability to manage processes. Set status
-     * value following "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
+     * Return process status (running or not) as String, depending on OS
+     * capability to manage processes. Set status value following
+     * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-
+     * generic/iniscrptact.html"
      *
      * @see #getStatus()
      */
@@ -2409,8 +2517,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Last error value set by any method. Exit code values are following the Linux Standard Base Core Specification
-     * 4.1.
+     * Last error value set by any method. Exit code values are following the
+     * Linux Standard Base Core Specification 4.1.
      */
     public int getErrorValue() {
         return errorValue;
@@ -2418,11 +2526,15 @@ public abstract class NuxeoLauncher {
 
     /**
      * @throws ParseException
-     * @return a NuxeoLauncher instance specific to current server ( Tomcat or Jetty).
-     * @throws ConfigurationException If server cannot be identified
+     * @return a NuxeoLauncher instance specific to current server ( Tomcat or
+     *         Jetty).
+     * @throws ConfigurationException
+     *             If server cannot be identified
+     * @throws PackageException
+     * @throws IOException
      * @since 5.5
      */
-    public static NuxeoLauncher createLauncher(String[] args) throws ConfigurationException, ParseException {
+    public static NuxeoLauncher createLauncher(String[] args) throws ConfigurationException, ParseException, IOException, PackageException {
         CommandLine cmdLine = parseOptions(args);
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
         if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
@@ -2436,14 +2548,19 @@ public abstract class NuxeoLauncher {
         } else {
             throw new ConfigurationException("Unknown server!");
         }
+        launcher.connectBroker = new ConnectBroker(launcher.configurationGenerator.getEnv());
         launcher.setArgs(cmdLine);
+        launcher.initConnectBroker();
         return launcher;
     }
 
     /**
-     * Sets from program arguments the launcher command and additional parameters.
+     * Sets from program arguments the launcher command and additional
+     * parameters.
      *
-     * @param cmdLine Program arguments; may be used by launcher implementation. Must not be null or empty.
+     * @param cmdLine
+     *            Program arguments; may be used by launcher implementation.
+     *            Must not be null or empty.
      * @throws ConfigurationException
      */
     private void setArgs(CommandLine cmdLine) throws ConfigurationException {
@@ -2514,7 +2631,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param categories Root categories to switch DEBUG on.
+     * @param categories
+     *            Root categories to switch DEBUG on.
      * @since 7.4
      */
     protected static void setDebug(String[] categories, String defaultCategory) {
@@ -2526,7 +2644,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param categories Root categories to switch DEBUG on.
+     * @param categories
+     *            Root categories to switch DEBUG on.
      * @since 5.6
      */
     protected static void setDebug(String categories) {
@@ -2534,8 +2653,10 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param categories Root categories to switch DEBUG on or off
-     * @param activateDebug Set DEBUG on or off.
+     * @param categories
+     *            Root categories to switch DEBUG on or off
+     * @param activateDebug
+     *            Set DEBUG on or off.
      * @since 5.6
      */
     protected static void setDebug(String categories, boolean activateDebug) {
@@ -2545,7 +2666,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param activateDebug if true, will activate the DEBUG logs
+     * @param activateDebug
+     *            if true, will activate the DEBUG logs
      * @since 5.5
      */
     protected static void setDebug(boolean activateDebug) {
@@ -2553,7 +2675,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param isStrict if {@code true}, set the launcher strict option
+     * @param isStrict
+     *            if {@code true}, set the launcher strict option
      * @since 7.4
      * @see #OPTION_STRICT_DESC
      */
@@ -2576,7 +2699,7 @@ public abstract class NuxeoLauncher {
         help.setSyntaxPrefix("USAGE\n");
         help.setOptionComparator(null);
         help.setWidth(1000);
-        help.printHelp(OPTION_HELP_USAGE, "OPTIONS", launcherOptions, null);
+        help.printHelp(OPTION_HELP_USAGE, "OPTIONS", options, null);
         System.out.println(OPTION_HELP_DESC_COMMANDS);
     }
 
@@ -2586,15 +2709,16 @@ public abstract class NuxeoLauncher {
         help.setSyntaxPrefix("USAGE\n");
         help.setOptionComparator(null);
         help.setWidth(1000);
-        help.printHelp(OPTION_HELP_USAGE, OPTION_HELP_HEADER, launcherOptions, null);
+        help.printHelp(OPTION_HELP_USAGE, OPTION_HELP_HEADER, options, null);
         System.out.println(OPTION_HELP_DESC_ENV);
         System.out.println(OPTION_HELP_DESC_COMMANDS);
         System.out.println(OPTION_HELP_FOOTER);
     }
 
     /**
-     * Work best with current nuxeoProcess. If nuxeoProcess is null or has exited, then will try to get process ID (so,
-     * result in that case depends on OS capabilities).
+     * Work best with current nuxeoProcess. If nuxeoProcess is null or has
+     * exited, then will try to get process ID (so, result in that case depends
+     * on OS capabilities).
      *
      * @return true if current process is running or if a running PID is found
      */
@@ -2614,6 +2738,16 @@ public abstract class NuxeoLauncher {
             log.error(e);
             return false;
         }
+    }
+
+    /**
+     * Provides this instance info
+     *
+     * @since 8.3
+     *
+     */
+    public InstanceInfo getInfo() {
+        return info;
     }
 
     /**
@@ -2648,22 +2782,31 @@ public abstract class NuxeoLauncher {
         return configurationGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_NUXEO_URL);
     }
 
-    protected ConnectBroker getConnectBroker() throws IOException, PackageException {
-        if (connectBroker == null) {
-            connectBroker = new ConnectBroker(configurationGenerator.getEnv());
-            if (cmdLine.hasOption(OPTION_ACCEPT)) {
-                connectBroker.setAccept(cmdLine.getOptionValue(OPTION_ACCEPT));
-            }
-            if (cmdLine.hasOption(OPTION_RELAX)) {
-                connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX));
-            }
-            if (cmdLine.hasOption(OPTION_SNAPSHOT) || isSNAPSHOTDistribution()) {
-                connectBroker.setAllowSNAPSHOT(true);
-            }
-            List<CommandInfo> csetCommands = cset.commands;
-            cset = connectBroker.getCommandSet();
-            cset.commands.addAll(0, csetCommands);
+    protected void initConnectBroker() throws IOException, PackageException {
+        if (cmdLine.hasOption(OPTION_ACCEPT)) {
+            connectBroker.setAccept(cmdLine.getOptionValue(OPTION_ACCEPT));
         }
+        if (cmdLine.hasOption(OPTION_RELAX)) {
+            connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX));
+        }
+        if (cmdLine.hasOption(OPTION_SNAPSHOT)) {
+            connectBroker.setAllowSNAPSHOT(true);
+        }
+        List<CommandInfo> csetCommands = cset.commands;
+        cset = connectBroker.getCommandSet();
+        cset.commands.addAll(0, csetCommands);
+        try {
+            clid = connectBroker.getCLID();
+        } catch (NoCLID cause) {
+            ;
+        }
+        info = configurationGenerator.getServerConfigurator().getInfo(clid, connectBroker.getPkgList());
+        if (new Version(info.distribution.version).isSnapshot()) {
+            connectBroker.setAllowSNAPSHOT(true);
+        }
+    }
+
+    protected ConnectBroker getConnectBroker() throws IOException, PackageException {
         return connectBroker;
     }
 
@@ -2673,13 +2816,6 @@ public abstract class NuxeoLauncher {
             connectRegistrationBroker = new ConnectRegistrationBroker();
         }
         return connectRegistrationBroker;
-    }
-
-    /**
-     * @since 5.9.1
-     */
-    private boolean isSNAPSHOTDistribution() {
-        return new Version(getDistributionInfo().version).isSnapshot();
     }
 
     /**
@@ -2755,14 +2891,19 @@ public abstract class NuxeoLauncher {
      */
     protected void printInstanceXMLOutput(InstanceInfo instance) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
-                    PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
-            printXMLOutput(jaxbContext, instance);
-        } catch (JAXBException e) {
+            printInstanceXMLOutput(instance, System.out);
+        } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
             log.error("Output serialization failed: " + e.getMessage());
             log.debug(e, e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
+    }
+
+    protected void printInstanceXMLOutput(InstanceInfo instance, OutputStream out)
+            throws JAXBException, XMLStreamException, FactoryConfigurationError {
+        JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
+                PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
+        printXMLOutput(jaxbContext, instance, out);
     }
 
     /**
@@ -2771,129 +2912,46 @@ public abstract class NuxeoLauncher {
      * @throws ConfigurationException
      * @since 5.6
      */
-    protected InstanceInfo showConfig() throws IOException, PackageException, ConfigurationException {
-        InstanceInfo nxInstance = new InstanceInfo();
+    protected void showConfig() throws IOException, PackageException, ConfigurationException {
         log.info("***** Nuxeo instance configuration *****");
-        nxInstance.NUXEO_CONF = configurationGenerator.getNuxeoConf().getPath();
-        log.info("NUXEO_CONF: " + nxInstance.NUXEO_CONF);
-        nxInstance.NUXEO_HOME = configurationGenerator.getNuxeoHome().getPath();
-        log.info("NUXEO_HOME: " + nxInstance.NUXEO_HOME);
-        // CLID
-        try {
-            nxInstance.clid = getConnectBroker().getCLID();
-            log.info("Instance CLID: " + nxInstance.clid);
-        } catch (NoCLID e) {
-            // leave nxInstance.clid unset
-        } catch (IOException | PackageException e) {
-            // something went wrong in the NuxeoConnectClient initialization
-            errorValue = EXIT_CODE_UNAUTHORIZED;
-            throw new ConfigurationException("Could not initialize NuxeoConnectClient", e);
+        log.info("NUXEO_CONF: " + info.NUXEO_CONF);
+        log.info("NUXEO_HOME: " + info.NUXEO_HOME);
+        if (info.clid != null) {
+            log.info("Instance CLID: " + info.clid);
         }
         // distribution.properties
-        DistributionInfo nxDistrib = getDistributionInfo();
-        nxInstance.distribution = nxDistrib;
         log.info("** Distribution");
-        log.info("- name: " + nxDistrib.name);
-        log.info("- server: " + nxDistrib.server);
-        log.info("- version: " + nxDistrib.version);
-        log.info("- date: " + nxDistrib.date);
-        log.info("- packaging: " + nxDistrib.packaging);
+        log.info("- name: " + info.distribution.name);
+        log.info("- server: " + info.distribution.server);
+        log.info("- version: " + info.distribution.version);
+        log.info("- date: " + info.distribution.date);
+        log.info("- packaging: " + info.distribution.packaging);
         // packages
-        List<LocalPackage> pkgs = getConnectBroker().getPkgList();
         log.info("** Packages:");
-        List<String> pkgTemplates = new ArrayList<>();
-        for (LocalPackage pkg : pkgs) {
-            nxInstance.packages.add(new PackageInfo(pkg));
-            log.info(String.format("- %s (version: %s - id: %s - state: %s)", pkg.getName(), pkg.getVersion(),
-                    pkg.getId(), pkg.getPackageState().getLabel()));
-            // store template(s) added by this package
-            try {
-                File installFile = pkg.getInstallFile();
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                Document dom = db.parse(installFile);
-                NodeList nodes = dom.getDocumentElement().getElementsByTagName("config");
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Element node = (Element) nodes.item(i);
-                    if (node.hasAttribute("addtemplate")) {
-                        pkgTemplates.add(node.getAttribute("addtemplate"));
-                    }
-                }
-            } catch (Exception e) {
-                log.warn("Could not parse install file for " + pkg.getName(), e);
-            }
+        for (PackageInfo pkg : info.packages) {
+            log.info(String.format("- %s (version: %s - id: %s - state: %s)", pkg.name, pkg.version,
+                    pkg.id, pkg.state.getLabel()));
         }
         // nuxeo.conf
-        ConfigurationInfo nxConfig = new ConfigurationInfo();
-        nxConfig.dbtemplate = configurationGenerator.extractDatabaseTemplateName();
         log.info("** Templates:");
-        log.info("Database template: " + nxConfig.dbtemplate);
-        String userTemplates = configurationGenerator.getUserTemplates();
-        StringTokenizer st = new StringTokenizer(userTemplates, ",");
-        while (st.hasMoreTokens()) {
-            String template = st.nextToken();
-            if (template.equals(nxConfig.dbtemplate)) {
-                continue;
-            }
-            if (pkgTemplates.contains(template)) {
-                nxConfig.pkgtemplates.add(template);
-                log.info("Package template: " + template);
-            } else {
-                File testBase = new File(configurationGenerator.getNuxeoHome(), ConfigurationGenerator.TEMPLATES
-                        + File.separator + template);
-                if (testBase.exists()) {
-                    nxConfig.basetemplates.add(template);
-                    log.info("Base template: " + template);
-                } else {
-                    nxConfig.usertemplates.add(template);
-                    log.info("User template: " + template);
-                }
-            }
+        log.info("Database template: " + info.config.dbtemplate);
+        for (String template : info.config.pkgtemplates) {
+            log.info("Package template: " + template);
+        }
+        for (String template : info.config.usertemplates) {
+            log.info("User template: " + template);
+        }
+        for (String template : info.config.basetemplates) {
+            log.info("Base template: " + template);
         }
         log.info("** Settings from nuxeo.conf:");
-        CryptoProperties userConfig = configurationGenerator.getUserConfig();
-        for (Object item : new TreeSet<>(userConfig.keySet())) {
-            String key = (String) item;
-            String value = userConfig.getRawProperty(key);
-            if (key.equals("JAVA_OPTS")) {
-                value = getJavaOptsProperty();
-            }
-            KeyValueInfo kv = new KeyValueInfo(key, value);
-            nxConfig.keyvals.add(kv);
-            if (!ConfigurationGenerator.SECRET_KEYS.contains(key) && !key.contains("password")
-                    && !key.equals(Environment.SERVER_STATUS_KEY) && !Crypto.isEncrypted(value)) {
-                log.info(key + "=" + value);
-            } else {
-                log.info(key + "=********");
-            }
+        for (KeyValueInfo keyval : info.config.keyvals) {
+            log.info(String.format("%s=%s", keyval.key, keyval.value));
         }
-        nxInstance.config = nxConfig;
         log.info("****************************************");
         if (xmlOutput) {
-            printInstanceXMLOutput(nxInstance);
+            printInstanceXMLOutput(info);
         }
-        return nxInstance;
-    }
-
-    /**
-     * @since 5.9.1
-     */
-    protected DistributionInfo getDistributionInfo() {
-        File distFile = new File(configurationGenerator.getConfigDir(), "distribution.properties");
-        if (!distFile.exists()) {
-            // fallback in the file in templates
-            distFile = new File(configurationGenerator.getNuxeoHome(), "templates");
-            distFile = new File(distFile, "common");
-            distFile = new File(distFile, "config");
-            distFile = new File(distFile, "distribution.properties");
-        }
-        DistributionInfo nxDistrib;
-        try {
-            nxDistrib = new DistributionInfo(distFile);
-        } catch (IOException e) {
-            nxDistrib = new DistributionInfo();
-        }
-        return nxDistrib;
     }
 
     /**
@@ -2985,7 +3043,9 @@ public abstract class NuxeoLauncher {
     /**
      * Combined install/uninstall request
      *
-     * @param request Space separated list of package names or IDs prefixed with + (install) or - (uninstall)
+     * @param request
+     *            Space separated list of package names or IDs prefixed with +
+     *            (install) or - (uninstall)
      * @throws IOException
      * @throws PackageException
      * @since 5.6
@@ -3022,9 +3082,12 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * dpkg-like command which returns package location, version, dependencies, conflicts, ...
+     * dpkg-like command which returns package location, version, dependencies,
+     * conflicts, ...
      *
-     * @param packages List of packages identified by their ID, name or local filename.
+     * @param packages
+     *            List of packages identified by their ID, name or local
+     *            filename.
      * @return false if unable to show package information.
      * @throws PackageException
      * @throws IOException
@@ -3038,4 +3101,42 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
+    protected boolean dumpConnectReport(OutputStream out, boolean prettyprint) {
+        class MapBuilder<K, V> {
+            final Map<K, V> store = new HashMap<>();
+
+            MapBuilder<K, V> with(K key, V value) {
+                store.put(key, value);
+                return this;
+            }
+
+            Map<K, V> build() {
+                return store;
+            }
+        }
+        try (JsonGenerator generator =
+                Json.createGeneratorFactory(new MapBuilder<String, Object>().with(JsonGenerator.PRETTY_PRINTING, prettyprint).build())
+                        .createGenerator(out)) {
+            generator.writeStartObject();
+            // show config
+            generator.writeStartObject("config");
+            try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
+                JAXBContext context = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
+                        PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
+                Marshaller marshaller = context.createMarshaller();
+                marshaller.marshal(info, jsonWriter(context, bytes));
+                new StreamFeeder().feed(generator, Json.createParser(new ByteArrayInputStream(bytes.toByteArray())));
+            }
+            generator.writeEnd();
+            generator.flush();
+            // runtime
+            Connector.of().feed(generator);
+            generator.writeEnd();
+        } catch (IOException | JAXBException | InterruptedException | ExecutionException cause) {
+            log.error("Cannot dump connect report", cause);
+            errorValue = EXIT_CODE_ERROR;
+            return false;
+        }
+        return true;
+    }
 }
