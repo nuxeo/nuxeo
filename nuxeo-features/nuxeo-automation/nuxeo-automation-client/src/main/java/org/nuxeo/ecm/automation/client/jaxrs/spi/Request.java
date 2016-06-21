@@ -46,6 +46,8 @@ public class Request extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
+    protected static Pattern RFC2231_ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*\\\\*.*\\*=.*'\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
+
     protected static Pattern ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*=\\s*([^;]+)\\s*",
             Pattern.CASE_INSENSITIVE);
 
@@ -165,7 +167,11 @@ public class Request extends HashMap<String, String> {
     }
 
     protected static String getFileName(String ctype) {
-        Matcher m = ATTR_PATTERN.matcher(ctype);
+        Matcher m = RFC2231_ATTR_PATTERN.matcher(ctype);
+        if (m.find()) {
+            return m.group(1);
+        }
+        m = ATTR_PATTERN.matcher(ctype);
         if (m.find()) {
             return m.group(1);
         }
