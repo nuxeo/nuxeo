@@ -28,18 +28,20 @@ import org.junit.Test;
  */
 public class TestContentDisposition {
 
+    private static final String MSIE_7 = "Mozilla/4.0 (compatible; MSIE 7.0)";
+
     @Test
     public void inlineContentDisposition() throws Exception {
         for (boolean useAttribute : new Boolean[] { true, false }) {
 
-            HttpServletRequest req = getRequest(useAttribute, "true", "MSIE");
+            HttpServletRequest req = getRequest(useAttribute, "true", MSIE_7);
             assertEquals("inline; filename=myfile.txt", ServletHelper.getRFC2231ContentDisposition(req, "myfile.txt"));
 
-            req = getRequest(useAttribute, "false", "MSIE");
+            req = getRequest(useAttribute, "false", MSIE_7);
             assertEquals("attachment; filename=myfile.txt",
                     ServletHelper.getRFC2231ContentDisposition(req, "myfile.txt"));
 
-            req = getRequest(useAttribute, null, "MSIE");
+            req = getRequest(useAttribute, null, MSIE_7);
             assertEquals("attachment; filename=myfile.txt",
                     ServletHelper.getRFC2231ContentDisposition(req, "myfile.txt"));
         }
@@ -52,7 +54,7 @@ public class TestContentDisposition {
         } else {
             when(req.getParameter("inline")).thenReturn(inline);
         }
-        when(req.getParameter("User-Agent")).thenReturn(userAgent);
+        when(req.getHeader("User-Agent")).thenReturn(userAgent);
         return req;
     }
 }
