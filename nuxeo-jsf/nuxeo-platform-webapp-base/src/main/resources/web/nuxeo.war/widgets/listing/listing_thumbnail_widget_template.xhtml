@@ -11,13 +11,13 @@
 
     <nxu:set var="folderishStyleClass"
       value="#{nxu:test(field.isFolder(), 'folderishThumbnail', '')}"
-      cache="false">
+      cache="#{!useRepeatRenderTime}">
     <nxu:set var="blobInfo"
       value="#{blobHolderGenerator.getBlobHolder(field).blob.filename}"
-      cache="false">
+      cache="#{!useRepeatRenderTime}">
     <nxu:set var="thumbnailUrl"
       value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobInfo)}"
-      cache="false">
+      cache="#{!useRepeatRenderTime}">
       <div class="thumbnailContainer #{folderishStyleClass}" style="background-image:url('#{thumbnailUrl}');" />
     </nxu:set>
     </nxu:set>
@@ -29,10 +29,10 @@
     <nxp:html>
     <nxu:set var="folderishStyleClass"
       value="#{nxu:test(field.isFolder(), 'folderishThumbnail', '')}"
-      cache="false">
+      cache="#{!useRepeatRenderTime}">
     <nxu:set var="thumbnailUrl"
       value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
-      cache="false">
+      cache="#{!useRepeatRenderTime}">
       <div class="thumbnailContainer" style="background-image:url('#{thumbnailUrl}');" />
     </nxu:set>
     </nxu:set>
