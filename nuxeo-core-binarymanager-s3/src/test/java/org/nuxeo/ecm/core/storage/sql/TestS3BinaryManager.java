@@ -83,6 +83,19 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
             PROPERTIES.put(S3BinaryManager.BUCKET_NAME_PROPERTY, bucketName);
             PROPERTIES.put(S3BinaryManager.AWS_ID_PROPERTY, idKey);
             PROPERTIES.put(S3BinaryManager.AWS_SECRET_PROPERTY , secretKey);
+            boolean useKeyStore = false;
+            if (useKeyStore) {
+                // keytool -genkeypair -keystore /tmp/keystore.ks -alias unittest -storepass unittest -keypass unittest
+                // -dname "CN=AWS S3 Key, O=example, DC=com" -keyalg RSA
+                String keyStoreFile = "/tmp/keystore.ks";
+                String keyStorePassword = "unittest";
+                String privKeyAlias = "unittest";
+                String privKeyPassword = "unittest";
+                PROPERTIES.put(S3BinaryManager.KEYSTORE_FILE_PROPERTY , keyStoreFile);
+                PROPERTIES.put(S3BinaryManager.KEYSTORE_PASS_PROPERTY , keyStorePassword);
+                PROPERTIES.put(S3BinaryManager.PRIVKEY_ALIAS_PROPERTY , privKeyAlias);
+                PROPERTIES.put(S3BinaryManager.PRIVKEY_PASS_PROPERTY , privKeyPassword);
+            }
         }
         boolean disabled = bucketName.equals("CHANGETHIS");
         assumeTrue("No AWS credentials configured", !disabled);
@@ -91,6 +104,11 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
     @After
     public void tearDown() throws Exception {
         removeObjects();
+    }
+
+    @Override
+    public boolean isStorageSizeSameAsOriginalSize() {
+        return !binaryManager.isEncrypted;
     }
 
     @Test

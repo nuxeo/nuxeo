@@ -26,12 +26,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -48,6 +51,8 @@ import org.nuxeo.ecm.core.blob.binary.LazyBinary;
  * @since 7.10
  */
 public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryManager> {
+
+    private static final Log log = LogFactory.getLog(AbstractTestCloudBinaryManager.class);
 
     protected abstract T getBinaryManager() throws IOException;
 
@@ -77,10 +82,34 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
 
     @Before
     public void setUp() throws IOException {
+        setUnlimitedJCEPolicy();
         binaryManager = getBinaryManager();
         removeObjects();
     }
 
+    /** Overridden when encrypted storage has bigger binaries than the original. */
+    public boolean isStorageSizeSameAsOriginalSize() {
+        return true;
+    }
+
+    /**
+     * By default the JRE may ship with restricted key length. Instead of having administrators download the Java
+     * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
+     * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
+     * using reflection.
+     */
+    protected static void setUnlimitedJCEPolicy() {
+        try {
+            Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
+            field.setAccessible(true);
+            if (Boolean.TRUE.equals(field.get(null))) {
+                log.info("Setting JCE Unlimited Strength");
+                field.set(null, Boolean.FALSE);
+            }
+        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
+            log.debug("Cannot check/set JCE Unlimited Strength", e);
+        }
+    }
     @Test
     public void testStoreFile() throws Exception {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
@@ -171,9 +200,13 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         assertFalse(gc.isInProgress());
         BinaryManagerStatus status = gc.getStatus();
         assertEquals(2, status.numBinaries);
-        assertEquals(bytes.length + 4, status.sizeBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length + CONTENT3.length(), status.sizeBinaries);
+        }
         assertEquals(1, status.numBinariesGC);
-        assertEquals(3, status.sizeBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT2.length(), status.sizeBinariesGC);
+        }
         assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
@@ -184,9 +217,13 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         gc.stop(true);
         status = gc.getStatus();
         assertEquals(2, status.numBinaries);
-        assertEquals(bytes.length + 4, status.sizeBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length + CONTENT3.length(), status.sizeBinaries);
+        }
         assertEquals(1, status.numBinariesGC);
-        assertEquals(3, status.sizeBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT2.length(), status.sizeBinariesGC);
+        }
         assertEquals(new HashSet<>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
@@ -196,9 +233,13 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         gc.stop(true);
         status = gc.getStatus();
         assertEquals(1, status.numBinaries);
-        assertEquals(bytes.length, status.sizeBinaries);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(bytes.length, status.sizeBinaries);
+        }
         assertEquals(1, status.numBinariesGC);
-        assertEquals(4, status.sizeBinariesGC);
+        if (isStorageSizeSameAsOriginalSize()) {
+            assertEquals(CONTENT3.length(), status.sizeBinariesGC);
+        }
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
     }
 
