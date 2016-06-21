@@ -51,6 +51,9 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@httpEnabled")
     protected boolean httpEnabled = false;
 
+    @XNode("@httpPort")
+    protected String httpPort = "9200";
+
     @XNode("@networkHost")
     protected String networkHost = "127.0.0.1";
 
@@ -144,5 +147,9 @@ public class ElasticSearchLocalConfig implements Serializable {
                     getIndexStorageType());
         }
         return "EsLocalConfig disabled";
+    }
+
+    public String getHttpPort() {
+        return httpPort;
     }
 }
