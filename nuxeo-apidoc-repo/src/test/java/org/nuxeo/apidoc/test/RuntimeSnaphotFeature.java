@@ -33,8 +33,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features({ CoreFeature.class, RepositoryElasticSearchFeature.class, AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.apidoc.core" })
-@LocalDeploy({ "org.nuxeo.apidoc.core:apidoc-works-test-contrib.xml", "org.nuxeo.apidoc.core:apidoc-es-test-contrib.xml" })
+@Deploy({ "org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo" })
+@LocalDeploy({ "org.nuxeo.apidoc.repo:apidoc-works-test-contrib.xml", "org.nuxeo.apidoc.repo:apidoc-es-test-contrib.xml" })
 public class RuntimeSnaphotFeature extends SimpleFeature {
 
 }

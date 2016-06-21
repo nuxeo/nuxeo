@@ -88,7 +88,7 @@ public class TestExtractor {
         DocumentModel myDoc = session.createDocumentModel("/", "mydoc", ExtensionInfo.TYPE_NAME);
         myDoc.setPropertyValue(ATTRIBUTES_PROPERTY, "toto");
 
-        long completed = 0L;
+        long completed = workManager.getMetrics(ExtractXmlAttributesWorker.CATEGORY).completed.longValue();
         // Should not be triggered
         myDoc = session.createDocument(myDoc);
         Assert.assertNull(myDoc.getPropertyValue(ATTRIBUTES_PROPERTY));
