@@ -6,7 +6,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
-  <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{blobHolderGenerator.getBlobHolder(field).blob.filename)}</c:if>
+  <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{blobHolderGenerator.getBlobHolder(field).blob.filename}</c:if>
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
     <nxu:set var="folderishStyleClass"
