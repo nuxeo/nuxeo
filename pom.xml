@@ -6167,6 +6167,13 @@
       </properties>
     </profile>
     <profile>
+      <id>mariadb</id>
+      <properties>
+        <nuxeo.test.vcs.db>MySQL</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>3306</nuxeo.db.port.default>
+      </properties>
+    </profile>
+    <profile>
       <id>mongodb</id>
        <properties>
         <nuxeo.test.core>mongodb</nuxeo.test.core>
