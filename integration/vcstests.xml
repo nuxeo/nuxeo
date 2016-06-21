@@ -54,6 +54,14 @@
         <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
       </propertyfile>
     </nx:profile>
+    <nx:profile name="mariadb">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.vcs.db" value="MySQL" />
+        <entry key="nuxeo.test.vcs.url" value="jdbc:mysql://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}" />
+        <entry key="nuxeo.test.vcs.user" value="${nuxeo.db.user}" />
+        <entry key="nuxeo.test.vcs.password" value="${nuxeo.db.pass}" />
+      </propertyfile>
+    </nx:profile>
     <nx:profile name="mongodb">
       <propertyfile file="${vcsprops}">
         <entry key="nuxeo.test.core" value="mongodb" />
