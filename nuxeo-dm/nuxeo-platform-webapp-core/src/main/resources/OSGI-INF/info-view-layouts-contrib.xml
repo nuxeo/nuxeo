@@ -243,6 +243,7 @@
       <category>INFO_VIEW_ACTIONS</category>
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
+      <filter-id>isNotVersion</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
@@ -254,6 +255,7 @@
       <category>INFO_VIEW_ACTIONS</category>
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
+      <filter-id>isNotVersion</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
