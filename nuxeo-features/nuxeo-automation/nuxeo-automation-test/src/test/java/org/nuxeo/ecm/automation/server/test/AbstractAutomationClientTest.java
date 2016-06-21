@@ -97,7 +97,7 @@ public abstract class AbstractAutomationClientTest {
     }
 
     protected File newFile(String content) throws IOException {
-        File file = File.createTempFile("automation-test-", ".xml");
+        File file = File.createTempFile("automation-test-éåò-", ".xml");
         FileUtils.writeFile(file, content);
         return file;
     }
