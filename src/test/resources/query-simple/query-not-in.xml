@@ -1,15 +1,10 @@
 <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
        xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <not-query>
-      <or-query>
-        <value-query type="string">
-          <element ns="" name="ecm__id" />
-          <text>ID1</text>
-        </value-query>
-        <value-query type="string">
-          <element ns="" name="ecm__id" />
-          <text>ID2</text>
-        </value-query>
-      </or-query>
-    </not-query>
+  <not-query>
+    <value-query type="string">
+      <element ns="" name="ecm__id" />
+      <text>ID1</text>
+      <text>ID2</text>
+    </value-query>
+  </not-query>
 </query>

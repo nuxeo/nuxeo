@@ -74,18 +74,11 @@ class MarkLogicQuerySimpleBuilder {
     public MarkLogicQuerySimpleBuilder notIn(String key, Collection<?> values) {
         if (!values.isEmpty()) {
             String serializedKey = MarkLogicHelper.serializeKey(key);
-            StructuredQueryDefinition conditionQuery;
-            if (values.size() == 1) {
-                String serializedValue = MarkLogicStateSerializer.serializeValue(values.iterator().next());
-                conditionQuery = sqb.value(sqb.element(serializedKey), serializedValue);
-            } else {
-                StructuredQueryDefinition[] orQueries = values.stream()
-                                                              .map(MarkLogicStateSerializer::serializeValue)
-                                                              .map(v -> sqb.value(sqb.element(serializedKey), v))
-                                                              .toArray(StructuredQueryDefinition[]::new);
-                conditionQuery = sqb.or(orQueries);
-            }
-            StructuredQueryDefinition notQuery = sqb.not(conditionQuery);
+            String[] serializedValues = values.stream()
+                                              .map(MarkLogicStateSerializer::serializeValue)
+                                              .toArray(String[]::new);
+            StructuredQueryDefinition inQuery = sqb.value(sqb.element(serializedKey), serializedValues);
+            StructuredQueryDefinition notQuery = sqb.not(inQuery);
             queries.add(notQuery);
         }
         return this;
