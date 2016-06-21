@@ -31,6 +31,7 @@ Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/navtree-default-contrib.xml,
  OSGI-INF/webresources-contrib.xml,
  OSGI-INF/webapp-base-properties.xml,
+ OSGI-INF/thumbnail-contrib.xml,
  OSGI-INF/exception-handling-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.webapp.base
