@@ -102,6 +102,15 @@ public interface DBSRepository extends Repository, LockManager {
     void createState(State state);
 
     /**
+     * Creates documents.
+     *
+     * @param states the document states
+     */
+    default void createStates(List<State> states) {
+        states.forEach(this::createState);
+    }
+
+    /**
      * Updates a document.
      *
      * @param id the document id

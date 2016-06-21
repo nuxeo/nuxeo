@@ -548,13 +548,17 @@ public class DBSTransactionState {
         } else {
             works = Collections.emptyList();
         }
+        List<State> statesToCreate = new ArrayList<>();
         for (String id : transientCreated) { // ordered
             DBSDocumentState docState = transientStates.get(id);
             docState.setNotDirty();
             if (undoLog != null) {
                 undoLog.put(id, null); // marker to denote create
             }
-            repository.createState(docState.getState());
+            statesToCreate.add(docState.getState());
+        }
+        if (!statesToCreate.isEmpty()) {
+            repository.createStates(statesToCreate);
         }
         for (DBSDocumentState docState : transientStates.values()) {
             String id = docState.getId();
