@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +48,7 @@ public class Request extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
-    protected static Pattern RFC2231_ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*\\\\*.*\\*=.*'\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
+    protected static Pattern RFC2231_ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*\\\\*.*\\*=([^']*)'([^']*)'\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
 
     protected static Pattern ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*=\\s*([^;]+)\\s*",
             Pattern.CASE_INSENSITIVE);
@@ -169,7 +171,11 @@ public class Request extends HashMap<String, String> {
     protected static String getFileName(String ctype) {
         Matcher m = RFC2231_ATTR_PATTERN.matcher(ctype);
         if (m.find()) {
-            return m.group(1);
+            try {
+                return URLDecoder.decode(m.group(3), m.group(1));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
         m = ATTR_PATTERN.matcher(ctype);
         if (m.find()) {
