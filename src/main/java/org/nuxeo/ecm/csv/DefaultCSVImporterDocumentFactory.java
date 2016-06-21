@@ -24,8 +24,10 @@ import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -62,13 +65,17 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
         }
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
         if (cs.isBooleanPropertyTrue("nuxeo.csv.importMode")) {
+            ((DocumentModelImpl) doc).setId(UUID.randomUUID().toString());
+            for (Map.Entry<String, Serializable> entry : values.entrySet()) {
+                doc.setPropertyValue(entry.getKey(), entry.getValue());
+            }
+            session.importDocuments(Collections.singletonList(doc));
+        } else {
             doc = session.createDocument(doc);
             for (Map.Entry<String, Serializable> entry : values.entrySet()) {
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
             session.saveDocument(doc);
-        } else {
-            session.importDocuments(Arrays.asList(doc));
         }
     }
 

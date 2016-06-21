@@ -11,7 +11,7 @@
     <documentation>
       Property that activates import mode on CSV importer to avoid overwriting metadata.
     </documentation>
-    <property name="nuxeo.csv.importMode">true</property>
+    <property name="nuxeo.csv.importMode">false</property>
   </extension>
   
 
