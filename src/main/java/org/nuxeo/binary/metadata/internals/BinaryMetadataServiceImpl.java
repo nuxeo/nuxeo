@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
@@ -100,7 +99,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public Blob writeMetadata(String processorName, Blob blob, Map<String, String> metadata, boolean ignorePrefix) {
+    public Blob writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.writeMetadata(blob, metadata, ignorePrefix);
@@ -110,7 +109,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public Blob writeMetadata(Blob blob, Map<String, String> metadata, boolean ignorePrefix) {
+    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.writeMetadata(blob, metadata, ignorePrefix);
@@ -123,12 +122,11 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     public Blob writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc) {
         try {
             // Creating mapping properties Map.
-            Map<String, String> metadataMapping = new HashMap<>();
+            Map<String, Object> metadataMapping = new HashMap<>();
             MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
                     mappingDescriptorId);
             for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
-                Serializable value = doc.getPropertyValue(metadataDescriptor.getXpath());
-                metadataMapping.put(metadataDescriptor.getName(), ObjectUtils.toString(value));
+                metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
             BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.writeMetadata(blob, metadataMapping, mappingDescriptor.getIgnorePrefix());
@@ -140,20 +138,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     @Override
     public Blob writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc) {
-        try {
-            // Creating mapping properties Map.
-            Map<String, String> metadataMapping = new HashMap<>();
-            MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
-                    mappingDescriptorId);
-            for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
-                Serializable value = doc.getPropertyValue(metadataDescriptor.getXpath());
-                metadataMapping.put(metadataDescriptor.getName(), ObjectUtils.toString(value));
-            }
-            BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
-            return processor.writeMetadata(blob, metadataMapping, mappingDescriptor.getIgnorePrefix());
-        } catch (NoSuchMethodException e) {
-            throw new BinaryMetadataException(e);
-        }
+        return writeMetadata(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID, blob, mappingDescriptorId, doc);
     }
 
     @Override

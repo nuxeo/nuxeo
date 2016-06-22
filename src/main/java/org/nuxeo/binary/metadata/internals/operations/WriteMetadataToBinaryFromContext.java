@@ -53,7 +53,7 @@ public class WriteMetadataToBinaryFromContext {
 
     @OperationMethod
     public Blob run(Blob blob) {
-        Map<String, String> metadataMap = new HashMap<>(metadata.size());
+        Map<String, Object> metadataMap = new HashMap<>(metadata.size());
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             metadataMap.put(entry.getKey(), entry.getValue());
         }

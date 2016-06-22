@@ -23,6 +23,10 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -76,7 +80,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     }
 
     @Override
-    public Blob writeMetadata(Blob blob, Map<String, String> metadata, boolean ignorePrefix) {
+    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_WRITE_NOPREFIX
                 : BinaryMetadataConstants.EXIFTOOL_WRITE;
         CommandAvailability ca = commandLineService.getCommandAvailability(command);
@@ -196,9 +200,34 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         return metadataList.stream().map(tag -> "-" + tag).collect(Collectors.toList());
     }
 
-    protected List<String> getCommandTags(Map<String, String> metadataMap) {
-        return metadataMap.entrySet().stream().map(
-                es -> "-" + es.getKey() + "=" + StringUtils.defaultString(es.getValue()) //
+    protected List<String> getCommandTags(Map<String, Object> metadataMap) {
+        List<String> commandTags = new ArrayList<>();
+        for (String tag : metadataMap.keySet()) {
+            Object metadataValue = metadataMap.get(tag);
+            if (metadataValue instanceof Collection) {
+                commandTags.addAll(buildCommandTagsFromCollection(tag, (Collection<Object>) metadataValue));
+            } else if (metadataValue instanceof Object[]) {
+                commandTags.addAll(buildCommandTagsFromCollection(tag, Arrays.asList((Object[]) metadataValue)));
+            } else {
+                commandTags.add(buildCommandTag(tag, metadataValue));
+            }
+        }
+        return commandTags;
+    }
+
+    /**
+     * @since 8.3
+     */
+    private String buildCommandTag(String tag, Object value) {
+        return "-" + tag + "=" + ObjectUtils.toString(value);
+    }
+
+    /**
+     * @since 8.3
+     */
+    private List<String> buildCommandTagsFromCollection(String tag, Collection<Object> values) {
+        return values.isEmpty() ? Collections.singletonList("-" + tag + "=") : values.stream().map(
+            val -> buildCommandTag(tag, val)
         ).collect(Collectors.toList());
     }
 
