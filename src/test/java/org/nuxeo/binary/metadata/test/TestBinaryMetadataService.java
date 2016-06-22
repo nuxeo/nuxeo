@@ -79,15 +79,17 @@ public class TestBinaryMetadataService {
         {
             add("EXIF:ImageHeight");
             add("EXIF:Software");
+            add("IPTC:Keywords");
         }
     };
 
-    private static final Map<String, String> inputPSDMetadata;
+    private static final Map<String, Object> inputPSDMetadata;
 
     static {
         inputPSDMetadata = new HashMap<>();
         inputPSDMetadata.put("EXIF:ImageHeight", "200");
         inputPSDMetadata.put("EXIF:Software", "Nuxeo");
+        inputPSDMetadata.put("IPTC:Keywords", new String[] {"keyword1", "keyword2"});
     }
 
     @Test
@@ -135,9 +137,13 @@ public class TestBinaryMetadataService {
         // Check the content
         blobProperties = binaryMetadataService.readMetadata(blob, PSDMetadata, false);
         assertNotNull(blobProperties);
-        assertEquals(2, blobProperties.size());
+        assertEquals(3, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Nuxeo", blobProperties.get("EXIF:Software").toString());
+        // Check keywords were written to the binary
+        List<String> keywords = (List<String>) blobProperties.get("IPTC:Keywords");
+        assertEquals("keyword1", keywords.get(0));
+        assertEquals("keyword2", keywords.get(1));
     }
 
     @Test
@@ -174,7 +180,7 @@ public class TestBinaryMetadataService {
         assertEquals("Twist", blobProperties.get("Title").toString());
 
         // Write Non ASCII Character
-        Map<String, String> metadata = new HashMap<>();
+        Map<String, Object> metadata = new HashMap<>();
         metadata.put("SourceURL", "l'adresse idéale");
         try {
             binaryMetadataService.writeMetadata(musicBlobHolder.getBlob(), metadata, true);

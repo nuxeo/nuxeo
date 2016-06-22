@@ -84,7 +84,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(String processorName, Blob blob, Map<String, String> metadata, boolean ignorePrefix);
+    public Blob writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Write given metadata into a given binary with a Nuxeo default processor.
@@ -94,7 +94,7 @@ public interface BinaryMetadataService {
      * @param ignorePrefix Since 7.3
      * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public Blob writeMetadata(Blob blob, Map<String, String> metadata, boolean ignorePrefix);
+    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Write given metadata mapping id into a given binary with a Nuxeo default processor.
