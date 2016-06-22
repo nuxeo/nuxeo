@@ -67,7 +67,6 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         // get MD5 binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
         assertEquals("MD5", binary.getDigestAlgorithm());
         assertEquals(CONTENT_MD5, binary.getDigest());

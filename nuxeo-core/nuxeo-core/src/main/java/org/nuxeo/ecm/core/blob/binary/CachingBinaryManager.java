@@ -20,17 +20,13 @@
 package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.file.FileCache;
@@ -50,8 +46,6 @@ import org.nuxeo.runtime.trackers.files.FileEventTracker;
 public abstract class CachingBinaryManager extends AbstractBinaryManager {
 
     private static final Log log = LogFactory.getLog(CachingBinaryManager.class);
-
-    protected static final String LEN_DIGEST_SUFFIX = "-len";
 
     protected File cachedir;
 
@@ -146,7 +140,6 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
             in.close();
             out.close();
         }
-        long length = tmp.length();
 
         File cachedFile = fileCache.getFile(digest);
         if (cachedFile != null) {
@@ -162,7 +155,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
             // register the file in the file cache
             fileCache.putFile(digest, tmp);
         }
-        return new LazyBinary(digest, length, blobProviderId, this);
+        return getBinary(digest);
     }
 
     @Override
@@ -193,61 +186,6 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
             // file not in storage
             tmp.delete();
             return null;
-        }
-    }
-
-    /**
-     * Gets a file length from cache or storage.
-     * <p>
-     * Use by {@link LazyBinary}.
-     */
-    public Long getLength(String digest) throws IOException {
-        // get length from cache
-        Long length = getLengthFromCache(digest);
-        if (length != null) {
-            return length;
-        }
-        // fetch length from storage
-        length = fileStorage.fetchLength(digest);
-        // put length in cache
-        putLengthInCache(digest, length);
-        return length;
-    }
-
-    protected Long getLengthFromCache(String digest) throws IOException {
-        File f = fileCache.getFile(digest + LEN_DIGEST_SUFFIX);
-        if (f == null) {
-            return null;
-        }
-        // read decimal length from file
-        InputStream in = null;
-        try {
-            in = new FileInputStream(f);
-            String len = IOUtils.toString(in);
-            return Long.valueOf(len);
-        } catch (NumberFormatException e) {
-            throw new IOException("Invalid length in " + f, e);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-    }
-
-    protected void putLengthInCache(String digest, Long len) throws IOException {
-        if (len == null) {
-            return;
-        }
-        // write decimal length in file
-        OutputStream out = null;
-        try {
-            File tmp = fileCache.getTempFile();
-            out = new FileOutputStream(tmp);
-            Writer writer = new OutputStreamWriter(out);
-            writer.write(len.toString());
-            writer.flush();
-            writer.close();
-            fileCache.putFile(digest + LEN_DIGEST_SUFFIX, tmp);
-        } finally {
-            IOUtils.closeQuietly(out);
         }
     }
 

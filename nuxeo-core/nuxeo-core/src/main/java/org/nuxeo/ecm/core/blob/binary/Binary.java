@@ -45,8 +45,6 @@ public class Binary implements Serializable {
 
     protected transient File file;
 
-    protected long length;
-
     protected Binary(String digest, String blobProviderId) {
         this(null, digest, blobProviderId);
     }
@@ -55,33 +53,6 @@ public class Binary implements Serializable {
         this.file = file;
         this.digest = digest;
         this.blobProviderId = blobProviderId;
-        length = -1;
-    }
-
-    /**
-     * Compute length on demand, default implementation only works if the file referenced contains the binary original
-     * content. If you're contributing a binary type, you should adapt this in case you're encoding the content. This
-     * method is only used when users make a direct access to the binary. Persisted blobs don't use that API.
-     *
-     * @since 5.7.3
-     */
-    protected long computeLength() {
-        if (file == null) {
-            return -1;
-        }
-        return file.length();
-    }
-
-    /**
-     * Gets the length of the binary.
-     *
-     * @return the length of the binary
-     */
-    public long getLength() {
-        if (length == -1) {
-            length = computeLength();
-        }
-        return length;
     }
 
     /**
