@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
+ *     ajusto <ajusto@nuxeo.com>
  */
 package org.nuxeo.binary.metadata.internals;
 
@@ -244,7 +245,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 if (fileProp.isDirty()) {
                     if (isDirtyMapping) {
                         // if Blob dirty and document metadata dirty, write metadata from doc to Blob
-                        Blob newBlob = writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
                         fileProp.setValue(newBlob);
                     } else {
                         // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
@@ -253,7 +254,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 } else {
                     if (isDirtyMapping) {
                         // if Blob not dirty and document metadata dirty, write metadata from doc to Blob
-                        Blob newBlob = writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
                         fileProp.setValue(newBlob);
                     }
                 }
