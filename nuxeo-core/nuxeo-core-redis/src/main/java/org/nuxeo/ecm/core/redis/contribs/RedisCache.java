@@ -26,8 +26,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,14 +110,11 @@ public class RedisCache extends AbstractCache {
         return executor.execute(new RedisCallable<Set<String>>() {
             @Override
             public Set<String> call(Jedis jedis) {
-                Set<String> formattedKeys = jedis.keys(formatKey("*"));
                 int offset = namespace.length();
-                Set<String> keys = new HashSet<>(formattedKeys.size());
-                for (String formattedKey : formattedKeys) {
-                    String key = formattedKey.substring(offset);
-                    keys.add(key);
-                }
-                return keys;
+                return jedis.keys(formatKey("*"))
+                            .stream()
+                            .map(key -> key.substring(offset))
+                            .collect(Collectors.toSet());
             }
         });
     }

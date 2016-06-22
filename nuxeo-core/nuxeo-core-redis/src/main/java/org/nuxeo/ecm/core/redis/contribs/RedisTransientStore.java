@@ -30,10 +30,13 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -90,11 +93,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RedisTransientStore extends AbstractTransientStore {
 
+    protected static final String SIZE_KEY = "size";
+
     protected RedisExecutor redisExecutor;
 
     protected String namespace;
 
     protected String sizeKey;
+
+    protected KeyMatcher keyMatcher;
 
     protected RedisAdmin redisAdmin;
 
@@ -115,7 +122,8 @@ public class RedisTransientStore extends AbstractTransientStore {
         super.init(config);
 
         namespace = redisAdmin.namespace("transientStore", config.getName());
-        sizeKey = namespace + "size";
+        sizeKey = namespace + SIZE_KEY;
+        keyMatcher = new KeyMatcher();
 
         // Use seconds for Redis EXPIRE command
         firstLevelTTL = config.getFirstLevelTTL() * 60;
@@ -136,22 +144,28 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public Set<String> keySet() {
-        Set<String> redisKeys = redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
-            return jedis.keys(namespace + "*");
+        return redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
+            return jedis.keys(namespace + "*")
+                        .stream()
+                        .map(keyMatcher)
+                        .filter(key -> !SIZE_KEY.equals(key))
+                        .collect(Collectors.toSet());
         });
-        int offset = namespace.length();
-        Set<String> keys = new HashSet<>(redisKeys.size());
-        for (String redisKey : redisKeys) {
-            if (redisKey.equals(sizeKey)) {
-                continue;
-            }
-            String key = redisKey.substring(offset);
-            if (key.endsWith("params") || key.contains("blobs:")) {
-                continue;
-            }
-            keys.add(key);
+    }
+
+    protected class KeyMatcher implements Function<String, String> {
+
+        protected final Pattern KEY_PATTERN = Pattern.compile("(.*?)(:(params|blobs:[0-9]+))?");
+
+        protected final int offset = namespace.length();
+
+        @Override
+        public String apply(String t) {
+            final Matcher m = KEY_PATTERN.matcher(t.substring(offset));
+            m.matches();
+            return m.group(1);
         }
-        return keys;
+
     }
 
     @Override
@@ -273,13 +287,13 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     public long getSize(String key) {
         return redisExecutor.execute((RedisCallable<Long>) jedis -> {
-            String size = jedis.hget(namespace + key, "size");
+            String size = jedis.hget(namespace + key, SIZE_KEY);
             if (size == null) {
                 return -1L;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched field \"size\" from Redis hash stored at key %s -> %s", namespace
-                        + key, size));
+                log.debug(String.format("Fetched field \"%s\" from Redis hash stored at key %s -> %s", SIZE_KEY,
+                        namespace + key, size));
             }
             return Long.parseLong(size);
         });
@@ -330,7 +344,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             });
 
             // Decrement storage size
-            String size = summary.get("size");
+            String size = summary.get(SIZE_KEY);
             if (size != null) {
                 long entrySize = Integer.parseInt(size);
                 if (entrySize > 0) {
@@ -368,7 +382,7 @@ public class RedisTransientStore extends AbstractTransientStore {
         // Update storage size
         long entrySize = -1;
         if (oldSummary != null) {
-            String size = oldSummary.get("size");
+            String size = oldSummary.get(SIZE_KEY);
             if (size != null) {
                 entrySize = Long.parseLong(size);
             }
@@ -394,7 +408,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             blobCount = blobInfos.size();
         }
         entrySummary.put("blobCount", String.valueOf(blobCount));
-        entrySummary.put("size", String.valueOf(sizeOfBlobs));
+        entrySummary.put(SIZE_KEY, String.valueOf(sizeOfBlobs));
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Setting fields %s in Redis hash stored at key %s", entrySummary, namespace

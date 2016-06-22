@@ -121,7 +121,6 @@ public class TransientStorageComplianceFixture {
         assertEquals(11, size);
 
         // update the entry
-        ts.setCompleted("1", true);
         Blob otherBlob = new StringBlob("FakeContent2");
         otherBlob.setFilename("fake2.txt");
         otherBlob.setMimeType("text/plain");
@@ -130,7 +129,6 @@ public class TransientStorageComplianceFixture {
 
         // check update
         assertTrue(ts.exists("1"));
-        assertTrue(ts.isCompleted("1"));
         assertEquals(1, ts.keySet().size());
         assertTrue(ts.keySet().contains("1"));
         assertEquals(23, ts.getSize("1"));
