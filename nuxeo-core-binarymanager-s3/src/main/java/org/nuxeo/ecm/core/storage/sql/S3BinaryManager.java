@@ -579,7 +579,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         expiration.setTime(expiration.getTime() + directDownloadExpire * 1000);
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, key, HttpMethod.GET);
         request.addRequestParameter("response-content-type", getContentTypeHeader(blob));
-        request.addRequestParameter("response-content-disposition", getContentDispositionHeader(blob, servletRequest));
+        request.addRequestParameter("response-content-disposition", getContentDispositionHeader(blob, null));
         request.setExpiration(expiration);
         URL url = amazonS3.generatePresignedUrl(request);
         try {
