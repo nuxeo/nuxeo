@@ -101,7 +101,6 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         // get binary (from cache)
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // get binary (clean cache)
@@ -110,19 +109,16 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         assertNotNull(binary);
         assertTrue(binary instanceof LazyBinary);
         assertEquals(CONTENT, toString(binary.getStream()));
-        assertEquals(bytes.length, binary.getLength());
         // refetch, now in cache
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
         assertEquals(CONTENT, toString(binary.getStream()));
-        assertEquals(bytes.length, binary.getLength());
 
         // get binary (clean cache), fetch length first
         binaryManager.fileCache.clear();
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
         assertTrue(binary instanceof LazyBinary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
     }
 
@@ -153,7 +149,6 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
 
         // another binary we'll GC
