@@ -71,6 +71,7 @@ import com.marklogic.client.document.DocumentDescriptor;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
+import com.marklogic.client.document.DocumentWriteSet;
 import com.marklogic.client.document.XMLDocumentManager;
 import com.marklogic.client.query.RawQueryDefinition;
 
@@ -169,6 +170,21 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             log.trace("MarkLogic: CREATE " + id + ": " + state);
         }
         markLogicClient.newXMLDocumentManager().write(ID_FORMATTER.apply(id), new StateHandle(state));
+    }
+
+    public void createStates(List<State> states) {
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        DocumentWriteSet writeSet = docManager.newWriteSet();
+        for (State state : states) {
+            String id = state.get(KEY_ID).toString();
+            writeSet.add(ID_FORMATTER.apply(id), new StateHandle(state));
+        }
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: CREATE ["
+                    + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
+                    + "]: " + states);
+        }
+        docManager.write(writeSet);
     }
 
     @Override
