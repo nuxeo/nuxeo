@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxa="http://nuxeo.org/nxweb/actions"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <c:if test="false">
@@ -50,6 +51,27 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
 <nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
 <nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
+
+<c:choose>
+  <c:when test="#{!removeActionOptims}">
+
+    <nxa:action action="#{action}"
+      value="#{fieldOrValue}"
+      mode="#{mode}"
+      widgetName="#{actionWidgetName}"
+      addForm="#{addForm}"
+      useAjaxForm="#{useAjaxForm}"
+      hideIcon="#{hideIcon}"
+      hideLabel="#{hideLabel}"
+      useButton="#{useButton}"
+      disableFiltered="#{disableFiltered}"
+      actionStyleClass="#{actionStyleClass}"
+      clickedActionIdHolder="#{clickedActionIdHolder}"
+      formStyleClass="#{formStyleClass}" />
+
+  </c:when>
+  <c:otherwise>
+
 <nxu:set var="actionConfirmMessageJs"
   value="if (!confirm#{actionWidgetName}Message()) return false;"
   cache="true">
@@ -102,17 +124,14 @@ Templating zones that can be filled when useAjaxForm is set to true:
     <nxu:set var="disableDoubleClickShield"
       value="#{action.properties.containsKey('disableDoubleClickShield') ? action.properties.disableDoubleClickShield : widget.properties.disableDoubleClickShield}"
       resolveTwice="true" >
-      <ui:decorate template="/widgets/incl/form_template.xhtml">
-        <ui:param name="addForm" value="#{addForm and (!discardForm or useAjaxForm)}" />
-        <ui:param name="formId" value="#{widget.id}_form" />
-        <ui:param name="useAjaxForm" value="#{useAjaxForm and supportAjax}" />
-        <ui:param name="disableMultipartForm" value="#{disableMultipartForm}" />
-        <ui:param name="formStyleClass" value="#{formStyleClass}" />
-        <ui:param name="disableDoubleClickShield" value="#{disableDoubleClickShield}" />
-        <ui:define name="form_template_content">
-          <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-        </ui:define>
-      </ui:decorate>
+      <nxu:form id="#{widget.id}_form"
+        skip="#{!addForm or (discardForm and !useAjaxForm)}"
+        useAjaxForm="#{useAjaxForm and supportAjax}"
+        disableMultipartForm="#{disableMultipartForm}"
+        styleClass="#{formStyleClass}"
+        disableDoubleClickShield="#{disableDoubleClickShield}">
+        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+      </nxu:form>
     </nxu:set>
     </nxu:set>
     </nxu:set>
@@ -124,6 +143,11 @@ Templating zones that can be filled when useAjaxForm is set to true:
   </nxu:set>
 
 </nxu:set>
+
+
+  </c:otherwise>
+</c:choose>
+
 </nxu:set>
 </nxu:set>
 

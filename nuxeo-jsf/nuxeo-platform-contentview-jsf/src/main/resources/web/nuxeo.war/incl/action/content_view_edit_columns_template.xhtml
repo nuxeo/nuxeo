@@ -22,6 +22,7 @@
     <div class="buttonsGadget">
       <h:commandButton value="#{messages['command.save']}" styleClass="button">
         <f:ajax
+          render="#{ajaxReRender}"
           execute="@form"
           onevent="jQuery.fancybox.close" />
       </h:commandButton>

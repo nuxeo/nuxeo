@@ -1,0 +1,96 @@
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+
+<c:choose>
+<c:when test="#{widgetProperty_useButton}">
+
+  <c:choose>
+  <c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
+    <h:commandButton
+      id="#{widget.id}"
+      onclick="#{widgetProperty_onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};"
+      value="#{messages[widget.label]}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
+        <ui:param name="widgetProperty_hideLabel" value="true" />
+      </ui:include>
+      <ui:insert name="before_action_trigger" />
+      <nxu:actionListenerMethod
+        value="#{widgetProperty_action.getLink()}" />
+      <ui:insert name="after_action_trigger" />
+      <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
+        render="#{ajaxReRender}" />
+    </h:commandButton>
+  </c:when>
+
+  <c:otherwise>
+    <nxh:commandButton action="#{widgetProperty_action.getLink()}"
+      id="#{widget.id}"
+      onclick="#{widgetProperty_onclick}"
+      immediate="#{widgetProperty_immediate}"
+      value="#{messages[widget.label]}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
+        <ui:param name="widgetProperty_hideLabel" value="true" />
+      </ui:include>
+      <ui:insert name="inside_action" />
+    </nxh:commandButton>
+  </c:otherwise>
+  </c:choose>
+
+</c:when>
+<c:otherwise>
+
+  <c:choose>
+  <c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
+    <h:commandLink
+      id="#{widget.id}"
+      onclick="#{widgetProperty_onclick}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+      <ui:insert name="before_action_trigger" />
+      <nxu:actionListenerMethod
+        value="#{widgetProperty_action.getLink()}" />
+      <ui:insert name="after_action_trigger" />
+      <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
+        render="#{ajaxReRender}" />
+    </h:commandLink>
+  </c:when>
+
+  <c:otherwise>
+    <nxh:commandLink action="#{widgetProperty_action.getLink()}"
+      id="#{widget.id}"
+      onclick="#{widgetProperty_onclick}"
+      immediate="#{widgetProperty_immediate}"
+      target="#{widgetProperty_target}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </nxh:commandLink>
+  </c:otherwise>
+  </c:choose>
+
+</c:otherwise>
+</c:choose>
+
+</ui:fragment>
+
+</c:if>

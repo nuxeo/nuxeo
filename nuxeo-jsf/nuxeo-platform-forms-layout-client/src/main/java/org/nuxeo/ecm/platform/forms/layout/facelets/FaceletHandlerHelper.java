@@ -64,6 +64,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.facelets.tag.TagAttributeImpl;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
@@ -413,7 +414,7 @@ public final class FaceletHandlerHelper {
                     // and it's not kept (cached) in a component value on
                     // ajax refresh
                     attr = createAttribute(key,
-                            String.format("#{%s.properties.%s}", RenderVariables.widgetVariables.widget.name(), key));
+                            "#{" + RenderVariables.widgetVariables.widget.name() + ".properties." + key + "}");
                 }
                 attrs.add(attr);
             }
@@ -519,8 +520,8 @@ public final class FaceletHandlerHelper {
      */
     public ComponentHandler getErrorComponentHandler(String tagConfigId, String errorMessage) {
         FaceletHandler leaf = new org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler();
-        TagAttribute valueAttr = createAttribute("value", "<span style=\"color:red;font-weight:bold;\">ERROR: "
-                + errorMessage + "</span><br />");
+        TagAttribute valueAttr = createAttribute("value",
+                "<span style=\"color:red;font-weight:bold;\">ERROR: " + errorMessage + "</span><br />");
         TagAttribute escapeAttr = createAttribute("escape", "false");
         ComponentHandler output = getHtmlComponentHandler(tagConfigId,
                 FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr), leaf, HtmlOutputText.COMPONENT_TYPE, null);
@@ -637,7 +638,7 @@ public final class FaceletHandlerHelper {
             if (bean.isDevModeSet()) {
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
                 ValueExpression disableDevAttr = eFactory.createValueExpression(ctx,
-                        String.format("#{%s}", DEV_MODE_DISABLED_VARIABLE), Boolean.class);
+                        "#{" + DEV_MODE_DISABLED_VARIABLE + "}", Boolean.class);
                 if (!Boolean.TRUE.equals(disableDevAttr.getValue(ctx))) {
                     return true;
                 }
@@ -661,8 +662,23 @@ public final class FaceletHandlerHelper {
      * @since 6.0
      */
     public FaceletHandler getDisableDevModeTagHandler(String tagConfigId, FaceletHandler nextHandler) {
+        TagAttribute[] attrs = new TagAttribute[4];
+        attrs[0] = createAttribute("var", DEV_MODE_DISABLED_VARIABLE);
+        attrs[1] = createAttribute("value", "true");
+        attrs[2] = createAttribute("cache", "true");
+        attrs[3] = createAttribute("blockMerge", "true");
+        TagAttributes attributes = new TagAttributesImpl(attrs);
         ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId,
-                DEV_MODE_DISABLED_VARIABLE, "true", "true", "false", nextHandler);
+                attributes, nextHandler);
         return new SetTagHandler(config);
     }
+
+    /**
+     * @since 8.2
+     */
+    public static boolean isAliasOptimEnabled() {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return !cs.isBooleanPropertyTrue("nuxeo.jsf.layout.removeAliasOptims");
+    }
+
 }

@@ -17,7 +17,6 @@
     <property name="org.nuxeo.dnd.upload.timeout">30000</property>
     <property name="org.nuxeo.dnd.exec.timeout">30000</property>
     <property name="org.nuxeo.dnd.extendedmode.timeout">2000</property>
-    <property name="nuxeo.jsf.combinePageResources">true</property>
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
@@ -55,6 +54,21 @@
     </documentation>
     <property name="nuxeo.jsf.combinePageResources">true</property>
     <property name="nuxeo.jsf.deferJavaScriptLoading">true</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Controls whether iterations in document listings are done
+      using build-time tag c:forEach or render-time tag ui:repeat (which is much
+      more efficient on large content).
+
+      Using render-time iterations may break
+      some behaviours, this property is mainly useful for backport of
+      optimizations on maintenance branches.
+
+      @since 8.2
+    </documentation>
+    <property name="nuxeo.jsf.listings.useRepeatRenderTime">false</property>
   </extension>
 
 </component>

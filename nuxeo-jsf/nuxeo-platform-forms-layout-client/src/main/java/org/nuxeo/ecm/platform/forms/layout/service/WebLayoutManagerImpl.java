@@ -229,7 +229,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         } else if (value == null || value instanceof String) {
             return Boolean.valueOf((String) value);
         } else {
-            log.error(String.format("Could not get boolean value for '%s' in expression '%s'", value, expression));
+            log.error("Could not get boolean value for '" + value + "' in expression '" + expression + "'");
             return Boolean.FALSE;
         }
     }
@@ -242,7 +242,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         if (value == null || value instanceof String) {
             return (String) value;
         } else {
-            log.error(String.format("Could not get string value for '%s' in expression '%s'", value, expression));
+            log.error("Could not get string value for '" + value + "' in expression '" + expression + "'");
             return null;
         }
     }
@@ -338,7 +338,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 }
                 WidgetDefinition swDef = lookupWidget(layoutDef, new WidgetReferenceImpl(cat, swRef.getName()));
                 if (swDef == null) {
-                    log.error(String.format("Widget '%s' not found in layout %s", swRef.getName(), layoutName));
+                    log.error("Widget '" + swRef.getName() + "' not found in layout " + layoutName);
                 } else {
                     Widget subWidget = getWidget(context, lctx, conversionCat, layoutName, layoutDef, swDef, cat,
                             wMode, valueName, level + 1);
@@ -407,7 +407,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         }
         LayoutDefinition layoutDef = getLayoutStore().getLayoutDefinition(layoutCategory, layoutName);
         if (layoutDef == null) {
-            log.debug(String.format("Layout '%s' not found for category '%s'", layoutName, layoutCategory));
+            if (log.isDebugEnabled()) {
+                log.debug("Layout '" + layoutName + "' not found for category '" + layoutCategory + "'");
+            }
             return null;
         }
         return getLayout(ctx, layoutDef, mode, valueName, selectedRows, selectAllRowsByDefault);
@@ -448,10 +450,9 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             String rowName = rowDef.getName();
             if (rowName == null) {
                 rowName = rowDef.getDefaultName(rowIndex);
-                if (selectedRows != null) {
-                    log.debug(String.format("Generating default name '%s' in "
-                            + "layout '%s' for row or column at index %s", rowName, layoutName,
-                            Integer.valueOf(rowIndex)));
+                if (selectedRows != null && log.isDebugEnabled()) {
+                    log.debug("Generating default name '" + rowName + "' in layout '" + layoutName
+                            + "' for row or column at index " + rowIndex);
                 }
             }
             boolean emptyRow = true;
@@ -476,7 +477,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 }
                 WidgetDefinition wDef = lookupWidget(lDef, new WidgetReferenceImpl(cat, widgetName));
                 if (wDef == null) {
-                    log.error(String.format("Widget '%s' not found in layout %s", widgetName, layoutName));
+                    log.error("Widget '" + widgetName + "' not found in layout " + layoutName);
                     widgets.add(null);
                     continue;
                 }
@@ -496,8 +497,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             Collections.sort(rows, new LayoutRowComparator(selectedRows));
             for (String selectedRow : selectedRows) {
                 if (!foundRowNames.contains(selectedRow)) {
-                    log.debug(String.format("Selected row or column named '%s' " + "was not found in layout '%s'",
-                            selectedRow, layoutName));
+                    log.warn("Selected row or column named '" + selectedRow + "' " + "was not found in layout '"
+                            + layoutName + "'");
                 }
             }
         }
@@ -510,7 +511,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             // retrieve type for templates and props mapping
             layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(actualLayoutTypeCategory, layoutType);
             if (layoutTypeDef == null) {
-                log.debug(String.format("Layout type '%s' not found for category '%s'", layoutType, layoutTypeCategory));
+                log.warn("Layout type '" + layoutType + "' not found for category '" + layoutTypeCategory + "'");
             }
         }
 
@@ -565,8 +566,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeCategory, widgetTypeName);
         if (handler == null) {
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            String message = String.format("No widget handler found for type '%s' in category '%s'", widgetTypeName,
-                    widgetTypeCategory);
+            String message = "No widget handler found for type '" + widgetTypeName + "' in category '"
+                    + widgetTypeCategory + "'";
             log.error(message);
             ComponentHandler output = helper.getErrorComponentHandler(null, message);
             return output;
@@ -656,8 +657,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 } else if (requiredProp instanceof String) {
                     required = getBooleanValue(ctx, (String) requiredProp).booleanValue();
                 } else {
-                    log.error(String.format("Invalid property '%s' on widget: '%s'",
-                            WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
+                    log.error("Invalid property 'required' on widget: '" + requiredProp + "'.");
                 }
             }
         }

@@ -10,6 +10,11 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+<c:if test="false">
+  WARN: deprecated template since 8.2, see widgets subdirectory
+</c:if>
+
+
 <c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
 
 <nxu:set var="onclick"
@@ -96,14 +101,7 @@
 
 <c:if test="#{widget.mode == 'tab_content'}">
   <c:if test="#{not empty action.link}">
-    <c:choose>
-      <c:when test="#{action.link.startsWith('/')}">
-        <ui:include src="#{action.link}" />
-      </c:when>
-      <c:otherwise>
-        <ui:include src="/#{action.link}" />
-      </c:otherwise>
-    </c:choose>
+    <ui:include src="#{nxu:test(action.link.startsWith('/'), '', '/')}#{action.link}" />
   </c:if>
 </c:if>
 

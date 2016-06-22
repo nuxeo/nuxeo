@@ -49,8 +49,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
-import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,10 +61,6 @@ public final class ComponentUtils {
     public static final String WHITE_SPACE_CHARACTER = "&#x0020;";
 
     private static final Log log = LogFactory.getLog(ComponentUtils.class);
-
-    private static final String VH_HEADER = "nuxeo-virtual-host";
-
-    private static final String VH_PARAM = "nuxeo.virtual.host";
 
     public static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
@@ -158,11 +152,26 @@ public final class ComponentUtils {
     }
 
     public static Object getAttributeValue(UIComponent component, String attributeName, Object defaultValue) {
-        Object value = component.getAttributes().get(attributeName);
+        return getAttributeValue(component, attributeName, Object.class, defaultValue, false);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public static <T> T getAttributeValue(UIComponent component, String name, Class<T> klass, T defaultValue,
+            boolean required) {
+        Object value = component.getAttributes().get(name);
         if (value == null) {
             value = defaultValue;
         }
-        return value;
+        if (required && value == null) {
+            throw new IllegalArgumentException("Component attribute with name '" + name + "' cannot be null: " + value);
+        }
+        if (value == null || value.getClass().isAssignableFrom(klass)) {
+            return (T) value;
+        }
+        throw new IllegalArgumentException(
+                "Component attribute with name '" + name + "' is not a " + klass + ": " + value);
     }
 
     public static Object getAttributeOrExpressionValue(FacesContext context, UIComponent component,
@@ -351,9 +360,8 @@ public final class ComponentUtils {
             try {
                 return (T) component;
             } catch (ClassCastException e) {
-                log.error(String.format(
-                        "Invalid component with id %s: %s, expected a " + "component with interface %s", componentId,
-                        component, expectedComponentClass));
+                log.error("Invalid component with id '" + componentId + "': " + component
+                        + ", expected a component with interface " + expectedComponentClass);
             }
         }
         return null;

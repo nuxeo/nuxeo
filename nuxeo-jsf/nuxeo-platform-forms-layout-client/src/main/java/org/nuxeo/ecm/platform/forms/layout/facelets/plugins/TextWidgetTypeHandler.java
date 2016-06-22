@@ -114,9 +114,9 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             } else {
                 String bareExpression = ValueExpressionHelper.createBareExpressionString(widget.getValueName(), field);
                 String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-                String localizedExpression = String.format("%s[%s]", bundleName, bareExpression);
-                String expression = String.format("#{%s ? %s : %s}", "widget.properties.localize", localizedExpression,
-                        bareExpression);
+                String localizedExpression = bundleName + "[" + bareExpression + "]";
+                String expression = "#{widget.properties.localize ? " + localizedExpression + " : " + bareExpression
+                        + "}";
                 TagAttribute valueAttr = helper.createAttribute("value", expression);
                 attrs.add(valueAttr);
             }

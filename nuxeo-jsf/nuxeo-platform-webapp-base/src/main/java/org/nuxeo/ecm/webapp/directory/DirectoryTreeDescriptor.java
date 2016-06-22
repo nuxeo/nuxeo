@@ -250,7 +250,7 @@ public class DirectoryTreeDescriptor {
             // they're displayed after standard navigation trees
             a.setOrder(1000);
         }
-        a.setIcon(String.format("/img/%s.png", getName()));
+        a.setIcon("/img/" + getName() + ".png");
         // need to set a non-empty list
         a.setEnabled(Boolean.TRUE.equals(getEnabled()));
         a.setFilterIds(new ArrayList<String>());

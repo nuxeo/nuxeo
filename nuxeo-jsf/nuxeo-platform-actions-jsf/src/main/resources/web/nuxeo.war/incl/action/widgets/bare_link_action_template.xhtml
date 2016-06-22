@@ -1,0 +1,23 @@
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+  <ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+    <nxu:set var="actionLink" value="#{widgetProperty_link}"
+      cache="#{widgetProperty_cacheLink != null ? widgetProperty_cacheLink : false}">
+      <h:outputLink value="#{actionLink}"
+        id="#{widget.id}"
+        target="#{widgetProperty_target}"
+        onclick="#{widgetProperty_onclick}"
+        immediate="#{widgetProperty_immediate}"
+        disabled="#{!widgetProperty_available}"
+        styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+        accesskey="#{widgetProperty_accessKey}">
+        <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+        <ui:insert name="inside_action" />
+      </h:outputLink>
+    </nxu:set>
+  </ui:fragment>
+</c:if>

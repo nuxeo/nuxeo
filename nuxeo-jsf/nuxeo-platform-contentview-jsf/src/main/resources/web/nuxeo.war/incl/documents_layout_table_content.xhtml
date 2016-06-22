@@ -48,16 +48,21 @@
   <c:if test="#{documents.rowCount != 0}">
 
     <c:if test="false">
-      Resolve layout for first element just to get display
+      Resolve layout for first element just to get display and before_layout property.
     </c:if>
     <nxl:layout name="#{layoutName}" value="#{documents.rows[0]}"
       mode="view" selectedColumns="#{selectedResultLayoutColumns}"
       template="#{layoutTemplate}" resolveOnly="true">
 
+      <c:set var="useRepeatRenderTime" value="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.listings.useRepeatRenderTime')}" />
       <c:set var="display" value="#{layoutProperty_display}" />
       <c:if
         test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
         <c:set var="display" value="table_2_columns" />
+      </c:if>
+
+      <c:if test="#{not empty layoutProperty_before_template}">
+        <ui:include src="#{layoutProperty_before_template}" />
       </c:if>
 
       <c:choose>
@@ -65,6 +70,8 @@
         <c:when test="#{display == 'block'}">
           <div>
             <nxu:repeat var="row" items="#{documents.rows}"
+              id="#{formId}_repeat"
+              renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
@@ -79,6 +86,8 @@
               <td>
                 <table class="dataTableNoBorder">
                   <nxu:repeat var="row" items="#{documents.rows}"
+                    id="#{formId}_repeat"
+                    renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     end="#{(documents.size-1)/2}">
                     <c:set var="showListingHeader"
@@ -90,6 +99,8 @@
               <td>
                 <table class="dataTableNoBorder">
                   <nxu:repeat var="row" items="#{documents.rows}"
+                    id="#{formId}_repeat"
+                    renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     begin="#{(documents.size-1)/2 + 1}">
                     <c:set var="showListingHeader"
@@ -105,6 +116,8 @@
         <c:otherwise>
           <table class="dataOutput">
             <nxu:repeat var="row" items="#{documents.rows}"
+              id="#{formId}_repeat"
+              renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />

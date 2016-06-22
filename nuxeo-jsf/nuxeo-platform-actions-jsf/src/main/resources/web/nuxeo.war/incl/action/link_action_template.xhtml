@@ -9,11 +9,15 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+<c:if test="false">
+  WARN: deprecated template since 8.2, see widgets subdirectory
+</c:if>
+
 <nxu:set var="onclick"
   value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
   cache="true">
 
-<c:if test="#{useButton}">
+<c:if test="#{widgetProperty_useButton}">
 
   <c:if test="#{not useAjaxForm}">
     <nxh:commandButton action="#{action.getLink()}"
@@ -54,7 +58,7 @@
 
 </c:if>
 
-<c:if test="#{not useButton}">
+<c:if test="#{not widgetProperty_useButton}">
 
   <c:if test="#{not useAjaxForm}">
     <nxh:commandLink action="#{action.getLink()}"

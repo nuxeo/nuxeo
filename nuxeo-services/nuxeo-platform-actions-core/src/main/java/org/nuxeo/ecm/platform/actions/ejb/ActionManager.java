@@ -80,6 +80,11 @@ public interface ActionManager extends Serializable {
     boolean checkFilters(List<String> filterIds, ActionContext context);
 
     /**
+     * @since 8.2
+     */
+    boolean checkFilters(Action action, ActionContext context);
+
+    /**
      * Gets all actions in a category (filters are NOT evaluated).
      */
     List<Action> getAllActions(String category);

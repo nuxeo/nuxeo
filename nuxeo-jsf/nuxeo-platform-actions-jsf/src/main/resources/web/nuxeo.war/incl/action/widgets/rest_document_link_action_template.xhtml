@@ -1,0 +1,85 @@
+<ui:fragment
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
+
+<nxu:set var="tabIds"
+  value="#{parentTabActionCategory}:#{widgetProperty_actionId}"
+  cache="true">
+<nxu:set var="finalView"
+  value="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+  cache="true">
+<nxu:set var="finalPattern"
+  value="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}"
+  cache="true">
+
+<c:choose>
+<c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    repositoryName="#{widgetProperty_repositoryName}"
+    view="#{finalView}"
+    pattern="#{finalPattern}"
+    tabs="#{tabIds}"
+    addTabInfo="false"
+    accesskey="#{widgetProperty_accessKey}"
+    disabled="#{!widgetProperty_available}"
+    id="#{widget.id}_restLink"
+    resolveOnly="true"
+    var="docUrl">
+    <h:commandLink
+      id="#{widget.id}"
+      action="#{webActions.setCurrentTabIds(tabIds)}"
+      onclick="if (!(jQuery(this).checkSafeEdit())){return false;};history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{widgetProperty_onclick}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accessKey="#{widgetProperty_accessKey}">
+      <a4j:ajax execute="@this" render="#{ajaxReRender}" />
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </h:commandLink>
+  </nxd:restDocumentLink>
+</c:when>
+
+<c:otherwise>
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    repositoryName="#{widgetProperty_repositoryName}"
+    view="#{finalView}"
+    pattern="#{finalPattern}"
+    tabs="#{tabIds}"
+    addTabInfo="false"
+    accesskey="#{widgetProperty_accessKey}"
+    disabled="#{!widgetProperty_available}"
+    id="#{widget.id}"
+    target="#{widgetProperty_target}"
+    styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+    onclick="#{widgetProperty_onclick}">
+    <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+    <ui:insert name="inside_action" />
+  </nxd:restDocumentLink>
+</c:otherwise>
+</c:choose>
+
+</nxu:set>
+</nxu:set>
+</nxu:set>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'tab_content'}">
+  <c:if test="#{not empty widgetProperty_link}">
+    <ui:include src="#{nxu:test(widgetProperty_link.startsWith('/'), '', '/')}#{widgetProperty_link}" />
+  </c:if>
+</c:if>
+
+</ui:fragment>

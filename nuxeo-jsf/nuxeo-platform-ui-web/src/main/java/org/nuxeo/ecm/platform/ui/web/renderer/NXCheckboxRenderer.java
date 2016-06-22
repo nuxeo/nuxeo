@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.renderer;
 
+import java.io.IOException;
+
+import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
@@ -70,6 +73,23 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
         } else {
             return Boolean.valueOf(newValue);
         }
+    }
+
+    @Override
+    protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
+            throws IOException {
+        String val = currentValue;
+        // hack to make sure checkbox state is restored correctly from bound value on ajax request
+        if (component instanceof EditableValueHolder && context.getPartialViewContext().isAjaxRequest()) {
+            Object reset = component.getAttributes().get("resetOnAjax");
+            if ((reset instanceof Boolean && Boolean.TRUE.equals(reset))
+                    || (reset instanceof String && Boolean.parseBoolean((String) reset))) {
+                EditableValueHolder c = (EditableValueHolder) component;
+                c.resetValue();
+                val = getCurrentValue(context, component);
+            }
+        }
+        super.getEndTextToRender(context, component, val);
     }
 
 }

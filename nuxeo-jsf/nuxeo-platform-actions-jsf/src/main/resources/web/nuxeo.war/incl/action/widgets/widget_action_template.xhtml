@@ -1,0 +1,39 @@
+<c:if test="#{mode != 'after_view' and mode != 'tab_content'}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+
+  <c:if test="#{widgetProperty_displayActionLabel}">
+    <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+    <h:outputText value=" " />
+  </c:if>
+
+  <nxl:widget
+    name="#{widgetProperty_widgetName}"
+    mode="#{nxu:test(empty widgetProperty_widgetMode, widget.mode, widgetProperty_widgetMode)}"
+    category="#{empty widgetProperty_widgetCategory ? '': widgetProperty_widgetCategory}"
+    layoutName="#{widget.name}"
+    value="#{fieldOrValue}"
+    resolveOnly="true">
+    <nxu:form id="#{widget.id}_form"
+      skip="#{!widgetControl_requireSurroundingForm}"
+      useAjaxForm="#{widgetControl_useAjaxForm}"
+      disableMultipartForm="#{widgetControl_disableMultiPartForm}"
+      styleClass="subWidgetForm"
+      disableDoubleClickShield="#{widgetControl_disableDoubleClickShield}">
+      <c:if test="#{widgetProperty_displayWidgetLabel}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+        <h:outputText value=" " />
+      </c:if>
+      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+    </nxu:form>
+  </nxl:widget>
+
+</ui:fragment>
+
+</c:if>

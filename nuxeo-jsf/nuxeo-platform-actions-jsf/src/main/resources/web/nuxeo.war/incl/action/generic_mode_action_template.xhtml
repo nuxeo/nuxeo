@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxa="http://nuxeo.org/nxweb/actions"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <c:if test="false">
@@ -20,12 +21,32 @@ Parameters:
 
 <nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
 <nxu:set var="simpleActionWidgetName" value="#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
-<nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, simpleActionWidgetName, defActionWidgetName)}">
+
+<c:choose>
+  <c:when test="#{!removeActionOptims}">
+
+    <nxa:action action="#{action}"
+      value="#{fieldOrValue}"
+      widgetName="#{nxu:test(formAdded, simpleActionWidgetName, defActionWidgetName)}"
+      mode="#{mode}"
+      addForm="#{addForm}"
+      useAjaxForm="#{useAjaxForm}"
+      hideIcon="#{hideIcon}"
+      hideLabel="#{hideLabel}"
+      useButton="#{useButton}"
+      formAdded="#{formAdded}"
+      disableFiltered="#{disableFiltered}"
+      actionStyleClass="#{actionStyleClass}"
+      clickedActionIdHolder="#{clickedActionIdHolder}"
+      formStyleClass="#{formStyleClass}" />
+
+  </c:when>
+  <c:otherwise>
 
   <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
     mode="#{mode}"
-    widgetName="#{actionWidgetName}"
+    widgetName="#{nxu:test(formAdded, simpleActionWidgetName, defActionWidgetName)}"
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
@@ -36,7 +57,9 @@ Parameters:
     clickedActionIdHolder="#{clickedActionIdHolder}"
     value="#{fieldOrValue}" />
 
-</nxu:set>
+  </c:otherwise>
+</c:choose>
+
 </nxu:set>
 </nxu:set>
 

@@ -54,15 +54,26 @@ public class MetaValueExpression extends ValueExpression implements Serializable
 
     private VariableMapper varMapper;
 
+    private Class<?> expectedType;
+
+    /**
+     * @see {@link #MetaValueExpression(ValueExpression, FunctionMapper, VariableMapper)}
+     */
     public MetaValueExpression(ValueExpression originalValueExpression) {
-        this(originalValueExpression, null, null);
+        this(originalValueExpression, null, null, Object.class);
     }
 
     public MetaValueExpression(ValueExpression originalValueExpression, FunctionMapper fnMapper,
             VariableMapper varMapper) {
+        this(originalValueExpression, fnMapper, varMapper, Object.class);
+    }
+
+    public MetaValueExpression(ValueExpression originalValueExpression, FunctionMapper fnMapper,
+            VariableMapper varMapper, Class<?> expectedType) {
         this.originalValueExpression = originalValueExpression;
         this.fnMapper = fnMapper;
         this.varMapper = varMapper;
+        this.expectedType = expectedType;
     }
 
     // Expression interface
@@ -129,11 +140,11 @@ public class MetaValueExpression extends ValueExpression implements Serializable
                     FacesContext faces = FacesContext.getCurrentInstance();
                     Application app = faces.getApplication();
                     ExpressionFactory factory = app.getExpressionFactory();
-                    ValueExpression newExpr = factory.createValueExpression(nxcontext, expression, Object.class);
+                    ValueExpression newExpr = factory.createValueExpression(nxcontext, expression, expectedType);
                     try {
                         res = newExpr.getValue(nxcontext);
                     } catch (ELException err) {
-                        log.error(String.format("Error processing expression %s: %s", expression, err));
+                        log.error("Error processing expression " + expression + ": " + err);
                         res = null;
                     }
                 } else {
