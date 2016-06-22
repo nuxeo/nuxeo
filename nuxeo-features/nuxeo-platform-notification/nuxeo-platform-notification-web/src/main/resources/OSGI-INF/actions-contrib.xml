@@ -25,6 +25,7 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>general_documents</filter-id>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>isNotVersion</filter-id>
     </action>
 
     <action id="TAB_MANAGE_SUBSCRIPTIONS" link="/incl/tabs/document_group_subscriptions.xhtml"
@@ -33,6 +34,7 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>general_documents</filter-id>
       <filter-id>manage_subscriptions</filter-id>
+      <filter-id>isNotVersion</filter-id>
     </action>
 
   </extension>
