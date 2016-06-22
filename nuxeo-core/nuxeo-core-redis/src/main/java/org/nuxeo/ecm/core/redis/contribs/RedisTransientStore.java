@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,6 +132,25 @@ public class RedisTransientStore extends AbstractTransientStore {
     public boolean exists(String key) {
         // Jedis#exists(String key) doesn't to work for a key created with hset or hmset
         return getSummary(key) != null || getParameters(key) != null;
+    }
+
+    @Override public Set<String> keySet() {
+        Set<String> redisKeys = redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
+            return jedis.keys(namespace + "*");
+        });
+        int offset = namespace.length();
+        Set<String> keys = new HashSet<>(redisKeys.size());
+        for (String redisKey : redisKeys) {
+            if (redisKey.equals(sizeKey)) {
+                continue;
+            }
+            String key = redisKey.substring(offset);
+            if (key.endsWith("params") || key.contains("blobs:")) {
+                continue;
+            }
+            keys.add(key);
+        }
+        return keys;
     }
 
     @Override

@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.transientstore.api;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -51,6 +52,13 @@ public interface TransientStore {
      * @since 7.10
      */
     boolean exists(String key);
+
+    /**
+     * Returns the set of keys for all entries.
+     *
+     * @since 8.3
+     */
+    Set<String> keySet();
 
     /**
      * Sets {@code parameter} to {@code value} in the entry with the given {@code key}.

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -69,6 +70,11 @@ public class InMemoryCacheImpl extends AbstractCache {
         } else {
             return cache.getIfPresent(key);
         }
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return cache.asMap().keySet();
     }
 
     @Override
