@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.chemistry.opencmis.commons.data.CacheHeaderContentStream;
@@ -42,7 +41,6 @@ import org.apache.chemistry.opencmis.commons.data.LastModifiedContentStream;
 import org.apache.chemistry.opencmis.commons.data.RedirectingContentStream;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.commons.io.input.ClosedInputStream;
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -65,18 +63,14 @@ public class NuxeoContentStream
 
     protected final InputStream stream;
 
-    private NuxeoContentStream(Blob blob, GregorianCalendar lastModified, boolean isHeadRequest) {
+    private NuxeoContentStream(Blob blob, GregorianCalendar lastModified) {
         this.blob = blob;
         this.lastModified = lastModified;
         // The callers of getStream() often just want to know if the stream is null or not.
         // (Callers are ObjectService.GetContentStream / AbstractServiceCall.sendContentStreamHeaders)
         // Also in case we end up redirecting, we don't want to get the stream (which is possibly costly) to just have
         // it closed immediately. So we wrap in a lazy implementation
-        if (isHeadRequest) {
-            stream = new NullInputStream(0);
-        } else {
-            stream = new LazyInputStream(this::getActualStream);
-        }
+        stream = new LazyInputStream(this::getActualStream);
     }
 
     public static NuxeoContentStream create(DocumentModel doc, String xpath, Blob blob, String reason,
@@ -92,26 +86,13 @@ public class NuxeoContentStream
             extendedInfos = new HashMap<>(extendedInfos == null ? Collections.emptyMap() : extendedInfos);
             extendedInfos.put("redirect", uri.toString());
         }
-        boolean isHeadRequest = isHeadRequest(request);
-        if (!isHeadRequest) {
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.logDownload(doc, xpath, blob.getFilename(), reason, extendedInfos);
-        }
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        downloadService.logDownload(doc, xpath, blob.getFilename(), reason, extendedInfos);
         if (uri == null) {
-            return new NuxeoContentStream(blob, lastModified, isHeadRequest);
+            return new NuxeoContentStream(blob, lastModified);
         } else {
-            return new NuxeoRedirectingContentStream(blob, lastModified, isHeadRequest, uri.toString());
+            return new NuxeoRedirectingContentStream(blob, lastModified, uri.toString());
         }
-    }
-
-    public static boolean isHeadRequest(HttpServletRequest request) {
-        if (request == null) {
-            return false;
-        }
-        if (request instanceof HttpServletRequestWrapper) {
-            request = (HttpServletRequest) ((HttpServletRequestWrapper) request).getRequest();
-        }
-        return request.getMethod().equals("HEAD");
     }
 
     @Override
@@ -250,9 +231,8 @@ public class NuxeoContentStream
 
         protected final String location;
 
-        private NuxeoRedirectingContentStream(Blob blob, GregorianCalendar lastModified, boolean isHeadRequest,
-                String location) {
-            super(blob, lastModified, isHeadRequest);
+        private NuxeoRedirectingContentStream(Blob blob, GregorianCalendar lastModified, String location) {
+            super(blob, lastModified);
             this.location = location;
         }
 
