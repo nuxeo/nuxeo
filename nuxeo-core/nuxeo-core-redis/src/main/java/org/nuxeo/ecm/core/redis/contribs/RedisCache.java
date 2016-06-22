@@ -109,7 +109,7 @@ public class RedisCache extends AbstractCache {
     public Set<String> keySet() {
         return executor.execute(new RedisCallable<Set<String>>() {
             @Override
-            public Set<String> call (Jedis jedis) {
+            public Set<String> call(Jedis jedis) {
                 Set<String> formattedKeys = jedis.keys(formatKey("*"));
                 int offset = namespace.length();
                 Set<String> keys = new HashSet<>(formattedKeys.size());

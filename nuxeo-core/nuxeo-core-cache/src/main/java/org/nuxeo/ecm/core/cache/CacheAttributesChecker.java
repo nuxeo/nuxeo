@@ -52,7 +52,8 @@ public class CacheAttributesChecker extends AbstractCache {
         return cache.get(key);
     }
 
-    @Override public Set<String> keySet() {
+    @Override
+    public Set<String> keySet() {
         return cache.keySet();
     }
 

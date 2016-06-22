@@ -47,7 +47,7 @@ public interface Cache {
     public Serializable get(String key);
 
     /**
-     * Return the set of all keys stored in the cache
+     * Returns the set of all keys stored in the cache.
      *
      * @return the {@link Set} of all keys
      * @since 8.3

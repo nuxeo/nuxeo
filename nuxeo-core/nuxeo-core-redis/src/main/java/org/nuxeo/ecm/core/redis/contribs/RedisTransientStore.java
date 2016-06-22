@@ -55,22 +55,22 @@ import org.nuxeo.runtime.api.Framework;
  *
  * <pre>
  *  - Entry summary:
- * 
+ *
  *    transientStore:transientStoreName:entryKey {
  *      "blobCount":    number of blobs associated with the entry
  *      "size":         storage size of the blobs associated with the entry
  *      "completed":    entry status
  *    }
- * 
+ *
  * - Entry parameters:
- * 
+ *
  *   transientStore:transientStoreName:entryKey:params {
  *      "param1": value1
  *      "param2": value2
  *   }
- * 
+ *
  * - Entry blobs:
- * 
+ *
  *   transientStore:transientStoreName:entryKey:blobs:0 {
  *      "file"
  *      "filename"
@@ -78,11 +78,11 @@ import org.nuxeo.runtime.api.Framework;
  *      "mimetype"
  *      "digest"
  *   }
- * 
+ *
  *   transientStore:transientStoreName:entryKey:blobs:1 {
  *      ...
  *   }
- * 
+ *
  *   ...
  * </pre>
  *
@@ -134,7 +134,8 @@ public class RedisTransientStore extends AbstractTransientStore {
         return getSummary(key) != null || getParameters(key) != null;
     }
 
-    @Override public Set<String> keySet() {
+    @Override
+    public Set<String> keySet() {
         Set<String> redisKeys = redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
             return jedis.keys(namespace + "*");
         });
