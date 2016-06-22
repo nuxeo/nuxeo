@@ -10,6 +10,7 @@
     </container-query>
   </query>
   <options xmlns="http://marklogic.com/appservices/search">
+    <transform-results apply="empty-snippet" />
     <extract-document-data selected="include-with-ancestors">
       <extract-path>/document/ecm__id</extract-path>
     </extract-document-data>

@@ -180,6 +180,7 @@ class MarkLogicQueryBuilder {
     private String buildOptions() {
         return "<options xmlns=\"http://marklogic.com/appservices/search\">" //
                 + buildProjections() //
+                + "<transform-results apply=\"empty-snippet\"/>" //
                 + "</options>";
     }
 

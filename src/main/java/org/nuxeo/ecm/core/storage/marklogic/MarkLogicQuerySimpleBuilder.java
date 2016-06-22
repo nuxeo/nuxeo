@@ -91,19 +91,25 @@ class MarkLogicQuerySimpleBuilder {
 
     public RawQueryDefinition build() {
         RawStructuredQueryDefinition query = sqb.build(queries.toArray(new StructuredQueryDefinition[queries.size()]));
-        if (selectKeys.isEmpty()) {
-            return query;
-        }
         String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" //
                 + query.toString() //
-                + buildSelectPaths() //
+                + buildOptions() //
                 + "</search>";
         return queryManager.newRawCombinedQueryDefinition(new StringHandle(comboQuery));
     }
 
+    private String buildOptions() {
+        StringBuilder options = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
+        options.append("<transform-results apply=\"empty-snippet\"/>");
+        if (!selectKeys.isEmpty()) {
+            options.append(buildSelectPaths());
+        }
+        options.append("</options>");
+        return options.toString();
+    }
+
     private String buildSelectPaths() {
-        StringBuilder extract = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
-        extract.append("<extract-document-data selected=\"include-with-ancestors\">");
+        StringBuilder extract = new StringBuilder("<extract-document-data selected=\"include-with-ancestors\">");
         for (String selectKey : selectKeys) {
             extract.append("<extract-path>");
             extract.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
@@ -112,7 +118,6 @@ class MarkLogicQuerySimpleBuilder {
             extract.append("</extract-path>");
         }
         extract.append("</extract-document-data>");
-        extract.append("</options>");
         return extract.toString();
     }
 

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-       xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <container-query>
-    <element ns="" name="ecm__ancestorIds" />
-    <value-query type="string">
-      <element ns="" name="nxml__item" />
-      <text>ID</text>
-    </value-query>
-  </container-query>
-</query>
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <container-query>
+      <element ns="" name="ecm__ancestorIds" />
+      <value-query type="string">
+        <element ns="" name="nxml__item" />
+        <text>ID</text>
+      </value-query>
+    </container-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <transform-results apply="empty-snippet" />
+  </options>
+</search>
