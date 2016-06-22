@@ -49,7 +49,7 @@ public class TestRFC2231 {
                 RFC2231.encodeContentDisposition("caf\u00e9", true, TestUserAgent.FF_30));
         assertEquals("attachment; filename=caf%C3%A9",
                 RFC2231.encodeContentDisposition("caf\u00e9", false, TestUserAgent.MSIE7_UA));
-        assertEquals("attachment; filename=caf\u00e9", RFC2231.encodeContentDisposition("caf\u00e9", false, null));
+        assertEquals("attachment; filename*=UTF-8''caf%C3%A9", RFC2231.encodeContentDisposition("caf\u00e9", false, null));
         assertEquals("attachment; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.",
                 RFC2231.encodeContentDisposition("R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).", false,
                         TestUserAgent.FF_30));
