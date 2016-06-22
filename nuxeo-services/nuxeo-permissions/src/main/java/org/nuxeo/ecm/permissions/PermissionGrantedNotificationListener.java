@@ -56,7 +56,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -138,7 +137,7 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
                 NuxeoPrincipal creator = userManager.getPrincipal(aceCreator);
                 if (creator != null) {
                     ctx.put("aceCreator",
-                            String.format("%s (%s)", Functions.principalFullName(creator), creator.getName()));
+                            String.format("%s (%s)", principalFullName(creator), creator.getName()));
                 }
             }
 
@@ -158,6 +157,29 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
         } catch (OperationException e) {
             log.warn("Unable to notify user", e);
             log.debug(e, e);
+        }
+    }
+
+    // copied from org.nuxeo.ecm.platform.ui.web.tag.fn.Functions which lives in nuxeo-platform-ui-web
+    public static String principalFullName(NuxeoPrincipal principal) {
+        String first = principal.getFirstName();
+        String last = principal.getLastName();
+        return userDisplayName(principal.getName(), first, last);
+    }
+
+    public static String userDisplayName(String id, String first, String last) {
+        if (first == null || first.length() == 0) {
+            if (last == null || last.length() == 0) {
+                return id;
+            } else {
+                return last;
+            }
+        } else {
+            if (last == null || last.length() == 0) {
+                return first;
+            } else {
+                return first + ' ' + last;
+            }
         }
     }
 

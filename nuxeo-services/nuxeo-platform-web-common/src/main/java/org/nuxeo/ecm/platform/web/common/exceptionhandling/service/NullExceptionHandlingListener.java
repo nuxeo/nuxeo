@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.platform.web.common.exceptionhandling.service;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,20 +28,24 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class NullExceptionHandlingListener implements ExceptionHandlingListener {
 
-    public void beforeForwardToErrorPage(Throwable t, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    @Override
+    public void beforeForwardToErrorPage(Throwable t, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    public void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    @Override
+    public void beforeSetErrorPageAttribute(Throwable t, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    public void startHandling(Throwable t, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    @Override
+    public void startHandling(Throwable t, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    public void afterDispatch(Throwable t, HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+    @Override
+    public void afterDispatch(Throwable t, HttpServletRequest request, HttpServletResponse response) {
+    }
+
+    @Override
+    public void responseComplete() {
     }
 
 }
