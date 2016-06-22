@@ -177,7 +177,7 @@ goto END
 echo Found JAVA_HOME = %JAVA_HOME%
 set PATH=%JAVA_HOME%\bin;%PATH%
 set JAVA=%JAVA_HOME%\bin\java.exe
-set JAVA_TOOLS=%JAVA_HOME%\lib\tooks.jar
+set JAVA_TOOLS=%JAVA_HOME%\lib\tools.jar
 if exist "%JAVA%" goto HAS_JAVA
 echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java is properly installed.
 goto END
