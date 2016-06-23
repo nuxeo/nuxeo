@@ -312,7 +312,7 @@ public class DBSTransactionState {
         docState.put(KEY_POS, pos);
         docState.put(KEY_PRIMARY_TYPE, typeName);
         // update read acls for new doc
-        updateReadAcls(id);
+        updateDocumentReadAcls(id);
         return docState;
     }
 
@@ -382,15 +382,20 @@ public class DBSTransactionState {
     /**
      * Updates the Read ACLs recursively on a document.
      */
-    public void updateReadAcls(String id) {
+    public void updateTreeReadAcls(String id) {
         // versions too XXX TODO
         Set<String> ids = getSubTree(id, null, null);
         ids.add(id);
-        for (String cid : ids) {
-            // XXX TODO oneShot update, don't pollute transient space
-            DBSDocumentState docState = getStateForUpdate(cid);
-            docState.put(KEY_READ_ACL, getReadACL(docState));
-        }
+        ids.forEach(this::updateDocumentReadAcls);
+    }
+
+    /**
+     * Updates the Read ACLs on a document (not recursively)
+     */
+    protected void updateDocumentReadAcls(String id) {
+        // XXX TODO oneShot update, don't pollute transient space
+        DBSDocumentState docState = getStateForUpdate(id);
+        docState.put(KEY_READ_ACL, getReadACL(docState));
     }
 
     /**

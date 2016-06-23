@@ -657,7 +657,7 @@ public class DBSSession implements Session {
         // pos fixup
         copyState.put(KEY_POS, pos);
         // update read acls
-        transaction.updateReadAcls(copyId);
+        transaction.updateTreeReadAcls(copyId);
 
         return getDocument(copyState);
     }
@@ -781,7 +781,7 @@ public class DBSSession implements Session {
         transaction.updateAncestors(sourceId, ndel, ancestorIds);
 
         // update read acls
-        transaction.updateReadAcls(sourceId);
+        transaction.updateTreeReadAcls(sourceId);
 
         return source;
     }
@@ -1234,7 +1234,7 @@ public class DBSSession implements Session {
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         docState.put(KEY_ACP, acpToMem(acp));
         transaction.save(); // read acls update needs full tree
-        transaction.updateReadAcls(id);
+        transaction.updateTreeReadAcls(id);
     }
 
     protected void checkNegativeAcl(ACP acp) {
