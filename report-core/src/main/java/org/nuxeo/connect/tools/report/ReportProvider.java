@@ -25,7 +25,7 @@ import javax.json.JsonObject;
  *
  * @since 8.3
  */
-public interface Report {
+public interface ReportProvider {
 
     JsonObject snapshot() throws IOException;
 

@@ -7,10 +7,10 @@
     <version>8.3-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-connect-tools-report-api</artifactId>
+  <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
 
-  <name>Nuxeo Connect Tools Report API</name>
-  <description>Nuxeo Connect Tools Report API</description>
+  <name>Nuxeo Connect Tools Report Management API</name>
+  <description>Nuxeo Connect Tools Report Manangement API</description>
 
 
 </project>

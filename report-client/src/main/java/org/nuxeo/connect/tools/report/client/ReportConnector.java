@@ -43,7 +43,7 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.nuxeo.connect.tools.report.Server;
+import org.nuxeo.connect.tools.report.ReportServer;
 
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
@@ -55,7 +55,7 @@ import com.sun.tools.attach.VirtualMachineDescriptor;
  *
  * @since 8.3
  */
-public class Connector {
+public class ReportConnector {
 
     static final ObjectName NAME = name();
 
@@ -67,8 +67,8 @@ public class Connector {
         }
     }
 
-    public static Connector of() {
-        return new Connector();
+    public static ReportConnector of() {
+        return new ReportConnector();
     }
 
     public JsonGenerator feed(JsonGenerator generator) throws IOException, InterruptedException, ExecutionException {
@@ -97,16 +97,16 @@ public class Connector {
         return builder;
     }
 
-    static class Discovery implements Iterable<Server> {
+    static class Discovery implements Iterable<ReportServer> {
         @Override
-        public Iterator<Server> iterator() {
-            return new Iterator<Server>() {
+        public Iterator<ReportServer> iterator() {
+            return new Iterator<ReportServer>() {
 
                 final Iterator<VirtualMachineDescriptor> source = VirtualMachine.list().iterator();
 
-                Server next = fetchNext();
+                ReportServer next = fetchNext();
 
-                Server fetchNext() {
+                ReportServer fetchNext() {
                     if (!source.hasNext()) {
                         return null;
                     }
@@ -117,7 +117,7 @@ public class Connector {
                             if (!connection.isRegistered(NAME)) {
                                 continue;
                             }
-                            return JMX.newMXBeanProxy(connection, NAME, Server.class);
+                            return JMX.newMXBeanProxy(connection, NAME, ReportServer.class);
                         } catch (IOException cause) {
                             ;
                         }
@@ -219,7 +219,7 @@ public class Connector {
                 }
 
                 @Override
-                public Server next() {
+                public ReportServer next() {
                     try {
                         return next;
                     } finally {
@@ -247,7 +247,7 @@ public class Connector {
         });
         // invoke servers
         try (ServerSocket callback = new ServerSocket(0)) {
-            for (Server server : new Discovery()) {
+            for (ReportServer server : new Discovery()) {
                 final Future<?> consumed = executor.submit(new Runnable() {
 
                     @Override
@@ -268,13 +268,13 @@ public class Connector {
         }
     }
 
-    public Iterable<Server> discover() {
+    public Iterable<ReportServer> discover() {
         class ToolsRunner {
 
             @SuppressWarnings("unchecked")
-            Iterable<Server> discover() {
+            Iterable<ReportServer> discover() {
                 try {
-                    Connector.class.getClassLoader().loadClass("com.sun.tools.attach.VirtualMachine");
+                    ReportConnector.class.getClassLoader().loadClass("com.sun.tools.attach.VirtualMachine");
                 } catch (ClassNotFoundException cause) {
                     class Loader extends URLClassLoader {
                         Loader(Path path) {
@@ -293,7 +293,7 @@ public class Connector {
                     ClassLoader loader = new Loader(findTools());
                     Thread.currentThread().setContextClassLoader(loader);
                     try {
-                        return (Iterable<Server>) loader.loadClass(Discovery.class.getName()).newInstance();
+                        return (Iterable<ReportServer>) loader.loadClass(Discovery.class.getName()).newInstance();
                     } catch (ReflectiveOperationException cause1) {
                         throw new AssertionError("Cannot discover servers", cause1);
                     } finally {

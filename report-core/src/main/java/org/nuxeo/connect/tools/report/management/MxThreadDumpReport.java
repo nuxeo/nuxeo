@@ -16,15 +16,14 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
-import java.io.IOException;
-
 import javax.json.JsonObject;
-import javax.management.JMException;
+import org.nuxeo.connect.tools.report.ReportProvider;
 
-public class MxThreadDumpReport extends MxAbstractReport {
+public class MxThreadDumpReport implements ReportProvider {
 
     @Override
-    protected JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException {
-        return invoker.exec("java.lang:type=Threading", "dumpAllThreads", true, true);
+    public JsonObject snapshot() {
+        return MXComponent.instance.exec("java.lang:type=Threading", "dumpAllThreads", true, true).run();
     }
+
 }

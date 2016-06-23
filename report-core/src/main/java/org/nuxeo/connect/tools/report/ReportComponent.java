@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
 
+import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.ecm.core.management.statuses.NuxeoInstanceIdentifierHelper;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
@@ -42,43 +43,72 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class ReportComponent extends DefaultComponent {
 
-    public class Endpoint implements Server {
+    public interface Runner {
 
-        @Override
-        public void run(String host, int port, String... names) throws IOException {
-            try (Socket sock = new Socket(host, port)) {
-                ReportComponent.this.run(sock.getOutputStream(), new HashSet<>(Arrays.asList(names)));
-            }
-        }
+        void run(OutputStream out, Set<String> names) throws IOException;
 
+        Set<String> list();
     }
 
     public static ReportComponent instance;
 
+    public ReportComponent() {
+        instance = this;
+    }
+
     final ReportConfiguration configuration = new ReportConfiguration();
 
-    void run(OutputStream out, Set<String> names) throws IOException {
-        try (JsonGenerator json = Json.createGenerator(out)) {
-            json.writeStartObject();
-            try {
-                json.writeStartObject(NuxeoInstanceIdentifierHelper.getServerInstanceName());
+    final Service service = new Service();
+
+    class Service implements ReportRunner {
+        @Override
+        public Set<String> list() {
+            Set<String> names = new HashSet<>();
+            for (Contribution contrib : configuration) {
+                names.add(contrib.name);
+            }
+            return names;
+        }
+
+        @Override
+        public void run(OutputStream out, Set<String> names) throws IOException {
+            try (JsonGenerator json = Json.createGenerator(out)) {
+                json.writeStartObject();
                 try {
-                    for (ReportContribution contrib : configuration.filter(names)) {
-                        json.write(contrib.name, contrib.instance.snapshot());
+                    json.writeStartObject(NuxeoInstanceIdentifierHelper.getServerInstanceName());
+                    try {
+                        for (Contribution contrib : configuration.filter(names)) {
+                            json.write(contrib.name, contrib.instance.snapshot());
+                        }
+                    } finally {
+                        json.writeEnd();
                     }
                 } finally {
                     json.writeEnd();
                 }
-            } finally {
-                json.writeEnd();
+            } catch (IOException cause) {
+                throw cause;
             }
-        } catch (IOException cause) {
-            throw cause;
         }
+    }
+
+    final Management management = new Management();
+
+    public class Management implements ReportServer {
+
+        @Override
+        public void run(String host, int port, String... names) throws IOException {
+            try (Socket sock = new Socket(host, port)) {
+                service.run(sock.getOutputStream(), new HashSet<>(Arrays.asList(names)));
+            }
+        }
+
     }
 
     @Override
     public void applicationStarted(ComponentContext context) {
+        instance = this;
+        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", ReportServer.class, management);
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
@@ -87,20 +117,26 @@ public class ReportComponent extends DefaultComponent {
                     return;
                 }
                 Framework.removeListener(this);
-                instance = null;
+                Framework.getService(ResourcePublisher.class).unregisterResource("connect-report", "connect-report");
             }
         });
-        instance = this;
-        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", Server.class, new Endpoint());
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof ReportContribution) {
-            configuration.addContribution((ReportContribution) contribution);
+        if (contribution instanceof Contribution) {
+            configuration.addContribution((Contribution) contribution);
         } else {
             throw new IllegalArgumentException(String.format("unknown contribution of type %s in %s", contribution.getClass(), contributor));
         }
+    }
+
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(Service.class)) {
+            return adapter.cast(service);
+        }
+        return super.getAdapter(adapter);
     }
 
 }

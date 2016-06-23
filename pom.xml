@@ -15,9 +15,10 @@
   <description>Nuxeo Connect Tools</description>
 
   <modules>
+    <module>report-management-api</module>
     <module>report-client</module>
-    <module>report-api</module>
     <module>report-core</module>
+    <module>report-web</module>
   </modules>
 
 </project>

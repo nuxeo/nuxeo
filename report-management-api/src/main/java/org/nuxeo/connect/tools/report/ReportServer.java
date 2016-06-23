@@ -25,7 +25,7 @@ import javax.management.MXBean;
  * @since 8.3
  */
 @MXBean
-public interface Server {
+public interface ReportServer {
 
     /**
      * Makes a runtime inventory and serializes in the provided socket in the

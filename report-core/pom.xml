@@ -16,12 +16,17 @@
 
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
-      <artifactId>nuxeo-connect-tools-report-api</artifactId>
+      <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-launcher-commons</artifactId>
     </dependency>
 
     <dependency>
@@ -48,6 +53,12 @@
       <groupId>org.codehaus.jettison</groupId>
       <artifactId>jettison</artifactId>
       <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.tngtech.jgiven</groupId>
+      <artifactId>jgiven-core</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -97,13 +108,6 @@
       <artifactId>maven-jdk-tools-wrapper</artifactId>
       <type>pom</type>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>net.javacrumbs.json-unit</groupId>
-      <artifactId>json-unit-fluent</artifactId>
-      <scope>test</scope>
-      <version>1.12.1</version>
     </dependency>
 
   </dependencies>

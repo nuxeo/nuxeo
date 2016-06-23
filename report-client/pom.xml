@@ -13,7 +13,7 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
-      <artifactId>nuxeo-connect-tools-report-api</artifactId>
+      <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
@@ -53,6 +53,21 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.jgiven</groupId>
+      <artifactId>jgiven-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,10 +1,10 @@
 <component name="org.nuxeo.connect.tools.report">
- 
-  <require phase="resolve" order="first">org.nuxeo.connect.tools.report.jsr353</require>
-  
+   
   <implementation class="org.nuxeo.connect.tools.report.ReportComponent" />
 
-  <service>org.nuxeo.connect.tools.report.ReportInvoker</service>
+  <service>
+    <provide interface="org.nuxeo.connect.tools.report.ReportRunner"/>
+  </service>
 
   <extension-point name="reports">
   
@@ -30,7 +30,7 @@
 
     </documentation>
 
-    <object class="org.nuxeo.connect.tools.report.ReportContribution" />
+    <object class="org.nuxeo.connect.tools.report.ReportConfiguration$Contribution" />
 
   </extension-point>
 

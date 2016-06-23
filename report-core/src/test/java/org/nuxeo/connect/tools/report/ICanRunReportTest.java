@@ -30,9 +30,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.connect.tools.report.Report;
+import org.nuxeo.connect.tools.report.ReportProvider;
 import org.nuxeo.connect.tools.report.ReportComponent;
-import org.nuxeo.connect.tools.report.ReportContribution;
+import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Given;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Then;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.When;
@@ -79,10 +79,10 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
         }
 
         @ProvidedScenarioState
-        Report report;
+        ReportProvider report;
 
         Given the_report_is_registered() {
-            for (ReportContribution contrib : ReportComponent.instance.configuration) {
+            for (Contribution contrib : ReportComponent.instance.configuration) {
                 if (contrib.name.equals(name)) {
                     report = contrib.instance;
                     return self();
@@ -95,7 +95,7 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
     public static class When extends Stage<When> {
 
         @ExpectedScenarioState
-        Report report;
+        ReportProvider report;
 
         @ProvidedScenarioState(resolution = Resolution.NAME)
         JsonObject json;

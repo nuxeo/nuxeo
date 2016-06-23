@@ -1,7 +1,6 @@
 <component name="org.nuxeo.connect.tools.report.management">
-  <implementation
-    class="org.nuxeo.connect.tools.report.management.MXComponent" />
-
+  <implementation class="org.nuxeo.connect.tools.report.management.MXComponent" />
+ 
   <extension target="org.nuxeo.connect.tools.report" point="reports">
     <report name="mx-infos"
       oftype="org.nuxeo.connect.tools.report.management.MxInfosReport" />

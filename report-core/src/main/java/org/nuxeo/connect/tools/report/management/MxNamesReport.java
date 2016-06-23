@@ -16,16 +16,14 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
-import java.io.IOException;
-
 import javax.json.JsonObject;
-import javax.management.JMException;
+import org.nuxeo.connect.tools.report.ReportProvider;
 
-public class MxNamesReport extends MxAbstractReport {
+public class MxNamesReport implements ReportProvider {
 
     @Override
-    protected JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException {
-        return invoker.search("*:*");
+    public JsonObject snapshot() {
+        return MXComponent.instance.search("*:*").run();
     }
 
 }

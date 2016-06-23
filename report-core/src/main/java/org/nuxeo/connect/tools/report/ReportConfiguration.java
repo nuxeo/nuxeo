@@ -21,17 +21,39 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
+
+import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 
 /**
  *
  *
  * @since 8.3
  */
-public class ReportConfiguration extends SimpleContributionRegistry<ReportContribution> implements Iterable<ReportContribution> {
+public class ReportConfiguration extends SimpleContributionRegistry<Contribution> implements Iterable<Contribution> {
+
+    @XObject("report")
+    public static class Contribution {
+
+        @XNode("@name")
+        String name = "noop";
+
+        @XNode("@enabled")
+        boolean enabled = true;
+
+        @XNode("@oftype")
+        public void oftype(Class<? extends ReportProvider> typeof) throws ReflectiveOperationException {
+            instance = typeof.newInstance();
+        }
+
+        ReportProvider instance;
+
+    }
 
     @Override
-    public String getContributionId(ReportContribution contrib) {
+    public String getContributionId(Contribution contrib) {
         return contrib.name;
     }
 
@@ -41,14 +63,14 @@ public class ReportConfiguration extends SimpleContributionRegistry<ReportContri
     }
 
     @Override
-    public void merge(ReportContribution src, ReportContribution dst) {
+    public void merge(Contribution src, Contribution dst) {
         dst.instance = src.instance;
         dst.enabled = src.enabled;
     }
 
     @Override
-    public ReportContribution clone(ReportContribution orig) {
-        ReportContribution clone = new ReportContribution();
+    public Contribution clone(Contribution orig) {
+        Contribution clone = new Contribution();
         clone.name = orig.name;
         clone.instance = orig.instance;
         clone.enabled = orig.enabled;
@@ -56,24 +78,24 @@ public class ReportConfiguration extends SimpleContributionRegistry<ReportContri
     }
 
     @Override
-    public Iterator<ReportContribution> iterator() {
+    public Iterator<Contribution> iterator() {
         return filter(Collections.emptySet()).iterator();
     }
 
-    Iterable<ReportContribution> filter(Set<String> names) {
-        return new Iterable<ReportContribution>() {
+    Iterable<Contribution> filter(Set<String> names) {
+        return new Iterable<Contribution>() {
 
             @Override
-            public Iterator<ReportContribution> iterator() {
-                return new Iterator<ReportContribution>() {
-                    final Iterator<ReportContribution> iterator = currentContribs.values().iterator();
+            public Iterator<Contribution> iterator() {
+                return new Iterator<Contribution>() {
+                    final Iterator<Contribution> iterator = currentContribs.values().iterator();
 
                     @Override
                     public boolean hasNext() {
                         return fetch();
                     }
 
-                    ReportContribution next;
+                    Contribution next;
 
                     boolean fetch() {
                         if (next != null) {
@@ -94,7 +116,7 @@ public class ReportConfiguration extends SimpleContributionRegistry<ReportContri
                     }
 
                     @Override
-                    public ReportContribution next() {
+                    public Contribution next() {
                         if (!fetch()) {
                             throw new NoSuchElementException("no more reports");
                         }

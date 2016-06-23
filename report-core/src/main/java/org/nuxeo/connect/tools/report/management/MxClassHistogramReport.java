@@ -16,16 +16,16 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import javax.json.JsonObject;
-import javax.management.JMException;
+import org.nuxeo.connect.tools.report.ReportProvider;
 
-public class MxClassHistogramReport extends MxAbstractReport {
+public class MxClassHistogramReport implements ReportProvider {
 
     @Override
-    protected JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException {
-        return invoker.exec("com.sun.management:type=DiagnosticCommand", "gcClassHistogram", Collections.emptyList());
+    public JsonObject snapshot() {
+        return MXComponent.instance.exec("com.sun.management:type=DiagnosticCommand", "gcClassHistogram", Collections.emptyList())
+                .run();
     }
 }

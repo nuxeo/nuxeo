@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.connect.tools.report.ReportFeature;
-import org.nuxeo.connect.tools.report.client.Connector;
+import org.nuxeo.connect.tools.report.client.ReportConnector;
 import org.nuxeo.connect.tools.report.client.ICanConnectTest.Given;
 import org.nuxeo.connect.tools.report.client.ICanConnectTest.Then;
 import org.nuxeo.connect.tools.report.client.ICanConnectTest.When;
@@ -73,10 +73,10 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
 
     static class When extends Stage<When> {
         @ProvidedScenarioState
-        Connector connector;
+        ReportConnector connector;
 
         When i_connect_with_providers() {
-            connector = Connector.of();
+            connector = ReportConnector.of();
             return self();
         }
 

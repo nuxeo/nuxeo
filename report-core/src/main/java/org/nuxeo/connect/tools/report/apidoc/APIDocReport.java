@@ -22,12 +22,8 @@ import java.io.IOException;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.json.JsonReaderFactory;
-
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.connect.tools.report.Report;
-import org.nuxeo.runtime.api.Framework;
-
+import org.nuxeo.connect.tools.report.ReportProvider;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
@@ -36,7 +32,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  *
  * @since 8.3
  */
-public class APIDocReport implements Report {
+public class APIDocReport implements ReportProvider {
 
     @Override
     public JsonObject snapshot() throws IOException {
@@ -44,7 +40,7 @@ public class APIDocReport implements Report {
         stream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             stream.toXML(new RuntimeSnapshot(), out);
-            return Framework.getService(JsonReaderFactory.class).createReader(new ByteArrayInputStream(out.toByteArray())).readObject();
+            return Json.createReader(new ByteArrayInputStream(out.toByteArray())).readObject();
         }
     }
 
