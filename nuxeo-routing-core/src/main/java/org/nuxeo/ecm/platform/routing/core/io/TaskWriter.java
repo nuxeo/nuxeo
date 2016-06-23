@@ -190,7 +190,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeFieldName("layoutResource");
             jg.writeStartObject();
             jg.writeStringField("name", node.getTaskLayout());
-            jg.writeStringField("url", ctx.getBaseUrl() + "layout-manager/layouts/?layoutName=" + node.getTaskLayout());
+            jg.writeStringField("url", ctx.getBaseUrl() + "site/layout-manager/layouts/?layoutName=" + node.getTaskLayout());
             jg.writeEndObject();
 
             jg.writeArrayFieldStart("schemas");
