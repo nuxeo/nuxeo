@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
@@ -111,6 +110,10 @@ public class MongoDBQueryBuilder {
 
     protected final SchemaManager schemaManager;
 
+    protected final MongoDBRepository repository;
+
+    protected final String idKey;
+
     protected List<String> documentTypes;
 
     protected final Expression expression;
@@ -135,9 +138,11 @@ public class MongoDBQueryBuilder {
 
     private boolean fulltextSearchDisabled;
 
-    public MongoDBQueryBuilder(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
-            PathResolver pathResolver, boolean fulltextSearchDisabled) {
+    public MongoDBQueryBuilder(MongoDBRepository repository, Expression expression, SelectClause selectClause,
+            OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
+        this.repository = repository;
+        idKey = repository.idKey;
         this.expression = expression;
         this.selectClause = selectClause;
         this.orderByClause = orderByClause;
@@ -199,7 +204,7 @@ public class MongoDBQueryBuilder {
 
     protected void walkProjection() {
         projection = new BasicDBObject();
-        projection.put(KEY_ID, ONE); // always useful
+        projection.put(idKey, ONE); // always useful
         projection.put(KEY_NAME, ONE); // used in ORDER BY ecm:path
         projection.put(KEY_PARENT_ID, ONE); // used in ORDER BY ecm:path
         boolean projectionOnFulltextScore = false;
@@ -332,9 +337,9 @@ public class MongoDBQueryBuilder {
             return new BasicDBObject(MONGODB_ID, "__nosuchid__");
         }
         if (op == Operator.EQ) {
-            return new BasicDBObject(DBSDocument.KEY_ID, id);
+            return new BasicDBObject(idKey, id);
         } else {
-            return new BasicDBObject(DBSDocument.KEY_ID, new BasicDBObject(QueryOperators.NE, id));
+            return new BasicDBObject(idKey, new BasicDBObject(QueryOperators.NE, id));
         }
     }
 
@@ -974,7 +979,8 @@ public class MongoDBQueryBuilder {
             // simple field
             String field = DBSSession.convToInternal(prop);
             Type type = DBSSession.getType(field);
-            return new FieldInfo(prop, field, field, field, type, true);
+            String queryField = repository.keyToBson(field);
+            return new FieldInfo(prop, field, queryField, field, type, true);
         } else {
             String first = parts[0];
             Field field = schemaManager.getField(first);

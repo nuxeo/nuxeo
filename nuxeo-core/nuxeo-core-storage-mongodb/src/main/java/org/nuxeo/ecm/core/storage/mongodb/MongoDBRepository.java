@@ -148,6 +148,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected DBCollection countersColl;
 
+    /** The key to use to store the id in the database. */
+    protected String idKey;
+
+    /** True if we don't use MongoDB's native "_id" key to store the id. */
+    protected boolean useCustomId;
+
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
         try {
@@ -157,6 +163,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
+        if (Boolean.TRUE.equals(descriptor.nativeId)) {
+            idKey = MONGODB_ID;
+        } else {
+            idKey = KEY_ID;
+        }
+        useCustomId = KEY_ID.equals(idKey);
         initRepository();
     }
 
@@ -203,6 +215,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return getCollection(mongoClient, descriptor.dbname, descriptor.name + ".counters");
     }
 
+    protected String keyToBson(String key) {
+        if (useCustomId) {
+            return key;
+        } else {
+            return KEY_ID.equals(key) ? idKey : key;
+        }
+    }
+
     protected Object valueToBson(Object value) {
         if (value instanceof State) {
             return stateToBson((State) value);
@@ -222,7 +242,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         for (Entry<String, Serializable> en : state.entrySet()) {
             Object val = valueToBson(en.getValue());
             if (val != null) {
-                ob.put(en.getKey(), val);
+                ob.put(keyToBson(en.getKey()), val);
             }
         }
         return ob;
@@ -236,17 +256,25 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return objects;
     }
 
+    protected String bsonToKey(String key) {
+        if (useCustomId) {
+            return key;
+        } else {
+            return idKey.equals(key) ? KEY_ID : key;
+        }
+    }
+
     protected State bsonToState(DBObject ob) {
         if (ob == null) {
             return null;
         }
         State state = new State(ob.keySet().size());
         for (String key : ob.keySet()) {
-            if (MONGODB_ID.equals(key)) {
-                // skip ObjectId
+            if (useCustomId && MONGODB_ID.equals(key)) {
+                // skip native id
                 continue;
             }
-            state.put(key, bsonToValue(ob.get(key)));
+            state.put(bsonToKey(key), bsonToValue(ob.get(key)));
         }
         return state;
     }
@@ -461,7 +489,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void initRepository() {
         // create required indexes
         // code does explicit queries on those
-        coll.createIndex(new BasicDBObject(KEY_ID, ONE));
+        if (useCustomId) {
+            coll.createIndex(new BasicDBObject(idKey, ONE));
+        }
         coll.createIndex(new BasicDBObject(KEY_PARENT_ID, ONE));
         coll.createIndex(new BasicDBObject(KEY_ANCESTOR_IDS, ONE));
         coll.createIndex(new BasicDBObject(KEY_VERSION_SERIES_ID, ONE));
@@ -493,7 +523,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             coll.createIndex(indexKeys, indexOptions);
         }
         // check root presence
-        DBObject query = new BasicDBObject(KEY_ID, getRootId());
+        DBObject query = new BasicDBObject(idKey, getRootId());
         if (coll.findOne(query, justPresenceField()) != null) {
             return;
         }
@@ -536,7 +566,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void createState(State state) {
         DBObject ob = stateToBson(state);
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: CREATE " + ob.get(KEY_ID) + ": " + ob);
+            log.trace("MongoDB: CREATE " + ob.get(idKey) + ": " + ob);
         }
         coll.insert(ob);
         // TODO dupe exception
@@ -545,19 +575,19 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
-        DBObject query = new BasicDBObject(KEY_ID, id);
+        DBObject query = new BasicDBObject(idKey, id);
         return findOne(query);
     }
 
     @Override
     public List<State> readStates(List<String> ids) {
-        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(QueryOperators.IN, ids));
+        DBObject query = new BasicDBObject(idKey, new BasicDBObject(QueryOperators.IN, ids));
         return findAll(query, ids.size());
     }
 
     @Override
     public void updateState(String id, StateDiff diff) {
-        DBObject query = new BasicDBObject(KEY_ID, id);
+        DBObject query = new BasicDBObject(idKey, id);
         for (DBObject update : diffToBson(diff)) {
             if (log.isTraceEnabled()) {
                 log.trace("MongoDB: UPDATE " + id + ": " + update);
@@ -570,7 +600,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void deleteStates(Set<String> ids) {
-        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(QueryOperators.IN, ids));
+        DBObject query = new BasicDBObject(idKey, new BasicDBObject(QueryOperators.IN, ids));
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: REMOVE " + ids);
         }
@@ -587,7 +617,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void logQuery(String id, DBObject fields) {
-        logQuery(new BasicDBObject(KEY_ID, id), fields);
+        logQuery(new BasicDBObject(idKey, id), fields);
     }
 
     protected void logQuery(DBObject query, DBObject fields) {
@@ -623,21 +653,21 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void addIgnoredIds(DBObject query, Set<String> ignored) {
         if (!ignored.isEmpty()) {
             DBObject notInIds = new BasicDBObject(QueryOperators.NIN, new ArrayList<String>(ignored));
-            query.put(KEY_ID, notInIds);
+            query.put(idKey, notInIds);
         }
     }
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        DBObject query = new BasicDBObject(key, value);
+        DBObject query = new BasicDBObject(keyToBson(key), value);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        DBObject query = new BasicDBObject(key1, value1);
-        query.put(key2, value2);
+        DBObject query = new BasicDBObject(keyToBson(key1), value1);
+        query.put(keyToBson(key2), value2);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
@@ -647,8 +677,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
             Map<String, Object[]> targetProxies) {
         DBObject query = new BasicDBObject(key, value);
         DBObject fields = new BasicDBObject();
-        fields.put(MONGODB_ID, ZERO);
-        fields.put(KEY_ID, ONE);
+        if (useCustomId) {
+            fields.put(MONGODB_ID, ZERO);
+        }
+        fields.put(idKey, ONE);
         fields.put(KEY_IS_PROXY, ONE);
         fields.put(KEY_PROXY_TARGET_ID, ONE);
         fields.put(KEY_PROXY_IDS, ONE);
@@ -658,7 +690,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DBCursor cursor = coll.find(query, fields);
         try {
             for (DBObject ob : cursor) {
-                String id = (String) ob.get(KEY_ID);
+                String id = (String) ob.get(idKey);
                 ids.add(id);
                 if (proxyTargets != null && TRUE.equals(ob.get(KEY_IS_PROXY))) {
                     String targetId = (String) ob.get(KEY_PROXY_TARGET_ID);
@@ -702,7 +734,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         try {
             List<State> list = new ArrayList<>(sizeHint);
             for (DBObject ob : cursor) {
-                if (!seen.add((String) ob.get(KEY_ID))) {
+                if (!seen.add((String) ob.get(idKey))) {
                     // MongoDB cursors may return the same
                     // object several times
                     continue;
@@ -723,8 +755,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.getExpression(), evaluator.getSelectClause(),
-                orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
+        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
+                evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
         if (builder.hasFulltext && isFulltextDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
@@ -936,7 +968,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(id, LOCK_FIELDS);
         }
-        DBObject res = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
+        DBObject res = coll.findOne(new BasicDBObject(idKey, id), LOCK_FIELDS);
         if (res == null) {
             // document not found
             throw new DocumentNotFoundException(id);
@@ -952,7 +984,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        DBObject query = new BasicDBObject(KEY_ID, id);
+        DBObject query = new BasicDBObject(idKey, id);
         query.put(KEY_LOCK_OWNER, null); // select doc if no lock is set
         DBObject setLock = new BasicDBObject();
         setLock.put(KEY_LOCK_OWNER, lock.getOwner());
@@ -971,7 +1003,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             if (log.isTraceEnabled()) {
                 logQuery(id, LOCK_FIELDS);
             }
-            DBObject old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
+            DBObject old = coll.findOne(new BasicDBObject(idKey, id), LOCK_FIELDS);
             if (old == null) {
                 // document not found
                 throw new DocumentNotFoundException(id);
@@ -989,7 +1021,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock removeLock(String id, String owner) {
-        DBObject query = new BasicDBObject(KEY_ID, id);
+        DBObject query = new BasicDBObject(idKey, id);
         if (owner != null) {
             // remove if owner matches or null
             // implements LockManager.canLockBeRemoved inside MongoDB
@@ -1015,7 +1047,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             if (log.isTraceEnabled()) {
                 logQuery(id, LOCK_FIELDS);
             }
-            old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
+            old = coll.findOne(new BasicDBObject(idKey, id), LOCK_FIELDS);
             if (old == null) {
                 // document not found
                 throw new DocumentNotFoundException(id);
