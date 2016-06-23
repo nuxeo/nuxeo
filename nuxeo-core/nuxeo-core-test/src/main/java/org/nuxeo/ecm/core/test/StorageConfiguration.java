@@ -33,6 +33,7 @@ import java.util.function.BiConsumer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;

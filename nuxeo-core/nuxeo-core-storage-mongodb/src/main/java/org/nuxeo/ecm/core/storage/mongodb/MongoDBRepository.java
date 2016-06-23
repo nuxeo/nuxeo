@@ -149,7 +149,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected DBCollection countersColl;
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
-        super(cm, descriptor.name, descriptor.getFulltextDescriptor());
+        super(cm, descriptor.name, descriptor);
         try {
             mongoClient = newMongoClient(descriptor);
             coll = getCollection(descriptor, mongoClient);
@@ -158,6 +158,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
             throw new RuntimeException(e);
         }
         initRepository();
+    }
+
+    @Override
+    public List<IdType> getAllowedIdTypes() {
+        return Arrays.asList(IdType.varchar, IdType.sequence);
     }
 
     @Override
@@ -493,7 +498,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             return;
         }
         // create basic repository structure needed
-        if (DEBUG_UUIDS) {
+        if (idType == IdType.sequence || DEBUG_UUIDS) {
             // create the id counter
             DBObject idCounter = new BasicDBObject();
             idCounter.put(MONGODB_ID, COUNTER_NAME_UUID);
@@ -516,9 +521,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public String generateNewId() {
-        if (DEBUG_UUIDS) {
+        if (idType == IdType.sequence || DEBUG_UUIDS) {
             Long id = getNextUuidSeq();
-            return "UUID_" + id;
+            if (DEBUG_UUIDS) {
+                return "UUID_" + id;
+            }
+            return id.toString();
         } else {
             return UUID.randomUUID().toString();
         }

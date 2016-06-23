@@ -51,6 +51,9 @@ public class DBSRepositoryDescriptor implements Cloneable {
         return isDefault;
     }
 
+    @XNode("idType")
+    public String idType; // "varchar", "uuid", "sequence"
+
     protected FulltextDescriptor fulltextDescriptor = new FulltextDescriptor();
 
     public FulltextDescriptor getFulltextDescriptor() {
@@ -107,6 +110,9 @@ public class DBSRepositoryDescriptor implements Cloneable {
         }
         if (other.isDefault != null) {
             isDefault = other.isDefault;
+        }
+        if (other.idType != null) {
+            idType = other.idType;
         }
         fulltextDescriptor.merge(other.fulltextDescriptor);
     }

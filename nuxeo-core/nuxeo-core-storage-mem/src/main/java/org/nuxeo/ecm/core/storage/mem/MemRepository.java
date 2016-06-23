@@ -66,6 +66,7 @@ import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
 import org.nuxeo.runtime.api.Framework;
 
@@ -92,8 +93,13 @@ public class MemRepository extends DBSRepositoryBase {
     protected Map<String, State> states;
 
     public MemRepository(ConnectionManager cm, MemRepositoryDescriptor descriptor) {
-        super(cm, descriptor.name, descriptor.getFulltextDescriptor());
+        super(cm, descriptor.name, descriptor);
         initRepository();
+    }
+
+    @Override
+    public List<IdType> getAllowedIdTypes() {
+        return Collections.singletonList(IdType.varchar);
     }
 
     @Override

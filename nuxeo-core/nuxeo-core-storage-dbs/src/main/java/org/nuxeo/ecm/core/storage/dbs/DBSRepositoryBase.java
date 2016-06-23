@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +42,7 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -88,6 +90,23 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     private static final String UUID_ZERO_DEBUG = "UUID_0";
 
+    /**
+     * Type of id to used for documents.
+     *
+     * @since 8.3
+     */
+    public enum IdType {
+        /** Random UUID stored in a string. */
+        varchar,
+        /** Random UUID stored as a native UUID type. */
+        uuid,
+        /** Integer sequence maintained by the database. */
+        sequence,
+    }
+
+    /** @since 8.3 */
+    protected IdType idType;
+
     protected final String repositoryName;
 
     protected final FulltextConfiguration fulltextConfiguration;
@@ -103,8 +122,23 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      */
     protected boolean selfRegisteredLockManager = false;
 
-    public DBSRepositoryBase(ConnectionManager cm, String repositoryName, FulltextDescriptor fulltextDescriptor) {
+
+    public DBSRepositoryBase(ConnectionManager cm, String repositoryName, DBSRepositoryDescriptor descriptor) {
         this.repositoryName = repositoryName;
+        String idt = descriptor.idType;
+        List<IdType> allowed = getAllowedIdTypes();
+        if (StringUtils.isBlank(idt)) {
+            idt = allowed.get(0).name();
+        }
+        try {
+            idType = IdType.valueOf(idt);
+            if (!allowed.contains(idType)) {
+                throw new IllegalArgumentException();
+            }
+        } catch (IllegalArgumentException e) {
+            throw new NuxeoException("Unknown id type: " + idt + ", allowed: " + allowed);
+        }
+        FulltextDescriptor fulltextDescriptor = descriptor.getFulltextDescriptor();
         if (fulltextDescriptor.getFulltextDisabled()) {
             fulltextConfiguration = null;
         } else {
@@ -115,6 +149,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         initBlobsPaths();
         initLockManager();
     }
+
+    /** Gets the allowed id types for this DBS repository. The first one is the default. */
+    public abstract List<IdType> getAllowedIdTypes();
 
     @Override
     public void shutdown() {
@@ -260,7 +297,18 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public String getRootId() {
-        return DEBUG_UUIDS ? UUID_ZERO_DEBUG : UUID_ZERO;
+        if (DEBUG_UUIDS) {
+            return UUID_ZERO_DEBUG;
+        }
+        switch (idType) {
+        case varchar:
+        case uuid:
+            return UUID_ZERO;
+        case sequence:
+            return "0";
+        default:
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
