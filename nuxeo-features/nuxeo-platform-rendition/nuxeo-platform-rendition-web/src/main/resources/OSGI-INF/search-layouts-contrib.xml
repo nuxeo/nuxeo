@@ -1,0 +1,346 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.search.layouts.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select_renditionNames">
+      <configuration>
+        <sinceVersion>8.3</sinceVersion>
+        <title>Rendition Names selection</title>
+        <description>
+          <p>
+            This widget type allows to select multiple rendition names.
+          </p>
+        </description>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <defaultValues mode="any">
+            <property name="width">50%</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_rendition_names_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_rendition_source_title_link">
+      <configuration>
+        <sinceVersion>8.3</sinceVersion>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_rendition_source_title_link_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_rendition_title_link">
+      <configuration>
+        <sinceVersion>8.3</sinceVersion>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_rendition_title_link_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="stored_rendition_search_title" type="text">
+      <labels>
+        <label mode="any">label.dublincore.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:dc_title</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="stored_rendition_search_creation_min" type="datetime">
+      <labels>
+        <label mode="any">label.dublincore.creationDateBetween</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:dc_created_min</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        <property name="defaultTime">00:00</property>
+      </properties>
+    </widget>
+
+    <widget name="stored_rendition_search_creation_max" type="datetime">
+      <labels>
+        <label mode="any">label.search.and</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:dc_created_max</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        <property name="defaultTime">23:59</property>
+      </properties>
+    </widget>
+
+    <widget name="stored_rendition_search_source_modification_min" type="datetime">
+      <labels>
+        <label mode="any">label.rendition.search.sourceModificationDateBetween</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:rend_sourceModificationDate_min</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        <property name="defaultTime">00:00</property>
+      </properties>
+    </widget>
+
+    <widget name="stored_rendition_search_source_modification_max" type="datetime">
+      <labels>
+        <label mode="any">label.search.and</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:rend_sourceModificationDate_max</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+      </properties>
+      <properties widgetMode="edit">
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        <property name="defaultTime">23:59</property>
+      </properties>
+    </widget>
+
+    <widget name="stored_rendition_search_rendition_name" type="select_renditionNames">
+      <labels>
+        <label mode="any">label.rendition.search.renditionName</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:rend_renditionName</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="stored_rendition_search_rendition_variant" type="text">
+      <labels>
+        <label mode="any">label.rendition.search.renditionVariant</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>stored_rend_srch:rend_renditionVariant</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rendition_title_link" type="listing_rendition_title_link">
+      <labels>
+        <label mode="any">label.rendition.title_link</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.description</field>
+        <field>data.file.content</field>
+        <field>data.file.content.filename</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_property_name">file:content</property>
+        <property name="file_schema">file</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rendition_source_title_link" type="listing_rendition_source_title_link">
+      <labels>
+        <label mode="any">label.rendition.source_title_link</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+        <field>data.dc.description</field>
+        <field>data.file.content</field>
+        <field>data.file.content.filename</field>
+      </fields>
+      <properties mode="any">
+        <property name="file_property_name">file:content</property>
+        <property name="file_schema">file</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rendition_source_modification_date" type="datetime">
+      <labels>
+        <label mode="any">label.rendition.sourceModificationDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.rend.sourceModificationDate</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_rendition_name" type="text">
+      <labels>
+        <label mode="any">label.rendition.renditionName</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.rend.renditionName</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_rendition_variant" type="text">
+      <labels>
+        <label mode="any">label.rendition.renditionVariant</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.rend.renditionVariant</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="stored_rendition_search">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>stored_rendition_search_title</widget>
+        </row>
+        <row>
+          <widget>stored_rendition_search_creation_min</widget>
+          <widget>stored_rendition_search_creation_max</widget>
+        </row>
+        <row>
+          <widget>stored_rendition_search_source_modification_min</widget>
+          <widget>stored_rendition_search_source_modification_max</widget>
+        </row>
+        <row>
+          <widget>stored_rendition_search_rendition_name</widget>
+        </row>
+        <row>
+          <widget>stored_rendition_search_rendition_variant</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="renditions_listing" type="listingTable">
+      <columns>
+        <column alwaysSelected="true" name="selection">
+          <properties>
+            <property name="isListingSelectionBoxWithCurrentDocument">true</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.checkbox</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column name="icon_type">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="label">label.selection.column.icon_type</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column name="title_link" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+            <property name="label">label.selection.column.title_link</property>
+          </properties>
+          <widget>listing_rendition_title_link</widget>
+        </column>
+        <column name="rendition_source_title_link" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.rendition.source_title_link</property>
+          </properties>
+          <widget>listing_rendition_source_title_link</widget>
+        </column>
+        <column name="rendition_source_modification_date" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.rendition.sourceModificationDate</property>
+          </properties>
+          <widget>listing_rendition_source_modification_date</widget>
+        </column>
+        <column name="rendition_name" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.rendition.renditionName</property>
+          </properties>
+          <widget>listing_rendition_name</widget>
+        </column>
+        <column name="rendition_variant" selectedByDefault="true">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="label">label.rendition.renditionVariant</property>
+          </properties>
+          <widget>listing_rendition_variant</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>
