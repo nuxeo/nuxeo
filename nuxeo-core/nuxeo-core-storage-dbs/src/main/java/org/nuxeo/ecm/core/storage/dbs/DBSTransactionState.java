@@ -214,8 +214,10 @@ public class DBSTransactionState {
 
     // XXX TODO for update or for read?
     public DBSDocumentState getChildState(String parentId, String name) {
+        Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
+            seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
@@ -225,7 +227,7 @@ public class DBSTransactionState {
             return docState;
         }
         // fetch from repository
-        State state = repository.readChildState(parentId, name, Collections.emptySet());
+        State state = repository.readChildState(parentId, name, seen);
         return newTransientState(state);
     }
 
