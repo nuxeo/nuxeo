@@ -65,4 +65,10 @@ public class EventBundlePipeDispatcher{
         }
         return res;
     }
+
+    public void shutdown() throws InterruptedException {
+        for (EventBundlePipe pipe: pipes) {
+            pipe.shutdown();
+        }
+    }
 }

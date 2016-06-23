@@ -24,61 +24,89 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipeConsumer;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @since TODO
  */
 public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundle> {
 
+    protected static Log log = LogFactory.getLog(QueueBaseEventBundlePipe.class);
 
     protected ConcurrentLinkedQueue<EventBundle> queue;
 
     protected ThreadPoolExecutor consumerTPE;
 
+    protected LocalEventBundlePipeConsumer consumer;
+
+    protected boolean stop = false;
+
+    protected int batchSize = 10;
+
     @Override
     public void initPipe(String name, Map<String, String> params) {
         super.initPipe(name, params);
+        stop = false;
+
+        if (params.containsKey("batchSize")) {
+            try {
+                batchSize = Integer.parseInt(params.get(batchSize));
+            } catch (NumberFormatException e) {
+                log.error("Unable to read batchSize parameter", e);
+            }
+        }
+
         queue = new ConcurrentLinkedQueue<EventBundle>();
-        consumerTPE = new ThreadPoolExecutor(1, 1, 60, TimeUnit.MINUTES,  new LinkedBlockingQueue<Runnable>());
+        consumerTPE = new ThreadPoolExecutor(1, 1, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
         consumerTPE.prestartCoreThread();
         consumerTPE.execute(new Runnable() {
+
+            protected boolean send(List<EventBundle> messages) {
+                if (consumer.receiveMessage(messages)) {
+                    messages.clear();
+                } else {
+                    // keep the events that can not be processed ?
+                    queue.addAll(messages);
+                    return false;
+                }
+                return true;
+            }
 
             @Override
             public void run() {
 
-                LocalEventBundlePipeConsumer consumer = new LocalEventBundlePipeConsumer();
+                consumer = new LocalEventBundlePipeConsumer();
                 consumer.initConsumer(getName(), getParameters());
-
-                while(true) {
+                while (!stop) {
                     List<EventBundle> messages = new ArrayList<EventBundle>();
                     EventBundle message;
-                    while ((message = queue.poll()) !=null) {
+                    while ((message = queue.poll()) != null) {
                         messages.add(message);
-                        if (messages.size() > 9) {
-                            consumer.receiveMessage(messages);
-                            messages.clear();
+                        if (messages.size() >= batchSize) {
+                            send(messages);
                         }
                     }
                     if (messages.size() > 0) {
-                        consumer.receiveMessage(messages);
-                        messages.clear();
+                        send(messages);
                     }
+
+                    // XXX this is a hack !
                     try {
                         if (Framework.isTestModeSet()) {
-                            // I know this is a hack !
                             Thread.sleep(5);
                         } else {
-                            Thread.sleep(500);
+                            Thread.sleep(200);
                         }
                     } catch (InterruptedException e) {
                         consumerTPE.shutdown();
                     }
                 }
+                consumer = null;
             }
         });
     }
@@ -93,19 +121,27 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
         queue.add(message);
     }
 
+    @Override
+    public void shutdown() throws InterruptedException {
+        stop = true;
+        // XXX
+        waitForCompletion(5000L);
+        if (consumer != null) {
+            consumer.shutdown();
+        }
+    }
 
     @Override
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeoutMillis;
         int pause = (int) Math.min(timeoutMillis, 500L);
         do {
-            if (queue.size()==0) {
+            if (queue.size() == 0) {
                 return true;
             }
             Thread.sleep(pause);
         } while (System.currentTimeMillis() < deadline);
         return false;
     }
-
 
 }

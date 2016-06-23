@@ -43,8 +43,11 @@ public class EventServiceComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) {
         service = new EventServiceImpl();
-        service.init();
+    }
 
+    @Override
+    public void applicationStarted(ComponentContext context) {
+        service.init();
     }
 
     @Override

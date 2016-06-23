@@ -46,13 +46,13 @@ public abstract class AbstractPipeConsumer<T> implements PipeConsumer<T> {
     }
 
     @Override
-    public void receiveMessage(List<T> messages) {
+    public boolean receiveMessage(List<T> messages) {
         List<EventBundle> bundles = unmarshallEventBundle(messages);
-        processEventBundles(bundles);
+        return processEventBundles(bundles);
     }
 
     protected abstract List<EventBundle> unmarshallEventBundle(List<T> messages);
 
-    protected abstract void processEventBundles(List<EventBundle> bundles);
+    protected abstract boolean processEventBundles(List<EventBundle> bundles);
 
 }

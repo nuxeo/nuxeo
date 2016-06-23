@@ -31,4 +31,6 @@ public interface EventBundlePipe {
     void sendEventBundle(EventBundle events);
 
     boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
+
+    void shutdown() throws InterruptedException;
 }

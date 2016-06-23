@@ -27,6 +27,8 @@ public interface PipeConsumer<T> {
 
     void initConsumer(String name, Map<String, String> params);
 
-    void receiveMessage(List<T> messages);
+    boolean receiveMessage(List<T> messages);
+
+    void shutdown() throws InterruptedException;
 
 }

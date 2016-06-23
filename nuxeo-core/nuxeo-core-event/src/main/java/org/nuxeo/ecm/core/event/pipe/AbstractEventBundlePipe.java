@@ -91,4 +91,10 @@ public abstract class AbstractEventBundlePipe<T> implements EventBundlePipe {
      */
     protected abstract void send(T message);
 
+
+    @Override
+    public void shutdown() throws InterruptedException {
+
+    }
+
 }

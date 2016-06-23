@@ -95,6 +95,8 @@ public class PostCommitEventListenerTest {
 
         nextTransaction();
 
+        service.waitForAsyncCompletion();
+
         assertEquals(2, SCRIPT_CNT);
 
         harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "test-PostCommitListeners.xml");

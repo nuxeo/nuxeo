@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.event.pipe;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
@@ -33,25 +35,47 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsumer<T> {
 
+    protected static final Log log = LogFactory.getLog(AbstractListenerPipeConsumer.class);
 
     protected volatile AsyncEventExecutor asyncExec;
+
+    protected boolean stopping = false;
 
     @Override
     public void initConsumer(String name, Map<String, String> params) {
         super.initConsumer(name, params);
         asyncExec = new AsyncEventExecutor();
+        if (Framework.getRuntime()==null) {
+            throw new RuntimeException("Nuxeo Runtime not initialized");
+        }
     }
 
     @Override
-    protected void processEventBundles(List<EventBundle> bundles) {
+    public void shutdown() throws InterruptedException{
+        stopping=true;
+        waitForCompletion(1000L);
+    }
 
-        EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);
-        EventListenerList listeners = eventService.getListenerList();
-        List<EventListenerDescriptor> postCommitAsync =listeners.getEnabledAsyncPostCommitListenersDescriptors();
+    @Override
+    protected boolean processEventBundles(List<EventBundle> bundles) {
 
-        // could introduce bulk mode for EventListeners
-        for (EventBundle eventBundle : bundles) {
-            asyncExec.run(postCommitAsync, eventBundle);
+        try {
+            EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);
+            EventListenerList listeners = eventService.getListenerList();
+            List<EventListenerDescriptor> postCommitAsync =listeners.getEnabledAsyncPostCommitListenersDescriptors();
+
+            // could introduce bulk mode for EventListeners
+            for (EventBundle eventBundle : bundles) {
+                asyncExec.run(postCommitAsync, eventBundle);
+            }
+            return true;
+        } catch (NullPointerException npe) {
+            if (stopping) {
+                log.warn("Trying to send events in pipe after shutdown");
+            } else {
+                log.error("Unable to acess Runtime in the context of EventPipe processing", npe);
+            }
+            return false;
         }
     }
 

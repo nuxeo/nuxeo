@@ -70,7 +70,11 @@ public class AsyncEventExecutor {
 
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         WorkManager workManager = getWorkManager();
-        return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
+        if (workManager!=null) {
+            return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
+        } else {
+            return false;
+        }
     }
 
     public void run(final List<EventListenerDescriptor> listeners, EventBundle bundle) {

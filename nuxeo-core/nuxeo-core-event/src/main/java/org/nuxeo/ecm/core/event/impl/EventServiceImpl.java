@@ -135,6 +135,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         if (asyncExec.shutdown(timeoutMillis) == false) {
             throw new RuntimeException("Async executor is still running, timeout expired");
         }
+        pipeDispatcher.shutdown();
     }
 
     public void registerForAsyncWait(AsyncWaitHook callback) {
@@ -173,10 +174,15 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             if (!asyncExec.waitForCompletion(timeout)) {
                 throw new RuntimeException("Async event listeners thread pool is not terminated");
             }
-            pipeDispatcher.waitForCompletion(timeout);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // TODO change signature
+            throw new RuntimeException(e);
+        }
+        try {
+            pipeDispatcher.waitForCompletion(timeout);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
