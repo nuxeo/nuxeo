@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -310,7 +310,7 @@ public class DBSSession implements Session {
             // sort children in order
             Collections.sort(docStates, POS_COMPARATOR);
         }
-        List<Document> children = new ArrayList<Document>(docStates.size());
+        List<Document> children = new ArrayList<>(docStates.size());
         for (DBSDocumentState docState : docStates) {
             try {
                 children.add(getDocument(docState));
@@ -329,7 +329,7 @@ public class DBSSession implements Session {
             // TODO state not for update
             List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
             Collections.sort(docStates, POS_COMPARATOR);
-            List<String> children = new ArrayList<String>(docStates.size());
+            List<String> children = new ArrayList<>(docStates.size());
             for (DBSDocumentState docState : docStates) {
                 children.add(docState.getId());
             }
@@ -371,7 +371,7 @@ public class DBSSession implements Session {
 
     protected List<Document> getDocuments(List<String> ids) {
         List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
-        List<Document> docs = new ArrayList<Document>(ids.size());
+        List<Document> docs = new ArrayList<>(ids.size());
         for (DBSDocumentState docState : docStates) {
             docs.add(getDocument(docState));
         }
@@ -434,11 +434,11 @@ public class DBSSession implements Session {
         long max = -1;
         for (DBSDocumentState docState : transaction.getChildrenStates(parentId)) {
             Long pos = (Long) docState.get(KEY_POS);
-            if (pos != null && pos.longValue() > max) {
-                max = pos.longValue();
+            if (pos != null && pos > max) {
+                max = pos;
             }
         }
-        return Long.valueOf(max + 1);
+        return max + 1;
     }
 
     protected void orderBefore(String parentId, String sourceId, String destId) {
@@ -631,7 +631,7 @@ public class DBSSession implements Session {
         State parentState = transaction.getStateForRead(parentId);
         String oldParentId = (String) sourceState.get(KEY_PARENT_ID);
         Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
-        LinkedList<String> ancestorIds = new LinkedList<String>();
+        LinkedList<String> ancestorIds = new LinkedList<>();
         if (parentAncestorIds != null) {
             for (Object id : parentAncestorIds) {
                 ancestorIds.add((String) id);
@@ -640,7 +640,8 @@ public class DBSSession implements Session {
         ancestorIds.add(parentId);
         if (oldParentId != null && !oldParentId.equals(parentId)) {
             if (ancestorIds.contains(sourceId)) {
-                throw new DocumentExistsException("Cannot copy a node under itself: " + parentId + " is under " + sourceId);
+                throw new DocumentExistsException("Cannot copy a node under itself: " + parentId + " is under "
+                        + sourceId);
 
             }
             // checkNotUnder(parentId, sourceId, "copy");
@@ -712,7 +713,8 @@ public class DBSSession implements Session {
         String pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new DocumentExistsException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
+                throw new DocumentExistsException("Cannot " + op + " a node under itself: " + parentId + " is under "
+                        + id);
             }
             State state = transaction.getStateForRead(pid);
             if (state == null) {
@@ -725,7 +727,7 @@ public class DBSSession implements Session {
 
     @Override
     public Document move(Document source, Document parent, String name) {
-        String oldName = (String) source.getName();
+        String oldName = source.getName();
         if (name == null) {
             name = oldName;
         }
@@ -756,7 +758,7 @@ public class DBSSession implements Session {
         // prepare new ancestor ids
         State parentState = transaction.getStateForRead(parentId);
         Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
-        List<String> ancestorIdsList = new ArrayList<String>();
+        List<String> ancestorIdsList = new ArrayList<>();
         if (parentAncestorIds != null) {
             for (Object id : parentAncestorIds) {
                 ancestorIdsList.add((String) id);
@@ -958,7 +960,7 @@ public class DBSSession implements Session {
         }
 
         String parentId = folder == null ? null : folder.getUUID();
-        List<Document> documents = new ArrayList<Document>(docStates.size());
+        List<Document> documents = new ArrayList<>(docStates.size());
         for (DBSDocumentState docState : docStates) {
             // filter by parent
             if (parentId != null && !parentId.equals(docState.getParentId())) {
@@ -991,7 +993,7 @@ public class DBSSession implements Session {
             Map<String, Serializable> properties) {
         String parentId = parent == null ? null : parent.getUUID();
         boolean isProxy = typeName.equals(CoreSession.IMPORT_PROXY_TYPE);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         Long pos = null; // TODO pos
         DBSDocumentState docState;
         if (isProxy) {
@@ -1019,7 +1021,9 @@ public class DBSSession implements Session {
                     String owner = values[0];
                     Calendar created = new GregorianCalendar();
                     try {
-                        created.setTimeInMillis(DateFormat.getDateInstance(DateFormat.MEDIUM).parse(values[1]).getTime());
+                        created.setTimeInMillis(DateFormat.getDateInstance(DateFormat.MEDIUM)
+                                                          .parse(values[1])
+                                                          .getTime());
                     } catch (ParseException e) {
                         // use current date
                     }
@@ -1095,7 +1099,7 @@ public class DBSSession implements Session {
         List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
                 KEY_IS_VERSION, TRUE);
         Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
-        List<String> ids = new ArrayList<String>(docStates.size());
+        List<String> ids = new ArrayList<>(docStates.size());
         for (DBSDocumentState docState : docStates) {
             ids.add(docState.getId());
         }
@@ -1268,7 +1272,7 @@ public class DBSSession implements Session {
             return addAcp;
         }
         ACP newAcp = curAcp.clone();
-        Map<String, ACL> acls = new HashMap<String, ACL>();
+        Map<String, ACL> acls = new HashMap<>();
         for (ACL acl : newAcp.getACLs()) {
             String name = acl.getName();
             if (ACL.INHERITED_ACL.equals(name)) {
@@ -1300,19 +1304,19 @@ public class DBSSession implements Session {
         if (acls.length == 0) {
             return null;
         }
-        List<Serializable> aclList = new ArrayList<Serializable>(acls.length);
+        List<Serializable> aclList = new ArrayList<>(acls.length);
         for (ACL acl : acls) {
             String name = acl.getName();
             if (name.equals(ACL.INHERITED_ACL)) {
                 continue;
             }
             ACE[] aces = acl.getACEs();
-            List<Serializable> aceList = new ArrayList<Serializable>(aces.length);
+            List<Serializable> aceList = new ArrayList<>(aces.length);
             for (ACE ace : aces) {
                 State aceMap = new State(6);
                 aceMap.put(KEY_ACE_USER, ace.getUsername());
                 aceMap.put(KEY_ACE_PERMISSION, ace.getPermission());
-                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
+                aceMap.put(KEY_ACE_GRANT, ace.isGranted());
                 String creator = ace.getCreator();
                 if (creator != null) {
                     aceMap.put(KEY_ACE_CREATOR, creator);
@@ -1362,13 +1366,17 @@ public class DBSSession implements Session {
                 State aceMap = (State) aceSer;
                 String username = (String) aceMap.get(KEY_ACE_USER);
                 String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
-                Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
+                boolean granted = (boolean) aceMap.get(KEY_ACE_GRANT);
                 String creator = (String) aceMap.get(KEY_ACE_CREATOR);
                 Calendar begin = (Calendar) aceMap.get(KEY_ACE_BEGIN);
                 Calendar end = (Calendar) aceMap.get(KEY_ACE_END);
                 // status not read, ACE always computes it on read
-                ACE ace = ACE.builder(username, permission).isGranted(granted.booleanValue()).creator(creator).begin(
-                        begin).end(end).build();
+                ACE ace = ACE.builder(username, permission)
+                             .isGranted(granted)
+                             .creator(creator)
+                             .begin(begin)
+                             .end(end)
+                             .build();
                 acl.add(ace);
             }
             acp.addACL(acl);
@@ -1395,11 +1403,11 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
-        Mutable<String> idKeyHolder = new MutableObject<String>();
+        Mutable<String> idKeyHolder = new MutableObject<>();
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, countUpTo,
                 idKeyHolder);
         String idKey = idKeyHolder.getValue();
-        List<String> ids = new ArrayList<String>(pl.list.size());
+        List<String> ids = new ArrayList<>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
             String id = (String) map.get(idKey);
             ids.add(id);
@@ -1412,7 +1420,7 @@ public class DBSSession implements Session {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
-            return new PartialList<Map<String, Serializable>>(Collections.<Map<String, Serializable>> emptyList(), 0);
+            return new PartialList<>(Collections.<Map<String, Serializable>> emptyList(), 0);
         }
         if (!NXQL.NXQL.equals(queryType)) {
             throw new NuxeoException("No QueryMaker accepts query type: " + queryType);
@@ -1511,7 +1519,7 @@ public class DBSSession implements Session {
             }
         }
 
-        return new PartialList<Map<String, Serializable>>(projections, totalSize);
+        return new PartialList<>(projections, totalSize);
     }
 
     /** Does an ORDER BY clause include ecm:path */
@@ -1538,7 +1546,7 @@ public class DBSSession implements Session {
                 return name; // placeless, no slash
             }
         }
-        LinkedList<String> list = new LinkedList<String>();
+        LinkedList<String> list = new LinkedList<>();
         list.addFirst(name);
         for (;;) {
             name = (String) state.get(KEY_NAME);
@@ -1580,6 +1588,7 @@ public class DBSSession implements Session {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public int compare(Map<String, Serializable> map1, Map<String, Serializable> map2) {
             for (OrderByExpr ob : orderByClause.elements) {
                 Reference ref = ob.reference;
