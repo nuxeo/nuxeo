@@ -57,8 +57,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     private static final String LOG_MIN_DURATION_KEY = "nuxeo.actions.debug.log_min_duration_ms";
 
-    private static final long LOG_MIN_DURATION_NS = Long.parseLong(
-            Framework.getService(ConfigurationService.class).getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
+    private long LOG_MIN_DURATION_NS = -1 * 1000000;
 
     private Timer actionsTimer;
 
@@ -86,6 +85,12 @@ public class ActionService extends DefaultComponent implements ActionManager {
         actionTimer = null;
         filtersTimer = null;
         filterTimer = null;
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) {
+        LOG_MIN_DURATION_NS = Long.parseLong(
+                Framework.getService(ConfigurationService.class).getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
     }
 
     /**
