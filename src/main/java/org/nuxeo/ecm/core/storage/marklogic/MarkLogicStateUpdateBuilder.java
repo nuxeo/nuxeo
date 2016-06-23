@@ -80,15 +80,15 @@ class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
     }
 
     private void fillPatch(DocumentPatchBuilder patchBuilder, String path, ListDiff listDiff) {
+        String itemName = MarkLogicHelper.buildItemNameFromPath(path);
         if (listDiff.diff != null) {
             int i = 1;
             for (Object value : listDiff.diff) {
-                String subPath = path + '/' + MarkLogicHelper.ARRAY_ITEM_KEY + '[' + i + ']';
+                String subPath = path + '/' + itemName + '[' + i + ']';
                 if (value instanceof StateDiff) {
                     fillPatch(patchBuilder, subPath, (StateDiff) value);
                 } else if (value != State.NOP) {
-                    Optional<Element> fragment = MarkLogicStateSerializer.serialize(MarkLogicHelper.ARRAY_ITEM_KEY,
-                            value);
+                    Optional<Element> fragment = MarkLogicStateSerializer.serialize(itemName, value);
                     if (fragment.isPresent()) {
                         patchBuilder.replaceFragment(subPath, Cardinality.ONE, fragment.get().asXML());
                     } else {
@@ -100,7 +100,7 @@ class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
         }
         if (listDiff.rpush != null) {
             for (Object value : listDiff.rpush) {
-                Element fragment = MarkLogicStateSerializer.serialize(MarkLogicHelper.ARRAY_ITEM_KEY, value).get();
+                Element fragment = MarkLogicStateSerializer.serialize(itemName, value).get();
                 patchBuilder.insertFragment(path, Position.LAST_CHILD, fragment.asXML());
             }
         }

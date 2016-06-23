@@ -5,7 +5,7 @@
     <container-query>
       <element ns="" name="ecm__ancestorIds" />
       <value-query type="string">
-        <element ns="" name="nxml__item" />
+        <element ns="" name="ecm__ancestorIds__item" />
         <text>ID</text>
       </value-query>
     </container-query>

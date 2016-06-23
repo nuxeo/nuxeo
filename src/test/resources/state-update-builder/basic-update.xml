@@ -13,8 +13,8 @@
   </rapi:replace-insert>
   <rapi:replace-insert select="/document/ecm__acl" context="/document" position="last-child">
     <ecm__acl>
-      <nxml__item xsi:type="xs:string">Administrator</nxml__item>
-      <nxml__item xsi:type="xs:string">Members</nxml__item>
+      <ecm__acl__item xsi:type="xs:string">Administrator</ecm__acl__item>
+      <ecm__acl__item xsi:type="xs:string">Members</ecm__acl__item>
     </ecm__acl>
   </rapi:replace-insert>
 </rapi:patch>

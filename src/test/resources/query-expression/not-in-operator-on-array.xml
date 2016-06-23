@@ -5,7 +5,7 @@
       <container-query>
         <element ns="" name="dc__contributors" />
         <value-query type="string">
-          <element ns="" name="nxml__item" />
+          <element ns="" name="dc__contributors__item" />
           <text>bob</text>
           <text>pete</text>
         </value-query>

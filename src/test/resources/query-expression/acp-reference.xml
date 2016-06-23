@@ -4,11 +4,11 @@
     <container-query>
       <element ns="" name="ecm__acp" />
       <container-query>
-        <element ns="" name="nxml__item" />
+        <element ns="" name="ecm__acp__item" />
         <container-query>
           <element ns="" name="acl" />
           <container-query>
-            <element ns="" name="nxml__item" />
+            <element ns="" name="acl__item" />
             <and-query>
               <value-query type="string">
                 <element ns="" name="perm" />

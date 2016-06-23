@@ -62,12 +62,13 @@ class MarkLogicQuerySimpleBuilder {
         String serializedValue = MarkLogicStateSerializer.serializeValue(value);
         Type type = DBSSession.getType(key);
         // TODO check if it's enought
+        StructuredQueryBuilder.TextIndex element;
         if (type instanceof ListType) {
-            queries.add(sqb.containerQuery(sqb.element(serializedKey),
-                    sqb.value(sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY), serializedValue)));
+            element = sqb.element(serializedKey + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX);
         } else {
-            queries.add(sqb.value(sqb.element(serializedKey), serializedValue));
+            element = sqb.element(serializedKey);
         }
+        queries.add(sqb.value(element, serializedValue));
         return this;
     }
 

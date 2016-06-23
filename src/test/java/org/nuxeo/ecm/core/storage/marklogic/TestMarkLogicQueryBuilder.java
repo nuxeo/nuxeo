@@ -369,6 +369,22 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testCorrelatedWildcardReferenceOnArray() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference("dc:subjects/*1"));
+
+        Expression expression = new Expression(new Reference("dc:subjects/*1"), Operator.LIKE,
+                new StringLiteral("abc%"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        assertXMLFileAgainstString("query-expression/correlated-wildcard-reference-on-array.xml", query.getHandle()
+                                                                                                       .toString());
+    }
+
+    @Test
     public void testACPReference() throws Exception {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference(NXQL.ECM_UUID));

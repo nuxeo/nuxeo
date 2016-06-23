@@ -4,7 +4,7 @@
     <container-query>
       <element ns="" name="info__views" />
       <container-query>
-        <element ns="" name="nxml__item" />
+        <element ns="" name="info__views__item" />
         <value-query type="string">
           <element ns="" name="title" />
           <text>Original</text>

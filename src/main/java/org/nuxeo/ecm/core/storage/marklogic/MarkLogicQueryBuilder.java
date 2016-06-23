@@ -22,7 +22,9 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -178,10 +180,13 @@ class MarkLogicQueryBuilder {
     }
 
     private String buildOptions() {
-        return "<options xmlns=\"http://marklogic.com/appservices/search\">" //
-                + buildProjections() //
-                + "<transform-results apply=\"empty-snippet\"/>" //
-                + "</options>";
+        StringBuilder options = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
+        options.append("<transform-results apply=\"empty-snippet\"/>");
+        if (!doManualProjection()) {
+            options.append(buildProjections());
+        }
+        options.append("</options>");
+        return options.toString();
     }
 
     private String buildProjections() {
@@ -198,7 +203,7 @@ class MarkLogicQueryBuilder {
             extract.append("<extract-path>");
             extract.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
                    .append('/')
-                   .append(MarkLogicHelper.serializeKey(fieldInfo.getFullField()));
+                   .append(MarkLogicHelper.serializeKey(fieldInfo.queryField));
             extract.append("</extract-path>");
             // TODO check fulltext score case (from mongodb)
         }
@@ -427,16 +432,16 @@ class MarkLogicQueryBuilder {
         List<QueryBuilder> children = walkOperandAsExpression(values);
         // Check wildcards in children in order to perform correlated constraints
         Map<String, List<QueryBuilder>> propBaseToBuilders = new LinkedHashMap<>();
+        Map<String, String> propBaseKeyToFieldBase = new HashMap<>();
         for (Iterator<QueryBuilder> it = children.iterator(); it.hasNext();) {
             QueryBuilder child = it.next();
             if (child instanceof CorrelatedContainerQueryBuilder) {
                 CorrelatedContainerQueryBuilder queryBuilder = (CorrelatedContainerQueryBuilder) child;
-                String correlatedPath = queryBuilder.getPath();
+                String correlatedPath = queryBuilder.getCorrelatedPath();
+                propBaseKeyToFieldBase.putIfAbsent(correlatedPath, queryBuilder.getPath());
                 // Store object for this key
-                List<QueryBuilder> propBaseBuilders = propBaseToBuilders.get(correlatedPath);
-                if (propBaseBuilders == null) {
-                    propBaseToBuilders.put(correlatedPath, propBaseBuilders = new LinkedList<>());
-                }
+                List<QueryBuilder> propBaseBuilders = propBaseToBuilders.computeIfAbsent(correlatedPath,
+                        key -> new LinkedList<>());
                 propBaseBuilders.add(queryBuilder.getChild());
                 it.remove();
             }
@@ -452,7 +457,8 @@ class MarkLogicQueryBuilder {
                 queryBuilder = new CompositionQueryBuilder(propBaseBuilders, true);
             }
             // Build upper container
-            children.add(new CorrelatedContainerQueryBuilder(correlatedPath, queryBuilder));
+            String path = propBaseKeyToFieldBase.get(correlatedPath);
+            children.add(new CorrelatedContainerQueryBuilder(path, correlatedPath, queryBuilder));
         }
         if (children.size() == 1) {
             return children.get(0);
@@ -657,14 +663,15 @@ class MarkLogicQueryBuilder {
             String correlatedFieldPart = m.group(1);
             String fieldSuffix = m.group(2);
             if (fieldSuffix == null) {
-                fieldSuffix = MarkLogicHelper.ARRAY_ITEM_KEY;
+                fieldSuffix = fieldInfo.queryField.substring(fieldInfo.queryField.lastIndexOf('/') + 1);
             }
-            return new CorrelatedContainerQueryBuilder(correlatedFieldPart, constraintBuilder.apply(fieldSuffix));
+            String path = fieldInfo.queryField.substring(0, fieldInfo.queryField.indexOf('/' + fieldSuffix));
+            return new CorrelatedContainerQueryBuilder(path, correlatedFieldPart, constraintBuilder.apply(fieldSuffix));
         }
-        String path = fieldInfo.fullField;
+        String path = fieldInfo.queryField;
         // Handle the list type case - if it's not present in path
         if (fieldInfo.type != null && fieldInfo.type.isListType() && !fieldInfo.fullField.endsWith("*")) {
-            path += '/' + MarkLogicHelper.ARRAY_ITEM_KEY;
+            path += '/' + MarkLogicHelper.buildItemNameFromPath(path);
         }
         return constraintBuilder.apply(path);
     }
@@ -680,6 +687,11 @@ class MarkLogicQueryBuilder {
          * MarkLogic field including wildcards.
          */
         protected final String fullField;
+
+        /**
+         * MarkLogic field without widlcards (replaced by the corresponding name in MarkLogic)
+         */
+        protected final String queryField;
 
         protected final Type type;
 
@@ -698,12 +710,22 @@ class MarkLogicQueryBuilder {
         public FieldInfo(String prop, String fullField, Type type, boolean isTrueOrNullBoolean) {
             this.prop = prop;
             this.fullField = fullField;
+            List<String> fields = new ArrayList<>();
+            String previous = null;
+            for (String element : fullField.split("/")) {
+                if (element.startsWith("*")) {
+                    if (previous == null) {
+                        throw new QueryParseException("Invalid query, property can't starts by '*'");
+                    }
+                    fields.add(previous + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX);
+                } else {
+                    fields.add(element);
+                }
+                previous = element;
+            }
+            this.queryField = String.join("/", fields);
             this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
-        }
-
-        public String getFullField() {
-            return fullField;
         }
 
         public boolean isBoolean() {
@@ -722,24 +744,31 @@ class MarkLogicQueryBuilder {
 
     private static class CorrelatedContainerQueryBuilder extends AbstractNamedQueryBuilder {
 
+        private final String correlatedPath;
+
         private final QueryBuilder child;
 
-        public CorrelatedContainerQueryBuilder(String path, QueryBuilder child) {
+        public CorrelatedContainerQueryBuilder(String path, String correlatedPath, QueryBuilder child) {
             super(path);
+            this.correlatedPath = correlatedPath;
             this.child = child;
         }
 
         @Override
         protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
-            if (!name.startsWith("*")) {
+            if (!correlatedPath.matches("^.*\\*\\d$")) {
                 throw new QueryParseException("A correlated query builder might finish by a wildcard, path=" + path);
             }
-            return sqb.containerQuery(sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY), child.build(sqb));
+            return sqb.containerQuery(sqb.element(serializeName(name)), child.build(sqb));
         }
 
         @Override
         public void not() {
             child.not();
+        }
+
+        public String getCorrelatedPath() {
+            return correlatedPath;
         }
 
         public QueryBuilder getChild() {
@@ -1067,7 +1096,7 @@ class MarkLogicQueryBuilder {
         }
 
         default String serializeName(String name) {
-            return name.startsWith("*") ? MarkLogicHelper.ARRAY_ITEM_KEY : MarkLogicHelper.serializeKey(name);
+            return MarkLogicHelper.serializeKey(name);
         }
 
     }

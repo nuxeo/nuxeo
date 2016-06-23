@@ -5,20 +5,20 @@
   <subState>
     <nbValues xsi:type="xs:long">2</nbValues>
     <values>
-      <nxml__item>
+      <values__item>
         <item xsi:type="xs:string">itemState1</item>
         <read xsi:type="xs:boolean">true</read>
         <write xsi:type="xs:boolean">true</write>
-      </nxml__item>
-      <nxml__item>
+      </values__item>
+      <values__item>
         <item xsi:type="xs:string">itemState2</item>
         <read xsi:type="xs:boolean">true</read>
         <write xsi:type="xs:boolean">false</write>
-      </nxml__item>
+      </values__item>
     </values>
     <valuesAsArray>
-      <nxml__item xsi:type="xs:long">3</nxml__item>
-      <nxml__item xsi:type="xs:long">4</nxml__item>
+      <valuesAsArray__item xsi:type="xs:long">3</valuesAsArray__item>
+      <valuesAsArray__item xsi:type="xs:long">4</valuesAsArray__item>
     </valuesAsArray>
   </subState>
 </document>

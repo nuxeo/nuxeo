@@ -9,7 +9,7 @@
       <container-query>
         <element ns="" name="ecm__racl" />
         <value-query type="string">
-          <element ns="" name="nxml__item" />
+          <element ns="" name="ecm__racl__item" />
           <text>Everyone</text>
           <text>bob</text>
         </value-query>

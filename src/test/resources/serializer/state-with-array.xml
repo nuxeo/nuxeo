@@ -3,7 +3,7 @@
   <ecm__id xsi:type="xs:string">ID</ecm__id>
   <nbValues xsi:type="xs:long">2</nbValues>
   <values>
-    <nxml__item xsi:type="xs:long">3</nxml__item>
-    <nxml__item xsi:type="xs:long">4</nxml__item>
+    <values__item xsi:type="xs:long">3</values__item>
+    <values__item xsi:type="xs:long">4</values__item>
   </values>
 </document>

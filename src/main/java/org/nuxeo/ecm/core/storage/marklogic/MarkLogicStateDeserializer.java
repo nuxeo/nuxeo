@@ -69,7 +69,7 @@ final class MarkLogicStateDeserializer {
         Iterator children = element.elementIterator();
         if (children.hasNext()) {
             Element first = (Element) children.next();
-            if (MarkLogicHelper.ARRAY_ITEM_KEY.equals(first.getQualifiedName())) {
+            if (first.getQualifiedName().endsWith(MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX)) {
                 result = deserializeList(element);
             } else {
                 result = deserializeState(element);

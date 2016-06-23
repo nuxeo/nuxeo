@@ -36,7 +36,7 @@ final class MarkLogicHelper {
 
     public static final String DOCUMENT_ROOT_PATH = '/' + DOCUMENT_ROOT;
 
-    public static final String ARRAY_ITEM_KEY = serializeKey("nxml:item");
+    public static final String ARRAY_ITEM_KEY_SUFFIX = "__item";
 
     public static final String ATTRIBUTE_TYPE = "type";
 
@@ -63,6 +63,14 @@ final class MarkLogicHelper {
 
     public static String deserializeKey(String key) {
         return key.replace(SCHEMA_MARKLOGIC_DELIMITER, SCHEMA_ORIGINAL_DELIMITER);
+    }
+
+    public static String getLastElementName(String path) {
+        return path.replaceAll("^(.*/)?([^/]*)$", "$2");
+    }
+
+    public static String buildItemNameFromPath(String path) {
+        return getLastElementName(path) + ARRAY_ITEM_KEY_SUFFIX;
     }
 
     public enum ElementType {

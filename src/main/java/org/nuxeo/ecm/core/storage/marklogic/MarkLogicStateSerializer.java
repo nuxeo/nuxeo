@@ -100,7 +100,7 @@ final class MarkLogicStateSerializer {
     private static Element serialize(String key, List<Object> list) {
         Element array = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
         for (Object object : list) {
-            serialize(MarkLogicHelper.ARRAY_ITEM_KEY, object).ifPresent(array::add);
+            serialize(key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, object).ifPresent(array::add);
         }
         return array;
     }
