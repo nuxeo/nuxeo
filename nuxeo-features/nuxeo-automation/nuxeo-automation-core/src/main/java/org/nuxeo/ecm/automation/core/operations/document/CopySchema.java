@@ -25,7 +25,6 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
@@ -43,33 +42,31 @@ public class CopySchema {
     @Param(name = "source", required = false)
     protected DocumentModel source;
 
-    @Param(name = "schema", required = true)
+    @Param(name = "schema")
     protected String schema;
 
-    @OperationMethod
-    public DocumentModel run(DocumentModel docToUpdate) {
-        if (source == null) {
-            source = (DocumentModel) context.get("request");
-        }
-        docToUpdate.setProperties(schema, source.getProperties(schema));
-        return docToUpdate;
+    private void copySchemaProperties(DocumentModel documentSource, DocumentModel documentTarget, String schema) {
+        documentTarget.setProperties(schema, documentSource.getProperties(schema));
     }
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) {
-        if (source == null)
+    public DocumentModel run(DocumentModel target) {
+        if (source == null) {
             source = (DocumentModel) context.get("request");
-        DataModel model = source.getDataModel(schema);
-        if (model != null) {
-            for (DocumentModel doc : docs) {
-                DataModel targetDM = doc.getDataModel(schema);
-                if (targetDM != null) {
-                    // explicitly set values so that the dirty flags are set !
-                    targetDM.setMap(model.getMap());
-                }
-            }
         }
-        return docs;
+        copySchemaProperties(source, target, schema);
+        return target;
+    }
+
+    @OperationMethod
+    public DocumentModelList run(DocumentModelList targets) {
+        if (source == null) {
+            source = (DocumentModel) context.get("request");
+        }
+        for (DocumentModel target : targets) {
+            copySchemaProperties(source, target, schema);
+        }
+        return targets;
     }
 
 }
