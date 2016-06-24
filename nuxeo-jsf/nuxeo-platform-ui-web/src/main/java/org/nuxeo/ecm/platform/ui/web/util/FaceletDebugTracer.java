@@ -56,13 +56,13 @@ public class FaceletDebugTracer {
             long end = System.currentTimeMillis();
             long lag = end - start;
             if (lag >= maxLag) {
-                log.info(String.format("'%s' at '%s' took: %s ms.", id, tag, lag));
+                log.debug(String.format("'%s' at '%s' took: %s ms.", id, tag, lag));
             }
         }
     }
 
     protected static long getMaxTraceLag() {
-        if (log.isInfoEnabled()) {
+        if (log.isDebugEnabled()) {
             ConfigurationService cs = Framework.getService(ConfigurationService.class);
             return Long.valueOf(cs.getProperty(TRACE_PROP, "-1"));
         }
