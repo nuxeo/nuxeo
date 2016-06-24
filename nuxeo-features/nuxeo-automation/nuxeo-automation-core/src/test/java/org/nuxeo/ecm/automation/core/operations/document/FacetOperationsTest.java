@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/add-facet-test-contrib.xml")
-public class AddFacetTest {
+public class FacetOperationsTest {
 
     @Inject
     CoreSession session;
@@ -42,7 +42,9 @@ public class AddFacetTest {
 
     protected DocumentModel folder;
 
-    protected DocumentModel theDoc;
+    protected DocumentModel docNoFacet;
+
+    protected DocumentModel docWithFacet;
 
     @Before
     public void initRepo() throws Exception {
@@ -55,11 +57,22 @@ public class AddFacetTest {
         session.save();
         folder = session.getDocument(folder.getRef());
 
-        theDoc = session.createDocumentModel("/Folder", "TheDoc", "File");
-        theDoc.setPropertyValue("dc:title", "TheDoc");
-        theDoc = session.createDocument(theDoc);
+        docNoFacet = session.createDocumentModel("/Folder", "DocNoFacet", "File");
+        docNoFacet.setPropertyValue("dc:title", "DocNotFacet");
+        docNoFacet = session.createDocument(docNoFacet);
         session.save();
-        theDoc = session.getDocument(theDoc.getRef());
+        docNoFacet = session.getDocument(docNoFacet.getRef());
+
+        docWithFacet = session.createDocumentModel("/Folder", "DocWithFacet", "File");
+        docWithFacet.setPropertyValue("dc:title", "DocWithFacet");
+        docWithFacet = session.createDocument(docWithFacet);
+        session.save();
+        docWithFacet = session.getDocument(docWithFacet.getRef());
+
+        docWithFacet.addFacet(THE_FACET);
+        docWithFacet = session.saveDocument(docWithFacet);
+        session.save();
+
     }
     
     @After
@@ -69,18 +82,37 @@ public class AddFacetTest {
     }
 
     @Test
-    public void testAddFacet() throws InvalidChainException, OperationException, Exception {
+    public void testAddFacet() throws OperationException {
         
-        assertNotNull(theDoc);
-        assertFalse("New doc should not have the facet.", theDoc.hasFacet(THE_FACET));        
+        assertNotNull(docNoFacet);
+        assertFalse("New doc should not have the facet.", docNoFacet.hasFacet(THE_FACET));
+
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(theDoc);
+        ctx.setInput(docNoFacet);
         OperationChain chain = new OperationChain("testAddFacet");
-        chain.add(AddFacet.ID).set("facet", "MyNewFacet");
+        chain.add(AddFacet.ID).set("facet", THE_FACET);
         DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
 
         assertNotNull(resultDoc);
         assertTrue("The doc should now have the facet.", resultDoc.hasFacet(THE_FACET));        
+
+    }
+
+    @Test
+    public void testRemoveFacet() throws OperationException {
+
+        //remove from a document with facet
+        assertNotNull(docWithFacet);
+        assertTrue("New doc should have the facet.", docWithFacet.hasFacet(THE_FACET));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(docNoFacet);
+        OperationChain chain = new OperationChain("testRemoveFacet");
+        chain.add(RemoveFacet.ID).set("facet", THE_FACET);
+        DocumentModel resultDoc = (DocumentModel)service.run(ctx, chain);
+
+        assertNotNull(resultDoc);
+        assertFalse("The doc should not have the facet.", resultDoc.hasFacet(THE_FACET));
 
     }
 

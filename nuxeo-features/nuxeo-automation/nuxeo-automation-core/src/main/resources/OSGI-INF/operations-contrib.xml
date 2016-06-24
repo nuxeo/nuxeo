@@ -100,6 +100,8 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.AddFacet" />
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.RemoveFacet" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty">
       <widgets>
         <widget name="xpath" type="codearea">
