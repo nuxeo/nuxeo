@@ -338,7 +338,6 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public synchronized void run() {
-        TransactionHelper.startTransaction(transactionTimeout);
         synchronized (this) {
             if (isRunning) {
                 throw new IllegalStateException("Task already running");
@@ -350,6 +349,8 @@ public class GenericThreadedImportTask implements Runnable {
                 throw new IllegalArgumentException("source node must be specified");
             }
         }
+        TransactionHelper.startTransaction(transactionTimeout);
+        boolean completedAbruptly = true;
         try {
             session = CoreInstance.openCoreSessionSystem(repositoryName);
             log.info("Starting new import task");
@@ -360,19 +361,26 @@ public class GenericThreadedImportTask implements Runnable {
             recursiveCreateDocumentFromNode(rootDoc, rootSource);
             session.save();
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
-            TransactionHelper.commitOrRollbackTransaction();
+            completedAbruptly = false;
         } catch (Exception e) { // deals with interrupt below
             log.error("Error during import", e);
             ExceptionUtils.checkInterrupt(e);
             notifyImportError();
         } finally {
             log.info("End of task");
-            if (session != null) {
-                session.close();
-                session = null;
-            }
-            synchronized (this) {
-                isRunning = false;
+            try {
+                if (session != null) {
+                    session.close();
+                    session = null;
+                }
+            } finally {
+                if (completedAbruptly) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                TransactionHelper.commitOrRollbackTransaction();
+                synchronized (this) {
+                    isRunning = false;
+                }
             }
         }
     }
