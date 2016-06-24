@@ -19,14 +19,13 @@
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.*;
 
 @Operation(id = CopySchema.ID, category = Constants.CAT_DOCUMENT, label = "Copy Schema", description = "Copy all the info in the schema of the source to the input document.")
 public class CopySchema {
@@ -39,30 +38,39 @@ public class CopySchema {
     @Context
     protected CoreSession session;
 
-    @Param(name = "source", required = false)
-    protected DocumentModel source;
+    @Param(name = "sourceId", required = false)
+    protected String sourceId;
+
+    @Param(name = "sourcePath", required = false)
+    protected String sourcePath;
 
     @Param(name = "schema")
     protected String schema;
+
+    private DocumentModel getDocumentFromIdOrPath() throws OperationException {
+        if (sourceId != null) {
+            return session.getDocument(new IdRef(sourceId));
+        } else if (sourcePath != null) {
+            return session.getDocument(new PathRef(sourcePath));
+        } else {
+            throw new OperationException("No document id or path was provided");
+        }
+    }
 
     private void copySchemaProperties(DocumentModel documentSource, DocumentModel documentTarget, String schema) {
         documentTarget.setProperties(schema, documentSource.getProperties(schema));
     }
 
     @OperationMethod
-    public DocumentModel run(DocumentModel target) {
-        if (source == null) {
-            source = (DocumentModel) context.get("request");
-        }
+    public DocumentModel run(DocumentModel target) throws OperationException {
+        DocumentModel source = getDocumentFromIdOrPath();
         copySchemaProperties(source, target, schema);
         return target;
     }
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList targets) {
-        if (source == null) {
-            source = (DocumentModel) context.get("request");
-        }
+    public DocumentModelList run(DocumentModelList targets) throws OperationException {
+        DocumentModel source = getDocumentFromIdOrPath();
         for (DocumentModel target : targets) {
             copySchemaProperties(source, target, schema);
         }
