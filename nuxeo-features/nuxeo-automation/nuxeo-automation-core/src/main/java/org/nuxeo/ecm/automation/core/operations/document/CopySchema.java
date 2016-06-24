@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
-import java.util.Map;
-
 @Operation(id = CopySchema.ID, category = Constants.CAT_DOCUMENT, label = "Copy Schema", description = "Copy all the info in the schema of the source to the input document.")
 public class CopySchema {
 
@@ -53,10 +51,7 @@ public class CopySchema {
         if (source == null) {
             source = (DocumentModel) context.get("request");
         }
-        Map<String, Object> sourceDataModelMap = source.getProperties(schema);
-        for (Map.Entry<String, Object> pair : sourceDataModelMap.entrySet()) {
-            docToUpdate.setProperty(schema, pair.getKey(), pair.getValue());
-        }
+        docToUpdate.setProperties(schema, source.getProperties(schema));
         return docToUpdate;
     }
 

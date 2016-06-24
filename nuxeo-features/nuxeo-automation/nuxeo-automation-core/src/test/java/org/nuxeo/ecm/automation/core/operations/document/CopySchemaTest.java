@@ -59,9 +59,11 @@ public class CopySchemaTest {
         documentSource = session.createDocumentModel("/", "Source", "File");
         documentSource = session.createDocument(documentSource);
         session.save();
+        assertNotNull(documentSource);
         documentTarget = session.createDocumentModel("/", "Target", "File");
         documentSource = session.createDocument(documentTarget);
         session.save();
+        assertNotNull(documentTarget);
     }
 
     @After
@@ -75,11 +77,9 @@ public class CopySchemaTest {
         String schema = "dublincore";
         String property = "title";
 
-        assertNotNull(documentSource);
         assertTrue(documentSource.hasSchema(schema));
         documentSource.setProperty(schema, property, "Source");
 
-        assertNotNull(documentTarget);
         assertTrue(documentTarget.hasSchema(schema));
         documentTarget.setProperty(schema, property, "Target");
 
@@ -97,10 +97,7 @@ public class CopySchemaTest {
     @Test
     public void testCopyFullSchema() throws OperationException {
         String schema = "common";
-
-        assertNotNull(documentSource);
         assertTrue(documentSource.hasSchema(schema));
-        assertNotNull(documentTarget);
         assertTrue(documentTarget.hasSchema(schema));
 
         documentSource.setProperty(schema, "size", 1);
@@ -111,19 +108,13 @@ public class CopySchemaTest {
         documentTarget.setProperty(schema, "icon-expanded", "icon-expanded2");
         documentTarget.setProperty(schema, "icon", "icon2");
 
-        Map<String, Object> propertyMap = documentSource.getProperties(schema);
-        for (Map.Entry<String, Object> pair : propertyMap.entrySet()) {
-            // ensure that the values of the properties for the two documents are different
-            assertNotEquals(documentSource.getProperty(schema, pair.getKey()), documentTarget.getProperty(schema, pair.getKey()));
-        }
-
         OperationContext context = new OperationContext(session);
         context.setInput(documentTarget);
         OperationChain chain = new OperationChain("testCopyFullSchema");
         chain.add(CopySchema.ID).set("source", documentSource).set("schema", schema);
         documentTarget = (DocumentModel)service.run(context, chain);
 
-        propertyMap = documentSource.getProperties(schema);
+        Map<String, Object> propertyMap = documentSource.getProperties(schema);
         for (Map.Entry<String, Object> pair : propertyMap.entrySet()) {
             // ensure that the values of the properties for the two documents are now the same
             assertEquals(documentSource.getProperty(schema, pair.getKey()), documentTarget.getProperty(schema, pair.getKey()));
