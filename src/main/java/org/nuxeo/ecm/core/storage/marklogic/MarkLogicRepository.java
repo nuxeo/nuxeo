@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,9 +92,14 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     protected DatabaseClient markLogicClient;
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
-        super(cm, descriptor.name, descriptor.getFulltextDescriptor());
+        super(cm, descriptor.name, descriptor);
         markLogicClient = newMarkLogicClient(descriptor);
         initRepository();
+    }
+
+    @Override
+    public List<IdType> getAllowedIdTypes() {
+        return Collections.singletonList(IdType.varchar);
     }
 
     @Override
