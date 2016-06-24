@@ -75,7 +75,10 @@ import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
  */
 public class Util {
 
-    private static JAXBContext jaxbContext;
+    // volatile for double-checked locking
+    private static volatile JAXBContext jaxbContext;
+
+    private static final Object jaxbContextLock = new Object();
 
     private static JAXBContext initJaxbContext() throws JAXBException {
         return JAXBContext.newInstance(new Class<?>[] { //
@@ -138,7 +141,11 @@ public class Util {
 
     public static JAXBContext getJaxbContext() throws JAXBException {
         if (jaxbContext == null) {
-            jaxbContext = initJaxbContext();
+            synchronized (jaxbContextLock) {
+                if (jaxbContext == null) {
+                    jaxbContext = initJaxbContext();
+                }
+            }
         }
         return jaxbContext;
     }
