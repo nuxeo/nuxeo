@@ -133,18 +133,18 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (action == null) {
             return false;
         }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Checking access for action '%s'...", action.getId()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Checking access for action '%s'...", action.getId()));
         }
 
         boolean granted = checkFilters(action, action.getFilterIds(), context);
         if (granted) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Granting access for action '%s'", action.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Granting access for action '%s'", action.getId()));
             }
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Denying access for action '%s'", action.getId()));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Denying access for action '%s'", action.getId()));
             }
         }
         return granted;
@@ -301,13 +301,13 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 }
                 if (!filter.accept(action, context)) {
                     // denying filter found => ignore following filters
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Filter '%s' denied access", filterId));
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format("Filter '%s' denied access", filterId));
                     }
                     return false;
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Filter '%s' granted access", filterId));
+                if (log.isTraceEnabled()) {
+                    log.trace(String.format("Filter '%s' granted access", filterId));
                 }
             }
             return true;
