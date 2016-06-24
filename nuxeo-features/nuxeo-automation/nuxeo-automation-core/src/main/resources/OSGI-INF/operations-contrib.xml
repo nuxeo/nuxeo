@@ -106,6 +106,8 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.CopySchema" />
     <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.ResetSchema" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty">
       <widgets>
         <widget name="xpath" type="codearea">
