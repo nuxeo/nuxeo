@@ -180,11 +180,15 @@ public class ActionService extends DefaultComponent implements ActionManager {
             }
         } finally {
             long duration = timerContext.stop();
-            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
-                log.info(String.format("Resolving actions for category '%s' took: %.2f ms", category,
+            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+                log.debug(String.format("Resolving actions for category '%s' took: %.2f ms", category,
                         duration / 1000000.0));
             }
         }
+    }
+
+    protected boolean isTimeTracerLogEnabled() {
+        return log.isDebugEnabled() && LOG_MIN_DURATION_NS >= 0;
     }
 
     @Override
@@ -208,8 +212,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return action;
         } finally {
             long duration = timerContext.stop();
-            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
-                log.info(String.format("Resolving action with id '%s' took: %.2f ms", actionId, duration / 1000000.0));
+            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+                log.debug(String.format("Resolving action with id '%s' took: %.2f ms", actionId, duration / 1000000.0));
             }
         }
     }
@@ -275,8 +279,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return filter.accept(null, context);
         } finally {
             long duration = timerContext.stop();
-            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
-                log.info(String.format("Resolving filter with id '%s' took: %.2f ms", filterId, duration / 1000000.0));
+            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+                log.debug(String.format("Resolving filter with id '%s' took: %.2f ms", filterId, duration / 1000000.0));
             }
         }
     }
@@ -309,8 +313,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return true;
         } finally {
             long duration = timerContext.stop();
-            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
-                log.info(String.format("Resolving filters %s took: %.2f ms", filterIds, duration / 1000000.0));
+            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+                log.debug(String.format("Resolving filters %s took: %.2f ms", filterIds, duration / 1000000.0));
             }
         }
     }
