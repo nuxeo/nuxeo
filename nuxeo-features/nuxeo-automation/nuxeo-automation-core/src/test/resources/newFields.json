@@ -1,0 +1,16 @@
+[
+    {
+        "fieldType":"unicTypeAdded",
+        "description":"desc fieldZ Added",
+        "name":"fieldZAdded",
+        "columnName":"colZAdded",
+        "sqlTypeHint":"whateverAdded"
+    },
+    {
+        "fieldType":"unicTypeAdded2",
+        "description":"desc fieldZ Added2",
+        "name":"fieldZAdded2",
+        "columnName":"colZAdded2",
+        "sqlTypeHint":"whateverAdded2"
+    }
+]
