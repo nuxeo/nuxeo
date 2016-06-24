@@ -84,20 +84,44 @@ public class CopySchemaTest {
     }
 
     @Test
-    public void tesSingleTargetSingleProperty() throws OperationException {
+    public void testSingleTargetSinglePropertyById() throws OperationException {
         String schema = "dublincore";
         String property = "title";
 
         assertTrue(source.hasSchema(schema));
         source.setProperty(schema, property, source.getName());
+        session.saveDocument(source);
 
         assertTrue(target1.hasSchema(schema));
         target1.setProperty(schema, property, target1.getName());
+        session.saveDocument(target1);
 
         OperationContext context = new OperationContext(session);
         context.setInput(target1);
-        OperationChain chain = new OperationChain("testSingleTargetSingleProperty");
-        chain.add(CopySchema.ID).set("source", source).set("schema", schema);
+        OperationChain chain = new OperationChain("testSingleTargetSinglePropertyById");
+        chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
+        target1 = (DocumentModel)service.run(context, chain);
+
+        assertEquals(source.getProperty(schema, property), target1.getProperty(schema, property));
+    }
+
+    @Test
+    public void testSingleTargetSinglePropertyByPath() throws OperationException {
+        String schema = "dublincore";
+        String property = "title";
+
+        assertTrue(source.hasSchema(schema));
+        source.setProperty(schema, property, source.getName());
+        session.saveDocument(source);
+
+        assertTrue(target1.hasSchema(schema));
+        target1.setProperty(schema, property, target1.getName());
+        session.saveDocument(target1);
+
+        OperationContext context = new OperationContext(session);
+        context.setInput(target1);
+        OperationChain chain = new OperationChain("testSingleTargetSinglePropertyByPath");
+        chain.add(CopySchema.ID).set("sourcePath", source.getPath().toString()).set("schema", schema);
         target1 = (DocumentModel)service.run(context, chain);
 
         assertEquals(source.getProperty(schema, property), target1.getProperty(schema, property));
@@ -112,15 +136,17 @@ public class CopySchemaTest {
         source.setProperty(schema, "size", 1);
         source.setProperty(schema, "icon-expanded", "icon-expanded1");
         source.setProperty(schema, "icon", "icon1");
+        session.saveDocument(source);
 
         target1.setProperty(schema, "size", 2);
         target1.setProperty(schema, "icon-expanded", "icon-expanded2");
         target1.setProperty(schema, "icon", "icon2");
+        session.saveDocument(target1);
 
         OperationContext context = new OperationContext(session);
         context.setInput(target1);
         OperationChain chain = new OperationChain("testSingleTargetFullSchema");
-        chain.add(CopySchema.ID).set("source", source).set("schema", schema);
+        chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
         target1 = (DocumentModel)service.run(context, chain);
 
         Map<String, Object> propertyMap = source.getProperties(schema);
@@ -137,17 +163,20 @@ public class CopySchemaTest {
 
         assertTrue(source.hasSchema(schema));
         source.setProperty(schema, property, source.getName());
+        session.saveDocument(source);
 
         assertTrue(target1.hasSchema(schema));
         target1.setProperty(schema, property, target1.getName());
+        session.saveDocument(target1);
 
         assertTrue(target2.hasSchema(schema));
         target2.setProperty(schema, property, target2.getName());
+        session.saveDocument(target2);
 
         OperationContext context = new OperationContext(session);
         context.setInput(targets);
         OperationChain chain = new OperationChain("testMultipleTargetsSingleProperty");
-        chain.add(CopySchema.ID).set("source", source).set("schema", schema);
+        chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
         targets = (DocumentModelList)service.run(context, chain);
 
         assertEquals(target1, targets.get(0));
@@ -166,19 +195,22 @@ public class CopySchemaTest {
         source.setProperty(schema, "size", 1);
         source.setProperty(schema, "icon-expanded", "icon-expanded1");
         source.setProperty(schema, "icon", "icon1");
+        session.saveDocument(source);
 
         target1.setProperty(schema, "size", 2);
         target1.setProperty(schema, "icon-expanded", "icon-expanded2");
         target1.setProperty(schema, "icon", "icon2");
+        session.saveDocument(target1);
 
         target2.setProperty(schema, "size", 3);
         target2.setProperty(schema, "icon-expanded", "icon-expanded2");
         target2.setProperty(schema, "icon", "icon2");
+        session.saveDocument(target2);
 
         OperationContext context = new OperationContext(session);
         context.setInput(targets);
         OperationChain chain = new OperationChain("testMultipleTargersFullSchema");
-        chain.add(CopySchema.ID).set("source", source).set("schema", schema);
+        chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
         targets = (DocumentModelList)service.run(context, chain);
 
         assertEquals(target1, targets.get(0));
