@@ -57,14 +57,14 @@ public class CopySchema {
         }
     }
 
-    private void copySchemaProperties(DocumentModel documentSource, DocumentModel documentTarget, String schema) {
-        documentTarget.setProperties(schema, documentSource.getProperties(schema));
+    private void copySchemaProperties(DocumentModel source, DocumentModel target) {
+        target.setProperties(schema, source.getProperties(schema));
     }
 
     @OperationMethod
     public DocumentModel run(DocumentModel target) throws OperationException {
         DocumentModel source = getDocumentFromIdOrPath();
-        copySchemaProperties(source, target, schema);
+        copySchemaProperties(source, target);
         return target;
     }
 
@@ -72,7 +72,7 @@ public class CopySchema {
     public DocumentModelList run(DocumentModelList targets) throws OperationException {
         DocumentModel source = getDocumentFromIdOrPath();
         for (DocumentModel target : targets) {
-            copySchemaProperties(source, target, schema);
+            copySchemaProperties(source, target);
         }
         return targets;
     }

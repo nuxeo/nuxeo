@@ -84,6 +84,28 @@ public class CopySchemaTest {
     }
 
     @Test
+    public void testThrowException() {
+        String schema = "dublincore";
+        String property = "title";
+        boolean triggeredException = false;
+
+        assertTrue(target1.hasSchema(schema));
+        target1.setProperty(schema, property, target1.getName());
+        session.saveDocument(target1);
+
+        OperationContext context = new OperationContext(session);
+        context.setInput(target1);
+        OperationChain chain = new OperationChain("testSingleTargetSinglePropertyById");
+        chain.add(CopySchema.ID).set("schema", schema);
+        try {
+            target1 = (DocumentModel)service.run(context, chain);
+        } catch (OperationException e) {
+            triggeredException = true;
+        }
+        assertTrue(triggeredException);
+    }
+
+    @Test
     public void testSingleTargetSinglePropertyById() throws OperationException {
         String schema = "dublincore";
         String property = "title";
@@ -149,8 +171,7 @@ public class CopySchemaTest {
         chain.add(CopySchema.ID).set("sourceId", source.getId()).set("schema", schema);
         target1 = (DocumentModel)service.run(context, chain);
 
-        Map<String, Object> propertyMap = source.getProperties(schema);
-        for (Map.Entry<String, Object> pair : propertyMap.entrySet()) {
+        for (Map.Entry<String, Object> pair : source.getProperties(schema).entrySet()) {
             // ensure that the values of the properties for the two documents are now the same
             assertEquals(source.getProperty(schema, pair.getKey()), target1.getProperty(schema, pair.getKey()));
         }
@@ -215,8 +236,7 @@ public class CopySchemaTest {
 
         assertEquals(target1, targets.get(0));
         assertEquals(target2, targets.get(1));
-        Map<String, Object> propertyMap = source.getProperties(schema);
-        for (Map.Entry<String, Object> pair : propertyMap.entrySet()) {
+        for (Map.Entry<String, Object> pair : source.getProperties(schema).entrySet()) {
             // ensure that the values of the properties for the three documents are now the same
             assertEquals(source.getProperty(schema, pair.getKey()), target1.getProperty(schema, pair.getKey()));
             assertEquals(source.getProperty(schema, pair.getKey()), target2.getProperty(schema, pair.getKey()));
