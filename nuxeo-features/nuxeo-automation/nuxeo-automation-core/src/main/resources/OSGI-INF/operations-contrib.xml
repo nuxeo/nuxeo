@@ -102,6 +102,8 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.RemoveFacet" />
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.AddItemToListProperty" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.document.CopySchema" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty">
