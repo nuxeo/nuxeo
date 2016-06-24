@@ -98,7 +98,9 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentACL" />
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.document.AddFacet" />
+      class="org.nuxeo.ecm.automation.core.operations.document.AddFacet" />
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.document.CopySchema" />
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.RemoveFacet" />
     <operation
