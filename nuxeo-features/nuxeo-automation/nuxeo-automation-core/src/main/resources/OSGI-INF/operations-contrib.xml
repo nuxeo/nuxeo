@@ -148,6 +148,8 @@
       </widgets>
     </operation>
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.RemoveProxies" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.document.UpdateDocument" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.PublishDocument" />
