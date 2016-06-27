@@ -27,6 +27,7 @@
     <module>nuxeo-platform-login-shibboleth</module>
     <module>nuxeo-platform-login-token</module>
     <module>nuxeo-platform-login-token-jsf</module>
+    <module>nuxeo-platform-login-token-rest-api</module>
   </modules>
 
 </project>

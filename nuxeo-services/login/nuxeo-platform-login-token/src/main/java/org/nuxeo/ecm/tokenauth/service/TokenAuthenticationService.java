@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,5 +100,11 @@ public interface TokenAuthenticationService extends Serializable {
      * Gets the token bindings for the specified user.
      */
     DocumentModelList getTokenBindings(String userName);
+
+    /**
+     * Gets the token bindings for the specified user and application.
+     * @since 8.3
+     */
+    DocumentModelList getTokenBindings(String userName, String applicationName);
 
 }

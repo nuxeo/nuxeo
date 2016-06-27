@@ -24,8 +24,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -40,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.tokenauth.io.AuthenticationToken;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -178,129 +183,33 @@ public class TestTokenAuthenticationService {
 
         DocumentModelList tokenBindings = tokenAuthenticationService.getTokenBindings("joe");
         assertEquals(3, tokenBindings.size());
-        Set<TokenBindingMock> expectedTokenBindings = new HashSet<TokenBindingMock>();
-        expectedTokenBindings.add(new TokenBindingMock(token1, "joe", "myFavoriteApp", "Ubuntu box 64 bits",
+        Set<AuthenticationToken> expectedTokenBindings = new HashSet<AuthenticationToken>();
+        expectedTokenBindings.add(new AuthenticationToken(token1, "joe", "myFavoriteApp", "Ubuntu box 64 bits",
                 "This is my personal Linux box", "rw"));
-        expectedTokenBindings.add(new TokenBindingMock(token2, "joe", "myFavoriteApp", "Windows box 32 bits",
+        expectedTokenBindings.add(new AuthenticationToken(token2, "joe", "myFavoriteApp", "Windows box 32 bits",
                 "This is my personal Windows box", "rw"));
-        expectedTokenBindings.add(new TokenBindingMock(token3, "joe", "nuxeoDrive", "Mac OSX VM",
+        expectedTokenBindings.add(new AuthenticationToken(token3, "joe", "nuxeoDrive", "Mac OSX VM",
                 "This is my personal Mac box", "rw"));
-        assertTrue(CollectionUtils.isEqualCollection(expectedTokenBindings, toTokenBindingMocks(tokenBindings)));
+        assertTrue(CollectionUtils.isEqualCollection(expectedTokenBindings, asAuthenticationTokens(tokenBindings)));
         for (DocumentModel tokenBinding : tokenBindings) {
             assertNotNull(tokenBinding.getPropertyValue("authtoken:creationDate"));
         }
     }
 
-    protected Set<TokenBindingMock> toTokenBindingMocks(DocumentModelList tokenBindings) {
-        Set<TokenBindingMock> tokenBindingMocks = new HashSet<TokenBindingMock>();
-        for (DocumentModel tokenBinding : tokenBindings) {
-            tokenBindingMocks.add(toTokenBindingMock(tokenBinding));
-        }
-        return tokenBindingMocks;
+    private List<AuthenticationToken> asAuthenticationTokens(DocumentModelList entries) {
+        return entries.stream().map(this::asAuthenticationToken).collect(Collectors.toList());
     }
 
-    protected TokenBindingMock toTokenBindingMock(DocumentModel tokenBinding) {
-        return new TokenBindingMock((String) tokenBinding.getPropertyValue("authtoken:token"),
-                (String) tokenBinding.getPropertyValue("authtoken:userName"),
-                (String) tokenBinding.getPropertyValue("authtoken:applicationName"),
-                (String) tokenBinding.getPropertyValue("authtoken:deviceId"),
-                (String) tokenBinding.getPropertyValue("authtoken:deviceDescription"),
-                (String) tokenBinding.getPropertyValue("authtoken:permission"));
+    private AuthenticationToken asAuthenticationToken(DocumentModel entry) {
+        Map<String, Object> props = entry.getProperties("authtoken");
+        AuthenticationToken token = new AuthenticationToken(
+                (String) props.get("token"),
+                (String) props.get("userName"),
+                (String) props.get("applicationName"),
+                (String) props.get("deviceId"),
+                (String) props.get("deviceDescription"),
+                (String) props.get("permission"));
+        token.setCreationDate((Calendar) props.get("creationDate"));
+        return token;
     }
-
-    protected final class TokenBindingMock {
-
-        protected String token;
-
-        protected String userName;
-
-        protected String applicationName;
-
-        protected String deviceId;
-
-        protected String deviceDescription;
-
-        protected String permission;
-
-        public TokenBindingMock(String token, String userName, String applicationName, String deviceId,
-                String deviceDescription, String permission) {
-            this.token = token;
-            this.userName = userName;
-            this.applicationName = applicationName;
-            this.deviceId = deviceId;
-            this.deviceDescription = deviceDescription;
-            this.permission = permission;
-        }
-
-        public String getToken() {
-            return token;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public String getApplicationName() {
-            return applicationName;
-        }
-
-        public String getDeviceId() {
-            return deviceId;
-        }
-
-        public String getDeviceDescription() {
-            return deviceDescription;
-        }
-
-        public String getPermission() {
-            return permission;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 17;
-            hash = hash * 37 + token.hashCode();
-            hash = hash * 37 + userName.hashCode();
-            hash = hash * 37 + applicationName.hashCode();
-            hash = hash * 37 + deviceId.hashCode();
-            hash = hash * 37 + deviceDescription.hashCode();
-            return hash * 37 + permission.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (!(obj instanceof TokenBindingMock)) {
-                return false;
-            }
-            TokenBindingMock other = (TokenBindingMock) obj;
-            return token.equals(other.getToken()) && userName.equals(other.getUserName())
-                    && applicationName.equals(other.getApplicationName()) && deviceId.equals(other.getDeviceId())
-                    && deviceDescription.equals(other.getDeviceDescription())
-                    && permission.equals(other.getPermission());
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("(");
-            sb.append(token);
-            sb.append(", ");
-            sb.append(userName);
-            sb.append(", ");
-            sb.append(applicationName);
-            sb.append(", ");
-            sb.append(deviceId);
-            sb.append(", ");
-            sb.append(deviceDescription);
-            sb.append(", ");
-            sb.append(permission);
-            sb.append(")");
-            return sb.toString();
-        }
-
-    }
-
 }
