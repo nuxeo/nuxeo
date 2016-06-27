@@ -16,16 +16,16 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
+import java.io.OutputStream;
 import java.util.Collections;
 
-import javax.json.JsonObject;
-import org.nuxeo.connect.tools.report.ReportProvider;
+import org.nuxeo.connect.tools.report.ReportWriter;
 
-public class MxClassHistogramReport implements ReportProvider {
+public class MxClassHistogramReport implements ReportWriter {
 
     @Override
-    public JsonObject snapshot() {
-        return MXComponent.instance.exec("com.sun.management:type=DiagnosticCommand", "gcClassHistogram", Collections.emptyList())
-                .run();
+    public void write(OutputStream output) {
+        MXComponent.instance.exec("com.sun.management:type=DiagnosticCommand", "gcClassHistogram", Collections.emptyList())
+                .run(output);
     }
 }

@@ -16,14 +16,15 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
-import javax.json.JsonObject;
-import org.nuxeo.connect.tools.report.ReportProvider;
+import java.io.OutputStream;
 
-public class MxThreadDumpReport implements ReportProvider {
+import org.nuxeo.connect.tools.report.ReportWriter;
+
+public class MxThreadDumpReport implements ReportWriter {
 
     @Override
-    public JsonObject snapshot() {
-        return MXComponent.instance.exec("java.lang:type=Threading", "dumpAllThreads", true, true).run();
+    public void write(OutputStream output) {
+        MXComponent.instance.exec("java.lang:type=Threading", "dumpAllThreads", true, true).run(output);
     }
 
 }

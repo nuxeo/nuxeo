@@ -16,7 +16,10 @@
  */
 package org.nuxeo.connect.tools.report;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -30,7 +33,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.connect.tools.report.ReportProvider;
 import org.nuxeo.connect.tools.report.ReportComponent;
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Given;
@@ -79,12 +81,12 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
         }
 
         @ProvidedScenarioState
-        ReportProvider report;
+        ReportWriter writer;
 
         Given the_report_is_registered() {
             for (Contribution contrib : ReportComponent.instance.configuration) {
                 if (contrib.name.equals(name)) {
-                    report = contrib.instance;
+                    writer = contrib.writer;
                     return self();
                 }
             }
@@ -95,7 +97,7 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
     public static class When extends Stage<When> {
 
         @ExpectedScenarioState
-        ReportProvider report;
+        ReportWriter writer;
 
         @ProvidedScenarioState(resolution = Resolution.NAME)
         JsonObject json;
@@ -104,8 +106,11 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
         IOException error;
 
         When i_run_the_report() {
-            try {
-                json = report.snapshot();
+            try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
+                writer.write(sink);
+                try (InputStream source = new ByteArrayInputStream(sink.toByteArray())) {
+                    json = Json.createReader(source).readObject();
+                }
             } catch (IOException cause) {
                 error = cause;
             }

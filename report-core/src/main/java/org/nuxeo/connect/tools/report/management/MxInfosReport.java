@@ -16,14 +16,15 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
-import javax.json.JsonObject;
-import org.nuxeo.connect.tools.report.ReportProvider;
+import java.io.OutputStream;
 
-public class MxInfosReport implements ReportProvider {
+import org.nuxeo.connect.tools.report.ReportWriter;
+
+public class MxInfosReport implements ReportWriter {
 
     @Override
-    public JsonObject snapshot() {
-        return MXComponent.instance.list().run();
+    public void write(OutputStream output) {
+        MXComponent.instance.list().run(output);
     }
 
 }

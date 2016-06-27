@@ -23,11 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.stream.JsonGenerator;
-
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
-import org.nuxeo.ecm.core.management.statuses.NuxeoInstanceIdentifierHelper;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -72,23 +68,13 @@ public class ReportComponent extends DefaultComponent {
 
         @Override
         public void run(OutputStream out, Set<String> names) throws IOException {
-            try (JsonGenerator json = Json.createGenerator(out)) {
-                json.writeStartObject();
-                try {
-                    json.writeStartObject(NuxeoInstanceIdentifierHelper.getServerInstanceName());
-                    try {
-                        for (Contribution contrib : configuration.filter(names)) {
-                            json.write(contrib.name, contrib.instance.snapshot());
-                        }
-                    } finally {
-                        json.writeEnd();
-                    }
-                } finally {
-                    json.writeEnd();
-                }
-            } catch (IOException cause) {
-                throw cause;
+            out.write('{');
+            for (Contribution contrib : configuration.filter(names)) {
+                out.write(contrib.name.getBytes());
+                out.write(',');
+                contrib.writer.write(out);
             }
+            out.write('}');
         }
     }
 

@@ -19,11 +19,14 @@ package org.nuxeo.connect.tools.report.apidoc;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.connect.tools.report.ReportProvider;
+import org.nuxeo.connect.tools.report.ReportWriter;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
@@ -32,16 +35,11 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  *
  * @since 8.3
  */
-public class APIDocReport implements ReportProvider {
+public class APIDocReport implements ReportWriter {
 
     @Override
-    public JsonObject snapshot() throws IOException {
-        XStream stream = new XStream(new JettisonMappedXmlDriver());
-        stream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            stream.toXML(new RuntimeSnapshot(), out);
-            return Json.createReader(new ByteArrayInputStream(out.toByteArray())).readObject();
-        }
+    public void write(OutputStream output) throws IOException {
+        new XStream(new JettisonMappedXmlDriver()).toXML(new RuntimeSnapshot(), output);
     }
 
     public static RuntimeSnapshot snasphotOf(JsonObject aSnapshot) throws IOException {

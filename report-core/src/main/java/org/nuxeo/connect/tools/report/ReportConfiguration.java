@@ -44,11 +44,11 @@ public class ReportConfiguration extends SimpleContributionRegistry<Contribution
         boolean enabled = true;
 
         @XNode("@oftype")
-        public void oftype(Class<? extends ReportProvider> typeof) throws ReflectiveOperationException {
-            instance = typeof.newInstance();
+        public void oftype(Class<? extends ReportWriter> typeof) throws ReflectiveOperationException {
+            writer = typeof.newInstance();
         }
 
-        ReportProvider instance;
+        ReportWriter writer;
 
     }
 
@@ -64,7 +64,7 @@ public class ReportConfiguration extends SimpleContributionRegistry<Contribution
 
     @Override
     public void merge(Contribution src, Contribution dst) {
-        dst.instance = src.instance;
+        dst.writer = src.writer;
         dst.enabled = src.enabled;
     }
 
@@ -72,7 +72,7 @@ public class ReportConfiguration extends SimpleContributionRegistry<Contribution
     public Contribution clone(Contribution orig) {
         Contribution clone = new Contribution();
         clone.name = orig.name;
-        clone.instance = orig.instance;
+        clone.writer = orig.writer;
         clone.enabled = orig.enabled;
         return clone;
     }

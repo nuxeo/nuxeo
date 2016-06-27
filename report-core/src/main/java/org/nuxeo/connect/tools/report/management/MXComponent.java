@@ -16,19 +16,16 @@
  */
 package org.nuxeo.connect.tools.report.management;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.management.JMException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jolokia.backend.BackendManager;
@@ -98,16 +95,13 @@ public class MXComponent extends DefaultComponent {
 
         final Map<String, String> pParams = new HashMap<>();
 
-        JsonObject run() {
+        void run(OutputStream output) {
             try {
                 JmxRequest request = JmxRequestFactory.createPostRequest(pRequestMap, config.getProcessingParameters(pParams));
                 JSONObject json = manager.handleRequest(request);
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                try (Writer writer = new OutputStreamWriter(bytes)) {
+                try (Writer writer = new OutputStreamWriter(output)) {
                     json.writeJSONString(writer);
                 }
-                JsonReader reader = Json.createReader(new ByteArrayInputStream(bytes.toByteArray()));
-                return (JsonObject) reader.read();
             } catch (JMException | IOException cause) {
                 throw new AssertionError("Cannot invoke jolokia", cause);
             }
