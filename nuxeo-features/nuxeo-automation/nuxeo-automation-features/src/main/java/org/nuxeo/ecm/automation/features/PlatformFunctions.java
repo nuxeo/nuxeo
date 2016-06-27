@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.features;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,9 +28,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.CoreService;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
@@ -194,7 +195,7 @@ public class PlatformFunctions extends CoreFunctions {
      *
      * @param <T>
      * @param list List of values of type A
-     * @param value Value can be instance of java.util.Collection<Object> or an array of Objects or simply a scalar
+     * @param values Value can be instance of java.util.Collection<Object> or an array of Objects or simply a scalar
      *            Object. If Null, the parameter is ignored
      * @return the list that contains the list contain and value (see value description)
      * @exception xxxxx if in values there is at least one object type not compatible with the collection list
@@ -242,6 +243,25 @@ public class PlatformFunctions extends CoreFunctions {
 
         List<T> result = new ArrayList<T>();
         return concatenateIntoList(result, values);
+    }
+
+    public boolean documentExists(CoreSession session, String idOrPath) {
+
+        DocumentRef documentRef;
+        if (idOrPath.startsWith("/")) {
+            documentRef = new PathRef(idOrPath);
+        } else {
+            documentRef = new IdRef(idOrPath);
+        }
+
+        try {
+            // we do not need the variable, just check if the document exists
+            /*DocumentModel doc = */session.getDocument(documentRef);
+        } catch (DocumentNotFoundException exception) {
+            return false;
+        }
+
+        return true;
     }
 
 }
