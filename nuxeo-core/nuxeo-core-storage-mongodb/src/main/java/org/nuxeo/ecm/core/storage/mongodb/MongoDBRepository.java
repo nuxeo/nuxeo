@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.resource.spi.ConnectionManager;
 
@@ -593,6 +594,17 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.insert(ob);
         // TODO dupe exception
         // throw new DocumentException("Already exists: " + id);
+    }
+
+    @Override
+    public void createStates(List<State> states) {
+        List<DBObject> obs = states.stream().map(this::stateToBson).collect(Collectors.toList());
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: CREATE ["
+                    + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
+                    + "]: " + states);
+        }
+        coll.insert(obs);
     }
 
     @Override
