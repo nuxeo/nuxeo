@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,6 +295,11 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
     @Override
     public DocumentModelList getTokenBindings(String userName) {
+        return getTokenBindings(userName, null);
+    }
+
+    @Override
+    public DocumentModelList getTokenBindings(String userName, String applicationName) {
 
         // Log in as system user
         LoginContext lc;
@@ -307,9 +312,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 final Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put(USERNAME_FIELD, userName);
+                if (applicationName != null) {
+                    filter.put(APPLICATION_NAME_FIELD, applicationName);
+                }
                 final Map<String, String> orderBy = new HashMap<String, String>();
                 orderBy.put(CREATION_DATE_FIELD, "desc");
-                return session.query(filter, Collections.<String> emptySet(), orderBy);
+                return session.query(filter, Collections.emptySet(), orderBy);
             }
         } finally {
             try {
