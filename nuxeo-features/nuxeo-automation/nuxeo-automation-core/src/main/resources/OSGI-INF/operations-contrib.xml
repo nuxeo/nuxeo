@@ -104,6 +104,8 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.AddItemToListProperty" />
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.RemoveItemFromListProperty" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.document.CopySchema" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.ResetSchema" />
