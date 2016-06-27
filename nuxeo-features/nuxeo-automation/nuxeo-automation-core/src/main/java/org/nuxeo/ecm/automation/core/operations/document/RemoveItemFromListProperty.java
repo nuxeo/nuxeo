@@ -14,14 +14,13 @@
  * limitations under the License.
  *
  * Contributors:
- *     
+ *     Ricardo Dias
  */
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -32,17 +31,15 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
-import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * @author rdias
+ * @since 8.3
  */
 @Operation(id = RemoveItemFromListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Removes a Property From a List Item", description = "This operation can remove fields from a multivalued complex metadata. The value parameter is with an index. If the index is null, removes all the property (nullify it)", aliases = { "Document.RemoveItemFromListProperty" })
 public class RemoveItemFromListProperty {
@@ -70,34 +67,32 @@ public class RemoveItemFromListProperty {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws OperationException, IOException {
 
-        if (index != null) {
-            //clear just the specific property
-            Property property = doc.getProperty(xpath);
-            ListType ltype = (ListType) property.getField().getType();
+        if (index != null) { // clear just the specific property
+            Property complexProperty = doc.getProperty(xpath);
+            ListType ltype = (ListType) complexProperty.getField().getType();
 
             if (!ltype.getFieldType().isComplexType() && !ltype.isListType()) {
                 throw new OperationException("Property type is not supported by this operation");
             }
 
-            ListProperty listProperty = (ListProperty) property;
-            ArrayList<Property> propertiesArray = new ArrayList<>(listProperty.getChildren());
-            propertiesArray.remove(index.intValue());
+            ListProperty listProperty = (ListProperty) complexProperty;
+            ArrayList propertiesValues = (ArrayList) listProperty.getValue();
+            // remove the desired property
+            propertiesValues.remove(index.intValue());
 
             listProperty.clear();
-            for (Property p : propertiesArray){
-                listProperty.addValue(p.getValue());
-            }
+            // set the remaining properties
+            listProperty.setValue(propertiesValues);
 
-        } else {
-            // clear all the properties
-            Property complexMeta = doc.getProperty(xpath);
-            ListType ltype = (ListType) complexMeta.getField().getType();
+        } else { // clear all the properties
+            Property complexProperty = doc.getProperty(xpath);
+            ListType ltype = (ListType) complexProperty.getField().getType();
 
             if (!ltype.getFieldType().isComplexType() && !ltype.isListType()) {
                 throw new OperationException("Property type is not supported by this operation");
             }
 
-            ListProperty listProperty = (ListProperty) complexMeta;
+            ListProperty listProperty = (ListProperty) complexProperty;
             listProperty.clear();
         }
 
