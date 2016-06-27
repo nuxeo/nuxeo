@@ -63,6 +63,8 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent" />
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.document.GetLastDocumentVersion" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.document.GetDocumentVersions" />
     <operation class="org.nuxeo.ecm.automation.core.operations.document.MoveDocument" />
     <operation
