@@ -105,7 +105,7 @@ public class AddItemToListPropertyTest {
         // Add first fields
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
-        OperationChain chain = new OperationChain("testChain");
+        OperationChain chain = new OperationChain("testAddItemToPropertyChain");
         chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set(
                 "ComplexJsonProperties", fieldsDataAsJSon);
 
