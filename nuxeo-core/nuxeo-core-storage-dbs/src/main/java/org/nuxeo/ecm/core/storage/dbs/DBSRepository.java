@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ public interface DBSRepository extends Repository, LockManager {
      * Gets the fulltext configuration.
      *
      * @return the fulltext configuration
-     *
      * @since 7.10-HF04, 8.1
      */
     FulltextConfiguration getFulltextConfiguration();

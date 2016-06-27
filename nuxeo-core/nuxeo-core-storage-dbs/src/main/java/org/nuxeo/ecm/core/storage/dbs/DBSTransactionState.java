@@ -831,7 +831,7 @@ public class DBSTransactionState {
         }
 
         public void findDirtyPaths(StateDiff value) {
-            findDirtyPaths(value, (String) null);
+            findDirtyPaths(value, null);
         }
 
         protected void findDirtyPaths(Object value, String path) {
