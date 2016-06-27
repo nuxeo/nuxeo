@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.connect.tools.report.web;singleton:=tru
+ e
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=nuxeo-connect-tools;package=org/nuxeo/connect/tools
 Bundle-Name: nuxeo connect tools
-Bundle-SymbolicName: org.nuxeo.connect.tools.report.web;singleton:=true
 Bundle-Version: 0.0.1
+Bundle-ManifestVersion: 1
 Bundle-Vendor: Nuxeo
-Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=nuxeo-connect-tools-report
 

@@ -18,12 +18,13 @@ package org.nuxeo.connect.tools.report.web;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.GZIPOutputStream;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,47 +32,30 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.connect.tools.report.ReportRunner;
-import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
-
-import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * Runs report
  *
  * @since 8.3
  */
-@Path("/connect-tools-report")
-@WebObject(type = "root", administrator = Access.GRANT)
-public class ReportRunnerObject extends ModuleRoot {
+@WebObject(type = "report")
+public class ReportRunnerObject extends DefaultObject {
 
     ReportRunner runner = Framework.getService(ReportRunner.class);
 
-    List<String> availables = new ArrayList<>(runner.list());
+    List<String> list = new ArrayList<>(runner.list());
 
-    List<String> selected = new ArrayList<>(availables);
-
-    @Path("/")
-    public ReportRunnerObject setup(@Context UriInfo info) {
-        return this;
-    }
-
-    @Override
-    protected void initialize(Object... args) {
-        MultivaluedMap<String, String> params = uriInfo.getPathParameters();
-        if (params.containsKey("report")) {
-            selected = new ArrayList<>(params.get("report"));
-        }
-    }
+    List<String> selection = new ArrayList<>(list);
 
     @GET
     @Produces("text/html")
@@ -81,61 +65,40 @@ public class ReportRunnerObject extends ModuleRoot {
 
     @POST
     @Path("run")
+    @Consumes("application/x-www-form-urlencoded")
     @Produces("text/json")
-    public Response run(@FormParam("report") List<String> reports) throws IOException {
-        selected = reports;
+    public Response run(@FormParam("report") List<String> reports, @Context HttpServletRequest request) throws IOException {
+        selection = reports;
+        boolean compress = request.getHeader("Accept-Encoding").toLowerCase().contains("gzip");
 
         StreamingOutput stream = new StreamingOutput() {
             @Override
             public void write(OutputStream os) throws IOException, WebApplicationException {
-                runner.run(new ZipOutputStream(os), new HashSet<>(selected));
+                runner.run(compress ? new GZIPOutputStream(os) : os, new HashSet<>(selection));
             }
         };
-        return Response.ok(stream).header("Content-Encoding", "zip").build();
+        ResponseBuilder builder = Response.ok(stream);
+        if (compress) {
+            builder = builder.header("Content-Encoding", "zip")
+                    .header("Content-Disposition",
+                            "attachment; filename=nuxeo-connect-tools-report.json.gz");
+        } else {
+            builder.header("Content-Disposition",
+                    "attachment; filename=nuxeo-connect-tools-report.json");
+        }
+        return builder.build();
     }
 
     public List<String> availables() {
-        return availables;
+        return list;
     }
 
     public boolean isSelected(String report) {
-        return selected.contains(report);
-    }
-
-    class Builder {
-
-
-        Builder(UriInfo info) {
-            this.info = info;
-        }
-
-        final UriInfo info;
-
-        final MultivaluedMap<String, String> values = new MultivaluedMapImpl();
-
-        Builder with(String key, String value) {
-            values.add(key, value);
-            return this;
-        }
-
-        Builder with(String key, List<String> value) {
-            values.put(key, value);
-            return this;
-        }
-
-        URI build() {
-            StringBuilder builder = new StringBuilder(info.getBaseUri().toASCIIString());
-            for (String key : values.keySet()) {
-                for (String value : values.get(key)) {
-                    builder.append(';').append(key).append('=').append(value);
-                }
-            }
-            return URI.create(builder.toString());
-        }
+        return selection.contains(report);
     }
 
     @Override
     public String toString() {
-        return "Report runner of " + selected;
+        return "Report runner of " + selection;
     }
 }
