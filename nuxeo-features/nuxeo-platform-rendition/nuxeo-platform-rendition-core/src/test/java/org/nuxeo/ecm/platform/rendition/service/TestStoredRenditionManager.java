@@ -17,30 +17,28 @@
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.ecm.platform.rendition.Renderable;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
@@ -49,10 +47,16 @@ import static org.junit.Assume.assumeTrue;
 public class TestStoredRenditionManager {
 
     @Inject
+    TransactionalFeature txFeature;
+
+    @Inject
     protected CoreSession session;
 
     @Inject
     protected RenditionService renditionService;
+
+    @Inject
+    protected EventService eventService;
 
     @Test
     public void testDummyRendition() throws Exception {
@@ -72,6 +76,42 @@ public class TestStoredRenditionManager {
         blob.setFilename("dummy.txt");
         bh.setBlob(blob);
         return session.createDocument(file);
+    }
+
+    @Test
+    public void testStoredRenditionsCleanup() {
+        DocumentModel file1 = createBlobDoc("File");
+        DocumentModel file2 = createBlobDoc("File");
+
+        Rendition ren1 = renditionService.getRendition(file1, "dummyRendition", true);
+        assertNotNull(ren1);
+        DocumentModel renditionDoc1 = ren1.getHostDocument();
+        assertTrue(renditionDoc1.isVersion());
+        DocumentRef liveRenditionRef1 = new IdRef(renditionDoc1.getSourceId());
+        assertTrue(session.exists(liveRenditionRef1));
+
+        Rendition ren2 = renditionService.getRendition(file2, "dummyRendition", true);
+        assertNotNull(ren2);
+        DocumentModel renditionDoc2 = ren2.getHostDocument();
+        assertTrue(renditionDoc2.isVersion());
+        DocumentRef liveRenditionRef2 = new IdRef(renditionDoc2.getSourceId());
+        assertTrue(session.exists(liveRenditionRef2));
+
+        // remove the first document (and versions)
+        session.removeDocument(file1.getRef());
+
+        txFeature.nextTransaction();
+
+        // delete stored renditions
+        renditionService.deleteStoredRenditions(session.getRepositoryName());
+
+        txFeature.nextTransaction();
+
+        assertFalse(session.exists(liveRenditionRef1));
+        assertFalse(session.exists(renditionDoc1.getRef()));
+
+        assertTrue(session.exists(liveRenditionRef2));
+        assertTrue(session.exists(renditionDoc2.getRef()));
     }
 
 }

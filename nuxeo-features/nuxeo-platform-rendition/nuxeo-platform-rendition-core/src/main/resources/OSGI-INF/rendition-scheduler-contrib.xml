@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.scheduler">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="storedRenditionsCleanup">
+      <event>storedRenditionsCleanup</event>
+      <!-- every day at 11.59 PM -->
+      <cronExpression>0 59 23 * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="softDeleteCleanup" async="true"
+      class="org.nuxeo.ecm.platform.rendition.listener.StoredRenditionsCleanupListener">
+      <event>storedRenditionsCleanup</event>
+    </listener>
+  </extension>
+
+</component>

@@ -18,12 +18,17 @@
 
 package org.nuxeo.ecm.platform.rendition.service;
 
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,8 +37,13 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -43,6 +53,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Default implementation of {@link RenditionService}.
@@ -285,7 +296,8 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         if (RENDITION_DEFINITIONS_EP.equals(extensionPoint)) {
             renditionDefinitionRegistry.removeContribution((RenditionDefinition) contribution);
         } else if (RENDITON_DEFINION_PROVIDERS_EP.equals(extensionPoint)) {
-            renditionDefinitionProviderRegistry.removeContribution((RenditionDefinitionProviderDescriptor) contribution);
+            renditionDefinitionProviderRegistry.removeContribution(
+                    (RenditionDefinitionProviderDescriptor) contribution);
         } else if (STORED_RENDITION_MANAGERS_EP.equals(extensionPoint)) {
             storedRenditionManagerDescriptors.remove(((StoredRenditionManagerDescriptor) contribution));
         }
@@ -384,4 +396,93 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
         return renditions;
     }
+
+    @Override
+    public void deleteStoredRenditions(String repositoryName) {
+        StoredRenditionsCleaner cleaner = new StoredRenditionsCleaner(repositoryName);
+        cleaner.runUnrestricted();
+    }
+
+    private final class StoredRenditionsCleaner extends UnrestrictedSessionRunner {
+
+        private static final int BATCH_SIZE = 100;
+
+        private StoredRenditionsCleaner(String repositoryName) {
+            super(repositoryName);
+        }
+
+        @Override
+        public void run() {
+            Map<String, List<String>> sourceIdToRenditionRefs = computeLiveDocumentRefsToRenditionRefs();
+            removeStoredRenditions(sourceIdToRenditionRefs);
+        }
+
+        /**
+         * Computes only live documents renditions, the related versions will be deleted by Nuxeo.
+         */
+        private Map<String, List<String>> computeLiveDocumentRefsToRenditionRefs() {
+            Map<String, List<String>> liveDocumentRefsToRenditionRefs = new HashMap<>();
+            String query = String.format("SELECT %s, %s, %s FROM Document WHERE %s IS NOT NULL AND ecm:isVersion = 0",
+                    NXQL.ECM_UUID, RENDITION_SOURCE_ID_PROPERTY, RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY,
+                    RENDITION_SOURCE_ID_PROPERTY);
+            try (IterableQueryResult result = session.queryAndFetch(query, NXQL.NXQL)) {
+                for (Map<String, Serializable> res : result) {
+                    String renditionRef = res.get(NXQL.ECM_UUID).toString();
+                    String sourceId = res.get(RENDITION_SOURCE_ID_PROPERTY).toString();
+                    Serializable sourceVersionableId = res.get(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY);
+
+                    String key = sourceVersionableId != null ? sourceVersionableId.toString() : sourceId;
+                    liveDocumentRefsToRenditionRefs.computeIfAbsent(key, k -> new ArrayList<>()).add(renditionRef);
+                }
+            }
+            return liveDocumentRefsToRenditionRefs;
+        }
+
+        private void removeStoredRenditions(Map<String, List<String>> liveDocumentRefsToRenditionRefs) {
+            List<String> liveDocumentRefs = new ArrayList<>(liveDocumentRefsToRenditionRefs.keySet());
+            if (liveDocumentRefs.isEmpty()) {
+                // no more document to check
+                return;
+            }
+
+            int processedSourceIds = 0;
+            while (processedSourceIds < liveDocumentRefs.size()) {
+                // compute the batch of source ids to check for existence
+                int limit = processedSourceIds + BATCH_SIZE > liveDocumentRefs.size() ? liveDocumentRefs.size()
+                        : processedSourceIds + BATCH_SIZE;
+                List<String> batchSourceIds = liveDocumentRefs.subList(processedSourceIds, limit);
+
+                // retrieve still existing documents
+                List<String> existingSourceIds = new ArrayList<>();
+                String query = NXQLQueryBuilder.getQuery("SELECT ecm:uuid FROM Document WHERE ecm:uuid IN ?",
+                        new Object[] { batchSourceIds }, true, true, null);
+                try (IterableQueryResult result = session.queryAndFetch(query, NXQL.NXQL)) {
+                    result.forEach(res -> existingSourceIds.add(res.get(NXQL.ECM_UUID).toString()));
+                }
+                batchSourceIds.removeAll(existingSourceIds);
+
+                List<String> renditionRefsToDelete = batchSourceIds.stream()
+                                                                   .map(liveDocumentRefsToRenditionRefs::get)
+                                                                   .reduce(new ArrayList<>(), (allRefs, refs) -> {
+                                                                       allRefs.addAll(refs);
+                                                                       return allRefs;
+                                                                   });
+
+                if (!renditionRefsToDelete.isEmpty()) {
+                    session.removeDocuments(
+                            renditionRefsToDelete.stream().map(IdRef::new).collect(Collectors.toList()).toArray(
+                                    new DocumentRef[renditionRefsToDelete.size()]));
+                }
+
+                if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                    TransactionHelper.startTransaction();
+                }
+
+                // next batch
+                processedSourceIds += BATCH_SIZE;
+            }
+        }
+    }
+
 }

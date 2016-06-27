@@ -109,4 +109,10 @@ public interface RenditionService {
      */
     List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible);
 
+    /**
+     * Query and delete stored renditions where the related version or live document does not exist anymore.
+     *
+     * @since 8.3
+     */
+    void deleteStoredRenditions(String repositoryName);
 }
