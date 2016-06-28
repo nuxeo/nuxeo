@@ -32,6 +32,9 @@ import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @since 8.3
+ */
 public class DefaultConsumer extends AbstractConsumer {
 
     protected FileManager fileManager;

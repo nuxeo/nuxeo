@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.importer.queue;
 
+/**
+ * @since 8.3
+ */
 public interface TaskRunner extends Runnable {
 
     public boolean isCompleted();

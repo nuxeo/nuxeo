@@ -21,6 +21,9 @@ import java.util.Random;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+/**
+ * @since 8.3
+ */
 public class RandomQueuesManager extends AbstractQueuesManager {
 
     protected final Random rand;
