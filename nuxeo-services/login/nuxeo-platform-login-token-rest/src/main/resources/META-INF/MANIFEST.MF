@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-platform-login-token-rest-api
+Bundle-Name: nuxeo-platform-login-token-rest
 Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.server.login.tokenauth;singleton:=true
 Fragment-Host: org.nuxeo.ecm.platform.restapi.server
 Bundle-Vendor: Nuxeo

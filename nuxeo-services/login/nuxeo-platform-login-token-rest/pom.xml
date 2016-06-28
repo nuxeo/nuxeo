@@ -5,7 +5,7 @@
     <artifactId>parent</artifactId>
     <version>8.3-SNAPSHOT</version>
   </parent>
-  <artifactId>nuxeo-platform-login-token-rest-api</artifactId>
+  <artifactId>nuxeo-platform-login-token-rest</artifactId>
   <name>Nuxeo Token Authentication Rest API</name>
   <dependencies>
     <dependency>

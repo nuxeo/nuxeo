@@ -718,7 +718,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-token-rest-api</artifactId>
+        <artifactId>nuxeo-platform-login-token-rest</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
