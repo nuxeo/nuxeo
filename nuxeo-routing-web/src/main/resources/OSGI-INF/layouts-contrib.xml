@@ -588,7 +588,7 @@
             <property name="nxl_gridStyleClass_0">gridStyle12</property>
             <property name="nxl_gridStyleClass_1">gridStyle7</property>
             <property name="nxl_gridStyleClass_2">gridStyle5</property>
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+            <property name="nxl_gridStyleClass_3">gridStyle12</property>
           </properties>
           <widget>current_route_panel_top</widget>
           <widget>current_route_panel_left</widget>
