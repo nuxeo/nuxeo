@@ -40,7 +40,8 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 /**
  * @author fvadon
  */
-@Operation(id = AddItemToListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Adds a Property From a List Item", description = "This operation can add new fields to a multivalued complex metadata. The value parameter is a String containing the JSON list of new value for the metadata given in xpath", aliases = { "Document.AddItemToListProperty" })
+@Operation(id = AddItemToListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Adds a Property From a List Item", description = "This operation can add new fields to a multivalued complex metadata. The value parameter is a String containing the JSON list of new value for the metadata given in xpath", aliases = {
+        "Document.AddItemToListProperty" })
 public class AddItemToListProperty {
 
     public static final String ID = "Document.AddItemToListProperty";
@@ -65,8 +66,8 @@ public class AddItemToListProperty {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws OperationException, IOException {
-        Property complexMeta = doc.getProperty(xpath);
-        ListType ltype = (ListType) complexMeta.getField().getType();
+        Property complexProperty = doc.getProperty(xpath);
+        ListType ltype = (ListType) complexProperty.getField().getType();
 
         if (!ltype.getFieldType().isComplexType()) {
             throw new OperationException("Property type is not supported by this operation");
@@ -74,7 +75,7 @@ public class AddItemToListProperty {
 
         List<Object> newVals = ComplexTypeJSONDecoder.decodeList(ltype, ComplexJsonProperties);
         for (Object newVal : newVals) {
-            complexMeta.addValue(newVal);
+            complexProperty.addValue(newVal);
         }
 
         doc = session.saveDocument(doc);
