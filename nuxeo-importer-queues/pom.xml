@@ -11,7 +11,7 @@
   <groupId>org.nuxeo.addons</groupId>
   <artifactId>nuxeo-importer-queues</artifactId>
 
-  <name>nuxeo-importer-queues</name>
+  <name>Nuxeo Importer Queues</name>
   <description></description>
   <dependencies>
     <dependency>
