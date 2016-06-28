@@ -15,10 +15,10 @@
  *
  * Contributors:
  *     bstefanescu
+ *     rdias
  */
 package org.nuxeo.ecm.automation.features;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,9 +28,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
@@ -245,6 +243,12 @@ public class PlatformFunctions extends CoreFunctions {
         return concatenateIntoList(result, values);
     }
 
+    /**
+     * Checks if a document with the supplied id (or path) exists.
+     * @param session The CoreSession to obtain the document
+     * @param idOrPath The document Id or path
+     * @return true if the document exists, or false otherwise
+     */
     public boolean documentExists(CoreSession session, String idOrPath) {
 
         DocumentRef documentRef;
@@ -262,6 +266,7 @@ public class PlatformFunctions extends CoreFunctions {
         }
 
         return true;
+
     }
 
 }
