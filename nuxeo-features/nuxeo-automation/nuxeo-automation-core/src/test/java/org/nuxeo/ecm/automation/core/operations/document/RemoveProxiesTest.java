@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Frederic Vadon
+ *     Ricardo Dias
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -22,7 +23,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.*;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,9 +38,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- * @author fvadon
+ * @since 8.3
  */
-
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -54,7 +57,6 @@ public class RemoveProxiesTest {
 
     @Before
     public void initRepo() throws Exception {
-
         folder = session.createDocumentModel("/", "Folder", "Folder");
         folder.setPropertyValue("dc:title", "Folder");
         folder = session.createDocument(folder);
@@ -72,12 +74,10 @@ public class RemoveProxiesTest {
         fileToPublish = session.createDocument(fileToPublish);
         session.save();
         fileToPublish = session.getDocument(fileToPublish.getRef());
-
     }
 
     @Test
     public void testRemoveProxies() throws OperationException {
-
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(fileToPublish);
         OperationChain chain = new OperationChain("testRemoveProxies");
@@ -94,7 +94,6 @@ public class RemoveProxiesTest {
         service.run(ctx, removeProxies);
 
         Assert.assertEquals(0, session.getChildren(section.getRef()).size());
-
     }
 
 }

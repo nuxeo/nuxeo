@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -32,7 +33,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.automation.*;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -44,7 +49,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * @author rdias
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
@@ -97,10 +101,10 @@ public class RemoveItemFromListPropertyTest {
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testChain");
         chain = new OperationChain("testChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("ComplexJsonProperties", fieldsDataAsJSon);
+        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJSon);
 
         doc = (DocumentModel) service.run(ctx, chain);
-        ArrayList<?> dbFields = (java.util.ArrayList<?>) doc.getPropertyValue("ds:fields");
+        List dbFields = (List) doc.getPropertyValue("ds:fields");
         assertEquals(2, dbFields.size());
     }
 
@@ -112,33 +116,29 @@ public class RemoveItemFromListPropertyTest {
 
     @Test
     public void removeAllItemFromListPropertyTest() throws Exception {
-
         // Remove all the fields
         DocumentModel resultDoc = removeItemsFromListProperty(null);
-        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
         assertEquals(0, dbFields.size());
     }
 
     @Test
     public void removeFirstItemFromListPropertyTest() throws Exception {
-
         //remove the first item
         DocumentModel resultDoc = removeItemsFromListProperty(0);
 
-        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = (Map<String, String>) dbFields.get(0);
         assertEquals(properties.get("fieldType"), "unicTypeAdded2");
-
     }
 
     @Test
     public void removeLastItemFromListPropertyTest() throws Exception {
-
         // Remove the last item
         DocumentModel resultDoc = removeItemsFromListProperty(1);
-        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = (Map<String, String>) dbFields.get(0);
@@ -147,10 +147,9 @@ public class RemoveItemFromListPropertyTest {
 
     @Test(expected = OperationException.class)
     public void removeNonExistentItemFromListPropertyTest() throws Exception {
-
         // Not possible to remove the index:2, because the list only have two items
         DocumentModel resultDoc = removeItemsFromListProperty(2);
-        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = (Map<String, String>) dbFields.get(0);
@@ -158,7 +157,6 @@ public class RemoveItemFromListPropertyTest {
     }
 
     protected DocumentModel removeItemsFromListProperty(Integer index) throws OperationException {
-
         // Remove all the fields
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
@@ -172,7 +170,6 @@ public class RemoveItemFromListPropertyTest {
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
 
         return resultDoc;
-
     }
 
 }

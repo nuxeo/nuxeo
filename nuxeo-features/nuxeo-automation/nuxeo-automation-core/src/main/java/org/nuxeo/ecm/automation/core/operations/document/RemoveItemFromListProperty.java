@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -38,7 +39,6 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 
 /**
- * @author rdias
  * @since 8.3
  */
 @Operation(id = RemoveItemFromListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Removes a Property From a List Item", description = "This operation can remove fields from a multivalued complex metadata. The value parameter is with an index. If the index is null, removes all the property (nullify it)", aliases = { "Document.RemoveItemFromListProperty" })
@@ -76,7 +76,7 @@ public class RemoveItemFromListProperty {
             }
 
             ListProperty listProperty = (ListProperty) complexProperty;
-            ArrayList propertiesValues = (ArrayList) listProperty.getValue();
+            List propertiesValues = (List) listProperty.getValue();
             // remove the desired property
             propertiesValues.remove(index.intValue());
 

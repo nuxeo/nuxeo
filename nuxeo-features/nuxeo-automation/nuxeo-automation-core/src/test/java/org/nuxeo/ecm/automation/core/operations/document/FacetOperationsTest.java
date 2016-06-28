@@ -18,14 +18,14 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import static org.junit.Assert.*;
-
-import com.sun.star.lang.IllegalArgumentException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.*;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -36,10 +36,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-/**
- * @author rdias
- */
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+/**
+ * @since 8.3
+ */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -63,8 +67,6 @@ public class FacetOperationsTest {
 
     @Before
     public void initRepo() throws Exception {
-        session.removeChildren(session.getRootDocument().getRef());
-        session.save();
 
         folder = session.createDocumentModel("/", "Folder", "Folder");
         folder.setPropertyValue("dc:title", "Folder");

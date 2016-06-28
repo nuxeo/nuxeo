@@ -19,13 +19,14 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.*;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -37,8 +38,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 /**
- * @author rdias
  * @since 8.3
  */
 
@@ -57,13 +61,7 @@ public class GetLastDocumentVersionTest {
 
     protected DocumentModel section;
 
-    protected DocumentModel docWithMajorVersions;
-
-    protected DocumentModel docWithMinorVersions;
-
-    protected DocumentModel docWithMajorMinorVersions;
-
-    protected DocumentModel docWithNoVersion;
+    protected DocumentModel doc;
 
     @Before
     public void initRepo() throws Exception {
@@ -75,34 +73,6 @@ public class GetLastDocumentVersionTest {
         folder = session.createDocument(folder);
         session.save();
         folder = session.getDocument(folder.getRef());
-
-        // major versions
-        docWithMajorVersions = session.createDocumentModel("/Folder", "DocWithVersions", "File");
-        docWithMajorVersions.setPropertyValue("dc:title", "DocWithVersions");
-        docWithMajorVersions = session.createDocument(docWithMajorVersions);
-        session.save();
-        docWithMajorVersions = session.getDocument(docWithMajorVersions.getRef());
-
-        // minor versions
-        docWithMinorVersions = session.createDocumentModel("/Folder", "DocWithVersions", "File");
-        docWithMinorVersions.setPropertyValue("dc:title", "DocWithVersions");
-        docWithMinorVersions = session.createDocument(docWithMinorVersions);
-        session.save();
-        docWithMinorVersions = session.getDocument(docWithMinorVersions.getRef());
-
-        // major and minor versions
-        docWithMajorMinorVersions = session.createDocumentModel("/Folder", "DocWithMoreVersions", "File");
-        docWithMajorMinorVersions.setPropertyValue("dc:title", "DocWithMoreVersions");
-        docWithMajorMinorVersions = session.createDocument(docWithMajorMinorVersions);
-        session.save();
-        docWithMajorMinorVersions = session.getDocument(docWithMajorMinorVersions.getRef());
-
-        docWithNoVersion = session.createDocumentModel("/Folder", "docWithNoVersion", "File");
-        docWithNoVersion.setPropertyValue("dc:title", "docWithNoVersion");
-        docWithNoVersion = session.createDocument(docWithNoVersion);
-        session.save();
-        docWithNoVersion = session.getDocument(docWithNoVersion.getRef());
-
     }
 
     @After
@@ -123,35 +93,48 @@ public class GetLastDocumentVersionTest {
 
     @Test
     public void testGetLastMajorVersion() throws OperationException {
+        doc = session.createDocumentModel("/Folder", "DocWithMajorVersions", "File");
+        doc.setPropertyValue("dc:title", "DocWithMajorVersions");
+        doc = session.createDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
 
-        createDocumentVersions(docWithMajorVersions, VersioningOption.MAJOR, 3);
+        createDocumentVersions(doc, VersioningOption.MAJOR, 3);
 
-        DocumentModel lastVersion = runOperation(docWithMajorVersions);
+        DocumentModel lastVersion = runOperation(doc);
         assertNotNull(lastVersion);
         assertEquals("3", lastVersion.getPropertyValue("dc:description"));
         assertEquals("3.0", lastVersion.getVersionLabel());
-
     }
 
     @Test
     public void testGetLastMinorVersion() throws OperationException {
+        doc = session.createDocumentModel("/Folder", "DocWithMinorVersions", "File");
+        doc.setPropertyValue("dc:title", "DocWithMinorVersions");
+        doc = session.createDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
 
-        createDocumentVersions(docWithMinorVersions, VersioningOption.MINOR, 3);
+        createDocumentVersions(doc, VersioningOption.MINOR, 3);
 
-        DocumentModel lastVersion = runOperation(docWithMinorVersions);
+        DocumentModel lastVersion = runOperation(doc);
         assertNotNull(lastVersion);
         assertEquals("3", lastVersion.getPropertyValue("dc:description"));
         assertEquals("0.3", lastVersion.getVersionLabel());
-
     }
 
     @Test
     public void testGetLastMinorMajorVersion() throws OperationException {
+        doc = session.createDocumentModel("/Folder", "DocWithMajorMinorVersions", "File");
+        doc.setPropertyValue("dc:title", "DocWithMajorMinorVersions");
+        doc = session.createDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
 
-        createDocumentVersions(docWithMajorMinorVersions, VersioningOption.MAJOR, 3);
-        createDocumentVersions(docWithMajorMinorVersions, VersioningOption.MINOR, 3);
+        createDocumentVersions(doc, VersioningOption.MAJOR, 3);
+        createDocumentVersions(doc, VersioningOption.MINOR, 3);
 
-        DocumentModel lastVersion = runOperation(docWithMajorMinorVersions);
+        DocumentModel lastVersion = runOperation(doc);
         assertNotNull(lastVersion);
         assertEquals("3", lastVersion.getPropertyValue("dc:description"));
         assertEquals("3.3", lastVersion.getVersionLabel());
@@ -159,8 +142,13 @@ public class GetLastDocumentVersionTest {
 
     @Test
     public void testNonexistentLastVersion() throws OperationException {
+        doc = session.createDocumentModel("/Folder", "DocWithNoVersion", "File");
+        doc.setPropertyValue("dc:title", "DocWithNoVersion");
+        doc = session.createDocument(doc);
+        session.save();
+        doc = session.getDocument(doc.getRef());
 
-        DocumentModel lastVersion = runOperation(docWithNoVersion);
+        DocumentModel lastVersion = runOperation(doc);
         assertNull(lastVersion);
     }
 

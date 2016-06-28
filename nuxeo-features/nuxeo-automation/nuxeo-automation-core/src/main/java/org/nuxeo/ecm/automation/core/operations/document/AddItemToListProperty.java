@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     
+ *     Frédéric Vadon
+ *     Ricardo Dias
  */
 
 package org.nuxeo.ecm.automation.core.operations.document;
@@ -38,7 +39,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.ListType;
 
 /**
- * @author fvadon
+ * @since 8.3
  */
 @Operation(id = AddItemToListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Adds a Property From a List Item", description = "This operation can add new fields to a multivalued complex metadata. The value parameter is a String containing the JSON list of new value for the metadata given in xpath", aliases = {
         "Document.AddItemToListProperty" })
@@ -58,8 +59,8 @@ public class AddItemToListProperty {
     @Param(name = "xpath")
     protected String xpath;
 
-    @Param(name = "ComplexJsonProperties")
-    protected String ComplexJsonProperties;
+    @Param(name = "complexJsonProperties")
+    protected String complexJsonProperties;
 
     @Param(name = "save", required = false, values = { "true" })
     protected boolean save = true;
@@ -73,7 +74,7 @@ public class AddItemToListProperty {
             throw new OperationException("Property type is not supported by this operation");
         }
 
-        List<Object> newVals = ComplexTypeJSONDecoder.decodeList(ltype, ComplexJsonProperties);
+        List<Object> newVals = ComplexTypeJSONDecoder.decodeList(ltype, complexJsonProperties);
         for (Object newVal : newVals) {
             complexProperty.addValue(newVal);
         }
