@@ -406,6 +406,36 @@ public class TestDocumentValidationService {
     }
 
     @Test
+    public void testValidateArrayPropsOnlyDirtyItem1() {
+        doc.setPropertyValue("vs:simpleList", new Object[] { "123", "234", "345" });
+        DocumentValidationReport violations = validator.validate(doc, true);
+        assertFalse(violations.hasError());
+
+    }
+
+    @Test
+    public void testValidateArrayPropsOnlyDirtyItem2() {
+        doc.setPropertyValue("vs:simpleList", new Object[] { "123", "234", "345" });
+        session.saveDocument(doc);
+        doc.setPropertyValue("vs:simpleList", new Object[] { "abc", "234", "345" });
+        DocumentValidationReport violations = validator.validate(doc, true);
+        assertTrue(violations.hasError());
+        assertEquals(1, violations.numberOfErrors());
+        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+    }
+
+    @Test
+    public void testValidateArrayPropsOnlyDirtyItem3() {
+        doc.setPropertyValue("vs:simpleList", new Object[] { "123", "234", "345" });
+        session.saveDocument(doc);
+        doc.setPropertyValue("vs:simpleList", new Object[] { "123", "abc", "345" });
+        DocumentValidationReport violations = validator.validate(doc, true);
+        assertTrue(violations.hasError());
+        assertEquals(1, violations.numberOfErrors());
+        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+    }
+
+    @Test
     public void testValidateArrayPropertyWithConstraint() {
         DocumentValidationReport violations;
         doc.setPropertyValue("vs:groupCode", 123);

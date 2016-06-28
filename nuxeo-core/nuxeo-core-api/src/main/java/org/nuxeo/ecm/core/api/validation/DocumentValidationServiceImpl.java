@@ -468,8 +468,8 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                             List<PathNode> subPath = new ArrayList<PathNode>(path);
                             subPath.add(new PathNode(field, index));
                             violations.addAll(validateSimpleTypeField(schema, subPath, field, itemValue));
-                            index++;
                         }
+                        index++;
                     }
                 } else {
                     for (Property child : prop.getChildren()) {
