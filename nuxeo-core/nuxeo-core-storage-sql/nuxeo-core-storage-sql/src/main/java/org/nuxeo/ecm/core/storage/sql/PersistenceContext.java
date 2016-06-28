@@ -1385,18 +1385,15 @@ public class PersistenceContext {
         }
         if (label == null) {
             // use version major + minor as label
-            try {
-                Serializable major = node.getSimpleProperty(Model.MAIN_MAJOR_VERSION_PROP).getValue();
-                Serializable minor = node.getSimpleProperty(Model.MAIN_MINOR_VERSION_PROP).getValue();
-                if (major == null || minor == null) {
-                    label = "";
-                } else {
-                    label = major + "." + minor;
-                }
-            } catch (StorageException e) {
-                log.error("Cannot get version", e);
-                label = "";
+            Serializable major = node.getSimpleProperty(Model.MAIN_MAJOR_VERSION_PROP).getValue();
+            Serializable minor = node.getSimpleProperty(Model.MAIN_MINOR_VERSION_PROP).getValue();
+            if (major == null) {
+                major = "0";
             }
+            if (minor == null) {
+                minor = "0";
+            }
+            label = major + "." + minor;
         }
 
         /*

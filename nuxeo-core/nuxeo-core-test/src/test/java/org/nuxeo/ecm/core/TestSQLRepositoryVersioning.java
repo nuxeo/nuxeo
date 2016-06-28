@@ -602,6 +602,22 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testVersionLabelOfCopy() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentModel copy = session.copy(doc.getRef(), new PathRef("/"), "copy");
+        DocumentRef versionRef = session.checkIn(copy.getRef(), VersioningOption.MINOR, null);
+        DocumentModel version = session.getDocument(versionRef);
+
+        // check version label
+        assertEquals("0.1", version.getVersionLabel());
+        // check version label through VersionModel
+        VersionModel vm = session.getLastVersion(copy.getRef());
+        assertEquals("0.1", vm.getLabel());
+    }
+
+    @Test
     public void testPublishing() throws ClientException {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
