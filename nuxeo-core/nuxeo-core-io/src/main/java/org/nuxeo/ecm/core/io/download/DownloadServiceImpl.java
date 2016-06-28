@@ -158,7 +158,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
             registry.removeContribution(descriptor);
         } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
-            redirectResolverContributions.remove((DownloadPermissionDescriptor) contribution);
+            redirectResolverContributions.remove((RedirectResolverDescriptor) contribution);
             if (redirectResolverContributions.size() == 0) {
                 // If no more custom contribution go back to the default one
                 redirectResolver = new DefaultRedirectResolver();
