@@ -120,18 +120,6 @@ public class RemoveItemFromListPropertyTest {
     }
 
     @Test
-    public void removeLastItemFromListPropertyTest() throws Exception {
-
-        // Remove all the fields
-        DocumentModel resultDoc = removeItemsFromListProperty(1);
-        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
-        assertEquals(1, dbFields.size());
-
-        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
-        assertEquals(properties.get("fieldType"), "unicTypeAdded");
-    }
-
-    @Test
     public void removeFirstItemFromListPropertyTest() throws Exception {
 
         //remove the first item
@@ -143,6 +131,30 @@ public class RemoveItemFromListPropertyTest {
         Map<String, String> properties = (Map<String, String>) dbFields.get(0);
         assertEquals(properties.get("fieldType"), "unicTypeAdded2");
 
+    }
+
+    @Test
+    public void removeLastItemFromListPropertyTest() throws Exception {
+
+        // Remove the last item
+        DocumentModel resultDoc = removeItemsFromListProperty(1);
+        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        assertEquals(1, dbFields.size());
+
+        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
+        assertEquals(properties.get("fieldType"), "unicTypeAdded");
+    }
+
+    @Test(expected = OperationException.class)
+    public void removeNonExistentItemFromListPropertyTest() throws Exception {
+
+        // Not possible to remove the index:2, because the list only have two items
+        DocumentModel resultDoc = removeItemsFromListProperty(2);
+        ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        assertEquals(1, dbFields.size());
+
+        Map<String, String> properties = (Map<String, String>) dbFields.get(0);
+        assertEquals(properties.get("fieldType"), "unicTypeAdded");
     }
 
     protected DocumentModel removeItemsFromListProperty(Integer index) throws OperationException {
