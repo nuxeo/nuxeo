@@ -64,7 +64,7 @@ public class WriteMetadataToBinaryFromDocument {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        Map<String, String> metadataMap = new HashMap<>(metadata.size());
+        Map<String, Object> metadataMap = new HashMap<>(metadata.size());
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             metadataMap.put(entry.getKey(), entry.getValue());
         }
