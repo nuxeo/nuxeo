@@ -88,7 +88,6 @@ public class RemoveProxiesTest {
         Assert.assertEquals("Section", session.getDocument(publishedDoc.getParentRef()).getTitle());
         Assert.assertEquals(1, session.getChildren(section.getRef()).size());
 
-
         OperationChain removeProxies = new OperationChain("testRemoveProxies");
         removeProxies.add(FetchContextDocument.ID);
         removeProxies.add(RemoveProxies.ID);

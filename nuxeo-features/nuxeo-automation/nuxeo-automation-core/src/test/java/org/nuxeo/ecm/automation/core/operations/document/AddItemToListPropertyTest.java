@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.After;
@@ -33,6 +34,8 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -45,11 +48,11 @@ import com.google.inject.Inject;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class})
+@Features({ CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:OSGI-INF/dataset-type-test-contrib.xml")
 public class AddItemToListPropertyTest {
-    
+
     @Inject
     AutomationService service;
 
@@ -71,7 +74,7 @@ public class AddItemToListPropertyTest {
         coreSession.save();
         testFolder = coreSession.getDocument(testFolder.getRef());
 
-        //creates a document of custom type DataSet
+        // creates a document of custom type DataSet
         doc = coreSession.createDocumentModel("/Folder", "TestDoc", "DataSet");
         doc.setPropertyValue("dc:title", "TestDoc");
         doc = coreSession.createDocument(doc);
@@ -86,50 +89,67 @@ public class AddItemToListPropertyTest {
     }
 
     @Test
-    public void addItemToListPropertyTest() throws Exception {
+    public void addItemToListPropertyTest() throws IOException, OperationException {
 
-        //check if the doc exists
+        // check if the doc exists
         assertNotNull(doc);
 
         // Check there is no value already.
         assertNotNull(doc.getPropertyValue("ds:fields"));
-        assertEquals(((Collection)doc.getPropertyValue("ds:fields")).size(), 0);
+        assertEquals(((Collection) doc.getPropertyValue("ds:fields")).size(), 0);
 
-        // Get new fields from json file to String
-        File fieldsAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
-        assertNotNull(fieldsAsJsonFile);
-        String fieldsDataAsJSon = FileUtils.readFile(fieldsAsJsonFile);
-        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
-        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        String fieldsDataAsJSon = readPropertiesFromFile("creationFields.json");
 
         // Add first fields
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(doc);
         OperationChain chain = new OperationChain("testAddItemToPropertyChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set(
-                "ComplexJsonProperties", fieldsDataAsJSon);
+        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("ComplexJsonProperties", fieldsDataAsJSon);
 
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
         java.util.ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(5, dbFields.size());
 
+    }
+
+    @Test
+    public void addMoreItemToListPropertyTest() throws IOException, OperationException {
+
+        String fieldsDataAsJSon = readPropertiesFromFile("newFields.json");
+
+        // ADD new fields
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(doc);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("ComplexJsonProperties", fieldsDataAsJSon);
+
+        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+        java.util.ArrayList<?> dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
+        assertEquals(2, dbFields.size());
+    }
+
+    @Test(expected = OperationException.class)
+    public void addItemToNonListPropertyTest() throws IOException, OperationException {
+
         // Get new fields from json file to String
-        fieldsAsJsonFile = FileUtils.getResourceFileFromContext("newFields.json");
+        String fieldsDataAsJSon = readPropertiesFromFile("newFields.json");
+        // ADD new fields
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(doc);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(AddItemToListProperty.ID).set("xpath", "dc:title").set("ComplexJsonProperties", fieldsDataAsJSon);
+        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+
+    }
+
+    protected String readPropertiesFromFile(String filename) throws IOException {
+        File fieldsAsJsonFile = FileUtils.getResourceFileFromContext(filename);
         assertNotNull(fieldsAsJsonFile);
-        fieldsDataAsJSon = FileUtils.readFile(fieldsAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldsAsJsonFile);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
 
-        // ADD new fields
-        ctx = new OperationContext(coreSession);
-        ctx.setInput(doc);
-        chain = new OperationChain("testChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set(
-                "ComplexJsonProperties", fieldsDataAsJSon);
-
-        resultDoc = (DocumentModel) service.run(ctx, chain);
-        dbFields = (java.util.ArrayList<?>) resultDoc.getPropertyValue("ds:fields");
-        assertEquals(7, dbFields.size());
+        return fieldsDataAsJSon;
     }
 
 }

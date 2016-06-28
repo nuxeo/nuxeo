@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -49,7 +50,7 @@ public class AddFacet {
     public DocumentModel run(DocumentModel input) {
 
         // we ignore the result
-        /*boolean result = */input.addFacet(facet);
+        /*boolean result = */ input.addFacet(facet);
 
         session.saveDocument(input);
         return input;

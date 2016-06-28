@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.core.operations.document;
 
 import static org.junit.Assert.*;
 
+import com.sun.star.lang.IllegalArgumentException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import com.google.inject.Inject;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
- * @author Thibaud Arguillere
+ * @author rdias
  */
 
 @RunWith(FeaturesRunner.class)
@@ -112,6 +113,19 @@ public class FacetOperationsTest {
 
     }
 
+    @Test(expected=OperationException.class)
+    public void testAddUnknownFacet() throws OperationException {
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(docNoFacet);
+        OperationChain chain = new OperationChain("testAddFacet");
+        chain.add(AddFacet.ID).set("facet", "UnknownFacet");
+
+        // the facet does not exist
+        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+        assertNull(resultDoc);
+    }
+
     @Test
     public void testRemoveFacet() throws OperationException {
 
@@ -127,6 +141,19 @@ public class FacetOperationsTest {
 
         assertNotNull(resultDoc);
         assertFalse("The doc should not have the facet.", resultDoc.hasFacet(THE_FACET));
+
+    }
+
+    @Test
+    public void testRemoveUnknownFacet() throws OperationException {
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(docNoFacet);
+        OperationChain chain = new OperationChain("testRemoveUnknownFacet");
+        chain.add(RemoveFacet.ID).set("facet", "UnknownFacet");
+
+        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+        assertFalse(resultDoc.hasFacet("UnknownFacet"));
 
     }
 
