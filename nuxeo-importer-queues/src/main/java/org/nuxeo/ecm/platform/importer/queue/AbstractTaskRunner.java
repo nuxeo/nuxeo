@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.importer.queue;
 
+/**
+ * @since 8.3
+ */
 public abstract class AbstractTaskRunner implements TaskRunner {
 
     protected boolean completed = false;

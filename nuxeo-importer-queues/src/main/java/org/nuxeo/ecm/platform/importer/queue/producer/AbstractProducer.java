@@ -21,6 +21,9 @@ import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+/**
+ * @since 8.3
+ */
 public abstract class AbstractProducer extends AbstractTaskRunner implements Producer {
 
     protected ImporterLogger log = null;

@@ -21,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @since 8.3
+ */
 public class ImportStat implements Serializable {
 
     /**

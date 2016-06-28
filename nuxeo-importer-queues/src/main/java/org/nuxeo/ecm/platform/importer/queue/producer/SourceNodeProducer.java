@@ -21,7 +21,10 @@ import java.util.List;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
-public class SourceNodeProducer extends AbstractProducer implements Producer {
+/**
+ * @since 8.3
+ */
+public class SourceNodeProducer extends AbstractProducer {
 
     protected final SourceNode root;
 

@@ -34,6 +34,9 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.ImportStat;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 
+/**
+ * @since 8.3
+ */
 public class QueueImporter {
 
     protected ImporterLogger log = null;

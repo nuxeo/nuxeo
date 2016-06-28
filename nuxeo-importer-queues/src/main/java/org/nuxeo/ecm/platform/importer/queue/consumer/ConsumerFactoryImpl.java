@@ -22,6 +22,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+/**
+ * @since 8.3
+ */
 public class ConsumerFactoryImpl implements ConsumerFactory {
 
     @Override

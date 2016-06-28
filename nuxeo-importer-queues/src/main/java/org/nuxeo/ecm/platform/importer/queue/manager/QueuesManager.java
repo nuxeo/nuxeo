@@ -20,6 +20,9 @@ import java.util.concurrent.BlockingQueue;
 
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+/**
+ * @since 8.3
+ */
 public interface QueuesManager {
 
     BlockingQueue<SourceNode> getQueue(int idx);

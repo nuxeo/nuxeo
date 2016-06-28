@@ -25,6 +25,9 @@ import java.util.concurrent.TimeUnit;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+/**
+ * @since 8.3
+ */
 public abstract class AbstractQueuesManager implements QueuesManager {
 
     List<BlockingQueue<SourceNode>> queues = new ArrayList<BlockingQueue<SourceNode>>();
