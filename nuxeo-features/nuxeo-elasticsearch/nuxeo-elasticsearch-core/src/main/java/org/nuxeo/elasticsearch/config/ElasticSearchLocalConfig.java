@@ -37,6 +37,7 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
+    @XNode("@clusterName")
     protected String clusterName;
 
     @XNode("@nodeName")
@@ -64,7 +65,6 @@ public class ElasticSearchLocalConfig implements Serializable {
     public String getClusterName() {
         return clusterName;
     }
-
 
     public String getDataPath() {
         if (dataPath == null) {
@@ -104,9 +104,8 @@ public class ElasticSearchLocalConfig implements Serializable {
         return isEnabled;
     }
 
-    @XNode("@clusterName")
-    public void setClusterName(String name) {
-        clusterName = String.format("%s.%d",name, System.currentTimeMillis());
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 
     public void setDataPath(String dataPath) {
