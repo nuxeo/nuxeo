@@ -79,37 +79,38 @@ public class DocumentExistsTest {
     }
 
     @Test
-    public void testDocumentExists() throws Exception {
-
+    public void testDocumentExistsContextHelper() {
         Map<String, ContextHelper> contextHelperList = ctxService.getHelperFunctions();
         PlatformFunctions functions = (PlatformFunctions) contextHelperList.get("Fn");
         assertEquals(functions, Scripting.newExpression("Fn").eval(ctx));
         assertTrue(functions instanceof PlatformFunctions);
 
-        String path = src.getPath().toString();
-        String expr = String.format(exprTemplate, path);
-
         // using directly the platform functions
-        boolean exists = functions.documentExists(session, path);
+        boolean exists = functions.documentExists(session, src.getPath().toString());
         assertTrue(exists);
 
+        // using directly the platform functions
+        exists = functions.documentExists(session, src.getId());
+        assertTrue(exists);
+    }
+
+    @Test
+    public void testDocumentExists() throws Exception {
+
         // using the scripting with a document path
-        exists = (boolean) Scripting.newExpression(expr).eval(ctx);
+        String expr = String.format(exprTemplate, src.getId());
+        boolean exists = (boolean) Scripting.newExpression(expr).eval(ctx);
         assertTrue(exists);
 
         // using the scripting with a document id
         expr = String.format(exprTemplate, src.getId());
         exists = (boolean) Scripting.newExpression(expr).eval(ctx);
         assertTrue(exists);
+
     }
 
     @Test
     public void testDocumentDoNotExists() throws Exception {
-
-        Map<String, ContextHelper> contextHelperList = ctxService.getHelperFunctions();
-        PlatformFunctions functions = (PlatformFunctions) contextHelperList.get("Fn");
-        assertEquals(functions, Scripting.newExpression("Fn").eval(ctx));
-        assertTrue(functions instanceof PlatformFunctions);
 
         // using the scripting with a document path
         String expr = String.format(exprTemplate, "/notsrc");
@@ -120,7 +121,6 @@ public class DocumentExistsTest {
         expr = String.format(exprTemplate, "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
         exists = (boolean) Scripting.newExpression(expr).eval(ctx);
         assertFalse(exists);
+
     }
-
-
 }
