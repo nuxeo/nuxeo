@@ -89,9 +89,16 @@ public class DocumentExistsTest {
         String path = src.getPath().toString();
         String expr = String.format(exprTemplate, path);
 
+        // using directly the platform functions
         boolean exists = functions.documentExists(session, path);
         assertTrue(exists);
 
+        // using the scripting with a document path
+        exists = (boolean) Scripting.newExpression(expr).eval(ctx);
+        assertTrue(exists);
+
+        // using the scripting with a document id
+        expr = String.format(exprTemplate, src.getId());
         exists = (boolean) Scripting.newExpression(expr).eval(ctx);
         assertTrue(exists);
     }
@@ -104,8 +111,14 @@ public class DocumentExistsTest {
         assertEquals(functions, Scripting.newExpression("Fn").eval(ctx));
         assertTrue(functions instanceof PlatformFunctions);
 
+        // using the scripting with a document path
         String expr = String.format(exprTemplate, "/notsrc");
         boolean exists = (boolean) Scripting.newExpression(expr).eval(ctx);
+        assertFalse(exists);
+
+        // using the scripting with a document id
+        expr = String.format(exprTemplate, "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+        exists = (boolean) Scripting.newExpression(expr).eval(ctx);
         assertFalse(exists);
     }
 
