@@ -17,7 +17,8 @@ Nuxeo-Component: OSGI-INF/TagService.xml,
   OSGI-INF/tag-listener-contrib.xml,
   OSGI-INF/ws-tag-loader-contrib.xml,
   OSGI-INF/tag-pageprovider-contrib.xml,
-  OSGI-INF/tag-operations-contrib.xml
+  OSGI-INF/tag-operations-contrib.xml,
+  OSGI-INF/json-enrichers-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.resource,
  org.apache.commons.logging,

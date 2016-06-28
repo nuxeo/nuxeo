@@ -55,6 +55,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.permissions.ACLJsonEnricher;
 import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
+import org.nuxeo.ecm.platform.tag.TagService;
+import org.nuxeo.ecm.platform.tag.io.TagsJsonEnricher;
 import org.nuxeo.ecm.platform.thumbnail.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
@@ -450,6 +452,45 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
+    }
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void iCanGetDocumentTags() throws Exception {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", TagsJsonEnricher.NAME);
+
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+
+        // The above GET will force the creation of the user workspace if it did not exist yet.
+        // Force to refresh current transaction context.
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(0, node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME).size());
+
+        TagService tagService = Framework.getService(TagService.class);
+        tagService.tag(session, note.getId(), "pouet", session.getPrincipal().getName());
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        response = getResponse(RequestType.GET, "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(),
+                headers);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME).size());
+        assertEquals("pouet", node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TagsJsonEnricher.NAME).get(0).get(
+                "label").getTextValue());
     }
 
     /**

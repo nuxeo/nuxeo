@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.tags.jsonEnrichers">
+  <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+    <register class="org.nuxeo.ecm.platform.tag.io.TagsJsonEnricher"
+      enable="true" />
+  </extension>
+</component>
