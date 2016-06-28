@@ -13,6 +13,7 @@
 <%@ page import="org.nuxeo.common.Environment"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo" %>
+<%@ page import="org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -21,6 +22,8 @@
 String productName = Framework.getProperty(Environment.PRODUCT_NAME);
 String productVersion = Framework.getProperty(Environment.PRODUCT_VERSION);
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
+String itunesId = Framework.getProperty("nuxeo.mobile.application.itunesId");
+String baseURL = VirtualHostHelper.getBaseURL(request);
 boolean isTesting = "Nuxeo-Selenium-Tester".equals(testerName);
 String context = request.getContextPath();
 
@@ -94,6 +97,10 @@ if (selectedLanguage != null) { %>
 <script type="text/javascript">
   nxtz.resetTimeZoneCookieIfNotSet();
 </script>
+
+<meta name="apple-itunes-app"
+  content="app-id=<%=itunesId%>, app-argument=<%=baseURL%>" />
+
 <style type="text/css">
 <!--
 html, body {

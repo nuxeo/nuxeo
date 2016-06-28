@@ -87,3 +87,5 @@ nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60
 
+# Mobile Application
+nuxeo.mobile.application.itunesId=1103802613
