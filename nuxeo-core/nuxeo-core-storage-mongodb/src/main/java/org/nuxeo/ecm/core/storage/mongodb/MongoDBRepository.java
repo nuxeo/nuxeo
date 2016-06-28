@@ -154,6 +154,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
     /** True if we don't use MongoDB's native "_id" key to store the id. */
     protected boolean useCustomId;
 
+    /** Number of values still available in the in-memory sequence. */
+    protected long sequenceLeft;
+
+    /** Last value used from the in-memory sequence. */
+    protected long sequenceLastValue;
+
+    /** Sequence allocation block size. */
+    protected long sequenceBlockSize;
+
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
         try {
@@ -169,6 +178,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
             idKey = KEY_ID;
         }
         useCustomId = KEY_ID.equals(idKey);
+        if (idType == IdType.sequence || DEBUG_UUIDS) {
+            Integer sbs = descriptor.sequenceBlockSize;
+            sequenceBlockSize = sbs == null ? 1 : sbs.longValue();
+            sequenceLeft = 0;
+        }
         initRepository();
     }
 
@@ -538,21 +552,29 @@ public class MongoDBRepository extends DBSRepositoryBase {
         initRoot();
     }
 
-    protected Long getNextUuidSeq() {
-        DBObject query = new BasicDBObject(MONGODB_ID, COUNTER_NAME_UUID);
-        DBObject update = new BasicDBObject(MONGODB_INC, new BasicDBObject(COUNTER_FIELD, ONE));
-        boolean returnNew = true;
-        DBObject idCounter = countersColl.findAndModify(query, null, null, false, update, returnNew, false);
-        if (idCounter == null) {
-            throw new RuntimeException("Repository id counter not initialized");
+    protected Long getNextSequenceId() {
+        if (sequenceLeft == 0) {
+            // allocate a new sequence block
+            // the database contains the last value from the last block
+            DBObject query = new BasicDBObject(MONGODB_ID, COUNTER_NAME_UUID);
+            DBObject update = new BasicDBObject(MONGODB_INC,
+                    new BasicDBObject(COUNTER_FIELD, Long.valueOf(sequenceBlockSize)));
+            DBObject idCounter = countersColl.findAndModify(query, null, null, false, update, true, false);
+            if (idCounter == null) {
+                throw new NuxeoException("Repository id counter not initialized");
+            }
+            sequenceLeft = sequenceBlockSize;
+            sequenceLastValue = ((Long) idCounter.get(COUNTER_FIELD)).longValue() - sequenceBlockSize;
         }
-        return (Long) idCounter.get(COUNTER_FIELD);
+        sequenceLeft--;
+        sequenceLastValue++;
+        return Long.valueOf(sequenceLastValue);
     }
 
     @Override
     public String generateNewId() {
         if (idType == IdType.sequence || DEBUG_UUIDS) {
-            Long id = getNextUuidSeq();
+            Long id = getNextSequenceId();
             if (DEBUG_UUIDS) {
                 return "UUID_" + id;
             }

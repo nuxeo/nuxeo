@@ -6,6 +6,7 @@
       <dbname>${nuxeo.test.mongodb.dbname}</dbname>
       <!--
       <idType>varchar</idType>
+      <sequenceBlockSize>1</sequenceBlockSize>
       <nativeId>false</nativeId>
       -->
       <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
