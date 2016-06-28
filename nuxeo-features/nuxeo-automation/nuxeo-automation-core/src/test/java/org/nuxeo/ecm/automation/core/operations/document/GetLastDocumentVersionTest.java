@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.*;
-import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -62,6 +61,8 @@ public class GetLastDocumentVersionTest {
 
     protected DocumentModel docWithMinorVersions;
 
+    protected DocumentModel docWithMajorMinorVersions;
+
     protected DocumentModel docWithNoVersion;
 
     @Before
@@ -89,13 +90,19 @@ public class GetLastDocumentVersionTest {
         session.save();
         docWithMinorVersions = session.getDocument(docWithMinorVersions.getRef());
 
+        // major and minor versions
+        docWithMajorMinorVersions = session.createDocumentModel("/Folder", "DocWithMoreVersions", "File");
+        docWithMajorMinorVersions.setPropertyValue("dc:title", "DocWithMoreVersions");
+        docWithMajorMinorVersions = session.createDocument(docWithMajorMinorVersions);
+        session.save();
+        docWithMajorMinorVersions = session.getDocument(docWithMajorMinorVersions.getRef());
+
         docWithNoVersion = session.createDocumentModel("/Folder", "docWithNoVersion", "File");
         docWithNoVersion.setPropertyValue("dc:title", "docWithNoVersion");
         docWithNoVersion = session.createDocument(docWithNoVersion);
         session.save();
         docWithNoVersion = session.getDocument(docWithNoVersion.getRef());
 
-        CreateVersions();
     }
 
     @After
@@ -104,28 +111,20 @@ public class GetLastDocumentVersionTest {
         session.save();
     }
 
-    protected void CreateVersions() {
-
-        VersioningOption vo = VersioningOption.MAJOR;
+    protected void createDocumentVersions(DocumentModel doc, VersioningOption vo, int nrVersions) {
         // create a document with major versions
-        for (int i = 1; i <= 3; i++) {
-            docWithMajorVersions.setPropertyValue("dc:description", "" + i);
-            docWithMajorVersions.putContextData(VersioningService.VERSIONING_OPTION, vo);
-            docWithMajorVersions = DocumentHelper.saveDocument(session, docWithMajorVersions);
+        for (int i = 1; i <= nrVersions; i++) {
+            doc.setPropertyValue("dc:description", "" + i);
+            doc.putContextData(VersioningService.VERSIONING_OPTION, vo);
+            session.saveDocument(doc);
         }
-
-        vo = VersioningOption.MINOR;
-        // create a document with minor versions
-        for (int i = 1; i <= 3; i++) {
-            docWithMinorVersions.setPropertyValue("dc:description", "" + i);
-            docWithMinorVersions.putContextData(VersioningService.VERSIONING_OPTION, vo);
-            docWithMinorVersions = DocumentHelper.saveDocument(session, docWithMinorVersions);
-        }
-
+        session.save();
     }
 
     @Test
     public void testGetLastMajorVersion() throws OperationException {
+
+        createDocumentVersions(docWithMajorVersions, VersioningOption.MAJOR, 3);
 
         DocumentModel lastVersion = runOperation(docWithMajorVersions);
         assertNotNull(lastVersion);
@@ -137,11 +136,25 @@ public class GetLastDocumentVersionTest {
     @Test
     public void testGetLastMinorVersion() throws OperationException {
 
+        createDocumentVersions(docWithMinorVersions, VersioningOption.MINOR, 3);
+
         DocumentModel lastVersion = runOperation(docWithMinorVersions);
         assertNotNull(lastVersion);
         assertEquals("3", lastVersion.getPropertyValue("dc:description"));
         assertEquals("0.3", lastVersion.getVersionLabel());
 
+    }
+
+    @Test
+    public void testGetLastMinorMajorVersion() throws OperationException {
+
+        createDocumentVersions(docWithMajorMinorVersions, VersioningOption.MAJOR, 3);
+        createDocumentVersions(docWithMajorMinorVersions, VersioningOption.MINOR, 3);
+
+        DocumentModel lastVersion = runOperation(docWithMajorMinorVersions);
+        assertNotNull(lastVersion);
+        assertEquals("3", lastVersion.getPropertyValue("dc:description"));
+        assertEquals("3.3", lastVersion.getVersionLabel());
     }
 
     @Test
