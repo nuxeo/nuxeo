@@ -13,6 +13,13 @@
     </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="tomcat" value="${outdir}/tomcat" />
+    <property name="distribution.dir" value="${outdir}/nuxeo-server-${maven.project.version}" />
+    <property name="distribution.zip.base" value="${outdir}/${maven.project.artifactId}-${maven.project.version}" />
+    <property name="distribution.zip" value="${distribution.zip.base}.zip" />
+    <property name="distribution.sdk.dir" value="${distribution.dir}-sdk" />
+    <property name="distribution.sdk.zip" value="${distribution.zip.base}-sdk.zip" />
+    <property name="marketplace" value="${outdir}/marketplace-jsf-ui" />
     <antcall target="expand" />
     <property name="init.done" value="true" />
   </target>
@@ -25,12 +32,16 @@
 
   <target name="build" depends="init" unless="no.build">
     <echo level="info">Building Tomcat standard distributions...</echo>
-    <property name="tomcat" value="${outdir}/tomcat.tmp" />
     <antcall target="prepare-tomcat" />
     <artifact:attach file="pom.xml" type="pom" />
     <antcall target="build-nuxeo-server" />
-    <delete dir="${tomcat}" failonerror="false" />
+    <delete dir="${tomcat}" failonerror="false" /> <!-- cleanup -->
+
     <antcall target="build-cap" />
+
+    <!-- cleanup -->
+    <!-- <delete dir="${outdir}/nuxeo-server-${maven.project.version}" failonerror="false" /> -->
+    <delete dir="${outdir}/nuxeo-server-${maven.project.version}-sdk" failonerror="false" />
   </target>
 
   <target name="prepare-tomcat">
@@ -49,15 +60,12 @@
     <copy tofile="${tomcat}/lib/tomcat-juli-adapters.jar">
       <artifact:resolveFile key="org.apache.tomcat.extras:tomcat-extras-juli-adapters" />
     </copy>
-
     <copy todir="${tomcat}">
       <fileset dir="src/main/resources/tomcat" />
     </copy>
-
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
       <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
     </copy>
-
     <copy todir="${tomcat}/client">
       <artifact:file key="org.nuxeo.shell:nuxeo-shell" />
     </copy>
@@ -81,7 +89,6 @@ install nuxeo-dam</echo>
           depends="sample-installAfterRestart-files,copy-packages-xml"
           description="Build Tomcat distribution with Nuxeo Server">
     <echo level="info">Building Nuxeo Server...</echo>
-    <property name="distribution.dir" value="${outdir}/nuxeo-server-${maven.project.version}" />
     <delete dir="${distribution.dir}" failonerror="false" />
     <copy todir="${distribution.dir}">
       <fileset dir="${tomcat}" />
@@ -110,15 +117,12 @@ install nuxeo-dam</echo>
     <antcall target="reorganize-libs" />
     <antcall target="build-server" />
     <antcall target="build-sdk" />
-    <!--    <delete dir="${distribution.dir}" failonerror="false" /> -->
   </target>
 
   <target name="build-server">
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${outdir}"
+    <zip destfile="${distribution.zip}" basedir="${outdir}"
          includes="nuxeo-server-${maven.project.version}/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-                     type="zip" />
+    <artifact:attach file="${distribution.zip}" type="zip" />
   </target>
 
   <target name="reorganize-libs">
@@ -207,42 +211,44 @@ org.nuxeo.distribution.package=zip</echo>
   </target>
 
   <target name="build-sdk" if="build.sdk">
-    <copy file="${distribution.dir}/templates/common/config/distribution.properties" todir="${distribution.dir}/sdk" />
-    <copy file="${outdir}/artifacts-tomcat.properties" todir="${distribution.dir}/sdk" />
-    <move todir="${distribution.dir}/sdk">
-      <fileset dir="${distribution.dir}/nxserver/">
+    <property name="sdk.dir" value="${distribution.sdk.dir}/sdk" />
+    <delete dir="${distribution.sdk.dir}" failonerror="false" />
+    <copy todir="${distribution.sdk.dir}">
+      <fileset dir="${distribution.dir}"/>
+    </copy>
+    <copy file="${distribution.sdk.dir}/templates/common/config/distribution.properties" todir="${sdk.dir}" />
+    <copy file="${outdir}/artifacts-tomcat.properties" todir="${sdk.dir}" />
+    <move todir="${sdk.dir}">
+      <fileset dir="${distribution.sdk.dir}/nxserver/">
         <filename name="*artifacts-*.properties" />
       </fileset>
     </move>
-    <artifact:printMgt output="${distribution.dir}/sdk/artifacts-nuxeo.properties"
+    <artifact:printMgt output="${sdk.dir}/artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
                        scopes="compile,provided,runtime" />
-    <artifact:printMgt output="${distribution.dir}/sdk/test-artifacts-nuxeo.properties"
+    <artifact:printMgt output="${sdk.dir}/test-artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
                        scopes="test,provided" />
 
-    <copy todir="${distribution.dir}/sdk/sources">
-      <artifact:resolveFiles source="${distribution.dir}/sdk/artifacts*.properties" classifier="sources" />
-      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" classifier="sources" />
+    <copy todir="${sdk.dir}/sources">
+      <artifact:resolveFiles source="${sdk.dir}/artifacts*.properties" classifier="sources" />
+      <artifact:resolveFiles source="${sdk.dir}/test-artifacts*.properties" classifier="sources" />
     </copy>
-    <copy todir="${distribution.dir}/sdk/tests">
-      <artifact:resolveFiles source="${distribution.dir}/sdk/test-artifacts*.properties" />
+    <copy todir="${sdk.dir}/tests">
+      <artifact:resolveFiles source="${sdk.dir}/test-artifacts*.properties" />
     </copy>
 
-    <unzip dest="${distribution.dir}/sdk/tools">
+    <unzip dest="${sdk.dir}/tools">
       <artifact:file key="org.nuxeo:nuxeo-ecm::zip:tools" />
     </unzip>
 
-    <copy todir="${distribution.dir}/nxserver/bundles">
+    <copy todir="${distribution.sdk.dir}/nxserver/bundles">
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
     </copy>
 
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-sdk.zip"
-         basedir="${outdir}"
-         includes="nuxeo-server-${maven.project.version}/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-sdk.zip"
-                     classifier="sdk"
-                     type="zip" />
+    <zip destfile="${distribution.sdk.zip}" basedir="${outdir}"
+         includes="nuxeo-server-${maven.project.version}-sdk/**" />
+    <artifact:attach file="${distribution.sdk.zip}" classifier="sdk" type="zip" />
   </target>
 
   <!-- #############################################################################-->
@@ -256,59 +262,53 @@ org.nuxeo.distribution.package=zip</echo>
     <artifact:attach file="pom.xml" type="pom" />
 
     <!-- Marketplace package -->
-    <property name="marketplace" value="${outdir}/marketplace" />
-    <antcall target="get-marketplace">
-      <param name="marketplace" value="${marketplace}" />
-    </antcall>
+    <antcall target="get-marketplace" />
 
     <!-- Tomcat Server with CAP -->
     <antcall target="build-cap-full">
-      <param name="marketplace" value="${marketplace}" />
-      <param name="tomcat.name" value="nuxeo-cap-${maven.project.version}-tomcat" />
-      <param name="tomcat" value="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" />
-      <param name="classifier" value="" />
-      <param name="capClassifier" value="nuxeo-cap" />
+      <param name="server.dir" value="${distribution.dir}" />
+      <param name="cap.tomcat.name" value="nuxeo-cap-${maven.project.version}-tomcat" />
+      <param name="classifier" value="nuxeo-cap" />
     </antcall>
 
     <!-- Tomcat Server with CAP + SDK -->
-    <antcall target="build-cap-sdk">
-      <param name="marketplace" value="${marketplace}" />
-    </antcall>
+    <antcall target="build-cap-sdk" />
 
+    <!-- cleanup -->
     <delete dir="${marketplace}" failonerror="false" />
+    <!-- <delete dir="${outdir}/nuxeo-cap-${maven.project.version}-tomcat" failonerror="false" /> -->
+    <delete dir="${outdir}/nuxeo-cap-${maven.project.version}-tomcat-sdk" failonerror="false" />
   </target>
 
   <target name="build-cap-sdk" if="build.sdk">
     <antcall target="build-cap-full">
-      <param name="marketplace" value="${marketplace}" />
-      <param name="tomcat.name" value="nuxeo-cap-${maven.project.version}-tomcat-sdk" />
-      <param name="tomcat" value="${outdir}/nuxeo-cap-${maven.project.version}-tomcat-sdk" />
-      <param name="classifier" value="sdk" />
-      <param name="capClassifier" value="nuxeo-cap-sdk" />
+      <param name="server.dir" value="${distribution.sdk.dir}" />
+      <param name="cap.tomcat.name" value="nuxeo-cap-${maven.project.version}-tomcat-sdk" />
+      <param name="classifier" value="nuxeo-cap-sdk" />
     </antcall>
   </target>
 
   <target name="build-cap-full">
-    <echo level="info">Building Nuxeo Tomcat with JSF UI Marketplace (${capClassifier})...</echo>
-    <copy todir="${tomcat}">
-      <fileset dir="${outdir}/nuxeo-server-${maven.project.version}">
+    <local name="cap.tomcat" />
+    <property name="cap.tomcat" value="${outdir}/${cap.tomcat.name}" />
+    <echo level="info">Building Nuxeo Tomcat with JSF UI Marketplace (${classifier})...</echo>
+    <copy todir="${cap.tomcat}">
+      <fileset dir="${server.dir}">
         <include name="**" />
       </fileset>
     </copy>
     <antcall target="apply-marketplace">
-      <param name="marketplace" value="${marketplace}" />
-      <param name="tomcat" value="${tomcat}" />
-      <param name="capClassifier" value="${capClassifier}" />
+      <param name="cap.tomcat" value="${cap.tomcat}" />
+      <param name="classifier" value="${classifier}" />
     </antcall>
     <antcall target="fixup-cap">
-      <param name="tomcat" value="${tomcat}" />
+      <param name="cap.tomcat" value="${cap.tomcat}" />
     </antcall>
-    <chmod dir="${tomcat}" perm="ug+x" includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
+    <chmod dir="${cap.tomcat}" perm="ug+x" includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
     <antcall target="zip-cap">
-      <param name="tomcat.name" value="${tomcat.name}" />
-      <param name="capClassifier" value="${capClassifier}" />
+      <param name="cap.tomcat.name" value="${cap.tomcat.name}" />
+      <param name="classifier" value="${classifier}" />
     </antcall>
-    <!--  <delete dir="${tomcat}" failonerror="false" /> -->
   </target>
 
   <target name="get-marketplace">
@@ -319,20 +319,20 @@ org.nuxeo.distribution.package=zip</echo>
 
   <target name="apply-marketplace">
     <!-- Apply manually the content of the package's install.xml -->
-    <copy todir="${tomcat}/nxserver/lib">
+    <copy todir="${cap.tomcat}/nxserver/lib">
       <fileset dir="${marketplace}/install/lib" />
     </copy>
-    <copy todir="${tomcat}/nxserver/bundles">
+    <copy todir="${cap.tomcat}/nxserver/bundles">
       <fileset dir="${marketplace}/install/bundles" />
     </copy>
     <!-- Completely remove the directory as the fixup-cap removes the template from nuxeo.template.includes -->
-    <delete dir="${tomcat}/templates/server" />
+    <delete dir="${cap.tomcat}/templates/server" />
   </target>
 
   <target name="fixup-cap">
-    <echo file="${tomcat}/setupWizardDownloads/packages-default-selection.properties"
+    <echo file="${cap.tomcat}/setupWizardDownloads/packages-default-selection.properties"
           message="preset=nuxeo-cap-preset" />
-    <replace file="${tomcat}/setupWizardDownloads/packages.xml">
+    <replace file="${cap.tomcat}/setupWizardDownloads/packages.xml">
       <replacefilter>
         <replacetoken>nuxeo-server</replacetoken>
         <replacevalue>nuxeo-cap</replacevalue>
@@ -354,13 +354,13 @@ org.nuxeo.distribution.package=zip</echo>
         <replacevalue>Nuxeo CAP Preset</replacevalue>
       </replacefilter>
     </replace>
-    <replace file="${tomcat}/templates/common/config/distribution.properties">
+    <replace file="${cap.tomcat}/templates/common/config/distribution.properties">
       <replacefilter>
         <replacetoken>org.nuxeo.distribution.name=server</replacetoken>
         <replacevalue>org.nuxeo.distribution.name=cap</replacevalue>
       </replacefilter>
     </replace>
-    <replace file="${tomcat}/templates/common/nuxeo.defaults">
+    <replace file="${cap.tomcat}/templates/common/nuxeo.defaults">
       <replacefilter>
         <replacetoken>nuxeo.template.includes=common-base,server</replacetoken>
         <replacevalue>nuxeo.template.includes=common-base</replacevalue>
@@ -369,12 +369,11 @@ org.nuxeo.distribution.package=zip</echo>
   </target>
 
   <target name="zip-cap">
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${capClassifier}.zip"
-         basedir="${outdir}"
-         includes="${tomcat.name}/**" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${capClassifier}.zip"
-                     classifier="${capClassifier}"
-                     type="zip" />
+    <local name="zip"/>
+    <property name="zip" value="${distribution.zip.base}-${classifier}.zip"/>
+    <zip destfile="${zip}" basedir="${outdir}"
+         includes="${cap.tomcat.name}/**" />
+    <artifact:attach file="${zip}" classifier="${classifier}" type="zip" />
   </target>
 
 </project>
