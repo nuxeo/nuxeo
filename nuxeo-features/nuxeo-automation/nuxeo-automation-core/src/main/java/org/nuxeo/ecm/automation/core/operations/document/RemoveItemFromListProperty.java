@@ -101,6 +101,7 @@ public class RemoveItemFromListProperty {
             session.save();
         }
         return doc;
+        
     }
 
 }
