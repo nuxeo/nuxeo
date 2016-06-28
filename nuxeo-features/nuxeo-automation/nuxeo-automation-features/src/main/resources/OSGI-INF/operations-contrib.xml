@@ -108,6 +108,9 @@
       class="org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries" />
 
     <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.CreateVocabularyEntry" />
+
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries" />
 
     <operation
