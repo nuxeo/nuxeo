@@ -10,7 +10,7 @@
 
   <artifactId>nuxeo-importer-queues</artifactId>
 
-  <name>nuxeo-importer-queues</name>
+  <name>Nuxeo Importer Queues</name>
   <description></description>
   <dependencies>
     <dependency>
