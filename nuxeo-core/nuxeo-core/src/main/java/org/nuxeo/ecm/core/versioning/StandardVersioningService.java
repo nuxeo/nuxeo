@@ -129,7 +129,8 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     protected void incrementMinor(Document doc) throws DocumentException {
-        doc.setPropertyValue(MINOR_VERSION, Long.valueOf(getMinor(doc) + 1));
+        // make sure major is not null by re-setting it
+        setVersion(doc, getMajor(doc), getMinor(doc) + 1);
     }
 
     protected void incrementByOption(Document doc, VersioningOption option)
