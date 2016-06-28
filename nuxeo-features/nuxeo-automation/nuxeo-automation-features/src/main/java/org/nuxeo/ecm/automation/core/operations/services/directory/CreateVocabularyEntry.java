@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thibaud Arguillere
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.automation.core.operations.services.directory;
 
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @since 8.3
  * Adds a new entry ion a vocabulary.
  * <p>
  * Notice: This is for a nuxeo Vocabulary, which is a specific kind of Directory. This code expects the following:
@@ -42,14 +44,17 @@ import java.util.Map;
  * <li>If it is hierarchical, it must also have the <code>parent</code> field</li>
  * </ul>
  */
-@Operation(id = CreateVocabularyEntry.ID, category = Constants.CAT_SERVICES, label = "Vocabulary: Add Entry", description = "Add a new entry in the <i>name</i> directory only if <i>id</i> is not found (an existing entry is not updated). If <i>label</i> is empty, it is set to the id. WARNING: Current user must have enough rights to write in a directory.")
+@Operation(id = CreateVocabularyEntry.ID, category = Constants.CAT_SERVICES, label = "Vocabulary: Add Entry",
+    description = "Add a new entry in the <i>name</i> directory only if <i>id</i> is not found (an existing entry is" +
+        "not updated). If <i>label</i> is empty, it is set to the id. WARNING: Current user must have enough rights " +
+        "to write in a directory.")
 public class CreateVocabularyEntry {
 
     public static final String ID = "Directory.CreateVocabularyEntry";
 
     // Caching infos about vocabularies, to avoid getting the schema and testing the "parent" field at every call.
     // This is because passing a Map with "parent" to a simple vocabulary (non hierarchical) throws an error
-    protected static HashMap<String, Boolean> vocabularyAndHasParent = new HashMap<>();
+    protected static Map<String, Boolean> vocabularyAndHasParent = new HashMap<>();
 
     @Context
     protected DirectoryService directoryService;
@@ -78,34 +83,36 @@ public class CreateVocabularyEntry {
     @OperationMethod
     public void run() {
 
-        if (StringUtils.isNotBlank(id)) {
-            boolean hasParent;
-            if (vocabularyAndHasParent.get(name) == null) {
-                String dirSchema = directoryService.getDirectorySchema(name);
-                Schema schema = schemaManager.getSchema(dirSchema);
-                hasParent = schema.hasField("parent");
-                vocabularyAndHasParent.put(name, hasParent);
-            } else {
-                hasParent = vocabularyAndHasParent.get(name);
-            }
-
-            Session directorySession = directoryService.open(name);
-            if (!directorySession.hasEntry(id)) {
-                Map<String, Object> entry = new HashMap<>();
-                entry.put("id", id);
-                if (StringUtils.isEmpty(label)) {
-                    label = id;
-                }
-                entry.put("label", label);
-                if (hasParent) {
-                    entry.put("parent", parent);
-                }
-                entry.put("obsolete", obsolete);
-                entry.put("ordering", ordering);
-                directorySession.createEntry(entry);
-            }
-            directorySession.close();
+        if (StringUtils.isBlank(id)) {
+            return;
         }
+
+        boolean hasParent;
+        if (vocabularyAndHasParent.get(name) == null) {
+            String dirSchema = directoryService.getDirectorySchema(name);
+            Schema schema = schemaManager.getSchema(dirSchema);
+            hasParent = schema.hasField("parent");
+            vocabularyAndHasParent.put(name, hasParent);
+        } else {
+            hasParent = vocabularyAndHasParent.get(name);
+        }
+
+        Session directorySession = directoryService.open(name);
+        if (!directorySession.hasEntry(id)) {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("id", id);
+            if (StringUtils.isEmpty(label)) {
+                label = id;
+            }
+            entry.put("label", label);
+            if (hasParent) {
+                entry.put("parent", parent);
+            }
+            entry.put("obsolete", obsolete);
+            entry.put("ordering", ordering);
+            directorySession.createEntry(entry);
+        }
+        directorySession.close();
 
     }
 

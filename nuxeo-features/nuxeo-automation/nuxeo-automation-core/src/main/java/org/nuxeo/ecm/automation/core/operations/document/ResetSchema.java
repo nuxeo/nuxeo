@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -31,7 +31,11 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 import java.util.Map;
 
-@Operation(id = ResetSchema.ID, category = Constants.CAT_DOCUMENT, label = "Reset Schema", description = "Reset all values")
+/**
+ * @since 8.3
+ */
+@Operation(id = ResetSchema.ID, category = Constants.CAT_DOCUMENT, label = "Reset Schema",
+    description = "Reset all values")
 public class ResetSchema {
 
     public static final String ID = "Document.ResetSchema";
@@ -52,8 +56,8 @@ public class ResetSchema {
         if (xpath != null) {
             target.setPropertyValue(xpath, null);
         } else if (schema != null) {
-            for (Map.Entry<String, Object> entry : target.getProperties(schema).entrySet()) {
-                target.setProperty(schema, entry.getKey(), null);
+            for (String key : target.getProperties(schema).keySet()) {
+                target.setProperty(schema, key, null);
             }
         } else {
             throw new OperationException("No schema or xpath was provided");

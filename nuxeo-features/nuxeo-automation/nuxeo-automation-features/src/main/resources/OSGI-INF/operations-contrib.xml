@@ -96,7 +96,7 @@
       class="org.nuxeo.ecm.automation.core.operations.services.GetDirectoryEntries" />
 
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.services.UserInvite" />
+      class="org.nuxeo.ecm.automation.core.operations.services.UserInvite" />
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspace" />
@@ -117,13 +117,13 @@
       class="org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries" />
 
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries" />
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries" />
 
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.services.directory.DirectoryProjection" />
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.DirectoryProjection" />
 
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.users.GetNuxeoPrincipal" />
+      class="org.nuxeo.ecm.automation.core.operations.users.GetNuxeoPrincipal" />
 
   </extension>
 

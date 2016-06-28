@@ -14,11 +14,10 @@
  * limitations under the License.
  *
  * Contributors:
- *
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import com.google.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +36,15 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import javax.inject.Inject;
 import java.util.Map;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @since 8.3
+ */
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class})
 @Deploy("org.nuxeo.ecm.automation.core")

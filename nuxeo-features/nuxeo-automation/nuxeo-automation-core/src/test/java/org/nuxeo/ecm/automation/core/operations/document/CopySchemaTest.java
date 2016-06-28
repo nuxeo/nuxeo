@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -39,8 +39,12 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+/**
+ * @since 8.3
+ */
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class})
 @Deploy("org.nuxeo.ecm.automation.core")
