@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Julien Carsique
  *     Florent Guillaume
+ *     Ronan DANIELLOU
  */
 package org.nuxeo.launcher;
 
@@ -576,7 +577,7 @@ public abstract class NuxeoLauncher {
 
     private static final int PAGE_SIZE = 20;
 
-    public static final String CONNECT_TC_URL = "https://www.nuxeo.com/en/services/nuxeo-trial-tc";
+    public static final String CONNECT_TC_URL = "https://www.nuxeo.com/legal/nuxeo-trial-terms-conditions";
 
     protected ConfigurationGenerator configurationGenerator;
 
