@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
- *     rdias
+ *     Bogdan Stefanescu
+ *     Ricardo Dias
  */
 package org.nuxeo.ecm.automation.features;
 
@@ -28,7 +28,14 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
@@ -250,23 +257,8 @@ public class PlatformFunctions extends CoreFunctions {
      * @return true if the document exists, or false otherwise
      */
     public boolean documentExists(CoreSession session, String idOrPath) {
-
-        DocumentRef documentRef;
-        if (idOrPath.startsWith("/")) {
-            documentRef = new PathRef(idOrPath);
-        } else {
-            documentRef = new IdRef(idOrPath);
-        }
-
-        try {
-            // we do not need the variable, just check if the document exists
-            /*DocumentModel doc = */session.getDocument(documentRef);
-        } catch (DocumentNotFoundException exception) {
-            return false;
-        }
-
-        return true;
-
+        DocumentRef documentRef = idOrPath.startsWith("/") ? new PathRef(idOrPath) : new IdRef(idOrPath);
+        return session.exists(documentRef);
     }
 
 }

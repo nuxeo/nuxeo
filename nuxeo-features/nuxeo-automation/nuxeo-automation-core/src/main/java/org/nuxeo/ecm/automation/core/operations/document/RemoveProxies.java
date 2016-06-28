@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Frederic Vadon
+ *     Ricardo Dias
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -28,7 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * @author fvadon
  * @since 8.3
  */
 @Operation(id = RemoveProxies.ID, category = Constants.CAT_DOCUMENT, label = "Remove Document Proxies", description = "Will remove all proxies of the input document, make sure proxies are not used for something else than publishing", aliases = {"Document.RemoveProxies"})

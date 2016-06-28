@@ -23,18 +23,13 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * @since 8.3
- * @author rdias
  */
 @Operation(id = GetLastDocumentVersion.ID, category = Constants.CAT_DOCUMENT, label = "Get Last version", description = "Returns the last version of the document if it exists.", aliases = { "Document.GetLastVersion" })
 public class GetLastDocumentVersion {
@@ -48,9 +43,8 @@ public class GetLastDocumentVersion {
     public DocumentModel run(DocumentModel input) {
 
         IdRef idRef = new IdRef(input.getId());
-        DocumentModel lastVersion = session.getLastDocumentVersion(idRef);
+        return session.getLastDocumentVersion(idRef);
 
-        return lastVersion;
     }
 
 }

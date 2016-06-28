@@ -43,7 +43,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
- * @author rdias
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)

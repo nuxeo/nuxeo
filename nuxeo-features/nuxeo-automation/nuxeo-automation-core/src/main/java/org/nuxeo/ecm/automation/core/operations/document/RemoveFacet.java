@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thibaud Arguillere
+ *     Ricardo Dias
  */
 
 package org.nuxeo.ecm.automation.core.operations.document;
@@ -29,8 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Operation that adds a facet to the document.
- *
  * IMPORTANT: This requires the document to be saved immediately.
  * @since 8.3
  */
@@ -48,10 +47,9 @@ public class RemoveFacet {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
 
-        // we ignore the result
-        /*boolean result = */input.removeFacet(facet);
-
+        input.removeFacet(facet);
         session.saveDocument(input);
+
         return input;
     }
 
