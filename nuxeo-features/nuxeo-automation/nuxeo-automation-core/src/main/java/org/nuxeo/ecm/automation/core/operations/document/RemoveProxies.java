@@ -49,7 +49,7 @@ public class RemoveProxies {
         for (DocumentModel proxy : proxies) {
             session.removeDocument(proxy.getRef());
         }
-        
+
         if (save) {
             session.save();
         }

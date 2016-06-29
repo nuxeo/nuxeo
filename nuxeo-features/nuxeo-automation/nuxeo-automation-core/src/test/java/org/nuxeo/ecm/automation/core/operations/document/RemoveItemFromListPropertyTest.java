@@ -127,7 +127,7 @@ public class RemoveItemFromListPropertyTest {
         //remove the first item
         DocumentModel resultDoc = removeItemsFromListProperty(0);
 
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(1, dbFields.size());
 
         Map<String, String> properties = (Map<String, String>) dbFields.get(0);
