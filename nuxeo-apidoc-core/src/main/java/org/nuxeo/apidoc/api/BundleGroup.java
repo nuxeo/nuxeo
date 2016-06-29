@@ -34,4 +34,6 @@ public interface BundleGroup extends NuxeoArtifact {
 
     List<String> getBundleIds();
 
+    List<String> getParentIds();
+
 }

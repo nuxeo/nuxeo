@@ -21,10 +21,10 @@
   </appender>
   
 
-  <!-- category name="org.nuxeo.runtime" additivity="false">
+  <category name="org.nuxeo.runtime" additivity="false">
     <priority value="INFO" />
     <appender-ref ref="FILE" />
-  </category-->
+  </category>
 
   <category name="org.nuxeo.apidoc">
     <priority value="INFO" />

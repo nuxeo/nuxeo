@@ -19,9 +19,9 @@
  */
 package org.nuxeo.apidoc.introspection;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -32,11 +32,15 @@ import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.ecm.core.api.CoreSession;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected final String bundleId;
 
-    protected final Collection<ComponentInfo> components;
+    protected final Collection<ComponentInfo> components = new HashSet<>();
 
     protected String fileName;
 
@@ -56,6 +60,26 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected Map<String, ResourceDocumentationItem> parentLiveDoc;
 
+    @JsonCreator
+    BundleInfoImpl(@JsonProperty("bundleId") String bundleId,
+            @JsonProperty("fileName") String fileName, @JsonProperty("manifest") String manifest, @JsonProperty("requirements") String[] requirements,
+            @JsonProperty("groupId") String groupId, @JsonProperty("artifactId") String artifactId,
+            @JsonProperty("artifactVersion") String artifactVersion,
+            @JsonProperty("bundleGroup") BundleGroup bundleGroup, @JsonProperty("liveDoc") Map<String, ResourceDocumentationItem> liveDoc,
+            @JsonProperty("parentLiveDoc") Map<String, ResourceDocumentationItem> parentLiveDoc, @JsonProperty("location") String location) {
+        this.bundleId = bundleId;
+        this.fileName = fileName;
+        this.manifest = manifest;
+        this.requirements = requirements;
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.artifactVersion = artifactVersion;
+        this.bundleGroup = bundleGroup;
+        this.liveDoc = liveDoc;
+        this.parentLiveDoc = parentLiveDoc;
+        this.location = location;
+    }
+
     public BundleGroup getBundleGroup() {
         return bundleGroup;
     }
@@ -68,7 +92,6 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     public BundleInfoImpl(String bundleId) {
         this.bundleId = bundleId;
-        components = new ArrayList<>();
     }
 
     @Override
@@ -122,7 +145,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     }
 
     @Override
-    public String getArtifactGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
@@ -149,21 +172,25 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     }
 
     @Override
+    @JsonIgnore
     public String getId() {
         return bundleId;
     }
 
     @Override
+    @JsonIgnore
     public String getVersion() {
         return artifactVersion;
     }
 
     @Override
+    @JsonIgnore
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
     @Override
+    @JsonIgnore
     public String getHierarchyPath() {
         return bundleGroup.getHierarchyPath() + "/" + getId();
     }
@@ -199,10 +226,12 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         return docs;
     }
 
+    @Override
     public Map<String, ResourceDocumentationItem> getLiveDoc() {
         return liveDoc;
     }
 
+    @Override
     public Map<String, ResourceDocumentationItem> getParentLiveDoc() {
         return parentLiveDoc;
     }

@@ -38,6 +38,7 @@ import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
+import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -421,7 +422,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return result;
     }
 
-    @Override
     public JavaDocHelper getJavaDocHelper() {
         if (jdocHelper == null) {
             jdocHelper = JavaDocHelper.getHelper(getName(), getVersion());
@@ -475,5 +475,10 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public boolean isHidden() {
         return Boolean.TRUE.equals(doc.getPropertyValue(PROP_HIDE));
+    }
+
+    @Override
+    public ServerInfo getServerInfo() {
+        throw new UnsupportedOperationException();
     }
 }

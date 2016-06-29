@@ -67,7 +67,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         DocumentModelList docs = getCoreSession().query(query);
         for (DocumentModel child : docs) {
             BundleInfo bi = child.getAdapter(BundleInfo.class);
-            if (bi != null && !bi.getId().equals(this.getId())) {
+            if (bi != null && !bi.getId().equals(getId())) {
                 bundles.add(bi.getId());
             }
         }
@@ -116,6 +116,11 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     @Override
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+    @Override
+    public List<String> getParentIds() {
+        throw new UnsupportedOperationException();
     }
 
 }

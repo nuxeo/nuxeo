@@ -63,9 +63,9 @@ public class TestSnapshotWithDocPersist {
         BundleInfoImpl bi = (BundleInfoImpl) runtimeSnapshot.getBundle("org.nuxeo.ecm.core.api");
 
         ResourceDocumentationItem desc = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core API</p>",
-                bi, DefaultDocumentationType.DESCRIPTION.toString());
-        ResourceDocumentationItem ht = new ResourceDocumentationItem("HowTo.md", "This is simple", bi,
-                DefaultDocumentationType.HOW_TO.toString());
+                DefaultDocumentationType.DESCRIPTION.toString(), bi);
+        ResourceDocumentationItem ht = new ResourceDocumentationItem("HowTo.md", "This is simple",
+                DefaultDocumentationType.HOW_TO.toString(), bi);
 
         liveDoc.put(DefaultDocumentationType.DESCRIPTION.toString(), desc);
         liveDoc.put(DefaultDocumentationType.HOW_TO.toString(), ht);
@@ -73,10 +73,10 @@ public class TestSnapshotWithDocPersist {
         bi.setLiveDoc(liveDoc);
 
         Map<String, ResourceDocumentationItem> liveDocP = new HashMap<>();
-        ResourceDocumentationItem descP = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core</p>", bi,
-                DefaultDocumentationType.DESCRIPTION.toString());
-        ResourceDocumentationItem htP = new ResourceDocumentationItem("HowTo.md", "This is simple !", bi,
-                DefaultDocumentationType.HOW_TO.toString());
+        ResourceDocumentationItem descP = new ResourceDocumentationItem("readMe.md", "<p>Hello this is core</p>",
+                DefaultDocumentationType.DESCRIPTION.toString(), bi);
+        ResourceDocumentationItem htP = new ResourceDocumentationItem("HowTo.md", "This is simple !",
+                DefaultDocumentationType.HOW_TO.toString(), bi);
 
         liveDocP.put(DefaultDocumentationType.DESCRIPTION.toString(), descP);
         liveDocP.put(DefaultDocumentationType.HOW_TO.toString(), htP);

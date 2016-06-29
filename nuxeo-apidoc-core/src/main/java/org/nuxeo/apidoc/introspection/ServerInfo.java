@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -51,6 +52,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
@@ -64,6 +66,8 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The entry point to the server runtime introspection To build a description of
@@ -134,13 +138,20 @@ public class ServerInfo {
 
     protected final String version;
 
-    protected final Map<String, BundleInfoImpl> bundles = new HashMap<>();
+    protected final Map<String, BundleInfo> bundles = new HashMap<>();
 
     protected final List<Class<?>> allSpi = new ArrayList<>();
 
     public ServerInfo(String name, String version) {
         this.name = name;
         this.version = version;
+    }
+
+    public ServerInfo(@JsonProperty("name") String name, @JsonProperty("version") String version, @JsonProperty("bundles") Set<BundleInfo> bundles) {
+        this(name, version);
+        for (BundleInfo bundle : bundles) {
+            this.bundles.put(bundle.getBundleId(), bundle);
+        }
     }
 
     public String getName() {
@@ -151,21 +162,21 @@ public class ServerInfo {
         return version;
     }
 
-    public Collection<BundleInfoImpl> getBundles() {
+    public Collection<BundleInfo> getBundles() {
         return bundles.values();
     }
 
-    public void addBundle(BundleInfoImpl bundle) {
+    public void addBundle(BundleInfo bundle) {
         bundles.put(bundle.getId(), bundle);
     }
 
-    public void addBundle(Collection<BundleInfoImpl> someBundles) {
-        for (BundleInfoImpl bundle : someBundles) {
+    public void addBundle(Collection<BundleInfo> someBundles) {
+        for (BundleInfo bundle : someBundles) {
             bundles.put(bundle.getId(), bundle);
         }
     }
 
-    public BundleInfoImpl getBundle(String id) {
+    public BundleInfo getBundle(String id) {
         return bundles.get(id);
     }
 
@@ -306,7 +317,7 @@ public class ServerInfo {
                 }
                 // avoids duplicating/overriding the bundles
                 if (server.bundles.containsKey(bundle.getSymbolicName())) {
-                    binfo = server.bundles.get(bundle.getSymbolicName());
+                    binfo = (BundleInfoImpl) server.bundles.get(bundle.getSymbolicName());
                 } else {
                     binfo = computeBundleInfo(bundle);
                 }
@@ -366,7 +377,7 @@ public class ServerInfo {
         Bundle[] allbundles = runtime.getContext().getBundle().getBundleContext().getBundles();
         for (Bundle bundle : allbundles) {
             if (!server.bundles.containsKey(bundle.getSymbolicName())) {
-                BundleInfoImpl bi = computeBundleInfo(bundle);
+                BundleInfo bi = computeBundleInfo(bundle);
                 server.addBundle(bi);
             }
         }
@@ -403,9 +414,9 @@ public class ServerInfo {
         XMLWriter xw = new XMLWriter(writer, 4);
         xw.start();
         xw.element("server").attr("name", name).attr("version", version).start();
-        for (BundleInfoImpl bundle : bundles.values()) {
-            xw.element("bundle").attr("id", bundle.bundleId).start();
-            xw.element("fileName").content(bundle.fileName);
+        for (BundleInfo bundle : bundles.values()) {
+            xw.element("bundle").attr("id", bundle.getId()).start();
+            xw.element("fileName").content(bundle.getFileName());
             // TODO requirements
             for (ComponentInfo component : bundle.getComponents()) {
                 xw.element("component").attr("id", component.getId()).start();

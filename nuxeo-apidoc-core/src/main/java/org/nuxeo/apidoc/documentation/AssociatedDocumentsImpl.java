@@ -114,7 +114,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
             }
         }
 
-        return new AbstractDocumentationItem() {
+        return new AbstractDocumentationItem(null) {
 
             @Override
             public boolean isApproved() {
@@ -123,11 +123,6 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
             @Override
             public String getUUID() {
-                return null;
-            }
-
-            @Override
-            public String getTypeLabel() {
                 return null;
             }
 

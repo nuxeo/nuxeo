@@ -35,6 +35,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 
 @Provider
@@ -57,7 +58,7 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
-        SimpleDocumentationItem item = new SimpleDocumentationItem();
+        SimpleDocumentationItem item = new SimpleDocumentationItem(AbstractDocumentationItem.typeLabelOf(request.getParameter("type")));
         item.content = request.getParameter("content");
         item.id = request.getParameter("id");
         item.renderingType = request.getParameter("renderingType");
@@ -81,7 +82,7 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
         String[] attachmentsTitles = request.getParameterValues("attachmentsTitle");
         if (attachmentsTitles != null && attachmentsTitles.length > 0) {
             String[] attachmentsContents = request.getParameterValues("attachmentsContent");
-            Map<String, String> attachments = new LinkedHashMap<String, String>();
+            Map<String, String> attachments = new LinkedHashMap<>();
             int idx = 0;
             for (String attachmentsTitle : attachmentsTitles) {
                 if (attachmentsContents.length > idx) {

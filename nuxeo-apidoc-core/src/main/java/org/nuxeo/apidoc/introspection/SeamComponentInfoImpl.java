@@ -24,6 +24,9 @@ import java.util.List;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+@JsonIgnoreType
 public class SeamComponentInfoImpl extends BaseNuxeoArtifact implements SeamComponentInfo {
 
     protected String name;

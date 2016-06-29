@@ -20,29 +20,65 @@ package org.nuxeo.apidoc.introspection;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * DTO for an {@link OperationInfo}, used for the runtime implementation.
  */
+@JsonIgnoreType
 public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInfo {
 
-    public final OperationDocumentation op;
+    protected final String name;
 
-    public final String version;
+    protected final String version;
+
+    protected final String[] aliases;
 
     protected final String operationClass;
 
     protected final String contributingComponent;
 
-    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass,
-            String contributingComponent) {
-        this.op = op;
+    protected final String description;
+
+    protected final String[] signature;
+
+    protected final String category;
+
+    protected final String url;
+
+    protected final String label;
+
+    protected final String requires;
+
+    protected final String since;
+
+    protected final List<Param> params;
+
+    public OperationInfoImpl(@JsonProperty("name") String name,
+            @JsonProperty("version") String version,
+            @JsonProperty("aliases") String[] aliases,
+            @JsonProperty("description") String description,
+            @JsonProperty("operationClass") String operationClass,
+            @JsonProperty("contributingComponent") String contributingComponent,
+            @JsonProperty("signature") String[] signature,
+            @JsonProperty("category") String category,
+            @JsonProperty("url") String url,
+            @JsonProperty("label") String label,
+            @JsonProperty("requires") String requires,
+            @JsonProperty("since") String since,
+            @JsonProperty("params") List<Param> params) {
+
+        this.name = name;
         this.version = version;
+        this.aliases = aliases;
+        this.description = description;
         this.operationClass = operationClass;
         if (contributingComponent == null || contributingComponent.isEmpty()) {
             this.contributingComponent = OperationInfo.BUILT_IN;
@@ -54,61 +90,76 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
                 this.contributingComponent = contributingComponent;
             }
         }
+        this.signature = signature;
+        this.category = category;
+        this.url = url;
+        this.label = label;
+        this.requires = requires;
+        this.since = since;
+        this.params = params;
+    }
+
+    public OperationInfoImpl(OperationDocumentation op, String version, String operationClass,
+            String contributingComponent) {
+        this(op.getId(), version, op.getAliases(), op.getDescription(), operationClass, contributingComponent, op.getSignature(), op.getCategory(),
+                op.getUrl(), op.getLabel(), op.getRequires(), op.getSince(),
+                Arrays.asList(op.getParams()));
     }
 
     @Override
     public String getName() {
-        return op.getId();
+        return name;
     }
 
     @Override
+    @JsonIgnore
     public String getId() {
-        return ARTIFACT_PREFIX + op.getId();
+        return ARTIFACT_PREFIX + name;
     }
 
     @Override
     public String[] getAliases() {
-        return op.getAliases();
+        return aliases;
     }
 
     @Override
     public String getDescription() {
-        return op.getDescription();
+        return description;
     }
 
     @Override
     public String[] getSignature() {
-        return op.getSignature();
+        return signature;
     }
 
     @Override
     public String getCategory() {
-        return op.getCategory();
+        return category;
     }
 
     @Override
     public String getUrl() {
-        return op.getUrl();
+        return url;
     }
 
     @Override
     public String getLabel() {
-        return op.getLabel();
+        return label;
     }
 
     @Override
     public String getRequires() {
-        return op.getRequires();
+        return requires;
     }
 
     @Override
     public String getSince() {
-        return op.since;
+        return since;
     }
 
     @Override
     public List<Param> getParams() {
-        return Arrays.asList(op.getParams());
+        return params;
     }
 
     @Override
@@ -117,11 +168,13 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     }
 
     @Override
+    @JsonIgnore
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
     @Override
+    @JsonIgnore
     public String getHierarchyPath() {
         return "/";
     }

@@ -129,7 +129,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
                 Long order = (Long) map.get(PROP_PARAM_ORDER);
                 p.order = order == null ? 0 : order.intValue();
                 Boolean required = (Boolean) map.get(PROP_PARAM_REQUIRED);
-                p.isRequired = required == null ? false : required.booleanValue();
+                p.required = required == null ? false : required.booleanValue();
                 params.add(p);
             }
         }

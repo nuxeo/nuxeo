@@ -37,6 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
+import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
@@ -47,7 +48,7 @@ import org.nuxeo.common.utils.Path;
 
 public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
 
-    protected final BundleInfoImpl bundle;
+    protected final BundleInfo bundle;
 
     protected final String name;
 
@@ -67,7 +68,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected static final Log log = LogFactory.getLog(ComponentInfoImpl.class);
 
-    public ComponentInfoImpl(BundleInfoImpl bundleInfo, String name) {
+    public ComponentInfoImpl(BundleInfo bundleInfo, String name) {
         bundle = bundleInfo;
         this.name = name;
         extensionPoints = new HashMap<>();
@@ -80,7 +81,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     @Override
-    public BundleInfoImpl getBundle() {
+    public BundleInfo getBundle() {
         return bundle;
     }
 

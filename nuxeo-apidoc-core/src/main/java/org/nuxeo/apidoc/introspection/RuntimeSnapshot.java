@@ -19,9 +19,11 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
+import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
@@ -47,6 +50,10 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
 
     public static final String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
@@ -55,7 +62,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected Date created;
 
-    protected final List<String> bundlesIds = new ArrayList<>();
+    protected final List<String> bundleIds = new ArrayList<>();
 
     protected final List<String> javaComponentsIds = new ArrayList<>();
 
@@ -85,67 +92,87 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected final List<Class<?>> spi = new ArrayList<>();
 
-    public RuntimeSnapshot() {
-        buildServerInfo();
+    public static RuntimeSnapshot build() {
+        return new RuntimeSnapshot();
+    }
+
+    @JsonCreator
+    private RuntimeSnapshot(@JsonProperty("serverInfo") ServerInfo serverInfo, @JsonProperty("creationDate") Date created,
+            @JsonProperty("seamComponents") List<SeamComponentInfo> seamComponents,
+            @JsonProperty("operations") List<OperationInfo> operations) {
+        this.serverInfo = serverInfo;
+        this.created = created;
+        index();
+        this.seamComponents.addAll(seamComponents);
+        this.operations.addAll(operations);
+    }
+
+    protected RuntimeSnapshot() {
+        serverInfo = ServerInfo.build();
+        created = new Date();
+
+        index();
     }
 
     @Override
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
+
+    @Override
+    @JsonIgnore
     public String getVersion() {
         return serverInfo.getVersion();
     }
 
     @Override
+    @JsonIgnore
     public String getName() {
         return serverInfo.getName();
     }
 
-    protected synchronized ServerInfo buildServerInfo() {
-        if (serverInfo == null) {
-            serverInfo = ServerInfo.build();
-            created = new Date();
-            spi.addAll(serverInfo.getAllSpi());
-            for (BundleInfoImpl bInfo : serverInfo.getBundles()) {
-                bundlesIds.add(bInfo.getId());
+    protected void index() {
+        spi.addAll(serverInfo.getAllSpi());
+        for (BundleInfo bInfo : serverInfo.getBundles()) {
+            bundleIds.add(bInfo.getId());
 
-                String groupId = bInfo.getArtifactGroupId();
-                if (groupId != null) {
-                    groupId = "grp:" + groupId;
+            String groupId = bInfo.getGroupId();
+            if (groupId != null) {
+                groupId = "grp:" + groupId;
+            }
+            String artifactId = bInfo.getArtifactId();
+
+            if (groupId == null || artifactId == null) {
+                groupId = VIRTUAL_BUNDLE_GROUP;
+                ((BundleInfoImpl) bInfo).setGroupId(groupId);
+            }
+            if (!mavenGroups.containsKey(groupId)) {
+                mavenGroups.put(groupId, new ArrayList<String>());
+            }
+            mavenGroups.get(groupId).add(bInfo.getId());
+
+            for (ComponentInfo cInfo : bInfo.getComponents()) {
+                components2Bundles.put(cInfo.getId(), bInfo.getId());
+                if (!cInfo.isXmlPureComponent()) {
+                    javaComponentsIds.add(cInfo.getId());
                 }
-                String artifactId = bInfo.getArtifactId();
 
-                if (groupId == null || artifactId == null) {
-                    groupId = VIRTUAL_BUNDLE_GROUP;
-                    bInfo.setGroupId(groupId);
+                for (ServiceInfo sInfo : cInfo.getServices()) {
+                    if (sInfo.isOverriden()) {
+                        continue;
+                    }
+                    services2Components.put(sInfo.getId(), cInfo.getId());
                 }
-                if (!mavenGroups.containsKey(groupId)) {
-                    mavenGroups.put(groupId, new ArrayList<String>());
+
+                for (ExtensionPointInfo epi : cInfo.getExtensionPoints()) {
+                    extensionPoints.put(epi.getId(), epi);
                 }
-                mavenGroups.get(groupId).add(bInfo.getId());
 
-                for (ComponentInfo cInfo : bInfo.getComponents()) {
-                    components2Bundles.put(cInfo.getId(), bInfo.getId());
-                    if (!cInfo.isXmlPureComponent()) {
-                        javaComponentsIds.add(cInfo.getId());
-                    }
-
-                    for (ServiceInfo sInfo : cInfo.getServices()) {
-                        if (sInfo.isOverriden()) {
-                            continue;
-                        }
-                        services2Components.put(sInfo.getId(), cInfo.getId());
-                    }
-
-                    for (ExtensionPointInfo epi : cInfo.getExtensionPoints()) {
-                        extensionPoints.put(epi.getId(), epi);
-                    }
-
-                    for (ExtensionInfo ei : cInfo.getExtensions()) {
-                        contributions.put(ei.getId(), ei);
-                    }
+                for (ExtensionInfo ei : cInfo.getExtensions()) {
+                    contributions.put(ei.getId(), ei);
                 }
             }
         }
-
         // post process bundle groups
         List<String> mvnGroupNames = new ArrayList<>();
         mvnGroupNames.addAll(mavenGroups.keySet());
@@ -193,7 +220,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             BundleGroupImpl bGroup = buildBundleGroup(grpId, serverInfo.getVersion());
             bundleGroups.add(bGroup);
         }
-        return serverInfo;
+
     }
 
     protected BundleGroupImpl buildBundleGroup(String id, String version) {
@@ -205,8 +232,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                 newGroup.addParent(bGroup.getId());
             } else {
                 bGroup.add(aid);
-                getBundle(aid).setBundleGroup(bGroup);
-                BundleInfoImpl bi = getBundle(aid);
+                ((BundleInfoImpl) getBundle(aid)).setBundleGroup(bGroup);
+                BundleInfo bi = getBundle(aid);
                 bGroup.addLiveDoc(bi.getParentLiveDoc());
             }
         }
@@ -214,6 +241,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<BundleGroup> getBundleGroups() {
         return bundleGroups;
     }
@@ -244,10 +272,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<String> getBundleIds() {
         List<String> bundlesIds = new ArrayList<>();
 
-        for (BundleInfoImpl info : serverInfo.getBundles()) {
+        for (BundleInfo info : serverInfo.getBundles()) {
             bundlesIds.add(info.getId());
 
         }
@@ -256,11 +285,12 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
-    public BundleInfoImpl getBundle(String id) {
+    public BundleInfo getBundle(String id) {
         return serverInfo.getBundle(id);
     }
 
     @Override
+    @JsonIgnore
     public List<String> getComponentIds() {
         List<String> componentsIds = new ArrayList<>();
         componentsIds.addAll(components2Bundles.keySet());
@@ -274,7 +304,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         if (bundleId == null) {
             return null;
         }
-        BundleInfoImpl bi = getBundle(bundleId);
+        BundleInfo bi = getBundle(bundleId);
 
         for (ComponentInfo ci : bi.getComponents()) {
             if (ci.getId().equals(id)) {
@@ -285,6 +315,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<String> getServiceIds() {
         List<String> serviceIds = new ArrayList<>();
         serviceIds.addAll(services2Components.keySet());
@@ -293,6 +324,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<String> getExtensionPointIds() {
         List<String> epIds = new ArrayList<>();
         epIds.addAll(extensionPoints.keySet());
@@ -301,11 +333,13 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public ExtensionPointInfo getExtensionPoint(String id) {
         return extensionPoints.get(id);
     }
 
     @Override
+    @JsonIgnore
     public List<String> getContributionIds() {
         List<String> contribIds = new ArrayList<>();
         contribIds.addAll(contributions.keySet());
@@ -314,6 +348,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<ExtensionInfo> getContributions() {
         List<ExtensionInfo> contribs = new ArrayList<>();
         contribs.addAll(contributions.values());
@@ -349,21 +384,25 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public String getKey() {
         return getName() + "-" + getVersion();
     }
 
     @Override
+    @JsonIgnore
     public List<Class<?>> getSpi() {
         return spi;
     }
 
     @Override
+    @JsonIgnore
     public String getId() {
         return getKey();
     }
 
     @Override
+    @JsonIgnore
     public String getArtifactType() {
         return TYPE_NAME;
     }
@@ -384,11 +423,13 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<String> getJavaComponentIds() {
         return javaComponentsIds;
     }
 
     @Override
+    @JsonIgnore
     public List<String> getXmlComponentIds() {
         List<String> result = new ArrayList<>();
 
@@ -406,18 +447,20 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public Date getReleaseDate() {
         return null;
     }
 
     @Override
+    @JsonIgnore
     public boolean isLive() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public String getHierarchyPath() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -436,7 +479,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         if (opsInitialized) {
             return;
         }
-        OperationType[] ops = Framework.getService(AutomationService.class).getOperations();
+        AutomationService service = Framework.getService(AutomationService.class);
+        if (service == null) {
+            return;
+        }
+        OperationType[] ops = service.getOperations();
         for (OperationType op : ops) {
             OperationDocumentation documentation;
             try {
@@ -461,6 +508,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public List<String> getSeamComponentIds() {
         List<String> ids = new ArrayList<>();
         for (SeamComponentInfo sci : getSeamComponents()) {
@@ -476,7 +524,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public boolean containsSeamComponents() {
-        return seamInitialized && getSeamComponentIds().size() > 0;
+        return getSeamComponentIds().size() > 0;
     }
 
     @Override
@@ -498,7 +546,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return operations;
     }
 
-    @Override
     public JavaDocHelper getJavaDocHelper() {
         if (jdocHelper == null) {
             jdocHelper = JavaDocHelper.getHelper(getName(), getVersion());
@@ -513,21 +560,27 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    @JsonIgnore
     public boolean isLatestFT() {
         return false;
     }
 
     @Override
+    @JsonIgnore
     public boolean isLatestLTS() {
         return false;
     }
 
+    final List<String> aliases = new LinkedList<>(Arrays.asList("current"));
+
     @Override
+    @JsonIgnore
     public List<String> getAliases() {
-        return Collections.singletonList("current");
+        return aliases;
     }
 
     @Override
+    @JsonIgnore
     public boolean isHidden() {
         return false;
     }

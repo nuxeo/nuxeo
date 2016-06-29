@@ -53,13 +53,13 @@ public class EmbeddedDocExtractor {
                     String name = new Path(entry.getName()).lastSegment();
                     if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
 
-                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
-                                DefaultDocumentationType.DESCRIPTION.toString());
+                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content,
+                                DefaultDocumentationType.DESCRIPTION.toString(), bi);
 
                         parentDocs.put(DefaultDocumentationType.DESCRIPTION.toString(), docItem);
                     } else {
-                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
-                                DefaultDocumentationType.HOW_TO.toString());
+                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content,
+                                DefaultDocumentationType.HOW_TO.toString(), bi);
                         parentDocs.put(DefaultDocumentationType.HOW_TO.toString(), docItem);
                     }
                 }
@@ -68,12 +68,12 @@ public class EmbeddedDocExtractor {
                     String name = new Path(entry.getName()).lastSegment();
                     if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
 
-                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
-                                DefaultDocumentationType.DESCRIPTION.toString());
+                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content,
+                                DefaultDocumentationType.DESCRIPTION.toString(), bi);
                         localDocs.put(DefaultDocumentationType.DESCRIPTION.toString(), docItem);
                     } else {
-                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content, bi,
-                                DefaultDocumentationType.HOW_TO.toString());
+                        ResourceDocumentationItem docItem = new ResourceDocumentationItem(name, content,
+                                DefaultDocumentationType.HOW_TO.toString(), bi);
                         localDocs.put(DefaultDocumentationType.HOW_TO.toString(), docItem);
                     }
                 }

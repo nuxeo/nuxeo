@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationComponent;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -34,6 +36,12 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractDocumentationItem implements DocumentationItem {
 
     protected static final Log log = LogFactory.getLog(AbstractDocumentationItem.class);
+
+    protected AbstractDocumentationItem(String typeLabel) {
+        this.typeLabel = typeLabel;
+    }
+
+    final String typeLabel;
 
     @Override
     public int compareTo(DocumentationItem o) {
@@ -60,12 +68,12 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
 
     @Override
     public String getTypeLabel() {
-        String type = getType();
-        if ("".equals(type)) {
+        return typeLabel;
+    }
+
+    public static String typeLabelOf(String type) {
+        if (StringUtils.isEmpty(type)) {
             return "";
-        }
-        if (Framework.isTestModeSet()) {
-            return type;
         }
 
         DirectoryService dm = Framework.getService(DirectoryService.class);
@@ -76,8 +84,10 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
             } catch (PropertyException e) {
                 log.error("Error while resolving typeLabel", e);
             }
+        } catch (DirectoryException cause) {
+            ;
         }
-        return "";
+        return type;
     }
 
 }

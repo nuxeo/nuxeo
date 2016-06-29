@@ -48,11 +48,9 @@ public class FakeDocumentationItem extends AbstractDocumentationItem implements 
 
     public boolean approved = false;
 
-    public FakeDocumentationItem() {
-
-    }
 
     public FakeDocumentationItem(DocumentationItem item) {
+        super(item.getTypeLabel());
         applicableVersion = item.getApplicableVersion();
         content = item.getContent();
         id = item.getId();

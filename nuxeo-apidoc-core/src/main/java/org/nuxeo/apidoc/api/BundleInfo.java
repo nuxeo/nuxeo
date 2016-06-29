@@ -20,6 +20,11 @@
 package org.nuxeo.apidoc.api;
 
 import java.util.Collection;
+import java.util.Map;
+
+import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 public interface BundleInfo extends NuxeoArtifact {
 
@@ -35,6 +40,7 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String PROP_JAR_NAME = "nxbundle:jarName";
 
+    @JsonBackReference("component")
     Collection<ComponentInfo> getComponents();
 
     String getFileName();
@@ -47,10 +53,14 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String getLocation();
 
-    String getArtifactGroupId();
+    String getGroupId();
 
     String getArtifactId();
 
     String getArtifactVersion();
+
+    Map<String, ResourceDocumentationItem> getLiveDoc();
+
+    Map<String, ResourceDocumentationItem> getParentLiveDoc();
 
 }

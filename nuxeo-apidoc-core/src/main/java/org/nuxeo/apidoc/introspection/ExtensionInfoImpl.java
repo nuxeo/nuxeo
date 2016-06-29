@@ -34,6 +34,10 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.runtime.model.ComponentName;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+@JsonIgnoreType
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
 
     protected static final Log log = LogFactory.getLog(ExtensionInfoImpl.class);
@@ -53,9 +57,9 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
     protected Object[] contribution;
 
     public ExtensionInfoImpl(ComponentInfoImpl component, String xpoint) {
-        this.id = component.getId() + "--" + xpoint;
+        id = component.getId() + "--" + xpoint;
         this.component = component;
-        this.extensionPoint = xpoint;
+        extensionPoint = xpoint;
     }
 
     @Override
@@ -91,6 +95,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         this.targetComponentName = targetComponentName;
     }
 
+    @JsonIgnore
     public Object[] getContribution() {
         return contribution;
     }

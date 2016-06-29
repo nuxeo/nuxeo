@@ -20,6 +20,9 @@ package org.nuxeo.apidoc.api;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public interface NuxeoArtifact {
 
     String getId();

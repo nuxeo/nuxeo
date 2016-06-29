@@ -23,6 +23,9 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+@JsonIgnoreType
 public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     protected final String serviceClassName;

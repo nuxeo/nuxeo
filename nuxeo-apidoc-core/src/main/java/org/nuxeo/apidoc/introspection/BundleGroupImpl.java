@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,10 @@ import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.ecm.core.api.CoreSession;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
@@ -43,9 +48,11 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     protected final List<String> parentIds = new ArrayList<>();
 
-    protected Map<String, ResourceDocumentationItem> liveDoc;
+    protected Map<String, ResourceDocumentationItem> liveDoc = new HashMap<>();
 
-    public BundleGroupImpl(String key, String version) {
+    @JsonCreator
+    private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version,
+            @JsonProperty("liveDoc") Map<String, ResourceDocumentationItem> liveDoc) {
         this.key = key;
         if (key.startsWith("grp:")) {
             name = key.substring(4);
@@ -53,12 +60,18 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             name = key;
         }
         this.version = version;
+        this.liveDoc.putAll(liveDoc);
+    }
+
+    public BundleGroupImpl(String key, String version) {
+        this(key, version, Collections.emptyMap());
     }
 
     void addParent(String bgId) {
         parentIds.add(bgId);
     }
 
+    @JsonIgnore
     public String getKey() {
         return key;
     }
@@ -87,6 +100,11 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     }
 
     @Override
+    public List<String> getParentIds() {
+        return parentIds;
+    }
+
+    @Override
     public String getId() {
         return key;
     }
@@ -97,11 +115,13 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     }
 
     @Override
+    @JsonIgnore
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
     @Override
+    @JsonIgnore
     public String getHierarchyPath() {
         String path = "";
         for (String parentId : parentIds) {

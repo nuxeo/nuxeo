@@ -61,7 +61,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
-    protected DistributionSnapshot runtimeSnapshot;
+    protected volatile DistributionSnapshot runtimeSnapshot;
 
     public static final String RUNTIME = "current";
 
@@ -76,7 +76,11 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public DistributionSnapshot getRuntimeSnapshot() {
         if (runtimeSnapshot == null) {
-            runtimeSnapshot = new RuntimeSnapshot();
+            synchronized (this) {
+                if (runtimeSnapshot == null) {
+                    runtimeSnapshot = RuntimeSnapshot.build();
+                }
+            }
         }
         return runtimeSnapshot;
     }

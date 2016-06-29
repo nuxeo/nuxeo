@@ -29,6 +29,9 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+@JsonIgnoreType
 public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements ExtensionPointInfo {
 
     protected final ComponentInfoImpl component;

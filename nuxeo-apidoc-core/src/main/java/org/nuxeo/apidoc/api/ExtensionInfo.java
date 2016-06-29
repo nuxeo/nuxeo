@@ -21,6 +21,8 @@ package org.nuxeo.apidoc.api;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.runtime.model.ComponentName;
 
@@ -48,6 +50,7 @@ public interface ExtensionInfo extends NuxeoArtifact {
 
     List<ContributionItem> getContributionItems();
 
+    @JsonManagedReference("extension")
     ComponentInfo getComponent();
 
 }

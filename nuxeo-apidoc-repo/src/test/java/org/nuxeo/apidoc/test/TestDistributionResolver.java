@@ -35,7 +35,7 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.documentation.JavaDocHelper;
+import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 
@@ -46,7 +46,7 @@ public class TestDistributionResolver {
 
     protected List<DistributionSnapshot> buildFakeSnaps() {
 
-        List<DistributionSnapshot> snaps = new ArrayList<DistributionSnapshot>();
+        List<DistributionSnapshot> snaps = new ArrayList<>();
         for (final String distId : alldistribs) {
 
             DistributionSnapshot snap = new DistributionSnapshot() {
@@ -142,12 +142,6 @@ public class TestDistributionResolver {
                 @Override
                 public void cleanPreviousArtifacts() {
                     // empty body
-                }
-
-                @Override
-                public JavaDocHelper getJavaDocHelper() {
-                    // TODO Auto-generated method stub
-                    return null;
                 }
 
                 @Override
@@ -254,6 +248,13 @@ public class TestDistributionResolver {
                 public boolean containsSeamComponents() {
                     // TODO Auto-generated method stub
                     return false;
+                }
+
+                @Override
+                public ServerInfo getServerInfo() {
+                    // TODO Auto-generated method stub
+                    // return null;
+                    throw new UnsupportedOperationException();
                 }
             };
             snaps.add(snap);

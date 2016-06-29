@@ -24,40 +24,54 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
-import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.DocumentationItem;
-import org.nuxeo.apidoc.introspection.BundleGroupImpl;
-import org.nuxeo.apidoc.introspection.BundleInfoImpl;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 
 import com.cforcoding.jmd.MarkDownParserAndSanitizer;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResourceDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
 
-    protected String content;
+    protected final String content;
 
-    protected String filename;
+    protected final String filename;
 
-    protected BaseNuxeoArtifact target;
+    protected final String target;
 
-    protected String type;
+    protected final String targetType;
 
-    public ResourceDocumentationItem(String filename, String content, BundleInfoImpl target, String type) {
+    protected final String type;
+
+    protected final List<String> applicableVersion;
+
+    @JsonCreator
+    public ResourceDocumentationItem(@JsonProperty("filename") String filename, @JsonProperty("content") String content,
+            @JsonProperty("type") String type, @JsonProperty("target") String target, @JsonProperty("targetType") String targetType,
+            @JsonProperty("applicableVersion") List<String> applicableVersion, @JsonProperty("typeLabel") String typeLabel) {
+        super(typeLabel);
         this.content = content;
         this.filename = filename;
-        this.target = target;
         this.type = type;
+        this.target = target;
+        this.targetType = targetType;
+        this.applicableVersion = applicableVersion;
     }
 
-    public ResourceDocumentationItem(ResourceDocumentationItem other, BundleGroupImpl target) {
-        this.content = other.content;
-        this.filename = other.filename;
-        this.target = target;
-        this.type = other.type;
+
+    public ResourceDocumentationItem(String filename, String content, String type, NuxeoArtifact target) {
+        this(filename, content, type, target.getId(), target.getArtifactType(), Arrays.asList(target.getVersion()), typeLabelOf(type));
+    }
+
+    public ResourceDocumentationItem(ResourceDocumentationItem other, NuxeoArtifact target) {
+        this(other.filename, other.content, other.type, target);
     }
 
     @Override
+    @JsonIgnore
     public String getTitle() {
-        return getCleanName() + " " + target.getId();
+        return getCleanName() + " " + target;
     }
 
     protected String getCleanName() {
@@ -72,6 +86,7 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem impleme
     }
 
     @Override
+    @JsonIgnore
     public String getContent() {
         MarkDownParserAndSanitizer parser = new MarkDownParserAndSanitizer();
         String xHtml = parser.transform(content);
@@ -79,61 +94,70 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem impleme
     }
 
     @Override
+    @JsonIgnore
     public String getType() {
         return type;
     }
 
     @Override
+    @JsonIgnore
     public String getRenderingType() {
         return "html";
     }
 
     @Override
     public List<String> getApplicableVersion() {
-        return Arrays.asList(target.getVersion());
+        return applicableVersion;
     }
 
     @Override
     public String getTarget() {
-        return target.getId();
+        return target;
     }
 
     @Override
     public String getTargetType() {
-        return target.getArtifactType();
+        return targetType;
     }
 
     @Override
+    @JsonIgnore
     public boolean isApproved() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public String getId() {
         return getTargetType() + "--" + filename;
     }
 
     @Override
+    @JsonIgnore
     public String getUUID() {
         return null;
     }
 
     @Override
+    @JsonIgnore
     public Map<String, String> getAttachments() {
         return new HashMap<>();
     }
 
     @Override
+    @JsonIgnore
     public boolean isPlaceHolder() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public String getEditId() {
         return null;
     }
 
     @Override
+    @JsonIgnore
     public boolean isReadOnly() {
         return true;
     }

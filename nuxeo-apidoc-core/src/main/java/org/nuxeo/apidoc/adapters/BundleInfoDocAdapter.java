@@ -23,9 +23,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -47,7 +49,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue("dc:title", bundleInfo.getBundleId());
-        doc.setPropertyValue(PROP_ARTIFACT_GROUP_ID, bundleInfo.getArtifactGroupId());
+        doc.setPropertyValue(PROP_ARTIFACT_GROUP_ID, bundleInfo.getGroupId());
         doc.setPropertyValue(PROP_ARTIFACT_ID, bundleInfo.getArtifactId());
         doc.setPropertyValue(PROP_ARTIFACT_VERSION, bundleInfo.getArtifactVersion());
         doc.setPropertyValue(PROP_BUNDLE_ID, bundleInfo.getId());
@@ -101,7 +103,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     @Override
-    public String getArtifactGroupId() {
+    public String getGroupId() {
         return safeGet(PROP_ARTIFACT_GROUP_ID);
     }
 
@@ -151,6 +153,16 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+    @Override
+    public Map<String, ResourceDocumentationItem> getLiveDoc() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, ResourceDocumentationItem> getParentLiveDoc() {
+        throw new UnsupportedOperationException();
     }
 
 }

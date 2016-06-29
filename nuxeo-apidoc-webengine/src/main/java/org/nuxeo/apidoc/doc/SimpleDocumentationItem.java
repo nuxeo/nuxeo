@@ -29,7 +29,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 
 public class SimpleDocumentationItem extends AbstractDocumentationItem implements DocumentationItem {
 
-    protected final List<String> applicableVersion = new ArrayList<String>();
+    protected final List<String> applicableVersion = new ArrayList<>();
 
     protected String content = "";
 
@@ -49,12 +49,14 @@ public class SimpleDocumentationItem extends AbstractDocumentationItem implement
 
     protected boolean approved = false;
 
-    protected Map<String, String> attachments = new LinkedHashMap<String, String>();
+    protected Map<String, String> attachments = new LinkedHashMap<>();
 
-    public SimpleDocumentationItem() {
+    public SimpleDocumentationItem(String typeLabel) {
+        super(typeLabel);
     }
 
     public SimpleDocumentationItem(NuxeoArtifact nxItem) {
+        super(typeLabelOf(nxItem.getArtifactType()));
         target = nxItem.getId();
         targetType = nxItem.getArtifactType();
     }

@@ -40,6 +40,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     protected final DocumentModel doc;
 
     public DocumentationItemDocAdapter(DocumentModel doc) {
+        super(typeLabelOf(doc.getProperty(PROP_TYPE).getValue(String.class)));
         this.doc = doc;
     }
 
