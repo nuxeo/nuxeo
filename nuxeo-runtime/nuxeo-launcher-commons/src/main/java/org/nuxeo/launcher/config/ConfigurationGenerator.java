@@ -172,7 +172,7 @@ public class ConfigurationGenerator {
 
     public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql", "db2");
 
-    public static final List<String> DB_NOSQL_LIST = Arrays.asList("none", "mongodb");
+    public static final List<String> DB_NOSQL_LIST = Arrays.asList("none", "mongodb", "marklogic");
 
     public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "none");
 

@@ -313,4 +313,39 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertEquals("Failed to set NoSQL database to mongodb", "mongodb",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME));
     }
+
+    @Test
+    public void testChangeMarkLogicDatabase() throws Exception {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        String originalTemplates = configGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        configGenerator.changeDBTemplate("marklogic");
+        assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
+                configGenerator.getUserTemplates());
+    }
+
+    @Test
+    public void testChangeMarkLogicDatabaseFromCustom() throws Exception {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        configGenerator.changeTemplates("testinclude2");
+        String originalTemplates = configGenerator.getUserConfig().getProperty(
+                ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        configGenerator.changeDBTemplate("marklogic");
+        assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
+                configGenerator.getUserTemplates());
+        Map<String, String> customParameters = new HashMap<>();
+        customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME, "marklogic");
+        configGenerator.saveFilteredConfiguration(customParameters);
+        // Check stored value
+        assertTrue(configGenerator.init(true));
+        assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
+                configGenerator.getUserTemplates());
+        assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        assertEquals("Failed to set NoSQL database to marklogic", "marklogic",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME));
+    }
+
 }
