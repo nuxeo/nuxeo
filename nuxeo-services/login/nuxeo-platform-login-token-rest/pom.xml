@@ -5,6 +5,7 @@
     <artifactId>parent</artifactId>
     <version>8.3-SNAPSHOT</version>
   </parent>
+  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-login-token-rest</artifactId>
   <name>Nuxeo Token Authentication Rest API</name>
   <dependencies>
