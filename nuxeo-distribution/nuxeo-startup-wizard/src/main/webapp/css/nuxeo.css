@@ -199,6 +199,12 @@ textarea {
 .screenDescription {
   font-size: 120%;}
 
+.packageDescription {
+  font-size: 90%;
+  font-style: italic;
+  margin-left: 5%;
+  color: #797979;}
+
 .screenExplanations,
 .warnBlock, .errBlock {
   background-color: #f7f8f9;

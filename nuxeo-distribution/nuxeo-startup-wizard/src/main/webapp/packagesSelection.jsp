@@ -30,12 +30,17 @@ function createCheckBox(pkg) {
   checkBox += " id=\"pkg_" + pkg.id + "\" ";
   checkBox += " pkg=\"" + pkg.package + "\" ";
   checkBox += " exclusive=\"" + pkg.exclusive + "\" ";
-  checkBox += " title=\"" + pkg.desc + "\" ";
+  checkBox += " title=\"" + pkg.label + "\" ";
   checkBox += "/>";
   checkBox += "<label for=";
   checkBox += "\"pkg_" + pkg.id + "\">";
-  checkBox += pkg.label;
+  checkBox += pkg.label + " (" + pkg.shortlabel +")";
   checkBox += "</label>";
+  if (pkg.description && pkg.description !== 'null') {
+    checkBox += "<p class=\"packageDescription\">";
+    checkBox += pkg.description;
+    checkBox += "</p>";
+  }
 
   checkBox = $(checkBox);
   if (pkg.selected=='true') {

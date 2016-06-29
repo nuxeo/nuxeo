@@ -132,6 +132,13 @@ public class DownloadablePackageOption {
         return "";
     }
 
+    public String getDescription() {
+        if (pkg != null) {
+            return pkg.getDescription();
+        }
+        return "";
+    }
+
     public String getTextColor() {
         if (pkg != null) {
             return pkg.getTextColor();

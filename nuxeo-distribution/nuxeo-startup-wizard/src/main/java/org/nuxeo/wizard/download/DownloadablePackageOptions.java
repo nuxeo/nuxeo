@@ -178,6 +178,7 @@ public class DownloadablePackageOptions {
         sb.append("\"shortlabel\":\"" + option.getShortLabel() + "\",");
         sb.append("\"selected\":\"" + option.selected + "\",");
         sb.append("\"exclusive\":\"" + option.exclusive + "\",");
+        sb.append("\"description\":\"" + option.getDescription() + "\",");
         sb.append("\"children\": [");
         List<DownloadablePackageOption> children = option.getChildrenPackages();
         for (int i = 0; i < children.size(); i++) {
