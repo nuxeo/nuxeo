@@ -371,7 +371,7 @@ public class TestVersioningFileSystemItemFactory {
         // Check the property is correctly configured from the configuration
         // service
         ConfigurationService cs = Framework.getLocalService(ConfigurationService.class);
-        assertEquals("false", cs.getProperty(FileSystemItemHelper.NUXEO_FORCE_DRIVE_VERSIONING));
+        assertEquals("false", cs.getProperty(FileSystemItemHelper.NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY));
 
         FileItem fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
 
@@ -712,7 +712,7 @@ public class TestVersioningFileSystemItemFactory {
         // Check the property is correctly configured from the configuration
         // service
         ConfigurationService cs = Framework.getLocalService(ConfigurationService.class);
-        assertEquals("false", cs.getProperty(FileSystemItemHelper.NUXEO_FORCE_DRIVE_VERSIONING));
+        assertEquals("false", cs.getProperty(FileSystemItemHelper.NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY));
 
         FileItem fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
 

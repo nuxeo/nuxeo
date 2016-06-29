@@ -45,7 +45,7 @@ public final class FileSystemItemHelper {
     /**
      * @since 8.3
      */
-    public static final String NUXEO_FORCE_DRIVE_VERSIONING = "nuxeo.force.drive.versioning";
+    public static final String NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY = "nuxeo.drive.force.versioning";
 
     private FileSystemItemHelper() {
         // Helper class
@@ -58,7 +58,7 @@ public final class FileSystemItemHelper {
         if (factory.needsVersioning(doc)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
             session.saveDocument(doc);
-        } else if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(NUXEO_FORCE_DRIVE_VERSIONING)) {
+        } else if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(NUXEO_DRIVE_FORCE_VERSIONING_PROPERTY)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
         }
     }
