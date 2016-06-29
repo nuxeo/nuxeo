@@ -73,9 +73,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
                 ((DocumentModelImpl) doc).setId(UUID.randomUUID().toString());
             }
             for (Map.Entry<String, Serializable> entry : values.entrySet()) {
-                if (entry.getKey() != "ecm:uuid") {
-                    doc.setPropertyValue(entry.getKey(), entry.getValue());
-                }
+                doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
             session.importDocuments(Collections.singletonList(doc));
         } else {
