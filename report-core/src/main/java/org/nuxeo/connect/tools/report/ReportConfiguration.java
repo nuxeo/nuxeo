@@ -16,7 +16,6 @@
  */
 package org.nuxeo.connect.tools.report;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -33,6 +32,65 @@ import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
  * @since 8.3
  */
 public class ReportConfiguration extends SimpleContributionRegistry<Contribution> implements Iterable<Contribution> {
+
+    interface Filter {
+        boolean accept(Contribution contribution);
+
+        final Filter enabled = new Filter() {
+
+            @Override
+            public boolean accept(Contribution contribution) {
+                return contribution.enabled;
+            }
+
+        };
+
+    }
+
+    class FilteredIterator implements Iterator<Contribution> {
+
+        final Filter filter;
+
+        FilteredIterator(Filter filter) {
+            this.filter = filter;
+        }
+
+        final Iterator<Contribution> iterator = currentContribs.values().iterator();
+
+        Contribution next;
+
+        @Override
+        public boolean hasNext() {
+            return fetch();
+        }
+
+        boolean fetch() {
+            if (next != null) {
+                return true;
+            }
+            while (iterator.hasNext()) {
+                next = iterator.next();
+                if (!filter.accept(next)) {
+                    continue;
+                }
+                return true;
+            }
+            next = null;
+            return false;
+        }
+
+        @Override
+        public Contribution next() {
+            if (!fetch()) {
+                throw new NoSuchElementException("no more reports");
+            }
+            try {
+                return next;
+            } finally {
+                next = null;
+            }
+        }
+    }
 
     @XObject("report")
     public static class Contribution {
@@ -78,58 +136,28 @@ public class ReportConfiguration extends SimpleContributionRegistry<Contribution
     }
 
     @Override
-    public Iterator<Contribution> iterator() {
-        return filter(Collections.emptySet()).iterator();
+    public java.util.Iterator<Contribution> iterator() {
+        return new FilteredIterator(Filter.enabled);
     }
 
-    Iterable<Contribution> filter(Set<String> names) {
-        return new Iterable<Contribution>() {
+    Iterator<Contribution> iterator(Set<String> names) {
+        if (names.isEmpty()) {
+            return iterator();
+        }
+        class OfNames implements Filter {
+            final Set<String> names;
 
-            @Override
-            public Iterator<Contribution> iterator() {
-                return new Iterator<Contribution>() {
-                    final Iterator<Contribution> iterator = currentContribs.values().iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return fetch();
-                    }
-
-                    Contribution next;
-
-                    boolean fetch() {
-                        if (next != null) {
-                            return true;
-                        }
-                        while (iterator.hasNext()) {
-                            next = iterator.next();
-                            if (!next.enabled) {
-                                continue;
-                            }
-                            if (!names.isEmpty() && !names.contains(next.name)) {
-                                continue;
-                            }
-                            return true;
-                        }
-                        next = null;
-                        return false;
-                    }
-
-                    @Override
-                    public Contribution next() {
-                        if (!fetch()) {
-                            throw new NoSuchElementException("no more reports");
-                        }
-                        try {
-                            return next;
-                        } finally {
-                            next = null;
-                        }
-                    }
-                };
-
+            OfNames(Set<String> names) {
+                this.names = names;
             }
 
-        };
+            @Override
+            public boolean accept(Contribution contribution) {
+                return enabled.accept(contribution) && names.contains(contribution.name);
+            }
+
+        }
+        return new FilteredIterator(new OfNames(names));
     }
+
 }

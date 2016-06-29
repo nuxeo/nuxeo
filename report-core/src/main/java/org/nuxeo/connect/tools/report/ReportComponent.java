@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
@@ -69,12 +70,20 @@ public class ReportComponent extends DefaultComponent {
         @Override
         public void run(OutputStream out, Set<String> names) throws IOException {
             out.write('{');
-            for (Contribution contrib : configuration.filter(names)) {
+            Iterator<Contribution> iterator = configuration.iterator(names);
+            while (iterator.hasNext()) {
+                Contribution contrib = iterator.next();
+                out.write('"');
                 out.write(contrib.name.getBytes());
-                out.write(',');
+                out.write('"');
+                out.write(':');
                 contrib.writer.write(out);
+                if (iterator.hasNext()) {
+                    out.write(',');
+                }
             }
             out.write('}');
+            out.flush();
         }
     }
 

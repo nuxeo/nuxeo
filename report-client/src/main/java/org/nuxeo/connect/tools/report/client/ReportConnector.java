@@ -43,6 +43,7 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.tools.report.ReportServer;
 
 import com.sun.tools.attach.AgentInitializationException;
@@ -236,11 +237,11 @@ public class ReportConnector {
     }
 
     <A> void connect(Consumer consumer) throws IOException, InterruptedException, ExecutionException {
-        ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
 
             @Override
             public Thread newThread(Runnable target) {
-                Thread thread = new Thread(target, "connect-report-consumer");
+                Thread thread = new Thread(target, "connect-report");
                 thread.setDaemon(true);
                 return thread;
             }
@@ -252,16 +253,37 @@ public class ReportConnector {
 
                     @Override
                     public void run() {
+                        String name = Thread.currentThread().getName();
+                        Thread.currentThread().setName("connect-report-consumer-" + server);
                         try {
                             consumer.consume(Json.createParser(callback.accept().getInputStream()));
                         } catch (IOException cause) {
                             throw new AssertionError("Cannot consume connect report", cause);
+                        } finally {
+                            Thread.currentThread().setName(name);
                         }
+                        LogFactory.getLog(ReportConnector.class).info("Consumed " + server);
                     }
                 });
-                InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
-                server.run(address.getHostName(), address.getPort());
+                final Future<?> served = executor.submit(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        String name = Thread.currentThread().getName();
+                        Thread.currentThread().setName("connect-report-server-" + server);
+                        InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
+                        try {
+                            server.run(address.getHostName(), address.getPort());
+                        } catch (IOException cause) {
+                            throw new AssertionError("Cannot run connect report", cause);
+                        } finally {
+                            Thread.currentThread().setName(name);
+                        }
+                    }
+
+                });
                 consumed.get();
+                served.get();
             }
         } finally {
             executor.shutdownNow();
