@@ -17,6 +17,7 @@
 package org.nuxeo.connect.tools.report;
 
 import java.util.List;
+
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

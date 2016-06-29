@@ -16,7 +16,6 @@
  */
 package org.nuxeo.connect.tools.report.client;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
@@ -89,9 +88,7 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
         JsonObject json;
 
         When i_feed_a_report() throws IOException, InterruptedException, ExecutionException {
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-                json = connector.feed(Json.createObjectBuilder()).build();
-            }
+            json = connector.feed(Json.createObjectBuilder()).build();
             return self();
         }
     }
@@ -110,14 +107,14 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
     @Test
     public void i_can_report() throws IOException, InterruptedException, ExecutionException {
         given()
-               .the_runtime_is_started().and()
-               .the_connect_report_component_is_installed();
+                .the_runtime_is_started().and()
+                .the_connect_report_component_is_installed();
         when()
-              .i_connect_with_providers().and()
-              .there_is_at_least_one_server_available().and()
-              .i_feed_a_report();
+                .i_connect_with_providers().and()
+                .there_is_at_least_one_server_available().and()
+                .i_feed_a_report();
         then()
-              .it_contains_this_runtime_report();
+                .it_contains_this_runtime_report();
     }
 
 }

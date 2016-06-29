@@ -20,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -28,17 +31,16 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
+import org.apache.commons.io.output.TeeOutputStream;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.connect.tools.report.ReportComponent;
-import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Given;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.Then;
 import org.nuxeo.connect.tools.report.ICanRunReportTest.When;
-import org.nuxeo.connect.tools.report.apidoc.APIDocReport;
+import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.runtime.test.runner.Features;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
@@ -105,20 +107,23 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
         @ProvidedScenarioState
         IOException error;
 
-        When i_run_the_report() {
+        @ProvidedScenarioState
+        byte[] buffer;
+
+        When i_run_the_report() throws IOException {
             try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
-                writer.write(sink);
-                try (InputStream source = new ByteArrayInputStream(sink.toByteArray())) {
-                    json = Json.createReader(source).readObject();
-                }
-            } catch (IOException cause) {
-                error = cause;
+                writer.write(new TeeOutputStream(sink,
+                        Files.newOutputStream(Paths.get("target/".concat(writer.getClass().getSimpleName()).concat(".json")),
+                                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)));
+                buffer = sink.toByteArray();
             }
             return self();
         }
 
-        When there_is_no_errors() {
-            Assertions.assertThat(error).isNull();
+        When i_unmarshall() throws IOException {
+            try (InputStream source = new ByteArrayInputStream(buffer)) {
+                json = Json.createReader(source).readObject();
+            }
             return self();
         }
 
@@ -265,19 +270,19 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
 
         static class RuntimeSnapshotReport extends Stage<RuntimeSnapshotReport> {
 
+            @ExpectedScenarioState
+            byte[] bytes;
+
             @ExpectedScenarioState(resolution = Resolution.NAME)
             JsonObject json;
 
             @ProvidedScenarioState
-            RuntimeSnapshot snapshot;
+            DistributionSnapshot snapshot;
 
-            @BeforeStage
-            void is_a_runtime_snapshot() {
-                Assertions.assertThat(json).containsKey(RuntimeSnapshot.class.getName());
-            }
-
-            RuntimeSnapshotReport i_can_unmarshall() throws IOException {
-                snapshot = APIDocReport.snasphotOf(json);
+            RuntimeSnapshotReport i_can_unmarshall_it() throws IOException {
+                try (InputStream source = new ByteArrayInputStream(bytes)) {
+                    snapshot = DistributionSnapshot.jsonReader().readValue(source);
+                }
                 return self();
             }
 
@@ -332,7 +337,7 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
                .the_report_is_registered();
         when()
               .i_run_the_report().and()
-              .there_is_no_errors();
+              .i_unmarshall();
         then()
               .the_report_is_a_mx_report().which()
                   .have_a_request().which()
@@ -352,11 +357,11 @@ public class ICanRunReportTest extends ScenarioTest<Given, When, Then> {
                .the_report_component_is_installed().and()
                .the_report_is_registered();
         when()
-              .i_run_the_report().and()
-              .there_is_no_errors();
+            .i_run_the_report().and()
+            .i_unmarshall();
         then()
               .the_report_is_a_runtime_snapshot().which()
-                  .i_can_unmarshall().and()
+                  .i_can_unmarshall_it().and()
                   .contains_the_bundle$bundle("org.nuxeo.connect.tools.report.core").end();
         // formatter:on
     }

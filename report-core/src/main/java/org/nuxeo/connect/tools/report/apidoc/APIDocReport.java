@@ -16,19 +16,13 @@
  */
 package org.nuxeo.connect.tools.report.apidoc;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.connect.tools.report.ReportWriter;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  *
@@ -38,19 +32,8 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 public class APIDocReport implements ReportWriter {
 
     @Override
-    public void write(OutputStream output) throws IOException {
-        new XStream(new JettisonMappedXmlDriver()).toXML(new RuntimeSnapshot(), output);
-    }
-
-    public static RuntimeSnapshot snasphotOf(JsonObject aSnapshot) throws IOException {
-        XStream stream = new XStream(new JettisonMappedXmlDriver());
-        stream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            Json.createWriter(output).write(aSnapshot);
-            try (ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray())) {
-                return RuntimeSnapshot.class.cast(stream.fromXML(input));
-            }
-        }
+    public void write(OutputStream sink) throws IOException {
+        DistributionSnapshot.jsonWriter().with(SerializationFeature.WRAP_ROOT_VALUE).writeValue(sink, RuntimeSnapshot.build());
     }
 
 }

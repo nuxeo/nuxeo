@@ -22,9 +22,8 @@ import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
-
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  *

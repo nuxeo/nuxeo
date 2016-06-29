@@ -18,6 +18,7 @@ package org.nuxeo.connect.tools.report.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -32,10 +33,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParsingException;
 import javax.management.JMX;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -246,44 +249,59 @@ public class ReportConnector {
                 return thread;
             }
         });
-        // invoke servers
-        try (ServerSocket callback = new ServerSocket(0)) {
+        try {
             for (ReportServer server : new Discovery()) {
-                final Future<?> consumed = executor.submit(new Runnable() {
+                try (ServerSocket callback = new ServerSocket(0)) {
+                    final Future<?> consumed = executor.submit(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        String name = Thread.currentThread().getName();
-                        Thread.currentThread().setName("connect-report-consumer-" + server);
-                        try {
-                            consumer.consume(Json.createParser(callback.accept().getInputStream()));
-                        } catch (IOException cause) {
-                            throw new AssertionError("Cannot consume connect report", cause);
-                        } finally {
-                            Thread.currentThread().setName(name);
+                        @Override
+                        public void run() {
+
+                            String name = Thread.currentThread().getName();
+                            Thread.currentThread().setName("connect-report-consumer-" + server);
+                            try (InputStream source = callback.accept().getInputStream()) {
+                                consumer.consume(Json.createParser(source));
+                            } catch (IOException | JsonParsingException cause) {
+                                throw new AssertionError("Cannot consume connect report", cause);
+                            } finally {
+                                Thread.currentThread().setName(name);
+                            }
+                            LogFactory.getLog(ReportConnector.class).info("Consumed " + server);
                         }
-                        LogFactory.getLog(ReportConnector.class).info("Consumed " + server);
-                    }
-                });
-                final Future<?> served = executor.submit(new Runnable() {
+                    });
+                    final Future<?> served = executor.submit(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        String name = Thread.currentThread().getName();
-                        Thread.currentThread().setName("connect-report-server-" + server);
-                        InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
-                        try {
-                            server.run(address.getHostName(), address.getPort());
-                        } catch (IOException cause) {
-                            throw new AssertionError("Cannot run connect report", cause);
-                        } finally {
-                            Thread.currentThread().setName(name);
+                        @Override
+                        public void run() {
+                            String name = Thread.currentThread().getName();
+                            Thread.currentThread().setName("connect-report-server-" + server);
+                            InetSocketAddress address = (InetSocketAddress) callback.getLocalSocketAddress();
+                            try {
+                                server.run(address.getHostName(), address.getPort());
+                            } catch (IOException cause) {
+                                throw new AssertionError("Cannot run connect report", cause);
+                            } finally {
+                                Thread.currentThread().setName(name);
+                            }
                         }
-                    }
 
-                });
-                consumed.get();
-                served.get();
+                    });
+                    ExecutionException consumerError = null;
+                    try {
+                        consumed.get();
+                    } catch (ExecutionException cause) {
+                        consumerError = cause;
+                    }
+                    try {
+                        served.get();
+                    } catch (ExecutionException cause) {
+                        if (consumerError != null) {
+                            consumerError.addSuppressed(cause);
+                            throw consumerError;
+                        }
+                        throw cause;
+                    }
+                }
             }
         } finally {
             executor.shutdownNow();

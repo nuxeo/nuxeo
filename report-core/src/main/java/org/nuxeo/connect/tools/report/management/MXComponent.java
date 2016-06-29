@@ -19,7 +19,6 @@ package org.nuxeo.connect.tools.report.management;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,13 +94,13 @@ public class MXComponent extends DefaultComponent {
 
         final Map<String, String> pParams = new HashMap<>();
 
-        void run(OutputStream output) {
+        void run(OutputStream sink) {
             try {
                 JmxRequest request = JmxRequestFactory.createPostRequest(pRequestMap, config.getProcessingParameters(pParams));
                 JSONObject json = manager.handleRequest(request);
-                try (Writer writer = new OutputStreamWriter(output)) {
-                    json.writeJSONString(writer);
-                }
+                OutputStreamWriter writer = new OutputStreamWriter(sink);
+                json.writeJSONString(writer);
+                writer.flush();
             } catch (JMException | IOException cause) {
                 throw new AssertionError("Cannot invoke jolokia", cause);
             }

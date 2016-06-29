@@ -16,12 +16,12 @@
  */
 package org.nuxeo.connect.tools.report;
 
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Features(RuntimeFeature.class)
+@Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.connect.tools.report.api", "org.nuxeo.connect.tools.report.core", "org.nuxeo.apidoc.core" })
 public class ReportFeature extends SimpleFeature {
 

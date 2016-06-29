@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
+import org.nuxeo.ecm.core.management.statuses.NuxeoInstanceIdentifierHelper;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -70,6 +71,11 @@ public class ReportComponent extends DefaultComponent {
         @Override
         public void run(OutputStream out, Set<String> names) throws IOException {
             out.write('{');
+            out.write('"');
+            out.write(NuxeoInstanceIdentifierHelper.getServerInstanceName().getBytes());
+            out.write('"');
+            out.write(':');
+            out.write('{');
             Iterator<Contribution> iterator = configuration.iterator(names);
             while (iterator.hasNext()) {
                 Contribution contrib = iterator.next();
@@ -81,7 +87,9 @@ public class ReportComponent extends DefaultComponent {
                 if (iterator.hasNext()) {
                     out.write(',');
                 }
+                out.flush();
             }
+            out.write('}');
             out.write('}');
             out.flush();
         }
@@ -94,7 +102,12 @@ public class ReportComponent extends DefaultComponent {
         @Override
         public void run(String host, int port, String... names) throws IOException {
             try (Socket sock = new Socket(host, port)) {
-                service.run(sock.getOutputStream(), new HashSet<>(Arrays.asList(names)));
+                try (OutputStream sink =
+                        sock.getOutputStream()) {
+                    service.run(sink, new HashSet<>(Arrays.asList(names)));
+                }
+            } catch (IOException cause) {
+                throw cause;
             }
         }
 
