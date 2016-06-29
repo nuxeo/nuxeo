@@ -141,6 +141,11 @@
       <artifactId>jsf-impl</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.richfaces</groupId>
       <artifactId>richfaces</artifactId>
       <scope>provided</scope>
