@@ -1000,6 +1000,11 @@
         <type>test-jar</type>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
