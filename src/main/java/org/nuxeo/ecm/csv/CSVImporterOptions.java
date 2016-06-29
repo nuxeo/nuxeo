@@ -39,6 +39,8 @@ public class CSVImporterOptions implements Serializable {
 
         private String listSeparatorRegex = "\\|";
 
+        private Character commentMarker = null;
+
         private Character escapeCharacter = '\\';
 
         private boolean updateExisting = true;
@@ -61,6 +63,11 @@ public class CSVImporterOptions implements Serializable {
 
         public Builder listSeparatorRegex(String listSeparatorRegex) {
             this.listSeparatorRegex = listSeparatorRegex;
+            return this;
+        }
+
+        public Builder commentMarker(Character commentMarker) {
+            this.commentMarker = commentMarker;
             return this;
         }
 
@@ -90,8 +97,8 @@ public class CSVImporterOptions implements Serializable {
         }
 
         public CSVImporterOptions build() {
-            return new CSVImporterOptions(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, escapeCharacter,
-                    updateExisting, checkAllowedSubTypes, sendEmail, batchSize);
+            return new CSVImporterOptions(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, commentMarker,
+                    escapeCharacter, updateExisting, checkAllowedSubTypes, sendEmail, batchSize);
         }
     }
 
@@ -100,6 +107,8 @@ public class CSVImporterOptions implements Serializable {
     protected final String dateFormat;
 
     protected final String listSeparatorRegex;
+
+    protected final Character commentMarker;
 
     protected final Character escapeCharacter;
 
@@ -124,9 +133,20 @@ public class CSVImporterOptions implements Serializable {
     protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
             String listSeparatorRegex, Character escapeCharacter, boolean updateExisting, boolean checkAllowedSubTypes,
             boolean sendEmail, int batchSize) {
+        this(CSVImporterDocumentFactory, dateFormat, listSeparatorRegex, null, escapeCharacter, updateExisting,
+                checkAllowedSubTypes, sendEmail, batchSize);
+    }
+
+    /**
+     * @since 8.3
+     */
+    protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory, String dateFormat,
+            String listSeparatorRegex, Character commentMarker, Character escapeCharacter, boolean updateExisting,
+            boolean checkAllowedSubTypes, boolean sendEmail, int batchSize) {
         this.CSVImporterDocumentFactory = CSVImporterDocumentFactory;
         this.dateFormat = dateFormat;
         this.listSeparatorRegex = listSeparatorRegex;
+        this.commentMarker = commentMarker;
         this.escapeCharacter = escapeCharacter;
         this.updateExisting = updateExisting;
         this.checkAllowedSubTypes = checkAllowedSubTypes;
@@ -144,6 +164,10 @@ public class CSVImporterOptions implements Serializable {
 
     public String getListSeparatorRegex() {
         return listSeparatorRegex;
+    }
+
+    public Character getCommentMarker() {
+        return commentMarker;
     }
 
     public Character getEscapeCharacter() {
