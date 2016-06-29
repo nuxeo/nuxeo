@@ -46,10 +46,8 @@ public class RemoveFacet {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
-
         input.removeFacet(facet);
-        session.saveDocument(input);
-
+        input = session.saveDocument(input);
         return input;
     }
 

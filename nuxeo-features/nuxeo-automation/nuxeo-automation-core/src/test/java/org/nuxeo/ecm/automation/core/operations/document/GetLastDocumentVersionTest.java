@@ -81,14 +81,14 @@ public class GetLastDocumentVersionTest {
         session.save();
     }
 
-    protected void createDocumentVersions(DocumentModel doc, VersioningOption vo, int nrVersions) {
-        // create a document with major versions
+    protected DocumentModel createDocumentVersions(DocumentModel doc, VersioningOption vo, int nrVersions) {
         for (int i = 1; i <= nrVersions; i++) {
-            doc.setPropertyValue("dc:description", "" + i);
+            doc.setPropertyValue("dc:description", String.valueOf(i));
             doc.putContextData(VersioningService.VERSIONING_OPTION, vo);
-            session.saveDocument(doc);
+            doc = session.saveDocument(doc);
         }
         session.save();
+        return doc;
     }
 
     @Test
@@ -99,7 +99,7 @@ public class GetLastDocumentVersionTest {
         session.save();
         doc = session.getDocument(doc.getRef());
 
-        createDocumentVersions(doc, VersioningOption.MAJOR, 3);
+        doc = createDocumentVersions(doc, VersioningOption.MAJOR, 3);
 
         DocumentModel lastVersion = runOperation(doc);
         assertNotNull(lastVersion);
@@ -115,7 +115,7 @@ public class GetLastDocumentVersionTest {
         session.save();
         doc = session.getDocument(doc.getRef());
 
-        createDocumentVersions(doc, VersioningOption.MINOR, 3);
+        doc = createDocumentVersions(doc, VersioningOption.MINOR, 3);
 
         DocumentModel lastVersion = runOperation(doc);
         assertNotNull(lastVersion);
@@ -131,8 +131,8 @@ public class GetLastDocumentVersionTest {
         session.save();
         doc = session.getDocument(doc.getRef());
 
-        createDocumentVersions(doc, VersioningOption.MAJOR, 3);
-        createDocumentVersions(doc, VersioningOption.MINOR, 3);
+        doc = createDocumentVersions(doc, VersioningOption.MAJOR, 3);
+        doc = createDocumentVersions(doc, VersioningOption.MINOR, 3);
 
         DocumentModel lastVersion = runOperation(doc);
         assertNotNull(lastVersion);

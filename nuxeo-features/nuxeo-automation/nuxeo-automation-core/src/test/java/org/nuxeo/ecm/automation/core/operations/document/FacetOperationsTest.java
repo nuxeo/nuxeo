@@ -72,7 +72,6 @@ public class FacetOperationsTest {
         folder.setPropertyValue("dc:title", "Folder");
         folder = session.createDocument(folder);
         session.save();
-        folder = session.getDocument(folder.getRef());
 
         docNoFacet = session.createDocumentModel("/Folder", "DocNoFacet", "File");
         docNoFacet.setPropertyValue("dc:title", "DocNotFacet");
@@ -100,7 +99,7 @@ public class FacetOperationsTest {
 
     @Test
     public void testAddFacet() throws OperationException {
-        
+
         assertNotNull(docNoFacet);
         assertFalse("New doc should not have the facet.", docNoFacet.hasFacet(THE_FACET));
 

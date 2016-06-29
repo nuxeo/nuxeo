@@ -68,13 +68,14 @@ public class AddItemToListProperty {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws OperationException, IOException {
         Property complexProperty = doc.getProperty(xpath);
-        ListType ltype = (ListType) complexProperty.getField().getType();
+        ListType listType = (ListType) complexProperty.getField().getType();
 
-        if (!ltype.getFieldType().isComplexType()) {
-            throw new OperationException("Property type is not supported by this operation");
+        if (!listType.getFieldType().isComplexType()) {
+            throw new OperationException("Property type " + listType.getFieldType().getClass().getName()
+                    + " is not supported by this operation");
         }
 
-        List<Object> newVals = ComplexTypeJSONDecoder.decodeList(ltype, complexJsonProperties);
+        List<Object> newVals = ComplexTypeJSONDecoder.decodeList(listType, complexJsonProperties);
         for (Object newVal : newVals) {
             complexProperty.addValue(newVal);
         }
