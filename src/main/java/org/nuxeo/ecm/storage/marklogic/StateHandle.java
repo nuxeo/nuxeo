@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.storage.marklogic;
+package org.nuxeo.ecm.storage.marklogic;
 
 import org.nuxeo.ecm.core.storage.State;
 

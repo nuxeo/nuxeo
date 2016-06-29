@@ -30,7 +30,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.storage.marklogic;
+package org.nuxeo.ecm.storage.marklogic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

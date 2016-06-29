@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.storage.marklogic;
+package org.nuxeo.ecm.storage.marklogic;
 
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;

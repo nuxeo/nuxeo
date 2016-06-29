@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.core.storage.marklogic;
+package org.nuxeo.ecm.storage.marklogic;
 
 import static org.mockito.Mockito.mock;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
@@ -53,7 +53,7 @@ import com.marklogic.client.query.RawQueryDefinition;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
-@LocalDeploy("org.nuxeo.ecm.core.storage.marklogic.tests:OSGI-INF/test-types-contrib.xml")
+@LocalDeploy("org.nuxeo.ecm.storage.marklogic.test:OSGI-INF/test-types-contrib.xml")
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test

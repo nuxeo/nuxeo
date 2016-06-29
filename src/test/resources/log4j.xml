@@ -12,7 +12,7 @@
     </layout>
   </appender>
 
-  <logger name="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepository">
+  <logger name="org.nuxeo.ecm.storage.marklogic.MarkLogicRepository">
     <level value="WARN" />
   </logger>
 
