@@ -19,6 +19,8 @@
       desc="Live Connect for Cloud Services" />
     <package id="nuxeo-review-workflows-dashboards" label="Review Workflows Dashboards (RWD)" color="#213F7D"
       textcolor="#FFF" shortlabel="RWD" desc="Data Visualization Dashboards for Review Workflows" />
+    <package id="nuxeo-web-ui" label="Nuxe Web UI (WEBUI)" color="#00adff" textcolor="#FFF" shortlabel="WEBUI"
+      desc="New Nuxeo User Interface (Beta)" />
   </packageDefinitions>
   <install>
     <packageOptions>
@@ -32,6 +34,7 @@
         <package ref="nuxeo-template-rendering-samples" exclusive="false" />
         <package ref="nuxeo-liveconnect" exclusive="false" />
         <package ref="nuxeo-review-workflows-dashboards" exclusive="false" />
+        <package ref="nuxeo-web-ui" exclusive="false" />
       </package>
     </packageOptions>
   </install>
