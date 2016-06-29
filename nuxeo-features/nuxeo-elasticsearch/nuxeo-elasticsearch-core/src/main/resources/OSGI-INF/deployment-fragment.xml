@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#SERVLET">
+
+    <filter>
+      <display-name>ElasticSearchFilter</display-name>
+      <filter-name>ElasticSearchFilter</filter-name>
+      <filter-class>
+        org.nuxeo.elasticsearch.ElasticSearchFilter
+      </filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>ElasticSearchFilter</filter-name>
+      <url-pattern>/site/*</url-pattern>
+      <url-pattern>/api/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+</fragment>
