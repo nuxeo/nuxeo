@@ -175,6 +175,13 @@ public class CoreFeature extends SimpleFeature {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             storageConfiguration.init();
+            for (String bundle : storageConfiguration.getExternalBundles()) {
+                try {
+                    harness.deployBundle(bundle);
+                } catch (Exception e) {
+                    throw new NuxeoException(e);
+                }
+            }
             URL blobContribUrl = storageConfiguration.getBlobManagerContrib(runner);
             harness.getContext().deploy(new URLStreamRef(blobContribUrl));
             URL repoContribUrl = storageConfiguration.getRepositoryContrib(runner);
