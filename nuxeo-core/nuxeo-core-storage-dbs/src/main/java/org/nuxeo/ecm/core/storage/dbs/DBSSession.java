@@ -1936,6 +1936,7 @@ public class DBSSession implements Session {
         case KEY_MIXIN_TYPES:
         case KEY_ANCESTOR_IDS:
         case KEY_PROXY_IDS:
+        case KEY_READ_ACL:
             return STRING_ARRAY_TYPE;
         }
         return null;
