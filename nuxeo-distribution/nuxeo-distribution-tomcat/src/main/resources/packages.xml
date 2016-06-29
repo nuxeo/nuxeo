@@ -24,25 +24,29 @@
     <package id="nuxeo-web-ui" label="Nuxeo Web UI - PREVIEW" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
       desc="Try Nuxeo Web UI, the future of the user interface for Nuxeo Platform, finalised for next LTS." />
+    <package id="nuxeo-jsf-ui" label="Nuxeo JSF UI" color="#0000ff" textcolor="#FFF"
+      shortlabel="JSFUI" virtual="false" desc="The JSF UI is the original user interface for Nuxeo Platform" /> <!-- keep this formatting for assembly.xml replacement -->
   </packageDefinitions>
   <install>
     <packageOptions>
       <package ref="nuxeo-server" exclusive="false">
-        <package ref="nuxeo-dam" exclusive="false" />
+        <package ref="nuxeo-jsf-ui" exclusive="false">
+          <package ref="nuxeo-dam" exclusive="false" />
+          <package ref="nuxeo-drive" exclusive="false" />
+          <package ref="nuxeo-diff" exclusive="false" />
+          <package ref="nuxeo-showcase-content" exclusive="false" />
+          <package ref="nuxeo-spreadsheet" exclusive="false" />
+          <package ref="nuxeo-template-rendering-samples" exclusive="false" />
+          <package ref="nuxeo-liveconnect" exclusive="false" />
+          <package ref="nuxeo-review-workflows-dashboards" exclusive="false" />
+        </package>
         <package ref="nuxeo-web-ui" exclusive="false" />
-        <package ref="nuxeo-drive" exclusive="false" />
-        <package ref="nuxeo-diff" exclusive="false" />
-        <package ref="nuxeo-showcase-content" exclusive="false" />
-        <package ref="nuxeo-spreadsheet" exclusive="false" />
-        <package ref="nuxeo-template-rendering-samples" exclusive="false" />
-        <package ref="nuxeo-liveconnect" exclusive="false" />
-        <package ref="nuxeo-review-workflows-dashboards" exclusive="false" />
       </package>
     </packageOptions>
   </install>
   <presets>
     <preset id="nuxeo-server-preset" label="Nuxeo Server Preset">
-      nuxeo-server,nuxeo-web-ui,nuxeo-dam,nuxeo-drive,nuxeo-showcase-content,nuxeo-template-rendering-samples
+      nuxeo-server,nuxeo-web-ui,nuxeo-jsf-ui,nuxeo-dam,nuxeo-drive,nuxeo-showcase-content,nuxeo-template-rendering-samples
     </preset>
   </presets>
 </packages>

@@ -353,6 +353,10 @@ org.nuxeo.distribution.package=zip</echo>
         <replacetoken>Nuxeo Server Preset</replacetoken>
         <replacevalue>Nuxeo CAP Preset</replacevalue>
       </replacefilter>
+      <replacefilter>
+        <replacetoken>shortlabel="JSFUI" virtual="false"</replacetoken>
+        <replacevalue>shortlabel="JSFUI" virtual="true"</replacevalue>
+      </replacefilter>
     </replace>
     <replace file="${cap.tomcat}/templates/common/config/distribution.properties">
       <replacefilter>
