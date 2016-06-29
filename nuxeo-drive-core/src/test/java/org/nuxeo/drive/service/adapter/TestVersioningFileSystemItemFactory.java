@@ -205,12 +205,7 @@ public class TestVersioningFileSystemItemFactory {
     @Test
     public void testDefaultConfiguration() throws Exception {
 
-        // ------------------------------------------------------
-        // FileItem#getDownloadURL
-        // ------------------------------------------------------
         FileItem fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
-        String downloadURL = fileItem.getDownloadURL();
-        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
 
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();
@@ -378,12 +373,7 @@ public class TestVersioningFileSystemItemFactory {
         ConfigurationService cs = Framework.getLocalService(ConfigurationService.class);
         assertEquals("false", cs.getProperty(FileSystemItemHelper.NUXEO_FORCE_DRIVE_VERSIONING));
 
-        // ------------------------------------------------------
-        // FileItem#getDownloadURL
-        // ------------------------------------------------------
         FileItem fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
-        String downloadURL = fileItem.getDownloadURL();
-        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
 
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();
@@ -545,12 +535,7 @@ public class TestVersioningFileSystemItemFactory {
     @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioningrules-contrib.xml" })
     public void testAutomaticVersioning() throws Exception {
 
-        // ------------------------------------------------------
-        // FileItem#getDownloadURL
-        // ------------------------------------------------------
         FileItem fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
-        String downloadURL = fileItem.getDownloadURL();
-        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
 
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();
@@ -729,12 +714,7 @@ public class TestVersioningFileSystemItemFactory {
         ConfigurationService cs = Framework.getLocalService(ConfigurationService.class);
         assertEquals("false", cs.getProperty(FileSystemItemHelper.NUXEO_FORCE_DRIVE_VERSIONING));
 
-        // ------------------------------------------------------
-        // FileItem#getDownloadURL
-        // ------------------------------------------------------
         FileItem fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
-        String downloadURL = fileItem.getDownloadURL();
-        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
 
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();

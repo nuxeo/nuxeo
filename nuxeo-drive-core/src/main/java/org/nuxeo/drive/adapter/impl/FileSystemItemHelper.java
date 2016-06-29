@@ -58,7 +58,7 @@ public final class FileSystemItemHelper {
         if (factory.needsVersioning(doc)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
             session.saveDocument(doc);
-        } else if (Boolean.parseBoolean(Framework.getService(ConfigurationService.class).getProperty(NUXEO_FORCE_DRIVE_VERSIONING, "true"))) {
+        } else if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(NUXEO_FORCE_DRIVE_VERSIONING)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
         }
     }
