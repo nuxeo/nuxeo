@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.automation.core.test.directory;
 
@@ -41,8 +41,12 @@ import javax.inject.Inject;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * @since 8.3
+ */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
@@ -69,7 +73,7 @@ public class CreateVocabularyEntryTest {
 
         assertEquals("vocabulary", directoryService.getDirectorySchema(vocabularyName));
         Session vocabularySession = directoryService.open(vocabularyName);
-        assertTrue(!vocabularySession.hasEntry(entryId));
+        assertFalse(vocabularySession.hasEntry(entryId));
 
         OperationContext context = new OperationContext(session);
         OperationChain chain = new OperationChain("shouldCreateEntry");
