@@ -986,7 +986,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools-report-api</artifactId>
+        <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
