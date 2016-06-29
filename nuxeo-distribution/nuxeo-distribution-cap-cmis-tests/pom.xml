@@ -99,6 +99,9 @@
     <profile>
       <id>mysql</id>
     </profile>
+    <profile>
+      <id>mariadb</id>
+    </profile>
   </profiles>
 
 </project>

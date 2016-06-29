@@ -98,6 +98,9 @@
       <id>mysql</id>
     </profile>
     <profile>
+      <id>mariadb</id>
+    </profile>
+    <profile>
       <id>monitor</id>
     </profile>
     <profile>
