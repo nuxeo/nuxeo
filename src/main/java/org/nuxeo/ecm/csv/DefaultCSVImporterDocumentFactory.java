@@ -34,6 +34,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -65,12 +66,22 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
         }
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
         if (cs.isBooleanPropertyTrue("nuxeo.csv.importMode")) {
-            ((DocumentModelImpl) doc).setId(UUID.randomUUID().toString());
+            if (values.containsKey(NXQL.ECM_UUID)) {
+                ((DocumentModelImpl) doc).setId((String) values.get(NXQL.ECM_UUID));
+                values.remove(NXQL.ECM_UUID);
+            } else {
+                ((DocumentModelImpl) doc).setId(UUID.randomUUID().toString());
+            }
             for (Map.Entry<String, Serializable> entry : values.entrySet()) {
-                doc.setPropertyValue(entry.getKey(), entry.getValue());
+                if (entry.getKey() != "ecm:uuid") {
+                    doc.setPropertyValue(entry.getKey(), entry.getValue());
+                }
             }
             session.importDocuments(Collections.singletonList(doc));
         } else {
+            if (values.containsKey(NXQL.ECM_UUID)) {
+                throw new NuxeoException("CSV file contains UUID. Import using Import Mode to avoid overwriting.");
+            }
             doc = session.createDocument(doc);
             for (Map.Entry<String, Serializable> entry : values.entrySet()) {
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
