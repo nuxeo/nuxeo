@@ -54,10 +54,6 @@ public class CreateVocabularyEntry {
 
     public static final String ID = "Directory.CreateVocabularyEntry";
 
-    // Caching infos about vocabularies, to avoid getting the schema and testing the "parent" field at every call.
-    // This is because passing a Map with "parent" to a simple vocabulary (non hierarchical) throws an error
-    protected Map<String, Boolean> vocabularyAndHasParent = new HashMap<>();
-
     @Context
     protected DirectoryService directoryService;
 
@@ -89,16 +85,6 @@ public class CreateVocabularyEntry {
             return;
         }
 
-        boolean hasParent;
-        if (vocabularyAndHasParent.get(name) == null) {
-            String dirSchema = directoryService.getDirectorySchema(name);
-            Schema schema = schemaManager.getSchema(dirSchema);
-            hasParent = schema.hasField("parent");
-            vocabularyAndHasParent.put(name, hasParent);
-        } else {
-            hasParent = vocabularyAndHasParent.get(name);
-        }
-
         try(Session directorySession = directoryService.open(name)) {
             if (directorySession.hasEntry(id)) {
                 return;
@@ -106,7 +92,9 @@ public class CreateVocabularyEntry {
             Map<String, Object> entry = new HashMap<>();
             entry.put("id", id);
             entry.put("label", defaultIfEmpty(label, id));
-            if (hasParent) {
+            String dirSchema = directoryService.getDirectorySchema(name);
+            Schema schema = schemaManager.getSchema(dirSchema);
+            if (schema.hasField("parent")) {
                 entry.put("parent", parent);
             }
             entry.put("obsolete", obsolete);
