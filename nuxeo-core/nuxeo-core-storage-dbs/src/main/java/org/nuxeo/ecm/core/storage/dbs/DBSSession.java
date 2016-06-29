@@ -158,9 +158,9 @@ public class DBSSession implements Session {
 
     private final Timer queryTimer;
 
-    private static final java.lang.String LOG_MIN_DURATION_KEY = "org.nuxeo.dbs.query.log_min_duration_ms";
+    private static final String LOG_MIN_DURATION_KEY = "org.nuxeo.dbs.query.log_min_duration_ms";
 
-    private static final long LOG_MIN_DURATION_NS = Long.parseLong(Framework.getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
+    private long LOG_MIN_DURATION_NS = -1 * 1000000;
 
     public DBSSession(DBSRepository repository) {
         this.repository = repository;
@@ -170,6 +170,7 @@ public class DBSSession implements Session {
 
         saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
         queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
+        LOG_MIN_DURATION_NS = Long.parseLong(Framework.getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
     }
 
     @Override
@@ -1643,9 +1644,9 @@ public class DBSSession implements Session {
             boolean distinctDocuments, Object[] params) {
         final Timer.Context timerContext = queryTimer.time();
         try {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, distinctDocuments,
-                -1);
-        return new DBSQueryResult(pl);
+            PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, distinctDocuments,
+                    -1);
+            return new DBSQueryResult(pl);
        } finally {
             long duration = timerContext.stop();
             if (LOG_MIN_DURATION_NS >= 0 && duration > LOG_MIN_DURATION_NS) {
