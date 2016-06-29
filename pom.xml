@@ -4664,6 +4664,18 @@
       </dependency>
 
       <dependency>
+        <groupId>com.marklogic</groupId>
+        <artifactId>java-client-api</artifactId>
+        <version>3.0.5</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
         <groupId>com.duosecurity</groupId>
         <artifactId>com-duosecurity-java-client</artifactId>
         <version>1.0.0</version>
