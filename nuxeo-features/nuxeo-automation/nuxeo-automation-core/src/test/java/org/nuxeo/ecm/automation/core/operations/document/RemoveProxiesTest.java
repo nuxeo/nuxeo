@@ -80,7 +80,7 @@ public class RemoveProxiesTest {
     public void testRemoveProxies() throws OperationException {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(fileToPublish);
-        OperationChain chain = new OperationChain("testRemoveProxies");
+        OperationChain chain = new OperationChain("publishDocument");
         chain.add(FetchContextDocument.ID);
         chain.add(PublishDocument.ID).set("target",section.getId());
         DocumentModel publishedDoc = (DocumentModel)service.run(ctx, chain);

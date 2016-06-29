@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -69,9 +68,9 @@ public class RemoveItemFromListProperty {
 
         if (index != null) { // clear just the specific property
             Property complexProperty = doc.getProperty(xpath);
-            ListType ltype = (ListType) complexProperty.getField().getType();
+            ListType listType = (ListType) complexProperty.getField().getType();
 
-            if (!ltype.getFieldType().isComplexType() && !ltype.isListType()) {
+            if (!listType.getFieldType().isComplexType() && !listType.isListType()) {
                 throw new OperationException("Property type is not supported by this operation");
             }
 
@@ -86,9 +85,9 @@ public class RemoveItemFromListProperty {
 
         } else { // clear all the properties
             Property complexProperty = doc.getProperty(xpath);
-            ListType ltype = (ListType) complexProperty.getField().getType();
+            ListType listType = (ListType) complexProperty.getField().getType();
 
-            if (!ltype.getFieldType().isComplexType() && !ltype.isListType()) {
+            if (!listType.getFieldType().isComplexType() && !listType.isListType()) {
                 throw new OperationException("Property type is not supported by this operation");
             }
 

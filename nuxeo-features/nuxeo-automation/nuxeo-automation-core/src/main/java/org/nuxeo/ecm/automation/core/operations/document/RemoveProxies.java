@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,14 +40,20 @@ public class RemoveProxies {
     @Context
     protected CoreSession session;
 
+    @Param(name = "save", required = false, values = { "true" })
+    protected boolean save = true;
+
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
         DocumentModelList proxies = session.getProxies(input.getRef(), null);
         for (DocumentModel proxy : proxies) {
             session.removeDocument(proxy.getRef());
         }
-        session.save();
-        return null;
+        
+        if (save) {
+            session.save();
+        }
+        return input;
     }
 
 }

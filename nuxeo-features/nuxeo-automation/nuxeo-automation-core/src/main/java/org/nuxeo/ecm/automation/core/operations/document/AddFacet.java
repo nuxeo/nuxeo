@@ -48,10 +48,8 @@ public class AddFacet {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
-
         input.addFacet(facet);
-
-        session.saveDocument(input);
+        input = session.saveDocument(input);
         return input;
     }
 
