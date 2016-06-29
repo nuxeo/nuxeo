@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Thierry Martins <tmartins@nuxeo.com>
  */
 package org.nuxeo.drive.adapter.impl;
 
@@ -25,7 +26,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Helper for {@link FileSystemItem} manipulation.
@@ -35,6 +39,11 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 public final class FileSystemItemHelper {
 
     public static final String MD5_DIGEST_ALGORITHM = "MD5";
+
+    /**
+     * @since 7.10-HF12
+     */
+    public static final String NUXEO_DRIVE_FORCE_VERSIONING = "nuxeo.drive.force.versioning";
 
     private FileSystemItemHelper() {
         // Helper class
@@ -47,6 +56,8 @@ public final class FileSystemItemHelper {
         if (factory.needsVersioning(doc)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
             session.saveDocument(doc);
+        } else if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue((NUXEO_DRIVE_FORCE_VERSIONING))) {
+            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
         }
     }
 
