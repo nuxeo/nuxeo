@@ -11,8 +11,6 @@
       shortlabel="DOCS" desc="Showcase Content Sample" />
     <package id="nuxeo-spreadsheet" label="Spreadsheet (GRID)" color="#ff736e" textcolor="#FFF" shortlabel="GRID"
       desc="Spreadsheet" />
-    <package id="nuxeo-web-mobile" label="Mobile (MOB)" color="#faac05" textcolor="#FFF" shortlabel="MOB"
-      desc="Mobile" />
     <package id="nuxeo-template-rendering-samples" label="Template Rendering (TMPL)" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPL" desc="Template Rendering" />
     <package id="nuxeo-liveconnect" label="Live Connect (LIVE)" color="#ff452a" textcolor="#FFF" shortlabel="LIVE"
@@ -30,7 +28,6 @@
         <package ref="nuxeo-diff" exclusive="false" />
         <package ref="nuxeo-showcase-content" exclusive="false" />
         <package ref="nuxeo-spreadsheet" exclusive="false" />
-        <package ref="nuxeo-web-mobile" exclusive="false" />
         <package ref="nuxeo-template-rendering-samples" exclusive="false" />
         <package ref="nuxeo-liveconnect" exclusive="false" />
         <package ref="nuxeo-review-workflows-dashboards" exclusive="false" />
