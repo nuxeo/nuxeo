@@ -97,7 +97,7 @@ public class DownloadDescriptorParser {
                     Element preset = (Element) el;
                     String presetId = preset.attribute("id").getValue();
                     String presetLabel = preset.attribute("label").getValue();
-                    String pkgList = preset.getText();
+                    String pkgList = preset.getText().trim();
                     String[] presetPackages = pkgList.split(",");
                     options.addPreset(presetId, presetLabel, presetPackages);
                 }
@@ -124,6 +124,7 @@ public class DownloadDescriptorParser {
             pkg.setColor(el.attributeValue("color"));
             pkg.setTextColor(el.attributeValue("textcolor"));
             pkg.setShortLabel(el.attributeValue("shortlabel"));
+            pkg.setDescription(el.attributeValue("desc"));
             String url = el.attributeValue("url");
             if (url != null) {
                 pkg.setDownloadUrl(url);

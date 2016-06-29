@@ -58,6 +58,11 @@ public class DownloadPackage {
 
     protected String shortLabel;
 
+    /**
+     * @since 8.3
+     */
+    protected String description;
+
     protected final List<String> impliedDeps = new ArrayList<>();
 
     public DownloadPackage(String id) {
@@ -206,6 +211,20 @@ public class DownloadPackage {
      */
     public void setVirtual(boolean virtual) {
         this.virtual = virtual;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
