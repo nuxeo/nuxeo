@@ -105,7 +105,7 @@ import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.registration.RegistrationException;
-import org.nuxeo.connect.tools.report.client.Connector;
+import org.nuxeo.connect.tools.report.client.ReportConnector;
 import org.nuxeo.connect.tools.report.client.StreamFeeder;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
@@ -1350,12 +1350,11 @@ public abstract class NuxeoLauncher {
                 outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
             } else {
                 Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
-                outputpath = Files.createTempFile(dir,
-                        "connect-report",
-                        gzip ? ".json.gz" : ".json");
+                outputpath = dir.resolve("nuxeo-connect-report.json".concat(
+                        gzip ? ".gz" : ""));
             }
             log.info("Dumping connect report in " + outputpath);
-            OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING);
+            OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
             if (gzip) {
                 output = new GZIPOutputStream(output, 512, true);
             }
@@ -3131,7 +3130,7 @@ public abstract class NuxeoLauncher {
             generator.writeEnd();
             generator.flush();
             // runtime
-            Connector.of().feed(generator);
+            ReportConnector.of().feed(generator);
             generator.writeEnd();
         } catch (IOException | JAXBException | InterruptedException | ExecutionException cause) {
             log.error("Cannot dump connect report", cause);
