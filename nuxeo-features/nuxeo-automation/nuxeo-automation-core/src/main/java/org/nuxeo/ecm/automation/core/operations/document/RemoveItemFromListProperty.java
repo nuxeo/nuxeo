@@ -75,7 +75,7 @@ public class RemoveItemFromListProperty {
             }
 
             ListProperty listProperty = (ListProperty) complexProperty;
-            List propertiesValues = (List) listProperty.getValue();
+            List<?> propertiesValues = (List<?>) listProperty.getValue();
             // remove the desired property
             propertiesValues.remove(index.intValue());
 

@@ -109,7 +109,7 @@ public class AddItemToListPropertyTest {
         chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJson);
 
         DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+        List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
         assertEquals(5, dbFields.size());
 
     }
