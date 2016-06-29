@@ -21,6 +21,7 @@
   <properties>
     <nuxeo.addons.version>8.3-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>8.3-SNAPSHOT</nuxeo.opencmis.version>
+    <nuxeo.marklogic.version>8.3-SNAPSHOT</nuxeo.marklogic.version>
     <nuxeo.businessdays.version>8.3-SNAPSHOT</nuxeo.businessdays.version>
     <nuxeo.shell.version>8.3-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>8.3-SNAPSHOT</nuxeo.webembedded.version>
@@ -72,6 +73,7 @@
   <modules>
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-chemistry</module>
+    <module>nuxeo-storage-marklogic</module>
     <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-http-client</module>
@@ -161,6 +163,20 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- Storage -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.storage.marklogic</groupId>
+        <artifactId>nuxeo-storage-marklogic</artifactId>
+        <version>${nuxeo.marklogic.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.storage.marklogic</groupId>
+        <artifactId>nuxeo-storage-marklogic</artifactId>
+        <version>${nuxeo.marklogic.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+ 
       <!-- Business Days Management -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
