@@ -33,9 +33,11 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
 /**
  * @since 8.3
- * Adds a new entry ion a vocabulary.
+ * Adds a new entry to a vocabulary.
  * <p>
  * Notice: This is for a nuxeo Vocabulary, which is a specific kind of Directory. This code expects the following:
  * <ul>
@@ -54,7 +56,7 @@ public class CreateVocabularyEntry {
 
     // Caching infos about vocabularies, to avoid getting the schema and testing the "parent" field at every call.
     // This is because passing a Map with "parent" to a simple vocabulary (non hierarchical) throws an error
-    protected static Map<String, Boolean> vocabularyAndHasParent = new HashMap<>();
+    protected Map<String, Boolean> vocabularyAndHasParent = new HashMap<>();
 
     @Context
     protected DirectoryService directoryService;
@@ -75,10 +77,10 @@ public class CreateVocabularyEntry {
     protected String parent = "";
 
     @Param(name = "obsolete", required = false)
-    protected long obsolete = 0;
+    protected long obsolete;
 
     @Param(name = "ordering", required = false)
-    protected long ordering = 0;
+    protected long ordering;
 
     @OperationMethod
     public void run() {
@@ -97,14 +99,13 @@ public class CreateVocabularyEntry {
             hasParent = vocabularyAndHasParent.get(name);
         }
 
-        Session directorySession = directoryService.open(name);
-        if (!directorySession.hasEntry(id)) {
+        try(Session directorySession = directoryService.open(name)) {
+            if (directorySession.hasEntry(id)) {
+                return;
+            }
             Map<String, Object> entry = new HashMap<>();
             entry.put("id", id);
-            if (StringUtils.isEmpty(label)) {
-                label = id;
-            }
-            entry.put("label", label);
+            entry.put("label", defaultIfEmpty(label, id));
             if (hasParent) {
                 entry.put("parent", parent);
             }
@@ -112,7 +113,6 @@ public class CreateVocabularyEntry {
             entry.put("ordering", ordering);
             directorySession.createEntry(entry);
         }
-        directorySession.close();
 
     }
 
