@@ -132,11 +132,24 @@ public class DownloadablePackageOption {
         return "";
     }
 
+    /**
+     * @since 8.3
+     */
     public String getDescription() {
         if (pkg != null) {
             return pkg.getDescription();
         }
         return "";
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean isVirtual() {
+        if (pkg != null) {
+            return pkg.isVirtual();
+        }
+        return false;
     }
 
     public String getTextColor() {
