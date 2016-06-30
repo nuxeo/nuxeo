@@ -1,6 +1,7 @@
 --
--- From http://quartz-scheduler.org/documentation/quartz-2.x/migration-guide
--- Nuxeo upgrade to 7.3/7.10 (NXP-????)
+-- Migrating from quartz 1.8 to 2.x
+-- Nuxeo upgrade to 7.3/7.10 (NXP-18904)
+-- Taken from http://quartz-scheduler.org/documentation/quartz-2.x/migration-guide
 --
 -- drop tables that are no longer used
 --
@@ -118,3 +119,10 @@ create index idx_qrtz_ft_j_g on qrtz_fired_triggers(SCHED_NAME,JOB_NAME,JOB_GROU
 create index idx_qrtz_ft_jg on qrtz_fired_triggers(SCHED_NAME,JOB_GROUP);
 create index idx_qrtz_ft_t_g on qrtz_fired_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);
 create index idx_qrtz_ft_tg on qrtz_fired_triggers(SCHED_NAME,TRIGGER_GROUP);
+--
+-- NXP-19725 2.2 upgrade
+--
+alter table qrtz_fired_triggers add column sched_time bigint not null;
+-- Can be removed if present
+-- alter table qrtz_fired_triggers drop column is_update_data;
+-- alter table qrtz_scheduler_state drop column recoverer;
