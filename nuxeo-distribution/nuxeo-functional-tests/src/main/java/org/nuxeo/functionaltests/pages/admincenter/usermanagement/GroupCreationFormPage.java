@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.NoSuchElementException;
@@ -68,12 +69,18 @@ public class GroupCreationFormPage extends UsersGroupsBasePage {
         if (subgroups != null) {
             new Select2WidgetElement(driver, subgroupsSelect, true).selectValues(subgroups);
         }
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         createButton.click();
+        arm.end();
         return asPage(UsersGroupsBasePage.class);
     }
 
     public GroupsTabSubPage cancelCreation() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         cancelButton.click();
+        arm.end();
         return asPage(GroupsTabSubPage.class);
     }
 }
