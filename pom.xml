@@ -5171,7 +5171,7 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>
+                <!-- <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList> -->
               </requirePluginVersions>
               <bannedPlugins>
                 <excludes>
