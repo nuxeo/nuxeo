@@ -339,7 +339,7 @@ org.nuxeo.distribution.package=zip</echo>
       </replacefilter>
       <replacefilter>
         <replacetoken>label="Server"</replacetoken>
-        <replacevalue>label="Content Application Platform (CAP)"</replacevalue>
+        <replacevalue>label="Content Application Platform"</replacevalue>
       </replacefilter>
       <replacefilter>
         <replacetoken>desc="Server"</replacetoken>

@@ -23,9 +23,9 @@
       desc="The Review Workflows Dashboard addon provides data visualization dashboards for Review Workflows." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI - PREVIEW" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
-      desc="Try Nuxeo Web UI, the future of the user interface for Nuxeo Platform, finalised for next LTS." />
+      desc="Try Nuxeo Web UI, the future of the user interface for Nuxeo Platform, finalized for next LTS." />
     <package id="nuxeo-jsf-ui" label="Nuxeo JSF UI" color="#0000ff" textcolor="#FFF"
-      shortlabel="JSFUI" virtual="false" desc="The JSF UI is the original user interface for Nuxeo Platform" /> <!-- keep this formatting for assembly.xml replacement -->
+      shortlabel="JSFUI" virtual="false" desc="The JSF UI is the original user interface for Nuxeo Platform." /> <!-- keep this formatting for assembly.xml replacement -->
   </packageDefinitions>
   <install>
     <packageOptions>
