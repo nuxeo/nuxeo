@@ -75,6 +75,10 @@
             "description": "Browse and complete task"
         },
         {
+            "path": "/token.{format}",
+            "description": "Authentication token"
+        },
+        {
             "path": "/renditionAdapter.{format}",
             "description": "Rendition on a document"
         },
