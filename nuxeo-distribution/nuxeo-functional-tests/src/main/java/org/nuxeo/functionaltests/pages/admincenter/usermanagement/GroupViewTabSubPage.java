@@ -72,7 +72,7 @@ public class GroupViewTabSubPage extends UsersGroupsBasePage {
     }
 
     public GroupEditFormPage getEditGroupTab() {
-        editLink.click();
+        waitUntilEnabledAndClick(editLink);
         return asPage(GroupEditFormPage.class);
     }
 

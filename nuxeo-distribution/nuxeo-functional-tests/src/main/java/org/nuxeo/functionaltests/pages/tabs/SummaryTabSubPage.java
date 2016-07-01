@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
@@ -77,18 +78,19 @@ public class SummaryTabSubPage extends AbstractPage {
         super(driver);
     }
 
-    public void startDefaultWorkflow() {
+    public SummaryTabSubPage startDefaultWorkflow() {
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
         selectItemInDropDownMenu(workflowSelector, "Serial document review");
         a.waitForAjaxRequests();
-        startWorkflowBtn.click();
+        Locator.waitUntilEnabledAndClick(startWorkflowBtn);
+        return asPage(SummaryTabSubPage.class);
     }
 
-    public void startDefaultParallelWorkflow() {
+    public SummaryTabSubPage startDefaultParallelWorkflow() {
         selectItemInDropDownMenu(workflowSelector, "Parallel document review");
-
-        startWorkflowBtn.click();
+        Locator.waitUntilEnabledAndClick(startWorkflowBtn);
+        return asPage(SummaryTabSubPage.class);
     }
 
     public boolean workflowAlreadyStarted() {

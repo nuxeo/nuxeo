@@ -321,8 +321,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     protected DocumentBasePage startDefaultSerialWorkflow(DocumentBasePage filePage, final String username) {
         // start workflow
-        SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
-        summaryTabPage.startDefaultWorkflow();
+        SummaryTabSubPage summaryTabPage = filePage.getSummaryTab().startDefaultWorkflow();
         assertTrue(
                 summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
@@ -338,8 +337,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     protected DocumentBasePage startDefaultParallelWorkflow(DocumentBasePage filePage) {
         // start workflow
-        SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
-        summaryTabPage.startDefaultParallelWorkflow();
+        SummaryTabSubPage summaryTabPage = filePage.getSummaryTab().startDefaultParallelWorkflow();
         assertTrue(
                 summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab

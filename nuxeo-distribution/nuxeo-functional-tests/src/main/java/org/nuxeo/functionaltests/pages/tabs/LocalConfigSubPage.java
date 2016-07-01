@@ -33,18 +33,18 @@ public class LocalConfigSubPage extends DocumentBasePage {
     }
 
     public LocalConfigSubPage enableDocumentContentConfig() {
-        findElementAndWaitUntilEnabled(By.xpath("//a[contains(@id,'nxl_content_view_configuration_enable')]")).click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//a[contains(@id,'nxl_content_view_configuration_enable')]"));
         return asPage(LocalConfigSubPage.class);
     }
 
     public LocalConfigSubPage disableDocumentContentConfig() {
-        findElementAndWaitUntilEnabled(By.xpath("//a[contains(@id,'nxl_content_view_configuration_disable')]")).click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//a[contains(@id,'nxl_content_view_configuration_disable')]"));
         return asPage(LocalConfigSubPage.class);
     }
 
     public LocalConfigSubPage addDocumentContentConfig(String docType, String contentView) {
-        findElementAndWaitUntilEnabled(
-                By.xpath("//a[contains(@id,'nxl_content_view_configuration:nxw_content_view_selection_add')]")).click();
+        findElementWaitUntilEnabledAndClick(
+                By.xpath("//a[contains(@id,'nxl_content_view_configuration:nxw_content_view_selection_add')]"));
 
         selectItemInDropDownMenu(
                 driver.findElement(By.xpath("//select[contains(@id, 'nxw_complexListItem:nxw_docType')]")), docType);
@@ -53,7 +53,7 @@ public class LocalConfigSubPage extends DocumentBasePage {
                 driver.findElement(By.xpath("//select[contains(@id, 'nxw_complexListItem:nxw_contentView')]")),
                 contentView);
 
-        driver.findElement(By.xpath("//input[contains(@id,'nxl_content_view_configuration_save')]")).click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//input[contains(@id,'nxl_content_view_configuration_save')]"));
 
         return asPage(LocalConfigSubPage.class);
     }

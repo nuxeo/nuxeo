@@ -109,7 +109,7 @@ public class WorkflowHomePage extends AbstractPage {
      * @since 5.9.1
      */
     public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
-        driver.findElement(By.xpath(String.format("//input[@type='submit' and @value='%s']", taskAction))).click();
+        findElementWaitUntilEnabledAndClick(By.xpath(String.format("//input[@type='submit' and @value='%s']", taskAction)));
         WebElement element = getFancyBoxContent();
         return getWebFragment(element, WorkflowHomePage.TaskFancyBoxFragment.class);
     }

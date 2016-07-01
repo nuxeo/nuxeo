@@ -79,7 +79,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void showGraphView() {
-        findElementAndWaitUntilEnabled(By.linkText("Show Graph View")).click();
+        findElementWaitUntilEnabledAndClick(By.linkText("Show Graph View"));
     }
 
     public void closeGraphView() {

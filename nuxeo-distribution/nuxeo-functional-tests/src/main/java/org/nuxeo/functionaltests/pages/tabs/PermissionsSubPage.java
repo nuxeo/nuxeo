@@ -164,7 +164,7 @@ public class PermissionsSubPage extends AbstractPage {
     public PermissionsSubPage deletePermission(String permission, String userOrGroupName) {
         WebElement deleteButton = findDeleteButton(permission, userOrGroupName);
         if (deleteButton != null) {
-            deleteButton.click();
+            Locator.waitUntilEnabledAndClick(deleteButton);
             Locator.waitUntilElementPresent(
                     By.xpath("//h2[contains(text(), 'The following permission will be deleted')]"));
             findElementWaitUntilEnabledAndClick(By.xpath("//paper-button[text()='Delete']"));
