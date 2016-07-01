@@ -18,9 +18,11 @@
  */
 package org.nuxeo.connect.update.xml;
 
+import org.apache.commons.lang.mutable.MutableObject;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.connect.data.PackageDescriptor;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageState;
@@ -94,7 +96,6 @@ public class PackageDefinitionImpl implements PackageDefinition {
     /**
      * The target platforms where this package may be installed.
      */
-    @XNodeList(value = "platforms/platform", type = String[].class, componentType = String.class)
     protected String[] platforms;
 
     /**
@@ -169,6 +170,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @Override
     public void setName(String name) {
         this.name = name;
+        dependencies = PackageDescriptor.fixDependencies(name, dependencies);
     }
 
     @Override
@@ -280,9 +282,12 @@ public class PackageDefinitionImpl implements PackageDefinition {
         setTargetPlatforms(platforms);
     }
 
+    @XNodeList(value = "platforms/platform", type = String[].class, componentType = String.class)
     @Override
     public void setTargetPlatforms(String[] platforms) {
-        this.platforms = platforms;
+        MutableObject packageDependencies = new MutableObject();
+        this.platforms = PackageDescriptor.fixTargetPlatforms(name, platforms, packageDependencies);
+        setDependencies((PackageDependency[]) packageDependencies.getValue());
     }
 
     @Override
@@ -292,7 +297,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
 
     @Override
     public void setDependencies(PackageDependency[] dependencies) {
-        this.dependencies = dependencies;
+        this.dependencies = PackageDescriptor.addPackageDependencies(this.dependencies, dependencies);
     }
 
     @Override

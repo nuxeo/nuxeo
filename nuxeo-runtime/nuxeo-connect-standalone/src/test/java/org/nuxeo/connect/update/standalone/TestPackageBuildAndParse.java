@@ -26,6 +26,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -34,6 +37,7 @@ import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
+import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageVisibility;
@@ -46,8 +50,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestPackageBuildAndParse extends PackageTestCase {
 
-    @Test
-    public void testBuildAndParse() throws Exception {
+    protected void doTestBuildAndParse(boolean cap) throws Exception {
 
         String termsAndConditions = "You have to be crazy to use this package";
 
@@ -55,6 +58,9 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         builder.name("nuxeo-automation").version("5.3.2").type(PackageType.ADDON);
         builder.platform("dm-5.3.2");
         builder.platform("dam-5.3.2");
+        if (cap) {
+            builder.platform("cap-8.3");
+        }
         builder.dependency("nuxeo-core:5.3.1:5.3.2");
         builder.dependency("nuxeo-runtime:5.3.1");
         builder.title("Nuxeo Automation");
@@ -93,6 +99,22 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertTrue(packageDef.isSupported());
         assertTrue(packageDef.supportsHotReload());
         assertEquals(PackageVisibility.MARKETPLACE, packageDef.getVisibility());
+        Set<String> expectedTargetPlatforms = new HashSet<>(Arrays.asList("dm-5.3.2", "dam-5.3.2"));
+        if (cap) {
+            expectedTargetPlatforms.add("cap-8.3");
+            expectedTargetPlatforms.add("server-8.3");
+        }
+        assertEquals(expectedTargetPlatforms, new HashSet<>(Arrays.asList(packageDef.getTargetPlatforms())));
+        Set<String> deps = new HashSet<>();
+        for (PackageDependency pd : packageDef.getDependencies()) {
+            deps.add(pd.toString());
+        }
+        Set<String> expectedDependencies = new HashSet<>(
+                Arrays.asList("nuxeo-runtime:5.3.1", "nuxeo-core:5.3.1:5.3.2"));
+        if (cap) {
+            expectedDependencies.add("nuxeo-jsf-ui");
+        }
+        assertEquals(expectedDependencies, deps);
 
         // test on real unziped package
         File zipFile = builder.build();
@@ -110,6 +132,22 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertTrue(pkg.isSupported());
         assertTrue(pkg.supportsHotReload());
         assertEquals(PackageVisibility.MARKETPLACE, pkg.getVisibility());
+        assertEquals(expectedTargetPlatforms, new HashSet<>(Arrays.asList(pkg.getTargetPlatforms())));
+        deps = new HashSet<>();
+        for (PackageDependency pd : pkg.getDependencies()) {
+            deps.add(pd.toString());
+        }
+        assertEquals(expectedDependencies, deps);
+    }
+
+    @Test
+    public void testBuildAndParse() throws Exception {
+        doTestBuildAndParse(false);
+    }
+
+    @Test
+    public void testBuildAndParseWithCAP() throws Exception {
+        doTestBuildAndParse(true);
     }
 
 }
