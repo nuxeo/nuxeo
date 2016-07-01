@@ -241,10 +241,10 @@ if ("true".equals(request.getParameter("showPresets"))) {
   </div>
   </span>
   <br/>
-  <div id="tree"></div>
-  <div class="blocContainer">
-     <div id="blocs"></div>
-  </div>
+<div class="blocContainer">
+  <div id="blocs"></div>
+</div>
+<div id="tree"></div>
   <div style="clear:both"></div>
 
 <span class="screenExplanations">
