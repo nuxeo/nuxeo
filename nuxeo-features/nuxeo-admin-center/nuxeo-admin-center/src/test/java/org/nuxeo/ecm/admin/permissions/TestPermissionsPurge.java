@@ -42,12 +42,13 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * @since 7.10
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({TransientStoreFeature.class, PlatformFeature.class })
 @Deploy({ "org.nuxeo.admin.center:OSGI-INF/core-types-contrib.xml",
         "org.nuxeo.admin.center:OSGI-INF/pageproviders-contrib.xml" })
 public class TestPermissionsPurge {
