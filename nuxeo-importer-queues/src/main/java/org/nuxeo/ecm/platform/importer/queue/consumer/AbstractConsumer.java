@@ -126,7 +126,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected abstract void process(CoreSession session, SourceNode bh) throws Exception;
 
-    protected void commitIfNeeded(CoreSession session) {
+    protected void commitIfNeeded(CoreSession session) throws InterruptedException {
         if (batch.isFull()) {
             commit(session);
             long t = System.currentTimeMillis();
@@ -138,7 +138,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         }
     }
 
-    protected void commit(CoreSession session) {
+    protected void commit(CoreSession session) throws InterruptedException {
         session.save();
         boolean rolledBack = TransactionHelper.isTransactionMarkedRollback();
         TransactionHelper.commitOrRollbackTransaction();
@@ -153,14 +153,18 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * Replays the current batch in an isolated Transaction for each Source Node.
      *
      * @param session
+     * @throws InterruptedException
      */
-    private void replayBatch(CoreSession session) {
+    private void replayBatch(CoreSession session) throws InterruptedException {
         log.error("Replaying batch in isolated transaction because one source node rolled back the transaction");
         for (SourceNode node : batch.getNodes()) {
             TransactionHelper.startTransaction();
             try {
                 process(session, node);
+            } catch (InterruptedException e) {
+                throw e;
             } catch (Exception e) {
+
                 onSourceNodeException(node, e);
                 TransactionHelper.setTransactionRollbackOnly();
             }
@@ -179,7 +183,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param node
      * @param e
      */
-    private void onSourceNodeException(SourceNode node, Exception e) {
+    protected void onSourceNodeException(SourceNode node, Exception e) {
         log.error(String.format("   Error consuming source node [%s]", node.getName()), e);
     }
 
