@@ -66,16 +66,16 @@ public class AdminPermissionsActions implements Serializable {
 
     public String getACEStatusFixedPart() {
         switch (selectedACEStatus) {
-            case ACE_STATUS_ALL:
-                return null;
-            case "0":
-                return "AND ecm:acl/*1/status = 0";
-            case "1":
-                return "AND (ecm:acl/*1/status IS NULL OR ecm:acl/*1/status = 1)";
-            case "2":
-                return "AND ecm:acl/*1/status = 2";
-            default:
-                return null;
+        case ACE_STATUS_ALL:
+            return null;
+        case "0":
+            return "AND ecm:acl/*1/status = 0";
+        case "1":
+            return "AND (ecm:acl/*1/status IS NULL OR ecm:acl/*1/status = 1)";
+        case "2":
+            return "AND ecm:acl/*1/status = 2";
+        default:
+            return null;
         }
     }
 
@@ -96,7 +96,7 @@ public class AdminPermissionsActions implements Serializable {
 
     public boolean canStartPurge() {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        return workManager.getQueueSize("permissionsPurge", Work.State.RUNNING) <= 0;
+        return workManager.getMetrics(PermissionsPurgeWork.CATEGORY).getRunning().intValue() <= 0;
     }
 
     public PurgeWorkStatus getPurgeStatus() {

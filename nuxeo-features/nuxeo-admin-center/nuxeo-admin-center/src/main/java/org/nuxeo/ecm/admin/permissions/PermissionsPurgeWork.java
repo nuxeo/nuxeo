@@ -64,6 +64,7 @@ public class PermissionsPurgeWork extends AbstractWork {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String getTitle() {
         return String.format("Permissions purge for '%s' user and %s document ids",
                 searchDocument.getPropertyValue("rs:ace_username"),
@@ -76,6 +77,7 @@ public class PermissionsPurgeWork extends AbstractWork {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void work() {
         setStatus("Purging");
         openSystemSession();
@@ -133,6 +135,7 @@ public class PermissionsPurgeWork extends AbstractWork {
         setStatus(null);
     }
 
+    @Override
     @Override
     public int getRetryCount() {
         return 10;
