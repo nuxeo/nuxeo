@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
@@ -83,9 +82,7 @@ public class AdminPermissionsActions implements Serializable {
         ContentView contentView = contentViewActions.getContentView(PERMISSIONS_PURGE_CONTENT_VIEW);
         DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();
         PermissionsPurgeWork work = new PermissionsPurgeWork(searchDocumentModel);
-        purgeWorkId = work.getId();
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        purgeWorkId = work.launch();
     }
 
     public void cancelPurge() {
@@ -104,33 +101,7 @@ public class AdminPermissionsActions implements Serializable {
             return null;
         }
 
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work.State workState = workManager.getWorkState(purgeWorkId);
-        if (workState == null) {
-            return null;
-        }
-        return new PurgeWorkStatus(workState);
+        return PermissionsPurgeWork.getStatus(purgeWorkId);
     }
 
-    public static class PurgeWorkStatus {
-
-        private final Work.State state;
-
-        public PurgeWorkStatus(Work.State state) {
-            this.state = state;
-        }
-
-        public Work.State getState() {
-            return state;
-        }
-
-        public boolean isScheduled() {
-            return state == Work.State.SCHEDULED;
-        }
-
-        public boolean isRunning() {
-            return state == Work.State.RUNNING;
-        }
-
-    }
 }

@@ -35,7 +35,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
@@ -47,7 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  *
  * @since 7.4
  */
-public class PermissionsPurgeWork extends AbstractWork {
+public class PermissionsPurgeWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
@@ -79,6 +81,8 @@ public class PermissionsPurgeWork extends AbstractWork {
     @Override
     @SuppressWarnings("unchecked")
     public void work() {
+        TransientStore store = getStore();
+        store.putParameter(id, "status", new PurgeWorkStatus(PurgeWorkStatus.State.RUNNING));
         setStatus("Purging");
         openSystemSession();
 
@@ -136,8 +140,32 @@ public class PermissionsPurgeWork extends AbstractWork {
     }
 
     @Override
+    public void cleanUp(boolean ok, Exception e) {
+        try {
+            super.cleanUp(ok, e);
+        } finally {
+            getStore().putParameter(id, "status", new PurgeWorkStatus(PurgeWorkStatus.State.COMPLETED));
+        }
+    }
+
+    String launch() {
+        WorkManager works = Framework.getService(WorkManager.class);
+        TransientStore store = getStore();
+        store.putParameter(id, "status", new PurgeWorkStatus(PurgeWorkStatus.State.SCHEDULED));
+        works.schedule(this, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        return id;
+    }
+
     @Override
     public int getRetryCount() {
         return 10;
+    }
+
+    static PurgeWorkStatus getStatus(String id) {
+        TransientStore store = getStore();
+        if (!store.exists(id)) {
+            return null;
+        }
+        return (PurgeWorkStatus) store.getParameter(id, "status");
     }
 }
