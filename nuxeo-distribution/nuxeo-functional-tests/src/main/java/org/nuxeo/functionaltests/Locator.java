@@ -279,10 +279,12 @@ public class Locator {
                 // Find the element.
                 WebElement element = findElementAndWaitUntilEnabled(by, findElementTimeout, waitUntilEnabledTimeout);
                 // scroll to it
-                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(false);", element);
+                JavascriptExecutor executor = (JavascriptExecutor) driver;
+                executor.executeScript("arguments[0].scrollIntoView(false);", element);
                 // click
                 try {
-                    element.click();
+                    // forced click to workaround non-effective clicks in miscellaneous situations
+                    executor.executeScript("arguments[0].click();", element);
                     return true;
                 } catch (WebDriverException e) {
                     if (e.getMessage().contains("Element is not clickable at point")) {
