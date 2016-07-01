@@ -239,11 +239,11 @@ public abstract class AbstractTest {
     protected static void initChromeDriver() throws Exception {
         proxyManager = new ProxyManager();
         Proxy proxy = proxyManager.startProxy();
+        DesiredCapabilities dc = DesiredCapabilities.chrome();
         if (proxy != null) {
             proxy.setNoProxy("");
+            dc.setCapability(CapabilityType.PROXY, proxy);
         }
-        DesiredCapabilities dc = DesiredCapabilities.chrome();
-        dc.setCapability(CapabilityType.PROXY, proxy);
         driver = new ChromeDriverProvider().init(dc);
     }
 
