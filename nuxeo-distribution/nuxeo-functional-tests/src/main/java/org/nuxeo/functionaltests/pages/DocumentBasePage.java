@@ -67,6 +67,7 @@ import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.nuxeo.functionaltests.pages.workspace.WorkspaceHomePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -375,7 +376,10 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public DocumentBasePage goToDocumentByBreadcrumb(String documentTitle) {
-        breadcrumbForm.findElement(By.linkText(documentTitle)).click();
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        // ugly hack for NXP-19710: prevent search box from hiding breadcrumb links when window is too small
+        executor.executeScript("return document.getElementById('nxw_headerSearch_panel').remove()");
+        Locator.waitUntilEnabledAndClick(breadcrumbForm.findElement(By.linkText(documentTitle)));
         return asPage(DocumentBasePage.class);
     }
 

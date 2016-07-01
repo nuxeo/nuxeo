@@ -307,7 +307,8 @@ public class Locator {
     }
 
     /**
-     * Waits until the element is enabled, with a {@code waitUntilEnabledTimeout}. Scroll to it, then clicks on the element.
+     * Waits until the element is enabled, with a {@code waitUntilEnabledTimeout}. Scroll to it, then clicks on the
+     * element.
      *
      * @param element the element
      * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
@@ -320,13 +321,15 @@ public class Locator {
         waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                // Wait until enabled.
+                // wait until enabled
                 waitUntilEnabled(element, waitUntilEnabledTimeout);
                 // scroll to it
-                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(false);", element);
+                JavascriptExecutor executor = (JavascriptExecutor) driver;
+                executor.executeScript("arguments[0].scrollIntoView(false);", element);
                 // click
                 try {
-                    element.click();
+                    // forced click to workaround non-effective clicks in miscellaneous situations
+                    executor.executeScript("arguments[0].click();", element);
                     return true;
                 } catch (WebDriverException e) {
                     if (e.getMessage().contains("Element is not clickable at point")) {
