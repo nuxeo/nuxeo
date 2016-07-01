@@ -199,6 +199,7 @@ function displayBlocs() {
   var row = drawRow(container);
   parent = drawBloc(row,0,{ 'node':jsonTree, 'selected' : true}, parent,1);
   displayNodes(container, parent, 0, [jsonTree], ids);
+  disableImplies();
   // bind click
   $(".nxpblock").click(function(event) {
     if ($(event.target).attr("virtual")) {
@@ -207,7 +208,13 @@ function displayBlocs() {
     }
     var targetPkg = $(event.target).attr("pkg");
     var filter = "input[type='checkbox'][name='" + targetPkg + "']";
+    if ( $(filter).attr("disabled") === true) {
+      return;
+    }
     if ( $(filter).attr("checked")==true) {
+        if (checkImplies(targetPkg)) {
+          return;
+        }
         $(filter).removeAttr("checked");
         $(filter).trigger('click');
         $(filter).removeAttr("checked");
@@ -219,6 +226,44 @@ function displayBlocs() {
     }
   });
 
+}
+
+function disableImplies() {
+  var checkBoxes = $("input[type='checkbox']");
+  for (var i = 0; i < checkBoxes.length; i++) {
+    var impl = $(checkBoxes[i]).attr('implies');
+    if (impl) {
+      var implS = impl.split(',');
+      for(var j = 0; j < implS.length; j++) {
+        var implyCheckBox = $("input[type='checkbox'][name='" + implS[j] + "']");
+        if (implyCheckBox.length > 0) {
+          if ($(checkBoxes[i]).attr('checked') === true) {
+            implyCheckBox.attr("disabled", "true");
+          } else {
+            implyCheckBox.removeAttr("disabled");
+          }
+        }
+      }
+    }
+  }
+}
+
+function checkImplies(targetPkg) {
+  var checkBoxes = $("input[type='checkbox']:checked");
+  for (var i = 0; i < checkBoxes.length; i++) {
+    var implies = $(checkBoxes[i]).attr('implies');
+    if (implies) {
+      var impliesSplit = implies.split(',');
+      for(var j = 0; j < impliesSplit.length; j++) {
+         // Trim the excess whitespace.
+         imply = impliesSplit[j].replace(/^\s*/, "").replace(/\s*$/, "")
+         if (imply === targetPkg) {
+            return true;
+         }
+      }
+    }
+  }
+  return false;
 }
 
 function usePreset(optionArray) {
