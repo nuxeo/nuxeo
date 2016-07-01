@@ -27,6 +27,7 @@ function getTree() {
 function createCheckBox(pkg) {
   var checkBox = "<input type=\"checkbox\"";
   checkBox += " name=\"" + pkg.id + "\" ";
+  checkBox += " implies=\"" + pkg.implies + "\" ";
   checkBox += " id=\"pkg_" + pkg.id + "\" ";
   checkBox += " pkg=\"" + pkg.package + "\" ";
   checkBox += " exclusive=\"" + pkg.exclusive + "\" ";
@@ -87,6 +88,7 @@ function drawRow(container) {
   container.prepend(div);
   return div;
 }
+
 
 function drawBloc(container, idx, node2Display, parent, nbSiblings) {
     var selected = node2Display.selected;
@@ -173,6 +175,21 @@ function displayBlocs() {
   var ids = [];
   for (var i = 0; i < checkBoxes.length; i++) {
     ids.push($(checkBoxes[i]).attr('name'));
+    var implies = $(checkBoxes[i]).attr('implies');
+    if (implies) {
+      var impliesSplit = implies.split(',');
+      for(var j = 0; j < impliesSplit.length; j++) {
+         // Trim the excess whitespace.
+         imply = impliesSplit[j].replace(/^\s*/, "").replace(/\s*$/, "")
+         var implyCheckBox = $("input[type='checkbox'][name='" + imply + "']");
+         if (implyCheckBox.length > 0 &&  $(implyCheckBox).attr("checked") !== true) {
+           $(implyCheckBox).attr("checked","true");
+           $(implyCheckBox).trigger('click');
+           $(implyCheckBox).attr("checked","true");
+           return;
+         }
+      }
+    }
   }
   // draw root
   var container = $("#blocs");

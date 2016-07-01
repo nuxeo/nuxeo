@@ -180,6 +180,14 @@ public class DownloadablePackageOptions {
         sb.append("\"exclusive\":\"" + option.exclusive + "\",");
         sb.append("\"description\":\"" + option.getDescription() + "\",");
         sb.append("\"virtual\":\"" + option.isVirtual() + "\",");
+        sb.append("\"implies\": [");
+        for (int i = 0; i < option.getPackage().getImpliedDeps().size(); i++) {
+            sb.append("\"" + option.getPackage().getImpliedDeps().get(i).trim() + "\"");
+            if (i < option.getPackage().getImpliedDeps().size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("],");
         sb.append("\"children\": [");
         List<DownloadablePackageOption> children = option.getChildrenPackages();
         for (int i = 0; i < children.size(); i++) {
