@@ -377,11 +377,21 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public DocumentBasePage goToDocumentByBreadcrumb(String documentTitle) {
+        clickOnBreadcrumElement(driver, documentTitle);
+        return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * Clicks on a breadcrumb element.
+     *
+     * @since 8.3
+     */
+    public static void clickOnBreadcrumElement(WebDriver driver, String documentTitle) {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         // ugly hack for NXP-19710: prevent search box from hiding breadcrumb links when window is too small
         executor.executeScript("return document.getElementById('nxw_headerSearch_panel').remove()");
-        Locator.waitUntilEnabledAndClick(breadcrumbForm.findElement(By.linkText(documentTitle)));
-        return asPage(DocumentBasePage.class);
+        WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']"));
+        Locator.waitUntilEnabledAndClick(breadcrumb.findElement(By.linkText(documentTitle)));
     }
 
     private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectionAction_form:nxw_addToCollectionAction_link";

@@ -34,7 +34,6 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
 
@@ -172,10 +171,8 @@ public class ITNoteDocumentTest extends AbstractTest {
                                           .fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
 
             // go back to the parent folder
-            WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']"))
-                                          .findElement(By.linkText(TEST_WORKSPACE_TITLE));
-            assertTrue(breadcrumb.isDisplayed());
-            breadcrumb.click();
+            DocumentBasePage.clickOnBreadcrumElement(driver, TEST_WORKSPACE_TITLE);
+
             Alert alert = driver.switchTo().alert();
             assertEquals(
                     "This page is asking you to confirm that you want to leave - data you have entered may not be saved.",
