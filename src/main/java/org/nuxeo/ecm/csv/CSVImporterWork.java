@@ -229,12 +229,12 @@ public class CSVImporterWork extends TransientStoreWork {
             logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
             log.debug(e, e);
         }
+        store.putParameter(id, "logs", importLogs);
         if (options.sendEmail()) {
             setStatus("Sending email");
             sendMail();
         }
         setStatus(null);
-        store.putParameter(id, "logs", importLogs);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
     static CSVImportStatus getStatus(String id) {
         TransientStore store = getStore();
-        if (store.exists(id)) {
+        if (!store.exists(id)) {
             return null;
         }
         return  (CSVImportStatus) store.getParameter(id, "status");

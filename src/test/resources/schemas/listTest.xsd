@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.ecm.csv.test/schemas/list/"
+  xmlns:listTest="http://nuxeo.ecm.csv.test/schemas/list/">
+
+  <xs:simpleType name="stringList">
+    <xs:list itemType="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="doubleList">
+    <xs:list itemType="xs:double"/>
+  </xs:simpleType>
+  <xs:simpleType name="dateList">
+    <xs:list itemType="xs:date"/>
+  </xs:simpleType>
+  <xs:simpleType name="integerList">
+    <xs:list itemType="xs:integer"/>
+  </xs:simpleType>
+  <xs:simpleType name="booleanList">
+    <xs:list itemType="xs:boolean"/>
+  </xs:simpleType>
+
+  <xs:element name="string" type="listTest:stringList"/>
+  <xs:element name="double" type="listTest:doubleList"/>
+  <xs:element name="date" type="listTest:dateList"/>
+  <xs:element name="integer" type="listTest:integerList"/>
+  <xs:element name="boolean" type="listTest:booleanList"/>
+
+</xs:schema>

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.csv;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -124,6 +125,10 @@ public class TestCSVImport {
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
+
+        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
+        assertNotNull(importStatus);
+        assertTrue(importStatus.isComplete());
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(3, importLogs.size());

@@ -37,6 +37,7 @@
                     <h:selectBooleanCheckbox styleClass="dataInputText"
                       value="#{csvImportActions.notifyUserByEmail}"
                       id="csv_import_notifyUserByEmail">
+                      <a4j:ajax execute="@this" render="@this" />
                     </h:selectBooleanCheckbox>
                     <h:outputLabel for="csv_import_notifyUserByEmail"
                       value="#{messages['label.csv.import.notifyUserByEmail']}" />
