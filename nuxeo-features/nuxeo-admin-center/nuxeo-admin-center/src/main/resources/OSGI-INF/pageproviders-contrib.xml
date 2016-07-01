@@ -7,7 +7,7 @@
     <genericPageProvider name="permissions_purge" class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <whereClause docType="PermissionsSearch">
         <fixedPart
-          statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document">
+          statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
           ecm:mixinType != 'HiddenInNavigation'
           AND ecm:isCheckedInVersion = 0
           AND SORTED_COLUMN IS NOT NULL
