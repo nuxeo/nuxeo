@@ -3,29 +3,29 @@
     <package id="nuxeo-server" label="Server" color="#635959" textcolor="#FFF"
       shortlabel="SERVER" virtual="true" />
     <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
-      desc="The Nuxeo DAM addon is a robust, extensible, Digital Asset Management solution that helps marketing and brand managers catalog, process, store, retrieve, and distribute rich media content, including images, audio, and video." />
+      desc="The Nuxeo DAM addon is a robust, extensible Digital Asset Management solution that helps marketing and brand managers catalog, process, store, retrieve and distribute rich media content, including images, audio and video." />
     <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE"
-      desc="The Nuxeo Drive addon enables the synchronization of folders from the Nuxeo Platform with local folder on your computer. It handles offline modification of files and deals with concurrent updates." />
+      desc="The Nuxeo Drive addon enables the synchronization of folders from the Nuxeo Platform with local folders on your computer. It handles offline modification of files and deals with concurrent updates." />
     <package id="nuxeo-diff" label="Nuxeo Diff" color="#5e9adf" textcolor="#FFF" shortlabel="DIFF"
-      desc="The Nuxeo Diff addon enables to compare two documents or two versions of a document to see the differences between documents or versions, including metadata values comparaison, as well as office files." />
+      desc="The Nuxeo Diff addon enables the comparison of two documents or two versions of a document to see the differences between documents or versions, including metadata values comparison, as well as office files." />
     <package id="nuxeo-showcase-content" label="Showcase Content" color="#DB97FF" textcolor="#FFF"
       shortlabel="DOCS"
-      desc="Nuxeo Showcase Content import a set of showcase content so that the repository is not empty for your first steps: office documents, images, videos." />
+      desc="The Nuxeo Showcase Content addon imports a set of showcase content so that the repository is not empty for your first step: office documents, images, videos." />
     <package id="nuxeo-spreadsheet" label="Spreadsheet" color="#ff736e" textcolor="#FFF" shortlabel="GRID"
       desc="The Nuxeo Spreadsheet addon allows bulk editing documents metadata starting from a content view result set, providing a spreadsheet-like user experience." />
     <package id="nuxeo-template-rendering-samples" label="Template Rendering" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPL"
-      desc="The Nuxeo Template Rendering addon is a set of plugins that provides a way to associate a Nuxeo Document with a Template that can be a Word document, an Excel sheet, an HTLM website. Template can reference metadata of the document. See the samples to undestand better." />
+      desc="The Nuxeo Template Rendering addon is a set of plugins that provides a way to associate a Nuxeo Document with a Template which can be a Word document, an Excel sheet, an HTML website. Template can reference metadata of the document. See the samples to understand better." />
     <package id="nuxeo-liveconnect" label="Live Connect" color="#ff452a" textcolor="#FFF" shortlabel="LIVE"
-      desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources as if they were documents stored in the Nuxeo repository." />
+      desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). Users can then apply business workflows to those external ressources as if they were documents stored in the Nuxeo repository." />
     <package id="nuxeo-review-workflows-dashboards" label="Review Workflows Dashboards" color="#213F7D"
       textcolor="#FFF" shortlabel="RWD"
       desc="The Review Workflows Dashboard addon provides data visualization dashboards for Review Workflows." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI - PREVIEW" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
-      desc="Try Nuxeo Web UI, the future of the user interface for Nuxeo Platform, finalized for next LTS." />
+      desc="Try Nuxeo Web UI, the future of the user interface for the Nuxeo Platform, finalized for the next LTS." />
     <package id="nuxeo-jsf-ui" label="Nuxeo JSF UI" color="#0000ff" textcolor="#FFF"
-      shortlabel="JSFUI" virtual="false" desc="The JSF UI is the original user interface for Nuxeo Platform." /> <!-- keep this formatting for assembly.xml replacement -->
+      shortlabel="JSFUI" virtual="false" desc="The JSF UI is the original user interface for the Nuxeo Platform." /> <!-- keep this formatting for assembly.xml replacement -->
   </packageDefinitions>
   <install>
     <packageOptions>
