@@ -88,7 +88,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
     }
 
     @Test
-    public void testArchivedVersions() throws Exception {
+    public void testArchivedVersions() throws UserNotConnectedException {
         login();
         open(TEST_FILE_URL);
 
