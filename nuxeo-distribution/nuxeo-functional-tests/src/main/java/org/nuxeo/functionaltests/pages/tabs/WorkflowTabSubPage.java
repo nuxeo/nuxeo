@@ -27,12 +27,17 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.google.common.base.Function;
 
 public class WorkflowTabSubPage extends DocumentBasePage {
 
@@ -79,11 +84,29 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void showGraphView() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         findElementWaitUntilEnabledAndClick(By.linkText("Show Graph View"));
+        arm.end();
+        Locator.waitUntilElementPresent(By.id("fancybox-close"));
     }
 
     public void closeGraphView() {
-        findElementAndWaitUntilEnabled(By.id("fancybox-close")).click();
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        findElementWaitUntilEnabledAndClick(By.id("fancybox-close"));
+        arm.end();
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    WebElement btn = driver.findElement(By.id("fancybox-overlay"));
+                    return !btn.isDisplayed() || !btn.isEnabled();
+                } catch (NoSuchElementException e) {
+                    return false;
+                }
+            }
+        });
     }
 
     public void startWorkflow() {
