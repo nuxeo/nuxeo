@@ -44,7 +44,7 @@ import org.openqa.selenium.WebElement;
  */
 public class ITWorkspaceTest extends AbstractTest {
 
-    protected final static String WORKSPACE_TITLE = "Test Workspace " + new Date().getTime();
+    protected final static String WORKSPACE_TITLE = "ITWS " + new Date().getTime();
 
     protected static final String WORKSPACE_DESCRIPTION = "Workspace Description" + new Date().getTime();
 
