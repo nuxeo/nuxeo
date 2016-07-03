@@ -102,9 +102,7 @@ public class Locator {
      */
     public static WebElement findElementAndWaitUntilEnabled(WebElement parentElement, final By by,
             final int findElementTimeout, final int waitUntilEnabledTimeout) throws NotFoundException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         Function<WebDriver, WebElement> function = new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
@@ -128,14 +126,8 @@ public class Locator {
     }
 
     public static List<WebElement> findElementsWithTimeout(final By by) throws NoSuchElementException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver)
-                                                                             .withTimeout(
-                                                                                     AbstractTest.LOAD_TIMEOUT_SECONDS,
-                                                                                     TimeUnit.SECONDS)
-                                                                             .pollingEvery(
-                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                                                                                     TimeUnit.MILLISECONDS)
-                                                                             .ignoring(NoSuchElementException.class);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.ignoring(NoSuchElementException.class);
         return wait.until(new Function<WebDriver, List<WebElement>>() {
             @Override
             public List<WebElement> apply(WebDriver driver) {
@@ -207,10 +199,8 @@ public class Locator {
      */
     public static WebElement findElementWithTimeout(final By by, int timeout, final WebElement parentElement)
             throws NoSuchElementException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(
-                AbstractTest.driver).withTimeout(timeout, TimeUnit.MILLISECONDS)
-                                    .pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS)
-                                    .ignoring(StaleElementReferenceException.class);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.withTimeout(timeout, TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
         try {
             return wait.until(new Function<WebDriver, WebElement>() {
                 @Override
@@ -244,15 +234,20 @@ public class Locator {
         return findElementWithTimeout(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000, parentElement);
     }
 
+    public static FluentWait<WebDriver> getFluentWait() {
+        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver);
+        wait.withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        return wait;
+    }
+
     /**
      * Fluent wait for text to be not present in the given element.
      *
      * @since 5.7.3
      */
     public static void waitForTextNotPresent(final WebElement element, final String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -271,9 +266,7 @@ public class Locator {
      * @since 5.7.3
      */
     public static void waitForTextPresent(By locator, String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until(ExpectedConditions.textToBePresentInElementLocated(locator, text));
     }
 
@@ -283,9 +276,7 @@ public class Locator {
      * @since 5.7.3
      */
     public static void waitForTextPresent(final WebElement element, final String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -397,9 +388,7 @@ public class Locator {
      * @since 5.7.2
      */
     public static void waitUntilElementNotPresent(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until((new Function<WebDriver, By>() {
             @Override
             public By apply(WebDriver driver) {
@@ -420,14 +409,8 @@ public class Locator {
      * @since 5.7.2
      */
     public static void waitUntilElementPresent(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver)
-                                                                             .withTimeout(
-                                                                                     AbstractTest.LOAD_TIMEOUT_SECONDS,
-                                                                                     TimeUnit.SECONDS)
-                                                                             .pollingEvery(
-                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                                                                                     TimeUnit.MILLISECONDS)
-                                                                             .ignoring(NoSuchElementException.class);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.ignoring(NoSuchElementException.class);
         wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
@@ -452,8 +435,8 @@ public class Locator {
      * @param timeout the timeout in milliseconds
      */
     public static void waitUntilEnabled(final WebElement element, int timeout) throws NotFoundException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(timeout,
-                TimeUnit.MILLISECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.withTimeout(timeout, TimeUnit.MILLISECONDS);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -487,9 +470,7 @@ public class Locator {
     @SafeVarargs
     public static <K extends java.lang.Throwable> void waitUntilGivenFunctionIgnoreAll(
             Function<WebDriver, Boolean> function, java.lang.Class<? extends K>... ignoredExceptions) {
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        FluentWait<WebDriver> wait = getFluentWait();
         if (ignoredExceptions != null) {
             if (ignoredExceptions.length == 1) {
                 wait.ignoring(ignoredExceptions[0]);
@@ -510,9 +491,7 @@ public class Locator {
      */
     public static <K extends java.lang.Throwable> void waitUntilGivenFunctionIgnoring(
             Function<WebDriver, Boolean> function, java.lang.Class<? extends K> ignoredException) {
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        FluentWait<WebDriver> wait = getFluentWait();
         if (ignoredException != null) {
             wait.ignoring(ignoredException);
         }
