@@ -240,7 +240,7 @@ public class RestHelper {
         if (idOrPath.startsWith("/")) {
             // @yannis : temporary way to avoid DocumentNotFoundException in server log before NXP-19658
             Documents documents = CLIENT.repository().query(String.format(DOCUMENT_QUERY_BY_PATH_BASE, idOrPath));
-            if (documents.size() > 1) {
+            if (documents.size() > 0) {
                 CLIENT.repository().deleteDocument(documents.getDocument(0));
             }
         } else {
