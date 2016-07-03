@@ -222,7 +222,7 @@ public class JsonWriter {
             jg.writeStringField("name", p.name);
             jg.writeStringField("description", p.description);
             jg.writeStringField("type", p.type);
-            jg.writeBooleanField("required", p.isRequired);
+            jg.writeBooleanField("required", p.required);
 
             jg.writeStringField("widget", p.widget);
             jg.writeNumberField("order", p.order);

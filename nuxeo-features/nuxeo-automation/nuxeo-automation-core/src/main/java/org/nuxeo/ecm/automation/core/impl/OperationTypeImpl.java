@@ -355,7 +355,7 @@ public class OperationTypeImpl implements OperationType {
             }
             param.order = p.order();
             param.values = p.values();
-            param.isRequired = p.required();
+            param.required = p.required();
             paramsAccumulator.add(param);
         }
         Collections.sort(paramsAccumulator);

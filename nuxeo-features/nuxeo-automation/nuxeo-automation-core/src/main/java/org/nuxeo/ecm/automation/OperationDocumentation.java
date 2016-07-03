@@ -118,7 +118,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
         // is this useful (?)
         @XNode("@required")
-        public boolean isRequired;
+        public boolean required;
 
         public Param() {
         }
@@ -147,7 +147,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
         }
 
         public boolean isRequired() {
-            return isRequired;
+            return required;
         }
 
         public int getOrder() {
@@ -156,7 +156,7 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
 
         @Override
         public String toString() {
-            return name + " [" + type + "] " + (isRequired ? "required" : "optional");
+            return name + " [" + type + "] " + (required ? "required" : "optional");
         }
 
         @Override
@@ -168,10 +168,10 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
                     return 1;
                 }
             }
-            if (isRequired && !o.isRequired) {
+            if (required && !o.required) {
                 return -1;
             }
-            if (o.isRequired && !isRequired) {
+            if (o.required && !required) {
                 return 1;
             }
             return name.compareTo(o.name);
