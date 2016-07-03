@@ -213,7 +213,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public AdminCenterBasePage getAdminCenter() {
-        findElementWithTimeout(By.linkText("ADMIN")).click();
+        findElementWaitUntilEnabledAndClick(By.linkText("ADMIN"));
         return asPage(AdminCenterBasePage.class);
     }
 
@@ -357,7 +357,7 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.7
      */
     public UserHomePage getUserHome() {
-        findElementWithTimeout(By.linkText("HOME")).click();
+        findElementWaitUntilEnabledAndClick(By.linkText("HOME"));
         UserHomePage page = asPage(UserHomePage.class);
         // make sure we're back on the dashboard tab
         return page.goToDashboard();
@@ -377,7 +377,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public DocumentBasePage goToDocumentByBreadcrumb(String documentTitle) {
-        clickOnBreadcrumElement(driver, documentTitle);
+        clickOnBreadcrumbElement(driver, documentTitle);
         return asPage(DocumentBasePage.class);
     }
 
@@ -386,7 +386,7 @@ public class DocumentBasePage extends AbstractPage {
      *
      * @since 8.3
      */
-    public static void clickOnBreadcrumElement(WebDriver driver, String documentTitle) {
+    public static void clickOnBreadcrumbElement(WebDriver driver, String documentTitle) {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         // ugly hack for NXP-19710: prevent search box from hiding breadcrumb links when window is too small
         executor.executeScript("return document.getElementById('nxw_headerSearch_panel').remove()");
@@ -410,10 +410,10 @@ public class DocumentBasePage extends AbstractPage {
     public AddToCollectionForm getAddToCollectionPopup() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        addToCollectionUpperAction.click();
+        waitUntilEnabledAndClick(addToCollectionUpperAction);
         arm.end();
-        Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
+        WebElement elt = AbstractPage.getFancyBoxContent();
+        return getWebFragment(elt, AddToCollectionForm.class);
     }
 
     /**
@@ -426,10 +426,10 @@ public class DocumentBasePage extends AbstractPage {
                 StaleElementReferenceException.class);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
+        findElementWaitUntilEnabledAndClick(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID));
         arm.end();
-        Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(By.id("fancybox-content"), AddAllToCollectionForm.class);
+        WebElement elt = AbstractPage.getFancyBoxContent();
+        return getWebFragment(elt, AddAllToCollectionForm.class);
     }
 
     public boolean isAddToCollectionUpperActionAvailable() {
@@ -445,7 +445,7 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.9.3
      */
     public void popupUserMenuActions() {
-        userMenuActions.findElement(By.id("nxw_userMenuActions_dropDownMenu")).click();
+        Locator.findElementWaitUntilEnabledAndClick(userMenuActions, By.id("nxw_userMenuActions_dropDownMenu"));
         Locator.waitUntilGivenFunctionIgnoring(
                 driver -> !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']"))
                                           .getAttribute("style")
@@ -458,7 +458,7 @@ public class DocumentBasePage extends AbstractPage {
      */
     public DocumentBasePage switchToPersonalWorkspace() {
         popupUserMenuActions();
-        driver.findElement(By.linkText("Personal Workspace")).click();
+        findElementWaitUntilEnabledAndClick(By.linkText("Personal Workspace"));
         return asPage(DocumentBasePage.class);
     }
 
@@ -467,7 +467,7 @@ public class DocumentBasePage extends AbstractPage {
      */
     public DocumentBasePage switchToDocumentBase() {
         popupUserMenuActions();
-        driver.findElement(By.linkText("Back to Document Base")).click();
+        findElementWaitUntilEnabledAndClick(By.linkText("Back to Document Base"));
         return asPage(DocumentBasePage.class);
     }
 
@@ -475,7 +475,7 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.9.3
      */
     public HomePage goToHomePage() {
-        homePageLink.click();
+        waitUntilEnabledAndClick(homePageLink);
         return asPage(HomePage.class);
     }
 
@@ -483,7 +483,7 @@ public class DocumentBasePage extends AbstractPage {
      * @since 6.0
      */
     public SearchPage goToSearchPage() {
-        searchPageLink.click();
+        waitUntilEnabledAndClick(searchPageLink);
         return asPage(SearchPage.class);
     }
 
@@ -491,7 +491,7 @@ public class DocumentBasePage extends AbstractPage {
      * @since 7.3
      */
     public WorkspaceHomePage goToWorkspaces() {
-        documentManagementLink.click();
+        waitUntilEnabledAndClick(documentManagementLink);
         return asPage(WorkspaceHomePage.class);
     }
 

@@ -93,7 +93,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         assertEquals(2, trelements.size());
 
         // Select the first document
-        trelements.get(0).findElement(By.xpath(CHECK_BOX_XPATH)).click();
+        Locator.findElementWaitUntilEnabledAndClick(trelements.get(0), By.xpath(CHECK_BOX_XPATH));
         boolean selectedFileName = Boolean.parseBoolean(
                 trelements.get(0).findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText());
 

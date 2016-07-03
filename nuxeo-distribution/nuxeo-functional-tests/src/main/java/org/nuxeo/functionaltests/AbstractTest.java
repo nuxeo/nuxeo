@@ -113,6 +113,13 @@ public abstract class AbstractTest {
 
     public static final int LOAD_TIMEOUT_SECONDS = 30;
 
+    /**
+     * Driver implicit wait in milliseconds.
+     *
+     * @since 8.3
+     */
+    public static final int IMPLICIT_WAIT_MILLISECONDS = 200;
+
     public static final int LOAD_SHORT_TIMEOUT_SECONDS = 2;
 
     public static final int AJAX_TIMEOUT_SECONDS = 10;
@@ -176,8 +183,8 @@ public abstract class AbstractTest {
 
     static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll(
-            "/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
+                                                 .replaceAll("/$", "");
 
     public static RemoteWebDriver driver;
 
@@ -212,6 +219,7 @@ public abstract class AbstractTest {
             throw new RuntimeException("Browser not supported: " + browser);
         }
         driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME_OUT_SECONDS, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(IMPLICIT_WAIT_MILLISECONDS, TimeUnit.MILLISECONDS);
     }
 
     protected static void initFirefoxDriver() throws Exception {
@@ -357,14 +365,14 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                             .pollingEvery(POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         try {
             return wait.until(aPage -> {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
-                    //check if there are Jquery ajax requests to complete
-                    if(pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)){
+                    // check if there are Jquery ajax requests to complete
+                    if (pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)) {
                         new AjaxRequestManager(driver).waitForJQueryRequests();
                     }
 

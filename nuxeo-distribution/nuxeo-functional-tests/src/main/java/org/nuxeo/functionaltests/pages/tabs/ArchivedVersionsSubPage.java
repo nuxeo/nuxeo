@@ -19,13 +19,11 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
@@ -38,6 +36,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.SystemClock;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Representation of a Archived versions sub tab page.
@@ -185,8 +186,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      */
     public <T> T executeActionOnSelectedVersions(String actionId, boolean isConfirm, Class<T> pageClass,
             int findElementTimeout, int waitUntilEnabledTimeout) {
-        findElementWaitUntilEnabledAndClick(By.xpath("//span[@id=\"" + actionId + "\"]/input"), findElementTimeout,
-                waitUntilEnabledTimeout);
+        Locator.findElementWaitUntilEnabledAndClick(null, By.xpath("//span[@id=\"" + actionId + "\"]/input"),
+                findElementTimeout, waitUntilEnabledTimeout);
         if (isConfirm) {
             Alert alert = driver.switchTo().alert();
             assertEquals("Delete selected document(s)?", alert.getText());

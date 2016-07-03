@@ -126,8 +126,10 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         open(TEST_SECTION_URL);
 
-        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class).goToDocument(
-                TEST_FILE_TITLE).getSummaryTab().isPublished());
+        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
+                                                 .goToDocument(TEST_FILE_TITLE)
+                                                 .getSummaryTab()
+                                                 .isPublished());
 
         logout();
 
@@ -135,8 +137,10 @@ public class ITPublishDocumentTests extends AbstractTest {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
 
         open(TEST_SECTION_URL);
-        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class).goToDocument(
-                TEST_FILE_TITLE).getSummaryTab().isPublished());
+        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
+                                                 .goToDocument(TEST_FILE_TITLE)
+                                                 .getSummaryTab()
+                                                 .isPublished());
 
         logout();
     }
@@ -145,8 +149,12 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionManagerApproval() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
-                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
+                                                                     .createFile(TEST_FILE_TITLE, "description", false,
+                                                                             null, null, null)
+                                                                     .getPublishTab()
+                                                                     .publish("Local Sections (Domain)", "None",
+                                                                             TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
@@ -154,8 +162,11 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Document is waiting for approval
         open(TEST_SECTION_URL);
-        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class).goToDocument(
-                TEST_FILE_TITLE).getSummaryTab().isAwaitingPublication());
+        assertTrue(
+                asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
+                                              .goToDocument(TEST_FILE_TITLE)
+                                              .getSummaryTab()
+                                              .isAwaitingPublication());
         logout();
 
         login(READER_USERNAME, READER_USERNAME);
@@ -169,8 +180,9 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishingApprovalBySectionManager() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
-        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
-                null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
+                                      .getPublishTab()
+                                      .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
         logout();
 
         // manager has a publication task in the home dashboard
@@ -210,8 +222,12 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionWriterApproval() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
-                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
+                                                                     .createFile(TEST_FILE_TITLE, "description", false,
+                                                                             null, null, null)
+                                                                     .getPublishTab()
+                                                                     .publish("Local Sections (Domain)", "None",
+                                                                             TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
@@ -275,8 +291,12 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionWriterReject() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
-                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
+                                                                     .createFile(TEST_FILE_TITLE, "description", false,
+                                                                             null, null, null)
+                                                                     .getPublishTab()
+                                                                     .publish("Local Sections (Domain)", "None",
+                                                                             TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
@@ -345,8 +365,12 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionManagerReject() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
-                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
+                                                                     .createFile(TEST_FILE_TITLE, "description", false,
+                                                                             null, null, null)
+                                                                     .getPublishTab()
+                                                                     .publish("Local Sections (Domain)", "None",
+                                                                             TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
@@ -417,8 +441,9 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Publish a file
         open(TEST_FOLDER_URL);
-        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
-                null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
+                                      .getPublishTab()
+                                      .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // Unpublish it
         open(TEST_SECTION_URL);
@@ -462,8 +487,9 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Publish a file
         open(TEST_FOLDER_URL);
-        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
-                null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
+                                      .getPublishTab()
+                                      .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         logout();
 
@@ -638,8 +664,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         List<WebElement> items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // check only version 0.1 is published in test section as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -648,8 +677,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // publish version 0.2 as reader
         open(TEST_FOLDER_URL);
@@ -662,10 +694,16 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
-        assertEquals("0.1", items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
+        assertEquals("0.1",
+                items.get(1)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // check both version 0.1 and 0.2 are listed in test section as manager
         login(MANAGER_USERNAME, MANAGER_USERNAME);
@@ -674,10 +712,16 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
-        assertEquals("0.1", items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
+        assertEquals("0.1",
+                items.get(1)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // approve version 0.2 as manager
         sectionPage.goToDocument(TEST_NOTE_TITLE);
@@ -689,8 +733,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // check result as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -699,8 +746,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // unpublish as admin
         login();
@@ -736,8 +786,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         List<WebElement> items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // check only version 0.1 is published in test section as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -746,8 +799,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // publish version 0.2 as reader
         open(TEST_FOLDER_URL);
@@ -760,10 +816,16 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
-        assertEquals("0.1", items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
+        assertEquals("0.1",
+                items.get(1)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // check both version 0.1 and 0.2 are listed in test section as manager
         login(MANAGER_USERNAME, MANAGER_USERNAME);
@@ -772,10 +834,16 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
-        assertEquals("0.1", items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
+        assertEquals("0.1",
+                items.get(1)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // publish over version 0.2 as manager
         open(TEST_FOLDER_URL);
@@ -788,8 +856,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // check result as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -798,8 +869,11 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2", items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.2",
+                items.get(0)
+                     .findElement(By.id(
+                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
+                     .getText());
 
         // unpublish as admin
         login();

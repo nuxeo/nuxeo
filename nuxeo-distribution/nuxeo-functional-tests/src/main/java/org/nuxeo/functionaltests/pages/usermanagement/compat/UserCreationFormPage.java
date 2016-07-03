@@ -81,7 +81,8 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
         groupInput.sendKeys(group);
-        WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//table[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
+        WebElement ajaxUserListElement = findElementWithTimeout(
+                By.xpath("//table[@id='createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
         ajaxUserListElement.click();
         createButton.click();
         return asPage(UsersGroupsBasePage.class);

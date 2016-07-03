@@ -98,9 +98,11 @@ public class ITForumTest extends AbstractTest {
     public void testCreateForum() throws UserNotConnectedException {
         login(TEST_USERNAME, TEST_USERNAME);
         open(TEST_WORKSPACE_URL);
-        asPage(DocumentBasePage.class).getContentTab().createForum(TEST_FORUM_TITLE,
-                TEST_FORUM_DESCRIPTION).goToDocumentByBreadcrumb(TEST_WORKSPACE_TITLE).getContentTab().hasDocumentLink(
-                        TEST_FORUM_TITLE);
+        asPage(DocumentBasePage.class).getContentTab()
+                                      .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
+                                      .goToDocumentByBreadcrumb(TEST_WORKSPACE_TITLE)
+                                      .getContentTab()
+                                      .hasDocumentLink(TEST_FORUM_TITLE);
 
         logout();
 
@@ -115,8 +117,9 @@ public class ITForumTest extends AbstractTest {
         login(TEST_USERNAME, TEST_USERNAME);
         open(TEST_WORKSPACE_URL);
 
-        asPage(DocumentBasePage.class).getContentTab().createForum(TEST_FORUM_TITLE,
-                TEST_FORUM_DESCRIPTION).createTopic(TEST_TOPIC_NO_MODERATION_TITLE, "description", false);
+        asPage(DocumentBasePage.class).getContentTab()
+                                      .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
+                                      .createTopic(TEST_TOPIC_NO_MODERATION_TITLE, "description", false);
 
         logout();
 
@@ -136,8 +139,10 @@ public class ITForumTest extends AbstractTest {
         login(TEST_USERNAME, TEST_USERNAME);
         open(TEST_WORKSPACE_URL);
 
-        TopicTabSubPage page = asPage(DocumentBasePage.class).getContentTab().createForum(TEST_FORUM_TITLE,
-                TEST_FORUM_DESCRIPTION).createTopic(TEST_TOPIC_MODERATION_TITLE, "description", true, TEST_USERNAME_2);
+        TopicTabSubPage page = asPage(DocumentBasePage.class).getContentTab()
+                                                             .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
+                                                             .createTopic(TEST_TOPIC_MODERATION_TITLE, "description",
+                                                                     true, TEST_USERNAME_2);
 
         assertEquals(TEST_TOPIC_MODERATION_TITLE, page.getCurrentDocumentTitle());
         List<WebElement> children = page.goToDocumentByBreadcrumb(TEST_FORUM_TITLE).getForumTab().getChildTopicRows();
@@ -151,8 +156,10 @@ public class ITForumTest extends AbstractTest {
         login(TEST_USERNAME, TEST_USERNAME);
         open(TEST_WORKSPACE_URL);
 
-        TopicTabSubPage topicTab = asPage(DocumentBasePage.class).getContentTab().createForum(TEST_FORUM_TITLE,
-                TEST_FORUM_DESCRIPTION).createTopic(TEST_TOPIC_NO_MODERATION_TITLE, "description", false);
+        TopicTabSubPage topicTab = asPage(DocumentBasePage.class).getContentTab()
+                                                                 .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
+                                                                 .createTopic(TEST_TOPIC_NO_MODERATION_TITLE,
+                                                                         "description", false);
 
         // add comment
         assertTrue(topicTab.isCommentFormDisplayed());
@@ -193,8 +200,10 @@ public class ITForumTest extends AbstractTest {
         login();
         open(TEST_WORKSPACE_URL);
 
-        TopicTabSubPage topicTab = asPage(DocumentBasePage.class).getContentTab().createForum(TEST_FORUM_TITLE,
-                TEST_FORUM_DESCRIPTION).createTopic(TEST_TOPIC_MODERATION_TITLE, "description", true);
+        TopicTabSubPage topicTab = asPage(DocumentBasePage.class).getContentTab()
+                                                                 .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
+                                                                 .createTopic(TEST_TOPIC_MODERATION_TITLE,
+                                                                         "description", true);
 
         // add comment as test user
         login(TEST_USERNAME, TEST_USERNAME);
@@ -286,8 +295,10 @@ public class ITForumTest extends AbstractTest {
         login(TEST_USERNAME, TEST_USERNAME);
         open(TEST_WORKSPACE_URL);
 
-        TopicTabSubPage topicTab = asPage(DocumentBasePage.class).getContentTab().createForum(TEST_FORUM_TITLE,
-                TEST_FORUM_DESCRIPTION).createTopic(TEST_TOPIC_NO_MODERATION_TITLE, "description", false);
+        TopicTabSubPage topicTab = asPage(DocumentBasePage.class).getContentTab()
+                                                                 .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
+                                                                 .createTopic(TEST_TOPIC_NO_MODERATION_TITLE,
+                                                                         "description", false);
 
         // add 2 comments an 2 replies
         topicTab = topicTab.addComment("test comment 1", "this is the test comment 1");

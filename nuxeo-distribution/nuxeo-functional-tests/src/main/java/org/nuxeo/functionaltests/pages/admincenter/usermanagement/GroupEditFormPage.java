@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.WebDriver;
@@ -104,7 +105,7 @@ public class GroupEditFormPage extends UsersGroupsBasePage {
     public GroupViewTabSubPage save() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        saveButton.click();
+        Locator.waitUntilEnabledAndClick(saveButton);
         arm.end();
         return asPage(GroupViewTabSubPage.class);
     }

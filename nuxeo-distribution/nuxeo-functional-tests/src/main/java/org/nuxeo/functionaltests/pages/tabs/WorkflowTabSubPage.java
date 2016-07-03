@@ -30,14 +30,12 @@ import org.junit.Assert;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import com.google.common.base.Function;
 
 public class WorkflowTabSubPage extends DocumentBasePage {
 
@@ -88,25 +86,13 @@ public class WorkflowTabSubPage extends DocumentBasePage {
         arm.begin();
         findElementWaitUntilEnabledAndClick(By.linkText("Show Graph View"));
         arm.end();
+        // wait for load
+        AbstractPage.getFancyBoxContent();
         Locator.waitUntilElementPresent(By.id("fancybox-close"));
     }
 
     public void closeGraphView() {
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        findElementWaitUntilEnabledAndClick(By.id("fancybox-close"));
-        arm.end();
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                try {
-                    WebElement btn = driver.findElement(By.id("fancybox-overlay"));
-                    return !btn.isDisplayed() || !btn.isEnabled();
-                } catch (NoSuchElementException e) {
-                    return false;
-                }
-            }
-        });
+        AbstractPage.closeFancyBox();
     }
 
     public void startWorkflow() {
@@ -137,7 +123,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * @since 5.8
      */
     public WebElement getTaskLayoutNode() {
-        return findElementWithTimeout(By.xpath("//div[starts-with(@id, 'nxl_current_route_layout:nxw_current_route_user_tasks_panel')]"));
+        return findElementWithTimeout(
+                By.xpath("//div[starts-with(@id, 'nxl_current_route_layout:nxw_current_route_user_tasks_panel')]"));
     }
 
     @Override

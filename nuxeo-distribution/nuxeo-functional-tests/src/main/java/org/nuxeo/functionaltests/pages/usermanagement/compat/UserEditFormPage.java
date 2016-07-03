@@ -77,7 +77,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(emailInput, email);
         if (group != null) {
             groupInput.sendKeys(group);
-            WebElement ajaxUserListElement = findElementWithTimeout(By.xpath("//table[@id='editUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
+            WebElement ajaxUserListElement = findElementWithTimeout(
+                    By.xpath("//table[@id='editUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
             ajaxUserListElement.click();
         }
         saveButton.click();

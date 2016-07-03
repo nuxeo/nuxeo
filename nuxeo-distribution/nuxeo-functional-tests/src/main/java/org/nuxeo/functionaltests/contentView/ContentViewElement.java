@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests.contentView;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -70,8 +71,8 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     public WebElement getActionByTitle(String title) {
-        return getElement().findElement(By.className("contentViewUpperActions")).findElement(
-                By.xpath("//img[@alt=\"" + title + "\"]"));
+        return getElement().findElement(By.className("contentViewUpperActions"))
+                           .findElement(By.xpath("//img[@alt=\"" + title + "\"]"));
     }
 
     public ContentViewElement switchToResultLayout(ResultLayout layout) {
@@ -95,7 +96,7 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 8.3
      */
     public void clickOnItemTitle(String title) {
-        getResultsPanel().findElement(By.linkText(title)).click();
+        Locator.findElementWaitUntilEnabledAndClick(getResultsPanel(), By.linkText(title));
     }
 
     /**
@@ -121,10 +122,9 @@ public class ContentViewElement extends WebFragmentImpl {
             for (String title : titles) {
                 try {
                     item.findElement(By.linkText(title));
-                    WebElement checkBox = item.findElement(By.xpath(CHECK_BOX_XPATH));
                     AjaxRequestManager arm = new AjaxRequestManager(driver);
                     arm.begin();
-                    checkBox.click();
+                    Locator.findElementWaitUntilEnabledAndClick(item, By.xpath(CHECK_BOX_XPATH));
                     arm.end();
                     break;
                 } catch (NoSuchElementException e) {
@@ -165,7 +165,7 @@ public class ContentViewElement extends WebFragmentImpl {
             String id = getId();
             AjaxRequestManager arm = new AjaxRequestManager(driver);
             arm.begin();
-            selectAll.click();
+            Locator.scrollAndForceClick(selectAll);
             arm.end();
             return reload(id);
         }
@@ -176,8 +176,8 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 8.3
      */
     public WebElement getSelectionActionByTitle(String title) {
-        return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]")).findElement(
-                By.xpath("//input[@value=\"" + title + "\"]"));
+        return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]"))
+                                .findElement(By.xpath("//input[@value=\"" + title + "\"]"));
     }
 
 }

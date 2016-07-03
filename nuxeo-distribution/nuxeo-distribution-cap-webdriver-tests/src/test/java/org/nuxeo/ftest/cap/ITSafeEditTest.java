@@ -114,7 +114,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    private final static String WORKSPACE_TITLE = ITSafeEditTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITSafeEditTest.class.getSimpleName() + "_WorkspaceTitle_"
+            + new Date().getTime();
 
     private final static String NEW_WORKSPACE_TITLE = "newWorkspaceName";
 
@@ -130,7 +131,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
+                "members");
         wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
         fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE, null);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
@@ -246,6 +248,7 @@ public class ITSafeEditTest extends AbstractTest {
         titleElt.sendKeys(Keys.chord(ctrlKey, "a") + Keys.DELETE + NEW_WORKSPACE_TITLE);
         // weird thing in webdriver: we need to call clear on an input of the
         // form to fire an onchange event
+        Locator.scrollToElement(descriptionElt);
         descriptionElt.click();
         descriptionElt.clear();
         log.debug("2 - " + localStorage.getLocalStorageLength());

@@ -21,15 +21,13 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -38,6 +36,9 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
@@ -111,8 +112,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @return The create form page object
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
-        newButton.click();
-        WebElement fancyBox = getFancyBoxContent();
+        waitUntilEnabledAndClick(newButton);
+        WebElement fancyBox = AbstractPage.getFancyBoxContent();
         // find the link to doc type that needs to be created
         WebElement link = fancyBox.findElement(By.linkText(docType));
         assertNotNull(link);
@@ -127,7 +128,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     protected void deleteSelectedDocuments() {
-        getElement().getSelectionActionByTitle(DELETE).click();
+        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(DELETE));
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.accept();
@@ -135,7 +136,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     public DocumentBasePage addToWorkList(String documentTitle) {
         getElement().checkByTitle(documentTitle);
-        getElement().getSelectionActionByTitle(ADD_TO_WORKLIST).click();
+        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(ADD_TO_WORKLIST));
         return asPage(DocumentBasePage.class);
     }
 
@@ -180,7 +181,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.2
      */
     public ContentTabSubPage clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
-        clearFilterButton.click();
+        Locator.waitUntilEnabledAndClick(clearFilterButton);
         Locator.waitUntilGivenFunction(driver -> {
             try {
                 return getChildDocumentRows().size() == expectedNbOfDisplayedResult;

@@ -94,12 +94,14 @@ public class ITVerifyDeleteDocumentContentTest extends AbstractTest {
 
             // test restore and delete buttons and restore note
             trashPage.selectByTitle("note to restore 1"); // tick and check buttons
-            assertEquals(1, driver.findElements(
-                By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form']"))
-                .size());
-            assertEquals(1, driver.findElements(
-                By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_UNDELETE_form']"))
-                .size());
+            assertEquals(1,
+                    driver.findElements(
+                            By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form']"))
+                          .size());
+            assertEquals(1,
+                    driver.findElements(By
+                                          .xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_UNDELETE_form']"))
+                          .size());
             trashPage.selectByTitle("note to restore 1"); // untick
             filePage = trashPage.restoreDocument("note to restore 1");
 

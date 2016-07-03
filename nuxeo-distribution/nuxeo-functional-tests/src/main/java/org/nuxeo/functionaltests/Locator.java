@@ -85,16 +85,31 @@ public class Locator {
      */
     public static WebElement findElementAndWaitUntilEnabled(final By by, final int findElementTimeout,
             final int waitUntilEnabledTimeout) throws NotFoundException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        return findElementAndWaitUntilEnabled(null, by, findElementTimeout, waitUntilEnabledTimeout);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with a {@code findElementTimeout}, inside an optional
+     * {@code parentElement}. Then waits until the element is enabled, with a {@code waitUntilEnabledTimeout}.
+     *
+     * @param parentElement the parent element (can be null)
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
+     * @return the first matching element on the current page, if found, with optional parent element
+     * @throws NotFoundException if the element is not found or not enabled
+     * @since 8.3
+     */
+    public static WebElement findElementAndWaitUntilEnabled(WebElement parentElement, final By by,
+            final int findElementTimeout, final int waitUntilEnabledTimeout) throws NotFoundException {
+        Wait<WebDriver> wait = getFluentWait();
         Function<WebDriver, WebElement> function = new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
                 WebElement element = null;
                 try {
                     // Find the element.
-                    element = findElementWithTimeout(by, findElementTimeout);
+                    element = findElementWithTimeout(by, findElementTimeout, parentElement);
 
                     // Try to wait until the element is enabled.
                     waitUntilEnabled(element, waitUntilEnabledTimeout);
@@ -111,10 +126,8 @@ public class Locator {
     }
 
     public static List<WebElement> findElementsWithTimeout(final By by) throws NoSuchElementException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                                NoSuchElementException.class);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.ignoring(NoSuchElementException.class);
         return wait.until(new Function<WebDriver, List<WebElement>>() {
             @Override
             public List<WebElement> apply(WebDriver driver) {
@@ -132,7 +145,22 @@ public class Locator {
      * @throws NotFoundException if the element is not found or not enabled
      */
     public static void findElementWaitUntilEnabledAndClick(By by) throws NotFoundException {
-        findElementWaitUntilEnabledAndClick(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
+        findElementWaitUntilEnabledAndClick(null, by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
+                AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Finds the first {@link WebElement} using the given method, with the default timeout, inside an optional
+     * {@code parentElement}. Then waits until the element is enabled, with the default timeout. Then clicks on the
+     * element.
+     *
+     * @param parentElement the parent element (can be null)
+     * @param by the locating mechanism
+     * @throws NotFoundException if the element is not found or not enabled
+     * @since 8.3
+     */
+    public static void findElementWaitUntilEnabledAndClick(WebElement parentElement, By by) throws NotFoundException {
+        findElementWaitUntilEnabledAndClick(parentElement, by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
                 AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
     }
 
@@ -171,9 +199,8 @@ public class Locator {
      */
     public static WebElement findElementWithTimeout(final By by, int timeout, final WebElement parentElement)
             throws NoSuchElementException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(timeout,
-                TimeUnit.MILLISECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                        TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.withTimeout(timeout, TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
         try {
             return wait.until(new Function<WebDriver, WebElement>() {
                 @Override
@@ -207,15 +234,20 @@ public class Locator {
         return findElementWithTimeout(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000, parentElement);
     }
 
+    public static FluentWait<WebDriver> getFluentWait() {
+        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver);
+        wait.withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        return wait;
+    }
+
     /**
      * Fluent wait for text to be not present in the given element.
      *
      * @since 5.7.3
      */
     public static void waitForTextNotPresent(final WebElement element, final String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -234,9 +266,7 @@ public class Locator {
      * @since 5.7.3
      */
     public static void waitForTextPresent(By locator, String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until(ExpectedConditions.textToBePresentInElementLocated(locator, text));
     }
 
@@ -246,9 +276,7 @@ public class Locator {
      * @since 5.7.3
      */
     public static void waitForTextPresent(final WebElement element, final String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -269,30 +297,34 @@ public class Locator {
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @throws NotFoundException if the element is not found or not enabled
+     * @deprecated since 8.3, use {@link #findElementWaitUntilEnabledAndClick(WebElement, By)}
      */
+    @Deprecated
     public static void findElementWaitUntilEnabledAndClick(final By by, final int findElementTimeout,
             final int waitUntilEnabledTimeout) throws NotFoundException {
+        findElementWaitUntilEnabledAndClick(null, by, findElementTimeout, waitUntilEnabledTimeout);
+    }
 
+    /**
+     * Finds the first {@link WebElement} using the given method, with a {@code findElementTimeout}, inside an optional
+     * {@code parentElement}. Then waits until the element is enabled, with a {@code waitUntilEnabledTimeout}. Scroll to
+     * it, then clicks on the element.
+     *
+     * @param parentElement the parent element (can be null)
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
+     * @throws NotFoundException if the element is not found or not enabled
+     * @since 8.3
+     */
+    public static void findElementWaitUntilEnabledAndClick(WebElement parentElement, final By by,
+            final int findElementTimeout, final int waitUntilEnabledTimeout) throws NotFoundException {
+        WebElement element = findElementAndWaitUntilEnabled(parentElement, by, findElementTimeout,
+                waitUntilEnabledTimeout);
         waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                // Find the element.
-                WebElement element = findElementAndWaitUntilEnabled(by, findElementTimeout, waitUntilEnabledTimeout);
-                // scroll to it
-                JavascriptExecutor executor = (JavascriptExecutor) driver;
-                executor.executeScript("arguments[0].scrollIntoView(false);", element);
-                // click
-                try {
-                    // forced click to workaround non-effective clicks in miscellaneous situations
-                    executor.executeScript("arguments[0].click();", element);
-                    return true;
-                } catch (WebDriverException e) {
-                    if (e.getMessage().contains("Element is not clickable at point")) {
-                        log.debug("Element is not clickable yet");
-                        return false;
-                    }
-                    throw e;
-                }
+                return scrollAndForceClick(element);
             }
         }, StaleElementReferenceException.class);
     }
@@ -319,27 +351,11 @@ public class Locator {
      */
     public static void waitUntilEnabledAndClick(final WebElement element, final int waitUntilEnabledTimeout)
             throws NotFoundException {
-
+        waitUntilEnabled(element, waitUntilEnabledTimeout);
         waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                // wait until enabled
-                waitUntilEnabled(element, waitUntilEnabledTimeout);
-                // scroll to it
-                JavascriptExecutor executor = (JavascriptExecutor) driver;
-                executor.executeScript("arguments[0].scrollIntoView(false);", element);
-                // click
-                try {
-                    // forced click to workaround non-effective clicks in miscellaneous situations
-                    executor.executeScript("arguments[0].click();", element);
-                    return true;
-                } catch (WebDriverException e) {
-                    if (e.getMessage().contains("Element is not clickable at point")) {
-                        log.debug("Element is not clickable yet");
-                        return false;
-                    }
-                    throw e;
-                }
+                return scrollAndForceClick(element);
             }
         }, StaleElementReferenceException.class);
     }
@@ -372,9 +388,7 @@ public class Locator {
      * @since 5.7.2
      */
     public static void waitUntilElementNotPresent(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<WebDriver> wait = getFluentWait();
         wait.until((new Function<WebDriver, By>() {
             @Override
             public By apply(WebDriver driver) {
@@ -395,10 +409,8 @@ public class Locator {
      * @since 5.7.2
      */
     public static void waitUntilElementPresent(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                                NoSuchElementException.class);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.ignoring(NoSuchElementException.class);
         wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
@@ -423,8 +435,8 @@ public class Locator {
      * @param timeout the timeout in milliseconds
      */
     public static void waitUntilEnabled(final WebElement element, int timeout) throws NotFoundException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(timeout,
-                TimeUnit.MILLISECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        FluentWait<WebDriver> wait = getFluentWait();
+        wait.withTimeout(timeout, TimeUnit.MILLISECONDS);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -458,9 +470,7 @@ public class Locator {
     @SafeVarargs
     public static <K extends java.lang.Throwable> void waitUntilGivenFunctionIgnoreAll(
             Function<WebDriver, Boolean> function, java.lang.Class<? extends K>... ignoredExceptions) {
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        FluentWait<WebDriver> wait = getFluentWait();
         if (ignoredExceptions != null) {
             if (ignoredExceptions.length == 1) {
                 wait.ignoring(ignoredExceptions[0]);
@@ -481,9 +491,7 @@ public class Locator {
      */
     public static <K extends java.lang.Throwable> void waitUntilGivenFunctionIgnoring(
             Function<WebDriver, Boolean> function, java.lang.Class<? extends K> ignoredException) {
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        FluentWait<WebDriver> wait = getFluentWait();
         if (ignoredException != null) {
             wait.ignoring(ignoredException);
         }
@@ -574,4 +582,41 @@ public class Locator {
         }
         throw new NoSuchElementException(String.format("No parent element found with tag %s.", tagName));
     }
+
+    /**
+     * Scrolls to the element in the view: allows to safely click on it afterwards.
+     *
+     * @param executor the javascript executor, usually {@link WebDriver}
+     * @param element the element to scroll to
+     * @since 8.3
+     */
+    public static final void scrollToElement(WebElement element) {
+        ((JavascriptExecutor) AbstractTest.driver).executeScript("arguments[0].scrollIntoView(false);", element);
+    }
+
+    /**
+     * Forces a click on an element, to workaround non-effective clicks in miscellaneous situations, after having
+     * scrolled to it.
+     *
+     * @param executor the javascript executor, usually {@link WebDriver}
+     * @param element the element to scroll to
+     * @return true if element is clickable
+     * @since 8.3
+     */
+    public static final boolean scrollAndForceClick(WebElement element) {
+        JavascriptExecutor executor = (JavascriptExecutor) AbstractTest.driver;
+        scrollToElement(element);
+        try {
+            // forced click to workaround non-effective clicks in miscellaneous situations
+            executor.executeScript("arguments[0].click();", element);
+            return true;
+        } catch (WebDriverException e) {
+            if (e.getMessage().contains("Element is not clickable at point")) {
+                log.debug("Element is not clickable yet");
+                return false;
+            }
+            throw e;
+        }
+    }
+
 }

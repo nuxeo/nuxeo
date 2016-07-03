@@ -23,11 +23,6 @@
  */
 package org.nuxeo.functionaltests.drivers;
 
-import java.io.File;
-import java.net.URL;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -42,8 +37,6 @@ import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
  * @since 8.3
  */
 public class RemoteFirefoxDriverProvider implements DriverProvider {
-
-    private static final Log log = LogFactory.getLog(RemoteFirefoxDriverProvider.class);
 
     public static final String WEBDRIVER_URL = System.getProperty("webdriverURL", "http://localhost:4444/wd/hub");
 

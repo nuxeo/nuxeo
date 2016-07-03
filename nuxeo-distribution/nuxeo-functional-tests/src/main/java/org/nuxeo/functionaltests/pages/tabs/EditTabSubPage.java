@@ -67,8 +67,8 @@ public class EditTabSubPage extends AbstractPage {
             descriptionInputText.sendKeys(description);
         }
         if (versionIncrementLabel != null) {
-            WebElement versionIncrementRadio = driver.findElement(By.xpath("//input[@value=\"" + versionIncrementLabel
-                    + "\"]"));
+            WebElement versionIncrementRadio = driver.findElement(
+                    By.xpath("//input[@value=\"" + versionIncrementLabel + "\"]"));
             versionIncrementRadio.click();
         }
 

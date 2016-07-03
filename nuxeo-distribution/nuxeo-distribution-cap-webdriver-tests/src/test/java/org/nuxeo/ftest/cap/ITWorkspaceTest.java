@@ -92,10 +92,12 @@ public class ITWorkspaceTest extends AbstractTest {
         // Delete it as Test User
         DocumentBasePage workspacesPage = loginAsTestUser().goToWorkspaces().goToDocumentWorkspaces();
         ContentTabSubPage contentTabPage = workspacesPage.getContentTab().selectByTitle(WORKSPACE_TITLE);
-        WebElement deleteLink = driver.findElementById("document_content_buttons:nxw_CURRENT_SELECTION_TRASH_form:nxw_CURRENT_SELECTION_TRASH");
+        WebElement deleteLink = driver.findElementById(
+                "document_content_buttons:nxw_CURRENT_SELECTION_TRASH_form:nxw_CURRENT_SELECTION_TRASH");
         assertTrue(deleteLink.isEnabled());
-        assertTrue(driver.findElementById(
-                "document_content_buttons:nxw_CURRENT_SELECTION_ADDTOLIST_form:nxw_CURRENT_SELECTION_ADDTOLIST")
+        assertTrue(driver
+                         .findElementById(
+                                 "document_content_buttons:nxw_CURRENT_SELECTION_ADDTOLIST_form:nxw_CURRENT_SELECTION_ADDTOLIST")
                          .isEnabled());
         // Delete the workspace then cancel it on confirmation
         deleteLink.click();

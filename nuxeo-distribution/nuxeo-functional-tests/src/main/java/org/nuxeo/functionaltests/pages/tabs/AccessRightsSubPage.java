@@ -121,9 +121,9 @@ public class AccessRightsSubPage extends AbstractPage {
 
         WebElement selectGrantElement = driver.findElement(By.id("add_rights_form:rights_grant_select"));
 
-        Select2WidgetElement userSelection = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']")),
+        Select2WidgetElement userSelection = new Select2WidgetElement(driver,
+                driver.findElement(
+                        By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']")),
                 true);
         userSelection.selectValue(username);
 
@@ -149,9 +149,9 @@ public class AccessRightsSubPage extends AbstractPage {
      */
     public AccessRightsSubPage grantPermissionForUser(String permission, String username) {
 
-        Select2WidgetElement userSelection = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']")),
+        Select2WidgetElement userSelection = new Select2WidgetElement(driver,
+                driver.findElement(
+                        By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']")),
                 true);
         userSelection.selectValue(username);
 

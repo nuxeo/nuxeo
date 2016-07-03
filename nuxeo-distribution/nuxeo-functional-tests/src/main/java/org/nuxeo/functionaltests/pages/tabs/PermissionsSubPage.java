@@ -19,11 +19,15 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import java.io.File;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.ScreenshotTaker;
 import org.nuxeo.functionaltests.WaitForJQueryAjaxOnLoading;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -39,6 +43,8 @@ import org.openqa.selenium.support.FindBy;
  */
 @WaitForJQueryAjaxOnLoading
 public class PermissionsSubPage extends AbstractPage {
+
+    private static final Log log = LogFactory.getLog(PermissionsSubPage.class);
 
     // moved @Required on this element to allow read only view
     @Required
@@ -127,15 +133,19 @@ public class PermissionsSubPage extends AbstractPage {
             }
         }
 
+        // NXP-19932: take screenshot to help understanding potential randoms on click
+        ScreenshotTaker taker = new ScreenshotTaker();
+        File screenShot = taker.takeScreenshot(driver, "PermissionSubPage-add-permission-");
+        log.warn("Screenshot taken : " + screenShot.getAbsolutePath());
         // click on Create
-        popup.findElement(By.xpath(".//paper-button[text()='Create']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(popup, By.xpath(".//paper-button[text()='Create']"));
         waitForPermissionAdded(permission, userOrGroupName);
 
         return asPage(PermissionsSubPage.class);
     }
 
     protected void waitForPermissionAdded(String permission, String userOrGroupName) {
-        //wait for any JQuery ajax request to complete
+        // wait for any JQuery ajax request to complete
         new AjaxRequestManager(driver).waitForJQueryRequests();
         Locator.waitUntilGivenFunction(input -> hasPermission(permission, userOrGroupName));
     }

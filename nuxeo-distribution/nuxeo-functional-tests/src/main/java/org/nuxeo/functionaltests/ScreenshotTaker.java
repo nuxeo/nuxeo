@@ -64,7 +64,8 @@ public class ScreenshotTaker {
             try {
                 Thread.sleep(250);
                 String name = filename;
-                return TakesScreenshot.class.cast(driver).getScreenshotAs(new ScreenShotFileOutput(targetDirName, name));
+                return TakesScreenshot.class.cast(driver)
+                                            .getScreenshotAs(new ScreenShotFileOutput(targetDirName, name));
             } catch (InterruptedException e) {
                 log.error(e, e);
             }

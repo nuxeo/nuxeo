@@ -130,11 +130,11 @@ public class RestHelper {
         }
     }
 
-    public static void addUserToDelete(String userName){
+    public static void addUserToDelete(String userName) {
         usersToDelete.add(userName);
     }
 
-    public static void removeUserToDelete(String userName){
+    public static void removeUserToDelete(String userName) {
         usersToDelete.remove(userName);
     }
 
@@ -240,7 +240,7 @@ public class RestHelper {
         if (idOrPath.startsWith("/")) {
             // @yannis : temporary way to avoid DocumentNotFoundException in server log before NXP-19658
             Documents documents = CLIENT.repository().query(String.format(DOCUMENT_QUERY_BY_PATH_BASE, idOrPath));
-            if (documents.size() > 1) {
+            if (documents.size() > 0) {
                 CLIENT.repository().deleteDocument(documents.getDocument(0));
             }
         } else {
@@ -282,7 +282,8 @@ public class RestHelper {
     }
 
     public static void logOnServer(String level, String message) {
-        CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=%s", AbstractTest.NUXEO_URL, level, URIUtils.quoteURIPathComponent(message, true)));
+        CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=%s", AbstractTest.NUXEO_URL, level,
+                URIUtils.quoteURIPathComponent(message, true)));
     }
 
 }

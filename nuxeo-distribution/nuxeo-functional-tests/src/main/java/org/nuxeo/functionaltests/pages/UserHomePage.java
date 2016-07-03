@@ -19,6 +19,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -36,18 +37,14 @@ public class UserHomePage extends AbstractPage {
 
     private static final String DOCUMENT_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td/div/a/span[normalize-space(text())='%s']]";
 
-
     @FindBy(id = "nxw_dashboard_user_tasks")
     WebElement userTasks;
-
 
     @FindBy(id = "nxw_dashboard_user_workspaces")
     WebElement userWorkspaces;
 
-
     @FindBy(id = "nxw_dashboard_user_documents")
     WebElement userDocuments;
-
 
     @FindBy(id = "nxw_dashboard_domain_documents")
     WebElement domainDocuments;
@@ -119,7 +116,7 @@ public class UserHomePage extends AbstractPage {
      */
     public UserHomePage selectDomain(String domainName) {
         selectItemInDropDownMenu(selectDomainInput, domainName);
-        selectDomainSubmitButton.click();
+        Locator.waitUntilEnabledAndClick(selectDomainSubmitButton);
         return asPage(UserHomePage.class);
     }
 
@@ -160,7 +157,7 @@ public class UserHomePage extends AbstractPage {
      * @since 8.3
      */
     public DocumentBasePage goToDomainDocument(String docName) {
-        getDomainDocument(docName).findElement(By.className("documentTitle")).click();
+        Locator.findElementWaitUntilEnabledAndClick(getDomainDocument(docName), By.className("documentTitle"));
         return asPage(DocumentBasePage.class);
     }
 

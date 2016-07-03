@@ -40,6 +40,7 @@ public class FolderEditTabSubPage extends EditTabSubPage {
         super.setTitle(title);
         return this;
     }
+
     @Override
     public FolderEditTabSubPage setDescription(String description) {
         super.setDescription(description);

@@ -18,15 +18,14 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test main tabs management.
@@ -47,8 +46,7 @@ public class ITMainTabsTest extends AbstractTest {
         assertFalse(documentBasePage.isMainTabSelected(documentBasePage.documentManagementLink));
         assertTrue(documentBasePage.isMainTabSelected(documentBasePage.searchPageLink));
         // click on first search result, at least user workspace should be there
-        WebElement wsLink = Locator.findElement(By.cssSelector("span[class='documentTitle']"));
-        wsLink.click();
+        Locator.findElementWaitUntilEnabledAndClick(By.cssSelector("span[class='documentTitle']"));
         documentBasePage = AbstractTest.asPage(DocumentBasePage.class);
         // check that workspace main tab is now selected
         assertTrue(documentBasePage.isMainTabSelected(documentBasePage.documentManagementLink));

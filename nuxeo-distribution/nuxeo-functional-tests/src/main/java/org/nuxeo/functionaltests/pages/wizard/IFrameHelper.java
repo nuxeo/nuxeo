@@ -18,11 +18,8 @@
  */
 package org.nuxeo.functionaltests.pages.wizard;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchFrameException;
@@ -30,7 +27,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
@@ -52,9 +48,8 @@ public class IFrameHelper {
     public static final String CONNECT_FRAME_NAME = "connectForm";
 
     private static void switchToIFrame(final WebDriver driver, final WebElement iframe) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchFrameException.class, StaleElementReferenceException.class);
+        Wait<WebDriver> wait = Locator.getFluentWait().ignoring(NoSuchFrameException.class,
+                StaleElementReferenceException.class);
         wait.until(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {

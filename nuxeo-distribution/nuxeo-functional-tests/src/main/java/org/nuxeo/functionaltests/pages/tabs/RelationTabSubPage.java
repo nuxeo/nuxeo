@@ -118,7 +118,7 @@ public class RelationTabSubPage extends DocumentBasePage {
     }
 
     private boolean isObjectChecked(int index) {
-        assert (index < 3 && index >= 0);
+        assert(index < 3 && index >= 0);
         org.junit.Assert.assertNotNull(objectCheckBoxList);
         org.junit.Assert.assertEquals(3, objectCheckBoxList.size());
 

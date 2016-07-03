@@ -25,7 +25,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- *
  * @since 7.3
  */
 public class RestApiDocBasePage {

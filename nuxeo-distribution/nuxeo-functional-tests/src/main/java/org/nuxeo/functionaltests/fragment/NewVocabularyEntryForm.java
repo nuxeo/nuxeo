@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -92,7 +93,7 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
 
     public void setNewVocabularyObsolete(final boolean obsolete) {
         if (obsolete) {
-            obsoleteInput.click();
+            Locator.waitUntilEnabledAndClick(obsoleteInput);
         } else {
             Locator.waitUntilEnabledAndClick(notObsoleteInput);
         }
@@ -104,8 +105,8 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
     }
 
     public void setNewVocabularyParentId(final String parentLabelPath) {
-        newParentPopup.click();
-        WebElement selectParentFancyBox = Locator.findElementWithTimeout(By.id("fancybox-content"));
+        Locator.waitUntilEnabledAndClick(newParentPopup);
+        WebElement selectParentFancyBox = AbstractPage.getFancyBoxContent();
         String[] split = parentLabelPath.split("/");
         findParentNodeAndSelect(selectParentFancyBox, split);
     }

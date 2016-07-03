@@ -30,7 +30,6 @@ import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -216,7 +215,13 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 7.10
      */
     public void selectValue(final String value, final boolean wait4A4J, final boolean typeAll) {
-        clickSelect2Field();
+        selectValue(value, wait4A4J, typeAll, true);
+    }
+
+    public void selectValue(final String value, final boolean wait4A4J, final boolean typeAll, boolean click) {
+        if (click) {
+            clickSelect2Field();
+        }
 
         WebElement suggestInput = getSuggestInput();
 
@@ -242,13 +247,14 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         List<WebElement> suggestions = getSuggestedEntries();
         if (suggestions == null || suggestions.isEmpty()) {
-            log.warn("Suggestion for element " + element.getAttribute("id") + " returned no result.");
+            log.warn("Suggestion for element " + element.getAttribute("id") + " returned no result for value '" + value
+                    + "'.");
             return;
         }
         WebElement suggestion = suggestions.get(0);
         if (suggestions.size() > 1) {
-            log.warn("Suggestion for element " + element.getAttribute("id")
-                    + " returned more than 1 result, the first suggestion will be selected : " + suggestion.getText());
+            log.warn("Suggestion for element " + element.getAttribute("id") + " returned more than 1 result for value '"
+                    + value + "', the first suggestion will be selected : " + suggestion.getText());
         }
 
         AjaxRequestManager arm = new AjaxRequestManager(driver);
@@ -273,8 +279,12 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.7.3
      */
     public void selectValues(final String[] values) {
+        boolean click = true;
         for (String value : values) {
-            selectValue(value);
+            // avoid clicking again when setting multiple values, to prevent accidental deletion of previously added
+            // element
+            selectValue(value, false, false, click);
+            click = false;
         }
     }
 
@@ -314,10 +324,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
         Locator.waitUntilEnabled(select2Field);
-        // scroll to it
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
-        executor.executeScript("arguments[0].scrollIntoView(false);", select2Field);
-        // click
+        Locator.scrollToElement(select2Field);
         select2Field.click();
     }
 

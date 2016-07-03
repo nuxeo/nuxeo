@@ -40,7 +40,8 @@ public class SystemHomePage extends AdminCenterBasePage {
         if (!HOST_SUBTAB.equals(getSelectedSubTab())) {
             selectSubTab(HOST_SUBTAB);
         }
-        WebElement restartButton = findElementWithTimeout(By.xpath("//input[@type='submit' and @value='Restart server']"));
+        WebElement restartButton = findElementWithTimeout(
+                By.xpath("//input[@type='submit' and @value='Restart server']"));
         if (restartButton != null) {
             restartButton.click();
             // Trying wait until on failing alert.accept on some machine:

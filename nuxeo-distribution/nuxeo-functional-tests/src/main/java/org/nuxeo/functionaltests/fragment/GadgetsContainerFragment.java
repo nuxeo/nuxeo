@@ -20,17 +20,15 @@ package org.nuxeo.functionaltests.fragment;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 
@@ -54,9 +52,9 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
     }
 
     public WebElement waitForGadgetsLoad(final String mandatoryElements) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS).pollingEvery(5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
-        return wait.until(new Function<WebDriver, WebElement>() {
+        FluentWait<WebDriver> wait = Locator.getFluentWait();
+        wait.ignoring(NoSuchElementException.class);
+        Function<WebDriver, WebElement> function = new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
                 WebElement container = getElement();
@@ -84,8 +82,9 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
                                         mand));
                             } catch (NoSuchElementException e) {
                                 loaded = false;
-                                log.debug(String.format("Gadget frame '%s' not loaded yet, "
-                                        + "mandatory element '%s' not found", frameName, mand));
+                                log.debug(String.format(
+                                        "Gadget frame '%s' not loaded yet, " + "mandatory element '%s' not found",
+                                        frameName, mand));
                                 break;
                             }
                         }
@@ -104,7 +103,8 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
                 log.debug("No gadget frame loaded yet");
                 return null;
             }
-        });
+        };
+        return wait.until(function);
     }
 
     public boolean isGadgetLoaded(String gadgetTitle) {

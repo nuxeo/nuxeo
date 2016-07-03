@@ -33,7 +33,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public class GroupCreationFormPage extends UsersGroupsBasePage {
 
-
     @FindBy(id = "createGroupView:createGroup:nxl_group:nxw_group_name")
     WebElement nameInput;
 

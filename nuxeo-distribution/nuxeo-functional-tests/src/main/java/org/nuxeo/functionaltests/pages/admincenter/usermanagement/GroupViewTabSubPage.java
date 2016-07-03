@@ -43,10 +43,10 @@ public class GroupViewTabSubPage extends UsersGroupsBasePage {
     @FindBy(xpath = "//div[@id='nxw_adminCenterSubTabs_tab_content']//h1")
     WebElement groupName;
 
-    @FindBy(id="viewGroupView:viewGroup")
+    @FindBy(id = "viewGroupView:viewGroup")
     WebElement viewGroupForm;
 
-    @FindBy(id="viewGroupView:viewGroup:nxl_group:nxw_group_label")
+    @FindBy(id = "viewGroupView:viewGroup:nxl_group:nxw_group_label")
     WebElement groupLabel;
 
     @Required

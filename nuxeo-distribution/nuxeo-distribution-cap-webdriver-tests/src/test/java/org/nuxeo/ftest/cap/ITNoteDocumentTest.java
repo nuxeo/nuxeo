@@ -171,7 +171,7 @@ public class ITNoteDocumentTest extends AbstractTest {
                                           .fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
 
             // go back to the parent folder
-            DocumentBasePage.clickOnBreadcrumElement(driver, TEST_WORKSPACE_TITLE);
+            DocumentBasePage.clickOnBreadcrumbElement(driver, TEST_WORKSPACE_TITLE);
 
             Alert alert = driver.switchTo().alert();
             assertEquals(

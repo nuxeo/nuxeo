@@ -77,6 +77,7 @@ public class ITDomainTest extends AbstractTest {
         UserHomePage userHome = asPage(DocumentBasePage.class).getUserHome();
         assertTrue(userHome.hasUserWorkspace(TEST_WORKSPACE_TITLE));
         assertTrue(userHome.hasDomainDocument(TEST_FILE_TITLE));
+        assertFalse(userHome.hasSelectDomainInput());
 
         // create new domain as admin
         login();

@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupsTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
@@ -48,7 +49,7 @@ public class UsersGroupsHomePage extends HomePage {
     public UsersTabSubPage getUsersTab() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        usersTabLink.click();
+        Locator.waitUntilEnabledAndClick(usersTabLink);
         arm.end();
         return asPage(UsersTabSubPage.class);
     }
@@ -56,7 +57,7 @@ public class UsersGroupsHomePage extends HomePage {
     public GroupsTabSubPage getGroupsTab() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        groupsTabLink.click();
+        Locator.waitUntilEnabledAndClick(groupsTabLink);
         arm.end();
         return asPage(GroupsTabSubPage.class);
     }

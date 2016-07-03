@@ -101,8 +101,9 @@ public class SummaryTabSubPage extends AbstractPage {
 
     public boolean openTaskForCurrentUser() {
         return findElementWithTimeout(By.xpath(
-                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
-                        "Please accept or reject the document");
+                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText()
+                                                                                                              .contains(
+                                                                                                                      "Please accept or reject the document");
     }
 
     /**
@@ -110,8 +111,9 @@ public class SummaryTabSubPage extends AbstractPage {
      */
     public boolean parallelOpenTaskForCurrentUser() {
         return findElementWithTimeout(By.xpath(
-                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
-                        "Please give your opinion. Click on N/A if you have no advice.");
+                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText()
+                                                                                                              .contains(
+                                                                                                                      "Please give your opinion. Click on N/A if you have no advice.");
     }
 
     public WorkflowTabSubPage getWorkflow() {
@@ -179,8 +181,10 @@ public class SummaryTabSubPage extends AbstractPage {
      * @since 5.9.3
      */
     public int getCollectionCount() {
-        return driver.findElement(By.id(COLLECTIONS_FORM_ID)).findElements(By.xpath(
-                "div/span[@id='nxl_grid_summary_layout:nxw_summary_current_document_collections_form:collections']/span[@class='tag tagLink']")).size();
+        return driver.findElement(By.id(COLLECTIONS_FORM_ID))
+                     .findElements(By.xpath(
+                             "div/span[@id='nxl_grid_summary_layout:nxw_summary_current_document_collections_form:collections']/span[@class='tag tagLink']"))
+                     .size();
     }
 
     /**
@@ -222,7 +226,7 @@ public class SummaryTabSubPage extends AbstractPage {
      * @since 8.3
      */
     public SummaryTabSubPage approvePublication() {
-        publicationBlock.findElement(By.xpath(".//input[@value='Approve']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(publicationBlock, By.xpath(".//input[@value='Approve']"));
         return asPage(SummaryTabSubPage.class);
     }
 
@@ -254,6 +258,6 @@ public class SummaryTabSubPage extends AbstractPage {
     public void rejectPublication(String comment) {
         WebElement text = publicationBlock.findElement(By.xpath(".//*[contains(@name, 'rejectPublishingComment')]"));
         text.sendKeys(comment);
-        publicationBlock.findElement(By.xpath(".//input[@value='Reject']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(publicationBlock, By.xpath(".//input[@value='Reject']"));
     }
 }

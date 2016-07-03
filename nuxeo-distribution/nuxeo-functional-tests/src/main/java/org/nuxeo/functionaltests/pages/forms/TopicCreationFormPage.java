@@ -19,6 +19,7 @@
 
 package org.nuxeo.functionaltests.pages.forms;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -66,20 +67,20 @@ public class TopicCreationFormPage extends AbstractPage {
         descriptionTextInput.sendKeys(description);
 
         if (moderation) {
-            moderationYesRadioButton.click();
+            Locator.scrollAndForceClick(moderationYesRadioButton);
         } else {
-            moderationNoRadioButton.click();
+            Locator.scrollAndForceClick(moderationNoRadioButton);
         }
 
         if (usersOrGroups != null) {
-            Select2WidgetElement selectUsersOrGroups = new Select2WidgetElement(
-                    driver,
-                    driver.findElement(By.xpath("//div[@id='s2id_createThread:nxl_user_group_prefixed_suggestion:nxw_selection_select2']")),
+            Select2WidgetElement selectUsersOrGroups = new Select2WidgetElement(driver,
+                    driver.findElement(By
+                                         .xpath("//div[@id='s2id_createThread:nxl_user_group_prefixed_suggestion:nxw_selection_select2']")),
                     true);
             selectUsersOrGroups.selectValues(usersOrGroups);
         }
 
-        createButton.click();
+        Locator.waitUntilEnabledAndClick(createButton);
         return asPage(TopicTabSubPage.class);
     }
 }

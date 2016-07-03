@@ -41,7 +41,8 @@ public class SummaryWizardPage extends WizardPage {
             String currentUrl = driver.getCurrentUrl();
             throw new NoSuchElementException(
                     String.format("Unable to find login screen after %s minutes, currentUrl=%s",
-                            RESTART_TIMEOUT_MINUTES, currentUrl), e);
+                            RESTART_TIMEOUT_MINUTES, currentUrl),
+                    e);
         }
     }
 

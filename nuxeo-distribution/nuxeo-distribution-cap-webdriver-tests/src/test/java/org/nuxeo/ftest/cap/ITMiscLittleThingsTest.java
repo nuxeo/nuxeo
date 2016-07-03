@@ -44,11 +44,15 @@ import org.openqa.selenium.WebElement;
  */
 public class ITMiscLittleThingsTest extends AbstractTest {
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll("/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
+                                                 .replaceAll("/$", "");
 
-    private static final String EXPECTED_HREF = NUXEO_URL + "/nxpath/default/default-domain/workspaces@view_documents?tabIds=%3A";
+    private static final String EXPECTED_HREF = NUXEO_URL
+            + "/nxpath/default/default-domain/workspaces@view_documents?tabIds=%3A";
 
-    private static final String EXPECTED_ONCLICK = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='" + NUXEO_URL.replaceAll("/", "\\\\/") + "\\/nxpath\\/default\\/default-domain\\/workspaces@view_documents?tabIds=%3A&conversationId=0NXMAIN'}";
+    private static final String EXPECTED_ONCLICK = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='"
+            + NUXEO_URL.replaceAll("/", "\\\\/")
+            + "\\/nxpath\\/default\\/default-domain\\/workspaces@view_documents?tabIds=%3A&conversationId=0NXMAIN'}";
 
     @Before
     public void setup() throws UserNotConnectedException {

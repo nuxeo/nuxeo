@@ -21,9 +21,8 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
@@ -37,8 +36,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Base functions for all pages.
@@ -144,16 +145,41 @@ public abstract class AbstractPage {
     }
 
     /**
-     * Returns the fancy box content web element
+     * Returns the fancy box content web element.
      *
      * @since 5.7
      */
-    public WebElement getFancyBoxContent() {
+    public static WebElement getFancyBoxContent() {
         // make sure the fancybox content is loaded
         WebElement fancyBox = findElementWithTimeout(By.id("fancybox-content"));
-        WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
+        FluentWait<WebDriver> wait = Locator.getFluentWait();
         wait.until(ExpectedConditions.visibilityOf(fancyBox));
         return fancyBox;
+    }
+
+    /**
+     * Closes current fancy box.
+     *
+     * @since 8.3
+     */
+    public static void closeFancyBox() {
+        AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
+        arm.begin();
+        findElementWaitUntilEnabledAndClick(By.id("fancybox-close"));
+        arm.end();
+        waitForFancyBoxClosed();
+    }
+
+    /**
+     * Waits for the fancybox to be fully closed.
+     *
+     * @since 8.3
+     */
+    public static void waitForFancyBoxClosed() {
+        // make sure the fancybox content is not loaded anymore
+        FluentWait<WebDriver> wait = Locator.getFluentWait();
+        wait.withTimeout(AbstractTest.AJAX_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-overlay")));
     }
 
     /**
@@ -250,7 +276,8 @@ public abstract class AbstractPage {
      * @param timeout the timeout in milliseconds
      * @since 8.3
      */
-    public static void waitUntilEnabledAndClick(WebElement element, int waitUntilEnabledTimeout) throws NotFoundException {
+    public static void waitUntilEnabledAndClick(WebElement element, int waitUntilEnabledTimeout)
+            throws NotFoundException {
         Locator.waitUntilEnabledAndClick(element, waitUntilEnabledTimeout);
     }
 
@@ -289,7 +316,9 @@ public abstract class AbstractPage {
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @throws NotFoundException if the element is not found or not enabled
+     * @deprecated since 8.3, use {@link Locator#findElementWaitUntilEnabledAndClick(WebElement, By, int, int)}
      */
+    @Deprecated
     public static void findElementWaitUntilEnabledAndClick(By by, int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
         Locator.findElementWaitUntilEnabledAndClick(by, findElementTimeout, waitUntilEnabledTimeout);

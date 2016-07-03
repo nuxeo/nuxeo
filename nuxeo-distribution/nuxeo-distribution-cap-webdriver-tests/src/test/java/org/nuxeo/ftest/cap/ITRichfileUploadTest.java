@@ -18,20 +18,8 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,10 +38,21 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
+
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 5.9.3
@@ -146,10 +145,6 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile5);
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                                StaleElementReferenceException.class);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -161,7 +156,7 @@ public class ITRichfileUploadTest extends AbstractTest {
                 }
             }
         };
-        wait.until(function);
+        Locator.waitUntilGivenFunctionIgnoring(function, StaleElementReferenceException.class);
 
         // check we have 2 uploaded files
         List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
@@ -200,7 +195,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         // wait for message to be present for ajax request to be finished before logout
         Locator.waitForTextPresent(By.id("ambiance-notification"), "File modified");
 
-        //logout removed to avoid random exception on server (probably an unfinished ajax request)
+        // logout removed to avoid random exception on server (probably an unfinished ajax request)
     }
 
     protected void removeFirstUploadedItem() {
@@ -214,7 +209,7 @@ public class ITRichfileUploadTest extends AbstractTest {
                     // Expected
                 }
                 List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
-                uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
+                Locator.waitUntilEnabledAndClick(uploadedFiles.get(0).findElements(By.tagName("a")).get(0));
                 Alert confirmRemove = driver.switchTo().alert();
                 confirmRemove.accept();
                 return true;
