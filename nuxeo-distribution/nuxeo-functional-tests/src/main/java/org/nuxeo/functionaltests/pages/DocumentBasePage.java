@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.Locator;
@@ -81,6 +83,8 @@ import static org.junit.Assert.assertEquals;
  * @author Sun Seng David TAN <stan@nuxeo.com>
  */
 public class DocumentBasePage extends AbstractPage {
+
+    private static final Log log = LogFactory.getLog(DocumentBasePage.class);
 
     /**
      * Exception occurred a user is expected to be connected but it isn't.
@@ -382,14 +386,35 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
+     * Makes a breadcrumb element usable, to workaround issues in tests when resolution is too small, see NXP-19710.
+     *
+     * @since 8.3
+     */
+    public static void makeBreadcrumbUsable(WebDriver driver) {
+        log.warn("Removing header elements to make breadcrumb usable");
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        // ugly hack for NXP-19710: prevent header elements from hiding breadcrumb links when window is too small
+        String[] ids = { "logolink", "nxw_mainTabs_panel", "nxw_userActions_panel", "nxw_userMenuActions_panel",
+                "nxw_headerSearch_panel" };
+        for (String id : ids) {
+            try {
+                // make sure element is loaded
+                driver.findElement(By.id(id));
+                // remove it
+                executor.executeScript("return document.getElementById('" + id + "').remove()");
+            } catch (NoSuchElementException e) {
+                // ignore
+            }
+        }
+    }
+
+    /**
      * Clicks on a breadcrumb element.
      *
      * @since 8.3
      */
     public static void clickOnBreadcrumbElement(WebDriver driver, String documentTitle) {
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
-        // ugly hack for NXP-19710: prevent search box from hiding breadcrumb links when window is too small
-        executor.executeScript("return document.getElementById('nxw_headerSearch_panel').remove()");
+        makeBreadcrumbUsable(driver);
         WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']"));
         Locator.waitUntilEnabledAndClick(breadcrumb.findElement(By.linkText(documentTitle)));
     }

@@ -44,6 +44,7 @@ public class WorkspaceHomePage extends DocumentBasePage {
         Locator.getFluentWait()
                .ignoring(NoSuchElementException.class)
                .until(ExpectedConditions.visibilityOf(breadcrumbForm));
+        DocumentBasePage.makeBreadcrumbUsable(driver);
 
         WebElement first = breadcrumbForm.findElements(By.className("jsBreadcrumbActionList"))
                                          .get(0)
