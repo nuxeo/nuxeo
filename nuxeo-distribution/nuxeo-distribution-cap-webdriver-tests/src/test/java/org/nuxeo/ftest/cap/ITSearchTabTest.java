@@ -115,25 +115,28 @@ public class ITSearchTabTest extends AbstractTest {
     public void after() throws UserNotConnectedException {
         RestHelper.cleanupUsers();
 
-        // test aggregate on deleted user, on user workspace
-        DocumentBasePage documentBasePage = login();
-        SearchPage searchPage = documentBasePage.goToSearchPage();
-        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
-        Map<String, Integer> authorAggs = searchLayoutSubPage.getAvailableAuthorAggregate();
-        // NXP-19617: take screenshot to help understanding potential randoms
-        ScreenshotTaker taker = new ScreenshotTaker();
-        File screenShot = taker.takeScreenshot(driver, "ITSearchTabTest-after-authorAggs-");
-        log.warn("Screenshot taken: " + screenShot.getAbsolutePath());
-        boolean testUserFound = false;
-        for (Entry<String, Integer> e : authorAggs.entrySet()) {
-            if (e.getKey().equals(TEST_USERNAME)) {
-                testUserFound = true;
-                break;
+        try {
+            // test aggregate on deleted user, on user workspace
+            DocumentBasePage documentBasePage = login();
+            SearchPage searchPage = documentBasePage.goToSearchPage();
+            DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
+            Map<String, Integer> authorAggs = searchLayoutSubPage.getAvailableAuthorAggregate();
+            // NXP-19617: take screenshot to help understanding potential randoms
+            ScreenshotTaker taker = new ScreenshotTaker();
+            File screenShot = taker.takeScreenshot(driver, "ITSearchTabTest-after-authorAggs-");
+            log.warn("Screenshot taken for author '" + TEST_USERNAME + "' and aggs='" + authorAggs + "': "
+                    + screenShot.getAbsolutePath());
+            boolean testUserFound = false;
+            for (Entry<String, Integer> e : authorAggs.entrySet()) {
+                if (e.getKey().equals(TEST_USERNAME)) {
+                    testUserFound = true;
+                    break;
+                }
             }
+            assertTrue(testUserFound);
+        } finally {
+            RestHelper.cleanupDocuments();
         }
-        assertTrue(testUserFound);
-
-        RestHelper.cleanupDocuments();
     }
 
     @Test
