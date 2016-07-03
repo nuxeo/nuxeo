@@ -120,10 +120,10 @@ public class ITSearchTabTest extends AbstractTest {
         SearchPage searchPage = documentBasePage.goToSearchPage();
         DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
         Map<String, Integer> authorAggs = searchLayoutSubPage.getAvailableAuthorAggregate();
-        // take another screenshot
+        // NXP-19617: take screenshot to help understanding potential randoms
         ScreenshotTaker taker = new ScreenshotTaker();
-        File screenShot = taker.takeScreenshot(driver, "ITSearchTabTest-after-authorAggs");
-        log.error("Screenshot taken : " + screenShot.getAbsolutePath());
+        File screenShot = taker.takeScreenshot(driver, "ITSearchTabTest-after-authorAggs-");
+        log.warn("Screenshot taken: " + screenShot.getAbsolutePath());
         boolean testUserFound = false;
         for (Entry<String, Integer> e : authorAggs.entrySet()) {
             if (e.getKey().equals(TEST_USERNAME)) {
