@@ -328,12 +328,11 @@ public class Locator {
      */
     public static void findElementWaitUntilEnabledAndClick(WebElement parentElement, final By by,
             final int findElementTimeout, final int waitUntilEnabledTimeout) throws NotFoundException {
+        WebElement element = findElementAndWaitUntilEnabled(parentElement, by, findElementTimeout,
+                waitUntilEnabledTimeout);
         waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                // Find the element.
-                WebElement element = findElementAndWaitUntilEnabled(parentElement, by, findElementTimeout,
-                        waitUntilEnabledTimeout);
                 return scrollAndForceClick(element);
             }
         }, StaleElementReferenceException.class);
@@ -361,12 +360,10 @@ public class Locator {
      */
     public static void waitUntilEnabledAndClick(final WebElement element, final int waitUntilEnabledTimeout)
             throws NotFoundException {
-
+        waitUntilEnabled(element, waitUntilEnabledTimeout);
         waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                // wait until enabled
-                waitUntilEnabled(element, waitUntilEnabledTimeout);
                 return scrollAndForceClick(element);
             }
         }, StaleElementReferenceException.class);
