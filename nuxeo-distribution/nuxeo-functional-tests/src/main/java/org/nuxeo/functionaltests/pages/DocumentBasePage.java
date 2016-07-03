@@ -412,8 +412,8 @@ public class DocumentBasePage extends AbstractPage {
         arm.begin();
         waitUntilEnabledAndClick(addToCollectionUpperAction);
         arm.end();
-        Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
+        WebElement elt = AbstractPage.getFancyBoxContent();
+        return getWebFragment(elt, AddToCollectionForm.class);
     }
 
     /**
@@ -428,8 +428,8 @@ public class DocumentBasePage extends AbstractPage {
         arm.begin();
         findElementWaitUntilEnabledAndClick(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID));
         arm.end();
-        Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(By.id("fancybox-content"), AddAllToCollectionForm.class);
+        WebElement elt = AbstractPage.getFancyBoxContent();
+        return getWebFragment(elt, AddAllToCollectionForm.class);
     }
 
     public boolean isAddToCollectionUpperActionAvailable() {

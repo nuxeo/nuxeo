@@ -27,6 +27,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -112,7 +113,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
         waitUntilEnabledAndClick(newButton);
-        WebElement fancyBox = getFancyBoxContent();
+        WebElement fancyBox = AbstractPage.getFancyBoxContent();
         // find the link to doc type that needs to be created
         WebElement link = fancyBox.findElement(By.linkText(docType));
         assertNotNull(link);

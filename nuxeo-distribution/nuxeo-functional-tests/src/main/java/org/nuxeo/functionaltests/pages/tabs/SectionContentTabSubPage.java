@@ -20,14 +20,11 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.openqa.selenium.Alert;
@@ -36,6 +33,11 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Section content tab.
@@ -64,7 +66,7 @@ public class SectionContentTabSubPage extends DocumentBasePage {
 
     public DublinCoreCreationDocumentFormPage getSectionCreatePage() {
         newButton.click();
-        WebElement fancyBox = getFancyBoxContent();
+        WebElement fancyBox = AbstractPage.getFancyBoxContent();
         // find the link to doc type that needs to be created
         WebElement link = fancyBox.findElement(By.linkText(SECTION_TYPE));
         assertNotNull(link);

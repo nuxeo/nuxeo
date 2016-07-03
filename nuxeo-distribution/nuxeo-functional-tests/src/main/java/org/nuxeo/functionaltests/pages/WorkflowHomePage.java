@@ -21,7 +21,6 @@ package org.nuxeo.functionaltests.pages;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -31,8 +30,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * @since 5.8
@@ -111,7 +108,7 @@ public class WorkflowHomePage extends AbstractPage {
     public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
         findElementWaitUntilEnabledAndClick(
                 By.xpath(String.format("//input[@type='submit' and @value='%s']", taskAction)));
-        WebElement element = getFancyBoxContent();
+        WebElement element = AbstractPage.getFancyBoxContent();
         return getWebFragment(element, WorkflowHomePage.TaskFancyBoxFragment.class);
     }
 
@@ -131,18 +128,15 @@ public class WorkflowHomePage extends AbstractPage {
         }
 
         public void cancel() {
-            cancelButton.click();
-            // make sure the fancybox content is not loaded anymore
-            WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-content")));
+            Locator.waitUntilEnabledAndClick(cancelButton);
+            AbstractPage.waitForFancyBoxClosed();
         }
 
         @Override
         public void submit() {
-            sumbitButton.click();
-            // make sure the fancybox content is not loaded anymore
-            WebDriverWait wait = new WebDriverWait(driver, AbstractTest.LOAD_TIMEOUT_SECONDS);
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-content")));
+            Locator.waitUntilEnabledAndClick(sumbitButton);
+            AbstractPage.waitForFancyBoxClosed();
         }
+
     }
 }

@@ -26,6 +26,7 @@ import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.search.aggregates.CheckBoxAggregateElements;
 import org.nuxeo.functionaltests.pages.search.aggregates.Select2AggregateElement;
 import org.openqa.selenium.By;
@@ -196,13 +197,13 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         a.watchAjaxRequests();
         driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText(pathArray[i])).click();
         a.waitForAjaxRequests();
-        driver.findElement(By.id("fancybox-close")).click();
+        AbstractPage.closeFancyBox();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
                 try {
-                    WebElement tree = driver.findElement(By.id(TREE_PATH_ID));
-                    return !tree.isDisplayed();
+                    WebElement btn = driver.findElement(By.id("fancybox-overlay"));
+                    return !btn.isDisplayed() || !btn.isEnabled();
                 } catch (NoSuchElementException e) {
                     return false;
                 }
