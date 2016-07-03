@@ -377,7 +377,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public DocumentBasePage goToDocumentByBreadcrumb(String documentTitle) {
-        clickOnBreadcrumElement(driver, documentTitle);
+        clickOnBreadcrumbElement(driver, documentTitle);
         return asPage(DocumentBasePage.class);
     }
 
@@ -386,7 +386,7 @@ public class DocumentBasePage extends AbstractPage {
      *
      * @since 8.3
      */
-    public static void clickOnBreadcrumElement(WebDriver driver, String documentTitle) {
+    public static void clickOnBreadcrumbElement(WebDriver driver, String documentTitle) {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         // ugly hack for NXP-19710: prevent search box from hiding breadcrumb links when window is too small
         executor.executeScript("return document.getElementById('nxw_headerSearch_panel').remove()");
