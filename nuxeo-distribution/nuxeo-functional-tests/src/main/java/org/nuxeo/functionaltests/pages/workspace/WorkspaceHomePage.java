@@ -18,11 +18,14 @@
  */
 package org.nuxeo.functionaltests.pages.workspace;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static org.nuxeo.functionaltests.Constants.SECTIONS_TITLE;
 import static org.nuxeo.functionaltests.Constants.TEMPLATES_TITLE;
@@ -38,11 +41,17 @@ public class WorkspaceHomePage extends DocumentBasePage {
     }
 
     public WorkspaceRepositoryPage goToRepository() {
+        Locator.getFluentWait()
+               .ignoring(NoSuchElementException.class)
+               .until(ExpectedConditions.visibilityOf(breadcrumbForm));
+
         WebElement first = breadcrumbForm.findElements(By.className("jsBreadcrumbActionList"))
                                          .get(0)
                                          .findElement(By.tagName("li"));
+        Locator.scrollToElement(first);
+        Locator.getFluentWait().until(ExpectedConditions.elementToBeClickable(first));
         first.click();
-        first.findElement(By.linkText("Repository")).click();
+        Locator.findElementWaitUntilEnabledAndClick(first, By.linkText("Repository"));
         return asPage(WorkspaceRepositoryPage.class);
     }
 
