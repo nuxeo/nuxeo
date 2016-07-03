@@ -77,7 +77,6 @@ public class JSListWidgetElement extends AbstractWidgetElement {
         rm.end();
     }
 
-
     public void moveDownElement(int index) {
         WebElement moveElement = getRowActions(index).findElement(By.className("moveDownBtn"));
         JSListRequestManager rm = new JSListRequestManager(driver);

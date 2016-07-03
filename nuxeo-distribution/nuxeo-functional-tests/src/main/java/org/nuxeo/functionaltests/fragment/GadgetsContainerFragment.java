@@ -54,8 +54,11 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
     }
 
     public WebElement waitForGadgetsLoad(final String mandatoryElements) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS).pollingEvery(5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+                                                                .withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
+                                                                        TimeUnit.SECONDS)
+                                                                .pollingEvery(5, TimeUnit.SECONDS)
+                                                                .ignoring(NoSuchElementException.class);
         return wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
@@ -84,8 +87,9 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
                                         mand));
                             } catch (NoSuchElementException e) {
                                 loaded = false;
-                                log.debug(String.format("Gadget frame '%s' not loaded yet, "
-                                        + "mandatory element '%s' not found", frameName, mand));
+                                log.debug(String.format(
+                                        "Gadget frame '%s' not loaded yet, " + "mandatory element '%s' not found",
+                                        frameName, mand));
                                 break;
                             }
                         }

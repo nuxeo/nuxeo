@@ -55,7 +55,7 @@ public abstract class ActivityDashboardPage extends ActivityPage {
         sb.append("var date = document.querySelectorAll(\"input[type='date']\")[0];");
         sb.append("date.value = '" + fmtDate + "';");
         // force set the date since change events might not be triggered
-        sb.append("var els = document.querySelectorAll('" + selector +"');");
+        sb.append("var els = document.querySelectorAll('" + selector + "');");
         sb.append("for (var i=0; i<els.length; i++) { els[i].startDate = '" + fmtDate + "'; }");
         js.executeScript(sb.toString());
     }
@@ -66,7 +66,7 @@ public abstract class ActivityDashboardPage extends ActivityPage {
         sb.append("var date = document.querySelectorAll(\"input[type='date']\")[1];");
         sb.append("date.value = '" + fmtDate + "';");
         // force set the date since change events might not be triggered
-        sb.append("var els = document.querySelectorAll('" + selector +"');");
+        sb.append("var els = document.querySelectorAll('" + selector + "');");
         sb.append("for (var i=0; i<els.length; i++) { els[i].endDate = '" + fmtDate + "'; }");
         js.executeScript(sb.toString());
     }

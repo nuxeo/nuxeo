@@ -18,15 +18,15 @@
  */
 package org.nuxeo.functionaltests.pages.workspace;
 
-import static org.nuxeo.functionaltests.Constants.SECTIONS_TITLE;
-import static org.nuxeo.functionaltests.Constants.TEMPLATES_TITLE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
-
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import static org.nuxeo.functionaltests.Constants.SECTIONS_TITLE;
+import static org.nuxeo.functionaltests.Constants.TEMPLATES_TITLE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
 
 /**
  * @since 8.3

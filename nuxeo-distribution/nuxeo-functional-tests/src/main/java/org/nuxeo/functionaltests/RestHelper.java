@@ -130,11 +130,11 @@ public class RestHelper {
         }
     }
 
-    public static void addUserToDelete(String userName){
+    public static void addUserToDelete(String userName) {
         usersToDelete.add(userName);
     }
 
-    public static void removeUserToDelete(String userName){
+    public static void removeUserToDelete(String userName) {
         usersToDelete.remove(userName);
     }
 
@@ -282,7 +282,8 @@ public class RestHelper {
     }
 
     public static void logOnServer(String level, String message) {
-        CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=%s", AbstractTest.NUXEO_URL, level, URIUtils.quoteURIPathComponent(message, true)));
+        CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=%s", AbstractTest.NUXEO_URL, level,
+                URIUtils.quoteURIPathComponent(message, true)));
     }
 
 }

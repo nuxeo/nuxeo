@@ -83,9 +83,9 @@ public class WorkflowHomePage extends AbstractPage {
     public void reassignTask(String taskDirective, String user) {
         TaskFancyBoxFragment taskBox = showTaskFancyBox("Reassign Task");
         taskBox.waitForTextToBePresent(taskDirective);
-        Select2WidgetElement particpants = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout_1:nxw_task_reassignment_actors_1_select2')]")),
+        Select2WidgetElement particpants = new Select2WidgetElement(driver,
+                driver.findElement(By
+                                     .xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout_1:nxw_task_reassignment_actors_1_select2')]")),
                 true);
         particpants.selectValue(user);
         taskBox.submit();
@@ -97,9 +97,9 @@ public class WorkflowHomePage extends AbstractPage {
     public void delegateTask(String taskDirective, String user) {
         TaskFancyBoxFragment taskBox = showTaskFancyBox("Delegate Task");
         taskBox.waitForTextToBePresent(taskDirective);
-        Select2WidgetElement particpants = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]")),
+        Select2WidgetElement particpants = new Select2WidgetElement(driver,
+                driver.findElement(By
+                                     .xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]")),
                 true);
         particpants.selectValue(user);
         taskBox.submit();
@@ -109,7 +109,8 @@ public class WorkflowHomePage extends AbstractPage {
      * @since 5.9.1
      */
     public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
-        findElementWaitUntilEnabledAndClick(By.xpath(String.format("//input[@type='submit' and @value='%s']", taskAction)));
+        findElementWaitUntilEnabledAndClick(
+                By.xpath(String.format("//input[@type='submit' and @value='%s']", taskAction)));
         WebElement element = getFancyBoxContent();
         return getWebFragment(element, WorkflowHomePage.TaskFancyBoxFragment.class);
     }

@@ -123,7 +123,7 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
      * @since 7.4
      */
     public Map<String, Integer> getAvailableAuthorAggregate() {
-        Select2AggregateElement s2AuthorAggregate =  new Select2AggregateElement(driver, authorAggregate, true);
+        Select2AggregateElement s2AuthorAggregate = new Select2AggregateElement(driver, authorAggregate, true);
         return s2AuthorAggregate.getAggregates();
     }
 
@@ -153,7 +153,7 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     }
 
     public void selectPath(String path) {
-        assert (path != null && !path.isEmpty() && path.charAt(0) == '/');
+        assert(path != null && !path.isEmpty() && path.charAt(0) == '/');
         openPathPopupButton.click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             @Override
@@ -175,7 +175,10 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         } else {
             AjaxRequestManager a = new AjaxRequestManager(driver);
             a.watchAjaxRequests();
-            driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText("/")).findElement(By.xpath(EXPAND_XPATH)).click();
+            driver.findElement(By.id(TREE_PATH_ID))
+                  .findElement(By.linkText("/"))
+                  .findElement(By.xpath(EXPAND_XPATH))
+                  .click();
             a.waitForAjaxRequests();
         }
         String[] pathArray = path.substring(1).split("/");
@@ -183,8 +186,10 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         for (; i < pathArray.length - 1; i++) {
             AjaxRequestManager a = new AjaxRequestManager(driver);
             a.watchAjaxRequests();
-            driver.findElement(By.id(TREE_PATH_ID)).findElement(By.linkText(pathArray[i])).findElement(
-                    By.xpath(EXPAND_XPATH)).click();
+            driver.findElement(By.id(TREE_PATH_ID))
+                  .findElement(By.linkText(pathArray[i]))
+                  .findElement(By.xpath(EXPAND_XPATH))
+                  .click();
             a.waitForAjaxRequests();
         }
         AjaxRequestManager a = new AjaxRequestManager(driver);
@@ -206,11 +211,11 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     }
 
     public void deselectPath(String path) {
-        assert (path != null && !path.isEmpty());
+        assert(path != null && !path.isEmpty());
         int lastPartIndex = path.lastIndexOf('/');
         String folderName = path.substring(lastPartIndex + 1);
-        WebElement e = selectPathDiv.findElement(By.xpath("descendant::label[contains(text(),'" + folderName
-                + "')]/ancestor::span[@class='sticker']/a"));
+        WebElement e = selectPathDiv.findElement(By.xpath(
+                "descendant::label[contains(text(),'" + folderName + "')]/ancestor::span[@class='sticker']/a"));
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
         e.click();
@@ -221,10 +226,8 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
      * @since 7.3
      */
     public void selectCollections(final String[] collections) {
-        Select2WidgetElement collectionsWidget = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(S2_COLLECTION_XPATH)),
-                true);
+        Select2WidgetElement collectionsWidget = new Select2WidgetElement(driver,
+                driver.findElement(By.xpath(S2_COLLECTION_XPATH)), true);
         collectionsWidget.selectValues(collections);
     }
 
@@ -232,10 +235,8 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
      * @since 7.3
      */
     public List<String> getSelectedCollections() {
-        Select2WidgetElement collectionsWidget = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(S2_COLLECTION_XPATH)),
-                true);
+        Select2WidgetElement collectionsWidget = new Select2WidgetElement(driver,
+                driver.findElement(By.xpath(S2_COLLECTION_XPATH)), true);
         List<String> result = new ArrayList<String>();
         for (WebElement el : collectionsWidget.getSelectedValues()) {
             result.add(el.getText());

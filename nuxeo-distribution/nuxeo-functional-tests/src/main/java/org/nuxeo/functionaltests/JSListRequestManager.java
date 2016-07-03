@@ -93,10 +93,14 @@ public class JSListRequestManager {
     }
 
     private void waitUntil(Function<WebDriver, Boolean> function) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver)
+                                                                             .withTimeout(
+                                                                                     AbstractTest.LOAD_TIMEOUT_SECONDS,
+                                                                                     TimeUnit.SECONDS)
+                                                                             .pollingEvery(
+                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                                                                                     TimeUnit.MILLISECONDS)
+                                                                             .ignoring(NoSuchElementException.class);
         wait.until(function);
     }
 

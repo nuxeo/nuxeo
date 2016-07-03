@@ -50,10 +50,10 @@ public class EventListener {
 
     public void listen() {
         StringBuilder sb = new StringBuilder();
-        sb.append("window."+ id + " = 0;");
-        sb.append("var els = document.querySelectorAll('" + selector +"');");
+        sb.append("window." + id + " = 0;");
+        sb.append("var els = document.querySelectorAll('" + selector + "');");
         sb.append("for (var i=0; i<els.length; i++) {");
-        sb.append("  els[i].addEventListener('" + event + "', function(e) { window."+ id + "++; });");
+        sb.append("  els[i].addEventListener('" + event + "', function(e) { window." + id + "++; });");
         sb.append("}");
         js.executeScript(sb.toString());
     }
@@ -71,10 +71,14 @@ public class EventListener {
     }
 
     private void waitUntil(Function<WebDriver, Boolean> function) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-            AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-            AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-            NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver)
+                                                                             .withTimeout(
+                                                                                     AbstractTest.LOAD_TIMEOUT_SECONDS,
+                                                                                     TimeUnit.SECONDS)
+                                                                             .pollingEvery(
+                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                                                                                     TimeUnit.MILLISECONDS)
+                                                                             .ignoring(NoSuchElementException.class);
         wait.until(function);
     }
 

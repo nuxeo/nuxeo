@@ -135,7 +135,7 @@ public class PermissionsSubPage extends AbstractPage {
     }
 
     protected void waitForPermissionAdded(String permission, String userOrGroupName) {
-        //wait for any JQuery ajax request to complete
+        // wait for any JQuery ajax request to complete
         new AjaxRequestManager(driver).waitForJQueryRequests();
         Locator.waitUntilGivenFunction(input -> hasPermission(permission, userOrGroupName));
     }

@@ -176,8 +176,8 @@ public abstract class AbstractTest {
 
     static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll(
-            "/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
+                                                 .replaceAll("/$", "");
 
     public static RemoteWebDriver driver;
 
@@ -357,14 +357,14 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                             .pollingEvery(POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         try {
             return wait.until(aPage -> {
                 String notLoaded = anyElementNotLoaded(elements, fieldNames);
                 if (notLoaded == null) {
-                    //check if there are Jquery ajax requests to complete
-                    if(pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)){
+                    // check if there are Jquery ajax requests to complete
+                    if (pageClassToProxy.isAnnotationPresent(WaitForJQueryAjaxOnLoading.class)) {
                         new AjaxRequestManager(driver).waitForJQueryRequests();
                     }
 

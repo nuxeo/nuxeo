@@ -79,9 +79,9 @@ public class AjaxRequestManager {
         sb.append(" return e");
         sb.append("}();");
         sb.append("if (typeof jsf !== 'undefined') {");
-        sb.append("  jsf.ajax.addOnEvent(function(e) {"
-                + "if (e.status == 'begin') {window.NuxeoTestFaces.increment();}"
-                + "if (e.status == 'success') {window.NuxeoTestFaces.decrement();}" + "})");
+        sb.append(
+                "  jsf.ajax.addOnEvent(function(e) {" + "if (e.status == 'begin') {window.NuxeoTestFaces.increment();}"
+                        + "if (e.status == 'success') {window.NuxeoTestFaces.decrement();}" + "})");
         sb.append("}");
         sb.append("}");
         js.executeScript(sb.toString());
@@ -148,10 +148,14 @@ public class AjaxRequestManager {
     }
 
     private void waitUntil(Function<WebDriver, Boolean> function) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver)
+                                                                             .withTimeout(
+                                                                                     AbstractTest.LOAD_TIMEOUT_SECONDS,
+                                                                                     TimeUnit.SECONDS)
+                                                                             .pollingEvery(
+                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                                                                                     TimeUnit.MILLISECONDS)
+                                                                             .ignoring(NoSuchElementException.class);
         wait.until(function);
     }
 }

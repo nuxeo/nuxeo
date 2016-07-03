@@ -52,7 +52,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class ITSelect2Test extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = ITSelect2Test.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITSelect2Test.class.getSimpleName() + "_WorkspaceTitle_"
+            + new Date().getTime();
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
@@ -64,7 +65,8 @@ public class ITSelect2Test extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
+                "members");
         String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
         fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE, null);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
@@ -114,7 +116,8 @@ public class ITSelect2Test extends AbstractTest {
         assertEquals(savedSubjects.size(), SUBJECTS.length);
 
         // Remove the second subject
-        Locator.findElementWaitUntilEnabledAndClick(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li[2]/a"));
+        Locator.findElementWaitUntilEnabledAndClick(
+                By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li[2]/a"));
 
         // We need to do this because select2 take a little while to write in
         // the form that an entry has been deleted

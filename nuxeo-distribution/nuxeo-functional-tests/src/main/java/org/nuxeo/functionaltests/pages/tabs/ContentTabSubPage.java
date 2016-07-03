@@ -21,9 +21,6 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
@@ -38,6 +35,9 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's

@@ -44,7 +44,7 @@ public class NoteCreationFormPage extends DublinCoreCreationDocumentFormPage {
     }
 
     public NoteCreationFormPage fillCreateNoteForm(String title, String description, boolean defineNote,
-        String noteContent) {
+            String noteContent) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
 

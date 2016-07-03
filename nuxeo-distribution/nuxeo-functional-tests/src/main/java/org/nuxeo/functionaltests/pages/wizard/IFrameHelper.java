@@ -52,9 +52,14 @@ public class IFrameHelper {
     public static final String CONNECT_FRAME_NAME = "connectForm";
 
     private static void switchToIFrame(final WebDriver driver, final WebElement iframe) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
-                TimeUnit.SECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchFrameException.class, StaleElementReferenceException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+                                                                .withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS,
+                                                                        TimeUnit.SECONDS)
+                                                                .pollingEvery(
+                                                                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                                                                        TimeUnit.MILLISECONDS)
+                                                                .ignoring(NoSuchFrameException.class,
+                                                                        StaleElementReferenceException.class);
         wait.until(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {

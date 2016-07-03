@@ -48,12 +48,12 @@ public class UpdateCenterPage extends AdminCenterBasePage {
 
     public PackageListingPage getPackageListingPage() {
         boolean iframeFound = IFrameHelper.focusOnWEIFrame(driver);
-        assert (iframeFound);
+        assert(iframeFound);
         WebElement body = findElementWithTimeout(By.tagName("body")); // wait for IFrame Body
-        assert (body != null);
+        assert(body != null);
         PackageListingPage page = asPage(PackageListingPage.class);
         WebElement listing = findElementWithTimeout(By.xpath("//table[@class='packageListing']"));
-        assert (listing != null);
+        assert(listing != null);
         return page;
     }
 

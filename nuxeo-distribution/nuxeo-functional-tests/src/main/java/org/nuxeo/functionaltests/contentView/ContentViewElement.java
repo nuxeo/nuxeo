@@ -70,8 +70,8 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     public WebElement getActionByTitle(String title) {
-        return getElement().findElement(By.className("contentViewUpperActions")).findElement(
-                By.xpath("//img[@alt=\"" + title + "\"]"));
+        return getElement().findElement(By.className("contentViewUpperActions"))
+                           .findElement(By.xpath("//img[@alt=\"" + title + "\"]"));
     }
 
     public ContentViewElement switchToResultLayout(ResultLayout layout) {
@@ -176,8 +176,8 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 8.3
      */
     public WebElement getSelectionActionByTitle(String title) {
-        return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]")).findElement(
-                By.xpath("//input[@value=\"" + title + "\"]"));
+        return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]"))
+                                .findElement(By.xpath("//input[@value=\"" + title + "\"]"));
     }
 
 }

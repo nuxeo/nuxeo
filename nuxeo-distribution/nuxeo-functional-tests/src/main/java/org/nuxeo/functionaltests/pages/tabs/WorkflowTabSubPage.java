@@ -137,7 +137,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * @since 5.8
      */
     public WebElement getTaskLayoutNode() {
-        return findElementWithTimeout(By.xpath("//div[starts-with(@id, 'nxl_current_route_layout:nxw_current_route_user_tasks_panel')]"));
+        return findElementWithTimeout(
+                By.xpath("//div[starts-with(@id, 'nxl_current_route_layout:nxw_current_route_user_tasks_panel')]"));
     }
 
     @Override
