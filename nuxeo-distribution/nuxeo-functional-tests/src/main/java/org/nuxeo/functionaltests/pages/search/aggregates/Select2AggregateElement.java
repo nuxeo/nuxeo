@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -69,6 +70,8 @@ public class Select2AggregateElement extends Select2WidgetElement implements Agg
         } else {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
+        Locator.waitUntilEnabled(select2Field);
+        Locator.scrollToElement(select2Field);
         select2Field.click();
     }
 

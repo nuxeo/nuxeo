@@ -19,6 +19,7 @@
 
 package org.nuxeo.functionaltests.pages.admincenter.monitoring;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.openqa.selenium.WebDriver;
@@ -39,7 +40,7 @@ public class MonitoringPage extends AdminCenterBasePage {
     }
 
     public LogsPage getLogsPage() {
-        logsLink.click();
+        Locator.waitUntilEnabledAndClick(logsLink);
         return asPage(LogsPage.class);
     }
 

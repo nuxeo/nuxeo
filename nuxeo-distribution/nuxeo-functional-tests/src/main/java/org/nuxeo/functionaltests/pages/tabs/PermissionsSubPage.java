@@ -128,7 +128,7 @@ public class PermissionsSubPage extends AbstractPage {
         }
 
         // click on Create
-        popup.findElement(By.xpath(".//paper-button[text()='Create']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(popup, By.xpath(".//paper-button[text()='Create']"));
         waitForPermissionAdded(permission, userOrGroupName);
 
         return asPage(PermissionsSubPage.class);

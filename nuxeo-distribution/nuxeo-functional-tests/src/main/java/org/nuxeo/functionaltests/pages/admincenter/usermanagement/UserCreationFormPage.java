@@ -162,7 +162,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
 
     protected void switchCreationFormPage() {
         if (!isImmediateCreationYesSelected()) {
-            immediateCreation.get(1).click();
+            Locator.scrollAndForceClick(immediateCreation.get(1));
             Locator.waitUntilElementPresent(
                     By.id("createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword"));
         }

@@ -21,8 +21,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
@@ -39,6 +37,8 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Base functions for all pages.
@@ -250,7 +250,8 @@ public abstract class AbstractPage {
      * @param timeout the timeout in milliseconds
      * @since 8.3
      */
-    public static void waitUntilEnabledAndClick(WebElement element, int waitUntilEnabledTimeout) throws NotFoundException {
+    public static void waitUntilEnabledAndClick(WebElement element, int waitUntilEnabledTimeout)
+            throws NotFoundException {
         Locator.waitUntilEnabledAndClick(element, waitUntilEnabledTimeout);
     }
 
@@ -289,7 +290,9 @@ public abstract class AbstractPage {
      * @param findElementTimeout the find element timeout in milliseconds
      * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @throws NotFoundException if the element is not found or not enabled
+     * @deprecated since 8.3, use {@link Locator#findElementWaitUntilEnabledAndClick(WebElement, By, int, int)}
      */
+    @Deprecated
     public static void findElementWaitUntilEnabledAndClick(By by, int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
         Locator.findElementWaitUntilEnabledAndClick(by, findElementTimeout, waitUntilEnabledTimeout);

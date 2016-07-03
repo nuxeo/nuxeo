@@ -111,7 +111,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @return The create form page object
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
-        newButton.click();
+        waitUntilEnabledAndClick(newButton);
         WebElement fancyBox = getFancyBoxContent();
         // find the link to doc type that needs to be created
         WebElement link = fancyBox.findElement(By.linkText(docType));
@@ -127,7 +127,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     protected void deleteSelectedDocuments() {
-        getElement().getSelectionActionByTitle(DELETE).click();
+        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(DELETE));
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.accept();
@@ -135,7 +135,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     public DocumentBasePage addToWorkList(String documentTitle) {
         getElement().checkByTitle(documentTitle);
-        getElement().getSelectionActionByTitle(ADD_TO_WORKLIST).click();
+        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(ADD_TO_WORKLIST));
         return asPage(DocumentBasePage.class);
     }
 
@@ -180,7 +180,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.2
      */
     public ContentTabSubPage clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
-        clearFilterButton.click();
+        Locator.waitUntilEnabledAndClick(clearFilterButton);
         Locator.waitUntilGivenFunction(driver -> {
             try {
                 return getChildDocumentRows().size() == expectedNbOfDisplayedResult;

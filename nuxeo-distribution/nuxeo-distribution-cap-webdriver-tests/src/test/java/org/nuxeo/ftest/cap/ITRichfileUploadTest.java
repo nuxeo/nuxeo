@@ -216,7 +216,7 @@ public class ITRichfileUploadTest extends AbstractTest {
                     // Expected
                 }
                 List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
-                uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
+                Locator.waitUntilEnabledAndClick(uploadedFiles.get(0).findElements(By.tagName("a")).get(0));
                 Alert confirmRemove = driver.switchTo().alert();
                 confirmRemove.accept();
                 return true;

@@ -30,7 +30,6 @@ import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -314,10 +313,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
         Locator.waitUntilEnabled(select2Field);
-        // scroll to it
-        JavascriptExecutor executor = (JavascriptExecutor) driver;
-        executor.executeScript("arguments[0].scrollIntoView(false);", select2Field);
-        // click
+        Locator.scrollToElement(select2Field);
         select2Field.click();
     }
 

@@ -46,8 +46,7 @@ public class ITMainTabsTest extends AbstractTest {
         assertFalse(documentBasePage.isMainTabSelected(documentBasePage.documentManagementLink));
         assertTrue(documentBasePage.isMainTabSelected(documentBasePage.searchPageLink));
         // click on first search result, at least user workspace should be there
-        WebElement wsLink = Locator.findElement(By.cssSelector("span[class='documentTitle']"));
-        wsLink.click();
+        Locator.findElementWaitUntilEnabledAndClick(By.cssSelector("span[class='documentTitle']"));
         documentBasePage = AbstractTest.asPage(DocumentBasePage.class);
         // check that workspace main tab is now selected
         assertTrue(documentBasePage.isMainTabSelected(documentBasePage.documentManagementLink));

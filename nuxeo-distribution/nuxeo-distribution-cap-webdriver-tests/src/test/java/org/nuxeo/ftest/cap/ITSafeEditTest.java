@@ -248,6 +248,7 @@ public class ITSafeEditTest extends AbstractTest {
         titleElt.sendKeys(Keys.chord(ctrlKey, "a") + Keys.DELETE + NEW_WORKSPACE_TITLE);
         // weird thing in webdriver: we need to call clear on an input of the
         // form to fire an onchange event
+        Locator.scrollToElement(descriptionElt);
         descriptionElt.click();
         descriptionElt.clear();
         log.debug("2 - " + localStorage.getLocalStorageLength());

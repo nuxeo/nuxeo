@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
@@ -68,7 +69,7 @@ public class CommentsTabSubPage extends DocumentBasePage {
         }
         commentTextarea.clear();
         commentTextarea.sendKeys(comment);
-        add.click();
+        Locator.scrollAndForceClick(add);
         return asPage(CommentsTabSubPage.class);
     }
 

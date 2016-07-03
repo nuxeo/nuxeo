@@ -226,7 +226,7 @@ public class SummaryTabSubPage extends AbstractPage {
      * @since 8.3
      */
     public SummaryTabSubPage approvePublication() {
-        publicationBlock.findElement(By.xpath(".//input[@value='Approve']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(publicationBlock, By.xpath(".//input[@value='Approve']"));
         return asPage(SummaryTabSubPage.class);
     }
 
@@ -258,6 +258,6 @@ public class SummaryTabSubPage extends AbstractPage {
     public void rejectPublication(String comment) {
         WebElement text = publicationBlock.findElement(By.xpath(".//*[contains(@name, 'rejectPublishingComment')]"));
         text.sendKeys(comment);
-        publicationBlock.findElement(By.xpath(".//input[@value='Reject']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(publicationBlock, By.xpath(".//input[@value='Reject']"));
     }
 }

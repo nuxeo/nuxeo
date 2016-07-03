@@ -286,7 +286,7 @@ public class ITCollectionsTest extends AbstractTest {
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
 
         // Check now the collection has one file
-        collectionsPage = documentBasePage.goToHomePage().goToCollections();
+        collectionsPage = asPage(DocumentBasePage.class).goToHomePage().goToCollections();
         collectionContentTabSubPage = collectionsPage.goToCollection(COLLECTION_NAME_2);
         assertEquals(1, collectionContentTabSubPage.getChildDocumentRows().size());
 

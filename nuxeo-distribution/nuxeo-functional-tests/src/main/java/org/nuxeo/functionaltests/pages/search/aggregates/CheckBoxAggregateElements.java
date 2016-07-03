@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -81,6 +82,8 @@ public class CheckBoxAggregateElements implements AggregateElement {
                 AjaxRequestManager a = new AjaxRequestManager(driver);
                 a.watchAjaxRequests();
                 WebElement input = e.findElement(By.xpath("input"));
+                Locator.waitUntilEnabled(input);
+                Locator.scrollToElement(input);
                 input.click();
                 a.waitForAjaxRequests();
                 break;
