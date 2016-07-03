@@ -215,7 +215,13 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 7.10
      */
     public void selectValue(final String value, final boolean wait4A4J, final boolean typeAll) {
-        clickSelect2Field();
+        selectValue(value, wait4A4J, typeAll, true);
+    }
+
+    public void selectValue(final String value, final boolean wait4A4J, final boolean typeAll, boolean click) {
+        if (click) {
+            clickSelect2Field();
+        }
 
         WebElement suggestInput = getSuggestInput();
 
@@ -273,8 +279,12 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.7.3
      */
     public void selectValues(final String[] values) {
+        boolean click = true;
         for (String value : values) {
-            selectValue(value);
+            // avoid clicking again when setting multiple values, to prevent accidental deletion of previously added
+            // element
+            selectValue(value, false, false, click);
+            click = false;
         }
     }
 
@@ -309,7 +319,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     public void clickSelect2Field() {
         WebElement select2Field = null;
         if (multiple) {
-            select2Field = element.findElement(By.xpath("//input[contains(@class,'select2-input')]"));
+            select2Field = element;
         } else {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
