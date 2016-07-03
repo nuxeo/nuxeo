@@ -241,13 +241,14 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         List<WebElement> suggestions = getSuggestedEntries();
         if (suggestions == null || suggestions.isEmpty()) {
-            log.warn("Suggestion for element " + element.getAttribute("id") + " returned no result.");
+            log.warn("Suggestion for element " + element.getAttribute("id") + " returned no result for value '" + value
+                    + "'.");
             return;
         }
         WebElement suggestion = suggestions.get(0);
         if (suggestions.size() > 1) {
-            log.warn("Suggestion for element " + element.getAttribute("id")
-                    + " returned more than 1 result, the first suggestion will be selected : " + suggestion.getText());
+            log.warn("Suggestion for element " + element.getAttribute("id") + " returned more than 1 result for value '"
+                    + value + "', the first suggestion will be selected : " + suggestion.getText());
         }
 
         AjaxRequestManager arm = new AjaxRequestManager(driver);
@@ -308,7 +309,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
     public void clickSelect2Field() {
         WebElement select2Field = null;
         if (multiple) {
-            select2Field = element;
+            select2Field = element.findElement(By.xpath("//input[contains(@class,'select2-input')]"));
         } else {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
