@@ -24,7 +24,7 @@ nuxeo.suggestbox = (function(m) {
   };
 
   m.suggestedFormatter = function(item) {
-    return '<span><img src="/' + nxContextPath + item.icon + '" class="smallIcon" />' + escapeHTML(item.label) + '</span>';
+    return '<span><img src="' + nxContextPath + item.icon + '" class="smallIcon" />' + escapeHTML(item.label) + '</span>';
   };
 
   m.entryHandler = function(item) {
