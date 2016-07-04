@@ -107,7 +107,7 @@
 <#else>
   <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService"
       point="repository">
-    <repository name="default" label="MongoDB Repository">
+    <repository name="default" label="label.default.repository">
       <server>${nuxeo.mongodb.server}</server>
       <dbname>${nuxeo.mongodb.dbname}</dbname>
       <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}" />
