@@ -48,6 +48,9 @@ public class CopySchema {
 
     @Context
     protected CoreSession session;
+    
+    @Param(name = "schema")
+    protected String schema;
 
     @Param(name = "schema")
     protected String schema;
