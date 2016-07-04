@@ -115,15 +115,15 @@ public class ReportConnector {
                         return null;
                     }
                     while (source.hasNext()) {
+                        VirtualMachineDescriptor pid = source.next();
                         try {
-                            VirtualMachineDescriptor pid = source.next();
                             MBeanServerConnection connection = new Management(pid).connect();
                             if (!connection.isRegistered(NAME)) {
                                 continue;
                             }
                             return JMX.newMXBeanProxy(connection, NAME, ReportServer.class);
                         } catch (IOException cause) {
-                            ;
+                            LogFactory.getLog(Discovery.class).error("Cannot connect to " + pid, cause);
                         }
                     }
                     return null;
