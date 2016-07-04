@@ -165,12 +165,12 @@
 
       <!-- Storage -->
       <dependency>
-        <groupId>org.nuxeo.ecm.storage.marklogic</groupId>
+        <groupId>org.nuxeo.storage.marklogic</groupId>
         <artifactId>nuxeo-storage-marklogic</artifactId>
         <version>${nuxeo.marklogic.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.storage.marklogic</groupId>
+        <groupId>org.nuxeo.storage.marklogic</groupId>
         <artifactId>nuxeo-storage-marklogic</artifactId>
         <version>${nuxeo.marklogic.version}</version>
         <type>test-jar</type>
