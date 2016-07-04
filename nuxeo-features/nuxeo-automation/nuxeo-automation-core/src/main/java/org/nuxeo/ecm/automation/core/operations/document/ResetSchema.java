@@ -37,7 +37,7 @@ import java.util.Map;
  * @since 8.3
  */
 @Operation(id = ResetSchema.ID, category = Constants.CAT_DOCUMENT, label = "Reset Schema",
-    description = "Reset all values")
+    description = "Reset all properties for a given schema or xpath. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds.")
 public class ResetSchema {
 
     public static final String ID = "Document.ResetSchema";
