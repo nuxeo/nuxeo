@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -68,7 +69,7 @@ public class ResetSchema {
         }
     }
 
-    @OperationMethod
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel target) throws OperationException {
         resetSchemaProperties(target);
         target = session.saveDocument(target);
@@ -77,13 +78,4 @@ public class ResetSchema {
         }
         return target;
     }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList targets) throws OperationException {
-        for (DocumentModel target : targets) {
-            resetSchemaProperties(target);
-        }
-        return targets;
-    }
-
 }
