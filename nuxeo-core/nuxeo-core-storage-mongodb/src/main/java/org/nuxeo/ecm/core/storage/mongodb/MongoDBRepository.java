@@ -599,7 +599,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         List<DBObject> obs = states.stream().map(this::stateToBson).collect(Collectors.toList());
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE ["
-                    + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
+                    + states.stream().map(state -> state.get(idKey).toString()).collect(Collectors.joining(", "))
                     + "]: " + states);
         }
         coll.insert(obs);
