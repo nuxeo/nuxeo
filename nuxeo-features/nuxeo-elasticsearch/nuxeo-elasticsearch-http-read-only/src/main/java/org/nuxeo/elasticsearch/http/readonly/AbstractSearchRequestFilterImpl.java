@@ -59,7 +59,7 @@ public abstract class AbstractSearchRequestFilterImpl implements SearchRequestFi
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
         RequestValidator validator = new RequestValidator();
         this.indices = validator.getIndices(indices);
-        this.types = validator.getTypes(indices, types);
+        this.types = validator.getTypes(this.indices, types);
         this.principal = (NuxeoPrincipal) session.getPrincipal();
         this.rawQuery = rawQuery;
         this.payload = payload;
