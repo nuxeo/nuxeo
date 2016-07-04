@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -73,7 +74,7 @@ public class CopySchema {
         target.setProperties(schema, source.getProperties(schema));
     }
 
-    @OperationMethod
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel target) throws OperationException {
         DocumentModel source = getDocumentFromIdOrPath();
         copySchemaProperties(source, target);
@@ -84,14 +85,4 @@ public class CopySchema {
         }
         return target;
     }
-
-    @OperationMethod
-    public DocumentModelList run(DocumentModelList targets) throws OperationException {
-        DocumentModel source = getDocumentFromIdOrPath();
-        for (DocumentModel target : targets) {
-            copySchemaProperties(source, target);
-        }
-        return targets;
-    }
-
 }
