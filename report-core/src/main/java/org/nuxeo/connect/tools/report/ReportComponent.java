@@ -101,6 +101,8 @@ public class ReportComponent extends DefaultComponent {
 
         @Override
         public void run(String host, int port, String... names) throws IOException {
+            ClassLoader tcl = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(Runtime.class.getClassLoader());
             try (Socket sock = new Socket(host, port)) {
                 try (OutputStream sink =
                         sock.getOutputStream()) {
@@ -108,6 +110,8 @@ public class ReportComponent extends DefaultComponent {
                 }
             } catch (IOException cause) {
                 throw cause;
+            } finally {
+                Thread.currentThread().setContextClassLoader(tcl);
             }
         }
 
