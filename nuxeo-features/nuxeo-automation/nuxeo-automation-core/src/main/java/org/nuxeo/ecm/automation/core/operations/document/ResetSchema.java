@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Miguel Nixo
+ *     Ricardo Dias
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -52,6 +53,9 @@ public class ResetSchema {
     @Param(name = "xpath", required = false)
     protected String xpath;
 
+    @Param(name = "save", required = false, values = { "true" })
+    protected boolean save = true;
+
     private void resetSchemaProperties(DocumentModel target) throws OperationException {
         if (xpath != null) {
             target.setPropertyValue(xpath, null);
@@ -67,6 +71,10 @@ public class ResetSchema {
     @OperationMethod
     public DocumentModel run(DocumentModel target) throws OperationException {
         resetSchemaProperties(target);
+        target = session.saveDocument(target);
+        if (save) {
+            session.save();
+        }
         return target;
     }
 

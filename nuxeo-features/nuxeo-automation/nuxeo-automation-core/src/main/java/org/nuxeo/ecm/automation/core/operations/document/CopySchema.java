@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Miguel Nixo
+ *     Ricardo Dias
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -55,6 +56,9 @@ public class CopySchema {
     @Param(name = "schema")
     protected String schema;
 
+    @Param(name = "save", required = false, values = { "true" })
+    protected boolean save = true;
+
     private DocumentModel getDocumentFromIdOrPath() throws OperationException {
         if (sourceId != null) {
             return session.getDocument(new IdRef(sourceId));
@@ -73,6 +77,11 @@ public class CopySchema {
     public DocumentModel run(DocumentModel target) throws OperationException {
         DocumentModel source = getDocumentFromIdOrPath();
         copySchemaProperties(source, target);
+
+        target = session.saveDocument(target);
+        if (save) {
+            session.save();
+        }
         return target;
     }
 
