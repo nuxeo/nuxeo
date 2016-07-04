@@ -551,7 +551,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         initRoot();
     }
 
-    protected Long getNextSequenceId() {
+    protected synchronized Long getNextSequenceId() {
         if (sequenceLeft == 0) {
             // allocate a new sequence block
             // the database contains the last value from the last block
