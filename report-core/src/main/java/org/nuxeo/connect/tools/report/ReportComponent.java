@@ -33,6 +33,10 @@ import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * Reports aggregator, exposed as a service in the runtime.
@@ -52,6 +56,41 @@ public class ReportComponent extends DefaultComponent {
 
     public ReportComponent() {
         instance = this;
+    }
+
+    ReloadListener reloadListener;
+
+    class ReloadListener implements EventListener {
+        final ComponentContext context;
+
+        ReloadListener(ComponentContext context) {
+            this.context = context;
+        }
+
+        @Override
+        public void handleEvent(Event event) {
+            if (ReloadService.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
+                applicationStarted(context);
+                return;
+            } else if (ReloadService.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
+                applicationStopped(context);
+            }
+        }
+
+        @Override
+        public boolean aboutToHandleEvent(Event event) {
+            return true;
+        }
+    }
+
+    @Override
+    public void activate(ComponentContext context) {
+        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC, reloadListener = new ReloadListener(context));
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
     }
 
     final ReportConfiguration configuration = new ReportConfiguration();
@@ -129,9 +168,14 @@ public class ReportComponent extends DefaultComponent {
                     return;
                 }
                 Framework.removeListener(this);
-                Framework.getService(ResourcePublisher.class).unregisterResource("connect-report", "connect-report");
+                applicationStopped(context);
             }
+
         });
+    }
+
+    protected void applicationStopped(ComponentContext context) {
+        Framework.getService(ResourcePublisher.class).unregisterResource("connect-report", "connect-report");
     }
 
     @Override
