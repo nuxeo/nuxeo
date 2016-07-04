@@ -52,9 +52,6 @@ public class CopySchema {
     @Param(name = "schema")
     protected String schema;
 
-    @Param(name = "schema")
-    protected String schema;
-
     @Param(name = "sourceId", required = false)
     protected String sourceId;
 
