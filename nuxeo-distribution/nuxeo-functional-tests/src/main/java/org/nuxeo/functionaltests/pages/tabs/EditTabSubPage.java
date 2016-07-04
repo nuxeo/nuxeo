@@ -19,6 +19,7 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -69,12 +70,10 @@ public class EditTabSubPage extends AbstractPage {
         if (versionIncrementLabel != null) {
             WebElement versionIncrementRadio = driver.findElement(
                     By.xpath("//input[@value=\"" + versionIncrementLabel + "\"]"));
-            versionIncrementRadio.click();
+            Locator.waitUntilEnabledAndClick(versionIncrementRadio);
         }
 
-        save.click();
-
-        return asPage(DocumentBasePage.class);
+        return save();
     }
 
     /**
@@ -115,7 +114,7 @@ public class EditTabSubPage extends AbstractPage {
      * @since 5.7.3
      */
     public DocumentBasePage save() {
-        save.click();
+        Locator.waitUntilEnabledAndClick(save);
         return asPage(DocumentBasePage.class);
     }
 

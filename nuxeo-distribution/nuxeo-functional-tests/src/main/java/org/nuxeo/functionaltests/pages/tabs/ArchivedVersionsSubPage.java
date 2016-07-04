@@ -100,7 +100,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             try {
                 trItem.findElement(By.xpath("td[text()=\"" + versionLabel + "\"]"));
                 WebElement checkBox = trItem.findElement(By.xpath("td/input[@type=\"checkbox\"]"));
-                checkBox.click();
+                Locator.waitUntilEnabledAndClick(checkBox);
                 break;
             } catch (NoSuchElementException e) {
                 // Go to next line
@@ -231,7 +231,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             try {
                 trItem.findElement(By.xpath("td[text()=\"" + versionLabel + "\"]"));
                 WebElement actionButton = trItem.findElement(By.xpath("td/span[@id=\"" + actionId + "\"]/input"));
-                actionButton.click();
+                Locator.waitUntilEnabledAndClick(actionButton);
                 break;
             } catch (NoSuchElementException e) {
                 // Go to next line
