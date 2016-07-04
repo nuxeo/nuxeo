@@ -47,9 +47,9 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
  * </ul>
  */
 @Operation(id = CreateVocabularyEntry.ID, category = Constants.CAT_SERVICES, label = "Vocabulary: Add Entry",
-    description = "Add a new entry in the <i>name</i> directory only if <i>id</i> is not found (an existing entry is" +
+    description = "Add a new entry in the <i>vocabularyName</i> vocabulary only if <i>id</i> is not found (an existing entry is" +
         "not updated). If <i>label</i> is empty, it is set to the id. WARNING: Current user must have enough rights " +
-        "to write in a directory.")
+        "to write in a vocabulary.")
 public class CreateVocabularyEntry {
 
     public static final String ID = "Directory.CreateVocabularyEntry";
@@ -60,7 +60,7 @@ public class CreateVocabularyEntry {
     @Context
     protected SchemaManager schemaManager;
 
-    @Param(name = "name")
+    @Param(name = "vocabularyName")
     protected String name;
 
     @Param(name = "id")

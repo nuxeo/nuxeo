@@ -77,7 +77,7 @@ public class CreateVocabularyEntryTest {
 
         OperationContext context = new OperationContext(session);
         OperationChain chain = new OperationChain("shouldCreateEntry");
-        chain.add(CreateVocabularyEntry.ID).set("name", vocabularyName).set("id", entryId);
+        chain.add(CreateVocabularyEntry.ID).set("vocabularyName", vocabularyName).set("id", entryId);
         service.run(context, chain);
 
         assertTrue(vocabularySession.hasEntry(entryId));
@@ -94,7 +94,7 @@ public class CreateVocabularyEntryTest {
 
         OperationContext context = new OperationContext(session);
         OperationChain chain = new OperationChain("shouldNotCreateEntry");
-        chain.add(CreateVocabularyEntry.ID).set("name", vocabularyName).set("id", entryId);
+        chain.add(CreateVocabularyEntry.ID).set("vocabularyName", vocabularyName).set("id", entryId);
         service.run(context, chain);
 
         int numberOfEntriesAfter = vocabularySession.query(new HashMap<>()).size();

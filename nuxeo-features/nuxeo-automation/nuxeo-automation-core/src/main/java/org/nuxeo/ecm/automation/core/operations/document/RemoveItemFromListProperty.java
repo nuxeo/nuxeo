@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 /**
  * @since 8.3
  */
-@Operation(id = RemoveItemFromListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Removes a Property From a List Item", description = "This operation can remove fields from a multivalued complex metadata. The value parameter is with an index. If the index is null, removes all the property (nullify it)", aliases = { "Document.RemoveItemFromListProperty" })
+@Operation(id = RemoveItemFromListProperty.ID, category = Constants.CAT_DOCUMENT, label = "Removes an Entry From a Multivalued Complex Property", description = "This operation removes an entry from a multivalued complex property, specified using a xpath (e.g.: contract:customers). A specific entry can be removed using its index number. If the index parameter is left empty, all entries in the property are removed. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds.", aliases = { "Document.RemoveItemFromListProperty" })
 public class RemoveItemFromListProperty {
 
     public static final String ID = "Document.RemoveItemFromListProperty";

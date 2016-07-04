@@ -16,6 +16,7 @@
  * Contributors:
  *     Miguel Nixo
  *     Ricardo Dias
+ *     Bertrand Chauvin
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -37,7 +38,7 @@ import org.nuxeo.ecm.core.api.PathRef;
  * @since 8.3
  */
 @Operation(id = CopySchema.ID, category = Constants.CAT_DOCUMENT, label = "Copy Schema",
-    description = "Copy all the info in the schema of the source to the input document.")
+    description = "Copy all the properties from the schema of the source into the input document. Either sourceId or sourcePath parameter should be filled. When both are filled, sourceId will be used. Activating the save parameter forces the changes to be written in database immediately (at the cost of performance loss), otherwise changes made to the document will be written in bulk when the chain succeeds.")
 public class CopySchema {
 
     public static final String ID = "Document.CopySchema";
@@ -47,15 +48,18 @@ public class CopySchema {
 
     @Context
     protected CoreSession session;
+    
+    @Param(name = "schema")
+    protected String schema;
+
+    @Param(name = "schema")
+    protected String schema;
 
     @Param(name = "sourceId", required = false)
     protected String sourceId;
 
     @Param(name = "sourcePath", required = false)
     protected String sourcePath;
-
-    @Param(name = "schema")
-    protected String schema;
 
     @Param(name = "save", required = false, values = { "true" })
     protected boolean save = true;
