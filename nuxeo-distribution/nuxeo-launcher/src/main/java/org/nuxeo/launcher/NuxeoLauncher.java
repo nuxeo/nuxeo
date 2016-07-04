@@ -1350,7 +1350,7 @@ public abstract class NuxeoLauncher {
                 outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
             } else {
                 Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
-                outputpath = dir.resolve("nuxeo-connect-report.json".concat(
+                outputpath = dir.resolve("nuxeo-connect-tools-report.json".concat(
                         gzip ? ".gz" : ""));
             }
             log.info("Dumping connect report in " + outputpath);
