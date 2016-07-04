@@ -19,7 +19,6 @@
     <module>nuxeo-platform</module>
     <module>nuxeo-platform-actions-core</module>
     <module>nuxeo-platform-api</module>
-    <module>nuxeo-platform-commandline-executor</module>
     <module>nuxeo-platform-directory</module>
     <module>nuxeo-platform-dublincore</module>
     <module>nuxeo-platform-filemanager-core</module>
