@@ -40,12 +40,12 @@ import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.core.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.core.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
