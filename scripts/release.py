@@ -73,15 +73,18 @@ from terminalsize import get_terminal_size
 
 PKG_RENAMINGS = {
     # Tomcat packages
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
-    "nuxeo-distribution-tomcat-%s-nuxeo-cap.zip": "nuxeo-cap-%s-tomcat"
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s.zip": "nuxeo-server-%s-tomcat",
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-nuxeo-cap.zip": "nuxeo-cap-%s-tomcat"
 }
 
 PKG_RENAMINGS_OPTIONALS = {
     # Tomcat packages
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
-    "nuxeo-distribution-tomcat-%s-nuxeo-cap-sdk.zip":
-    "nuxeo-cap-%s-tomcat-sdk"
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-sdk.zip": "nuxeo-server-%s-tomcat-sdk",
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-nuxeo-cap-sdk.zip": "nuxeo-cap-%s-tomcat-sdk"
+}
+
+PKG_MP = {
+    "nuxeo-distribution/nuxeo-marketplace-jsf-ui/target/nuxeo-marketplace-jsf-ui-%s.zip": "nuxeo-jsf-ui-%s.zip"
 }
 
 NAMESPACES = {"pom": "http://maven.apache.org/POM/4.0.0"}
@@ -407,6 +410,9 @@ given the path parameter.
         # Tomcat SDK packages
         for old, new in PKG_RENAMINGS_OPTIONALS.items():
             self.package(old % version, new % version, False)
+        # MP
+        for old, new in PKG_MP.items():
+            self.package_mp(old % version, new % version, False)
 
         self.package_sources(version)
         shutil.rmtree(self.tmpdir)
@@ -454,6 +460,15 @@ given the path parameter.
     def package_sources(self, version):
         sources_archive_name = "nuxeo-%s-sources.zip" % version
         self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
+
+    def package_mp(self, old_archive, new_name, failonerror=True):
+        if not os.path.isfile(old_archive):
+            if failonerror:
+                raise ExitException(1, "Could not find %s" % old_archive)
+            else:
+                log("[WARN] Could not find %s" % old_archive, sys.stderr)
+                return
+        shutil.copy(old_archive, os.path.join(self.archive_dir, new_name))
 
     def get_message(self, message, additional_message):
         """Returns a message prefixing the additional message by ': ' if both
