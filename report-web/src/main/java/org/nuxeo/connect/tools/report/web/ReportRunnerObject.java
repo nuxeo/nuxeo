@@ -21,9 +21,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -33,7 +30,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -67,26 +63,19 @@ public class ReportRunnerObject extends DefaultObject {
     @Path("run")
     @Consumes("application/x-www-form-urlencoded")
     @Produces("text/json")
-    public Response run(@FormParam("report") List<String> reports, @Context HttpServletRequest request) throws IOException {
+    public Response run(@FormParam("report") List<String> reports) throws IOException {
         selection = reports;
-        boolean compress = request.getHeader("Accept-Encoding").toLowerCase().contains("gzip");
 
         StreamingOutput stream = new StreamingOutput() {
             @Override
-            public void write(OutputStream os) throws IOException, WebApplicationException {
-                runner.run(compress ? new GZIPOutputStream(os) : os, new HashSet<>(selection));
+            public void write(OutputStream sink) throws IOException, WebApplicationException {
+                runner.run(sink, new HashSet<>(selection));
             }
         };
-        ResponseBuilder builder = Response.ok(stream);
-        if (compress) {
-            builder = builder.header("Content-Encoding", "zip")
-                    .header("Content-Disposition",
-                            "attachment; filename=nuxeo-connect-tools-report.json.gz");
-        } else {
-            builder.header("Content-Disposition",
-                    "attachment; filename=nuxeo-connect-tools-report.json");
-        }
-        return builder.build();
+        return Response.ok(stream)
+                .header("Content-Disposition",
+                        "attachment; filename=nuxeo-connect-tools-report.json")
+                .build();
     }
 
     public List<String> availables() {
