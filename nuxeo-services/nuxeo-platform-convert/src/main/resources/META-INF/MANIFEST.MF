@@ -13,7 +13,6 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
  OSGI-INF/commandline-pdf2html-contrib.xml,
  OSGI-INF/commandline-pdf2image-contrib.xml,
- OSGI-INF/commandline-pdf2text-contrib.xml,
  OSGI-INF/commandline-wpd2text-contrib.xml,
  OSGI-INF/ooo-manager-framework.xml
 Bundle-ManifestVersion: 2
@@ -44,6 +43,7 @@ Import-Package: com.sun.star.beans;ridl=split,
  org.nuxeo.ecm.core.convert.api,
  org.nuxeo.ecm.core.convert.cache,
  org.nuxeo.ecm.core.convert.extension,
+ org.nuxeo.ecm.core.convert.plugins,
  org.nuxeo.ecm.directory;api=split,
  org.nuxeo.ecm.core.commandline.executor.api,
  org.nuxeo.ecm.platform.mimetype,

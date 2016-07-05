@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.convert.commandline.pdf2text">
+<component name="org.nuxeo.ecm.core.convert.plugins.commandline.pdf2text">
 
   <require>org.nuxeo.ecm.core.commandline.executor.service.defaultContrib</require>
   <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent" point="command">

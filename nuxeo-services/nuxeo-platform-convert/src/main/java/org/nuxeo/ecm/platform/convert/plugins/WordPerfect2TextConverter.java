@@ -30,9 +30,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.core.convert.plugins.CommandLineBasedConverter;
 
 public class WordPerfect2TextConverter extends CommandLineBasedConverter {
-
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
 
