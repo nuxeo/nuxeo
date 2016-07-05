@@ -125,7 +125,6 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     protected void initRepository() {
-        initRoot();
         // Activate Optimistic Locking
         // https://docs.marklogic.com/guide/java/transactions#id_81051
         ServerConfigurationManager configMgr = markLogicClient.newServerConfigManager();
@@ -133,6 +132,9 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         configMgr.setUpdatePolicy(UpdatePolicy.VERSION_OPTIONAL);
         // write the server configuration to the database
         configMgr.writeConfiguration();
+        if (readState(getRootId()) == null) {
+            initRoot();
+        }
     }
 
     @Override
@@ -147,70 +149,114 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
-        if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: READ " + id);
-        }
+        long begin = System.currentTimeMillis();
         try {
-            return markLogicClient.newXMLDocumentManager().read(ID_FORMATTER.apply(id), new StateHandle()).get();
-        } catch (ResourceNotFoundException e) {
-            return null;
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: READ " + id);
+            }
+            try {
+                return markLogicClient.newXMLDocumentManager().read(ID_FORMATTER.apply(id), new StateHandle()).get();
+            } catch (ResourceNotFoundException e) {
+                return null;
+            }
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: READ " + id + " time: " + (System.currentTimeMillis() - begin));
+            }
         }
     }
 
     @Override
     public List<State> readStates(List<String> ids) {
-        if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: READ " + ids);
+        long begin = System.currentTimeMillis();
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: READ " + ids);
+            }
+            String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
+            DocumentPage page = markLogicClient.newXMLDocumentManager().read(markLogicIds);
+            return StreamSupport.stream(page.spliterator(), false)
+                                .map(document -> document.getContent(new StateHandle()).get())
+                                .collect(Collectors.toList());
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: READ " + ids + " time: " + (System.currentTimeMillis() - begin));
+            }
         }
-        String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
-        DocumentPage page = markLogicClient.newXMLDocumentManager().read(markLogicIds);
-        return StreamSupport.stream(page.spliterator(), false)
-                            .map(document -> document.getContent(new StateHandle()).get())
-                            .collect(Collectors.toList());
     }
 
     @Override
     public void createState(State state) {
+        long begin = System.currentTimeMillis();
         String id = state.get(KEY_ID).toString();
-        if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: CREATE " + id + ": " + state);
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: CREATE " + id + ": " + state);
+            }
+            markLogicClient.newXMLDocumentManager().write(ID_FORMATTER.apply(id), new StateHandle(state));
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: CREATE " + id + " time: " + (System.currentTimeMillis() - begin));
+            }
         }
-        markLogicClient.newXMLDocumentManager().write(ID_FORMATTER.apply(id), new StateHandle(state));
     }
 
     @Override
     public void createStates(List<State> states) {
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        DocumentWriteSet writeSet = docManager.newWriteSet();
-        for (State state : states) {
-            String id = state.get(KEY_ID).toString();
-            writeSet.add(ID_FORMATTER.apply(id), new StateHandle(state));
+        long begin = System.currentTimeMillis();
+        try {
+            XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+            DocumentWriteSet writeSet = docManager.newWriteSet();
+            for (State state : states) {
+                String id = state.get(KEY_ID).toString();
+                writeSet.add(ID_FORMATTER.apply(id), new StateHandle(state));
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: CREATE ["
+                        + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
+                        + "]: " + states);
+            }
+            docManager.write(writeSet);
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: CREATE ["
+                        + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
+                        + "] time: " + (System.currentTimeMillis() - begin));
+            }
         }
-        if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: CREATE ["
-                    + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
-                    + "]: " + states);
-        }
-        docManager.write(writeSet);
     }
 
     @Override
     public void updateState(String id, StateDiff diff) {
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        PatchHandle patch = new MarkLogicStateUpdateBuilder(docManager::newPatchBuilder).apply(diff);
-        if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
+        long begin = System.currentTimeMillis();
+        try {
+            XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+            PatchHandle patch = new MarkLogicStateUpdateBuilder(docManager::newPatchBuilder).apply(diff);
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
+            }
+            docManager.patch(ID_FORMATTER.apply(id), patch);
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: UPDATE " + id + " time: " + (System.currentTimeMillis() - begin));
+            }
         }
-        docManager.patch(ID_FORMATTER.apply(id), patch);
     }
 
     @Override
     public void deleteStates(Set<String> ids) {
-        if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: DELETE " + ids);
+        long begin = System.currentTimeMillis();
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: DELETE " + ids);
+            }
+            String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
+            markLogicClient.newXMLDocumentManager().delete(markLogicIds);
+        } finally {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: DELETE " + ids + " time: " + (System.currentTimeMillis() - begin));
+            }
         }
-        String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
-        markLogicClient.newXMLDocumentManager().delete(markLogicIds);
     }
 
     @Override
