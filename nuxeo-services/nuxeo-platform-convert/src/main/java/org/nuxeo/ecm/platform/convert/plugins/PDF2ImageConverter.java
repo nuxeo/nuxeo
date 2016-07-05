@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.core.convert.plugins.CommandLineBasedConverter;
 
 /**
  * Pdf2Image converter based on imageMagick's convert command-line executable.

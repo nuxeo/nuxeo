@@ -17,7 +17,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.ecm.platform.convert.plugins;
+package org.nuxeo.ecm.core.convert.plugins;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * A sample contribution using this converter:
  *
  * <pre>
- *     <converter name="pdf2image" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+ *     <converter name="pdf2image" class="org.nuxeo.ecm.core.convert.plugins.CommandLineConverter">
  *       <sourceMimeType>application/pdf</sourceMimeType>
  *       <destinationMimeType>image/jpeg</destinationMimeType>
  *       <destinationMimeType>image/png</destinationMimeType>

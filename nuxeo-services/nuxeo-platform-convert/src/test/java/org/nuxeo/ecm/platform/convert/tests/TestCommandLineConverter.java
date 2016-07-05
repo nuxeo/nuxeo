@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.platform.convert" })
+    "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.platform.convert" })
 @LocalDeploy("org.nuxeo.ecm.platform.convert:test-command-line-converter-contrib.xml")
 public class TestCommandLineConverter {
 

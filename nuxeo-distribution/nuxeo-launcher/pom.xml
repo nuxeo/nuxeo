@@ -48,7 +48,6 @@
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
       <artifactId>nuxeo-connect-tools-report-client</artifactId>
-      <version>${nuxeo.distribution.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
@@ -132,14 +131,12 @@
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
       <artifactId>nuxeo-connect-tools-report-core</artifactId>
-      <version>${nuxeo.distribution.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.connect.tools</groupId>
       <artifactId>nuxeo-connect-tools-report-core</artifactId>
-      <version>${nuxeo.distribution.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

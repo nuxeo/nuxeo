@@ -18,7 +18,7 @@
  *
  */
 
-package org.nuxeo.ecm.platform.convert.plugins;
+package org.nuxeo.ecm.core.convert.plugins;
 
 import java.io.Closeable;
 import java.io.IOException;
