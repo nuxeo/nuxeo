@@ -19,6 +19,8 @@
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
@@ -80,7 +82,10 @@ public class UserEditFormPage extends UsersGroupsBasePage {
                     By.xpath("//*[@id='s2id_viewUserView:editUser:nxl_user_1:nxw_groups_1_select2']")), true);
             groups.selectValue(group);
         }
-        saveButton.click();
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        Locator.waitUntilEnabledAndClick(saveButton);
+        arm.end();
         return asPage(UserViewTabSubPage.class);
     }
 
