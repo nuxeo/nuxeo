@@ -178,6 +178,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         markLogicClient.newXMLDocumentManager().write(ID_FORMATTER.apply(id), new StateHandle(state));
     }
 
+    @Override
     public void createStates(List<State> states) {
         XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
         DocumentWriteSet writeSet = docManager.newWriteSet();
