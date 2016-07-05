@@ -31,6 +31,14 @@
   </target>
 
   <target name="build" depends="init" unless="no.build">
+    <artifact:printMgt output="${outdir}/artifacts-nuxeo.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
+                       scopes="compile,runtime" />
+    <artifact:printMgt output="${outdir}/test-artifacts-nuxeo.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
+                       scopes="test,provided" />
+    <nx:exit status="0" message="exit after artifact:printMgt" />
+
     <echo level="info">Building Tomcat standard distributions...</echo>
     <antcall target="prepare-tomcat" />
     <artifact:attach file="pom.xml" type="pom" />
@@ -225,7 +233,7 @@ org.nuxeo.distribution.package=zip</echo>
     </move>
     <artifact:printMgt output="${sdk.dir}/artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
-                       scopes="compile,provided,runtime" />
+                       scopes="compile,runtime" />
     <artifact:printMgt output="${sdk.dir}/test-artifacts-nuxeo.properties"
                        key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
                        scopes="test,provided" />
