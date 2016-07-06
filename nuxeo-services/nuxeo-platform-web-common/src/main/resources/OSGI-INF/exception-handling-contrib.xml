@@ -38,4 +38,10 @@
       class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener" />
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
+    point="exceptionhandler">
+    <exceptionHandler class="org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler" />
+  </extension>
+
 </component>
