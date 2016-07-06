@@ -20,6 +20,8 @@
 package org.nuxeo.launcher.info;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -30,12 +32,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageDependency;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageVisibility;
@@ -43,6 +47,7 @@ import org.nuxeo.connect.update.ProductionState;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "package")
@@ -137,13 +142,19 @@ public class PackageInfo {
         templates = templates(pkg);
     }
 
-    Set<String> templates(Package pkg) {
+    /**
+     * @since 8.3
+     */
+    private Set<String> templates(Package pkg) {
         if (!(pkg instanceof LocalPackage)) {
-            return null;
+            return Collections.emptySet();
         }
-        Set<String> templates = new HashSet<>();
+        Set<String> templatesFound = new HashSet<>();
         try {
             File installFile = ((LocalPackage) pkg).getInstallFile();
+            if (!installFile.exists()) {
+                return Collections.emptySet();
+            }
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document dom = db.parse(installFile);
@@ -155,13 +166,13 @@ public class PackageInfo {
                 }
                 StringTokenizer tokenizer = new StringTokenizer(node.getAttribute("addtemplate"), ",");
                 while (tokenizer.hasMoreTokens()) {
-                    templates.add(tokenizer.nextToken());
+                    templatesFound.add(tokenizer.nextToken());
                 }
 
             }
-        } catch (Exception e) {
+        } catch (PackageException | ParserConfigurationException | SAXException | IOException e) {
             LogFactory.getLog(PackageInfo.class).warn("Could not parse install file for " + pkg.getName(), e);
         }
-        return templates;
+        return templatesFound;
     }
 }
