@@ -60,6 +60,7 @@ import java.util.stream.Collectors;
 
 import javax.resource.spi.ConnectionManager;
 
+import com.mongodb.MongoClientOptions;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -141,6 +142,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final String COUNTER_FIELD = "seq";
 
+    protected static final int MONGODB_OPTION_CONNECTION_TIMEOUT_MS = 30000;
+
+    protected static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
+
     protected MongoClient mongoClient;
 
     protected DBCollection coll;
@@ -198,16 +203,28 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     // used also by unit tests
     public static MongoClient newMongoClient(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
+        MongoClient ret = null;
         String server = descriptor.server;
         if (StringUtils.isBlank(server)) {
             throw new NuxeoException("Missing <server> in MongoDB repository descriptor");
         }
+        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
+                // Can help to prevent firewall disconnects inactive connection, option not available from URI
+                .socketKeepAlive(true)
+                // don't wait for ever by default, can be overridden using URI options
+                .connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
+                .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
+                .description("Nuxeo");
         if (server.startsWith("mongodb://")) {
             // allow mongodb:// URI syntax for the server, to pass everything in one string
-            return new MongoClient(new MongoClientURI(server));
+            ret = new MongoClient(new MongoClientURI(server, optionsBuilder));
         } else {
-            return new MongoClient(new ServerAddress(server));
+            ret = new MongoClient(new ServerAddress(server), optionsBuilder.build());
         }
+        if (log.isDebugEnabled()) {
+            log.debug("MongoClient initialized with options: " + ret.getMongoClientOptions().toString());
+        }
+        return ret;
     }
 
     protected static DBCollection getCollection(MongoClient mongoClient, String dbname, String collection) {
