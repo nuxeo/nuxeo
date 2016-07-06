@@ -32,36 +32,34 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class VideoConvertersTest extends NXRuntimeTestCase {
+/**
+ * @since 5.3
+ */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.platform.video.convert" })
+public class VideoConvertersTest {
 
     public static final Log log = LogFactory.getLog(VideoConvertersTest.class);
 
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployBundle("org.nuxeo.ecm.platform.video.convert");
-    }
 
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
         try (InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path)) {

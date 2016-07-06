@@ -35,6 +35,8 @@ public class Constants {
 
     public static final String TO_OGG_CONVERTER = "convertToOgg";
 
+    public static final String TO_AVI_CONVERTER = "convertToAVI";
+
     public static final String POSITION_PARAMETER = "position";
 
     public static final String INPUT_FILE_PATH_PARAMETER = "inFilePath";

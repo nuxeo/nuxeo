@@ -13,7 +13,10 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/video-workmanager-config.xml,
  OSGI-INF/video-thumbnailfactory-contrib.xml,
  OSGI-INF/video-renditions-contrib.xml,
- OSGI-INF/preview-adapter-contrib.xml
+ OSGI-INF/preview-adapter-contrib.xml,
+ OSGI-INF/video-tools-operations-contrib.xml,
+ OSGI-INF/video-tools-service.xml,
+ OSGI-INF/video-tools-commandlines-contrib.xml
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
 Nuxeo-Require: org.nuxeo.ecm.platform.types.api,

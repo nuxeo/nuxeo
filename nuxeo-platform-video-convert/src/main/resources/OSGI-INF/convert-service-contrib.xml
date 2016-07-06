@@ -82,6 +82,24 @@
       </parameters>
     </converter>
 
+    <converter name="convertToAVI"
+      class="org.nuxeo.ecm.platform.video.convert.VideoConversionConverter">
+      <sourceMimeType>video/mpeg</sourceMimeType>
+      <sourceMimeType>video/mp4</sourceMimeType>
+      <sourceMimeType>video/quicktime</sourceMimeType>
+      <sourceMimeType>video/ogg</sourceMimeType>
+      <sourceMimeType>video/x-ms-asf</sourceMimeType>
+      <sourceMimeType>video/x-msvideo</sourceMimeType>
+      <sourceMimeType>video/flv</sourceMimeType>
+      <destinationMimeType>video/x-msvideo</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">ffmpeg-toavi</parameter>
+        <parameter name="videoMimeType">video/x-msvideo</parameter>
+        <parameter name="videoExtension">avi</parameter>
+        <parameter name="tmpDirectoryPrefix">convertToAVI</parameter>
+      </parameters>
+    </converter>
+
   </extension>
 
 </component>
