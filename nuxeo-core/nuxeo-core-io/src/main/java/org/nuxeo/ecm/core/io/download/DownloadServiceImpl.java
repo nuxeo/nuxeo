@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -87,7 +86,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     private static final String XP = "permissions";
-    
+
     private static final String REDIRECT_RESOLVER = "redirectResolver";
 
     private static final String RUN_FUNCTION = "run";
@@ -98,7 +97,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     protected RedirectResolver redirectResolver = new DefaultRedirectResolver();
 
-    protected List<RedirectResolverDescriptor> redirectResolverContributions = new ArrayList<RedirectResolverDescriptor>();
+    protected List<RedirectResolverDescriptor> redirectResolverContributions = new ArrayList<>();
 
     public static class DownloadPermissionRegistry extends SimpleContributionRegistry<DownloadPermissionDescriptor> {
 
@@ -158,13 +157,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
             registry.removeContribution(descriptor);
         } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
-            redirectResolverContributions.remove((RedirectResolverDescriptor) contribution);
+            redirectResolverContributions.remove(contribution);
             if (redirectResolverContributions.size() == 0) {
                 // If no more custom contribution go back to the default one
                 redirectResolver = new DefaultRedirectResolver();
             } else {
                 // Go back to the last contribution added
-                redirectResolver = redirectResolverContributions.get(redirectResolverContributions.size()-1).getObject();
+                redirectResolver = redirectResolverContributions.get(redirectResolverContributions.size() - 1)
+                                                                .getObject();
             }
         } else {
             throw new UnsupportedOperationException(extensionPoint);
@@ -203,8 +203,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
-            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos)
-            throws IOException {
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
         downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null);
     }
 
@@ -308,8 +307,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 if (byteRange == null) {
                     log.error("Invalid byte range received: " + range);
                 } else {
-                    response.setHeader("Content-Range",
-                            "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
+                    response.setHeader("Content-Range", "bytes " + byteRange.getStart() + "-" + byteRange.getEnd()
+                            + "/" + length);
                     response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                 }
             }
@@ -458,7 +457,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 log.error("Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
                 continue;
             }
-            boolean allow = ((Boolean) result).booleanValue();
+            boolean allow = ((Boolean) result);
             if (!allow) {
                 return false;
             }
