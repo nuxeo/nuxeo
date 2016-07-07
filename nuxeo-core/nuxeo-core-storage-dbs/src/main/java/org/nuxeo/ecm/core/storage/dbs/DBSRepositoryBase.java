@@ -331,18 +331,16 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         Transaction transaction;
         try {
             transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            if (transaction != null && transaction.getStatus() != Status.STATUS_ACTIVE) {
-                transaction = null;
+            if (transaction == null) {
+                throw new NuxeoException("Missing transaction");
+            }
+            int status = transaction.getStatus();
+            if (status != Status.STATUS_ACTIVE && status != Status.STATUS_MARKED_ROLLBACK) {
+                throw new NuxeoException("Transaction in invalid state: " + status);
             }
         } catch (SystemException | NamingException e) {
-            transaction = null;
+            throw new NuxeoException("Failed to get transaction", e);
         }
-
-        if (transaction == null) {
-            // no active transaction, use a regular session
-            return newSession();
-        }
-
         TransactionContext context = transactionContexts.get(transaction);
         if (context == null) {
             context = new TransactionContext(transaction, newSession());

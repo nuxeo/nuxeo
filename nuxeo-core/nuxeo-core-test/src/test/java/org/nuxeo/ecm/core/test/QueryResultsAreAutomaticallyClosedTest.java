@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
@@ -30,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -81,13 +83,15 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testWithoutTransaction() throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
-        IterableQueryResult results;
-        try (CoreSession session = coreFeature.openCoreSessionSystem()) {
-            results = session.queryAndFetch("SELECT * from Document", "NXQL");
+        try {
+            coreFeature.openCoreSessionSystem();
+            fail("Should not allow creation of CoreSession outside a transaction");
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Cannot create a CoreSession outside a transaction"));
+        } finally {
+            TransactionHelper.startTransaction();
         }
-        TransactionHelper.startTransaction();
-        assertFalse(results.mustBeClosed());
-        assertWarnInLogs();
     }
 
     // needs a JCA connection for this to work

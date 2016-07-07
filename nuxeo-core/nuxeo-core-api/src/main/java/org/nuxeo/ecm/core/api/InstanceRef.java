@@ -22,6 +22,8 @@ import java.io.InvalidObjectException;
 import java.io.ObjectStreamException;
 import java.security.Principal;
 
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 /**
  * Document repository reference including the principal owner of the session.
  *
@@ -61,6 +63,11 @@ public class InstanceRef implements DocumentRef {
     }
 
     private Object readResolve() throws ObjectStreamException {
+        // we need a transaction for this
+        boolean started = false;
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            started = TransactionHelper.startTransaction();
+        }
         try {
             try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 referent = session.getDocument(ref);
@@ -72,6 +79,10 @@ public class InstanceRef implements DocumentRef {
                     "Cannot refetch " + ref + " from " + repositoryName);
             error.initCause(cause);
             throw error;
+        } finally {
+            if (started) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
         }
     }
 

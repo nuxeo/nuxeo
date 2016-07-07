@@ -126,25 +126,13 @@ public abstract class UnrestrictedSessionRunner {
             }
             try {
                 CoreSession baseSession = session;
-                if (baseSession != null && !baseSession.isStateSharedByAllThreadSessions()) {
-                    // save base session state for unrestricted one
-                    baseSession.save();
-                }
                 session = CoreInstance.openCoreSession(repositoryName);
                 try {
                     run();
                 } finally {
                     try {
-                        if (!session.isStateSharedByAllThreadSessions()) {
-                            // save unrestricted state for base session
-                            session.save();
-                        }
                         session.close();
                     } finally {
-                        if (baseSession != null && !baseSession.isStateSharedByAllThreadSessions()) {
-                            // process invalidations from unrestricted session
-                            baseSession.save();
-                        }
                         session = baseSession;
                     }
                 }

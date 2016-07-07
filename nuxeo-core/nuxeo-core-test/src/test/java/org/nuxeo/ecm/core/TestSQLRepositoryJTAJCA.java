@@ -40,9 +40,9 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Repository;
@@ -187,9 +187,9 @@ public class TestSQLRepositoryJTAJCA {
         try {
             session.getRootDocument();
             fail("should throw");
-        } catch (LocalException e) {
+        } catch (NuxeoException e) {
             String msg = e.getMessage();
-            assertTrue(msg, msg.contains("No transaction active, cannot reconnect"));
+            assertTrue(msg, msg.contains("Cannot use a CoreSession outside a transaction"));
         }
         TransactionHelper.startTransaction();
     }
@@ -318,9 +318,11 @@ public class TestSQLRepositoryJTAJCA {
         try {
             closedSession.getRootDocument();
             fail("should throw");
-        } catch (LocalException e) {
+        } catch (NuxeoException e) {
             String msg = e.getMessage();
-            assertTrue(msg, msg.contains("No transaction active, cannot reconnect"));
+            assertTrue(msg, msg.contains("Cannot use a CoreSession outside a transaction"));
+        } finally {
+            TransactionHelper.startTransaction();
         }
     }
 
@@ -385,7 +387,7 @@ public class TestSQLRepositoryJTAJCA {
         t.join();
         Exception e = threadException[0];
         assertNotNull(e);
-        assertTrue(e.getMessage(), e instanceof LocalException);
+        assertTrue(e.getMessage(), e instanceof NuxeoException);
     }
 
     @Test

@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.sql.XADataSource;
+import javax.transaction.Transaction;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -86,6 +87,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * A {@link JDBCMapper} maps objects to and from a JDBC database. It is specific to a given database connection, as it
@@ -156,10 +158,16 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void createDatabase(String ddlMode) {
+        // most databases can't create tables in a transaction, so suspend it
+        Transaction transaction = TransactionHelper.suspendTransaction();
         try {
             createTables(ddlMode);
         } catch (SQLException e) {
             throw new NuxeoException(e);
+        } finally {
+            if (transaction != null) {
+                TransactionHelper.resumeTransaction(transaction);
+            }
         }
     }
 

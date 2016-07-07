@@ -218,11 +218,6 @@ public class DBSSession implements Session {
         transaction.rollback();
     }
 
-    @Override
-    public boolean isStateSharedByAllThreadSessions() {
-        return false;
-    }
-
     protected BlobManager getBlobManager() {
         return repository.getBlobManager();
     }

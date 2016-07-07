@@ -149,11 +149,6 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public boolean isStateSharedByAllThreadSessions() {
-        return session.isStateSharedByAllThreadSessions();
-    }
-
-    @Override
     public String getRepositoryName() {
         return repository.getName();
     }

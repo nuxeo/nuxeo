@@ -20,11 +20,10 @@
 
 package org.nuxeo.ecm.core.event;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.junit.Test;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -40,9 +39,6 @@ public class TestEventContext extends NXRuntimeTestCase {
     @Test
     public void testEventContext() {
         EventContextImpl ctx = new EventContextImpl("arg1", "arg2");
-        CoreSession cs = LocalSession.createInstance();
-        ctx.setCoreSession(cs);
-        assertEquals(cs, ctx.getCoreSession());
         assertEquals("arg1", ctx.getArguments()[0]);
         assertEquals("arg2", ctx.getArguments()[1]);
         ctx.setProperty("p1", "v1");

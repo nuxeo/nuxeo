@@ -159,13 +159,6 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public boolean isStateSharedByAllThreadSessions() {
-        // the JCA semantics is that in the same thread all handles point to the
-        // same underlying session
-        return true;
-    }
-
-    @Override
     public String getRepositoryName() {
         return getSession().getRepositoryName();
     }

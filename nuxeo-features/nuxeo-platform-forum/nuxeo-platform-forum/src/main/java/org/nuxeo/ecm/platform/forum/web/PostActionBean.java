@@ -124,13 +124,6 @@ public class PostActionBean implements PostAction {
         return false;
     }
 
-    protected void fetchInvalidationsIfNeeded() {
-        // fetch invalidations from unrestricted session if needed
-        if (!documentManager.isStateSharedByAllThreadSessions()) {
-            documentManager.save();
-        }
-    }
-
     /**
      * Adds the post to the thread and starts the moderation WF on the post created.
      */
@@ -172,7 +165,6 @@ public class PostActionBean implements PostAction {
                     systemSession.save();
                 }
             }
-            fetchInvalidationsIfNeeded();
             // NXP-1262 display the message only when about to publish
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("label.comment.added.sucess"));
@@ -189,7 +181,6 @@ public class PostActionBean implements PostAction {
     public String cancelPost() {
         cleanContextVariables();
         commentManagerActions.cancelComment();
-        fetchInvalidationsIfNeeded();
         return navigationContext.navigateToDocument(getParentThread());
     }
 
@@ -211,7 +202,6 @@ public class PostActionBean implements PostAction {
         }
         commentManagerActions.deleteComment(deletePostId);
 
-        fetchInvalidationsIfNeeded();
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_ENDED);
 
         return navigationContext.navigateToDocument(getParentThread());
@@ -233,8 +223,6 @@ public class PostActionBean implements PostAction {
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
 
-        fetchInvalidationsIfNeeded();
-
         return navigationContext.navigateToDocument(getParentThread());
     }
 
@@ -255,8 +243,6 @@ public class PostActionBean implements PostAction {
 
         // force comment manager to reload posts
         commentManagerActions.documentChanged();
-
-        fetchInvalidationsIfNeeded();
 
         return navigationContext.navigateToDocument(getParentThread());
     }

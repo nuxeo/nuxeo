@@ -80,11 +80,6 @@ public interface Session {
     boolean isLive();
 
     /**
-     * Returns {@code true} if all sessions in the current thread share the same state.
-     */
-    boolean isStateSharedByAllThreadSessions();
-
-    /**
      * Closes this session. Does not save.
      */
     void close();

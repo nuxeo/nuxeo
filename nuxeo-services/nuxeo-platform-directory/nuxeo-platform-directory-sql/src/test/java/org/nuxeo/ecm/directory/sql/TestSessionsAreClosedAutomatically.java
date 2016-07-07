@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -49,7 +48,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy({ "org.nuxeo.ecm.directory:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql:test-sql-directories-bundle.xml" })
 @LogCaptureFeature.FilterWith(TestSessionsAreClosedAutomatically.CloseSessionFilter.class)
-@TransactionalConfig(autoStart = false)
 public class TestSessionsAreClosedAutomatically {
 
     public static class CloseSessionFilter implements LogCaptureFeature.Filter {
@@ -88,44 +86,28 @@ public class TestSessionsAreClosedAutomatically {
 
     @Test
     public void hasNoWarns() throws DirectoryException, NoLogCaptureFilterException {
-        boolean started = TransactionHelper.startTransaction();
-
-        try {
-            try (Session session = userDirectory.getSession()) {
-                // do nothing
-            }
-        } finally {
-            if (started) {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
+        try (Session session = userDirectory.getSession()) {
+            // do nothing
         }
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         Assert.assertTrue(caughtEvents.getCaughtEvents().isEmpty());
     }
 
     @Test
     public void hasWarnsOnCommit() throws DirectoryException, NoLogCaptureFilterException {
-        boolean started = TransactionHelper.startTransaction();
-        try {
-            Session session = userDirectory.getSession();
-        } finally {
-            if (started) {
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-        }
+        userDirectory.getSession();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         caughtEvents.assertHasEvent();
     }
 
     @Test
     public void hasWarnsOnRollback() throws DirectoryException, NoLogCaptureFilterException {
-        boolean started = TransactionHelper.startTransaction();
-        try {
-            Session session = userDirectory.getSession();
-        } finally {
-            if (started) {
-                TransactionHelper.setTransactionRollbackOnly();
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-        }
+        userDirectory.getSession();
+        TransactionHelper.setTransactionRollbackOnly();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         caughtEvents.assertHasEvent();
     }
 }

@@ -92,16 +92,6 @@ public class LoginStack {
             } else {
                 currentSession = originalSession;
             }
-            if (currentSession != null) {
-                refreshSession(currentSession);
-            }
-        }
-    }
-
-    protected void refreshSession(CoreSession session) throws OperationException {
-        if (session != null && !session.isStateSharedByAllThreadSessions()) {
-            // this will indirectly process refresh the session
-            session.save();
         }
     }
 
@@ -115,9 +105,6 @@ public class LoginStack {
             }
             stack.clear();
             currentSession = originalSession;
-            if (currentSession != null) {
-                refreshSession(currentSession);
-            }
             stack.clear();
         }
     }

@@ -89,15 +89,8 @@ public class RepositoryService extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        { // open repositories without a tx active
-            Transaction tx = TransactionHelper.suspendTransaction();
-            try {
-                for (String name : repositoryManager.getRepositoryNames()) {
-                    openRepository(name);
-                }
-            } finally {
-                TransactionHelper.resumeTransaction(tx);
-            }
+        for (String name : repositoryManager.getRepositoryNames()) {
+            openRepository(name);
         }
         // give up if no handler configured
         RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();

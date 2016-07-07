@@ -160,7 +160,10 @@ public interface CoreSession extends AutoCloseable {
 
     /**
      * Returns {@code true} if all sessions in the current thread share the same state.
+     *
+     * @deprecated since 8.4 as it always returns true by design
      */
+    @Deprecated
     boolean isStateSharedByAllThreadSessions();
 
     /**

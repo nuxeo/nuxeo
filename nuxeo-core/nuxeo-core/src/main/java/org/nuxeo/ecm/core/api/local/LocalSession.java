@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -66,6 +67,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
     private final Set<SessionInfo> allSessions = Collections.newSetFromMap(new ConcurrentHashMap<SessionInfo, Boolean>());
 
     public static CoreSession createInstance() {
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            throw new NuxeoException("Cannot create a CoreSession outside a transaction");
+        }
         return new LocalSession();
     }
 
@@ -77,7 +81,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
     @Override
     public void connect(String repositoryName, NuxeoPrincipal principal) {
         if (sessionId != null) {
-            throw new LocalException("CoreSession already connected");
+            throw new NuxeoException("CoreSession already connected");
         }
         this.repositoryName = repositoryName;
         this.principal = principal;
@@ -100,13 +104,13 @@ public class LocalSession extends AbstractSession implements Synchronization {
 
     @Override
     public Session getSession() {
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            throw new NuxeoException("Cannot use a CoreSession outside a transaction");
+        }
         SessionInfo si = sessionHolder.get();
         if (si == null || !si.session.isLive()) {
             // close old one, previously completed
             closeInThisThread();
-            if (!TransactionHelper.isTransactionActive()) {
-                throw new LocalException("No transaction active, cannot reconnect: " + sessionId);
-            }
             if (log.isDebugEnabled()) {
                 log.debug("Reconnecting CoreSession: " + sessionId);
             }
@@ -186,7 +190,8 @@ public class LocalSession extends AbstractSession implements Synchronization {
 
     @Override
     public boolean isStateSharedByAllThreadSessions() {
-        return getSession().isStateSharedByAllThreadSessions();
+        // by design we always share state when in the same thread (through the sessionHolder ThreadLocal)
+        return true;
     }
 
 }
