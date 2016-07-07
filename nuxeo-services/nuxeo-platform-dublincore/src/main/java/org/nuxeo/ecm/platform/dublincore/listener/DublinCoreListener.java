@@ -127,7 +127,10 @@ public class DublinCoreListener implements EventListener {
                 // on them
                 return;
             }
-            // live proxies may be updated normally
+            // live proxies may be updated normally, except at creation time (don't update the live doc)
+            if (eventId.equals(DOCUMENT_CREATED)) {
+                return;
+            }
         }
 
         Boolean resetCreator = (Boolean) event.getContext().getProperty(CoreEventConstants.RESET_CREATOR);

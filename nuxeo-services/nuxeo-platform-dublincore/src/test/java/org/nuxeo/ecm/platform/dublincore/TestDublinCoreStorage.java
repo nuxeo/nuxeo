@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -294,6 +295,26 @@ public class TestDublinCoreStorage {
         proxy.setPropertyValue("info:info", "proxyinfo");
         proxy = session.saveDocument(proxy);
         session.save();
+    }
+
+    /* check that creating a live proxy to a doc doesn't update the doc. */
+    @Test
+    public void testProxyLive() throws Exception {
+        // create file
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        Calendar created1 = (Calendar) file.getPropertyValue("dc:created");
+        Thread.sleep(1000);
+
+        // create proxy
+        DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
+        proxy = session.saveDocument(proxy);
+
+        // check file
+        file = session.getDocument(file.getRef());
+        Calendar created2 = (Calendar) file.getPropertyValue("dc:created");
+
+        assertEquals(created1.getTimeInMillis(), created2.getTimeInMillis());
     }
 
     @Test
