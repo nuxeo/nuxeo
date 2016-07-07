@@ -255,32 +255,41 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         try {
-            String etag = '"' + blob.getDigest() + '"'; // with quotes per RFC7232 2.3
-            response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
-            addCacheControlHeaders(request, response);
+            if (blob.getDigest() == null) {
+                String msg = "ETag and cache has been disabled because blob doesn't have digest for ";
+                msg += "reason=" + reason + ", ";
+                msg += "docId=" + (doc == null ? null : doc.getId()) + ", ";
+                msg += "filename=" + (filename == null ? blob.getFilename() : filename) + ", ";
+                msg += "xpath=" + xpath;
+                log.warn(msg);
+            } else {
+                String etag = '"' + blob.getDigest() + '"'; // with quotes per RFC7232 2.3
+                response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
+                addCacheControlHeaders(request, response);
 
-            String ifNoneMatch = request.getHeader("If-None-Match");
-            if (ifNoneMatch != null) {
-                boolean match = false;
-                if (ifNoneMatch.equals("*")) {
-                    match = true;
-                } else {
-                    for (String previousEtag : StringUtils.split(ifNoneMatch, ", ")) {
-                        if (previousEtag.equals(etag)) {
-                            match = true;
-                            break;
+                String ifNoneMatch = request.getHeader("If-None-Match");
+                if (ifNoneMatch != null) {
+                    boolean match = false;
+                    if (ifNoneMatch.equals("*")) {
+                        match = true;
+                    } else {
+                        for (String previousEtag : StringUtils.split(ifNoneMatch, ", ")) {
+                            if (previousEtag.equals(etag)) {
+                                match = true;
+                                break;
+                            }
                         }
                     }
-                }
-                if (match) {
-                    String method = request.getMethod();
-                    if (method.equals("GET") || method.equals("HEAD")) {
-                        response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-                    } else {
-                        // per RFC7232 3.2
-                        response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                    if (match) {
+                        String method = request.getMethod();
+                        if (method.equals("GET") || method.equals("HEAD")) {
+                            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                        } else {
+                            // per RFC7232 3.2
+                            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                        }
+                        return;
                     }
-                    return;
                 }
             }
 
