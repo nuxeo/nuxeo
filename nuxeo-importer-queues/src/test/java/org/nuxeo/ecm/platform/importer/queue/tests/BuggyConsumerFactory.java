@@ -40,7 +40,7 @@ public class BuggyConsumerFactory implements ConsumerFactory {
                     docs++;
                 }
                 if (bsn.isExceptionBuggy()) {
-                    throw new Exception("This is a buggy exception !");
+                    throw new Exception("This is a buggy exception during consumer processing !");
                 }
 
             }
