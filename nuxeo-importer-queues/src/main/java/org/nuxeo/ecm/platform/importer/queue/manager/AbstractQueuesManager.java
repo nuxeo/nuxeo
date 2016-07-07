@@ -54,20 +54,40 @@ public abstract class AbstractQueuesManager implements QueuesManager {
         return queues.get(idQueue).isEmpty();
     }
 
+    // @Override
+    // public int dispatch(SourceNode bh) throws InterruptedException {
+    //
+    // int idx = getTargetQueue(bh, queues.size());
+    //
+    // getQueue(idx).put(bh);
+    //
+    // return idx;
+    // }
+
     @Override
     public int dispatch(SourceNode bh) throws InterruptedException {
-        int idx = getTargetQueue(bh, queues.size());
 
-        boolean accepted = getQueue(idx).offer(bh, 1, TimeUnit.SECONDS);
+        boolean accepted = false;
+        int nbTries = 0;
 
-        if (!accepted) {
-            log.warn("Timeout while waiting for an available queue");
-            idx = getTargetQueue(bh, queues.size());
-            getQueue(idx).offer(bh, 5, TimeUnit.SECONDS);
+        while (nbTries < 8) {
+            int idx = getTargetQueue(bh, getNBConsumers());
+            long timeWaitingInSeconds = (long) Math.pow(2, nbTries);
+            accepted = getQueue(idx).offer(bh, timeWaitingInSeconds, TimeUnit.SECONDS);
+
+            if (!accepted) {
+                log.warn(String.format(
+                        "Timeout while waiting for an available queue, waited %d seconds to get a queue for [%s] ",
+                        timeWaitingInSeconds, bh.getName()));
+                nbTries++;
+            } else {
+                return idx;
+            }
         }
-        return idx;
-    }
+        log.error(String.format("Ended up after %d tries to find a queue for [%s]", nbTries, bh.getName()));
+        return -1;
 
+    }
     protected abstract int getTargetQueue(SourceNode bh, int nbQueues);
 
     @Override
