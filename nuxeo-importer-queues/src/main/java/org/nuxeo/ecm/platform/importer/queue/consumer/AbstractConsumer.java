@@ -86,15 +86,6 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
             @Override
             public void run() {
                 LOG.info("Consumer running");
-                startTransaction();
-                try {
-                    consumerLoop();
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
-            }
-
-            private void consumerLoop() {
                 SourceNode src;
                 while (true) {
                     try {
@@ -144,8 +135,10 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
         };
 
-        // just stop the current transaction
-        TransactionHelper.commitOrRollbackTransaction();
+        if (! TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            // This is needed to acquire a session
+            startTransaction();
+        }
         try {
             runner.runUnrestricted();
         } catch (Exception e) {
@@ -155,7 +148,6 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         } finally {
             completed = true;
             started = false;
-            startTransaction();
         }
     }
 
