@@ -58,7 +58,7 @@ public class TestImporter {
         ImporterLogger logger = new BufferredLogger(log);
         QueueImporter importer = new QueueImporter(logger);
 
-        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
+        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, true);
         importer.addFilter(filter);
 
         RandomQueuesManager qm = new RandomQueuesManager(logger, 2, 100);

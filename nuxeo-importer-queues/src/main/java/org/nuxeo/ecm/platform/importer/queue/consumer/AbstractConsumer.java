@@ -126,7 +126,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected abstract void process(CoreSession session, SourceNode bh) throws Exception;
 
-    protected void commitIfNeeded(CoreSession session) throws InterruptedException {
+    protected void commitIfNeeded(CoreSession session) {
         if (batch.isFull()) {
             commit(session);
             long t = System.currentTimeMillis();
@@ -138,7 +138,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         }
     }
 
-    protected void commit(CoreSession session) throws InterruptedException {
+    protected void commit(CoreSession session) {
         session.save();
         boolean rolledBack = TransactionHelper.isTransactionMarkedRollback();
         TransactionHelper.commitOrRollbackTransaction();
@@ -155,7 +155,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param session
      * @throws InterruptedException
      */
-    private void replayBatch(CoreSession session) throws InterruptedException {
+    private void replayBatch(CoreSession session) {
         log.error("Replaying batch in isolated transaction because one source node rolled back the transaction");
         for (SourceNode node : batch.getNodes()) {
             TransactionHelper.startTransaction();
