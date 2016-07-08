@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -85,4 +86,11 @@ public class StringBlob extends AbstractBlob implements Serializable {
         return string;
     }
 
+    @Override
+    public String getDigest() {
+        if (digest == null) {
+            digest = DigestUtils.md5Hex(string);
+        }
+        return super.getDigest();
+    }
 }

@@ -256,6 +256,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         try {
+            if (blob.getDigest() == null) {
+                throw new NuxeoException("Blob doesn't have digest, which could lead to cache issue");
+            }
             String etag = '"' + blob.getDigest() + '"'; // with quotes per RFC7232 2.3
             response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
             addCacheControlHeaders(request, response);
