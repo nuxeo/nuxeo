@@ -20,7 +20,6 @@
     <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-sync</module>
     <module>nuxeo-platform-classification</module>
-    <module>nuxeo-indesign-connector</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
