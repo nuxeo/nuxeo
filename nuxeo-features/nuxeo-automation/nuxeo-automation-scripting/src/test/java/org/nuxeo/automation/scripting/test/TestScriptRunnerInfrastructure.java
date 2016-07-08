@@ -18,6 +18,7 @@
  */
 package org.nuxeo.automation.scripting.test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -450,4 +452,62 @@ public class TestScriptRunnerInfrastructure {
         String mvelResult = (String) automationService.run(ctx, "my-chain-with-mvelresolver", null);
         assertEquals("Foo Bar", mvelResult);
     }
+
+    /*
+     * NXP-19444
+     */
+    @Test
+    public void testSet() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        ctx.setInput(root);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSet", null);
+        // Don't use getPropertyValue in order to not use prefetch feature
+        assertEquals(123L, root.getProperty("size").getValue());
+        assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0L);
+        assertEquals(cal, root.getProperty("dc:created").getValue());
+    }
+
+    /*
+     * NXP-19444
+     */
+    @Test
+    public void testSetPropertyValue() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        ctx.setInput(root);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValue", null);
+        assertEquals(123L, root.getProperty("size").getValue());
+        assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0L);
+        assertEquals(cal, root.getProperty("dc:created").getValue());
+    }
+
+    /*
+     * NXP-19444
+     */
+    @Test
+    public void testSetArray() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        ctx.setInput(root);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetArray", null);
+        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+    }
+
+    /*
+     * NXP-19444
+     */
+    @Test
+    public void testSetPropertyValueArray() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        ctx.setInput(root);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray", null);
+        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+    }
+
 }

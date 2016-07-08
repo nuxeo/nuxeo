@@ -43,7 +43,6 @@ import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
-import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -103,12 +102,12 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         for (String entryId : ctx.keySet()) {
             Object entry = ctx.get(entryId);
             if (entry instanceof DocumentModel) {
-                ctx.put(entryId, new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) entry));
+                ctx.put(entryId, new DocumentScriptingWrapper(ctx.getCoreSession(), (DocumentModel) entry));
             }
             if (entry instanceof DocumentModelList) {
-                List<DocumentWrapper> docs = new ArrayList<>();
+                List<DocumentScriptingWrapper> docs = new ArrayList<>();
                 for (DocumentModel doc : (DocumentModelList) entry) {
-                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                    docs.add(new DocumentScriptingWrapper(ctx.getCoreSession(), doc));
                 }
                 ctx.put(entryId, docs);
             }

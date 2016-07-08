@@ -405,6 +405,58 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestSet">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          input['size'] = 123;
+          input['dc:title'] = 'TitleFromTest';
+          input['dc:created'] = new Date(0);
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestSetPropertyValue">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          input.setPropertyValue('size', 123);
+          input.setPropertyValue('dc:title', 'TitleFromTest');
+          input.setPropertyValue('dc:created', new Date(0));
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestSetArray">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          input['dc:subjects'] = [ 'sciences', 'society' ];
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestSetPropertyValueArray">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          input.setPropertyValue('dc:subjects', [ 'sciences', 'society' ]);
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"

@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,14 +63,14 @@ public class AutomationMapper {
     public void unwrapContext(ScriptOperationContext ctx, Object inputOutput) {
         if (inputOutput instanceof ScriptObjectMirror) {
             ctx.setInput(extractProperties((ScriptObjectMirror) inputOutput));
-        } else if (inputOutput instanceof DocumentWrapper) {
-            ctx.setInput(((DocumentWrapper) inputOutput).getDoc());
+        } else if (inputOutput instanceof DocumentScriptingWrapper) {
+            ctx.setInput(((DocumentScriptingWrapper) inputOutput).getDoc());
         } else if (inputOutput instanceof List<?>) {
             DocumentModelList docs = new DocumentModelListImpl();
             List<?> l = (List<?>) inputOutput;
             for (Object item : l) {
-                if (item instanceof DocumentWrapper) {
-                    docs.add(((DocumentWrapper) item).getDoc());
+                if (item instanceof DocumentScriptingWrapper) {
+                    docs.add(((DocumentScriptingWrapper) item).getDoc());
                 }
             }
             if (docs.size() == l.size() && docs.size() > 0) {
@@ -82,14 +81,14 @@ public class AutomationMapper {
         }
         for (String entryId : ctx.keySet()) {
             Object entry = ctx.get(entryId);
-            if (entry instanceof DocumentWrapper) {
-                ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
+            if (entry instanceof DocumentScriptingWrapper) {
+                ctx.put(entryId, ((DocumentScriptingWrapper) entry).getDoc());
             } else if (entry instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) entry;
                 for (Object item : l) {
-                    if (item instanceof DocumentWrapper) {
-                        docs.add(((DocumentWrapper) item).getDoc());
+                    if (item instanceof DocumentScriptingWrapper) {
+                        docs.add(((DocumentScriptingWrapper) item).getDoc());
                     }
                 }
                 if (docs.size() == l.size() && docs.size() > 0) {
@@ -112,22 +111,22 @@ public class AutomationMapper {
         for (String entryId : ctx.keySet()) {
             Object entry = ctx.get(entryId);
             if (entry instanceof DocumentModel) {
-                ctx.put(entryId, new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) entry));
+                ctx.put(entryId, new DocumentScriptingWrapper(ctx.getCoreSession(), (DocumentModel) entry));
             }
             if (entry instanceof DocumentModelList) {
-                List<DocumentWrapper> docs = new ArrayList<>();
+                List<DocumentScriptingWrapper> docs = new ArrayList<>();
                 for (DocumentModel doc : (DocumentModelList) entry) {
-                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                    docs.add(new DocumentScriptingWrapper(ctx.getCoreSession(), doc));
                 }
                 ctx.put(entryId, docs);
             }
         }
         if (output instanceof DocumentModel) {
-            return new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) output);
+            return new DocumentScriptingWrapper(ctx.getCoreSession(), (DocumentModel) output);
         } else if (output instanceof DocumentModelList) {
-            List<DocumentWrapper> docs = new ArrayList<>();
+            List<DocumentScriptingWrapper> docs = new ArrayList<>();
             for (DocumentModel doc : (DocumentModelList) output) {
-                docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                docs.add(new DocumentScriptingWrapper(ctx.getCoreSession(), doc));
             }
             return docs;
         }
@@ -145,14 +144,14 @@ public class AutomationMapper {
                 } else {
                     params.put(k, extractProperties(jso));
                 }
-            } else if (value instanceof DocumentWrapper) {
-                params.put(k, ((DocumentWrapper) value).getDoc());
+            } else if (value instanceof DocumentScriptingWrapper) {
+                params.put(k, ((DocumentScriptingWrapper) value).getDoc());
             } else if (value instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) value;
                 for (Object item : l) {
-                    if (item instanceof DocumentWrapper) {
-                        docs.add(((DocumentWrapper) item).getDoc());
+                    if (item instanceof DocumentScriptingWrapper) {
+                        docs.add(((DocumentScriptingWrapper) item).getDoc());
                     }
                 }
                 if (docs.size() == l.size() && docs.size() > 0) {
