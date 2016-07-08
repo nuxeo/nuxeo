@@ -16,17 +16,13 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
+import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -40,8 +36,13 @@ import org.nuxeo.ecm.platform.importer.queue.manager.RandomQueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -77,6 +78,40 @@ public class TestReplay {
 
         verify(logger, times(10)).error(anyString());
 
+    }
+
+    @Test
+    public void testRollback3() {
+         DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
+        file1.setPropertyValue("dc:title", "foo");
+        file1 = session.createDocument(file1);
+        session.save();
+        nextTransaction();
+
+        // create doc and fail
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
+        file2.setPropertyValue("dc:title", "foo");
+        file2 = session.createDocument(file2);
+        TransactionHelper.setTransactionRollbackOnly();
+        session.save();
+        nextTransaction();
+
+        // do it again
+        file2 = session.createDocumentModel("/", "file1", "File");
+        file2.setPropertyValue("dc:title", "foo");
+        file2 = session.createDocument(file2);
+        session.save();
+        TransactionHelper.setTransactionRollbackOnly();
+        nextTransaction();
+
+        DocumentModelList docs = session.query("SELECT * FROM File");
+        assertEquals(1, docs.size());
+
+    }
+
+    private void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
 }

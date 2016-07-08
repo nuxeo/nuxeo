@@ -31,16 +31,15 @@ public class BuggyConsumerFactory implements ConsumerFactory {
         protected void process(CoreSession session, SourceNode sn) throws Exception {
             if (sn instanceof BuggySourceNode) {
                 BuggySourceNode bsn = (BuggySourceNode) sn;
+                DocumentModel doc = session.createDocumentModel("/", bsn.getName(), "File");
+                doc = session.createDocument(doc);
                 if (bsn.isTransactionBuggy()) {
                     TransactionHelper.setTransactionRollbackOnly();
-
                 } else {
-                    DocumentModel doc = session.createDocumentModel("/", bsn.getName(), "File");
-                    doc = session.createDocument(doc);
                     docs++;
                 }
                 if (bsn.isExceptionBuggy()) {
-                    throw new Exception("This is a buggy exception !");
+                    throw new Exception("This is a buggy exception during consumer processing !");
                 }
 
             }
