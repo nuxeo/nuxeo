@@ -73,7 +73,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     public void activate(ComponentContext context) {
         filters = new FilterContributionHandler();
         actions = new ActionContributionHandler(filters);
-        actionsTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "ations"));
+        actionsTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "actions"));
         actionTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "action"));
         filtersTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "filters"));
         filterTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "filter"));
