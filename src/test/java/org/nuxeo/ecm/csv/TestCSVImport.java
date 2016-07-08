@@ -474,7 +474,9 @@ public class TestCSVImport {
         session.setACP(root.getRef(), acp, true);
 
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         try (CoreSession leelaSession = openSessionAs("leela")) {
             String importId = csvImporter.launchImport(leelaSession, "/", getCSVFile(DOCS_WITHOUT_CONTRIBUTORS_CSV),
@@ -486,6 +488,7 @@ public class TestCSVImport {
             assertEquals(2, importLogs.size());
         }
 
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         assertTrue(session.exists(new PathRef("/myfile")));
