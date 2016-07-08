@@ -51,6 +51,7 @@
     <module>nuxeo-elasticsearch</module>
     <module>nuxeo-platform-rendition</module>
     <module>nuxeo-user-center</module>
+    <module>nuxeo-platform-pdf-utils</module>
   </modules>
 
   <dependencies>
