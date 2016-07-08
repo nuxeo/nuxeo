@@ -1,5 +1,5 @@
 <packages>
-  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.3-SNAPSHOT/mp/">
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.4-SNAPSHOT/mp/">
     <package id="nuxeo-server" label="Server" color="#635959" textcolor="#FFF"
       shortlabel="SERVER" virtual="true" />
     <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
