@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
+import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
@@ -56,13 +57,13 @@ public class TestReplay {
 
     @Test
     public void shouldImportAllNonBuggyNodes() throws InterruptedException {
-
         ImporterLogger logger = mock(ImporterLogger.class);
+        // To get logs
+        // ImporterLogger logger = new BufferredLogger(log);
         QueueImporter importer = new QueueImporter(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, true);
         importer.addFilter(filter);
         RandomQueuesManager qm = new RandomQueuesManager(logger, 1, 100);
-
 
         // Given a producer that generate some buggy nodes.
         // index-0, index-30, index-50, index-60 and index-90 should not be created
@@ -74,10 +75,14 @@ public class TestReplay {
 
         // Then only buggy nodes should'nt be imported.
         DocumentModelList docs = session.query("SELECT * FROM File");
-        assertEquals("Count of documents that should have been created after import", 95, docs.size());
-
-        verify(logger, times(10)).error(anyString());
-
+        int expected = 95;
+        if (expected != docs.size()) {
+            for (DocumentModel doc : docs) {
+                System.out.println(doc.getName());
+            }
+        }
+        assertEquals("Count of documents that should have been created after import", expected, docs.size());
+        verify(logger, times(20)).error(anyString());
     }
 
     @Test
@@ -92,19 +97,26 @@ public class TestReplay {
         DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
         file2.setPropertyValue("dc:title", "foo");
         file2 = session.createDocument(file2);
-        TransactionHelper.setTransactionRollbackOnly();
         session.save();
+        TransactionHelper.setTransactionRollbackOnly();
         nextTransaction();
 
-        // do it again
-        file2 = session.createDocumentModel("/", "file1", "File");
+        DocumentModelList docs = session.query("SELECT * FROM File");
+        assertEquals(1, docs.size());
+
+        // replay the same tx
+        file2 = session.createDocumentModel("/", "file2", "File");
         file2.setPropertyValue("dc:title", "foo");
         file2 = session.createDocument(file2);
         session.save();
         TransactionHelper.setTransactionRollbackOnly();
         nextTransaction();
 
-        DocumentModelList docs = session.query("SELECT * FROM File");
+        // failure on vcs h2 and postgres, works on mongo
+        docs = session.query("SELECT * FROM File");
+        for (DocumentModel doc: docs) {
+            System.out.println(doc.getName());
+        }
         assertEquals(1, docs.size());
 
     }

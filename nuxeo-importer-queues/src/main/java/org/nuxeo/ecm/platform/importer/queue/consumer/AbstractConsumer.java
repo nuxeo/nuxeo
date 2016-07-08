@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,15 +29,12 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.nuxeo.ecm.core.io.registry.context.DepthValues.root;
 import static org.nuxeo.runtime.transaction.TransactionHelper.startTransaction;
 
 /**
  * @since 8.3
  */
 public abstract class AbstractConsumer extends AbstractTaskRunner implements Consumer {
-
-    private static final Log LOG = LogFactory.getLog(AbstractConsumer.class);
 
     protected final Batch batch;
 
@@ -72,7 +67,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         this.queue = queue;
         rootRef = root.getRef();
         importStat = new ImportStat();
-        LOG.info("Consumer root:" + root.getPathAsString() + " batchSize: " + batchSize);
+        log.info("Consumer root:" + root.getPathAsString() + " batchSize: " + batchSize);
     }
 
     @Override
@@ -85,19 +80,19 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(repositoryName, originatingUsername) {
             @Override
             public void run() {
-                LOG.info("Consumer running");
+                log.info("Consumer running");
                 SourceNode src;
                 while (true) {
                     try {
-                        src = queue.poll(30, TimeUnit.SECONDS);
-                    } catch(InterruptedException e) {
-                        LOG.error("Interrupted exception received, stopping consumer");
+                        src = queue.poll(5, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        log.error("Interrupted exception received, stopping consumer");
                         break;
                     }
                     if (src == null) {
-                        LOG.info("Poll timeout, queue size:" + queue.size());
+                        log.info("Poll timeout, queue size:" + queue.size());
                         if (canStop) {
-                            LOG.info("End of consumer");
+                            log.info("End of consumer");
                             break;
                         }
                         continue;
@@ -107,7 +102,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                     try {
                         process(session, src);
                     } catch (Exception e) {
-                        LOG.error("Exception while consuming node: " + src.getName(), e);
+                        log.error("Exception while consuming node: " + src.getName(), e);
                         ExceptionUtils.checkInterrupt(e);
                         TransactionHelper.setTransactionRollbackOnly();
                     }
@@ -118,7 +113,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
             private void commitIfNeededOrReplayBatch(SourceNode lastSrc) {
                 if (TransactionHelper.isTransactionMarkedRollback()) {
-                    LOG.error("Transaction marked as rollback while processing node: " + lastSrc.getName());
+                    log.error("Transaction marked as rollback while processing node: " + lastSrc.getName());
                     rollbackAndReplayBatch(session);
                 } else {
                     commitIfNeeded(session);
@@ -135,14 +130,13 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
         };
 
-        if (! TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             // This is needed to acquire a session
             startTransaction();
         }
         try {
             runner.runUnrestricted();
         } catch (Exception e) {
-            LOG.error("Error while running consumer", e);
             log.error("Error while running consumer.", e);
             ExceptionUtils.checkInterrupt(e);
             error = e;
@@ -167,9 +161,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
     }
 
     protected void commit(CoreSession session) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Commit batch of " + batch.size() + " nodes");
-        }
+        log.debug("Commit batch of " + batch.size() + " nodes");
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         batch.clear();
@@ -177,7 +169,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
     }
 
     protected void rollbackAndReplayBatch(CoreSession session) {
-        LOG.info("Rollback a batch of " + batch.size() + " docs");
+        log.info("Rollback a batch of " + batch.size() + " docs");
         TransactionHelper.setTransactionRollbackOnly();
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
@@ -193,32 +185,28 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @throws InterruptedException
      */
     private void replayBatch(CoreSession session) {
-        LOG.error("Replaying batch");
-        log.error("Replaying batch in isolated transaction because one source node rolled back the transaction");
-
+        log.error("Replaying batch in isolated transaction");
         for (SourceNode node : batch.getNodes()) {
             boolean success = false;
             startTransaction();
             try {
                 process(session, node);
             } catch (Exception e) { // deals with interrupt below
-                LOG.error("Exception while replaying consumer on node: " + node.getName(), e);
                 ExceptionUtils.checkInterrupt(e);
                 onSourceNodeException(node, e);
                 TransactionHelper.setTransactionRollbackOnly();
             }
             session.save();
             if (TransactionHelper.isTransactionMarkedRollback()) {
-                LOG.error("Transaction marked as rollback while replaying  consumer on node: " + node.getName());
                 onSourceNodeRollBack(node);
             } else {
                 success = true;
             }
             TransactionHelper.commitOrRollbackTransaction();
             if (success) {
-                LOG.debug("Replaying successfully node: " + node.getName());
+                log.debug("Replaying successfully node: " + node.getName());
             } else {
-                LOG.error("Import failure on node: " + node.getName());
+                log.error("Import failure after replay on node: " + node.getName());
             }
         }
     }
@@ -230,7 +218,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param e
      */
     protected void onSourceNodeException(SourceNode node, Exception e) {
-        log.error(String.format("   Error consuming source node [%s]", node.getName()), e);
+        log.error(String.format("   Exception while replaying consuming node [%s]", node.getName()), e);
     }
 
     /**
@@ -239,7 +227,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param node
      */
     protected void onSourceNodeRollBack(SourceNode node) {
-        log.error(String.format("   Source node [%s] did rollback the transaction", node.getName()));
+        log.error(String.format("   Rollback while replaying consumer node [%s]", node.getName()));
     }
 
     @Override

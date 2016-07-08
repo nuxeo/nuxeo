@@ -57,14 +57,7 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     @Override
     public int dispatch(SourceNode bh) throws InterruptedException {
         int idx = getTargetQueue(bh, queues.size());
-
-        boolean accepted = getQueue(idx).offer(bh, 1, TimeUnit.SECONDS);
-
-        if (!accepted) {
-            log.warn("Timeout while waiting for an available queue");
-            idx = getTargetQueue(bh, queues.size());
-            getQueue(idx).offer(bh, 5, TimeUnit.SECONDS);
-        }
+        getQueue(idx).put(bh);
         return idx;
     }
 
