@@ -35,10 +35,12 @@ public class BuggyConsumerFactory implements ConsumerFactory {
                 doc = session.createDocument(doc);
                 if (bsn.isTransactionBuggy()) {
                     TransactionHelper.setTransactionRollbackOnly();
+                    // Thread.sleep(500);
                 } else {
                     docs++;
                 }
                 if (bsn.isExceptionBuggy()) {
+                    // Thread.sleep(1000);
                     throw new Exception("This is a buggy exception during consumer processing !");
                 }
 

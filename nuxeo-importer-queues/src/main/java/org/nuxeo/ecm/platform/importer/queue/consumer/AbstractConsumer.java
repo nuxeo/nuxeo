@@ -84,13 +84,13 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 SourceNode src;
                 while (true) {
                     try {
-                        src = queue.poll(5, TimeUnit.SECONDS);
+                        src = queue.poll(1, TimeUnit.SECONDS);
                     } catch (InterruptedException e) {
                         log.error("Interrupted exception received, stopping consumer");
                         break;
                     }
                     if (src == null) {
-                        log.info("Poll timeout, queue size:" + queue.size());
+                        log.debug("Poll timeout, queue size:" + queue.size());
                         if (canStop) {
                             log.info("End of consumer");
                             break;
@@ -153,8 +153,8 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
             commit(session);
             long t = System.currentTimeMillis();
             if (t - lastCheckTime > CHECK_INTERVAL) {
-                lastImediatThroughput = 1000 * (nbProcessed - lastCount + 0.0) / (t - lastCheckTime);
-                lastCount = nbProcessed;
+                lastImediatThroughput = 1000 * (nbProcessed.get() - lastCount + 0.0) / (t - lastCheckTime);
+                lastCount = nbProcessed.get();
                 lastCheckTime = t;
             }
         }
@@ -237,7 +237,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     @Override
     public double getThroughput() {
-        return 1000 * (nbProcessed + 0.0) / (System.currentTimeMillis() + 1 - startTime);
+        return 1000 * (nbProcessed.get() + 0.0) / (System.currentTimeMillis() + 1 - startTime);
     }
 
     @Override
