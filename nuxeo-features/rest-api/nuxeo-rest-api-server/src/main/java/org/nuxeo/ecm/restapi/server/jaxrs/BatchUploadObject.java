@@ -63,6 +63,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Batch upload endpoint.
@@ -114,6 +115,17 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Path("{batchId}/{fileIdx}")
     public Response upload(@Context HttpServletRequest request, @PathParam(REQUEST_BATCH_ID) String batchId,
             @PathParam(REQUEST_FILE_IDX) String fileIdx) throws IOException {
+        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            return uploadNoTransaction(request, batchId, fileIdx);
+        } finally {
+            TransactionHelper.startTransaction();
+        }
+    }
+
+    protected Response uploadNoTransaction(@Context HttpServletRequest request,
+            @PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
+            throws IOException {
 
         BatchManager bm = Framework.getService(BatchManager.class);
         if (!bm.hasBatch(batchId)) {

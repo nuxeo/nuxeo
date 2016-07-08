@@ -60,28 +60,8 @@
 
   <extension-point name="request-configuration">
     <documentation>
-      @author Bogdan Stefanescu (bs@nuxeo.com)
-  Configure how a given path is handled by the WebEngine filter.
-
-  If <b>autoTx</b> is true (which is the default) then a transaction will be
-  started each time a path matching the given path specification is requested.
-  (the transaction is started in a filter before the JAX-RS resource is called
-  and closed after the response is sent to the output stream). If false then no
-  transaction handling is done. The default is to start a transaction for any
-  path but: [^/]+/skin/.*
-
-  The <b>value</b> attribute is required and must be used to specify the path pattern. The path
-  pattern is either a prefix or a regular expression. If the <b>regex</b> parameter
-  is true (the default is false) then the value will be expected to be a
-  regular expression. A prefix denotes a path starting with 'prefix'. Paths are
-  relative to the webengine servlet (i.e. they correspond to the servlet path
-  info in the JAX-RS servlet) - and always begin with a '/'.
-
-      <code>
-        <path value="/admin" autoTx="false" />
-      </code>
+      Obsolete since 8.4, transactions are always active.
     </documentation>
-
     <object
       class="org.nuxeo.ecm.webengine.PathDescriptor" />
   </extension-point>

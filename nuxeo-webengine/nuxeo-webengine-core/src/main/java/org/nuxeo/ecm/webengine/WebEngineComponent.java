@@ -120,8 +120,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
             // Form form = (Form)contribution;
             // engine.getFormManager().registerForm(form);
         } else if (extensionPoint.equals(REQUEST_CONFIGURATION_XP)) {
-            PathDescriptor pd = (PathDescriptor) contribution;
-            engine.getRequestConfiguration().addPathDescriptor(pd);
+            log.warn("Extension point " + REQUEST_CONFIGURATION_XP + " is obsolete since 8.4, transactions are always active");
         }
     }
 
@@ -139,9 +138,6 @@ public class WebEngineComponent extends DefaultComponent { // implements
             // } else if (extensionPoint.endsWith(FORM_XP)) {
             // Form form = (Form)contribution;
             // engine.getFormManager().unregisterForm(form.getId());
-        } else if (extensionPoint.equals(REQUEST_CONFIGURATION_XP)) {
-            PathDescriptor pd = (PathDescriptor) contribution;
-            engine.getRequestConfiguration().removePathDescriptor(pd);
         }
     }
 

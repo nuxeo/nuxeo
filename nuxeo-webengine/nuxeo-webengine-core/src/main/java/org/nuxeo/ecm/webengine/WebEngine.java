@@ -120,8 +120,6 @@ public class WebEngine implements ResourceLocator {
 
     protected final WebLoader webLoader;
 
-    protected RequestConfiguration requestConfig;
-
     protected volatile boolean isDirty;
 
     public WebEngine(File root) {
@@ -152,13 +150,6 @@ public class WebEngine implements ResourceLocator {
         rendering = new FreemarkerEngine();
         rendering.setResourceLocator(this);
         rendering.setSharedVariable("env", getEnvironment());
-
-        requestConfig = new RequestConfiguration();
-
-    }
-
-    public RequestConfiguration getRequestConfiguration() {
-        return requestConfig;
     }
 
     /**

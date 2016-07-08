@@ -61,6 +61,7 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Exposes {@link Batch} as a JAX-RS resource
@@ -125,7 +126,15 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Path("/upload")
     public Object doPost(@Context HttpServletRequest request) throws IOException {
+        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            return uploadNoTransaction(request);
+        } finally {
+            TransactionHelper.startTransaction();
+        }
+    }
 
+    protected Object uploadNoTransaction(@Context HttpServletRequest request) throws IOException {
         boolean useIFrame = false;
 
         // Parameters are passed as request header

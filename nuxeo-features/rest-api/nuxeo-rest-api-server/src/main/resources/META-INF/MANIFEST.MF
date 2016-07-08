@@ -8,5 +8,4 @@ Nuxeo-WebModule: org.nuxeo.ecm.restapi.server.jaxrs.APIModule;name=api;extends=a
 Nuxeo-Component: OSGI-INF/docviewurl-service-contrib.xml,
  OSGI-INF/auth-contrib.xml,
  OSGI-INF/searchadapter-pp-contrib.xml,
- OSGI-INF/restapi-batch-upload-filter-contrib.xml,
  OSGI-INF/json-enrichers-contrib.xml

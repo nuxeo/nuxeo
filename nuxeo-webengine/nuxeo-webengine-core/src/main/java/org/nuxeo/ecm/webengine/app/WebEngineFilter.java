@@ -35,7 +35,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
-import org.nuxeo.ecm.webengine.PathDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
@@ -82,8 +81,7 @@ public class WebEngineFilter implements Filter {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest req = (HttpServletRequest) request;
             HttpServletResponse resp = (HttpServletResponse) response;
-            PathDescriptor pd = engine.getRequestConfiguration().getMatchingConfiguration(req);
-            Config config = new Config(req, pd);
+            Config config = new Config(req);
             AbstractWebContext ctx = initRequest(config, req, resp);
             if (config.txStarted) {
                 resp = new BufferingHttpServletResponse(resp);
@@ -159,7 +157,7 @@ public class WebEngineFilter implements Filter {
     }
 
     public void initTx(Config config, HttpServletRequest req) {
-        if (!config.isStatic && config.autoTx && !TransactionHelper.isTransactionActive()) {
+        if (!config.isStatic && !TransactionHelper.isTransactionActive()) {
             config.txStarted = ServletHelper.startTransaction(req);
         }
     }
@@ -171,18 +169,14 @@ public class WebEngineFilter implements Filter {
     }
 
     protected static class Config {
-        boolean autoTx;
 
         boolean txStarted;
-
-        boolean locked;
 
         boolean isStatic;
 
         String pathInfo;
 
-        public Config(HttpServletRequest req, PathDescriptor pd) {
-            autoTx = pd == null ? true : pd.isAutoTx(true);
+        public Config(HttpServletRequest req) {
             pathInfo = req.getPathInfo();
             if (pathInfo == null || pathInfo.length() == 0) {
                 pathInfo = "/";
@@ -197,8 +191,6 @@ public class WebEngineFilter implements Filter {
             sb.append("WebEngineFilter&Confi:");
             sb.append("\nPath Info:");
             sb.append(pathInfo);
-            sb.append("\nAuto TX:");
-            sb.append(autoTx);
             sb.append("\nStatic:");
             sb.append(isStatic);
             return sb.toString();
