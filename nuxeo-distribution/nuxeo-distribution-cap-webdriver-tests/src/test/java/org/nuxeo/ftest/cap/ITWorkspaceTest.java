@@ -56,6 +56,7 @@ public class ITWorkspaceTest extends AbstractTest {
 
     @After
     public void after() {
+        RestHelper.removePermissions(WORKSPACES_PATH, TEST_USERNAME);
         RestHelper.cleanup();
     }
 

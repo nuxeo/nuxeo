@@ -55,6 +55,7 @@ public class ITSectionTest extends AbstractTest {
 
     @After
     public void after() {
+        RestHelper.removePermissions(SECTIONS_PATH, TEST_USERNAME);
         RestHelper.cleanup();
     }
 
