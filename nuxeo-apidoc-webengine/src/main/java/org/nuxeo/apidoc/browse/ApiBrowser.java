@@ -62,6 +62,7 @@ import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.tree.TreeHelper;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -322,7 +323,7 @@ public class ApiBrowser extends DefaultObject {
             }
         }
         return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg(
-                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", sanitize(fulltext));
     }
 
     /**
@@ -339,7 +340,7 @@ public class ApiBrowser extends DefaultObject {
             bundleIds.add(item.getId());
         }
         return getView("listBundles").arg("bundleIds", bundleIds).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", sanitize(fulltext));
     }
 
     /**
@@ -362,7 +363,7 @@ public class ApiBrowser extends DefaultObject {
             serviceLabels.add(ArtifactLabel.createLabelFromService(id));
         }
         return getView("listServices").arg("services", serviceLabels).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", sanitize(fulltext));
     }
 
     @POST
@@ -374,7 +375,7 @@ public class ApiBrowser extends DefaultObject {
         List<String> eps = artifacts.stream().map(NuxeoArtifact::getId).collect(Collectors.toList());
         List<ArtifactLabel> labels = eps.stream().map(ArtifactLabel::createLabelFromExtensionPoint).collect(Collectors.toList());
         return getView("listExtensionPoints").arg("eps", labels).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", sanitize(fulltext));
     }
 
     @POST
@@ -384,7 +385,7 @@ public class ApiBrowser extends DefaultObject {
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionInfo.TYPE_NAME, fulltext);
         return getView("listContributions").arg("contributions", artifacts).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", sanitize(fulltext));
     }
 
     @Path("doc")
@@ -589,6 +590,10 @@ public class ApiBrowser extends DefaultObject {
         List<OperationInfo> operations = snap.getOperations();
         return getView("listOperations").arg("operations", operations).arg(Distribution.DIST_ID,
                 ctx.getProperty(Distribution.DIST_ID)).arg("hideNav", Boolean.valueOf(false));
+    }
+
+    protected String sanitize(String value) {
+        return Framework.getService(HtmlSanitizerService.class).sanitizeString(value, null);
     }
 
 }
