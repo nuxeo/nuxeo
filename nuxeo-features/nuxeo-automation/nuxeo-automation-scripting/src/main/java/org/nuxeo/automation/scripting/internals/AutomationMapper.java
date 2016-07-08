@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
@@ -36,6 +34,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
+
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
  * Class injected/published in Nashorn engine to execute automation service.
@@ -84,7 +84,7 @@ public class AutomationMapper {
             Object entry = ctx.get(entryId);
             if (entry instanceof DocumentWrapper) {
                 ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
-            } else if (ctx.get(entryId) instanceof List<?>) {
+            } else if (entry instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) entry;
                 for (Object item : l) {
@@ -135,7 +135,7 @@ public class AutomationMapper {
     }
 
     protected Map<String, Object> unwrapParameters(ScriptObjectMirror parameters) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         for (String k : parameters.keySet()) {
             Object value = parameters.get(k);
             if (value instanceof ScriptObjectMirror) {

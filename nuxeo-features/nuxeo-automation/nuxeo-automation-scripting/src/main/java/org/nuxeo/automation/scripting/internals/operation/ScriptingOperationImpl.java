@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,8 @@ public class ScriptingOperationImpl {
 
     protected final String source;
 
-    public ScriptingOperationImpl(String source, ScriptOperationContext ctx, Map<String, Object> args) throws ScriptException {
+    public ScriptingOperationImpl(String source, ScriptOperationContext ctx, Map<String, Object> args)
+            throws ScriptException {
         this.ctx = ctx;
         this.args = args;
         this.source = source;
@@ -106,7 +107,7 @@ public class ScriptingOperationImpl {
             Object entry = ctx.get(entryId);
             if (entry instanceof DocumentWrapper) {
                 ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
-            } else if (ctx.get(entryId) instanceof List<?>) {
+            } else if (entry instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) entry;
                 for (Object item : l) {
@@ -124,8 +125,7 @@ public class ScriptingOperationImpl {
             return null;
         }
         if (res instanceof ScriptObjectMirror) {
-            Object unwrapped = MarshalingHelper.unwrap(
-                    (ScriptObjectMirror) res);
+            Object unwrapped = MarshalingHelper.unwrap((ScriptObjectMirror) res);
             if (unwrapped instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) unwrapped;

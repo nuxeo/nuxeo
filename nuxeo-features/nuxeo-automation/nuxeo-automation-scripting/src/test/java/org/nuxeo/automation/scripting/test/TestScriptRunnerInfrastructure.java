@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.script.ScriptException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

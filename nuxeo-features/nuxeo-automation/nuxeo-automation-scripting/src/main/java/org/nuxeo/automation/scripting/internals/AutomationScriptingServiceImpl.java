@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,9 +231,11 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     /**
      * Prevents dashes in operation/chain ids. Only used to avoid javascript issues.
+     *
      * @since 7.3
      */
     public static String replaceDashByUnderscore(String id) {
         return id.replaceAll("[\\s\\-()]", "_");
     }
+
 }
