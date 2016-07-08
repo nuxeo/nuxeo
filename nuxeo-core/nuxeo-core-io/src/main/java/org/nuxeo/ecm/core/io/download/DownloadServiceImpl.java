@@ -466,7 +466,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 log.error("Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
                 continue;
             }
-            boolean allow = ((Boolean) result);
+            boolean allow = ((Boolean) result).booleanValue();
             if (!allow) {
                 return false;
             }
