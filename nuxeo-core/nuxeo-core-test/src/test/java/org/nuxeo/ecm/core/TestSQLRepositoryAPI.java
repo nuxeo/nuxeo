@@ -3973,6 +3973,37 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testRollback3() {
+        // create file 1
+        DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
+        file1 = session.createDocument(file1);
+        session.save();
+        nextTransaction();
+
+        // create file 2 and rollback
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
+        file2 = session.createDocument(file2);
+        session.save();
+        TransactionHelper.setTransactionRollbackOnly();
+        nextTransaction();
+
+        // check just one file is here
+        DocumentModelList docs = session.query("SELECT * FROM File");
+        assertEquals(1, docs.size());
+
+        // re-try to create file 2 and re-rollback
+        file2 = session.createDocumentModel("/", "file2", "File");
+        file2 = session.createDocument(file2);
+        session.save();
+        TransactionHelper.setTransactionRollbackOnly();
+        nextTransaction();
+
+        // still just one file
+        docs = session.query("SELECT * FROM File");
+        assertEquals(1, docs.size());
+    }
+
+    @Test
     @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
     public void testBinaryGC() throws Exception {
         // GC binaries from previous tests
