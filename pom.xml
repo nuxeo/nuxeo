@@ -952,13 +952,6 @@
         <version>${nuxeo.playground.version}</version>
       </dependency>
 
-      <!-- Nuxeo inDesign Connector -->
-      <dependency>
-        <groupId>org.nuxeo.indesignconnector</groupId>
-        <artifactId>nuxeo-indesign-connector-server</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
       <!-- Nuxeo Showcase Sample -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
