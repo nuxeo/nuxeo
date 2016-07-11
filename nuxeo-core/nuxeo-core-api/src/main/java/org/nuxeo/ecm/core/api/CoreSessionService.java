@@ -18,19 +18,70 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import java.util.List;
+
 /**
- * The service giving access to {@link CoreSession} creation. INTERNAL, not to be used by application code.
+ * Service managing the acquisition/release of {@link CoreSession} instances.
  *
  * @since 8.4
  */
 public interface CoreSessionService {
 
     /**
-     * Instantiates a {@link CoreSession} (not connected to a repository or principal). INTERNAL, not to be used by
-     * application code.
+     * Debug information about a {@link CoreSession} acquisition.
+     */
+    static class CoreSessionRegistrationInfo extends Throwable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final CoreSession session;
+
+        public CoreSessionRegistrationInfo(CoreSession session) {
+            super("CoreSessionDebugInfo(" + Thread.currentThread().getName() + ", " + session.getSessionId() + ")");
+            this.session = session;
+        }
+
+        public CoreSession getCoreSession() {
+            return session;
+        }
+    }
+
+    /**
+     * Instantiates a {@link CoreSession}.
      *
+     * @param repositoryName the repository name
+     * @param principal the principal
      * @return a {@link CoreSession}
      */
-    CoreSession createCoreSession();
+    CoreSession createCoreSession(String repositoryName, NuxeoPrincipal principal);
+
+    /**
+     * Releases (closes) a {@link CoreSession} acquired by {@link #createCoreSession}.
+     *
+     * @param session the session to close
+     */
+    void releaseCoreSession(CoreSession session);
+
+    /**
+     * Gets an existing open session for the given session id.
+     * <p>
+     * The returned {@link CoreSession} must not be closed, as it is owned by someone else.
+     *
+     * @param sessionId the session id
+     * @return the session, which must not be closed
+     */
+    CoreSession getCoreSession(String sessionId);
+
+    /**
+     * Gets the number of open sessions.
+     */
+    int getNumberOfOpenCoreSessions();
+
+    /**
+     * Gets the debug info for the open sessions.
+     *
+     * @return a list of debug info
+     */
+    List<CoreSessionRegistrationInfo> getCoreSessionRegistrationInfos();
 
 }

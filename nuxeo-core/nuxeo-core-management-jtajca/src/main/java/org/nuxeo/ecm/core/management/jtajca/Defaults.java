@@ -25,7 +25,7 @@ import java.io.PrintStream;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
+import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 
 public class Defaults {
 
@@ -47,7 +47,7 @@ public class Defaults {
         }
     }
 
-    public String printStackTrace(RegistrationInfo info) {
+    public String printStackTrace(CoreSessionRegistrationInfo info) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
             info.printStackTrace(new PrintStream(bos));
             return bos.toString();

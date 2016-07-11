@@ -19,7 +19,7 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.ecm.core.api;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +35,8 @@ import org.apache.commons.lang.SerializationUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -46,6 +48,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
     }
 
     @Test
@@ -100,6 +103,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertNotNull(model.toString());
     }
 
+    // this test needs the CoreSessionService available (for DocumentModelImpl.writeReplace)
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
         DocumentModelImpl original = new DocumentModelImpl("my type");

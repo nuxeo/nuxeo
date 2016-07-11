@@ -25,11 +25,12 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -153,7 +153,7 @@ public class IndexingCommand implements Serializable {
     public DocumentModel getTargetDocument() {
         CoreSession session = null;
         if (sessionId != null) {
-            session = CoreInstance.getInstance().getSession(sessionId);
+            session = Framework.getService(CoreSessionService.class).getCoreSession(sessionId);
         }
         if (session == null) {
             throw new IllegalStateException("Command is not attached to a valid session: " + this);

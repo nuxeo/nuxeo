@@ -66,22 +66,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
      */
     private final Set<SessionInfo> allSessions = Collections.newSetFromMap(new ConcurrentHashMap<SessionInfo, Boolean>());
 
-    public static CoreSession createInstance() {
+    public LocalSession(String repositoryName, NuxeoPrincipal principal) {
         if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             throw new NuxeoException("Cannot create a CoreSession outside a transaction");
-        }
-        return new LocalSession();
-    }
-
-    @Override
-    public String getRepositoryName() {
-        return repositoryName;
-    }
-
-    @Override
-    public void connect(String repositoryName, NuxeoPrincipal principal) {
-        if (sessionId != null) {
-            throw new NuxeoException("CoreSession already connected");
         }
         this.repositoryName = repositoryName;
         this.principal = principal;
@@ -91,6 +78,11 @@ public class LocalSession extends AbstractSession implements Synchronization {
             log.debug("Creating CoreSession: " + sessionId);
         }
         createSession(); // create first session for current thread
+    }
+
+    @Override
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
     protected static String newSessionId(String repositoryName, NuxeoPrincipal principal) {

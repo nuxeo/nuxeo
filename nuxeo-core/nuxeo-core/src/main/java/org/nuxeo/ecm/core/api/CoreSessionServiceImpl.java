@@ -18,20 +18,60 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Implementation for the service giving access to {@link CoreSession} creation. INTERNAL, not to be used by application
- * code.
+ * Implementation for the service managing the acquisition/release of {@link CoreSession} instances.
  *
  * @since 8.4
  */
 public class CoreSessionServiceImpl extends DefaultComponent implements CoreSessionService {
 
+    /**
+     * All open {@link CoreSessionRegistrationInfo}, keyed by session id.
+     */
+    private final Map<String, CoreSessionRegistrationInfo> sessions = new ConcurrentHashMap<String, CoreSessionRegistrationInfo>();
+
     @Override
-    public CoreSession createCoreSession() {
-        return LocalSession.createInstance();
+    public CoreSession createCoreSession(String repositoryName, NuxeoPrincipal principal) {
+        LocalSession session = new LocalSession(repositoryName, principal);
+        sessions.put(session.getSessionId(), new CoreSessionRegistrationInfo(session));
+        return session;
+    }
+
+    @Override
+    public void releaseCoreSession(CoreSession session) {
+        String sessionId = session.getSessionId();
+        CoreSessionRegistrationInfo info = sessions.remove(sessionId);
+        if (info == null) {
+            throw new RuntimeException("Closing unknown CoreSession: " + sessionId, info);
+        }
+        session.destroy();
+    }
+
+    @Override
+    public CoreSession getCoreSession(String sessionId) {
+        if (sessionId == null) {
+            throw new NullPointerException("null sessionId");
+        }
+        CoreSessionRegistrationInfo info = sessions.get(sessionId);
+        return info == null ? null : info.getCoreSession();
+    }
+
+    @Override
+    public int getNumberOfOpenCoreSessions() {
+        return sessions.size();
+    }
+
+    @Override
+    public List<CoreSessionRegistrationInfo> getCoreSessionRegistrationInfos() {
+        return new ArrayList<>(sessions.values());
     }
 
 }

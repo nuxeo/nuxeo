@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,6 +40,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.
@@ -83,7 +84,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
 
     protected CoreSession getCoreSession() {
         String coreSessionId = treeRoot == null ? sessionId : treeRoot.getSessionId();
-        return CoreInstance.getInstance().getSession(coreSessionId);
+        return Framework.getService(CoreSessionService.class).getCoreSession(coreSessionId);
     }
 
     public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {

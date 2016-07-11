@@ -47,27 +47,6 @@ import org.nuxeo.ecm.core.schema.Prefetch;
  * <p>
  * The user may overwrite the default schemas by passing the schemas to be used at model creation via
  * {@link CoreSession#getDocument(DocumentRef, String[])}
- * <p>
- * How a lazy data model is loaded depends on the implementation.
- * <p>
- * Anyway the API already provides a mechanism to handle this as follow:
- *
- * <pre>
- * <code>
- * public DataModel getDataModel(String schema) {
- *     DataModel dataModel = dataModels.get(schema);
- *     if (dataModel != null &amp;&amp; !dataModel.isLoaded()) {
- *         CoreSession client = CoreInstance.getInstance().getClient(
- *                 getSessionId());
- *         if (client != null) {
- *             dataModel = client.getDataModel(getRef(), schema);
- *             dataModels.put(schema, dataModel);
- *         }
- *     }
- *     return dataModel;
- * }
- * </code>
- * </pre>
  *
  * @see CoreSession
  * @see DataModel

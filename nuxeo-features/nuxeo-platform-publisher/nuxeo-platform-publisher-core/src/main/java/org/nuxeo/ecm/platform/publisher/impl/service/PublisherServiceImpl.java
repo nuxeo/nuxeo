@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -282,7 +283,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (remoteLiveTrees.containsKey(sid)) {
             // close here session opened for remote trees
             String sessionId = remoteLiveTrees.get(sid);
-            CoreSession remoteSession = CoreInstance.getInstance().getSession(sessionId);
+            CoreSession remoteSession = Framework.getService(CoreSessionService.class).getCoreSession(sessionId);
             remoteSession.close();
             remoteLiveTrees.remove(sid);
         }

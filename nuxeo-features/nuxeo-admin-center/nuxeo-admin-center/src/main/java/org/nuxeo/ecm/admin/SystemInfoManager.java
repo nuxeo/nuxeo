@@ -44,7 +44,7 @@ import org.nuxeo.ecm.admin.repo.RepoStatInfo;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.ecm.admin.runtime.RuntimeInstrospection;
 import org.nuxeo.ecm.admin.runtime.SimplifiedServerInfo;
-import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -205,7 +205,7 @@ public class SystemInfoManager implements Serializable {
     }
 
     public int getOpenSessionNumber() {
-        return CoreInstance.getInstance().getNumberOfSessions();
+        return Framework.getService(CoreSessionService.class).getNumberOfOpenCoreSessions();
     }
 
     public int getActiveSessionNumber() {
@@ -256,7 +256,7 @@ public class SystemInfoManager implements Serializable {
     public String getRepoUsage() {
         StringBuilder sb = new StringBuilder();
 
-        int nbSessions = CoreInstance.getInstance().getNumberOfSessions();
+        int nbSessions = Framework.getService(CoreSessionService.class).getNumberOfOpenCoreSessions();
 
         sb.append("Number of open repository session : ");
         sb.append(nbSessions);

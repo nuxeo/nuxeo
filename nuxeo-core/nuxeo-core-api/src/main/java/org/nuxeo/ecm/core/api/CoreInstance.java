@@ -26,8 +26,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
@@ -36,9 +36,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-
 /**
  * The CoreInstance is the main access point to a CoreSession.
  */
@@ -46,29 +43,13 @@ public class CoreInstance {
 
     private static final CoreInstance INSTANCE = new CoreInstance();
 
-    public static class RegistrationInfo extends Throwable {
-
-        private static final long serialVersionUID = 1L;
-
-        public final CoreSession session;
-
-        public RegistrationInfo(CoreSession session) {
-            super("RegistrationInfo(" + Thread.currentThread().getName() + ", " + session.getSessionId() + ")");
-            this.session = session;
-        }
-
-    }
-
-    /**
-     * All open CoreSessionInfo, keyed by session id.
-     */
-    private final Map<String, RegistrationInfo> sessions = new ConcurrentHashMap<String, RegistrationInfo>();
-
     private CoreInstance() {
     }
 
     /**
      * Gets the CoreInstance singleton.
+     *
+     * @deprecated since 8.4, use {@link CoreSessionService} directly.
      */
     public static CoreInstance getInstance() {
         return INSTANCE;
@@ -184,15 +165,7 @@ public class CoreInstance {
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             repositoryName = repositoryManager.getDefaultRepository().getName();
         }
-        return getInstance().acquireCoreSession(repositoryName, principal);
-    }
-
-    protected CoreSession acquireCoreSession(String repositoryName, NuxeoPrincipal principal) {
-        CoreSessionService coreSessionService = Framework.getService(CoreSessionService.class);
-        CoreSession session = coreSessionService.createCoreSession();
-        session.connect(repositoryName, principal);
-        sessions.put(session.getSessionId(), new RegistrationInfo(session));
-        return session;
+        return Framework.getService(CoreSessionService.class).createCoreSession(repositoryName, principal);
     }
 
     /**
@@ -204,11 +177,7 @@ public class CoreInstance {
      * @return the session, which must not be closed
      */
     public CoreSession getSession(String sessionId) {
-        if (sessionId == null) {
-            throw new NullPointerException("null sessionId");
-        }
-        RegistrationInfo csi = sessions.get(sessionId);
-        return csi == null ? null : csi.session;
+        return Framework.getService(CoreSessionService.class).getCoreSession(sessionId);
     }
 
     /**
@@ -217,16 +186,7 @@ public class CoreInstance {
      * @since 5.9.3
      */
     public static void closeCoreSession(CoreSession session) {
-        getInstance().releaseCoreSession(session);
-    }
-
-    protected void releaseCoreSession(CoreSession session) {
-        String sessionId = session.getSessionId();
-        RegistrationInfo csi = sessions.remove(sessionId);
-        if (csi == null) {
-            throw new RuntimeException("Closing unknown CoreSession: " + sessionId, csi);
-        }
-        session.destroy();
+        Framework.getService(CoreSessionService.class).releaseCoreSession(session);
     }
 
     protected static NuxeoPrincipal getPrincipal(Map<String, Serializable> map) {
@@ -281,38 +241,20 @@ public class CoreInstance {
      * Gets the number of open sessions.
      *
      * @since 5.4.2
+     * @deprecated since 8.4, use {@link CoreSessionService#getNumberOfOpenSessions} directly
      */
     public int getNumberOfSessions() {
-        return sessions.size();
+        return Framework.getService(CoreSessionService.class).getNumberOfOpenCoreSessions();
     }
 
-    public Collection<RegistrationInfo> getRegistrationInfos() {
-        return new ArrayList<>(sessions.values());
+    /**
+     * Gets the number of open sessions.
+     *
+     * @since 5.4.2
+     * @deprecated since 8.4, use {@link CoreSessionService#getRegistrationInfos} directly
+     */
+    public Collection<CoreSessionRegistrationInfo> getRegistrationInfos() {
+        return Framework.getService(CoreSessionService.class).getCoreSessionRegistrationInfos();
     }
 
-    public Collection<RegistrationInfo> getRegistrationInfosLive(final boolean onThread) {
-        return Collections2.filter(sessions.values(), new Predicate<RegistrationInfo>() {
-
-            @Override
-            public boolean apply(RegistrationInfo input) {
-                return input.session.isLive(onThread);
-            }
-
-        });
-    }
-
-    public void cleanupThisThread() {
-        cleanup(true);
-    }
-
-    public void cleanup(boolean onthread) {
-        NuxeoException errors = new NuxeoException("disconnecting from storage for you");
-        for (RegistrationInfo each : CoreInstance.getInstance().getRegistrationInfosLive(false)) {
-            each.session.destroy();
-            errors.addSuppressed(each);
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
-    }
 }

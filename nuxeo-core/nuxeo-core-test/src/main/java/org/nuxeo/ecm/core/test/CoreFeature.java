@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +30,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSessionService;
+import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -190,14 +190,15 @@ public class CoreFeature extends SimpleFeature {
             releaseCoreSession();
         }
 
-        Collection<RegistrationInfo> leakedInfos = CoreInstance.getInstance().getRegistrationInfos();
+        List<CoreSessionRegistrationInfo> leakedInfos = Framework.getService(
+                CoreSessionService.class).getCoreSessionRegistrationInfos();
         if (leakedInfos.size() == 0) {
             return;
         }
         AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
-        for (RegistrationInfo info:leakedInfos) {
+        for (CoreSessionRegistrationInfo info:leakedInfos) {
             try {
-                info.session.close();
+                info.getCoreSession().close();
                 leakedErrors.addSuppressed(info);
             } catch (RuntimeException cause) {
                 leakedErrors.addSuppressed(cause);

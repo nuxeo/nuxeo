@@ -24,14 +24,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -98,7 +99,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
     }
 
     protected CoreSession getCoreSession() {
-        return CoreInstance.getInstance().getSession(coreSessionId);
+        return Framework.getService(CoreSessionService.class).getCoreSession(coreSessionId);
     }
 
     public List<PublishedDocument> getChildrenDocuments() {

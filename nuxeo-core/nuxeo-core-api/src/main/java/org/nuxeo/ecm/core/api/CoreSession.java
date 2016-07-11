@@ -125,16 +125,6 @@ public interface CoreSession extends AutoCloseable {
     DocumentType getDocumentType(String type);
 
     /**
-     * NOT PUBLIC, DO NOT CALL.
-     * <p>
-     * Connects the CoreSession to a low-level Session.
-     *
-     * @param repositoryName the repository name
-     * @param principal the principal
-     */
-    void connect(String repositoryName, NuxeoPrincipal principal);
-
-    /**
      * Returns true if the session is currently connected to the repository.
      */
     boolean isLive(boolean onThread);

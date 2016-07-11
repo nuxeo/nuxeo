@@ -18,6 +18,9 @@
  */
 package org.nuxeo.elasticsearch.http.readonly;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -98,24 +100,18 @@ public class TestSearchRequestFilter {
      * @since 7.4
      */
     public static CoreSession getAdminCoreSession() {
-        return new LocalSession() {
-            @Override
-            public NuxeoPrincipal getPrincipal() {
-                return getAdminPrincipal();
-            }
-        };
+        CoreSession session = mock(CoreSession.class);
+        when(session.getPrincipal()).thenReturn(getAdminPrincipal());
+        return session;
     }
 
     /**
      * @since 7.4
      */
     public static CoreSession getNonAdminCoreSession() {
-        return new LocalSession() {
-            @Override
-            public NuxeoPrincipal getPrincipal() {
-                return getNonAdminPrincipal();
-            }
-        };
+        CoreSession session = mock(CoreSession.class);
+        when(session.getPrincipal()).thenReturn(getNonAdminPrincipal());
+        return session;
     }
 
     public static NuxeoPrincipal getAdminPrincipal() {
