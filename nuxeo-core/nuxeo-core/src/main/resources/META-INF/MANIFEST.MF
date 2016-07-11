@@ -36,6 +36,7 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/document-resolver-contrib.xml,
   OSGI-INF/blobmanager-service.xml,
   OSGI-INF/uidgenerator-service.xml,
+  OSGI-INF/CoreSessionService.xml,
   OSGI-INF/scheduler-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.naming,

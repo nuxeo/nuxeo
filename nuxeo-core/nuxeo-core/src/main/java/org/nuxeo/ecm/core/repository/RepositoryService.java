@@ -23,14 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transaction;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalException;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -125,9 +121,6 @@ public class RepositoryService extends DefaultComponent {
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(getClass())) {
             return adapter.cast(this);
-        }
-        if (adapter.isAssignableFrom(CoreSession.class)) {
-            return adapter.cast(LocalSession.createInstance());
         }
         return null;
     }

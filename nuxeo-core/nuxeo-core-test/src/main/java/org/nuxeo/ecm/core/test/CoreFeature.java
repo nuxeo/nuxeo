@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -59,11 +58,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.test.runner.ServiceProvider;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.google.inject.Scope;
+import com.google.inject.Binder;
+import com.google.inject.Provider;
 
 /**
  * The core feature provides a default {@link CoreSession} that can be injected.
@@ -107,22 +106,6 @@ public class CoreFeature extends SimpleFeature {
 
     protected TransactionalFeature txFeature;
 
-    protected class CoreSessionServiceProvider extends ServiceProvider<CoreSession> {
-        public CoreSessionServiceProvider() {
-            super(CoreSession.class);
-        }
-
-        @Override
-        public Scope getScope() {
-            return CoreScope.INSTANCE;
-        }
-
-        @Override
-        public CoreSession get() {
-            return session;
-        }
-    }
-
     public StorageConfiguration getStorageConfiguration() {
         return storageConfiguration;
     }
@@ -140,7 +123,6 @@ public class CoreFeature extends SimpleFeature {
             }
 
         });
-        runner.getFeature(RuntimeFeature.class).addServiceProvider(new CoreSessionServiceProvider());
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
         if (repositoryConfig == null) {
@@ -186,6 +168,16 @@ public class CoreFeature extends SimpleFeature {
             initializeSession(runner);
             TransactionHelper.commitOrRollbackTransaction();
         }
+    }
+
+    @Override
+    public void configure(FeaturesRunner runner, Binder binder) {
+        binder.bind(CoreSession.class).toProvider(new Provider<CoreSession>() {
+            @Override
+            public CoreSession get() {
+                return session;
+            }
+        });
     }
 
     @Override

@@ -6,12 +6,11 @@
   </documentation>
 
   <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
-  
+
   <implementation class="org.nuxeo.ecm.core.repository.RepositoryService" />
 
   <service>
     <provide interface="org.nuxeo.ecm.core.repository.RepositoryService" />
-    <provide interface="org.nuxeo.ecm.core.api.CoreSession" />
   </service>
 
 </component>
