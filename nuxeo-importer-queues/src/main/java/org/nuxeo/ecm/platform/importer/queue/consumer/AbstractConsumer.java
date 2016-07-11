@@ -67,7 +67,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         this.queue = queue;
         rootRef = root.getRef();
         importStat = new ImportStat();
-        log.info("Consumer root:" + root.getPathAsString() + " batchSize: " + batchSize);
+        log.info("Create consumer root:" + root.getPathAsString() + " batchSize: " + batchSize);
     }
 
     @Override
@@ -92,7 +92,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                     if (src == null) {
                         log.debug("Poll timeout, queue size:" + queue.size());
                         if (canStop) {
-                            log.info("End of consumer");
+                            log.info("End of consumer, processed node: " + getNbProcessed());
                             break;
                         }
                         continue;
