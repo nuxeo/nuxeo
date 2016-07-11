@@ -40,10 +40,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -59,19 +55,37 @@ public class TestReplay {
     public void shouldImportAllNonBuggyNodes() throws InterruptedException {
         // ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
+        importWithBuggyNodes(0, 0);
+    }
+
+    @Test
+    public void shouldImportAllNonBuggyNodesWithSlowConsumer() throws InterruptedException {
+        // ImporterLogger logger = mock(ImporterLogger.class);
+        // To get logs
+        importWithBuggyNodes(0, 100);
+    }
+
+    @Test
+    public void shouldImportAllNonBuggyNodesWithSlowProducer() throws InterruptedException {
+        // ImporterLogger logger = mock(ImporterLogger.class);
+        // To get logs
+        importWithBuggyNodes(100, 0);
+    }
+
+    private void importWithBuggyNodes(int producerDelayMs, int consumerDelayMs) {
         ImporterLogger logger = new BufferredLogger(log);
         QueueImporter importer = new QueueImporter(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, true);
         importer.addFilter(filter);
-        RandomQueuesManager qm = new RandomQueuesManager(logger, 11, 1005);
+        RandomQueuesManager qm = new RandomQueuesManager(logger, 7, 42);
 
         // Given a producer that generate some buggy nodes.
         // index-0, index-30, index-50, index-60 and index-90 should not be created
-        Producer producer = new BuggyNodeProducer(logger, 100, 30, 50);
-        ConsumerFactory fact = new BuggyConsumerFactory();
+        Producer producer = new BuggyNodeProducer(logger, 100, 30, 50, producerDelayMs);
+        ConsumerFactory fact = new BuggyConsumerFactory(consumerDelayMs);
 
         // When the importer launches the import
-        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 13, fact);
+        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
 
         // Then only buggy nodes should'nt be imported.
         DocumentModelList docs = session.query("SELECT * FROM File");
@@ -85,41 +99,6 @@ public class TestReplay {
         // verify(logger, times(20)).error(anyString());
     }
 
-    @Test
-    public void testRollback3() {
-         DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
-        file1.setPropertyValue("dc:title", "foo");
-        file1 = session.createDocument(file1);
-        session.save();
-        nextTransaction();
-
-        // create doc and fail
-        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
-        file2.setPropertyValue("dc:title", "foo");
-        file2 = session.createDocument(file2);
-        session.save();
-        TransactionHelper.setTransactionRollbackOnly();
-        nextTransaction();
-
-        DocumentModelList docs = session.query("SELECT * FROM File");
-        assertEquals(1, docs.size());
-
-        // replay the same tx
-        file2 = session.createDocumentModel("/", "file2", "File");
-        file2.setPropertyValue("dc:title", "foo");
-        file2 = session.createDocument(file2);
-        session.save();
-        TransactionHelper.setTransactionRollbackOnly();
-        nextTransaction();
-
-        // failure on vcs h2 and postgres, works on mongo
-        docs = session.query("SELECT * FROM File");
-        for (DocumentModel doc: docs) {
-            System.out.println(doc.getName());
-        }
-        assertEquals(1, docs.size());
-
-    }
 
     private void nextTransaction() {
         TransactionHelper.commitOrRollbackTransaction();

@@ -138,11 +138,27 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
             runner.runUnrestricted();
         } catch (Exception e) {
             log.error("Error while running consumer.", e);
+            drainQueueOnError(e);
             ExceptionUtils.checkInterrupt(e);
             error = e;
         } finally {
             completed = true;
             started = false;
+        }
+    }
+
+    protected void drainQueueOnError(Exception e) {
+        log.error("Drain " + queue.size() + " nodes after error " + e.getMessage());
+        if (queue != null && ! queue.isEmpty()) {
+            try {
+                do {
+                    SourceNode src = queue.poll(10, TimeUnit.MILLISECONDS);
+                    onSourceNodeException(src, e);
+                } while (!queue.isEmpty());
+            } catch (InterruptedException ei) {
+                log.error("InterruptedException during drain");
+            }
+
         }
     }
 
@@ -218,7 +234,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param e
      */
     protected void onSourceNodeException(SourceNode node, Exception e) {
-        log.error(String.format("   Exception while replaying consuming node [%s]", node.getName()), e);
+        log.error(String.format("   Unable to import node [%s]", node.getName()), e);
     }
 
     /**

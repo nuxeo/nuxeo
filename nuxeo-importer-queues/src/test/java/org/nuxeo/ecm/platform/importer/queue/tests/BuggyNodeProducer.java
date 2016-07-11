@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.AbstractProducer;
 
 import java.util.Random;
@@ -14,19 +13,19 @@ import java.util.Random;
  */
 public class BuggyNodeProducer extends AbstractProducer {
 
+    private final int producerDelayMs;
     private int nbNode;
-
-    private QueuesManager qm;
 
     private int exceptionFrequency;
 
     private int rollBackFrequency;
 
-    public BuggyNodeProducer(ImporterLogger logger, int nbNode, int rollBackFrequency, int exceptionFrequency) {
+    public BuggyNodeProducer(ImporterLogger logger, int nbNode, int rollBackFrequency, int exceptionFrequency, int producerDelayMs) {
         super(logger);
         this.nbNode = nbNode;
         this.rollBackFrequency = rollBackFrequency;
         this.exceptionFrequency = exceptionFrequency;
+        this.producerDelayMs = producerDelayMs;
     }
 
     @Override
@@ -34,7 +33,9 @@ public class BuggyNodeProducer extends AbstractProducer {
         started = true;
         try {
             for (int i = 0; i < nbNode; i++) {
-                Thread.sleep(new Random().nextInt(100));
+                if (producerDelayMs > 0) {
+                    Thread.sleep((new Random()).nextInt(producerDelayMs));
+                }
                 dispatch(new BuggySourceNode(i, i % rollBackFrequency == 0, i % exceptionFrequency == 0));
             }
         } catch (InterruptedException e) {
