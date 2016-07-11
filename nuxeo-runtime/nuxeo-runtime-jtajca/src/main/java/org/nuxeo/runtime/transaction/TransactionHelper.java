@@ -424,4 +424,35 @@ public class TransactionHelper {
         }
     }
 
+    /**
+     * Runs the given {@link Runnable} in a transactional context. Will not start a new transaction if one already
+     * exists.
+     *
+     * @param runnable the {@link Runnable}
+     * @since 8.4
+     */
+    public static void runInTransaction(Runnable runnable) {
+        boolean startTransaction = !isTransactionActiveOrMarkedRollback();
+        if (startTransaction) {
+            if (!startTransaction()) {
+                throw new TransactionRuntimeException("Cannot start transaction");
+            }
+        }
+        boolean completedAbruptly = true;
+        try {
+            runnable.run();
+            completedAbruptly = false;
+        } finally {
+            try {
+                if (completedAbruptly) {
+                    setTransactionRollbackOnly();
+                }
+            } finally {
+                if (startTransaction) {
+                    commitOrRollbackTransaction();
+                }
+            }
+        }
+    }
+
 }

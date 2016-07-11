@@ -84,6 +84,15 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) {
+        TransactionHelper.runInTransaction(this::initRepositories);
+    }
+
+    /**
+     * Initializes all repositories. Run in a transaction.
+     *
+     * @since 8.4
+     */
+    protected void initRepositories() {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String name : repositoryManager.getRepositoryNames()) {
             openRepository(name);
@@ -93,27 +102,9 @@ public class RepositoryService extends DefaultComponent {
         if (handler == null) {
             return;
         }
-        // invoke handler with a tx active
-        {
-            boolean started = false;
-            boolean ok = false;
-            try {
-                started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
-                for (String name : repositoryManager.getRepositoryNames()) {
-                    initializeRepository(handler, name);
-                }
-                ok = true;
-            } finally {
-                if (started) {
-                    try {
-                        if (!ok) {
-                            TransactionHelper.setTransactionRollbackOnly();
-                        }
-                    } finally {
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                }
-            }
+        // invoke handlers
+        for (String name : repositoryManager.getRepositoryNames()) {
+            initializeRepository(handler, name);
         }
     }
 

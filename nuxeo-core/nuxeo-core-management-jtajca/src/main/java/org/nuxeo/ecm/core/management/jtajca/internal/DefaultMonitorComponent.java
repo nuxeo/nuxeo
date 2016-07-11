@@ -51,6 +51,7 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.MetricsServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Component used to install/uninstall the monitors (transaction and connections).
@@ -126,27 +127,29 @@ public class DefaultMonitorComponent extends DefaultComponent {
         transactionMonitor = new DefaultTransactionMonitor();
         transactionMonitor.install();
 
-        try {
-            installPoolMonitors();
-        } catch (LoginException cause) {
-            log.warn("Cannot install storage monitors", cause);
-        }
-
+        TransactionHelper.runInTransaction(this::installPoolMonitors);
     }
 
-    protected void installPoolMonitors() throws LoginException {
+    protected void installPoolMonitors() {
         NuxeoContainer.addListener(cmUpdater);
         NuxeoException errors = new NuxeoException("Cannot install pool monitors");
-        LoginContext loginContext = Framework.login();
         try {
-            for (String name : Framework.getLocalService(RepositoryService.class).getRepositoryNames()) {
-                try (CoreSession session = CoreInstance.openCoreSession(name)) {;
-                } catch (NuxeoException cause) {
-                    errors.addSuppressed(cause);
+            LoginContext loginContext = Framework.login();
+            try {
+                RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+                for (String name : repositoryService.getRepositoryNames()) {
+                    try (CoreSession session = CoreInstance.openCoreSession(name)) {
+                        // nothing
+                    } catch (NuxeoException e) {
+                        e.addInfo("For repository: " + name);
+                        errors.addSuppressed(e);
+                    }
                 }
+            } finally {
+                loginContext.logout();
             }
-        } finally {
-            loginContext.logout();
+        } catch (LoginException e) {
+            errors.addSuppressed(e);
         }
         if (errors.getSuppressed().length > 0) {
             throw errors;
