@@ -11,14 +11,17 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class Batch {
 
-    private final int size;
+    private final int capacity;
 
-    List<SourceNode> nodes = new ArrayList<>();
+    final List<SourceNode> nodes = new ArrayList<>();
 
 
-    public Batch(int size) {
-        this.size = size;
+    public Batch(int capacity) {
+        this.capacity = capacity;
+    }
 
+    public int size() {
+        return nodes.size();
     }
 
     public void add(SourceNode src) {
@@ -30,7 +33,7 @@ public class Batch {
     }
 
     public boolean isFull() {
-        return nodes.size() >= size;
+        return nodes.size() >= capacity;
     }
 
     public List<SourceNode> getNodes() {

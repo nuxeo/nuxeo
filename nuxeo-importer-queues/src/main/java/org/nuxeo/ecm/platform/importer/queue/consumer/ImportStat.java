@@ -34,7 +34,7 @@ public class ImportStat implements Serializable {
     private final Map<String, Long> statMap;
 
     public ImportStat() {
-        statMap = new HashMap<String, Long>();
+        statMap = new HashMap<>();
     }
 
     public ImportStat(Map<String, Long> initMap) {
@@ -86,6 +86,6 @@ public class ImportStat implements Serializable {
     }
 
     public Map<String, Long> getStatMap() {
-        return new HashMap<String, Long>(statMap);
+        return new HashMap<>(statMap);
     }
 }

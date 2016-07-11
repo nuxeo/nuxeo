@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.consumer;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -28,6 +25,11 @@ import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import static org.nuxeo.runtime.transaction.TransactionHelper.startTransaction;
 
 /**
  * @since 8.3
@@ -65,6 +67,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         this.queue = queue;
         rootRef = root.getRef();
         importStat = new ImportStat();
+        log.info("Create consumer root:" + root.getPathAsString() + " batchSize: " + batchSize);
     }
 
     @Override
@@ -77,50 +80,69 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(repositoryName, originatingUsername) {
             @Override
             public void run() {
-                while (!mustStop) {
+                log.info("Consumer running");
+                SourceNode src;
+                while (true) {
                     try {
-                        SourceNode src = queue.poll(1, TimeUnit.SECONDS);
-                        if (src != null) {
-                            try {
-                                incrementProcessed();
-                                batch.add(src);
-                                process(session, src);
-                                commitIfNeeded(session);
-                            } catch (Exception e) {
-                                TransactionHelper.setTransactionRollbackOnly();
-                                commitIfNeeded(session);
-                            }
-                        } else {
-                            if (canStop) {
-                                commit(session);
-                                break;
-                            }
-                        }
+                        src = queue.poll(1, TimeUnit.SECONDS);
                     } catch (InterruptedException e) {
-                        log.warn("Interrupted exception received, stopping consumer");
-                        mustStop = true;
+                        log.error("Interrupted exception received, stopping consumer");
+                        break;
                     }
+                    if (src == null) {
+                        log.debug("Poll timeout, queue size:" + queue.size());
+                        if (canStop) {
+                            log.info("End of consumer, processed node: " + getNbProcessed());
+                            break;
+                        }
+                        continue;
+                    }
+                    incrementProcessed();
+                    batch.add(src);
+                    try {
+                        process(session, src);
+                    } catch (Exception e) {
+                        log.error("Exception while consuming node: " + src.getName(), e);
+                        ExceptionUtils.checkInterrupt(e);
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                    commitIfNeededOrReplayBatch(src);
+                }
+                commitOrReplayBatch();
+            }
+
+            private void commitIfNeededOrReplayBatch(SourceNode lastSrc) {
+                if (TransactionHelper.isTransactionMarkedRollback()) {
+                    log.error("Transaction marked as rollback while processing node: " + lastSrc.getName());
+                    rollbackAndReplayBatch(session);
+                } else {
+                    commitIfNeeded(session);
                 }
             }
+
+            private void commitOrReplayBatch() {
+                if (TransactionHelper.isTransactionMarkedRollback()) {
+                    rollbackAndReplayBatch(session);
+                } else {
+                    commit(session);
+                }
+            }
+
         };
 
-        TransactionHelper.startTransaction();
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            // This is needed to acquire a session
+            startTransaction();
+        }
         try {
             runner.runUnrestricted();
         } catch (Exception e) {
-            log.error("Error while running consumer.", e);
-            TransactionHelper.setTransactionRollbackOnly();
-            error = e;
+            log.error("Unexpected End of consumer after " + getNbProcessed() + " nodes.", e);
             ExceptionUtils.checkInterrupt(e);
+            error = e;
         } finally {
             completed = true;
             started = false;
-            try {
-                TransactionHelper.commitOrRollbackTransaction();
-            } catch (Exception e) {
-                log.error("Error while running consumer. Could not commit or rollback transaction", e);
-                throw e;
-            }
         }
     }
 
@@ -131,22 +153,29 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
             commit(session);
             long t = System.currentTimeMillis();
             if (t - lastCheckTime > CHECK_INTERVAL) {
-                lastImediatThroughput = 1000 * (nbProcessed - lastCount + 0.0) / (t - lastCheckTime);
-                lastCount = nbProcessed;
+                lastImediatThroughput = 1000 * (nbProcessed.get() - lastCount + 0.0) / (t - lastCheckTime);
+                lastCount = nbProcessed.get();
                 lastCheckTime = t;
             }
         }
     }
 
     protected void commit(CoreSession session) {
+        log.debug("Commit batch of " + batch.size() + " nodes");
         session.save();
-        boolean rolledBack = TransactionHelper.isTransactionMarkedRollback();
         TransactionHelper.commitOrRollbackTransaction();
-        if (rolledBack) {
-            replayBatch(session);
-        }
         batch.clear();
-        TransactionHelper.startTransaction();
+        startTransaction();
+    }
+
+    protected void rollbackAndReplayBatch(CoreSession session) {
+        log.info("Rollback a batch of " + batch.size() + " docs");
+        TransactionHelper.setTransactionRollbackOnly();
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        replayBatch(session);
+        batch.clear();
+        startTransaction();
     }
 
     /**
@@ -156,9 +185,10 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @throws InterruptedException
      */
     private void replayBatch(CoreSession session) {
-        log.error("Replaying batch in isolated transaction because one source node rolled back the transaction");
+        log.error("Replaying batch in isolated transaction");
         for (SourceNode node : batch.getNodes()) {
-            TransactionHelper.startTransaction();
+            boolean success = false;
+            startTransaction();
             try {
                 process(session, node);
             } catch (Exception e) { // deals with interrupt below
@@ -166,12 +196,18 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 onSourceNodeException(node, e);
                 TransactionHelper.setTransactionRollbackOnly();
             }
-
+            session.save();
             if (TransactionHelper.isTransactionMarkedRollback()) {
                 onSourceNodeRollBack(node);
+            } else {
+                success = true;
             }
-            session.save();
             TransactionHelper.commitOrRollbackTransaction();
+            if (success) {
+                log.debug("Replaying successfully node: " + node.getName());
+            } else {
+                log.error("Import failure after replay on node: " + node.getName());
+            }
         }
     }
 
@@ -182,17 +218,16 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param e
      */
     protected void onSourceNodeException(SourceNode node, Exception e) {
-        log.error(String.format("   Error consuming source node [%s]", node.getName()), e);
+        log.error(String.format("   Unable to import node [%s]", node.getName()), e);
     }
 
     /**
      * Override if you want to do more that logging the error.
      *
      * @param node
-     * @param e
      */
     protected void onSourceNodeRollBack(SourceNode node) {
-        log.error(String.format("   Source node [%s] did rollback the transaction", node.getName()));
+        log.error(String.format("   Rollback while replaying consumer node [%s]", node.getName()));
     }
 
     @Override
@@ -202,7 +237,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     @Override
     public double getThroughput() {
-        return 1000 * (nbProcessed + 0.0) / (System.currentTimeMillis() + 1 - startTime);
+        return 1000 * (nbProcessed.get() + 0.0) / (System.currentTimeMillis() + 1 - startTime);
     }
 
     @Override

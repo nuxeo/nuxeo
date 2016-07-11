@@ -24,6 +24,6 @@ import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
  */
 public interface Producer extends TaskRunner {
 
-    public void init(QueuesManager qm);
+    void init(QueuesManager qm);
 
 }

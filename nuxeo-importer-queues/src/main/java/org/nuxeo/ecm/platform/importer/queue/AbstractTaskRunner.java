@@ -16,26 +16,28 @@
  */
 package org.nuxeo.ecm.platform.importer.queue;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * @since 8.3
  */
 public abstract class AbstractTaskRunner implements TaskRunner {
 
-    protected boolean completed = false;
+    protected volatile boolean completed = false;
 
-    protected Exception error;
+    protected volatile Exception error;
 
-    protected long nbProcessed = 0;
+    protected final AtomicLong nbProcessed = new AtomicLong(0);
 
-    protected boolean mustStop;
+    protected volatile boolean mustStop;
 
-    protected boolean canStop;
+    protected volatile boolean canStop;
 
-    protected boolean started = false;
+    protected volatile boolean started = false;
 
 
     protected void incrementProcessed() {
-        nbProcessed++;
+        nbProcessed.incrementAndGet();
     }
 
     @Override
@@ -45,7 +47,7 @@ public abstract class AbstractTaskRunner implements TaskRunner {
 
     @Override
     public boolean isTerminated() {
-        return !started || (completed || getError()!=null);
+        return !started || (completed || getError() != null);
     }
 
     @Override
@@ -55,7 +57,7 @@ public abstract class AbstractTaskRunner implements TaskRunner {
 
     @Override
     public long getNbProcessed() {
-        return nbProcessed;
+        return nbProcessed.get();
     }
 
     @Override
