@@ -1057,6 +1057,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             st.execute(sql);
             countExecute();
         } catch (SQLException e) {
+            checkConcurrentUpdate(e);
             throw new NuxeoException("Failed to update read acls", e);
         } finally {
             try {
