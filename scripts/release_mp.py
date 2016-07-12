@@ -19,7 +19,7 @@ Contributors:
 
 This script manages releasing of Nuxeo Marketplace packages."""
 
-import fnmatch
+import glob
 import optparse
 import os
 import sys
@@ -138,16 +138,16 @@ class ReleaseMP(object):
             self.repo.save_mp_config(self.mp_config)
             if prepared and not upgrade_only:
                 # Upload on Connect test
-                for dirpath, _, filenames in os.walk(mp_repo.basedir):
-                    for name in filenames:
-                        path = os.path.join(dirpath, name)
-                        if (os.path.isfile(path) and
-                            fnmatch.fnmatch(path[len(mp_repo.basedir) + 1:],
-                            self.mp_config.get(marketplace, "mp_to_upload"))):
-                            self.upload(CONNECT_TEST_URL, path, dryrun=dryrun)
-                            self.mp_config.set(marketplace, "uploaded",
-                                               CONNECT_TEST_URL + ": " + path)
-                            self.repo.save_mp_config(self.mp_config)
+                uploaded = []
+                mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
+                for pkg in glob.glob(mp_to_upload):
+                    if os.path.isfile(pkg):
+                        self.upload(CONNECT_TEST_URL, pkg, dryrun=dryrun)
+                        uploaded.append(CONNECT_TEST_URL + ": " + pkg)
+                if uploaded:
+                    self.mp_config.set(marketplace, "uploaded", "\n    ".join(uploaded))
+                    self.repo.save_mp_config(self.mp_config)
+
         os.chdir(cwd)
 
     def release_branch(self, dryrun=False):
@@ -260,16 +260,15 @@ class ReleaseMP(object):
             self.repo.save_mp_config(self.mp_config)
             if performed and not upgrade_only:
                 # Upload on Connect
-                for dirpath, _, filenames in os.walk(mp_repo.basedir):
-                    for name in filenames:
-                        path = os.path.join(dirpath, name)
-                        if (os.path.isfile(path) and
-                            fnmatch.fnmatch(path[len(mp_repo.basedir) + 1:],
-                            self.mp_config.get(marketplace, "mp_to_upload"))):
-                            self.upload(CONNECT_PROD_URL, path, dryrun=dryrun)
-                            self.mp_config.set(marketplace, "uploaded",
-                                               CONNECT_PROD_URL + ": " + path)
-                            self.repo.save_mp_config(self.mp_config)
+                uploaded = []
+                mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
+                for pkg in glob.glob(mp_to_upload):
+                    if os.path.isfile(pkg):
+                        self.upload(CONNECT_PROD_URL, pkg, dryrun=dryrun)
+                        uploaded.append(CONNECT_PROD_URL + ": " + pkg)
+                if uploaded:
+                    self.mp_config.set(marketplace, "uploaded", "\n    ".join(uploaded))
+                    self.repo.save_mp_config(self.mp_config)
         os.chdir(cwd)
 
     def upload(self, url, mp_file, dryrun=False):
@@ -281,18 +280,6 @@ class ReleaseMP(object):
     def test(self):
         """For current script development purpose."""
         self.prepare(dryrun=True)
-#         cwd = os.getcwd()
-#         self.repo = Repository(os.getcwd(), self.alias)
-#         os.chdir(os.path.join(self.repo.mp_dir, "marketplace-agenda"))
-#         for dirpath, _, filenames in os.walk(os.getcwd()):
-#             for name in filenames:
-#                 path = os.path.join(dirpath, name)
-#                 log(path[len(os.getcwd()):])
-#                 if (os.path.isfile(path) and
-#                     fnmatch.fnmatch(path[len(os.getcwd()) + 1:],
-#                             "marketplace/target/marketplace*.zip")):
-#                     log('self.upload(%s, %s)' % (CONNECT_TEST_URL, path))
-#         os.chdir(cwd)
 
 
 # pylint: disable=R0912,R0914,R0915
