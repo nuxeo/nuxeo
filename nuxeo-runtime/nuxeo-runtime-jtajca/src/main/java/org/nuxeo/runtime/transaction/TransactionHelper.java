@@ -68,6 +68,25 @@ public class TransactionHelper {
     }
 
     /**
+     * Gets the transaction status.
+     *
+     * @return the transaction {@linkplain Status status}, or -1 if there is no transaction manager
+     * @since 8.4
+     * @see Status
+     */
+    public static int getTransactionStatus() {
+        UserTransaction ut = NuxeoContainer.getUserTransaction();
+        if (ut == null) {
+            return -1;
+        }
+        try {
+            return ut.getStatus();
+        } catch (SystemException e) {
+            throw new TransactionRuntimeException("Cannot get transaction status", e);
+        }
+    }
+
+    /**
      * Returns the UserTransaction JNDI binding name.
      * <p>
      * Assumes {@link #lookupUserTransaction} has been called once before.
@@ -110,45 +129,42 @@ public class TransactionHelper {
      * @6.0
      */
     public static boolean isNoTransaction() {
-        try {
-            return lookupUserTransaction().getStatus() == Status.STATUS_NO_TRANSACTION;
-        } catch (NamingException | SystemException cause) {
-            return true;
-        }
+        int status = getTransactionStatus();
+        return status == Status.STATUS_NO_TRANSACTION || status == -1;
     }
 
     /**
      * Checks if the current User Transaction is active.
      */
     public static boolean isTransactionActive() {
-        try {
-            return lookupUserTransaction().getStatus() == Status.STATUS_ACTIVE;
-        } catch (NamingException | SystemException e) {
-            return false;
-        }
+        int status = getTransactionStatus();
+        return status == Status.STATUS_ACTIVE;
     }
 
     /**
      * Checks if the current User Transaction is marked rollback only.
      */
     public static boolean isTransactionMarkedRollback() {
-        try {
-            return lookupUserTransaction().getStatus() == Status.STATUS_MARKED_ROLLBACK;
-        } catch (NamingException | SystemException e) {
-            return false;
-        }
+        int status = getTransactionStatus();
+        return status == Status.STATUS_MARKED_ROLLBACK;
     }
 
     /**
      * Checks if the current User Transaction is active or marked rollback only.
      */
     public static boolean isTransactionActiveOrMarkedRollback() {
-        try {
-            int status = lookupUserTransaction().getStatus();
-            return status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK;
-        } catch (NamingException | SystemException e) {
-            return false;
-        }
+        int status = getTransactionStatus();
+        return status == Status.STATUS_ACTIVE || status == Status.STATUS_MARKED_ROLLBACK;
+    }
+
+    /**
+     * Checks if the current User Transaction is active or preparing.
+     *
+     * @since 8.4
+     */
+    public static boolean isTransactionActiveOrPreparing() {
+        int status = getTransactionStatus();
+        return status == Status.STATUS_ACTIVE || status == Status.STATUS_PREPARING;
     }
 
     /**
@@ -414,8 +430,8 @@ public class TransactionHelper {
     }
 
     public static void registerSynchronization(Synchronization handler) {
-        if (!isTransactionActiveOrMarkedRollback()) {
-            return;
+        if (!isTransactionActiveOrPreparing()) {
+            throw new TransactionRuntimeException("Cannot register Synchronization if transaction is not active");
         }
         try {
             NuxeoContainer.getTransactionManager().getTransaction().registerSynchronization(handler);
