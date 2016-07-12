@@ -20,16 +20,15 @@ Contributors:
 This script manages releasing of Nuxeo Marketplace packages."""
 
 import glob
+import inspect
 import optparse
 import os
 import sys
-import inspect
-from release import Release
 import traceback
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
-from nxutils import ExitException, Repository, assert_git_config, log, \
-    system, DEFAULT_MP_CONF_URL
+from nxutils import ExitException, Repository, assert_git_config, log, system, DEFAULT_MP_CONF_URL
+from release import Release
 from terminalsize import get_terminal_size
 
 
@@ -56,7 +55,7 @@ class ReleaseMP(object):
             cwd = os.path.abspath(os.path.join(cwd, os.pardir))
         else:
             if '__file__' not in locals():
-                __file__ = inspect.getframeinfo(inspect.currentframe())[0]
+                __file__ = inspect.getframeinfo(inspect.currentframe())[0]  # @ReservedAssignment
             cwd = os.path.dirname(os.path.abspath(__file__))
             cwd = os.path.abspath(os.path.join(cwd, os.pardir))
         log("Nuxeo source location: %s" % cwd)
@@ -89,8 +88,7 @@ class ReleaseMP(object):
             log("")
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[%s]" % marketplace)
-                log("[WARN] Skipped '%s' (%s)" % (marketplace,
-                                    self.mp_config.get(marketplace, "skip")))
+                log("[WARN] Skipped '%s' (%s)" % (marketplace, self.mp_config.get(marketplace, "skip")))
                 marketplaces_skipped.append(marketplace)
                 upgrade_only = True
             else:
@@ -103,8 +101,7 @@ class ReleaseMP(object):
                 mp_dir = os.path.join(self.repo.mp_dir, marketplace)
                 if not os.path.isdir(mp_dir):
                     os.chdir(self.repo.mp_dir)
-                    self.repo.git_pull(marketplace,
-                                    self.mp_config.get(marketplace, "branch"))
+                    self.repo.git_pull(marketplace, self.mp_config.get(marketplace, "branch"))
                 else:
                     log("[%s]" % marketplace)
                 os.chdir(mp_dir)
@@ -123,8 +120,7 @@ class ReleaseMP(object):
                                      skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
                                      other_versions=self.mp_config.get(marketplace, "other_versions", None))
                 mp_release.log_summary()
-                mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only,
-                                   dodeploy=True)
+                mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only, dodeploy=True)
                 prepared = True
             except Exception, e:
                 stack = traceback.format_exc()
@@ -161,8 +157,7 @@ class ReleaseMP(object):
             log("")
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[%s]" % marketplace)
-                log("[WARN] Skipped '%s' (%s)" % (marketplace,
-                                    self.mp_config.get(marketplace, "skip")))
+                log("[WARN] Skipped '%s' (%s)" % (marketplace, self.mp_config.get(marketplace, "skip")))
                 marketplaces_skipped.append(marketplace)
                 upgrade_only = True
             else:
@@ -175,8 +170,7 @@ class ReleaseMP(object):
                 mp_dir = os.path.join(self.repo.mp_dir, marketplace)
                 if not os.path.isdir(mp_dir):
                     os.chdir(self.repo.mp_dir)
-                    self.repo.git_pull(marketplace,
-                                    self.mp_config.get(marketplace, "branch"))
+                    self.repo.git_pull(marketplace, self.mp_config.get(marketplace, "branch"))
                 else:
                     log("[%s]" % marketplace)
                 os.chdir(mp_dir)
@@ -219,8 +213,7 @@ class ReleaseMP(object):
         for marketplace in self.get_packages_list():
             log("")
             if self.mp_config.has_option(marketplace, "skip"):
-                log("[WARN] Skipped '%s' (%s)" % (marketplace,
-                                    self.mp_config.get(marketplace, "skip")))
+                log("[WARN] Skipped '%s' (%s)" % (marketplace, self.mp_config.get(marketplace, "skip")))
                 marketplaces_skipped.append(marketplace)
                 upgrade_only = True
             else:
@@ -239,13 +232,10 @@ class ReleaseMP(object):
                 os.chdir(os.path.join(self.repo.mp_dir, marketplace))
                 mp_repo = Repository(os.getcwd(), self.alias)
                 # Perform release
-                (_, branch, tag, next_snapshot, maintenance_version, is_final,
-                 skipTests, skipITs, _, other_versions,
+                (_, branch, tag, next_snapshot, maintenance_version, is_final, skipTests, skipITs, _, other_versions,
                  _, _) = Release.read_release_log(mp_repo.basedir)
-                mp_release = Release(mp_repo, branch, tag, next_snapshot,
-                                     maintenance_version, is_final=is_final,
-                                     skipTests=skipTests, skipITs=skipITs,
-                                     other_versions=other_versions)
+                mp_release = Release(mp_repo, branch, tag, next_snapshot, maintenance_version, is_final=is_final,
+                                     skipTests=skipTests, skipITs=skipITs, other_versions=other_versions)
                 mp_release.perform(dryrun=dryrun, upgrade_only=upgrade_only)
                 performed = True
             except Exception, e:
@@ -273,8 +263,7 @@ class ReleaseMP(object):
 
     def upload(self, url, mp_file, dryrun=False):
         """ Upload the given mp_file on the given Connect URL."""
-        cmd = ("curl -i -n -F package=@%s %s%s"
-               % (mp_file, url, "/site/marketplace/upload?batch=true"))
+        cmd = "curl -i -n -F package=@%s %s%s" % (mp_file, url, "/site/marketplace/upload?batch=true")
         system(cmd, run=(not dryrun))
 
     def test(self):
@@ -292,54 +281,37 @@ def main():
        %prog branch [-r alias] [-m URL] [--rf package] [--dryrun]
        %prog prepare [-r alias] [-m URL] [--rf package] [--dryrun]
        %prog perform [-r alias] [-m URL] [--rf package] [--dryrun]""")
-        description = """Release Nuxeo Marketplace packages.\n
-The first call must provide an URL for the configuration. If set to '' (empty
-string), it defaults to '%s'. You can use a local file URL ('file://').\n
-Then, a 'release.ini' file is generated and will be reused for the next calls.
-For each package, a 'release-$PACKAGE_NAME.log' file is also generated and
-corresponds to the file generated by the release.py script.\n
+        description = """Release Nuxeo Packages.\n
+The first call must provide an URL for the configuration. If set to '' (empty string), it defaults to '%s'. You can use
+a local file URL ('file://').\n
+Then, a 'release.ini' file is generated and will be reused for the next calls. For each package, a
+'release-$PACKAGE_NAME.log' file is also generated and corresponds to the file generated by the release.py script.\n
 The 'release.ini' file contains informations about the release process:\n
 - 'prepared = True' if the prepare task succeeded,\n
 - 'performed = True' if the perform task succeeded,\n
 - 'uploaded = ...' if an upload successfully happened,\n
 - 'skip = Failed!' followed by a stack trace in case of error.\n
-The script can be re-called: it will skip the packages with a skip value and
-skip the prepare (or perform) if 'prepared = True' (or 'performed = True').\n
-Failed uploads are not retried and must be manually done.
-""" % DEFAULT_MP_CONF_URL
-        help_formatter = IndentedHelpFormatterWithNL(
-#                 max_help_position=6,
-                 width=get_terminal_size()[0])
-        parser = optparse.OptionParser(usage=usage, description=description,
-                                       formatter=help_formatter)
-        parser.add_option('-r', action="store", type="string",
-                          dest='remote_alias', default='origin',
-                          help="""The Git alias of remote URL.
-Default: '%default'""")
-        parser.add_option('-m', "--marketplace-conf", action="store",
-                          type="string", dest='marketplace_conf',
-                    default=None,
-                          help="""The Marketplace configuration URL.
-Default: '%default'""")
-        parser.add_option('-i', '--interactive', action="store_true",
-                          dest='interactive', default=False,
-                          help="""Not implemented (TODO NXP-8573). Interactive
-mode. Default: '%default'""")
-        parser.add_option('--rf', '--restart-from', action="store",
-                          dest='restart_from', default=None,
-                          help="""Restart from a package.
- Default: '%default'""")
-        parser.add_option('--dryrun', action="store_true",
-                          dest='dryrun', default=False,
+The script can be re-called: it will skip the packages with a skip value and skip the prepare (or perform) if
+'prepared = True' (or 'performed = True').\n
+Failed uploads are not retried and must be manually done.""" % DEFAULT_MP_CONF_URL
+        help_formatter = IndentedHelpFormatterWithNL(max_help_position=7, width=get_terminal_size()[0])
+        parser = optparse.OptionParser(usage=usage, description=description, formatter=help_formatter)
+        parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin',
+                          help="""The Git alias of remote URL. Default: '%default'""")
+        parser.add_option('-m', "--marketplace-conf", action="store", type="string", dest='marketplace_conf',
+                          default=None, help="""The Marketplace configuration URL. Default: '%default'""")
+        parser.add_option('-i', '--interactive', action="store_true", dest='interactive', default=False,
+                          help="""Not implemented (TODO NXP-8573). Interactive mode. Default: '%default'""")
+        parser.add_option('--rf', '--restart-from', action="store", dest='restart_from', default=None,
+                          help="""Restart from a package. Default: '%default'""")
+        parser.add_option('--dryrun', action="store_true", dest='dryrun', default=False,
                           help="""Dry run mode. Default: '%default'""")
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
         elif len(args) > 1:
-            raise ExitException(1, "'command' must be a single argument. "
-                                "See usage with '-h'.")
-        full_release = ReleaseMP(options.remote_alias, options.restart_from,
-                                 options.marketplace_conf)
+            raise ExitException(1, "'command' must be a single argument. See usage with '-h'.")
+        full_release = ReleaseMP(options.remote_alias, options.restart_from, options.marketplace_conf)
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "clone":
