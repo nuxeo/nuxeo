@@ -103,13 +103,61 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.RemoveFacet"/>
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.document.AddItemToListProperty"/>
+        class="org.nuxeo.ecm.automation.core.operations.document.AddItemToListProperty">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.document.RemoveItemFromListProperty"/>
+        class="org.nuxeo.ecm.automation.core.operations.document.RemoveItemFromListProperty">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.CopySchema"/>
     <operation
-        class="org.nuxeo.ecm.automation.core.operations.document.ResetSchema"/>
+        class="org.nuxeo.ecm.automation.core.operations.document.ResetSchema">
+      <widgets>
+        <widget name="xpath" type="codearea">
+          <labels>
+            <label mode="any">XPath</label>
+          </labels>
+          <properties mode="any">
+            <property name="language">xpath</property>
+            <property name="width">100%</property>
+            <property name="height">100%</property>
+          </properties>
+          <fields>
+            <field>xpath</field>
+          </fields>
+        </widget>
+      </widgets>
+    </operation>
     <operation
         class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty">
       <widgets>
