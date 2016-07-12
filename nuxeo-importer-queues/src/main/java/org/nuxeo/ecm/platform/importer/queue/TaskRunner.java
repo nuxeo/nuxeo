@@ -21,16 +21,16 @@ package org.nuxeo.ecm.platform.importer.queue;
  */
 public interface TaskRunner extends Runnable {
 
-    public boolean isCompleted();
+    boolean isCompleted();
 
-    public boolean isTerminated();
+    boolean isTerminated();
 
-    public Exception getError();
+    Exception getError();
 
-    public long getNbProcessed();
+    long getNbProcessed();
 
-    public void mustStop();
+    void mustStop();
 
-    public void canStop();
+    void canStop();
 
 }

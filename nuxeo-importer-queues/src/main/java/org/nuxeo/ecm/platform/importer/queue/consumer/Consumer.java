@@ -18,17 +18,18 @@ package org.nuxeo.ecm.platform.importer.queue.consumer;
 
 import org.nuxeo.ecm.platform.importer.queue.TaskRunner;
 
+
 /**
  * @since 8.3
  */
 public interface Consumer extends TaskRunner {
 
-    public double getImmediateThroughput();
+    double getImmediateThroughput();
 
-    public double getThroughput();
+    double getThroughput();
 
-    public double getNbDocsCreated();
+    double getNbDocsCreated();
 
-    public ImportStat getImportStat();
+    ImportStat getImportStat();
 
 }

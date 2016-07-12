@@ -23,7 +23,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public interface CallBackProducer extends Producer {
 
-    public void terminate();
+    void terminate();
 
-    public void submit(SourceNode node) throws Exception;
+    void submit(SourceNode node) throws Exception;
 }

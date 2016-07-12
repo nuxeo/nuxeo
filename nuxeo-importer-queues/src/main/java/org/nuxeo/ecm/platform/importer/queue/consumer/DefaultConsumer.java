@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DefaultConsumer extends AbstractConsumer {
 
-    protected FileManager fileManager;
+    protected final FileManager fileManager;
 
     protected final String rootPath;
 
@@ -88,7 +87,7 @@ public class DefaultConsumer extends AbstractConsumer {
     }
 
     protected DocumentModel setDocumentProperties(CoreSession session, Map<String, Serializable> properties,
-            DocumentModel doc) throws ClientException {
+            DocumentModel doc) {
         if (properties != null) {
 
             for (Map.Entry<String, Serializable> entry : properties.entrySet()) {

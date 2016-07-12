@@ -27,6 +27,6 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public interface ConsumerFactory {
 
-    public Consumer createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
+    Consumer createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
             BlockingQueue<SourceNode> blockingQueue);
 }

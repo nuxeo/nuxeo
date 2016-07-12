@@ -9,11 +9,9 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 public class BuggySourceNode implements SourceNode {
 
-    private int index;
-
-    private boolean txBuggy;
-
-    private boolean exceptionBuggy;
+    private final int index;
+    private final boolean txBuggy;
+    private final boolean exceptionBuggy;
 
     public BuggySourceNode(int index, boolean txBuggy, boolean exceptionBuggy) {
         this.index = index;

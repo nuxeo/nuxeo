@@ -1,5 +1,6 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -13,12 +14,24 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class BuggyConsumerFactory implements ConsumerFactory {
 
+    private final int consumerDelayMs;
+
+    public BuggyConsumerFactory() {
+        this(0);
+    }
+
+    public BuggyConsumerFactory(int consumerDelayMs) {
+        this.consumerDelayMs = consumerDelayMs;
+    }
+
     class BuggyConsumer extends AbstractConsumer {
+        private final int delayMs;
         int docs = 0;
 
-        public BuggyConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue) {
+        public BuggyConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue,
+                             int delayMs) {
             super(log, root, batchSize, queue);
-
+            this.delayMs = delayMs;
         }
 
         @Override
@@ -26,21 +39,24 @@ public class BuggyConsumerFactory implements ConsumerFactory {
             return docs;
         }
 
-
         @Override
         protected void process(CoreSession session, SourceNode sn) throws Exception {
             if (sn instanceof BuggySourceNode) {
                 BuggySourceNode bsn = (BuggySourceNode) sn;
+                DocumentModel doc = session.createDocumentModel("/", bsn.getName(), "File");
+                doc = session.createDocument(doc);
+                if (delayMs > 0) {
+                    Thread.sleep((new Random()).nextInt(delayMs));
+                }
                 if (bsn.isTransactionBuggy()) {
                     TransactionHelper.setTransactionRollbackOnly();
-
+                    // Thread.sleep(500);
                 } else {
-                    DocumentModel doc = session.createDocumentModel("/", bsn.getName(), "File");
-                    doc = session.createDocument(doc);
                     docs++;
                 }
                 if (bsn.isExceptionBuggy()) {
-                    throw new Exception("This is a buggy exception !");
+                    // Thread.sleep(1000);
+                    throw new Exception("This is a buggy exception during consumer processing !");
                 }
 
             }
@@ -51,7 +67,7 @@ public class BuggyConsumerFactory implements ConsumerFactory {
     @Override
     public Consumer createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
             BlockingQueue<SourceNode> queue) {
-        return new BuggyConsumer(log, root, batchSize, queue);
+        return new BuggyConsumer(log, root, batchSize, queue, consumerDelayMs);
     }
 
 }

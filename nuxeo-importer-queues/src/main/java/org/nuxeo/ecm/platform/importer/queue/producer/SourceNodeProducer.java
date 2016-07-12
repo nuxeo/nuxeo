@@ -46,9 +46,10 @@ public class SourceNodeProducer extends AbstractProducer {
     }
 
     protected void submit(SourceNode node) throws Exception {
-        if (node != null) {
-            dispatch(node);
+        if (node == null) {
+            return;
         }
+        dispatch(node);
         List<SourceNode> children = node.getChildren();
         if (children != null) {
             for (SourceNode child : children) {

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -30,16 +29,17 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public abstract class AbstractQueuesManager implements QueuesManager {
 
-    List<BlockingQueue<SourceNode>> queues = new ArrayList<BlockingQueue<SourceNode>>();
+    final List<BlockingQueue<SourceNode>> queues;
 
-    protected int maxQueueSize = 1000;
+    protected final int maxQueueSize;
 
-    protected ImporterLogger log = null;
+    protected final ImporterLogger log;
 
     public AbstractQueuesManager(ImporterLogger logger, int queuesNb, int maxQueueSize) {
         this.maxQueueSize = maxQueueSize;
+        queues = new ArrayList<BlockingQueue<SourceNode>>(queuesNb);
         for (int i = 0; i < queuesNb; i++) {
-            queues.add(new ArrayBlockingQueue<SourceNode>(maxQueueSize));
+            queues.add(new ArrayBlockingQueue<>(maxQueueSize));
         }
         log = logger;
     }
@@ -57,14 +57,7 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     @Override
     public int dispatch(SourceNode bh) throws InterruptedException {
         int idx = getTargetQueue(bh, queues.size());
-
-        boolean accepted = getQueue(idx).offer(bh, 1, TimeUnit.SECONDS);
-
-        if (!accepted) {
-            log.warn("Timeout while waiting for an available queue");
-            idx = getTargetQueue(bh, queues.size());
-            getQueue(idx).offer(bh, 5, TimeUnit.SECONDS);
-        }
+        getQueue(idx).put(bh);
         return idx;
     }
 
