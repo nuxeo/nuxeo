@@ -209,7 +209,7 @@ public class DocumentScriptingWrapper extends HashMap<String, Object> {
      * Used by nashorn for native javascript array/date.
      */
     public void setPropertyValue(String key, ScriptObjectMirror value) {
-        doc.setPropertyValue(key, (Serializable) MarshalingHelper.unwrap(value));
+        doc.setPropertyValue(key, (Serializable) ScriptObjectMirrors.unwrap(value));
     }
 
     public String getVersionLabel() {
@@ -280,7 +280,7 @@ public class DocumentScriptingWrapper extends HashMap<String, Object> {
     @Override
     public Object put(String key, Object value) {
         if (value instanceof ScriptObjectMirror) {
-            return put(key, (Serializable) MarshalingHelper.unwrap((ScriptObjectMirror) value));
+            return put(key, (Serializable) ScriptObjectMirrors.unwrap((ScriptObjectMirror) value));
         }
         return put(key, (Serializable) value);
     }
@@ -305,6 +305,11 @@ public class DocumentScriptingWrapper extends HashMap<String, Object> {
     @Override
     public void clear() {
         throw new UnsupportedOperationException("Read Only Map.");
+    }
+
+    @Override
+    public String toString() {
+        return doc.toString();
     }
 
 }

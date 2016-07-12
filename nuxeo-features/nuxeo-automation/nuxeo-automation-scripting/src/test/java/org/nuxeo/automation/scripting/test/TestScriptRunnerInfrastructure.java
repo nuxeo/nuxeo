@@ -52,6 +52,8 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -507,6 +509,67 @@ public class TestScriptRunnerInfrastructure {
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
         root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray", null);
+        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+    }
+
+    /*
+     * NXP-19176
+     */
+    @Test
+    public void handleBlobListAsInput() throws IOException, OperationException {
+        // Init parameters
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        Blob fb = Blobs.createBlob(fieldAsJsonFile);
+        fb.setMimeType("image/jpeg");
+
+        DocumentModel doc = session.createDocumentModel("/", "docWithBlobs", "File");
+        doc = session.createDocument(doc);
+        DocumentHelper.addBlob(doc.getProperty("files:files"), fb);
+        DocumentHelper.addBlob(doc.getProperty("files:files"), fb);
+        session.saveDocument(doc);
+
+        OperationContext ctx = new OperationContext(session);
+        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobList", null);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        // We added two blobs to context
+        BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
+        assertNotNull(blobs);
+        assertEquals(2, blobs.size());
+    }
+
+    /*
+     * NXP-19176
+     */
+    @Test
+    public void handleBlobArrayAsInput() throws IOException, OperationException {
+        // Init parameters
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        Blob fb = Blobs.createBlob(fieldAsJsonFile);
+        fb.setMimeType("image/jpeg");
+
+        DocumentModel doc = session.createDocumentModel("/", "docWithBlobs", "File");
+        doc = session.createDocument(doc);
+        DocumentHelper.addBlob(doc.getProperty("files:files"), fb);
+        DocumentHelper.addBlob(doc.getProperty("files:files"), fb);
+        session.saveDocument(doc);
+
+        OperationContext ctx = new OperationContext(session);
+        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobArray", null);
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        // We added two blobs to context
+        BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
+        assertNotNull(blobs);
+        assertEquals(2, blobs.size());
+    }
+
+    @Test
+    public void testArrayObjectParametersOperation() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        ctx.setInput(root);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestArrayObjectProperties", null);
         assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
     }
 

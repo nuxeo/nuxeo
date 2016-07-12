@@ -45,8 +45,6 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
@@ -99,19 +97,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     protected ScriptOperationContext wrapContext(ScriptOperationContext ctx) {
-        for (String entryId : ctx.keySet()) {
-            Object entry = ctx.get(entryId);
-            if (entry instanceof DocumentModel) {
-                ctx.put(entryId, new DocumentScriptingWrapper(ctx.getCoreSession(), (DocumentModel) entry));
-            }
-            if (entry instanceof DocumentModelList) {
-                List<DocumentScriptingWrapper> docs = new ArrayList<>();
-                for (DocumentModel doc : (DocumentModelList) entry) {
-                    docs.add(new DocumentScriptingWrapper(ctx.getCoreSession(), doc));
-                }
-                ctx.put(entryId, docs);
-            }
-        }
+        ctx.replaceAll((key, value) -> WrapperHelper.wrap(value, ctx.getCoreSession()));
         return ctx;
     }
 

@@ -38,7 +38,7 @@ import org.junit.Test;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
-public class TestMarshalingHelper {
+public class TestScriptObjectMirrors {
 
     private ScriptEngine engine;
 
@@ -51,7 +51,7 @@ public class TestMarshalingHelper {
     public void testUnwrapList() throws ScriptException, NoSuchMethodException {
         engine.eval("function test() { return ['science', 'society']; }");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
-        List<Object> list = MarshalingHelper.unwrapList(object);
+        List<Object> list = ScriptObjectMirrors.unwrapList(object);
         assertEquals("science", list.get(0));
         assertEquals("society", list.get(1));
     }
@@ -61,7 +61,7 @@ public class TestMarshalingHelper {
         engine.eval("function test() { return new Date(); };");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
         try {
-            MarshalingHelper.unwrapList(object);
+            ScriptObjectMirrors.unwrapList(object);
             fail("unwrapList should throw an exception.");
         } catch (IllegalArgumentException e) {
             assertEquals("JavaScript input is not an Array!", e.getMessage());
@@ -73,7 +73,7 @@ public class TestMarshalingHelper {
     public void testUnwrapMap() throws ScriptException, NoSuchMethodException {
         engine.eval("function test() { return {'key1':'value', 'key2': {'subKey': 'subValue'}}; }");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
-        Map<String, Object> map = MarshalingHelper.unwrapMap(object);
+        Map<String, Object> map = ScriptObjectMirrors.unwrapMap(object);
         assertEquals("value", map.get("key1"));
         assertNotNull(map.get("key2"));
         assertEquals("subValue", ((Map<String, Object>) map.get("key2")).get("subKey"));
@@ -84,7 +84,7 @@ public class TestMarshalingHelper {
         engine.eval("function test() { return []; };");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
         try {
-            MarshalingHelper.unwrapMap(object);
+            ScriptObjectMirrors.unwrapMap(object);
             fail("unwrapMap should throw an exception.");
         } catch (IllegalArgumentException e) {
             assertEquals("JavaScript input is not an Object!", e.getMessage());
@@ -95,7 +95,7 @@ public class TestMarshalingHelper {
     public void testUnwrapDate() throws ScriptException, NoSuchMethodException {
         engine.eval("function test() { return new Date(0); }");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
-        Calendar cal = MarshalingHelper.unwrapDate(object);
+        Calendar cal = ScriptObjectMirrors.unwrapDate(object);
         Calendar expectedCal = Calendar.getInstance();
         expectedCal.setTimeInMillis(0);
         assertEquals(expectedCal, cal);
@@ -106,7 +106,7 @@ public class TestMarshalingHelper {
         engine.eval("function test() { return []; };");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
         try {
-            MarshalingHelper.unwrapDate(object);
+            ScriptObjectMirrors.unwrapDate(object);
             fail("unwrapDate should throw an exception.");
         } catch (IllegalArgumentException e) {
             assertEquals("JavaScript input is not a Date!", e.getMessage());
@@ -118,7 +118,7 @@ public class TestMarshalingHelper {
     public void testUnwrapWithList() throws ScriptException, NoSuchMethodException {
         engine.eval("function test() { return ['science']; }");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
-        Object obj = MarshalingHelper.unwrap(object);
+        Object obj = ScriptObjectMirrors.unwrap(object);
         assertTrue(obj instanceof List);
         assertEquals("science", ((List<Object>) obj).get(0));
     }
@@ -128,7 +128,7 @@ public class TestMarshalingHelper {
     public void testUnwrapWithMap() throws ScriptException, NoSuchMethodException {
         engine.eval("function test() { return {'key1':'value'}; }");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
-        Object obj = MarshalingHelper.unwrap(object);
+        Object obj = ScriptObjectMirrors.unwrap(object);
         assertTrue(obj instanceof Map);
         // Needed by DocumentScriptingWrapper#setPropertyValue
         assertTrue(obj instanceof Serializable);
@@ -139,7 +139,7 @@ public class TestMarshalingHelper {
     public void testUnwrapWithDate() throws ScriptException, NoSuchMethodException {
         engine.eval("function test() { return new Date(0); }");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
-        Object obj = MarshalingHelper.unwrap(object);
+        Object obj = ScriptObjectMirrors.unwrap(object);
         assertTrue(obj instanceof Calendar);
         Calendar expectedCal = Calendar.getInstance();
         expectedCal.setTimeInMillis(0);
@@ -151,7 +151,7 @@ public class TestMarshalingHelper {
         engine.eval("function test() { return RegExp(); };");
         ScriptObjectMirror object = (ScriptObjectMirror) ((Invocable) engine).invokeFunction("test");
         try {
-            MarshalingHelper.unwrap(object);
+            ScriptObjectMirrors.unwrap(object);
             fail("unwrap should throw an exception.");
         } catch (UnsupportedOperationException e) {
             assertEquals("RegExp is not supported!", e.getMessage());

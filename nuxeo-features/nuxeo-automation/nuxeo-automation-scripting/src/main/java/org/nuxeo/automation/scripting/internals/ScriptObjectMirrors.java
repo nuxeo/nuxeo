@@ -29,13 +29,13 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 /**
  * @since 7.2
  */
-public class MarshalingHelper {
+public class ScriptObjectMirrors {
 
     private static final String JAVASCRIPT_MAP_CLASS_TYPE = "Object";
 
     private static final String JAVASCRIPT_DATE_CLASS_TYPE = "Date";
 
-    private MarshalingHelper() {
+    private ScriptObjectMirrors() {
         // empty
     }
 

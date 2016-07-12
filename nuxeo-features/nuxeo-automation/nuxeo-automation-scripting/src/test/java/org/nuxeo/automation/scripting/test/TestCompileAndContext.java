@@ -38,8 +38,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.MarshalingHelper;
+import org.nuxeo.automation.scripting.internals.ScriptObjectMirrors;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -58,6 +56,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
  * @since 7.2
@@ -197,7 +197,7 @@ public class TestCompileAndContext {
         public Object callMe(ScriptObjectMirror params) {
 
             @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) MarshalingHelper.unwrap(params);
+            Map<String, Object> map = (Map<String, Object>) ScriptObjectMirrors.unwrap(params);
 
             Integer p1 = (Integer) map.get("p1");
             String p2 = (String) map.get("p2");
@@ -227,7 +227,7 @@ public class TestCompileAndContext {
             nested2.put("b", "from java");
             data.put("p4", nested2);
 
-            return MarshalingHelper.wrap(data);
+            return ScriptObjectMirrors.wrap(data);
         }
 
     }

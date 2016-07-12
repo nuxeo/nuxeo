@@ -457,6 +457,67 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestInputBlobList">
+      <inputType>void</inputType>
+      <outputType>Blobs</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/docWithBlobs"
+            });
+
+            var blobs = Document.GetBlobs(root, {});
+
+            Context.PushBlobList(blobs, {});
+
+            return blobs;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestInputBlobArray">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+
+            var root = Repository.GetDocument(null, {
+                "value" : "/docWithBlobs"
+            });
+
+            var blobList = Document.GetBlobs(root, {});
+            var blobs = [];
+            blobs.push(blobList.get(0));
+            blobs.push(blobList.get(1));
+
+            Context.PushBlobList(blobs, {});
+
+            return blobs;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestArrayObjectProperties">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          var propertyName = "dc:subjects";
+          var props = {};
+          var subjects = [];
+          subjects.push("sciences");
+          subjects.push("society");
+          props[propertyName] = subjects;
+          Document.Update(input, { 'properties': props, 'save': true });
+          return input;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
