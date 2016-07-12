@@ -72,10 +72,42 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     @Override
     public void run() {
-
         started = true;
         startTime = System.currentTimeMillis();
         lastCheckTime = startTime;
+        try {
+            runImport();
+        } catch (Exception e) {
+            log.error("Unexpected End of consumer after " + getNbProcessed() + " nodes.", e);
+            ExceptionUtils.checkInterrupt(e);
+            error = e;
+            runDrainer();
+        } finally {
+            completed = true;
+            started = false;
+        }
+    }
+
+    protected void runDrainer() {
+        // consumer is broken but we drain the queue to prevent blocking the producer
+        log.error("Consumer is broken, draining the queue to rejected");
+        do {
+            try {
+                SourceNode src = queue.poll(1, TimeUnit.SECONDS);
+                if (src == null && canStop) {
+                    log.info("End of broken consumer, processed node: " + getNbProcessed());
+                    break;
+                }
+                log.error("Consumer is broken reject node: " + src.getName());
+                onSourceNodeException(src, error);
+            } catch (InterruptedException e) {
+                log.error("Interrupted exception received, stopping consumer");
+                break;
+            }
+        } while(true);
+    }
+
+    protected void runImport() {
 
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(repositoryName, originatingUsername) {
             @Override
@@ -109,6 +141,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                     commitIfNeededOrReplayBatch(src);
                 }
                 commitOrReplayBatch();
+
             }
 
             private void commitIfNeededOrReplayBatch(SourceNode lastSrc) {
@@ -134,16 +167,8 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
             // This is needed to acquire a session
             startTransaction();
         }
-        try {
-            runner.runUnrestricted();
-        } catch (Exception e) {
-            log.error("Unexpected End of consumer after " + getNbProcessed() + " nodes.", e);
-            ExceptionUtils.checkInterrupt(e);
-            error = e;
-        } finally {
-            completed = true;
-            started = false;
-        }
+        runner.runUnrestricted();
+
     }
 
     protected abstract void process(CoreSession session, SourceNode bh) throws Exception;
@@ -218,7 +243,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param e
      */
     protected void onSourceNodeException(SourceNode node, Exception e) {
-        log.error(String.format("   Unable to import node [%s]", node.getName()), e);
+        log.error(String.format("Unable to import node [%s]", node.getName()), e);
     }
 
     /**
@@ -227,7 +252,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @param node
      */
     protected void onSourceNodeRollBack(SourceNode node) {
-        log.error(String.format("   Rollback while replaying consumer node [%s]", node.getName()));
+        log.error(String.format("Rollback while replaying consumer node [%s]", node.getName()));
     }
 
     @Override

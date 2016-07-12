@@ -48,11 +48,15 @@ public class QueueImporter {
 
     protected long unprocessedNodesConsumer = 0L;
 
-    protected final ImportStat importStat = new ImportStat();
-
     protected long nbDocsCreated = 0L;
 
+    protected volatile boolean isRunning = true;
+
+    protected final ImportStat importStat = new ImportStat();
+
     protected final List<ImporterFilter> filters = new ArrayList<>();
+
+    protected List<Thread> consumers = new ArrayList<>();
 
     public QueueImporter(ImporterLogger log) {
         this.log = log;
@@ -61,6 +65,7 @@ public class QueueImporter {
     public void importDocuments(Producer producer, QueuesManager manager, String importPath, String repositoryName,
                                 int batchSize, ConsumerFactory factory) {
         log.info("importer: Starting import process");
+        isRunning = true;
         Exception finalException = null;
         DateTime importStarted = new DateTime();
 
@@ -68,7 +73,6 @@ public class QueueImporter {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)){
             producer.init(manager);
             DocumentModel root = session.getDocument(new PathRef(importPath));
-
             startProducerThread(producer);
             List<Consumer> consumers = startConsumerPool(manager, root, batchSize, factory);
             finalException = waitForProducer(producer);
@@ -82,10 +86,11 @@ public class QueueImporter {
             finalException = e;
         } finally {
             disableFilters(finalException);
+            isRunning = false;
         }
 
         DateTime importFinished = new DateTime();
-        log.info(String.format("import: End of process: producer send %d docs, consumer receive %d docs, creating %d docs with retry in %s mn, rate %.2f doc/s.",
+        log.info(String.format("import: End of process: producer send %d docs, consumer receive %d docs, creating %d docs (include retries) in %s mn, rate %.2f doc/s.",
                 producer.getNbProcessed(), processedNodesConsumer, nbDocsCreated,
                 Minutes.minutesBetween(importStarted, importFinished).getMinutes(),
                 processedNodesConsumer/(float) Seconds.secondsBetween(importStarted, importFinished).getSeconds()));
@@ -242,6 +247,10 @@ public class QueueImporter {
             filter.handleAfterImport(finalException);
         }
 
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
 }
