@@ -106,6 +106,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
             if (log.isDebugEnabled()) {
                 log.debug("Reconnecting CoreSession: " + sessionId);
             }
+            if (TransactionHelper.isTransactionMarkedRollback()) {
+                throw new NuxeoException("Cannot reconnect a CoreSession when transaction is marked rollback-only");
+            }
             si = createSession();
         }
         return si.session;

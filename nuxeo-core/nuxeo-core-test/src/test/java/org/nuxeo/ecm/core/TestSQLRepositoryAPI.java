@@ -72,6 +72,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.LockException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -4001,6 +4002,21 @@ public class TestSQLRepositoryAPI {
         // still just one file
         docs = session.query("SELECT * FROM File");
         assertEquals(1, docs.size());
+    }
+
+    @Test
+    public void testRollback4() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        // set rollback-only
+        TransactionHelper.setTransactionRollbackOnly();
+        // then use the session (first use in this transaction, it will be reconnected)
+        try {
+            session.getDocument(new PathRef("/"));
+            fail("should not allow use of session when marked rollback-only");
+        } catch (NuxeoException e) {
+            assertEquals("Cannot reconnect a CoreSession when transaction is marked rollback-only", e.getMessage());
+        }
     }
 
     @Test
