@@ -7,12 +7,17 @@ This module implements a single producer, multi consumers importer pattern.
 
 A producer generates source nodes that are dispatched into differents queues.
 
-Each queue has a consumer that reads source nodes and create Nuxeo documents, performing commit by batch.
+Each queue has a consumer thread that reads source nodes and create Nuxeo documents, performing commit by batch.
 
 In case of error the consumer rollback and replay the batch of nodes one by one to isolate a potential invalide node.
 
-The queues are bounded, so when a queue is full the producer will wait for the consumer before continuing its processing.
-This means that to work efficiently the dispatch should distribute equaly the nodes between queues.
+Nodes that can not be consumed are marked as rejected. 
+
+The queues are bounded, so when a queue is full the producer will wait for its consumer before continuing its processing.
+This means that to work efficiently:
+- the dispatch should distribute as equaly as possible the nodes between queues
+- a consumer should never hang (use timeouts when using webservices)
+- the queue length should be long enough
 
 When a consumer get an unexpeced error it stops processing nodes but it drains the queue to rejected nodes. This prevents to
 block the producer.
