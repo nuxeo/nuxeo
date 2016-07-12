@@ -67,7 +67,10 @@ public class LocalSession extends AbstractSession implements Synchronization {
     private final Set<SessionInfo> allSessions = Collections.newSetFromMap(new ConcurrentHashMap<SessionInfo, Boolean>());
 
     public LocalSession(String repositoryName, NuxeoPrincipal principal) {
-        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+        if (TransactionHelper.isTransactionMarkedRollback()) {
+            throw new NuxeoException("Cannot create a CoreSession when transaction is marked rollback-only");
+        }
+        if (!TransactionHelper.isTransactionActive()) {
             throw new NuxeoException("Cannot create a CoreSession outside a transaction");
         }
         this.repositoryName = repositoryName;

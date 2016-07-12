@@ -4020,6 +4020,20 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testRollback5() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        // set rollback-only
+        TransactionHelper.setTransactionRollbackOnly();
+        // then create a session
+        try (CoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+            fail("should not allow creation of session when marked rollback-only");
+        } catch (NuxeoException e) {
+            assertEquals("Cannot create a CoreSession when transaction is marked rollback-only", e.getMessage());
+        }
+    }
+
+    @Test
     @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
     public void testBinaryGC() throws Exception {
         // GC binaries from previous tests
