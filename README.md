@@ -1,10 +1,9 @@
 
 | Nuxeo QA Job | Status | 
 |-----|--------|
-| Build & Unit tests | [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=nuxeo-master)](http://qa.nuxeo.org/jenkins/job/nuxeo-master)|
-| Selenium functional testing | [![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=FT-nuxeo-master-selenium-cap-tomcat)](http://qa.nuxeo.org/jenkins/job/FT-nuxeo-master-selenium-cap-tomcat)
-| WebDrive functional testing | [![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=FT-nuxeo-master-webdriver-cap-tomcat)](http://qa.nuxeo.org/jenkins/job/FT-nuxeo-master-webdriver-cap-tomcat)
-|Funkload tests with multi-DB |[![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=FT-nuxeo-master-funkload-cap-tomcat-multidb)](http://qa.nuxeo.org/jenkins/job/FT-nuxeo-master-funkload-cap-tomcat-multidb)
+| Build & Unit tests | [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/nuxeo-master)](https://qa.nuxeo.org/jenkins/job/master/job/nuxeo-master)|
+| WebDriver functional testing | [![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/FT-nuxeo-master-webdriver-cap-tomcat)](https://qa.nuxeo.org/jenkins/job/master/job/FT-nuxeo-master-webdriver-cap-tomcat)
+|Funkload tests with multi-DB |[![Test Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/FT-nuxeo-master-funkload-cap-tomcat-multidb)](https://qa.nuxeo.org/jenkins/job/master/job/FT-nuxeo-master-funkload-cap-tomcat-multidb)
 
 
 # About the Nuxeo Platform
@@ -56,7 +55,7 @@ Building the Nuxeo Platform requires the following tools:
 
 # QA
 
-Each module includes unit and integration tests. Functional tests are available in nuxeo-distribution and for each addon Marketplace module.
+Each module includes unit and integration tests. Functional tests are available in nuxeo-distribution and for each addon package module.
 
 We also provide some tooling for tests:
 
