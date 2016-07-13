@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.importer.queue.manager.RandomQueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -46,7 +45,7 @@ import static org.mockito.Mockito.mock;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestReplay {
+public class TestBuggyProducer {
 
     protected static final Log log = LogFactory.getLog(TestImporter.class);
 
@@ -54,24 +53,7 @@ public class TestReplay {
     CoreSession session;
 
     @Test
-    @Ignore("NXP-200060 require rollback")
-    public void shouldImportAllNonBuggyNodes() throws InterruptedException {
-        importWithBuggyNodes(0, 0);
-    }
-
-    @Test
-    @Ignore("NXP-200060 require rollback")
-    public void shouldImportAllNonBuggyNodesWithSlowConsumer() throws InterruptedException {
-        importWithBuggyNodes(0, 100);
-    }
-
-    @Test
-    @Ignore("NXP-200060 require rollback")
-    public void shouldImportAllNonBuggyNodesWithSlowProducer() throws InterruptedException {
-        importWithBuggyNodes(100, 0);
-    }
-
-    private void importWithBuggyNodes(int producerDelayMs, int consumerDelayMs) {
+    public void shouldStopOnProducerError()  {
         ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
         // ImporterLogger logger = new BufferredLogger(log);
@@ -80,17 +62,16 @@ public class TestReplay {
         importer.addFilter(filter);
         RandomQueuesManager qm = new RandomQueuesManager(logger, 5, 42);
 
-        // Given a producer that generate some buggy nodes.
-        // index-0, index-30, index-50, index-60 and index-90 should not be created
-        Producer producer = new BuggyNodeProducer(logger, 100, 30, 50, producerDelayMs, 0);
-        ConsumerFactory fact = new BuggyConsumerFactory(consumerDelayMs);
+        // Given a producer that fail at node 20
+        Producer producer = new BuggyNodeProducer(logger, 100, 0, 0, 0, 80);
+        ConsumerFactory fact = new BuggyConsumerFactory(100);
 
-        // When the importer launches the import
+        // When consumer are slow
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
 
         // Then only buggy nodes should'nt be imported.
         DocumentModelList docs = session.query("SELECT * FROM File");
-        int expected = 95;
+        int expected = 80;
         if (expected != docs.size()) {
             for (DocumentModel doc : docs) {
                 System.out.println(doc.getName());
@@ -99,7 +80,5 @@ public class TestReplay {
         assertEquals("Count of documents that should have been created after import", expected, docs.size());
         // verify(logger, times(20)).error(anyString());
     }
-
-
 
 }

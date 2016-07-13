@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+
 /**
  * @since 8.3
  */
@@ -50,13 +51,15 @@ public class QueueImporter {
 
     protected long nbDocsCreated = 0L;
 
-    protected volatile boolean isRunning = true;
+    protected volatile boolean isRunning = false;
 
     protected final ImportStat importStat = new ImportStat();
 
     protected final List<ImporterFilter> filters = new ArrayList<>();
 
-    protected List<Thread> consumers = new ArrayList<>();
+    protected final List<Thread> consumerThreads = new ArrayList<>();
+
+    protected Thread producerThread;
 
     public QueueImporter(ImporterLogger log) {
         this.log = log;
@@ -105,7 +108,9 @@ public class QueueImporter {
                 unprocessedNodesConsumer += queue.size();
                 do {
                     SourceNode node = queue.poll();
-                    log.error("Unable to import " + node.getName() + " by consumer " +  i);
+                    if (node != null) {
+                        log.error("Unable to import " + node.getName() + " by consumer " + i);
+                    }
                 } while (!queue.isEmpty());
             }
         }
@@ -147,6 +152,18 @@ public class QueueImporter {
                 }
             }
         }
+        log.info("importer: All consumers has terminated their work.");
+        for (Thread thread: consumerThreads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                log.error("importer: Got an InterruptedException", e);
+                ExceptionUtils.checkInterrupt(e);
+            }
+        }
+        log.info("importer: All consumers threads terminated");
+        consumerThreads.clear();
+
         int processed = 0;
         int i = 0;
         for (Consumer consumer : consumers) {
@@ -154,6 +171,7 @@ public class QueueImporter {
             i += 1;
         }
         log.info("importer: " + i +  " consumers terminated, processed: " + processed );
+
         return ret;
     }
 
@@ -164,13 +182,17 @@ public class QueueImporter {
     protected Exception waitForProducer(Producer producer) {
         Exception ret = null;
         try {
-            while (!producer.isTerminated()) {
+            while (producerThread.isAlive() && !producer.isTerminated()) {
                 Thread.sleep(100);
             }
+            log.info("importer: producer terminated its work");
+            producerThread.join();
+            log.info("importer: producer thread terminated");
+            producerThread = null;
         } catch (InterruptedException e) {
             log.error("importer: Got an InterruptedException", e);
-            ret = e;
             ExceptionUtils.checkInterrupt(e);
+            ret = e;
         } finally {
             if (!producer.isTerminated()) {
                 log.warn("Forcibly stopping producer");
@@ -200,9 +222,9 @@ public class QueueImporter {
             ct.setName("import-Consumer" + i);
             ct.setUncaughtExceptionHandler((t, e) -> {
                 log.error("Uncaught exception in " + ct.getName() + ". Consumer is going to be stopped", e);
-                c.mustStop();
             });
             ct.start();
+            consumerThreads.add(ct);
         }
         return ret;
     }
@@ -215,6 +237,7 @@ public class QueueImporter {
             producer.mustStop();
         });
         p.start();
+        producerThread = p;
     }
 
     public ImportStat getImportStat() {

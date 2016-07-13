@@ -25,6 +25,7 @@ import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.objectweb.howl.log.ReplayListener;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +61,8 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected ImporterLogger log = null;
 
+    protected boolean replayMode = false;
+
     public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue) {
         this.log = log;
         repositoryName = root.getRepositoryName();
@@ -80,8 +83,8 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         } catch (Exception e) {
             log.error("Unexpected End of consumer after " + getNbProcessed() + " nodes.", e);
             ExceptionUtils.checkInterrupt(e);
-            error = e;
             runDrainer();
+            error = e;
         } finally {
             completed = true;
             started = false;
@@ -186,11 +189,13 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
     }
 
     protected void commit(CoreSession session) {
-        log.debug("Commit batch of " + batch.size() + " nodes");
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        batch.clear();
-        startTransaction();
+        if (batch.size() > 0) {
+            log.debug("Commit batch of " + batch.size() + " nodes");
+            session.save();
+            TransactionHelper.commitOrRollbackTransaction();
+            batch.clear();
+            startTransaction();
+        }
     }
 
     protected void rollbackAndReplayBatch(CoreSession session) {
@@ -210,6 +215,10 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      * @throws InterruptedException
      */
     private void replayBatch(CoreSession session) {
+        if (! replayMode) {
+            log.error("No replay mode, loosing the batch");
+            return;
+        }
         log.error("Replaying batch in isolated transaction");
         for (SourceNode node : batch.getNodes()) {
             boolean success = false;
