@@ -36,7 +36,7 @@ public class BuggyNodeProducer extends AbstractProducer {
                 if (producerDelayMs > 0) {
                     Thread.sleep((new Random()).nextInt(producerDelayMs));
                 }
-                if (i >= exceptionInProducer) {
+                if (exceptionInProducer > 0 && i >= exceptionInProducer) {
                     throw new RuntimeException("This is a buggy exception during producer processing !");
                 }
                 dispatch(new BuggySourceNode(i, rollBackFrequency > 0 ? i % rollBackFrequency == 0: false,
