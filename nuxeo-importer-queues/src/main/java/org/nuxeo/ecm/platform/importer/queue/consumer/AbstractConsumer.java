@@ -61,7 +61,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected ImporterLogger log = null;
 
-    protected boolean replayMode = false;
+    protected boolean replayMode = true;
 
     public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue) {
         this.log = log;
