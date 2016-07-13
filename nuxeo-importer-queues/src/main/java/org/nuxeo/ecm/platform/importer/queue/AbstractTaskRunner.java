@@ -62,6 +62,7 @@ public abstract class AbstractTaskRunner implements TaskRunner {
 
     @Override
     public void mustStop() {
+        canStop = true;
         mustStop = true;
         started = false;
     }

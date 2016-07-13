@@ -17,13 +17,15 @@ public class BuggyNodeProducer extends AbstractProducer {
     private final int nbNode;
     private final int exceptionFrequency;
     private final int rollBackFrequency;
+    private final int exceptionInProducer;
 
-    public BuggyNodeProducer(ImporterLogger logger, int nbNode, int rollBackFrequency, int exceptionFrequency, int producerDelayMs) {
+    public BuggyNodeProducer(ImporterLogger logger, int nbNode, int rollBackFrequency, int exceptionFrequency, int producerDelayMs, int exceptionInProducer) {
         super(logger);
         this.nbNode = nbNode;
         this.rollBackFrequency = rollBackFrequency;
         this.exceptionFrequency = exceptionFrequency;
         this.producerDelayMs = producerDelayMs;
+        this.exceptionInProducer = exceptionInProducer;
     }
 
     @Override
@@ -34,7 +36,11 @@ public class BuggyNodeProducer extends AbstractProducer {
                 if (producerDelayMs > 0) {
                     Thread.sleep((new Random()).nextInt(producerDelayMs));
                 }
-                dispatch(new BuggySourceNode(i, i % rollBackFrequency == 0, i % exceptionFrequency == 0));
+                if (i >= exceptionInProducer) {
+                    throw new RuntimeException("This is a buggy exception during producer processing !");
+                }
+                dispatch(new BuggySourceNode(i, rollBackFrequency > 0 ? i % rollBackFrequency == 0: false,
+                        exceptionFrequency > 0 ? i % exceptionFrequency == 0 : false));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
