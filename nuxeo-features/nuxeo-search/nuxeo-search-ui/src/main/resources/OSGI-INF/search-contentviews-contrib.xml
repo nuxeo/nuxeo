@@ -217,6 +217,10 @@
         #{searchDocument.cvd.selectedLayoutColumns}
       </resultColumns>
 
+      <resultLayout>
+        #{searchDocument.cvd.resultLayoutName}
+      </resultLayout>
+
       <selectionList>CURRENT_SELECTION</selectionList>
       <actions category="CURRENT_SELECTION_LIST" />
 
