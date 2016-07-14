@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 

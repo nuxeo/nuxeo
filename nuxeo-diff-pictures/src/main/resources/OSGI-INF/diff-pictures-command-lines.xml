@@ -3,9 +3,9 @@
   <!-- Please, do not format this file to nuxeo formating convention. On Windows, for example, we can't have line breaks
     in the command -->
 
-  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  <require>org.nuxeo.ecm.core.commandline.executor.service.defaultContrib</require>
 
-  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
+  <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent" point="command">
     <!-- Raw comparison. Fast, but the 2 same pictures in different format will result in a big "change" even ultimately,
       they are basically the same. Default values for fuzz (0), -highlight-color ("Red") apply when they are not used in the parameters
       of the command-line -->
