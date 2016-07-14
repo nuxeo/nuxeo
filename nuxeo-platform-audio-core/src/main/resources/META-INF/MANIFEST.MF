@@ -12,6 +12,6 @@ Eclipse-LazyStart: true
 Bundle-Category: core,stateful
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.platform.commandline.executor
+ org.nuxeo.ecm.core.commandline.executor
 Export-Package: org.nuxeo.ecm.platform.audio.core
 Bundle-ClassPath: .
