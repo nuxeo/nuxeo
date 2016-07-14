@@ -60,10 +60,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.convert.api", //
-        "org.nuxeo.ecm.core.convert", //
-        "org.nuxeo.ecm.platform.commandline.executor", //
-        "org.nuxeo.ecm.platform.types.api", //
+@Deploy({ "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
         "org.nuxeo.ecm.automation.core", //
         "org.nuxeo.ecm.platform.picture.core", //

@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-
 /**
  * Factorize common code for video converter implementations.
  *
