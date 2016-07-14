@@ -46,10 +46,6 @@ public class ConvertHelper {
 
     protected Blob applyConverter(Blob blob, String converter, String destMimeType, Map<String, Serializable> params) {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
-        if (params == null) {
-            params = new HashMap<String, Serializable>();
-            params.put("updateDocumentIndex", Boolean.TRUE);
-        }
         BlobHolder bh = cs.convert(converter, new SimpleBlobHolder(blob), params);
 
         if (bh == null || bh.getBlob() == null) {
