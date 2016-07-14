@@ -1,7 +1,7 @@
 <component name="org.nuxeo.template.deckjs.deckjs2pdf.commandline">
 
   <extension
-    target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
 
     <command name="phantomjs" enabled="true">
