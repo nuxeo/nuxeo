@@ -97,10 +97,6 @@
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-commandline-executor</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>javax.transaction</groupId>
