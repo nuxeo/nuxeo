@@ -56,7 +56,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
     "org.nuxeo.ecm.platform.signature.core.test",
     "org.nuxeo.ecm.core.convert.api", //
     "org.nuxeo.ecm.core.convert", //
-    "org.nuxeo.ecm.platform.commandline.executor", //
     "org.nuxeo.ecm.core.mimetype", //
     "org.nuxeo.ecm.core.cache", //
     "org.nuxeo.ecm.platform.convert" })
