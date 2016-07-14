@@ -40,7 +40,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.ws", //
         "org.nuxeo.ecm.core.io", //
         // deployed for fulltext indexing
-        "org.nuxeo.ecm.platform.commandline.executor", //
         "org.nuxeo.ecm.platform.convert", //
         // MyDocType
         "org.nuxeo.ecm.core.opencmis.tests", //
