@@ -48,11 +48,11 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.core.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.core.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.core.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
