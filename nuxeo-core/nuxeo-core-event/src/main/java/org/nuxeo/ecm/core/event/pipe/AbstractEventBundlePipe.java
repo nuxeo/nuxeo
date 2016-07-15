@@ -77,7 +77,7 @@ public abstract class AbstractEventBundlePipe<T> implements EventBundlePipe {
     }
 
     /**
-     * dehydrate the EventBundle to make it suitable for transmission on a Bus
+     * de-hydrate the EventBundle to make it suitable for transmission on a Bus
      *
      * @param events
      * @return

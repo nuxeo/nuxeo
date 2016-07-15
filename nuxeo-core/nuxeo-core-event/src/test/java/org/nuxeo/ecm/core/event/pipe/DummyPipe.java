@@ -16,45 +16,41 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 
 /**
- * Provides partial default implementation for a {@link PipeConsumer}
  *
- * @since 8.4
+ * @since TODO
  */
-public abstract class AbstractPipeConsumer<T> implements PipeConsumer<T> {
+public class DummyPipe implements EventBundlePipe {
 
-    protected String name;
-
-    protected Map<String, String> params;
+    public static List<Event> receivedEvents = new ArrayList<Event>();
 
     @Override
-    public void initConsumer(String name, Map<String, String> params) {
-        this.name = name;
-        this.params = params;
+    public void initPipe(String name, Map<String, String> params) {
 
-    }
-
-    protected String getName() {
-        return name;
-    }
-
-    protected Map<String, String> getParameters() {
-        return params;
     }
 
     @Override
-    public boolean receiveMessage(List<T> messages) {
-        List<EventBundle> bundles = unmarshallEventBundle(messages);
-        return processEventBundles(bundles);
+    public void sendEventBundle(EventBundle events) {
+        for ( Event event : events) {
+            receivedEvents.add(event);
+        }
     }
 
-    protected abstract List<EventBundle> unmarshallEventBundle(List<T> messages);
+    @Override
+    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
+        return true;
+    }
 
-    protected abstract boolean processEventBundles(List<EventBundle> bundles);
+    @Override
+    public void shutdown() throws InterruptedException {
+    }
+
 
 }

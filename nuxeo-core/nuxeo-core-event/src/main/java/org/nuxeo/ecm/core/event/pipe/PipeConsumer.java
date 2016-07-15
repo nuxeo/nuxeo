@@ -20,15 +20,33 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * SPI for a consumer of messages inside the {@link EventBundlePipe}
  *
- * @since TODO
+ * @since 8.4
  */
 public interface PipeConsumer<T> {
 
+    /**
+     * Initialize the Consumer when the {@link EventBundlePipe} is initialized
+     *
+     * @param name
+     * @param params
+     */
     void initConsumer(String name, Map<String, String> params);
 
+    /**
+     * Callback when a batch of messages is available
+     *
+     * @param messages
+     * @return
+     */
     boolean receiveMessage(List<T> messages);
 
+    /**
+     * Shutdown the consumer when the {@link EventBundlePipe} is shutdown
+     *
+     * @throws InterruptedException
+     */
     void shutdown() throws InterruptedException;
 
 }

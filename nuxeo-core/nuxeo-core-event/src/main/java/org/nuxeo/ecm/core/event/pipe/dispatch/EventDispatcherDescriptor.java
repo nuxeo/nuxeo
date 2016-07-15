@@ -14,7 +14,7 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.event.pipe;
+package org.nuxeo.ecm.core.event.pipe.dispatch;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,51 +26,44 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap Descriptor for contributing a new {@link EventBundlePipe}
+ * XMap Descriptor for contributing a new {@link EventBundleDispatcher}
  *
  * @since 8.4
  */
-@XObject("eventPipe")
-public class EventPipeDescriptor {
+@XObject("eventDispatcher")
+public class EventDispatcherDescriptor {
 
-    public static final Log log = LogFactory.getLog(EventPipeDescriptor.class);
+    public static final Log log = LogFactory.getLog(EventDispatcherDescriptor.class);
+
+    public EventDispatcherDescriptor() {
+    };
+
+    public EventDispatcherDescriptor(String name, Class<? extends EventBundleDispatcher> clazz) {
+        this.name = name;
+        this.clazz = clazz;
+    }
 
     @XNode("@name")
     protected String name;
 
-    @XNode("@priority")
-    protected Integer priority = 100;
-
-    public EventPipeDescriptor() {
-    };
-
-    public EventPipeDescriptor(String name, Class<? extends EventBundlePipe> clazz) {
-        this.name = name;
-        this.clazz = clazz;
-    };
-
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     Map<String, String> parameters = new HashMap<String, String>();
+
+    public String getName() {
+        return name == null ? clazz.getName() : name;
+    }
 
     /**
      * The implementation class.
      */
     @XNode("@class")
-    protected Class<? extends EventBundlePipe> clazz;
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getPriority() {
-        return priority;
-    }
+    protected Class<? extends EventBundleDispatcher> clazz;
 
     public Map<String, String> getParameters() {
         return parameters;
     }
 
-    public EventBundlePipe getInstance() {
+    public EventBundleDispatcher getInstance() {
         try {
             return clazz.newInstance();
         } catch (ReflectiveOperationException e) {
@@ -78,21 +71,10 @@ public class EventPipeDescriptor {
         }
     }
 
-    public void merge(EventPipeDescriptor other) {
-        if (other.priority!=null) {
-            priority = other.priority;
-        }
-        if (other.clazz!=null) {
-            clazz = other.clazz;
-        }
-        parameters.putAll(other.getParameters());
-    }
-
     @Override
-    public EventPipeDescriptor clone() {
-        EventPipeDescriptor copy = new EventPipeDescriptor(name, clazz);
-        copy.priority=priority;
-        copy.parameters = parameters;
+    public EventDispatcherDescriptor clone() {
+        EventDispatcherDescriptor copy = new EventDispatcherDescriptor(name, clazz);
+        copy.parameters = new HashMap<String, String>(parameters);
         return copy;
     }
 }

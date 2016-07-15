@@ -51,7 +51,10 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
-import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundlePipeDispatcher;
+import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
+import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
+import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
+import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
 import org.nuxeo.ecm.core.event.pipe.queue.QueueBaseEventBundlePipe;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -102,23 +105,34 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected boolean bulkModeEnabled = false;
 
-    protected EventBundlePipeDispatcher pipeDispatcher;
+    protected EventPipeRegistry registredPipes = new EventPipeRegistry();
+
+    protected EventDispatcherRegistry dispatchers = new EventDispatcherRegistry();
+
+    protected EventBundleDispatcher pipeDispatcher;
 
     public EventServiceImpl() {
         listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
-        pipeDispatcher = new  EventBundlePipeDispatcher();
     }
 
     public void init() {
         asyncExec.init();
 
+        EventDispatcherDescriptor dispatcherDescriptor = dispatchers.getDispatcherDescriptor();
+        if (dispatcherDescriptor!=null) {
+            List<EventPipeDescriptor> pipes = registredPipes.getPipes();
+            if (pipes.size()>0) {
+                pipeDispatcher = dispatcherDescriptor.getInstance();
+                pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
+            }
+        }
+
         // XXX simulate contribs
         List<EventPipeDescriptor> pipeDescriptors = new ArrayList<EventPipeDescriptor>();
         //pipeDescriptors.add(new EventPipeDescriptor("local", LocalEventBundlePipe.class));
         pipeDescriptors.add(new EventPipeDescriptor("localqueue", QueueBaseEventBundlePipe.class));
-        pipeDispatcher.init(pipeDescriptors);
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -193,10 +207,30 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         log.debug("Registered event listener: " + listener.getName());
     }
 
+    public void addEventPipe(EventPipeDescriptor pipeDescriptor) {
+        registredPipes.addContribution(pipeDescriptor);
+        log.debug("Registered event pipe: " + pipeDescriptor.getName());
+    }
+
+    public void addEventDispatcher(EventDispatcherDescriptor dispatcherDescriptor) {
+        dispatchers.addContrib(dispatcherDescriptor);
+        log.debug("Registered event dispatcher: " + dispatcherDescriptor.getName());
+    }
+
     @Override
     public void removeEventListener(EventListenerDescriptor listener) {
         listenerDescriptors.removeDescriptor(listener);
         log.debug("Unregistered event listener: " + listener.getName());
+    }
+
+    public void removeEventPipe(EventPipeDescriptor pipeDescriptor) {
+        registredPipes.removeContribution(pipeDescriptor);
+        log.debug("Unregistered event pipe: " + pipeDescriptor.getName());
+    }
+
+    public void removeEventDispatcher(EventDispatcherDescriptor dispatcherDescriptor) {
+        dispatchers.removeContrib(dispatcherDescriptor);
+        log.debug("Unregistered event dispatcher: " + dispatcherDescriptor.getName());
     }
 
     @Override
@@ -326,14 +360,16 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             return;
         }
 
-
         // fire async listeners
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
         } else {
-            //asyncExec.run(postCommitAsync, event);
-            // rather than sending to the WorkManager: send to the Pipe
-            pipeDispatcher.sendEventBundle(event);
+            if (pipeDispatcher==null) {
+                asyncExec.run(postCommitAsync, event);
+            } else {
+                // rather than sending to the WorkManager: send to the Pipe
+                pipeDispatcher.sendEventBundle(event);
+            }
         }
     }
 

@@ -14,48 +14,50 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.event.pipe;
+package org.nuxeo.ecm.core.event.pipe.dispatch;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
+import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 
 /**
- * Interface for a pipe of events. This is the abstraction used to bridge the Nuxeo events to pipes that consume them.
+ * Interface for dispatching {@link EventBundle} between different {@link EventBundlePipe}
  *
  * @since 8.4
  */
-public interface EventBundlePipe {
+public interface EventBundleDispatcher {
 
     /**
-     * Initialize the Pipe when Nuxeo Event Service starts
+     * Initialize the dispatcher
      *
-     * @param name the name as defined in the XMap descriptor
-     * @param params the parameters as defined in the XMap descriptor
+     * @param pipeDescriptors descriptors of the underlying {@link EventBundlePipe}s
      */
-    void initPipe(String name, Map<String, String> params);
+    public void init(List<EventPipeDescriptor> pipeDescriptors, Map<String, String> parameters);
 
     /**
-     * Send an {@link EventBundle} inside the pipe
+     * Forward an {@link EventBundle} to the underlying {@link EventBundlePipe}s
      *
      * @param events
      */
-    void sendEventBundle(EventBundle events);
+    public void sendEventBundle(EventBundle events);
 
     /**
-     * Wait until the end of event consumption
+     * Wait until the end of processing
      *
      * @param timeoutMillis
      * @return
      * @throws InterruptedException
      */
-    boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
+    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
 
     /**
-     * Shutdown callback when the {@link EventService} stops
+     * Shutdown callback
      *
      * @throws InterruptedException
      */
-    void shutdown() throws InterruptedException;
+    public void shutdown() throws InterruptedException;
+
 }

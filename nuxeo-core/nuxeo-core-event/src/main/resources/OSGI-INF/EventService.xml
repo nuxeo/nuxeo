@@ -72,6 +72,32 @@
     <object class="org.nuxeo.ecm.core.event.impl.EventListenerDescriptor"/>
   </extension-point>
 
+  <extension-point name="pipe">
+    <documentation>
+      Extension point to contribute event pipe.
+
+      An event pipe is a where Nuxeo events will be sent for asynchronous processing.
+
+      Example pipe definition:
+      <code>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor"/>
+  </extension-point>
+
+  <extension-point name="dispatcher">
+    <documentation>
+      Extension point to define the dispatcher used to dispatch event between pipes.
+
+      Example dispatcher definition:
+      <code>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor"/>
+  </extension-point>
+
+
+
   <extension target="org.nuxeo.runtime.EventService" point="listeners">
     <listener class="org.nuxeo.ecm.core.scheduler.ReloadListener">
       <topic>org.nuxeo.runtime.reload</topic>

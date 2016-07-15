@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Consumes EventBundles by running AsynchronousListeners
  *
- * @since TODO
+ * @since 8.4
  */
 public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsumer<T> {
 
@@ -45,14 +45,14 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
     public void initConsumer(String name, Map<String, String> params) {
         super.initConsumer(name, params);
         asyncExec = new AsyncEventExecutor();
-        if (Framework.getRuntime()==null) {
+        if (Framework.getRuntime() == null) {
             throw new RuntimeException("Nuxeo Runtime not initialized");
         }
     }
 
     @Override
-    public void shutdown() throws InterruptedException{
-        stopping=true;
+    public void shutdown() throws InterruptedException {
+        stopping = true;
         waitForCompletion(1000L);
     }
 
@@ -62,7 +62,7 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
         try {
             EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);
             EventListenerList listeners = eventService.getListenerList();
-            List<EventListenerDescriptor> postCommitAsync =listeners.getEnabledAsyncPostCommitListenersDescriptors();
+            List<EventListenerDescriptor> postCommitAsync = listeners.getEnabledAsyncPostCommitListenersDescriptors();
 
             // could introduce bulk mode for EventListeners
             for (EventBundle eventBundle : bundles) {
