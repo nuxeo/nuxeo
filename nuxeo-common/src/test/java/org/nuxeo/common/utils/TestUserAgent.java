@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,10 @@ public class TestUserAgent {
     @Test
     public void testSupportedBrowsers() throws Exception {
 
-        List<String> UAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream(
-                "supportedBrowsers.txt"));
-        List<String> BadUAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream(
-                "unsupportedBrowsers.txt"));
+        List<String> UAs = FileUtils
+                .readLines(this.getClass().getClassLoader().getResourceAsStream("supportedBrowsers.txt"));
+        List<String> BadUAs = FileUtils
+                .readLines(this.getClass().getClassLoader().getResourceAsStream("unsupportedBrowsers.txt"));
 
         for (String UA : UAs) {
             if (!UA.startsWith("#") && !UA.isEmpty()) {
