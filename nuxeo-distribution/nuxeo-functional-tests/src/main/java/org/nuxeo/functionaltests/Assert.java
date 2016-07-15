@@ -46,6 +46,20 @@ public class Assert {
     }
 
     /**
+     * Returns true if corresponding element is found under web element.
+     *
+     * @since 8.4
+     */
+    public static boolean hasChild(WebElement webElement, By by) {
+        try {
+            webElement.findElement(by);
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
      * Returns true if {@code text} is present in the element retrieved with the given method.
      *
      * @since 5.7.3

@@ -38,15 +38,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Assert;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.ScreenshotTaker;
+import org.nuxeo.functionaltests.contentView.ContentViewElement;
+import org.nuxeo.functionaltests.contentView.ContentViewElement.ResultLayout;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
+import org.nuxeo.functionaltests.pages.search.QuickSearchSubPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
@@ -228,6 +232,73 @@ public class ITSearchTabTest extends AbstractTest {
         driver.switchTo().alert().accept();
 
         logout();
+    }
+
+    /*
+     * NXP-19898
+     */
+    @Test
+    public void testResultColumnSimpleSearch() throws UserNotConnectedException, IOException {
+        DocumentBasePage documentBasePage = loginAsTestUser();
+
+        // Run a quick search
+        SearchPage searchPage = documentBasePage.goToSearchPage();
+        QuickSearchSubPage quickSearch = searchPage.getQuickSearch();
+        quickSearch.filter();
+
+        // switch to listing
+        SearchResultsSubPage resultSubPage = searchPage.getSearchResultsSubPage();
+        ContentViewElement contentView = resultSubPage.getContentView().switchToResultLayout(ResultLayout.LISTING);
+
+        // add column
+        WebElement addColumn = contentView.getActionByTitle("Edit Result Columns");
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        addColumn.click();
+        arm.end();
+        WebElement fancybox = Locator.findElementWithTimeout(By.id("fancybox-content"));
+        WebElement listShuttle = fancybox.findElement(By.className("listShuttleTable"));
+        listShuttle.findElement(By.xpath(".//td[@class=\"listShuttleSelectElements\"]//option[@value=\"contributors\"]"))
+                   .click();
+        listShuttle.findElement(By.xpath(".//td[@class=\"listShuttleSelectionActions\"]/a[contains(@id, 'nxw_template_addToSelection')]"))
+                   .click();
+        arm.begin();
+        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        arm.end();
+
+        // save this search
+        arm.begin();
+        driver.findElement(By.xpath("//input[contains(@id, 'nxw_saveSearch_link')]")).click();
+        arm.end();
+
+        fancybox = Locator.findElementWithTimeout(By.id("nxw_saveSearch_after_view_box"));
+        String ssTitle = "Test Saved Search " + new Date().getTime();
+        fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(ssTitle);
+        arm.begin();
+        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        arm.end();
+
+        // get default search
+        searchPage.getDefaultSearch();
+        // get saved search
+        quickSearch = searchPage.getSearch(ssTitle, QuickSearchSubPage.class);
+        resultSubPage = searchPage.getSearchResultsSubPage();
+
+        assertEquals(ResultLayout.LISTING, resultSubPage.getContentView().getResultLayout());
+        Assert.hasElement(By.xpath("//span[@class=\"colHeader\" && text()='Contributors'"));
+
+        // delete saved searches
+        documentBasePage.goToHomePage().goToSavedSearches();
+        arm = new AjaxRequestManager(driver);
+        arm.begin();
+        Locator.findElementWaitUntilEnabledAndClick(By.id(SELECT_ALL_SAVED_SEARCHES_BUTTON_ID));
+        arm.end();
+
+        Locator.findElementWaitUntilEnabledAndClick(By.id(PERMANENT_DELETE_SAVED_SEARCHES_BUTTON_ID));
+        driver.switchTo().alert().accept();
+
+        logout();
+
     }
 
 }

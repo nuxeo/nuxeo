@@ -20,7 +20,9 @@ package org.nuxeo.functionaltests.pages.search;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -35,6 +37,8 @@ public class SearchResultsSubPage extends AbstractPage {
 
     private static final String SEARCH_RESULTS_XPATH = "//div[contains(@class,'bubbleBox')]";
 
+    private static final String CONTENT_VIEW_XPATH = "//div[@id='nxw_searchContentView']//div[contains(@id, 'nxw_searchContentView_panel')]";
+
     @Required
     @FindBy(xpath = "//div[@id='nxw_searchContentView']//div[contains(@id, 'nxw_searchContentView_resultsPanel')]/form")
     protected WebElement resultForm;
@@ -48,8 +52,7 @@ public class SearchResultsSubPage extends AbstractPage {
     }
 
     public int getNumberOfDocumentInCurrentPage() {
-        List<WebElement> result = resultForm.findElements(By.xpath(SEARCH_RESULTS_XPATH));
-        return result.size();
+        return getContentView().getItems().size();
     }
 
     /**
@@ -57,10 +60,18 @@ public class SearchResultsSubPage extends AbstractPage {
      */
     public List<WebElement> getListResults() {
         try {
-            return resultForm.findElements(By.xpath(SEARCH_RESULTS_XPATH));
+            return getContentView().getItems();
         } catch (NoSuchElementException e) {
             return null;
         }
+    }
+
+    /**
+     * @return the content view of results
+     * @since 8.4
+     */
+    public ContentViewElement getContentView() {
+        return AbstractTest.getWebFragment(By.xpath(CONTENT_VIEW_XPATH), ContentViewElement.class);
     }
 
 }

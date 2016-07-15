@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests.contentView;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Assert;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
@@ -39,7 +40,7 @@ public class ContentViewElement extends WebFragmentImpl {
 
     private static final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
 
-    public static enum ResultLayout {
+    public enum ResultLayout {
         THUMBNAIL("Thumbnail view"), LISTING("List view");
 
         private final String title;
@@ -89,7 +90,14 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 8.3
      */
     public List<WebElement> getItems() {
-        return getResultsPanel().findElements(By.xpath("(.//form)[1]//tbody//tr"));
+        ResultLayout layout = getResultLayout();
+        switch (layout) {
+        case THUMBNAIL:
+            return getResultsPanel().findElements(By.xpath(".//div[contains(@class,'bubbleBox')]"));
+        case LISTING:
+        default:
+            return getResultsPanel().findElements(By.xpath("(.//form)[1]//tbody//tr"));
+        }
     }
 
     /**
@@ -178,6 +186,23 @@ public class ContentViewElement extends WebFragmentImpl {
     public WebElement getSelectionActionByTitle(String title) {
         return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]"))
                                 .findElement(By.xpath("//input[@value=\"" + title + "\"]"));
+    }
+
+    /**
+     * @since 8.4
+     */
+    public ResultLayout getResultLayout() {
+        WebElement element = getElement();
+        WebElement resultsPanel = getResultsPanel();
+        String resultLayoutSelected = ".//span[@class=\"resultLayoutSelection selected\"]/*/img[@alt=\"%s\"]";
+        if (Assert.hasChild(element, By.xpath(String.format(resultLayoutSelected, ResultLayout.THUMBNAIL.title)))
+                || Assert.hasChild(resultsPanel, By.xpath(".//div[contains(@class,'bubbleBox')]"))) {
+            return ResultLayout.THUMBNAIL;
+        } else if (Assert.hasChild(element, By.xpath(String.format(resultLayoutSelected, ResultLayout.LISTING.title)))
+                || Assert.hasChild(resultsPanel, By.xpath(".//table[@class='dataOutput']"))) {
+            return ResultLayout.LISTING;
+        }
+        throw new IllegalStateException("Content view is not listing nor thumbnail.");
     }
 
 }

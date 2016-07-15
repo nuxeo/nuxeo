@@ -55,24 +55,25 @@ public class SearchPage extends DocumentBasePage {
     }
 
     public DefaultSearchSubPage getDefaultSearch() {
-        if (!isDefaultSearch()) {
-            selectSearch(DEFAULT_SEARCH);
-        }
-        return asPage(DefaultSearchSubPage.class);
+        return getSearch(DEFAULT_SEARCH, DefaultSearchSubPage.class);
     }
 
     public NXQLSearchSubPage getNXQLSearch() {
-        if (!isNXQLSearch()) {
-            selectSearch(NXQL_SEARCH);
-        }
-        return asPage(NXQLSearchSubPage.class);
+        return getSearch(NXQL_SEARCH, NXQLSearchSubPage.class);
     }
 
     public QuickSearchSubPage getQuickSearch() {
-        if (!isQuickSearch()) {
-            selectSearch(QUICK_SEARCH);
+        return getSearch(QUICK_SEARCH, QuickSearchSubPage.class);
+    }
+
+    /**
+     * @since 8.4
+     */
+    public <T extends AbstractSearchSubPage> T getSearch(String searchLabel, Class<T> clazz) {
+        if (!isSearchSelected(searchLabel)) {
+            selectSearch(searchLabel);
         }
-        return asPage(QuickSearchSubPage.class);
+        return asPage(clazz);
     }
 
     public SearchResultsSubPage getSearchResultsSubPage() {
