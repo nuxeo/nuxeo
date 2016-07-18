@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.tag;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.util.ArrayList;
@@ -40,11 +41,17 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
@@ -677,6 +684,86 @@ public class TestTagService {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    /*
+     * NXP-19047
+     */
+    @Test
+    public void testUntagAllowed() {
+        DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
+        file1.setPropertyValue("dc:title", "File1");
+        file1 = session.createDocument(file1);
+        session.save();
+        String file1Id = file1.getId();
+
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.WRITE, true));
+        session.setACP(file1.getRef(), acp, false);
+        session.save();
+
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+
+            // Tag document
+            tagService.tag(bobSession, file1Id, "mytag", "bob");
+
+            // Test tag present
+            List<Tag> tags = tagService.getDocumentTags(bobSession, file1Id, "bob");
+            assertEquals(1, tags.size());
+            assertEquals("mytag", tags.get(0).getLabel());
+
+            // Untag
+            tagService.untag(bobSession, file1Id, "mytag", "bob");
+
+            // Test tag absent
+            tags = tagService.getDocumentTags(bobSession, file1Id, "bob");
+            assertTrue(tags.isEmpty());
+        }
+    }
+
+    /*
+     * NXP-19047
+     */
+    @Test
+    public void testUntagForbidden() {
+        DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
+        file1.setPropertyValue("dc:title", "File1");
+        file1 = session.createDocument(file1);
+        session.save();
+        String file1Id = file1.getId();
+
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        acl.add(new ACE("bender", SecurityConstants.WRITE, true));
+        session.setACP(file1.getRef(), acp, false);
+        session.save();
+
+        try (CoreSession benderSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
+
+            // Tag document
+            tagService.tag(benderSession, file1Id, "mytag", "bender");
+
+            // Test tag present
+            List<Tag> tags = tagService.getDocumentTags(benderSession, file1Id, "bender");
+            assertEquals(1, tags.size());
+            assertEquals("mytag", tags.get(0).getLabel());
+
+            try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+                // Untag with bob user
+                tagService.untag(bobSession, file1Id, "mytag", "bender");
+                fail("bob is not allowed to untag document file1 tagged by bender");
+            } catch (DocumentSecurityException e) {
+                assertEquals("User 'bob' is not allowed to remove tag 'mytag' on document '" + file1Id + "'",
+                        e.getMessage());
+            }
+
+            // Test tag present
+            tags = tagService.getDocumentTags(benderSession, file1Id, "bender");
+            assertEquals(1, tags.size());
+            assertEquals("mytag", tags.get(0).getLabel());
+        }
     }
 
 }
