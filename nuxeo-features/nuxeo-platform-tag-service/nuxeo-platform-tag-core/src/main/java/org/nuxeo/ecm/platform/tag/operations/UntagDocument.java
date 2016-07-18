@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.tag.operations;
 
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.platform.tag.TagService;
 
 /**
@@ -49,10 +51,15 @@ public class UntagDocument {
     protected StringList tags;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel document) {
+    public DocumentModel run(DocumentModel document) throws OperationException {
         if (tags != null) {
             for (String tag : tags) {
-                tagService.untag(session, document.getId(), tag, session.getPrincipal().getName());
+                try {
+                    tagService.untag(session, document.getId(), tag, null);
+                } catch (DocumentSecurityException e) {
+                    throw new OperationException(
+                            "Unable to remove tag '" + tag + "' on document '" + document.getId() + "'.", e);
+                }
             }
         }
         return document;
