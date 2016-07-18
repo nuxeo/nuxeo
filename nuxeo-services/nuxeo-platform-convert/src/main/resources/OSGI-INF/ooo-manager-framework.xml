@@ -17,9 +17,9 @@
   <documentation>
 	This extension point defines the port numbers or the pipe names used to
 	connect to open office. Only the last register contribution will be taken
-	into account.
+	into account. OOoManager is disabled by default.
 	<code>
-      <OOoManager>
+      <OOoManager enabled="false">
         <portNumbers>
           <portNumber>2003</portNumber>
           <portNumber>2004</portNumber>

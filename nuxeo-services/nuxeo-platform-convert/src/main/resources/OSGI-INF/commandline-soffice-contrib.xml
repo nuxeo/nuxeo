@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.commandline.executor.service.soffice">
+  
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+             point="command">
+    <command name="soffice" enabled="true">
+      <commandLine>soffice</commandLine>
+      <winCommand>soffice.exe</winCommand>
+      <parameterString>--headless --norestore --writer --convert-to #{format} #{sourceFilePath} --outdir #{outDirPath}
+      </parameterString>
+      <testParameterString>--version</testParameterString>
+      <installationDirective>You need to install OpenOffice/LibreOffice and add soffice to the PATH environment
+        variable.
+      </installationDirective>
+    </command>
+  </extension>
+
+</component>

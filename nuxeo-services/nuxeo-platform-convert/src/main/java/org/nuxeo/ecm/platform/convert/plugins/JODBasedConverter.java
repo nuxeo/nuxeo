@@ -56,7 +56,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Converter based on JOD which uses an external OpenOffice process to do actual conversions.
+ *
+ * @deprecated Since 8.4. Use 'soffice' with {@link org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter} instead
  */
+@Deprecated
 public class JODBasedConverter implements ExternalConverter {
 
     protected static final String TMP_PATH_PARAMETER = "TmpDirectory";

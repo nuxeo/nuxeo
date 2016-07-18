@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -78,6 +79,7 @@ public class BlobToFileTest {
     @Before
     public void setUp() throws Exception {
         tempDirectory = Framework.createTempDirectory("tmp").toFile();
+        Environment.getDefault().setServerHome(Environment.getDefault().getTemp());
         pdfFile = new File(tempDirectory.getAbsolutePath(), PDF_NAME);
         blob = Blobs.createBlob(pdfFile);
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(PDF_NAME);

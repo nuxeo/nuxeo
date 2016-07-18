@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Ricardo Dias
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
@@ -24,7 +23,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -32,43 +34,30 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
- * @since 5.2
+ * @since 8.4
  */
-public class TestPDFToHtml extends BaseConverterTest {
+public class TestSOfficeConverter extends BaseConverterTest {
 
     @Test
     public void testConverter() throws Exception {
-        String converterName = cs.getConverterName("application/pdf", "text/html");
-        assertEquals("pdf2html", converterName);
+        String converterName = cs.getConverterName("text/plain", "application/pdf");
+        assertEquals("any2pdf", converterName);
 
         checkConverterAvailability(converterName);
-        checkCommandAvailability("pdftohtml");
+        checkCommandAvailability("soffice");
 
-        BlobHolder pdfBH = getBlobFromPath("test-docs/hello.pdf");
+        BlobHolder pdfBH = getBlobFromPath("test-docs/hello.txt");
+        Map<String, Serializable> parameters = new HashMap<>();
 
-        BlobHolder result = cs.convert(converterName, pdfBH, null);
+        BlobHolder result = cs.convert(converterName, pdfBH, parameters);
         assertNotNull(result);
 
         List<Blob> blobs = result.getBlobs();
         assertNotNull(blobs);
-        assertEquals(2, blobs.size());
+        assertEquals(1, blobs.size());
 
         Blob mainBlob = result.getBlob();
-        assertEquals("index.html", mainBlob.getFilename());
-
-        Blob subBlob = blobs.get(1);
-        assertTrue(subBlob.getFilename().startsWith("index001"));
-
-        String htmlContent = mainBlob.getString();
-        assertTrue(htmlContent.contains("Hello"));
-        
-        pdfBH = getBlobFromPath("test-docs/test-copy-text-restricted.pdf");
-
-        result = cs.convert(converterName, pdfBH, null);
-        assertNotNull(result);
-        
-        blobs = result.getBlobs();
-        assertNotNull(blobs);
-        assertEquals(10, blobs.size());
+        String text = DocumentUTUtils.readPdfText(mainBlob.getFile());
+        assertTrue(text.contains("Hello") || text.contains("hello"));
     }
 }

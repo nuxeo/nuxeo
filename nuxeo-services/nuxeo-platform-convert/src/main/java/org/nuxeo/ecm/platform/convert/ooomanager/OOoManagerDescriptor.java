@@ -24,17 +24,30 @@ package org.nuxeo.ecm.platform.convert.ooomanager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+/**
+ * @deprecated Since 8.4. See uf of 'soffice' with {@link org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter}
+ *             instead
+ */
+@Deprecated
 @XObject("OOoManager")
 public class OOoManagerDescriptor {
+
+    @XNode("@enabled")
+    public boolean enabled;
 
     @XNodeList(value = "portNumbers/portNumber", type = ArrayList.class, componentType = Integer.class)
     public List<Integer> portNumbers;
 
     @XNodeList(value = "pipeNames/pipeName", type = ArrayList.class, componentType = String.class)
     public List<String> pipeNames;
+
+    public boolean isEnabled() {
+        return enabled;
+    }
 
     public int[] getPortNumbers() {
         if (portNumbers != null) {

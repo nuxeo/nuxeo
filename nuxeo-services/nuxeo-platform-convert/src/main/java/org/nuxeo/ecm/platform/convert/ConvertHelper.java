@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.convert;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;

@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.convert.plugins">
 
-  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
-    point="converter">
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
 
     <converter name="2utf8" class="org.nuxeo.ecm.platform.convert.plugins.UTF8CharsetConverter">
       <sourceMimeType>text/xml</sourceMimeType>
@@ -30,13 +29,9 @@
       </parameters>
     </converter>
 
-    <converter name="wpd2html" class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
-               <sourceMimeType>application/wordperfect</sourceMimeType>
-               <destinationMimeType>text/html</destinationMimeType>
-               <parameters>
-                       <parameter name="ooo_host_name">${org.nuxeo.ecm.platform.transform.ooo.host.name}</parameter>
-                       <parameter name="ooo_host_port">${org.nuxeo.ecm.platform.transform.ooo.host.port}</parameter>
-               </parameters>
+    <converter name="wpd2html" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+      <destinationMimeType>text/html</destinationMimeType>
     </converter>
 
     <converter name="pdf2html" class="org.nuxeo.ecm.platform.convert.plugins.PDF2HtmlConverter">
@@ -65,8 +60,7 @@
       </parameters>
     </converter>
 
-   <converter name="any2ods"
-      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+    <converter name="any2ods" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.spreadsheet</destinationMimeType>
 
       <!-- Microsoft office documents -->
@@ -86,19 +80,14 @@
         application/vnd.oasis.opendocument.spreadsheet-template
       </sourceMimeType>
 
-    <parameters>
-        <parameter name="ooo_host_name">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
-        </parameter>
-        <parameter name="ooo_host_port">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
-        </parameter>
-    </parameters>
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">ods</parameter>
+      </parameters>
 
     </converter>
 
-   <converter name="any2odp"
-      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+    <converter name="any2odp" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <destinationMimeType>application/vnd.oasis.opendocument.presentation</destinationMimeType>
 
       <!-- Microsoft office documents -->
@@ -118,20 +107,15 @@
         application/vnd.oasis.opendocument.presentation-template
       </sourceMimeType>
 
-    <parameters>
-        <parameter name="ooo_host_name">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
-        </parameter>
-        <parameter name="ooo_host_port">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
-        </parameter>
-    </parameters>
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">odp</parameter>
+      </parameters>
 
     </converter>
 
-
-   <converter name="any2pdf"
-      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+    <converter name="any2pdf"
+               class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <destinationMimeType>application/pdf</destinationMimeType>
 
       <sourceMimeType>text/xml</sourceMimeType>
@@ -141,7 +125,6 @@
       <sourceMimeType>application/rtf</sourceMimeType>
       <sourceMimeType>text/csv</sourceMimeType>
       <sourceMimeType>text/tsv</sourceMimeType>
-
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/msword</sourceMimeType>
@@ -196,19 +179,13 @@
       <!-- WordPerfect -->
       <sourceMimeType>application/wordperfect</sourceMimeType>
 
-    <parameters>
-        <parameter name="ooo_host_name">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
-        </parameter>
-        <parameter name="ooo_host_port">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
-        </parameter>
-    </parameters>
-   </converter>
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">pdf</parameter>
+      </parameters>
+    </converter>
 
-
-    <converter name="office2html"
-      class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
+    <converter name="office2html" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <destinationMimeType>text/html</destinationMimeType>
 
       <sourceMimeType>text/xml</sourceMimeType>
@@ -269,14 +246,11 @@
         application/vnd.oasis.opendocument.graphics-template
       </sourceMimeType>
 
-    <parameters>
-        <parameter name="ooo_host_name">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.name}
-        </parameter>
-        <parameter name="ooo_host_port">
-          ${org.nuxeo.ecm.platform.transform.ooo.host.port}
-        </parameter>
-     </parameters>
+      <parameters>
+        <parameter name="CommandLineName">soffice</parameter>
+        <parameter name="format">html</parameter>
+      </parameters>
+
     </converter>
 
     <converter name="md2html" class="org.nuxeo.ecm.platform.convert.plugins.Md2HtmlConverter">

@@ -15,38 +15,39 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
+ *     Ricardo Dias
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
 
-import org.junit.Assume;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import static org.junit.Assert.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * @since 5.2
+ */
 public class TestOffice2html extends BaseConverterTest {
+
     protected void doTestHtmlConverter(String srcMT, String fileName) throws Exception {
-
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         String converterName = cs.getConverterName(srcMT, "text/html");
         assertEquals("office2html", converterName);
 
-        ConverterCheckResult check = cs.isConverterAvailable(converterName);
-        assertNotNull(check);
-        Assume.assumeTrue(
-                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
-                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
-                        check.getErrorMessage()), check.isAvailable());
+        checkConverterAvailability(converterName);
+        checkCommandAvailability("soffice");
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
+        Map<String, Serializable> parameters = new HashMap<>();
 
-        BlobHolder result = cs.convert(converterName, hg, null);
+        BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
         String html = result.getBlob().getString();
@@ -55,14 +56,6 @@ public class TestOffice2html extends BaseConverterTest {
 
     @Test
     public void testOfficeToHtmlConverter() throws Exception {
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-        ConverterCheckResult check = cs.isConverterAvailable("office2html");
-        assertNotNull(check);
-        Assume.assumeTrue(
-                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
-                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
-                        check.getErrorMessage()), check.isAvailable());
-
         doTestHtmlConverter("application/vnd.ms-excel", "hello.xls");
         doTestHtmlConverter("application/vnd.sun.xml.writer", "hello.sxw");
         doTestHtmlConverter("application/vnd.oasis.opendocument.text", "hello.odt");

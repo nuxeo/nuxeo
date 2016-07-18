@@ -75,7 +75,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
     public static final String TARGET_FILE_PATH_KEY = "targetFilePath";
 
     public static final List<String> RESERVED_PARAMETERS = Arrays.asList(SOURCE_FILE_PATH_KEY, OUT_DIR_PATH_KEY,
-            TARGET_FILE_PATH_KEY);
+            TARGET_FILE_PATH_KEY, CMD_NAME_PARAMETER);
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
@@ -114,6 +114,12 @@ public class CommandLineConverter extends CommandLineBasedConverter {
             for (Map.Entry<String, Serializable> entry : parameters.entrySet()) {
                 if (!RESERVED_PARAMETERS.contains(entry.getKey())) {
                     cmdStringParams.put(entry.getKey(), (String) entry.getValue());
+                }
+            }
+            // pass all the converter descriptor parameters to the commandline
+            for (Map.Entry<String, String> entry : initParameters.entrySet()) {
+                if (!RESERVED_PARAMETERS.contains(entry.getKey())) {
+                    cmdStringParams.put(entry.getKey(), entry.getValue());
                 }
             }
 
