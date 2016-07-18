@@ -1,6 +1,7 @@
 <component name="org.nuxeo.ecm.platform.pdf.operations">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+
     <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFAddPageNumbersOperation" />
     <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFConvertToPicturesOperation" />
     <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptOperation" />

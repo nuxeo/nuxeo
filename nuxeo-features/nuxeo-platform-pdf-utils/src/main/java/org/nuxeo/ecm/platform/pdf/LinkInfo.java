@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Thibaut Arguillere
+ *     Thibaud Arguillere
  *     Miguel Nixo
  */
 package org.nuxeo.ecm.platform.pdf;
