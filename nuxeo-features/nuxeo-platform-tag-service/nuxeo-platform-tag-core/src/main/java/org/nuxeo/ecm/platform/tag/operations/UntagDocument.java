@@ -45,7 +45,7 @@ public class UntagDocument {
     @Context
     protected CoreSession session;
 
-    @Param(name = "tags", required = true, description = "Labels or tags " + "separated by comma.")
+    @Param(name = "tags", required = true, description = "Labels or tags separated by comma.")
     protected StringList tags;
 
     @OperationMethod(collector = DocumentModelCollector.class)
@@ -57,4 +57,5 @@ public class UntagDocument {
         }
         return document;
     }
+
 }

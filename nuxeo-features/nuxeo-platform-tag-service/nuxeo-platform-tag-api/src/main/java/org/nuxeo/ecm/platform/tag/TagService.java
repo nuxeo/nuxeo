@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Radu Darlea
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.tag;
 
 import java.util.List;

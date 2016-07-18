@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ package org.nuxeo.ecm.platform.tag.web;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -108,11 +108,7 @@ public class TagSelect2Support {
         if (currentDocumentTags == null || currentDocumentTags.isEmpty()) {
             return null;
         } else {
-            List<String> result = new ArrayList<String>();
-            for (Tag tag : currentDocumentTags) {
-                result.add(tag.getLabel());
-            }
-            return result;
+            return currentDocumentTags.stream().map(Tag::getLabel).collect(Collectors.toList());
         }
     }
 
@@ -188,7 +184,7 @@ public class TagSelect2Support {
     }
 
     public String encodeParametersForCurrentDocument(final Map<String, Serializable> widgetProperties) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("onAddEntryHandler", "addTagHandler");
         parameters.put("onRemoveEntryHandler", "removeTagHandler");
         parameters.put("containerCssClass", "s2tagContainerCssClass");
@@ -225,7 +221,7 @@ public class TagSelect2Support {
         obj.put("tokenSeparators", tokenSeparator);
         if (additionalParameters != null) {
             for (Entry<String, String> entry : additionalParameters.entrySet()) {
-                obj.put(entry.getKey(), entry.getValue().toString());
+                obj.put(entry.getKey(), entry.getValue());
             }
         }
         for (Entry<String, Serializable> entry : widgetProperties.entrySet()) {

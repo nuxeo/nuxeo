@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -110,8 +111,8 @@ public class TestTagService {
         String file1Id = file1.getId();
         String file2Id = file2.getId();
 
-        Set<String> file1set = new HashSet<String>(Arrays.asList(file1Id));
-        Set<String> twofiles = new HashSet<String>(Arrays.asList(file1Id, file2Id));
+        Set<String> file1set = new HashSet<>(Collections.singleton(file1Id));
+        Set<String> twofiles = new HashSet<>(Arrays.asList(file1Id, file2Id));
 
         // add tag
         tagService.tag(session, file1Id, "mytag", "Administrator");
@@ -119,8 +120,8 @@ public class TestTagService {
         tagService.tag(session, file2Id, "mytag", "Administrator");
         session.save();
 
-        Set<String> mytag = new HashSet<String>(Arrays.asList("mytag"));
-        Set<String> twotags = new HashSet<String>(Arrays.asList("mytag", "othertag"));
+        Set<String> mytag = new HashSet<>(Collections.singleton("mytag"));
+        Set<String> twotags = new HashSet<>(Arrays.asList("mytag", "othertag"));
 
         // find tags for doc
         List<Tag> tags;
@@ -145,16 +146,16 @@ public class TestTagService {
         List<String> docIds;
         // tag 1
         docIds = tagService.getTagDocumentIds(session, "mytag", null);
-        assertEquals(twofiles, new HashSet<String>(docIds));
+        assertEquals(twofiles, new HashSet<>(docIds));
         docIds = tagService.getTagDocumentIds(session, "mytag", "Administrator");
-        assertEquals(twofiles, new HashSet<String>(docIds));
+        assertEquals(twofiles, new HashSet<>(docIds));
         docIds = tagService.getTagDocumentIds(session, "mytag", "bob");
         assertTrue(docIds.isEmpty());
         // tag 2
         docIds = tagService.getTagDocumentIds(session, "othertag", null);
-        assertEquals(file1set, new HashSet<String>(docIds));
+        assertEquals(file1set, new HashSet<>(docIds));
         docIds = tagService.getTagDocumentIds(session, "othertag", "Administrator");
-        assertEquals(file1set, new HashSet<String>(docIds));
+        assertEquals(file1set, new HashSet<>(docIds));
         docIds = tagService.getTagDocumentIds(session, "othertag", "bob");
         assertTrue(docIds.isEmpty());
 
@@ -207,14 +208,7 @@ public class TestTagService {
         String sid = remoting.connect("Administrator", "Administrator");
         DocumentSnapshot snapshot = remoting.getDocumentSnapshot(sid, file1Id);
         DocumentProperty[] props = snapshot.getNoBlobProperties();
-        Comparator<DocumentProperty> propsComparator = new Comparator<DocumentProperty>() {
-
-            @Override
-            public int compare(DocumentProperty o1, DocumentProperty o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-
-        };
+        Comparator<DocumentProperty> propsComparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
         Arrays.sort(props, propsComparator);
         int ti = Arrays.binarySearch(props, new DocumentProperty("tags", null), propsComparator);
         assertTrue(ti > 0);
@@ -230,7 +224,7 @@ public class TestTagService {
         tags = tagService.getDocumentTags(session, file2Id, null);
         assertTrue(tags.isEmpty());
         docIds = tagService.getTagDocumentIds(session, "mytag", "Administrator");
-        assertEquals(file1set, new HashSet<String>(docIds));
+        assertEquals(file1set, new HashSet<>(docIds));
         // remove all taggings on doc
         tagService.untag(session, file1Id, null, null);
         tags = tagService.getDocumentTags(session, file1Id, null);
@@ -241,11 +235,7 @@ public class TestTagService {
     }
 
     protected static Set<String> labels(List<Tag> tags) {
-        Set<String> list = new HashSet<String>();
-        for (Tag tag : tags) {
-            list.add(tag.getLabel());
-        }
-        return list;
+        return tags.stream().map(Tag::getLabel).collect(Collectors.toSet());
     }
 
     @Test
@@ -562,7 +552,7 @@ public class TestTagService {
     @Test
     public void testCloudNormalization() throws Exception {
         List<Tag> cloud;
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         TagServiceImpl.normalizeCloud(cloud, 0, 0, true);
 
         // linear
@@ -576,7 +566,7 @@ public class TestTagService {
         assertEquals(100, cloud.get(0).getWeight());
 
         // linear
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         cloud.add(new Tag("a", 1));
         cloud.add(new Tag("b", 5));
         TagServiceImpl.normalizeCloud(cloud, 1, 5, true);
@@ -584,7 +574,7 @@ public class TestTagService {
         assertEquals(100, cloud.get(1).getWeight());
 
         // logarithmic
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         cloud.add(new Tag("a", 1));
         cloud.add(new Tag("b", 5));
         TagServiceImpl.normalizeCloud(cloud, 1, 5, false);
@@ -592,7 +582,7 @@ public class TestTagService {
         assertEquals(100, cloud.get(1).getWeight());
 
         // linear
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         cloud.add(new Tag("a", 1));
         cloud.add(new Tag("b", 2));
         cloud.add(new Tag("c", 5));
@@ -602,7 +592,7 @@ public class TestTagService {
         assertEquals(100, cloud.get(2).getWeight());
 
         // logarithmic
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         cloud.add(new Tag("a", 1));
         cloud.add(new Tag("b", 2));
         cloud.add(new Tag("c", 5));
@@ -612,7 +602,7 @@ public class TestTagService {
         assertEquals(100, cloud.get(2).getWeight());
 
         // linear
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         cloud.add(new Tag("a", 1));
         cloud.add(new Tag("b", 2));
         cloud.add(new Tag("c", 5));
@@ -624,7 +614,7 @@ public class TestTagService {
         assertEquals(100, cloud.get(3).getWeight());
 
         // logarithmic
-        cloud = new ArrayList<Tag>();
+        cloud = new ArrayList<>();
         cloud.add(new Tag("a", 1));
         cloud.add(new Tag("b", 2));
         cloud.add(new Tag("c", 5));
@@ -670,7 +660,7 @@ public class TestTagService {
             session.publishDocument(doc, folder);
             count += 2; // proxy + tagging
             count += 2; // version + tagging
-            trashService.trashDocuments(Arrays.asList(doc));
+            trashService.trashDocuments(Collections.singletonList(doc));
             count -= 1; // tagging
         }
         return count;
@@ -688,4 +678,5 @@ public class TestTagService {
         }
         return sb.toString();
     }
+
 }
