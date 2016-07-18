@@ -53,7 +53,12 @@
          "path_tokenizer" : {
             "delimiter" : "/",
             "type" : "path_hierarchy"
-         }
+         },
+         "ngram_tokenizer": {
+           "type": "nGram",
+           "min_gram": 3,
+           "max_gram": 12
+          }
       },
       "analyzer" : {
          "en_analyzer" : {
@@ -77,10 +82,17 @@
           "filter" : ["lowercase", "asciifolding"],
           "tokenizer" : "keyword"
         },
-         "default" : {
-            "type" : "custom",
-            "tokenizer" : "keyword"
-         }
+        "ngram_analyzer": {
+          "type": "custom",
+          "filter": [
+            "lowercase"
+          ],
+          "tokenizer": "ngram_tokenizer"
+        },
+        "default" : {
+           "type" : "custom",
+           "tokenizer" : "keyword"
+        }
       }
    }
 }
@@ -105,8 +117,16 @@
              "boost": 2,
              "type": "string",
              "analyzer" : "fulltext"
-          }
-        }
+           },
+           "lowercase" : {
+             "analyzer" : "lowercase_analyzer",
+             "type" : "string"
+           },
+           "ngram": {
+             "type": "string",
+             "analyzer": "ngram_analyzer"
+           }
+         }
       },
       "dc:description" : {
         "type" : "multi_field",

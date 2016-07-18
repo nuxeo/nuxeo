@@ -167,4 +167,49 @@ public class TestMapping {
         Assert.assertEquals(3, ret.totalSize());
 
     }
+
+    @Test
+    public void testNgramSearch() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "testDoc1", "File");
+        doc.setPropertyValue("dc:title", "FooBar12 test");
+        doc = session.createDocument(doc);
+
+        doc = session.createDocumentModel("/", "testDoc2", "File");
+        doc.setPropertyValue("dc:title", "foobar42");
+        doc = session.createDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+
+        startTransaction();
+
+        // Common left/right truncature with a ILIKE, translated into wilcard search *oba* with poor performance
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:title ILIKE '%Oba%'"));
+        Assert.assertEquals(2, ret.totalSize());
+
+        // Use an ngram index
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'ObA'"));
+        Assert.assertEquals(2, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'fOObar42'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        // No tokenizer mind the space
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = '2 t'"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        // need to provide min_ngram (3) or more characters
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = '42'"));
+        Assert.assertEquals(0, ret.totalSize());
+
+        // If we don't set the proper analyzer the searched term is also ngramized matching too much
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) OPERATOR(match) */ dc:title = 'ZOObar'"));
+        Assert.assertEquals(2, ret.totalSize());
+
+        // Using the lowercase analyzer for the search term and a ngram max_gram greater than the search term make it work
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.ngram) ANALYZER(lowercase_analyzer) OPERATOR(match) */ dc:title = 'ZOObar'"));
+        Assert.assertEquals(0, ret.totalSize());
+
+    }
 }
