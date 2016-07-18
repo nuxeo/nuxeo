@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +30,9 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Group fields and methods used at initialization and runtime for select2 feature.
@@ -52,6 +52,8 @@ public class Select2Common {
     public static final String ID = SuggestConstants.ID;
 
     public static final String LABEL = SuggestConstants.LABEL;
+
+    public static final String LOCKED = "locked";
 
     public static final String DIRECTORY_DEFAULT_LABEL_COL_NAME = "label";
 

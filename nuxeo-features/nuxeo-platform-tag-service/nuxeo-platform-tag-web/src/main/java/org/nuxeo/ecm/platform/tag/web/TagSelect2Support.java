@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Factory;
@@ -49,6 +46,9 @@ import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Helper component for tagging widget relying on select2.
@@ -81,11 +81,14 @@ public class TagSelect2Support {
         if (currentDocumentTags == null || currentDocumentTags.isEmpty()) {
             return "[]";
         } else {
+            String docId = navigationContext.getCurrentDocument().getId();
+            TagService tagService = getTagService();
             JSONArray result = new JSONArray();
             for (Tag tag : currentDocumentTags) {
                 JSONObject obj = new JSONObject();
                 obj.element(Select2Common.ID, tag.getLabel());
                 obj.element(Select2Common.LABEL, tag.getLabel());
+                obj.element(Select2Common.LOCKED, !tagService.canUntag(documentManager, docId, tag.getLabel()));
                 result.add(obj);
             }
             return result.toString();

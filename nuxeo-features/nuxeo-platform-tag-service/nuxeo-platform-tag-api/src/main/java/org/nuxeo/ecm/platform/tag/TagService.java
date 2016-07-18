@@ -63,6 +63,17 @@ public interface TagService {
     void untag(CoreSession session, String docId, String label, String username);
 
     /**
+     * Returns whether or not the current session can untag tag on provided document.
+     * 
+     * @param session the session
+     * @param docId the document id
+     * @param label the tag, or {@code null} for all tags
+     * @return whether or not the current session can untag provided document
+     * @since 8.4
+     */
+    boolean canUntag(CoreSession session, String docId, String label);
+
+    /**
      * Gets the tags applied to a document by a given user, or by all users.
      *
      * @param session the session

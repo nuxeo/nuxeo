@@ -199,11 +199,10 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     @Override
     public void untag(CoreSession session, String docId, String label, String username)
             throws DocumentSecurityException {
-        IdRef docIdRef = new IdRef(docId);
         // There's two allowed cases here:
         // - document doesn't exist, we're here after documentRemoved event
-        // - regular case: check if user has write permission on document
-        if (!session.exists(docIdRef) || session.hasPermission(docIdRef, SecurityConstants.WRITE)) {
+        // - regular case: check if user can remove this tag on document
+        if (!session.exists(new IdRef(docId)) || canUntag(session, docId, label)) {
             UnrestrictedRemoveTagging r = new UnrestrictedRemoveTagging(session, docId, label, username);
             r.runUnrestricted();
             if (label != null) {
@@ -268,7 +267,71 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
     }
-    
+
+    /**
+     * @since 8.4
+     */
+    @Override
+    public boolean canUntag(CoreSession session, String docId, String label) {
+        if (session.hasPermission(new IdRef(docId), SecurityConstants.WRITE)) {
+            // If user has WRITE permission, user can remove any tags
+            return true;
+        }
+        // Else check if desired tag was created by current user
+        UnrestrictedCanRemoveTagging r = new UnrestrictedCanRemoveTagging(session, docId, label);
+        r.runUnrestricted();
+        return r.canUntag;
+    }
+
+    protected static class UnrestrictedCanRemoveTagging extends UnrestrictedSessionRunner {
+
+        private final String docId;
+
+        private final String label;
+
+        private boolean canUntag;
+
+        protected UnrestrictedCanRemoveTagging(CoreSession session, String docId, String label) {
+            super(session);
+            this.docId = docId;
+            this.label = cleanLabel(label, true, false);
+            this.canUntag = false;
+        }
+
+        @Override
+        public void run() {
+            String tagId = null;
+            if (label != null) {
+                // Find tag
+                List<Map<String, Serializable>> res = getItems(PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(), session,
+                        label);
+                tagId = (res != null && !res.isEmpty()) ? (String) res.get(0).get(NXQL.ECM_UUID) : null;
+                if (tagId == null) {
+                    // tag not found - so user can untag
+                    canUntag = true;
+                    return;
+                }
+            }
+            // Find creators of tag(s).
+            Set<String> creators = new HashSet<>();
+            String query = String.format("SELECT DISTINCT dc:creator FROM Tagging WHERE relation:source = '%s'",
+                    docId);
+            if (tagId != null) {
+                query += String.format(" AND relation:target = '%s'", tagId);
+            }
+            try (IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL)) {
+                for (Map<String, Serializable> map : res) {
+                    creators.add((String) map.get("dc:creator"));
+                }
+            }
+            // Check if user can untag
+            // - in case of one tag, check if creators contains user
+            // - in case of all tags, check if user is the only creator
+            canUntag = creators.size() == 1 && creators.contains(originatingUsername);
+        }
+
+    }
+
     @Override
     public List<Tag> getDocumentTags(CoreSession session, String docId, String username) {
         return getDocumentTags(session, docId, username, true);

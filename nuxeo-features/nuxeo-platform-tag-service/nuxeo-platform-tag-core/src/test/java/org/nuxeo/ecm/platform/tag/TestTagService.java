@@ -700,9 +700,11 @@ public class TestTagService {
         ACPImpl acp = new ACPImpl();
         ACL acl = acp.getOrCreateACL();
         acl.add(new ACE("bob", SecurityConstants.WRITE, true));
+        acl.add(new ACE("bender", SecurityConstants.READ, true));
         session.setACP(file1.getRef(), acp, false);
         session.save();
 
+        // Test untag for user with write permission
         try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
 
             // Tag document
@@ -718,6 +720,25 @@ public class TestTagService {
 
             // Test tag absent
             tags = tagService.getDocumentTags(bobSession, file1Id, "bob");
+            assertTrue(tags.isEmpty());
+        }
+
+        // Test untag for user which created tag
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
+
+            // Tag document
+            tagService.tag(bobSession, file1Id, "othertag", "bender");
+
+            // Test tag present
+            List<Tag> tags = tagService.getDocumentTags(bobSession, file1Id, "bender");
+            assertEquals(1, tags.size());
+            assertEquals("othertag", tags.get(0).getLabel());
+
+            // Untag
+            tagService.untag(bobSession, file1Id, "othertag", "bender");
+
+            // Test tag absent
+            tags = tagService.getDocumentTags(bobSession, file1Id, "bender");
             assertTrue(tags.isEmpty());
         }
     }
