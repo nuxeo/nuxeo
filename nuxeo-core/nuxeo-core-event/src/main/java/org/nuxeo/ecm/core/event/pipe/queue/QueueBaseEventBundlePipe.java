@@ -26,14 +26,18 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipeConsumer;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since TODO
+ * Simple Queue based implementation that starts a dedicated thread to consume an in-memory message queue.
+ *
+ * @since 8.4
  */
+@Experimental
 public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundle> {
 
     protected static Log log = LogFactory.getLog(QueueBaseEventBundlePipe.class);

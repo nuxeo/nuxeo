@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
-import org.nuxeo.ecm.core.event.pipe.queue.QueueBaseEventBundlePipe;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -121,18 +120,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         asyncExec.init();
 
         EventDispatcherDescriptor dispatcherDescriptor = dispatchers.getDispatcherDescriptor();
-        if (dispatcherDescriptor!=null) {
+        if (dispatcherDescriptor != null) {
             List<EventPipeDescriptor> pipes = registredPipes.getPipes();
-            if (pipes.size()>0) {
+            if (pipes.size() > 0) {
                 pipeDispatcher = dispatcherDescriptor.getInstance();
                 pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
             }
         }
-
-        // XXX simulate contribs
-        List<EventPipeDescriptor> pipeDescriptors = new ArrayList<EventPipeDescriptor>();
-        //pipeDescriptors.add(new EventPipeDescriptor("local", LocalEventBundlePipe.class));
-        pipeDescriptors.add(new EventPipeDescriptor("localqueue", QueueBaseEventBundlePipe.class));
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -149,7 +143,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         if (asyncExec.shutdown(timeoutMillis) == false) {
             throw new RuntimeException("Async executor is still running, timeout expired");
         }
-        pipeDispatcher.shutdown();
+        if (pipeDispatcher != null) {
+            pipeDispatcher.shutdown();
+        }
     }
 
     public void registerForAsyncWait(AsyncWaitHook callback) {
@@ -193,11 +189,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             // TODO change signature
             throw new RuntimeException(e);
         }
-        try {
-            pipeDispatcher.waitForCompletion(timeout);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+        if (pipeDispatcher != null) {
+            try {
+                pipeDispatcher.waitForCompletion(timeout);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -364,7 +362,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
         } else {
-            if (pipeDispatcher==null) {
+            if (pipeDispatcher == null) {
                 asyncExec.run(postCommitAsync, event);
             } else {
                 // rather than sending to the WorkManager: send to the Pipe

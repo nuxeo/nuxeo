@@ -80,6 +80,11 @@
 
       Example pipe definition:
       <code>
+        <eventPipe name="dummyPipe1" class="org.nuxeo.ecm.core.event.pipe.DummyPipe" priority="0">
+	      <parameters>
+	        <parameter name="foo">bar</parameter>
+	      </parameters>
+	    </eventPipe>
       </code>
     </documentation>
     <object class="org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor"/>
@@ -91,6 +96,12 @@
 
       Example dispatcher definition:
       <code>
+        <eventDispatcher name="dispatcher" 
+                         class="org.nuxeo.ecm.core.event.pipe.dispatch.SimpleEventBundlePipeDispatcher">
+           <parameters>
+             <parameter name="foo">bar</parameter>
+           </parameters>
+        </eventDispatcher>    
       </code>
     </documentation>
     <object class="org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor"/>

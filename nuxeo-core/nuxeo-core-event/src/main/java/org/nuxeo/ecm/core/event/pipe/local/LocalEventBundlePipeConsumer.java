@@ -18,20 +18,25 @@ package org.nuxeo.ecm.core.event.pipe.local;
 
 import java.util.List;
 
+import javax.resource.spi.work.WorkManager;
+
+import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractListenerPipeConsumer;
 
 /**
+ * In memory implementation that does not handle any marshaling and directly feeds the {@link WorkManager}
  *
- * @since TODO
+ * @since 8.4
  */
+@Experimental
 public class LocalEventBundlePipeConsumer extends AbstractListenerPipeConsumer<EventBundle> {
 
     @Override
     protected List<EventBundle> unmarshallEventBundle(List<EventBundle> messages) {
-       // xxx reconnect them all using the same session ?
-       // we may not want to reconnect at this stage and let the workers do it
-       return messages;
+        // xxx reconnect them all using the same session ?
+        // we may not want to reconnect at this stage and let the workers do it
+        return messages;
     }
 
 }

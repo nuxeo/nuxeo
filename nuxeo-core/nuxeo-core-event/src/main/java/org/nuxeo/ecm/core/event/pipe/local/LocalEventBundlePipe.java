@@ -20,14 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
 
 /**
  * Local In memory implementation: directly relays to WorkManager
- * @since TODO
+ *
+ * @since 8.4
  */
+@Experimental
 public class LocalEventBundlePipe extends AbstractEventBundlePipe<EventBundle> implements EventBundlePipe {
 
     protected LocalEventBundlePipeConsumer consumer;
@@ -48,8 +51,6 @@ public class LocalEventBundlePipe extends AbstractEventBundlePipe<EventBundle> i
 
     @Override
     protected EventBundle marshall(EventBundle events) {
-        //ReconnectedEventBundle bundle = new ReconnectedEventBundleImpl(events);
-        //bundle.disconnect();
         return events;
     }
 
