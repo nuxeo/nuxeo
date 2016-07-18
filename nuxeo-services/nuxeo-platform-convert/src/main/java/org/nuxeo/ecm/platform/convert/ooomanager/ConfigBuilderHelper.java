@@ -30,6 +30,10 @@ import org.apache.commons.lang3.SystemUtils;
 
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * @deprecated Since 8.4. See 'soffice' use with {@link org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter} instead
+ */
+@Deprecated
 public class ConfigBuilderHelper {
 
     private static final String JPIPE_LIB_PATH_PROPERTY_KEY = "jod.jpipe.lib.path";

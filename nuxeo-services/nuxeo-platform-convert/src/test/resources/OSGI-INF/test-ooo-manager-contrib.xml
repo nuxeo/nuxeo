@@ -6,7 +6,7 @@
 		target="org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerComponent"
 		point="oooManagerConfig">
 
-		<OOoManager>
+		<OOoManager enabled="true">
 		  <portNumbers>
 		    <portNumber>2003</portNumber>
 		    <portNumber>2004</portNumber>

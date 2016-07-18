@@ -3,4 +3,4 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NXPlatformConvertPlugins
 Bundle-SymbolicName: org.nuxeo.ecm.platform.convert.test;singleton:=true
 Bundle-Localization: plugin
-Nuxeo-Component: test-ooo-manager-contrib.xml
+Nuxeo-Component: OSGI-INF/test-ooo-manager-contrib.xml, OSGI-INF/test-commandline-converter-contrib.xml

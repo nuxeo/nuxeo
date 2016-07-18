@@ -26,42 +26,25 @@ import static org.junit.Assert.assertNotNull;
 import java.io.FileInputStream;
 
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerComponent;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerDescriptor;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestOOoServiceManagerService extends NXRuntimeTestCase {
+@LocalDeploy("org.nuxeo.ecm.platform.convert:OSGI-INF/test-ooo-manager-contrib.xml")
+public class TestOOoServiceManagerService extends BaseConverterTest {
 
+    // not injected to test different configurations
     OOoManagerService ods;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.convert");
-        deployBundle("org.nuxeo.ecm.platform.convert.test");
-        deployContrib("org.nuxeo.ecm.platform.convert.test", "test-ooo-manager-contrib.xml");
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        ods.stopOOoManager();
-        super.tearDown();
-    }
 
     @Test
     public void testServiceRegistration() throws Exception {
-        ods = Framework.getLocalService(OOoManagerService.class);
+        ods = Framework.getService(OOoManagerService.class);
         assertNotNull(ods);
 
-        ods.startOOoManager();
         OfficeDocumentConverter converter = ods.getDocumentConverter();
         assertNotNull(converter);
 
@@ -80,24 +63,23 @@ public class TestOOoServiceManagerService extends NXRuntimeTestCase {
 
     @Test
     public void testSocketConnection() throws Exception {
-        Framework.getProperties().load(new FileInputStream(getResource("jodSocket.properties").getFile()));
-        ods = Framework.getLocalService(OOoManagerService.class);
+        Framework.getProperties().load(
+                new FileInputStream(TestOOoServiceManagerService.class.getResource("/jodSocket.properties").getFile()));
+        ods = Framework.getService(OOoManagerService.class);
         assertNotNull(ods);
 
-        ods.startOOoManager();
         OfficeDocumentConverter converter = ods.getDocumentConverter();
         assertNotNull(converter);
     }
 
     @Test
     public void testPipeConnection() throws Exception {
-        Framework.getProperties().load(new FileInputStream(getResource("jodPipe.properties").getFile()));
+        Framework.getProperties().load(
+                new FileInputStream(TestOOoServiceManagerService.class.getResource("/jodPipe.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
 
-        ods.startOOoManager();
         OfficeDocumentConverter converter = ods.getDocumentConverter();
         assertNotNull(converter);
     }
-
 }

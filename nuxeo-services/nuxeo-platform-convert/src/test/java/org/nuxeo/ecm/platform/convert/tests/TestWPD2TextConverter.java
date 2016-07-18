@@ -19,37 +19,23 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
-import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.runtime.api.Framework;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+/**
+ * @since 5.2
+ */
 public class TestWPD2TextConverter extends BaseConverterTest {
-
-    @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-    }
 
     @Test
     public void testWordPerfectToTextConverter() throws Exception {
-
-        ConversionService cs = Framework.getLocalService(ConversionService.class);
-        assertNotNull(cs);
-        ConverterCheckResult check = cs.isConverterAvailable("wpd2text");
-        assertNotNull(check);
-        Assume.assumeTrue(
-                String.format("Skipping Wordperfect conversion test since libpwd-tool is not installed:\n"
-                        + "- installation message: %s\n" + "- error message: %s", check.getInstallationMessage(),
-                        check.getErrorMessage()), check.isAvailable());
+        checkConverterAvailability("wpd2text");
+        checkCommandAvailability("wpd2text");
 
         String converterName = cs.getConverterName("application/wordperfect", "text/plain");
         assertEquals("wpd2text", converterName);

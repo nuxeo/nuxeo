@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Ricardo Dias
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
@@ -25,29 +24,63 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
-public abstract class BaseConverterTest extends NXRuntimeTestCase {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
-    private static final Log log = LogFactory.getLog(BaseConverterTest.class);
+/**
+ * @since 5.2
+ */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.platform.convert" })
+public abstract class BaseConverterTest {
 
-    OOoManagerService oooManagerService;
+    @Inject
+    protected ConversionService cs;
+
+    protected static final Log log = LogFactory.getLog(BaseConverterTest.class);
+
+    @Before
+    public void setUp() throws Exception {
+        assertNotNull(cs);
+    }
+
+    protected void checkConverterAvailability(String converterName) {
+        ConverterCheckResult check = cs.isConverterAvailable(converterName);
+        assertNotNull(check);
+        assumeTrue(String.format(
+                "Skipping %s tests since commandLine is not installed:\n"
+                        + "- installation message: %s\n- error message: %s",
+                converterName, check.getInstallationMessage(), check.getErrorMessage()), check.isAvailable());
+    }
+
+    protected void checkCommandAvailability(String command) {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        assertNotNull(cles);
+
+        CommandAvailability ca = cles.getCommandAvailability(command);
+        assumeTrue(String.format("Convert command %s is not available, skipping test", command), ca.isAvailable());
+    }
 
     protected static BlobHolder getBlobFromPath(String path, String srcMT) throws IOException {
         File file = FileUtils.getResourceFileFromContext(path);
@@ -64,54 +97,4 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
     protected static BlobHolder getBlobFromPath(String path) throws IOException {
         return getBlobFromPath(path, null);
     }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core.convert.api");
-        deployBundle("org.nuxeo.ecm.core.convert");
-        deployBundle("org.nuxeo.ecm.core.mimetype");
-        deployBundle("org.nuxeo.ecm.platform.convert");
-
-        oooManagerService = Framework.getService(OOoManagerService.class);
-        try {
-            oooManagerService.startOOoManager();
-        } catch (Exception e) {
-            log.warn("Can't run OpenOffice, JOD converter will not be available.");
-        }
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        oooManagerService = Framework.getService(OOoManagerService.class);
-        if (oooManagerService.isOOoManagerStarted()) {
-            oooManagerService.stopOOoManager();
-        }
-        super.tearDown();
-    }
-
-    public static String readPdfText(File pdfFile) throws IOException {
-        PDFTextStripper textStripper = new PDFTextStripper();
-        PDDocument document = PDDocument.load(pdfFile);
-        String text = textStripper.getText(document);
-        document.close();
-        return text.trim();
-    }
-
-    public static boolean isPDFA(File pdfFile) throws Exception {
-        PDDocument pddoc = PDDocument.load(pdfFile);
-        XMPMetadata xmp = pddoc.getDocumentCatalog().getMetadata().exportXMPMetadata();
-        Document doc = xmp.getXMPDocument();
-        // <rdf:Description xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
-        // rdf:about="">
-        // <pdfaid:part>1</pdfaid:part>
-        // <pdfaid:conformance>A</pdfaid:conformance>
-        // </rdf:Description>
-        NodeList list = doc.getElementsByTagName("pdfaid:conformance");
-        return list != null && "A".equals(list.item(0).getTextContent());
-    }
-
 }
