@@ -100,9 +100,10 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 if (src == null && canStop) {
                     log.info("End of broken consumer, processed node: " + getNbProcessed());
                     break;
+                } else if (src != null) {
+                    log.error("Consumer is broken reject node: " + src.getName());
+                    onSourceNodeException(src, error);
                 }
-                log.error("Consumer is broken reject node: " + src.getName());
-                onSourceNodeException(src, error);
             } catch (InterruptedException e) {
                 log.error("Interrupted exception received, stopping consumer");
                 break;
