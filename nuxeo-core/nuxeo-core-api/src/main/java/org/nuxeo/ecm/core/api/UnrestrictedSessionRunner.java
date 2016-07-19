@@ -139,9 +139,11 @@ public abstract class UnrestrictedSessionRunner {
                     run();
                 } finally {
                     try {
-                        if (!session.isStateSharedByAllThreadSessions()) {
-                            // save unrestricted state for base session
-                            session.save();
+                        if (session.isLive(false)) {
+                            if (!session.isStateSharedByAllThreadSessions()) {
+                                // save unrestricted state for base session
+                                session.save();
+                            }
                         }
                         session.close();
                     } finally {
