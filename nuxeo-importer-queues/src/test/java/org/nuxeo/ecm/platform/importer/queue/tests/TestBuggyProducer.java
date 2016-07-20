@@ -58,7 +58,7 @@ public class TestBuggyProducer {
         // To get logs
         // ImporterLogger logger = new BufferredLogger(log);
         QueueImporter importer = new QueueImporter(logger);
-        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, true);
+        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
         RandomQueuesManager qm = new RandomQueuesManager(logger, 5, 42);
 
