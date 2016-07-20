@@ -25,11 +25,11 @@ import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.objectweb.howl.log.ReplayListener;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.Thread.currentThread;
 import static org.nuxeo.runtime.transaction.TransactionHelper.startTransaction;
 
 /**
@@ -63,6 +63,9 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected boolean replayMode = true;
 
+    protected String threadName;
+
+
     public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue) {
         this.log = log;
         repositoryName = root.getRepositoryName();
@@ -75,6 +78,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     @Override
     public void run() {
+        threadName = currentThread().getName();
         started = true;
         startTime = System.currentTimeMillis();
         lastCheckTime = startTime;
@@ -93,6 +97,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected void runDrainer() {
         // consumer is broken but we drain the queue to prevent blocking the producer
+        markThreadName("draining");
         log.error("Consumer is broken, draining the queue to rejected");
         do {
             try {
@@ -109,6 +114,10 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 break;
             }
         } while(true);
+    }
+
+    private void markThreadName(String mark) {
+        Thread.currentThread().setName(Thread.currentThread().getName() + "-" + mark);
     }
 
     protected void runImport() {
@@ -136,7 +145,9 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                     incrementProcessed();
                     batch.add(src);
                     try {
+                        setThreadName(src);
                         process(session, src);
+                        restoreThreadName();
                     } catch (Exception e) {
                         log.error("Exception while consuming node: " + src.getName(), e);
                         ExceptionUtils.checkInterrupt(e);
@@ -146,6 +157,20 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 }
                 commitOrReplayBatch();
 
+            }
+
+            private void restoreThreadName() {
+                currentThread().setName(threadName);
+            }
+
+            private void setThreadName(SourceNode src) {
+                String name = threadName + "-" + nbProcessed;
+                if (src != null) {
+                    name += "-" + src.getName();
+                } else {
+                    name += "-null";
+                }
+                currentThread().setName(name);
             }
 
             private void commitIfNeededOrReplayBatch(SourceNode lastSrc) {
