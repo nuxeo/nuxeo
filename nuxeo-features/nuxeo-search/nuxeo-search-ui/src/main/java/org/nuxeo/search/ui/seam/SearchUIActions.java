@@ -270,7 +270,9 @@ public class SearchUIActions implements Serializable {
     protected void resetCurrentContentViewWorkingList() {
         if (currentContentViewName != null) {
             ContentView contentView = contentViewActions.getContentView(currentContentViewName);
-            documentsListsManager.resetWorkingList(contentView.getSelectionListName());
+            if (contentView != null) {
+                documentsListsManager.resetWorkingList(contentView.getSelectionListName());
+            }
         }
     }
 
@@ -325,7 +327,8 @@ public class SearchUIActions implements Serializable {
         SelectItemGroup flaggedGroup = new SelectItemGroup(messages.get(SEARCH_FILTERS_LABEL));
         List<ContentViewHeader> flaggedSavedSearches = getContentViewHeaders();
         List<SelectItem> flaggedSavedSearchesItems = convertCVToSelectItems(flaggedSavedSearches);
-        flaggedGroup.setSelectItems(flaggedSavedSearchesItems.toArray(new SelectItem[flaggedSavedSearchesItems.size()]));
+        flaggedGroup.setSelectItems(
+                flaggedSavedSearchesItems.toArray(new SelectItem[flaggedSavedSearchesItems.size()]));
         items.add(flaggedGroup);
 
         // Add saved searches
@@ -343,7 +346,8 @@ public class SearchUIActions implements Serializable {
         if (!otherUsersSavedFacetedSearches.isEmpty()) {
             List<SelectItem> otherUsersSavedSearchesItems = convertToSelectItems(otherUsersSavedFacetedSearches);
             SelectItemGroup allGroup = new SelectItemGroup(messages.get(SHARED_SEARCHES_LABEL));
-            allGroup.setSelectItems(otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
+            allGroup.setSelectItems(
+                    otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
             items.add(allGroup);
         }
         return items;
@@ -565,8 +569,8 @@ public class SearchUIActions implements Serializable {
 
     public void validateSimpleSearchKeywords(FacesContext context, UIComponent component, Object value) {
         if (!(value instanceof String) || StringUtils.isEmpty(((String) value).trim())) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    "feedback.search.noKeywords"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "feedback.search.noKeywords"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -575,8 +579,8 @@ public class SearchUIActions implements Serializable {
         for (String keyword : keywords) {
             if (keyword.startsWith("*")) {
                 // Can't begin search with * character
-                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                        "feedback.search.star"), null);
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        ComponentUtils.translate(context, "feedback.search.star"), null);
                 // also add global message
                 context.addMessage(null, message);
                 throw new ValidatorException(message);
