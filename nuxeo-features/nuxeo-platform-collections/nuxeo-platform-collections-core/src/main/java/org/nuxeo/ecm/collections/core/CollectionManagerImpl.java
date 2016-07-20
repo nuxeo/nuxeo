@@ -165,7 +165,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         }
         if (!isCollection(collection)) {
             throw new IllegalArgumentException(String.format("Document %s is not a collection",
-                    documentToBeAdded.getTitle()));
+                    collection.getTitle()));
         }
         if (!session.hasPermission(collection.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
             throw new DocumentSecurityException(String.format(PERMISSION_ERROR_MESSAGE,
