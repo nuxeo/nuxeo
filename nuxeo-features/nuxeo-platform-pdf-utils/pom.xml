@@ -4,7 +4,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>8.3-SNAPSHOT</version>
+    <version>8.4-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-pdf-utils</artifactId>
@@ -12,17 +12,108 @@
   <dependencies>
 
     <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-core</artifactId>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.levigo.jbig2</groupId>
+      <artifactId>levigo-jbig2-imageio</artifactId>
+      <version>1.6.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15</artifactId>
+      <version>1.44</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+      <version>1.44</version>
     </dependency>
 
   </dependencies>

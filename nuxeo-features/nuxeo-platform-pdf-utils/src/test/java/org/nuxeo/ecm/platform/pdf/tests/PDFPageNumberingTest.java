@@ -1,0 +1,155 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Thibaud Arguillere
+ *     Miguel Nixo
+ */
+package org.nuxeo.ecm.platform.pdf.tests;
+
+import java.io.File;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.pdf.PDFPageNumbering.PAGE_NUMBER_POSITION;
+import org.nuxeo.ecm.platform.pdf.PDFPageNumbering;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import javax.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+
+@RunWith(FeaturesRunner.class)
+@Features({ CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.pdf" })
+public class PDFPageNumberingTest {
+
+    private File pdfFile;
+
+    private String pdfMD5;
+
+    private DocumentModel testDocsFolder;
+
+    @Inject
+    CoreSession coreSession;
+
+    @Before
+    public void setUp() throws Exception {
+        testDocsFolder = coreSession.createDocumentModel("/", "test-pictures", "Folder");
+        testDocsFolder.setPropertyValue("dc:title", "test-pdfutils");
+        testDocsFolder = coreSession.createDocument(testDocsFolder);
+        testDocsFolder = coreSession.saveDocument(testDocsFolder);
+        pdfFile = FileUtils.getResourceFileFromContext(TestUtils.PDF_PATH);
+        pdfMD5 = TestUtils.calculateMd5(pdfFile);
+    }
+
+    @After
+    public void tearDown() {
+        coreSession.removeDocument(testDocsFolder.getRef());
+        coreSession.save();
+    }
+
+    private int getIndexOfNumberingForPage(int pageNumber) {
+        switch (pageNumber) {
+            case 1: return 1665;
+            case 2: return 1387;
+            case 3: return 1515;
+            case 4: return 1592;
+            case 5: return 1397;
+            case 6: return 1592;
+            case 7: return 1387;
+            case 8: return 1729;
+            case 9: return 1589;
+            case 10: return 1444;
+            case 11: return 1459;
+            case 12: return 1667;
+            case 13: return 849;
+        }
+        return 0;
+    }
+
+    private void checkPageNumbering(Blob pdfBlob, int firstPage, int firstNumber) throws Exception {
+        assertNotNull(pdfBlob);
+        assertNotSame(pdfMD5, TestUtils.calculateMd5(pdfBlob.getFile()));
+        PDDocument resultPDF = PDDocument.load(pdfBlob.getFile());
+        assertNotNull(resultPDF);
+        assertEquals(13, resultPDF.getNumberOfPages());
+        if (firstPage > 1) {
+            // there should not be any numbers in the pages before the ones that were numbered
+            assertFalse(TestUtils.extractText(resultPDF, 1, firstPage - 1).replace("\n", "").matches(".*\\d+.*"));
+        }
+        for (int page = firstPage; page <= 13; page++) {
+            // every numbered page should have the right number
+            int currentPageNumber = firstNumber + (page - firstPage);
+            assertEquals(getIndexOfNumberingForPage(page),
+                TestUtils.extractText(resultPDF, page, page).indexOf(Integer.toString(currentPageNumber)));
+        }
+        resultPDF.close();
+    }
+
+    @Test
+    public void testPageNumberingBottomLeft() throws Exception {
+        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        Blob result = pdfpn.addPageNumbers(1, 1, null, 0, "ff0000", PAGE_NUMBER_POSITION.BOTTOM_LEFT);
+        checkPageNumbering(result, 1, 1);
+    }
+
+    @Test
+    public void testPageNumberingBottomCenter() throws Exception {
+        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        Blob result = pdfpn.addPageNumbers(5, 3, null, 0, "00ff00", PAGE_NUMBER_POSITION.BOTTOM_CENTER);
+        checkPageNumbering(result, 5, 3);
+    }
+
+    @Test
+    public void testPageNumberingBottomRight() throws Exception {
+        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        Blob result = pdfpn.addPageNumbers(10, 10, null, 0, "0000ff", PAGE_NUMBER_POSITION.BOTTOM_RIGHT);
+        checkPageNumbering(result, 10, 10);
+    }
+
+    @Test
+    public void testPageNumberingTopLeft() throws Exception {
+        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        Blob result = pdfpn.addPageNumbers(1, 150, null, 0, "FF0000", PAGE_NUMBER_POSITION.TOP_LEFT);
+        checkPageNumbering(result, 1, 150);
+    }
+
+    @Test
+    public void testPageNumberingTopCenter() throws Exception {
+        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        Blob result = pdfpn.addPageNumbers(1, 1, null, 0, "0x0000ff", PAGE_NUMBER_POSITION.TOP_CENTER);
+        checkPageNumbering(result, 1, 1);
+    }
+
+    @Test
+    public void testPageNumberingTopRight() throws Exception {
+        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        Blob result = pdfpn.addPageNumbers(1, 1, null, 0, "", PAGE_NUMBER_POSITION.TOP_RIGHT);
+        checkPageNumbering(result, 1, 1);
+    }
+
+}
