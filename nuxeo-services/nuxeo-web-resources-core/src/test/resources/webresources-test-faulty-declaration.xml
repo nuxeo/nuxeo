@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.theme.styling.tests.themeContrib.override">
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+
+    <bundle name="myFaultyApp">
+      <resources append="true">
+        <resource></resource>
+      </resources>
+    </bundle>
+
+  </extension>
+
+</component>
