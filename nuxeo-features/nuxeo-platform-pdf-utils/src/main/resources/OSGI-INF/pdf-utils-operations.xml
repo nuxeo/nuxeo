@@ -2,20 +2,20 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
 
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFAddPageNumbersOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFConvertToPicturesOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptReadOnlyOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractInfoOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractLinksOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractPagesOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractTextOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFMergeBlobsOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFMergeDocumentsOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFRemoveEncryptionOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkImageOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkPDFOperation" />
-    <opeartion class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkTextOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFAddPageNumbersOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFConvertToPicturesOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptReadOnlyOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractInfoOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractLinksOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractPagesOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractTextOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFMergeBlobsOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFMergeDocumentsOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFRemoveEncryptionOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkImageOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkPDFOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkTextOperation" />
 
   </extension>
 
