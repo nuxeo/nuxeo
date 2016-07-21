@@ -107,8 +107,6 @@ public class PDFInfo {
 
     protected boolean alreadyParsed = false;
 
-    // LinkedHashMap just because wanted to keep the order
-    // (nothing requested, really)
     protected LinkedHashMap<String, String> cachedMap;
 
     /**
@@ -168,8 +166,7 @@ public class PDFInfo {
      */
     public void setParseWithXMP(boolean inValue) {
         if (alreadyParsed && doXMP != inValue) {
-            throw new NuxeoException(
-                "Value of 'doXML' cannot be modified after the blob has been already parsed.");
+            throw new NuxeoException("Value of 'doXML' cannot be modified after the blob has been already parsed.");
         }
         doXMP = inValue;
     }
@@ -201,8 +198,7 @@ public class PDFInfo {
                 pdfDoc = PDDocument.load(pdfBlob.getStream());
                 isEncrypted = pdfDoc.isEncrypted();
                 if (isEncrypted) {
-                    pdfDoc.openProtection(new StandardDecryptionMaterial(
-                        password));
+                    pdfDoc.openProtection(new StandardDecryptionMaterial(password));
                 }
                 numberOfPages = pdfDoc.getNumberOfPages();
                 PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();
@@ -273,7 +269,6 @@ public class PDFInfo {
                     }
                 }
             } catch (IOException | BadSecurityHandlerException | CryptographyException e) {
-                //throw new NuxeoException("Cannot get PDF info: " + e.getMessage());
                 throw new NuxeoException(e);
             } finally {
                 if (pdfDoc != null) {
@@ -329,14 +324,12 @@ public class PDFInfo {
             cachedMap.put("PDF producer", producer);
             cachedMap.put("Content creator", contentCreator);
             if (creationDate != null) {
-                cachedMap.put("Creation date",
-                    dateFormat.format(creationDate.getTime()));
+                cachedMap.put("Creation date", dateFormat.format(creationDate.getTime()));
             } else {
                 cachedMap.put("Creation date", "");
             }
             if (modificationDate != null) {
-                cachedMap.put("Modification date",
-                    dateFormat.format(modificationDate.getTime()));
+                cachedMap.put("Modification date", dateFormat.format(modificationDate.getTime()));
             } else {
                 cachedMap.put("Modification date", "");
             }
@@ -349,12 +342,17 @@ public class PDFInfo {
             cachedMap.put("Crop box height", "" + cropBoxHeightInPoints);
             if(permissions != null) {
                 cachedMap.put("Can Print", Boolean.toString(permissions.canPrint()));
+                cachedMap.put("Can Modify", Boolean.toString(permissions.canModify()));
+                cachedMap.put("Can Extract", Boolean.toString(permissions.canExtractContent()));
+                cachedMap.put("Can Modify Annotations", Boolean.toString(permissions.canModifyAnnotations()));
                 cachedMap.put("Can Fill Forms", Boolean.toString(permissions.canFillInForm()));
-                cachedMap.put("Can Extract for Accessibility", Boolean.toString(permissions.canExtractForAccessibility()));
+                cachedMap.put("Can Extract for Accessibility", Boolean.toString(
+                    permissions.canExtractForAccessibility()));
                 cachedMap.put("Can Assemble", Boolean.toString(permissions.canAssembleDocument()));
                 cachedMap.put("Can Print Degraded", Boolean.toString(permissions.canPrintDegraded()));
             }
         }
+
         return cachedMap;
     }
 
