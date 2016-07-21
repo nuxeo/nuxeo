@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
@@ -236,6 +237,11 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
     @Override
     public void registerResourceBundle(ResourceBundle bundle) {
         log.info(String.format("Register resource bundle '%s'", bundle.getName()));
+        if (bundle.getResources().removeIf(StringUtils::isBlank)) {
+            log.error("Some resources references were null or blank while setting " + bundle.getName()
+                    + " and have been supressed. This probably happened because some <resource> tags were empty in "
+                    + "the xml declaration. The correct form is <resource>resource name</resource>.");
+        }
         resourceBundles.addContribution(bundle);
         log.info(String.format("Done registering resource bundle '%s'", bundle.getName()));
     }
