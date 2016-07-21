@@ -19,21 +19,9 @@
 
 package org.nuxeo.ecm.restapi.test;
 
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
-import org.codehaus.jackson.JsonNode;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import javax.inject.Inject;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,9 +29,23 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import javax.inject.Inject;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
+import org.codehaus.jackson.JsonNode;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * @since 8.3
@@ -57,6 +59,9 @@ public class AuthenticationTokensTest extends BaseTest {
     @Inject
     TokenAuthenticationService tokenAuthenticationService;
 
+    @Inject
+    protected CoreFeature coreFeature;
+
     @Test
     public void itCanQueryTokens() throws Exception {
         // Check empty token list
@@ -67,6 +72,7 @@ public class AuthenticationTokensTest extends BaseTest {
 
         // acquire some tokens
         String token1 = tokenAuthenticationService.acquireToken("Administrator", "app1", "device1", "", "rw");
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
         String token2 = tokenAuthenticationService.acquireToken("Administrator", "app2", "device2", "", "rw");
 
         nextTransaction();
