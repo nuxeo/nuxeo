@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.pdf.tests;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -60,6 +59,8 @@ import static org.junit.Assert.assertTrue;
 @Features({ AutomationFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.pdf" })
 public class PDFWatermarkingTest {
+
+    private static final String TEXT_WATERMARK = "© Test Text Watermark";
 
     private FileBlob pdfFileBlob;
 
@@ -141,29 +142,26 @@ public class PDFWatermarkingTest {
     @Test
     public void testWatermarkTextPDF() throws Exception {
         PDFWatermarking pdfw = new PDFWatermarking(pdfFileBlob);
-        String watermark = UUID.randomUUID().toString();
-        pdfw.setText(watermark);
-        assertFalse(hasTextOnAllPages(pdfFileBlob, watermark));
-        assertTrue(hasTextOnAllPages(pdfw.watermark(), watermark));
+        pdfw.setText(TEXT_WATERMARK);
+        assertFalse(hasTextOnAllPages(pdfFileBlob, TEXT_WATERMARK));
+        assertTrue(hasTextOnAllPages(pdfw.watermark(), TEXT_WATERMARK));
     }
 
     @Test
     public void testWatermarkTextPDFWithImages() throws Exception {
         PDFWatermarking pdfw = new PDFWatermarking(pdfFileWithImagesBlob);
-        String watermark = UUID.randomUUID().toString().substring(1, 10);
-        pdfw.setText(watermark);
-        assertFalse(hasTextOnAllPages(pdfFileWithImagesBlob, watermark));
-        assertTrue(hasTextOnAllPages(pdfw.watermark(), watermark));
+        pdfw.setText(TEXT_WATERMARK);
+        assertFalse(hasTextOnAllPages(pdfFileWithImagesBlob, TEXT_WATERMARK));
+        assertTrue(hasTextOnAllPages(pdfw.watermark(), TEXT_WATERMARK));
     }
 
     @Test
     public void testWatermarkTextStylizedPDFWithImages() throws Exception {
         PDFWatermarking pdfw = new PDFWatermarking(pdfFileWithImagesBlob);
-        String watermark = "© ACME - " + java.util.UUID.randomUUID().toString().substring(1, 5);
-        pdfw.setText(watermark).setXPosition(100).setYPosition(100)
+        pdfw.setText(TEXT_WATERMARK).setXPosition(100).setYPosition(100)
             .setAlphaColor(0.3f).setFontSize(12f).setTextRotation(45);
-        assertFalse(hasTextOnAllPages(pdfFileWithImagesBlob, watermark));
-        assertTrue(hasTextOnAllPages(pdfw.watermark(), watermark));
+        assertFalse(hasTextOnAllPages(pdfFileWithImagesBlob, TEXT_WATERMARK));
+        assertTrue(hasTextOnAllPages(pdfw.watermark(), TEXT_WATERMARK));
     }
 
     @Test
@@ -229,7 +227,7 @@ public class PDFWatermarkingTest {
         properties.put("alphaColor", "0.9");
         properties.put("invertY", "true");
         properties.put("textRotation", "45");
-        String watermark = "© ACME - " + java.util.UUID.randomUUID().toString();
+        String watermark = "© ACME - Watermark";
         OperationChain chain = new OperationChain("testChain");
         OperationContext ctx = new OperationContext(coreSession);
         assertNotNull(ctx);
