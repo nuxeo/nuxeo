@@ -88,18 +88,6 @@
       </filter>
     </action>
 
-    <action id="thread_rights" link="/incl/tabs/document_rights.xhtml"
-      order="50" enabled="true" label="action.view.rights" icon="/icons/file.gif"
-      type="rest_document_link">
-      <category>VIEW_ACTION_LIST</category>
-      <filter id="on_thread_rights">
-        <rule grant="true">
-          <permission>WriteSecurity</permission>
-          <type>Thread</type>
-        </rule>
-      </filter>
-    </action>
-
     <action id="TAB_THREAD" link="/incl/tabs/document_thread.xhtml"
       enabled="true" label="action.view.thread" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
