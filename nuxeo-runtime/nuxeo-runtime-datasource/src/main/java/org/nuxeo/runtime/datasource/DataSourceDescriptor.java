@@ -47,8 +47,10 @@ import org.w3c.dom.Node;
  * The attributes of a {@code <datasource>} element are:
  * <ul>
  * <li><b>name</b>: the JNDI name (for instance {@code jdbc/foo})</li>
- * <li><b>driverClassName</b>: the JDBC driver class name (only for a non-XA datasource)</li>
- * <li><b>xaDataSource</b>: the XA datasource class name (only for a XA datasource)</li>
+ * <li><b>driverClassName</b>: the JDBC driver class name (only for a non-XA
+ * datasource)</li>
+ * <li><b>xaDataSource</b>: the XA datasource class name (only for a XA
+ * datasource)</li>
  * </ul>
  * <p>
  * To configure the characteristics of the pool:
@@ -56,12 +58,14 @@ import org.w3c.dom.Node;
  * <li><b>maxActive</b>: the maximum number of active connections</li>
  * <li><b>minIdle</b>: the minimum number of idle connections</li>
  * <li><b>maxIdle</b>: the maximum number of idle connections</li>
- * <li><b>maxWait</b>: the maximum number of milliseconds to wait for a connection to be available, or -1 (the default)
- * to wait indefinitely</li>
- * <li>... see {@link org.apache.commons.dbcp.BasicDataSource BasicDataSource} setters for more</li>
+ * <li><b>maxWait</b>: the maximum number of milliseconds to wait for a
+ * connection to be available, or -1 (the default) to wait indefinitely</li>
+ * <li>... see {@link org.apache.commons.dbcp.BasicDataSource BasicDataSource}
+ * setters for more</li>
  * </ul>
  * <p>
- * To configure the datasource connections, individual {@code <property>} sub-elements are used.
+ * To configure the datasource connections, individual {@code <property>}
+ * sub-elements are used.
  * <p>
  * For a non-XA datasource, you must specify at least a <b>url</b>:
  *
@@ -77,8 +81,9 @@ import org.w3c.dom.Node;
 public class DataSourceDescriptor {
 
     /*
-     * It is not possible to expand the variables in the setters because in tests, values are not available in context.
-     * A clean up needs to be done to have the values during startup.
+     * It is not possible to expand the variables in the setters because in
+     * tests, values are not available in context. A clean up needs to be done
+     * to have the values during startup.
      */
 
     @XNode("@name")

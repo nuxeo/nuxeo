@@ -82,4 +82,5 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
         }
         return config;
     }
+
 }

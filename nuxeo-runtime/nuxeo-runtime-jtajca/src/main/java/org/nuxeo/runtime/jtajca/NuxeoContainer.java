@@ -48,7 +48,6 @@ import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.ConnectionReturnAction;
 import org.apache.geronimo.connector.outbound.ConnectionTrackingInterceptor;
-import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.PoolingAttributes;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.LocalTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
@@ -87,10 +86,10 @@ public class NuxeoContainer {
 
     protected static UserTransaction ut;
 
-    protected static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
+    protected static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<>(
             8, 0.75f, 2);
 
-    private static final List<NuxeoContainerListener> listeners = new ArrayList<NuxeoContainerListener>();
+    private static final List<NuxeoContainerListener> listeners = new ArrayList<>();
 
     private static volatile InstallContext installContext;
 
@@ -115,7 +114,7 @@ public class NuxeoContainer {
     protected static final Timer transactionTimer = registry.timer(MetricRegistry.name("nuxeo", "transactions",
             "duration"));
 
-    protected static final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
+    protected static final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<>();
 
     private NuxeoContainer() {
     }
@@ -392,7 +391,7 @@ public class NuxeoContainer {
 
     public static synchronized ConnectionManagerWrapper initConnectionManager(NuxeoConnectionManagerConfiguration config) {
         ConnectionTrackingCoordinator coordinator = new ConnectionTrackingCoordinator();
-        GenericConnectionManager cm = createConnectionManager(coordinator, config);
+        NuxeoConnectionManager cm = createConnectionManager(coordinator, config);
         ConnectionManagerWrapper cmw = new ConnectionManagerWrapper(coordinator, cm, config);
         installConnectionManager(cmw);
         return cmw;
@@ -560,27 +559,34 @@ public class NuxeoContainer {
      *
      * @throws NamingException
      */
-    public static GenericConnectionManager createConnectionManager(ConnectionTracker tracker,
+    public static NuxeoConnectionManager createConnectionManager(ConnectionTracker tracker,
             NuxeoConnectionManagerConfiguration config) {
         TransactionSupport transactionSupport = createTransactionSupport(config);
-        // note: XATransactions -> TransactionCachingInterceptor ->
-        // ConnectorTransactionContext casts transaction to Geronimo's
-        // TransactionImpl (from TransactionManagerImpl)
-        PoolingSupport poolingSupport = new SinglePool(config.getMaxPoolSize(), config.getMinPoolSize(),
+        PoolingSupport poolingSupport = createPoolingSupport(config);
+        NuxeoValidationSupport validationSupport = createValidationSupport(config);
+        return new NuxeoConnectionManager(validationSupport, transactionSupport, poolingSupport, null, tracker, tmRecoverable,
+                config.getName(), Thread.currentThread().getContextClassLoader());
+    }
+
+    protected static PoolingSupport createPoolingSupport(NuxeoConnectionManagerConfiguration config) {
+        PoolingSupport support = new SinglePool(config.getMaxPoolSize(), config.getMinPoolSize(),
                 config.getBlockingTimeoutMillis(), config.getIdleTimeoutMinutes(), config.getMatchOne(),
                 config.getMatchAll(), config.getSelectOneNoMatch());
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
-
-        return new GenericConnectionManager(transactionSupport, poolingSupport, null, tracker, tmRecoverable,
-                config.getName(), classLoader);
+        return support;
     }
 
     protected static TransactionSupport createTransactionSupport(NuxeoConnectionManagerConfiguration config) {
         if (config.getXAMode()) {
+            // note: XATransactions -> TransactionCachingInterceptor ->
+            // ConnectorTransactionContext casts transaction to Geronimo's
+            // TransactionImpl (from TransactionManagerImpl)
             return new XATransactions(config.getUseTransactionCaching(), config.getUseThreadCaching());
         }
         return LocalTransactions.INSTANCE;
+    }
+
+    protected static NuxeoValidationSupport createValidationSupport(NuxeoConnectionManagerConfiguration config) {
+        return new NuxeoValidationSupport(config.testOnBorrow, config.testOnReturn);
     }
 
     public static class TransactionManagerConfiguration {
@@ -729,7 +735,7 @@ public class NuxeoContainer {
 
             protected final String threadName = Thread.currentThread().getName();
 
-            protected final Map<ConnectionInfo, Allocation> inuse = new HashMap<ConnectionInfo, Allocation>();
+            protected final Map<ConnectionInfo, Allocation> inuse = new HashMap<>();
 
             public static class AllocationErrors extends RuntimeException {
 
