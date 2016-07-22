@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.pdf.tests;
 
 import java.io.File;
+import java.util.HashMap;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
@@ -32,13 +34,16 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.pdf.PDFEncryption;
+import org.nuxeo.ecm.platform.pdf.operations.PDFEncryptOperation;
 import org.nuxeo.ecm.platform.pdf.operations.PDFEncryptReadOnlyOperation;
+import org.nuxeo.ecm.platform.pdf.operations.PDFRemoveEncryptionOperation;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 @Deploy({ "org.nuxeo.ecm.platform.pdf" })
 public class PDFEncryptionTest {
 
-    private FileBlob pdfFileBlob;
+    private FileBlob pdfFileBlob, pdfEncryptedFileBlob;
 
     private DocumentModel testDocsFolder;
 
@@ -83,6 +88,19 @@ public class PDFEncryptionTest {
         pdfDocModel = coreSession.createDocument(pdfDocModel);
         pdfDocModel = coreSession.saveDocument(pdfDocModel);
         assertNotNull(pdfDocModel);
+        File pdfEncryptedFile = FileUtils.getResourceFileFromContext(TestUtils.PDF_ENCRYPTED_PATH);
+        assertNotNull(pdfEncryptedFile);
+        pdfEncryptedFileBlob = new FileBlob(pdfEncryptedFile);
+        assertNotNull(pdfEncryptedFileBlob);
+        pdfEncryptedFileBlob.setMimeType("application/pdf");
+        pdfEncryptedFileBlob.setFilename(pdfEncryptedFile.getName());
+        DocumentModel pdfEncryptedDocModel = coreSession.createDocumentModel(testDocsFolder.getPathAsString(),
+            pdfEncryptedFile.getName(), "File");
+        pdfEncryptedDocModel.setPropertyValue("dc:title", pdfEncryptedFile.getName());
+        pdfEncryptedDocModel.setPropertyValue("file:content", pdfEncryptedFileBlob);
+        pdfEncryptedDocModel = coreSession.createDocument(pdfEncryptedDocModel);
+        pdfEncryptedDocModel = coreSession.saveDocument(pdfEncryptedDocModel);
+        assertNotNull(pdfEncryptedDocModel);
     }
 
     @After
@@ -159,6 +177,93 @@ public class PDFEncryptionTest {
         pdfDoc = PDDocument.load(result.getFile());
         assertFalse(pdfDoc.isEncrypted());
         pdfDoc.close();
+    }
+
+    @Test
+    public void testEncryptOperationSimple() throws Exception {
+        OperationChain chain = new OperationChain("testChain");
+        OperationContext ctx = new OperationContext(coreSession);
+        assertNotNull(ctx);
+        ctx.setInput(pdfFileBlob);
+        chain.add(PDFEncryptOperation.ID)
+            .set("originalOwnerPwd", TestUtils.PDF_PROTECTED_OWNER_PASSWORD)
+            .set("ownerPwd", TestUtils.PDF_PROTECTED_OWNER_PASSWORD)
+            .set("userPwd", TestUtils.PDF_PROTECTED_USER_PASSWORD);
+        Blob result = (Blob) automationService.run(ctx, chain);
+        assertNotNull(result);
+        PDDocument originalPDF = PDDocument.load(pdfFileBlob.getFile());
+        assertFalse(originalPDF.isEncrypted());
+        originalPDF.close();
+        PDDocument encryptedPDF = PDDocument.load(result.getFile());
+        assertTrue(encryptedPDF.isEncrypted());
+        encryptedPDF.openProtection(new StandardDecryptionMaterial(TestUtils.PDF_PROTECTED_USER_PASSWORD));
+        assertFalse(encryptedPDF.isEncrypted());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canModify());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canModifyAnnotations());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canPrint());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canPrintDegraded());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canExtractContent());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canExtractForAccessibility());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canAssembleDocument());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canFillInForm());
+        encryptedPDF.close();
+    }
+
+    @Test
+    public void testEncryptOperationComplex() throws Exception {
+        OperationChain chain = new OperationChain("testChain");
+        OperationContext ctx = new OperationContext(coreSession);
+        assertNotNull(ctx);
+        ctx.setInput(pdfFileBlob);
+        HashMap<String, String> properties = new HashMap<>();
+        properties.put("modify", "true");
+        properties.put("modifyannot", "true");
+        properties.put("print", "false");
+        properties.put("printdegraded", "false");
+        properties.put("copy", "true");
+        properties.put("extractforaccessibility", "true");
+        chain.add(PDFEncryptOperation.ID)
+            .set("originalOwnerPwd", TestUtils.PDF_PROTECTED_OWNER_PASSWORD)
+            .set("ownerPwd", TestUtils.PDF_PROTECTED_OWNER_PASSWORD)
+            .set("userPwd", TestUtils.PDF_PROTECTED_USER_PASSWORD)
+            .set("keyLength", "40")
+            .set("permissions", new Properties(properties));
+        Blob result = (Blob) automationService.run(ctx, chain);
+        assertNotNull(result);
+        PDDocument originalPDF = PDDocument.load(pdfFileBlob.getFile());
+        assertFalse(originalPDF.isEncrypted());
+        originalPDF.close();
+        PDDocument encryptedPDF = PDDocument.load(result.getFile());
+        assertTrue(encryptedPDF.isEncrypted());
+        encryptedPDF.openProtection(new StandardDecryptionMaterial(TestUtils.PDF_PROTECTED_USER_PASSWORD));
+        assertFalse(encryptedPDF.isEncrypted());
+        assertTrue(encryptedPDF.getCurrentAccessPermission().canModify());
+        assertTrue(encryptedPDF.getCurrentAccessPermission().canModifyAnnotations());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canPrint());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canPrintDegraded());
+        assertTrue(encryptedPDF.getCurrentAccessPermission().canExtractContent());
+        assertTrue(encryptedPDF.getCurrentAccessPermission().canExtractForAccessibility());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canAssembleDocument());
+        assertFalse(encryptedPDF.getCurrentAccessPermission().canFillInForm());
+        encryptedPDF.close();
+    }
+
+    @Test
+    public void testRemoveEncryptionOperation() throws Exception {
+        OperationChain chain = new OperationChain("testChain");
+        OperationContext ctx = new OperationContext(coreSession);
+        assertNotNull(ctx);
+        ctx.setInput(pdfEncryptedFileBlob);
+        chain.add(PDFRemoveEncryptionOperation.ID)
+            .set("ownerPwd", TestUtils.PDF_ENCRYPTED_PASSWORD);
+        Blob result = (Blob) automationService.run(ctx, chain);
+        assertNotNull(result);
+        PDDocument originalPDF = PDDocument.load(pdfEncryptedFileBlob.getFile());
+        assertTrue(originalPDF.isEncrypted());
+        originalPDF.close();
+        PDDocument decryptedPDF = PDDocument.load(result.getFile());
+        assertFalse(decryptedPDF.isEncrypted());
+        decryptedPDF.close();
     }
 
     @Test

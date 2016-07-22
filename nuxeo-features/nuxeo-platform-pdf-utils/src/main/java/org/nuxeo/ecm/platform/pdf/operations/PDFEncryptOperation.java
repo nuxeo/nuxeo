@@ -51,20 +51,17 @@ public class PDFEncryptOperation {
 
     public static final String ID = "PDF.Encrypt";
 
-    public static final String[] PERMISSIONS_LOWERCASE = { "print", "modify", "copy", "modifyannot", "fillforms",
-        "extractforaccessibility", "assemble", "printdegraded" };
-
     @Param(name = "originalOwnerPwd")
-    protected String originalOwnerPwd;
+    private String originalOwnerPwd;
 
     @Param(name = "ownerPwd")
-    protected String ownerPwd;
+    private String ownerPwd;
 
     @Param(name = "userPwd")
-    protected String userPwd;
+    private String userPwd;
 
     @Param(name = "keyLength", required = false, widget = Constants.W_OPTION, values = { "40", "128" })
-    protected String keyLength = "128";
+    private String keyLength = "128";
 
     @Param(name = "xpath", required = false, values = { "file:content" })
     protected String xpath = "file:content";
@@ -72,20 +69,14 @@ public class PDFEncryptOperation {
     @Param(name = "permissions", required = false)
     protected Properties permissions;
 
-    @OperationMethod
-    public Blob run(Blob inBlob) {
-        // Set everything to false by default
+    private AccessPermission computeAccessPermission(Properties properties) {
         AccessPermission ap = new AccessPermission(0);
-        boolean value;
-        String valueStr;
-        for(Entry<String, String> onePerm : permissions.entrySet()) {
-            valueStr = onePerm.getValue();
-            if(StringUtils.isBlank(valueStr)) {
-                value = false;
-            } else {
-                value = "true".equals(valueStr.toLowerCase());
-            }
-            switch(onePerm.getKey().toLowerCase()) {
+        if (properties == null) {
+            return ap;
+        }
+        for (Entry<String, String> property : properties.entrySet()) {
+            boolean value = Boolean.parseBoolean(property.getValue());
+            switch (property.getKey().toLowerCase()) {
                 case "print":
                     ap.setCanPrint(value);
                     break;
@@ -112,12 +103,17 @@ public class PDFEncryptOperation {
                     break;
             }
         }
+        return ap;
+    }
+
+    @OperationMethod
+    public Blob run(Blob inBlob) {
         PDFEncryption pdfe = new PDFEncryption(inBlob);
         pdfe.setKeyLength(Integer.parseInt(keyLength));
         pdfe.setOriginalOwnerPwd(originalOwnerPwd);
         pdfe.setOwnerPwd(ownerPwd);
         pdfe.setUserPwd(userPwd);
-        return pdfe.encrypt(ap);
+        return pdfe.encrypt(computeAccessPermission(permissions));
     }
 
     @OperationMethod
@@ -130,13 +126,8 @@ public class PDFEncryptOperation {
         if (StringUtils.isBlank(xpath)) {
             xpath = "file:content";
         }
-        Blob result = null;
-        Blob content;
-        content = (Blob) inDoc.getPropertyValue(xpath);
-        if (content != null) {
-            result = this.run(content);
-        }
-        return result;
+        Blob content = (Blob) inDoc.getPropertyValue(xpath);
+        return (content != null) ? this.run(content) : null;
     }
 
     @OperationMethod

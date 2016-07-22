@@ -19,14 +19,18 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
  * Encrypt/Decrypt a PDF.
@@ -41,21 +45,17 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class PDFEncryption {
 
-    protected Blob pdfBlob;
+    private Blob pdfBlob;
 
-    protected PDDocument pdfDoc;
+    private PDDocument pdfDoc;
 
-    public static final List<Integer> ALLOWED_LENGTH = Arrays.asList(40, 128);
+    private static final List<Integer> ALLOWED_LENGTH = Arrays.asList(40, 128);
 
-    public static final int DEFAULT_KEYLENGTH = 128;
+    private static final int DEFAULT_KEYLENGTH = 128;
 
-    int keyLength = DEFAULT_KEYLENGTH;
+    private int keyLength = DEFAULT_KEYLENGTH;
 
-    String originalOwnerPwd;
-
-    String userPwd;
-
-    String ownerPwd;
+    private String originalOwnerPwd, ownerPwd, userPwd;
 
     /**
      * Basic constructor.
@@ -64,12 +64,6 @@ public class PDFEncryption {
      */
     public PDFEncryption(Blob inBlob) {
         pdfBlob = inBlob;
-    }
-
-    protected void loadPdf() throws NuxeoException {
-        if (pdfDoc == null) {
-            pdfDoc = PDFUtils.load(pdfBlob, originalOwnerPwd);
-        }
     }
 
     /**
@@ -137,31 +131,29 @@ public class PDFEncryption {
      * @return A copy of the blob with the new permissions set.
      */
     public Blob encrypt(AccessPermission inPerm) {
-        Blob result = null;
-        if (keyLength < 1) {
-            keyLength = DEFAULT_KEYLENGTH;
-        } else {
-            if (!ALLOWED_LENGTH.contains(keyLength)) {
-                throw new NuxeoException("Cannot use " + keyLength + " is not allowed as lenght for the encrytion key");
-            }
+        if (!ALLOWED_LENGTH.contains(keyLength)) {
+            throw new NuxeoException(keyLength + " is not an allowed length for the encrytion key");
         }
-        if (StringUtils.isBlank(ownerPwd)) {
-            ownerPwd = originalOwnerPwd;
-        }
+        ownerPwd = (StringUtils.isBlank(ownerPwd)) ? originalOwnerPwd : ownerPwd;
         try {
-            loadPdf();
             StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerPwd, userPwd, inPerm);
             spp.setEncryptionKeyLength(keyLength);
-            spp.setPermissions(inPerm);
+            pdfDoc = PDDocument.load(pdfBlob.getFile());
             pdfDoc.protect(spp);
-            result = PDFUtils.saveInTempFile(pdfDoc, pdfBlob.getFilename());
+            Blob result = Blobs.createBlobWithExtension(".pdf");
+            File resultFile = result.getFile();
+            pdfDoc.save(result.getFile());
+            result.setMimeType("application/pdf");
+            if (StringUtils.isNotBlank(pdfBlob.getFilename())) {
+                result.setFilename(pdfBlob.getFilename());
+            }
+            pdfDoc.close();
+            FileBlob fb = new FileBlob(resultFile);
+            fb.setMimeType("application/pdf");
+            return fb;
         } catch (Exception e) {
             throw new NuxeoException("Failed to encrypt the PDF", e);
-        } finally {
-            PDFUtils.closeSilently(pdfDoc);
-            pdfDoc = null;
         }
-        return result;
     }
 
     /**
@@ -182,23 +174,29 @@ public class PDFEncryption {
      * </ul>
      */
     public Blob removeEncryption() {
-        Blob result = null;
         try {
-            loadPdf();
-            // loadPdf() has decrypted the pdf
+            String password = (StringUtils.isBlank(originalOwnerPwd)) ? ownerPwd : originalOwnerPwd;
+            pdfDoc = PDDocument.load(pdfBlob.getFile());
+            if (!pdfDoc.isEncrypted()) {
+                pdfDoc.close();
+                return pdfBlob;
+            }
+            pdfDoc.openProtection(new StandardDecryptionMaterial(password));
             pdfDoc.setAllSecurityToBeRemoved(true);
-            result = PDFUtils.saveInTempFile(pdfDoc, pdfBlob.getFilename());
+            Blob result = Blobs.createBlobWithExtension(".pdf");
+            File resultFile = result.getFile();
+            pdfDoc.save(result.getFile());
+            result.setMimeType("application/pdf");
+            if (StringUtils.isNotBlank(pdfBlob.getFilename())) {
+                result.setFilename(pdfBlob.getFilename());
+            }
+            pdfDoc.close();
+            FileBlob fb = new FileBlob(resultFile);
+            fb.setMimeType("application/pdf");
+            return fb;
         } catch (Exception e) {
             throw new NuxeoException("Failed to remove encryption of the PDF", e);
-        } finally {
-            PDFUtils.closeSilently(pdfDoc);
-            pdfDoc = null;
         }
-        return result;
-    }
-
-    public int getKeyLength() {
-        return keyLength;
     }
 
     /**

@@ -46,7 +46,7 @@ public class PDFRemoveEncryptionOperation {
     public static final String ID = "PDF.RemoveEncryption";
 
     @Param(name = "ownerPwd", required = false)
-    protected String ownerPwd;
+    private String ownerPwd;
 
     @Param(name = "xpath", required = false, values = { "file:content" })
     protected String xpath = "file:content";
@@ -68,13 +68,8 @@ public class PDFRemoveEncryptionOperation {
         if (StringUtils.isBlank(xpath)) {
             xpath = "file:content";
         }
-        Blob result = null;
-        Blob content;
-        content = (Blob) inDoc.getPropertyValue(xpath);
-        if (content != null) {
-            result = this.run(content);
-        }
-        return result;
+        Blob content = (Blob) inDoc.getPropertyValue(xpath);
+        return (content != null) ? this.run(content) : null;
     }
 
     @OperationMethod
@@ -82,11 +77,7 @@ public class PDFRemoveEncryptionOperation {
         if (StringUtils.isBlank(xpath)) {
             xpath = "file:content";
         }
-        BlobList bl = new BlobList();
-        for (DocumentModel doc : inDocs) {
-            bl.add(this.run(doc));
-        }
-        return bl;
+        return inDocs.stream().map(this::run).collect(Collectors.toCollection(BlobList::new));
     }
 
 }
