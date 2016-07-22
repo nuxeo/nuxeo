@@ -19,20 +19,24 @@
  */
 package org.nuxeo.ecm.platform.pdf.tests;
 
-import java.io.File;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.pdf.PDFPageNumbering.PAGE_NUMBER_POSITION;
 import org.nuxeo.ecm.platform.pdf.PDFPageNumbering;
+import org.nuxeo.ecm.platform.pdf.operations.PDFAddPageNumbersOperation;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -43,11 +47,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features({ AutomationFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.pdf" })
 public class PDFPageNumberingTest {
 
-    private File pdfFile;
+    private FileBlob pdfFileBlob;
 
     private String pdfMD5;
 
@@ -56,14 +60,17 @@ public class PDFPageNumberingTest {
     @Inject
     CoreSession coreSession;
 
+    @Inject
+    AutomationService automationService;
+
     @Before
     public void setUp() throws Exception {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pictures", "Folder");
         testDocsFolder.setPropertyValue("dc:title", "test-pdfutils");
         testDocsFolder = coreSession.createDocument(testDocsFolder);
         testDocsFolder = coreSession.saveDocument(testDocsFolder);
-        pdfFile = FileUtils.getResourceFileFromContext(TestUtils.PDF_PATH);
-        pdfMD5 = TestUtils.calculateMd5(pdfFile);
+        pdfFileBlob = new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_PATH));
+        pdfMD5 = TestUtils.calculateMd5(pdfFileBlob.getFile());
     }
 
     @After
@@ -112,44 +119,74 @@ public class PDFPageNumberingTest {
 
     @Test
     public void testPageNumberingBottomLeft() throws Exception {
-        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        PDFPageNumbering pdfpn = new PDFPageNumbering(pdfFileBlob);
         Blob result = pdfpn.addPageNumbers(1, 1, null, 0, "ff0000", PAGE_NUMBER_POSITION.BOTTOM_LEFT);
         checkPageNumbering(result, 1, 1);
     }
 
     @Test
     public void testPageNumberingBottomCenter() throws Exception {
-        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        PDFPageNumbering pdfpn = new PDFPageNumbering(pdfFileBlob);
         Blob result = pdfpn.addPageNumbers(5, 3, null, 0, "00ff00", PAGE_NUMBER_POSITION.BOTTOM_CENTER);
         checkPageNumbering(result, 5, 3);
     }
 
     @Test
     public void testPageNumberingBottomRight() throws Exception {
-        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        PDFPageNumbering pdfpn = new PDFPageNumbering(pdfFileBlob);
         Blob result = pdfpn.addPageNumbers(10, 10, null, 0, "0000ff", PAGE_NUMBER_POSITION.BOTTOM_RIGHT);
         checkPageNumbering(result, 10, 10);
     }
 
     @Test
     public void testPageNumberingTopLeft() throws Exception {
-        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        PDFPageNumbering pdfpn = new PDFPageNumbering(pdfFileBlob);
         Blob result = pdfpn.addPageNumbers(1, 150, null, 0, "FF0000", PAGE_NUMBER_POSITION.TOP_LEFT);
         checkPageNumbering(result, 1, 150);
     }
 
     @Test
     public void testPageNumberingTopCenter() throws Exception {
-        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        PDFPageNumbering pdfpn = new PDFPageNumbering(pdfFileBlob);
         Blob result = pdfpn.addPageNumbers(1, 1, null, 0, "0x0000ff", PAGE_NUMBER_POSITION.TOP_CENTER);
         checkPageNumbering(result, 1, 1);
     }
 
     @Test
     public void testPageNumberingTopRight() throws Exception {
-        PDFPageNumbering pdfpn = new PDFPageNumbering(new FileBlob(pdfFile));
+        PDFPageNumbering pdfpn = new PDFPageNumbering(pdfFileBlob);
         Blob result = pdfpn.addPageNumbers(1, 1, null, 0, "", PAGE_NUMBER_POSITION.TOP_RIGHT);
         checkPageNumbering(result, 1, 1);
+    }
+
+    @Test
+    public void testAddPageNumbersOperationSimple() throws Exception {
+        OperationChain chain = new OperationChain("testChain");
+        OperationContext ctx = new OperationContext(coreSession);
+        assertNotNull(ctx);
+        ctx.setInput(pdfFileBlob);
+        chain.add(PDFAddPageNumbersOperation.ID);
+        Blob result = (Blob) automationService.run(ctx, chain);
+        assertNotNull(result);
+        checkPageNumbering(result, 1, 1);
+    }
+
+    @Test
+    public void testAddPageNumbersOperationComplex() throws Exception {
+        OperationChain chain = new OperationChain("testChain");
+        OperationContext ctx = new OperationContext(coreSession);
+        assertNotNull(ctx);
+        ctx.setInput(pdfFileBlob);
+        chain.add(PDFAddPageNumbersOperation.ID)
+            .set("startAtPage", 2)
+            .set("startAtNumber", 10)
+            .set("position", "Top left")
+            .set("fontName", PDType1Font.COURIER.getBaseFont())
+            .set("fontSize", 32)
+            .set("hex255Color", "ff00ff");
+        Blob result = (Blob) automationService.run(ctx, chain);
+        assertNotNull(result);
+        checkPageNumbering(result, 2, 10);
     }
 
 }

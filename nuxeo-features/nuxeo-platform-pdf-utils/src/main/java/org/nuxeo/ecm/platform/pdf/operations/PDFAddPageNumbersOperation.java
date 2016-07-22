@@ -46,23 +46,23 @@ public class PDFAddPageNumbersOperation {
     public static final String ID = "PDF.AddPageNumbers";
 
     @Param(name = "startAtPage", required = false, values = { "1" })
-    protected long startAtPage = 1;
+    private long startAtPage = 1;
 
     @Param(name = "startAtNumber", required = false, values = { "1" })
-    protected long startAtNumber = 1;
+    private long startAtNumber = 1;
 
     @Param(name = "position", required = false, widget = Constants.W_OPTION, values = {
         "Bottom right", "Bottom center", "Bottom left", "Top right", "Top center", "Top left" })
-    String position = "Bottom right";
+    private String position = "Bottom right";
 
     @Param(name = "fontName", required = false, values = { "Helvetica" })
-    protected String fontName = "Helvetica";
+    private String fontName = "Helvetica";
 
     @Param(name = "fontSize", required = false, values = { "16" })
-    protected long fontSize = 16;
+    private long fontSize = 16;
 
     @Param(name = "hex255Color", required = false, values = { "0xffffff" })
-    protected String hex255Color = "0xffffff";
+    private String hex255Color = "0xffffff";
 
     @Param(name = "password", required = false)
     protected String password = null;
