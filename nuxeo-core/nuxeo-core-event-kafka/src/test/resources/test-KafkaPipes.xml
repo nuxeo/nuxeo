@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="test-kafka-pipes">
+
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="dispatcher">
+    <eventDispatcher name="dispatcher" class="org.nuxeo.ecm.core.event.pipe.dispatch.SimpleEventBundlePipeDispatcher">
+    </eventDispatcher>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="pipe">
+    <eventPipe name="kafkaPipe" class="org.nuxeo.ecm.core.event.kafka.KafkaPipe" priority="0">
+     <parameters>
+       <parameter name="KafkaBrokerHost">127.0.0.1</parameter>
+       <parameter name="KafkaBrokerPort">9093</parameter>
+     </parameters>
+    </eventPipe>
+  </extension>
+  
+</component>
+
+

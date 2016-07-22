@@ -14,15 +14,16 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.api.pipe;
+package org.nuxeo.ecm.core.event.kafka;
 
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.event.test:test-LocalPipes.xml" })
-public class LocalPipeFeature extends SimpleFeature {
+
+@Features({ KafkaFeature.class, RuntimeFeature.class })
+@Deploy("org.nuxeo.ecm.core.event")
+public class KafkaEventBusFeature extends SimpleFeature {
 
 }
