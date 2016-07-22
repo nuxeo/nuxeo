@@ -60,7 +60,7 @@ import static org.junit.Assert.assertTrue;
 @Deploy({ "org.nuxeo.ecm.platform.pdf" })
 public class PDFWatermarkingTest {
 
-    private static final String TEXT_WATERMARK = "© Test Text Watermark";
+    private static final String TEXT_WATERMARK = "(c) Test Text Watermark";
 
     private FileBlob pdfFileBlob;
 
