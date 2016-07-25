@@ -121,6 +121,20 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void itCanUseBatchUpload() throws IOException {
+        itCanUseBatchUpload(false);
+    }
+
+    /**
+     * Tests the /upload endpoints with the "X-Batch-No-Drop" header set to true.
+     *
+     * @since 8.4
+     */
+    @Test
+    public void itCanUseBatchUploadNoDrop() throws IOException {
+        itCanUseBatchUpload(true);
+    }
+
+    private void itCanUseBatchUpload(boolean noDrop) throws IOException {
 
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
@@ -233,7 +247,13 @@ public class BatchUploadFixture extends BaseTest {
         json += "{ \"content\" : { \"upload-batch\": \"" + batchId + "\", \"upload-fileId\": \"0\" } },";
         json += "{ \"content\" : { \"upload-batch\": \"" + batchId + "\", \"upload-fileId\": \"1\" } }";
         json += "]}}";
-        response = getResponse(RequestType.POST, "path/", json);
+        if (noDrop) {
+            headers = new HashMap<>();
+            headers.put("X-Batch-No-Drop", "true");
+            response = getResponse(RequestType.POST, "path/", json, headers);
+        } else {
+            response = getResponse(RequestType.POST, "path/", json);
+        }
         assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
 
         DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
@@ -247,6 +267,10 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("Fichier accentué 2.txt", blob.getFilename());
         assertEquals("application/octet-stream", blob.getMimeType());
         assertEquals(data2, blob.getString());
+
+        if (noDrop) {
+            assertBatchExists(batchId);
+        }
     }
 
     /**
@@ -256,6 +280,20 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void testBatchExecute() throws IOException {
+        testBatchExecute(false);
+    }
+
+    /**
+     * Tests the use of /upload + /upload/{batchId}/{fileIdx}/execute with the "X-Batch-No-Drop" header set to true.
+     *
+     * @since 8.4
+     */
+    @Test
+    public void testBatchExecuteNoDrop() throws IOException {
+        testBatchExecute(true);
+    }
+
+    private void testBatchExecute(boolean noDrop) throws IOException {
 
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
@@ -284,7 +322,13 @@ public class BatchUploadFixture extends BaseTest {
         String json = "{\"params\":{";
         json += "\"document\":\"" + file.getPathAsString() + "\"";
         json += "}}";
-        response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
+        if (noDrop) {
+            headers = new HashMap<>();
+            headers.put("X-Batch-No-Drop", "true");
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json, headers);
+        } else {
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
+        }
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
         DocumentModel doc = session.getDocument(new PathRef("/testBatchExecuteDoc"));
@@ -293,6 +337,10 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("Fichier accentué.txt", blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
         assertEquals(data, blob.getString());
+
+        if (noDrop) {
+            assertBatchExists(batchId);
+        }
     }
 
     /**
@@ -499,6 +547,26 @@ public class BatchUploadFixture extends BaseTest {
      */
     @Test
     public void testBatchExecuteWithChunkedUpload() throws IOException {
+        testBatchExecuteWithChunkedUpload(false);
+    }
+
+    /**
+     * Tests the use of /upload using file chunks + /upload/{batchId}/{fileIdx}/execute  with the "X-Batch-No-Drop"
+     * header set to true.
+     *
+     * @since 8.4
+     */
+    @Test
+    public void testBatchExecuteWithChunkedUploadNoDrop() throws IOException {
+        testBatchExecuteWithChunkedUpload(true);
+    }
+
+    /**
+     * Tests the use of /upload using file chunks + /upload/{batchId}/{fileIdx}/execute.
+     *
+     * @since 7.4
+     */
+    public void testBatchExecuteWithChunkedUpload(boolean noDrop) throws IOException {
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -560,7 +628,13 @@ public class BatchUploadFixture extends BaseTest {
         String json = "{\"params\":{";
         json += "\"document\":\"" + file.getPathAsString() + "\"";
         json += "}}";
-        response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
+        if (noDrop) {
+            headers = new HashMap<>();
+            headers.put("X-Batch-No-Drop", "true");
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json, headers);
+        } else {
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
+        }
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
         DocumentModel doc = session.getDocument(new PathRef("/testBatchExecuteDoc"));
@@ -569,6 +643,11 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("Fichier accentué.txt", blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
         assertEquals("Contenu accentué composé de 2 chunks", blob.getString());
+
+        if (noDrop) {
+            assertBatchExists(batchId);
+        }
+
     }
 
     /**
@@ -729,6 +808,11 @@ public class BatchUploadFixture extends BaseTest {
         // test removal of invalid file index
         response = getResponse(RequestType.DELETE, "upload/" + batchId + "/3");
         assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+    }
+
+    private void assertBatchExists(String batchId) {
+        ClientResponse response = getResponse(RequestType.GET, "upload/" + batchId);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
     }
 
 }
