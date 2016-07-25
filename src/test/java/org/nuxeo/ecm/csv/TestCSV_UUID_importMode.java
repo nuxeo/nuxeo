@@ -43,8 +43,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
         "org.nuxeo.ecm.csv:OSGI-INF/test-directories-contrib.xml", //
         "org.nuxeo.ecm.csv:OSGI-INF/test-types-contrib.xml", //
         "org.nuxeo.ecm.csv:OSGI-INF/test-ui-types-contrib.xml", //
-        "org.nuxeo.ecm.csv:OSGI-INF/csv-importer-service-with-import-mode.xml" //
-})
+        "org.nuxeo.ecm.csv:OSGI-INF/csv-importer-service-with-import-mode.xml" })
 
 public class TestCSV_UUID_importMode {
 
