@@ -53,10 +53,6 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.sun.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
