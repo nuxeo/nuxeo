@@ -309,4 +309,13 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             clean(batchId);
         }
     }
+
+    @Override
+    public boolean removeFileEntry(String batchId, String filedIdx) {
+        Batch batch = getBatch(batchId);
+        if (batch == null) {
+            return false;
+        }
+        return batch.removeFileEntry(filedIdx, getTransientStore());
+    }
 }

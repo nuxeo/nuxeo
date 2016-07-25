@@ -16,6 +16,7 @@
  * Contributors:
  *     Thierry Delprat <tdelprat@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Gabriel Barata <gbarata@nuxeo.com>
  *
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
@@ -210,43 +211,60 @@ public class Batch {
         BatchManager bm = Framework.getService(BatchManager.class);
         TransientStore ts = bm.getTransientStore();
         for (String fileIndex : fileEntries.keySet()) {
-            // Check for chunk entries to remove
-            BatchFileEntry fileEntry = (BatchFileEntry) getFileEntry(fileIndex, false);
-            if (fileEntry != null) {
-                if (fileEntry.isChunked()) {
-                    for (String chunkEntryKey : fileEntry.getChunkEntryKeys()) {
-                        // Remove chunk entry from the store and delete blobs from the file system
-                        List<Blob> chunkBlobs = ts.getBlobs(chunkEntryKey);
-                        if (chunkBlobs != null) {
-                            for (Blob blob : chunkBlobs) {
-                                try {
-                                    FileUtils.deleteDirectory(blob.getFile().getParentFile());
-                                } catch (IOException e) {
-                                    log.error("Error while deleting chunk parent directory", e);
-                                }
-                            }
-                        }
-                        ts.remove(chunkEntryKey);
-                    }
-                    fileEntry.beforeRemove();
-                }
-                // Remove file entry from the store and delete blobs from the file system
-                String fileEntryKey = fileEntry.getKey();
-                List<Blob> fileBlobs = ts.getBlobs(fileEntryKey);
-                if (fileBlobs != null) {
-                    for (Blob blob : fileBlobs) {
-                        try {
-                            FileUtils.deleteDirectory(blob.getFile().getParentFile());
-                        } catch (IOException e) {
-                            log.error("Error while deleting file parent directory", e);
-                        }
-                    }
-                }
-                ts.remove(fileEntryKey);
-            }
+            removeFileEntry(fileIndex, ts);
         }
         // Remove batch entry
         ts.remove(key);
     }
 
+    /**
+     * @since 8.4
+     */
+    public boolean removeFileEntry(String index, TransientStore ts) {
+        // Check for chunk entries to remove
+        BatchFileEntry fileEntry = getFileEntry(index, false);
+        if (fileEntry == null) {
+            return false;
+        }
+        if (fileEntry.isChunked()) {
+            for (String chunkEntryKey : fileEntry.getChunkEntryKeys()) {
+                // Remove chunk entry from the store and delete blobs from the file system
+                List<Blob> chunkBlobs = ts.getBlobs(chunkEntryKey);
+                if (chunkBlobs != null) {
+                    for (Blob blob : chunkBlobs) {
+                        try {
+                            FileUtils.deleteDirectory(blob.getFile().getParentFile());
+                        } catch (IOException e) {
+                            log.error("Error while deleting chunk parent directory", e);
+                        }
+                    }
+                }
+                ts.remove(chunkEntryKey);
+            }
+            fileEntry.beforeRemove();
+        }
+        // Remove file entry from the store and delete blobs from the file system
+        String fileEntryKey = fileEntry.getKey();
+        List<Blob> fileBlobs = ts.getBlobs(fileEntryKey);
+        if (fileBlobs != null) {
+            for (Blob blob : fileBlobs) {
+                try {
+                    FileUtils.deleteDirectory(blob.getFile().getParentFile());
+                } catch (IOException e) {
+                    log.error("Error while deleting file parent directory", e);
+                }
+            }
+        }
+        ts.remove(fileEntryKey);
+        return true;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public boolean removeFileEntry(String index) {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        TransientStore ts = bm.getTransientStore();
+        return removeFileEntry(index, ts);
+    }
 }

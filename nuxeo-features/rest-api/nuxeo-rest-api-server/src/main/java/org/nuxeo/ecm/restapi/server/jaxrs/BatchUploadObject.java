@@ -273,6 +273,20 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return buildEmptyResponse(Status.NO_CONTENT);
     }
 
+    /**
+     * @since 8.4
+     */
+    @DELETE
+    @Path("{batchId}/{fileIdx}")
+    public Response removeFile(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx)
+        throws IOException {
+        BatchManager bm = Framework.getLocalService(BatchManager.class);
+        if (!bm.removeFileEntry(batchId, fileIdx)) {
+            return buildEmptyResponse(Status.NOT_FOUND);
+        }
+        return buildEmptyResponse(Status.NO_CONTENT);
+    }
+
     @POST
     @Produces("application/json")
     @Path("{batchId}/execute/{operationId}")
