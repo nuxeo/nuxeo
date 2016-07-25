@@ -53,6 +53,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -306,10 +307,14 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
             ExecutionRequest xreq) throws UnsupportedEncodingException {
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
-            BatchManager bm = Framework.getService(BatchManager.class);
-            bm.clean(batchId);
-        });
+
+        if (!Boolean.parseBoolean(
+            RequestContext.getActiveContext(request).getRequest().getHeader(BatchManagerConstants.NO_DROP_FLAG))) {
+            RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
+                BatchManager bm = Framework.getService(BatchManager.class);
+                bm.clean(batchId);
+            });
+        }
 
         try {
             CoreSession session = ctx.getCoreSession();
