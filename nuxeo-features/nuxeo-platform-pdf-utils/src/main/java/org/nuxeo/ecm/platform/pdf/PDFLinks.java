@@ -55,19 +55,19 @@ import org.nuxeo.ecm.core.api.NuxeoException;
  */
 public class PDFLinks {
 
-    protected Blob pdfBlob;
+    private Blob pdfBlob;
 
-    protected PDDocument pdfDoc;
+    private PDDocument pdfDoc;
 
-    protected String password;
+    private String password;
 
-    protected ArrayList<LinkInfo> remoteGoToLinks;
+    private ArrayList<LinkInfo> remoteGoToLinks;
 
-    protected ArrayList<LinkInfo> launchLinks;
+    private ArrayList<LinkInfo> launchLinks;
 
-    protected ArrayList<LinkInfo> uriLinks;
+    private ArrayList<LinkInfo> uriLinks;
 
-    PDFTextStripperByArea stripper;
+    private PDFTextStripperByArea stripper;
 
     public PDFLinks(Blob inBlob) {
         pdfBlob = inBlob;
@@ -91,40 +91,37 @@ public class PDFLinks {
      * Here, we not only open and load the PDF, we also prepare regions to get the text behind the annotation
      * rectangles.
      */
-    protected void loadAndPreflightPdf() throws NuxeoException {
-        if (pdfDoc == null) {
-            pdfDoc = PDFUtils.load(pdfBlob, password);
-            @SuppressWarnings("unchecked")
-            List<PDPage> allPages = pdfDoc.getDocumentCatalog().getAllPages();
-            try {
-                stripper = new PDFTextStripperByArea();
-                for (PDPage page : allPages) {
-                    List<PDAnnotation> annotations = page.getAnnotations();
-                    for (int j = 0; j < annotations.size(); j++) {
-                        PDAnnotation annot = annotations.get(j);
-                        if (annot instanceof PDAnnotationLink) {
-                            PDAnnotationLink link = (PDAnnotationLink) annot;
-                            PDRectangle rect = link.getRectangle();
-                            // need to reposition link rectangle to match text space
-                            float x = rect.getLowerLeftX();
-                            float y = rect.getUpperRightY();
-                            float width = rect.getWidth();
-                            float height = rect.getHeight();
-                            int rotation = page.findRotation();
-                            if (rotation == 0) {
-                                PDRectangle pageSize = page.findMediaBox();
-                                y = pageSize.getHeight() - y;
-                            } else if (rotation == 90) {
-                                // do nothing
-                            }
-                            Rectangle2D.Float awtRect = new Rectangle2D.Float(x, y, width, height);
-                            stripper.addRegion("" + j, awtRect);
-                        }
+    private void loadAndPreflightPdf() throws NuxeoException {
+        if (pdfDoc != null) {
+            return;
+        }
+        pdfDoc = PDFUtils.load(pdfBlob, password);
+        try {
+            stripper = new PDFTextStripperByArea();
+            for (Object pageObject : pdfDoc.getDocumentCatalog().getAllPages()) {
+                PDPage page = (PDPage) pageObject;
+                List pageAnnotations = page.getAnnotations();
+                for (Object annotationObject : pageAnnotations) {
+                    PDAnnotation annot = (PDAnnotation) annotationObject;
+                    if (!(annot instanceof  PDAnnotationLink)) {
+                        continue;
                     }
+                    PDAnnotationLink link = (PDAnnotationLink) annot;
+                    PDRectangle rect = link.getRectangle();
+                    // need to reposition link rectangle to match text space
+                    float x = rect.getLowerLeftX(), y = rect.getUpperRightY();
+                    float width = rect.getWidth(), height = rect.getHeight();
+                    int rotation = page.findRotation();
+                    if (rotation == 0) {
+                        PDRectangle pageSize = page.findMediaBox();
+                        y = pageSize.getHeight() - y;
+                    }
+                    Rectangle2D.Float awtRect = new Rectangle2D.Float(x, y, width, height);
+                    stripper.addRegion("" + pageAnnotations.indexOf(annot), awtRect);
                 }
-            } catch (IOException e) {
-                throw new NuxeoException("Cannot prefilght and prepare regions", e);
             }
+        } catch (IOException e) {
+            throw new NuxeoException("Cannot prefilght and prepare regions", e);
         }
     }
 
@@ -167,49 +164,47 @@ public class PDFLinks {
         return uriLinks;
     }
 
-    @SuppressWarnings("unchecked")
-    protected ArrayList<LinkInfo> parseForLinks(String inSubType) throws IOException {
+    private ArrayList<LinkInfo> parseForLinks(String inSubType) throws IOException {
         PDActionRemoteGoTo goTo;
         PDActionLaunch launch;
         PDActionURI uri;
         PDFileSpecification fspec;
         ArrayList<LinkInfo> li = new ArrayList<>();
-        List<PDPage> allPages;
-        allPages = pdfDoc.getDocumentCatalog().getAllPages();
-        int pageNum = 0;
-        for (PDPage page : allPages) {
-            pageNum += 1;
+        List allPages = pdfDoc.getDocumentCatalog().getAllPages();
+        for (Object pageObject : allPages) {
+            PDPage page = (PDPage) pageObject;
             stripper.extractRegions(page);
             List<PDAnnotation> annotations = page.getAnnotations();
-            for (int j = 0; j < annotations.size(); j++) {
-                PDAnnotation annot = annotations.get(j);
-                if (annot instanceof PDAnnotationLink) {
-                    PDAnnotationLink link = (PDAnnotationLink) annot;
-                    PDAction action = link.getAction();
-                    if (action.getSubType().equals(inSubType)) {
-                        String urlText = stripper.getTextForRegion("" + j);
-                        String urlValue = null;
-                        switch (inSubType) {
-                            case PDActionRemoteGoTo.SUB_TYPE:
-                                goTo = (PDActionRemoteGoTo) action;
-                                fspec = goTo.getFile();
-                                urlValue = fspec.getFile();
-                                break;
-                            case PDActionLaunch.SUB_TYPE:
-                                launch = (PDActionLaunch) action;
-                                fspec = launch.getFile();
-                                urlValue = fspec.getFile();
-                                break;
-                            case PDActionURI.SUB_TYPE:
-                                uri = (PDActionURI) action;
-                                urlValue = uri.getURI();
-                                break;
-                            // others...
-                        }
-                        if (StringUtils.isNotBlank(urlValue)) {
-                            li.add(new LinkInfo(pageNum, inSubType, urlText, urlValue));
-                        }
-                    }
+            for (PDAnnotation annot : annotations) {
+                if (!(annot instanceof  PDAnnotationLink)) {
+                    continue;
+                }
+                PDAnnotationLink link = (PDAnnotationLink) annot;
+                PDAction action = link.getAction();
+                if (!action.getSubType().equals(inSubType)) {
+                    continue;
+                }
+                String urlText = stripper.getTextForRegion("" + annotations.indexOf(annot));
+                String urlValue = null;
+                switch (inSubType) {
+                    case PDActionRemoteGoTo.SUB_TYPE:
+                        goTo = (PDActionRemoteGoTo) action;
+                        fspec = goTo.getFile();
+                        urlValue = fspec.getFile();
+                        break;
+                    case PDActionLaunch.SUB_TYPE:
+                        launch = (PDActionLaunch) action;
+                        fspec = launch.getFile();
+                        urlValue = fspec.getFile();
+                        break;
+                    case PDActionURI.SUB_TYPE:
+                        uri = (PDActionURI) action;
+                        urlValue = uri.getURI();
+                        break;
+                    // others...
+                }
+                if (StringUtils.isNotBlank(urlValue)) {
+                    li.add(new LinkInfo(allPages.indexOf(page) + 1, inSubType, urlText, urlValue));
                 }
             }
         }

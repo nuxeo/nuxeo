@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PDFMerge {
 
-    protected BlobList blobs = new BlobList();
+    private BlobList blobs = new BlobList();
 
     public PDFMerge() {
 
@@ -137,7 +137,7 @@ public class PDFMerge {
      */
     public Blob merge(String inFileName, String inTitle, String inSubject, String inAuthor) throws IOException,
         COSVisitorException {
-        Blob finalBlob = null;
+        Blob finalBlob;
         switch (blobs.size()) {
             case 0:
                 finalBlob = null;

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.Overlay;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -69,25 +70,25 @@ public class PDFWatermarking {
 
     public static final boolean DEFAULT_INVERT_Y = false;
 
-    protected Blob blob = null;
+    private Blob blob = null;
 
-    protected String text = null;
+    private String text = null;
 
-    protected String fontFamily = DEFAULT_FONT_FAMILY;
+    private String fontFamily = DEFAULT_FONT_FAMILY;
 
-    protected float fontSize = DEFAULT_FONT_SIZE;
+    private String hex255Color = DEFAULT_TEXT_COLOR;
 
-    protected int textRotation = DEFAULT_TEXT_ROTATION;
+    private int textRotation = DEFAULT_TEXT_ROTATION;
 
-    protected String hex255Color = DEFAULT_TEXT_COLOR;
+    private float fontSize = DEFAULT_FONT_SIZE;
 
-    protected float alphaColor = DEFAULT_ALPHA;
+    private float alphaColor = DEFAULT_ALPHA;
 
-    protected float xPosition = DEFAULT_X_POSITION;
+    private float xPosition = DEFAULT_X_POSITION;
 
-    protected float yPosition = DEFAULT_Y_POSITION;
+    private float yPosition = DEFAULT_Y_POSITION;
 
-    protected boolean invertY = DEFAULT_INVERT_Y;
+    private boolean invertY = DEFAULT_INVERT_Y;
 
     /**
      * Constructor.
@@ -122,7 +123,7 @@ public class PDFWatermarking {
         Blob result = null;
         PDDocument pdfDoc = null;
         PDPageContentStream contentStream = null;
-        if (text == null || text.isEmpty()) {
+        if (StringUtils.isBlank(text)) {
             try {
                 File tempFile = File.createTempFile("nuxeo-pdfwatermarking-", ".pdf");
                 blob.transferTo(tempFile);
@@ -146,11 +147,10 @@ public class PDFWatermarking {
             pdfDoc = PDDocument.load(blob.getStream());
             PDFont font = PDType1Font.getStandardFont(fontFamily);
             int[] rgb = PDFUtils.hex255ToRGB(hex255Color);
-            List<?> allPages = pdfDoc.getDocumentCatalog().getAllPages();
-            int max = allPages.size();
-            for (int i = 0; i < max; i++) {
+            List allPages = pdfDoc.getDocumentCatalog().getAllPages();
+            for (Object pageObject : allPages) {
+                PDPage page = (PDPage) pageObject;
                 contentStream = null;
-                PDPage page = (PDPage) allPages.get(i);
                 PDRectangle pageSize = page.findMediaBox();
                 PDResources resources = page.findResources();
                 // Get the defined graphic states.
@@ -226,8 +226,7 @@ public class PDFWatermarking {
         return result;
     }
 
-    public Blob watermarkWithImage(Blob inBlob, int x, int y, float scale)
-        throws NuxeoException {
+    public Blob watermarkWithImage(Blob inBlob, int x, int y, float scale) throws NuxeoException {
         Blob result = null;
         PDDocument pdfDoc = null;
         PDPageContentStream contentStream = null;
@@ -236,17 +235,12 @@ public class PDFWatermarking {
             BufferedImage tmp_image = ImageIO.read(inBlob.getStream());
             pdfDoc = PDDocument.load(blob.getStream());
             PDXObjectImage ximage = new PDPixelMap(pdfDoc, tmp_image);
-            List<?> allPages = pdfDoc.getDocumentCatalog().getAllPages();
-            int max = allPages.size();
-            for (int i = 0; i < max; i++) {
-                PDPage page = (PDPage) allPages.get(i);
+            List allPages = pdfDoc.getDocumentCatalog().getAllPages();
+            for (Object allPage : allPages) {
+                PDPage page = (PDPage) allPage;
                 contentStream = new PDPageContentStream(pdfDoc, page, true, true);
                 contentStream.endMarkedContentSequence();
                 contentStream.drawXObject(ximage, x, y, ximage.getWidth() * scale, ximage.getHeight() * scale);
-                //AffineTransform at = new AffineTransform(ximage.getWidth() * scale, 200, 200, ximage.getHeight()
-                //    * scale, x, y);
-                //at.rotate(Math.toRadians(90));
-                //contentStream.drawXObject(ximage, at);
                 contentStream.close();
                 contentStream = null;
             }
@@ -269,21 +263,21 @@ public class PDFWatermarking {
     /**
      * Utilities to handle <code>null</code> in setProperties().
      */
-    protected float stringToFloat(String inValue) {
+    private float stringToFloat(String inValue) {
         if (inValue == null) {
             return 0f;
         }
         return Float.valueOf(inValue);
     }
 
-    protected int stringToInt(String inValue) {
+    private int stringToInt(String inValue) {
         if (inValue == null) {
             return 0;
         }
         return Integer.valueOf(inValue);
     }
 
-    protected boolean stringToBoolean(String inValue) {
+    private boolean stringToBoolean(String inValue) {
         if (inValue == null) {
             return false;
         }

@@ -29,13 +29,13 @@ package org.nuxeo.ecm.platform.pdf;
  */
 public class LinkInfo {
 
-    protected int page;
+    private int page;
 
-    protected String subType;
+    private String subType;
 
-    protected String text;
+    private String text;
 
-    protected String link;
+    private String link;
 
     public LinkInfo(int page, String subType, String text, String link) {
         this.page = page;

@@ -57,57 +57,57 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class PDFInfo {
 
-    protected Blob pdfBlob;
+    private Blob pdfBlob;
 
-    protected PDDocument pdfDoc;
+    private PDDocument pdfDoc;
 
-    protected String password;
+    private int numberOfPages = -1;
 
-    protected int numberOfPages = -1;
+    private float mediaBoxWidthInPoints = 0.0f;
 
-    protected float mediaBoxWidthInPoints = 0.0f;
+    private float mediaBoxHeightInPoints = 0.0f;
 
-    protected float mediaBoxHeightInPoints = 0.0f;
+    private float cropBoxWidthInPoints = 0.0f;
 
-    protected float cropBoxWidthInPoints = 0.0f;
+    private float cropBoxHeightInPoints = 0.0f;
 
-    protected float cropBoxHeightInPoints = 0.0f;
+    private long fileSize = -1;
 
-    protected long fileSize = -1;
+    private boolean isEncrypted;
 
-    protected boolean isEncrypted;
+    private boolean doXMP = false;
 
-    protected String author = "";
+    private boolean alreadyParsed = false;
 
-    protected String contentCreator = "";
+    private String password;
 
-    protected String fileName = "";
+    private String author = "";
 
-    protected String keywords = "";
+    private String contentCreator = "";
 
-    protected String pageLayout = "";
+    private String fileName = "";
 
-    protected String pdfVersion = "";
+    private String keywords = "";
 
-    protected String producer = "";
+    private String pageLayout = "";
 
-    protected String subject = "";
+    private String pdfVersion = "";
 
-    protected String title = "";
+    private String producer = "";
 
-    protected boolean doXMP = false;
+    private String subject = "";
 
-    protected String xmp;
+    private String title;
 
-    protected Calendar creationDate = null;
+    private String xmp;
 
-    protected Calendar modificationDate = null;
+    private Calendar creationDate;
 
-    protected AccessPermission permissions = null;
+    private Calendar modificationDate;
 
-    protected boolean alreadyParsed = false;
+    private AccessPermission permissions;
 
-    protected LinkedHashMap<String, String> cachedMap;
+    private LinkedHashMap<String, String> cachedMap;
 
     /**
      * Constructor with a Blob.
@@ -127,6 +127,7 @@ public class PDFInfo {
     public PDFInfo(Blob inBlob, String inPassword) {
         pdfBlob = inBlob;
         password = inPassword;
+        title = "";
     }
 
     /**
@@ -155,6 +156,7 @@ public class PDFInfo {
         }
         pdfBlob = (Blob) inDoc.getPropertyValue(inXPath);
         password = inPassword;
+        title = "";
     }
 
     /**
@@ -171,7 +173,7 @@ public class PDFInfo {
         doXMP = inValue;
     }
 
-    protected String checkNotNull(String inValue) {
+    private String checkNotNull(String inValue) {
         return inValue == null ? "" : inValue;
     }
 
@@ -223,15 +225,11 @@ public class PDFInfo {
                 title = checkNotNull(docInfo.getTitle());
                 permissions = pdfDoc.getCurrentAccessPermission();
                 // Getting dimension is a bit tricky
-                mediaBoxWidthInPoints = -1;
-                mediaBoxHeightInPoints = -1;
-                cropBoxWidthInPoints = -1;
-                cropBoxHeightInPoints = -1;
-                @SuppressWarnings("unchecked")
-                List<PDPage> allPages = docCatalog.getAllPages();
-                boolean gotMediaBox = false;
-                boolean gotCropBox = false;
-                for (PDPage page : allPages) {
+                mediaBoxWidthInPoints = mediaBoxHeightInPoints = cropBoxWidthInPoints = cropBoxHeightInPoints = -1;
+                List allPages = docCatalog.getAllPages();
+                boolean gotMediaBox = false, gotCropBox = false;
+                for (Object pageObject : allPages) {
+                    PDPage page = (PDPage) pageObject;
                     if (page != null) {
                         PDRectangle r = page.findMediaBox();
                         if (r != null) {
@@ -352,7 +350,6 @@ public class PDFInfo {
                 cachedMap.put("Can Print Degraded", Boolean.toString(permissions.canPrintDegraded()));
             }
         }
-
         return cachedMap;
     }
 

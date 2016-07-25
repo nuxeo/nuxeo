@@ -19,8 +19,7 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -46,12 +45,9 @@ import java.util.List;
  */
 public class PDFPageExtractor {
 
-    @SuppressWarnings("unused")
-    private static Log log = LogFactory.getLog(PDFPageExtractor.class);
+    private Blob pdfBlob;
 
-    protected Blob pdfBlob;
-
-    protected String password;
+    private String password;
 
     public PDFPageExtractor(Blob inBlob) {
         pdfBlob = inBlob;
@@ -65,7 +61,7 @@ public class PDFPageExtractor {
      * @param inXPath Input XPath.
      */
     public PDFPageExtractor(DocumentModel inDoc, String inXPath) {
-        if (inXPath == null || inXPath.isEmpty()) {
+        if (StringUtils.isBlank(inXPath)) {
             inXPath = "file:content";
         }
         pdfBlob = (Blob) inDoc.getPropertyValue(inXPath);
@@ -73,6 +69,19 @@ public class PDFPageExtractor {
 
     public Blob extract(int inStartPage, int inEndPage) {
         return extract(inStartPage, inEndPage, null, null, null, null);
+    }
+
+    private String getFileName(Blob blob) {
+        String originalName = blob.getFilename();
+        if (StringUtils.isBlank(originalName)) {
+            return "extracted";
+        } else {
+            int pos = originalName.toLowerCase().lastIndexOf(".pdf");
+            if (pos > 0) {
+                originalName = originalName.substring(0, pos);
+            }
+            return originalName;
+        }
     }
 
     /**
@@ -101,9 +110,8 @@ public class PDFPageExtractor {
      */
     public Blob extract(int inStartPage, int inEndPage, String inFileName, String inTitle, String inSubject,
                         String inAuthor) throws NuxeoException {
-        Blob result = null;
-        PDDocument pdfDoc = null;
-        PDDocument extracted = null;
+        Blob result;
+        PDDocument pdfDoc = null, extracted = null;
         try {
             pdfDoc = PDFUtils.load(pdfBlob, password);
             PageExtractor pe = new PageExtractor(pdfDoc, inStartPage, inEndPage);
@@ -111,17 +119,8 @@ public class PDFPageExtractor {
             PDFUtils.setInfos(extracted, inTitle, inSubject, inAuthor);
             result = PDFUtils.saveInTempFile(extracted);
             result.setMimeType("application/pdf");
-            if (inFileName == null || inFileName.isEmpty()) {
-                String originalName = pdfBlob.getFilename();
-                if (originalName == null || originalName.isEmpty()) {
-                    originalName = "extracted";
-                } else {
-                    int pos = originalName.toLowerCase().lastIndexOf(".pdf");
-                    if (pos > 0) {
-                        originalName = originalName.substring(0, pos);
-                    }
-                }
-                inFileName = originalName + "-" + inStartPage + "-" + inEndPage + ".pdf";
+            if (StringUtils.isBlank(inFileName)) {
+                inFileName = getFileName(pdfBlob) + "-" + inStartPage + "-" + inEndPage + ".pdf";
             }
             result.setFilename(inFileName);
             extracted.close();
@@ -141,35 +140,23 @@ public class PDFPageExtractor {
     }
 
     public BlobList getPagesAsImages(String inFileName) throws NuxeoException {
-        // See https://github.com/levigo/jbig2-imageio#what-if-the-plugin-is-on-classpath-but-not-seen
         ImageIO.scanForPlugins();
         BlobList results = new BlobList();
         PDDocument pdfDoc = null;
-        String resultFileName = null;
+        String resultFileName;
         // Use file name parameter if passed, otherwise use original file name.
-        if (inFileName == null || inFileName.isEmpty()) {
-            String originalName = pdfBlob.getFilename();
-            if (originalName == null || originalName.isEmpty()) {
-                originalName = "extracted";
-            } else {
-                int pos = originalName.toLowerCase().lastIndexOf(".pdf");
-                if (pos > 0) {
-                    originalName = originalName.substring(0, pos);
-                }
-            }
-            inFileName = originalName + ".pdf";
+        if (StringUtils.isBlank(inFileName)) {
+            inFileName = getFileName(pdfBlob) + ".pdf";
         }
         try {
             pdfDoc = PDFUtils.load(pdfBlob, password);
             // Get all PDF pages.
-            @SuppressWarnings("unchecked")
-            List<PDPage> pages = pdfDoc.getDocumentCatalog().getAllPages();
-            int page = 0;
+            List pages = pdfDoc.getDocumentCatalog().getAllPages();
             // Convert each page to PNG.
-            for (PDPage pdPage : pages) {
-                ++page;
-                resultFileName = inFileName + "-" + page;
-                BufferedImage bim = pdPage.convertToImage(BufferedImage.TYPE_INT_RGB, 300);
+            for (Object pageObject : pages) {
+                PDPage page = (PDPage) pageObject;
+                resultFileName = inFileName + "-" + (pages.indexOf(page) + 1);
+                BufferedImage bim = page.convertToImage(BufferedImage.TYPE_INT_RGB, 300);
                 File resultFile = Framework.createTempFile(resultFileName, ".png");
                 FileOutputStream resultFileStream = new FileOutputStream(resultFile);
                 ImageIOUtil.writeImage(bim, "png", resultFileStream, 300);

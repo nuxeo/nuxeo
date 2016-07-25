@@ -68,7 +68,7 @@ public class PDFUtils {
      * @throws NuxeoException
      */
     public static PDDocument load(Blob inBlob, String inPwd) throws NuxeoException {
-        PDDocument pdfDoc = null;
+        PDDocument pdfDoc;
         try {
             pdfDoc = PDDocument.load(inBlob.getStream());
             if (pdfDoc.isEncrypted()) {
@@ -93,13 +93,6 @@ public class PDFUtils {
      * @throws COSVisitorException
      */
     public static FileBlob saveInTempFile(PDDocument inPdfDoc) throws IOException, COSVisitorException {
-        // FileBlob result = null;
-        // File tempFile = File.createTempFile("nuxeo-pdfutils-", ".pdf");
-        // inPdfDoc.save(tempFile);
-        // result = new FileBlob(tempFile);
-        // result.setMimeType("application/pdf");
-        // Framework.trackFile(tempFile, result);
-        // return result;
         return saveInTempFile(inPdfDoc, null);
     }
 
@@ -151,17 +144,17 @@ public class PDFUtils {
     }
 
     public static String checkXPath(String inXPath) {
-        if (inXPath == null || inXPath.isEmpty()) {
+        if (StringUtils.isBlank(inXPath)) {
             inXPath = DEFAULT_BLOB_XPATH;
         }
         return inXPath;
     }
 
     public static void closeSilently(PDDocument... inPdfDocs) {
-        for (PDDocument theDoc : inPdfDocs) {
-            if (theDoc != null) {
+        for (PDDocument doc : inPdfDocs) {
+            if (doc != null) {
                 try {
-                    theDoc.close();
+                    doc.close();
                 } catch (IOException e) {
                     // Ignore
                 }
@@ -171,13 +164,13 @@ public class PDFUtils {
 
     public static class UnrestrictedGetBlobForDocumentIdOrPath extends UnrestrictedSessionRunner {
 
-        protected String idOrPath;
+        private String idOrPath;
 
-        protected DocumentModel doc;
+        private DocumentModel doc;
 
-        protected Blob blob;
+        private Blob blob;
 
-        protected CoreSession session;
+        private CoreSession session;
 
         public UnrestrictedGetBlobForDocumentIdOrPath(CoreSession inSession, String inIdOrPath) {
             super(inSession);

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.pdf;
 
 import java.io.IOException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.nuxeo.ecm.core.api.Blob;
@@ -33,11 +34,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class PDFTextExtractor {
 
-    protected Blob pdfBlob;
+    private Blob pdfBlob;
 
-    protected String password;
+    private String password;
 
-    protected String extractedAllAsString = null;
+    private String extractedAllAsString;
 
     private static final String END_OF_LINE = "\n";
 
@@ -53,7 +54,7 @@ public class PDFTextExtractor {
      * @param inXPath Input XPath.
      */
     public PDFTextExtractor(DocumentModel inDoc, String inXPath) {
-        if (inXPath == null || inXPath.isEmpty()) {
+        if (StringUtils.isBlank(inXPath)) {
             inXPath = "file:content";
         }
         pdfBlob = (Blob) inDoc.getPropertyValue(inXPath);
@@ -78,21 +79,19 @@ public class PDFTextExtractor {
     public String extractLineOf(String inString) throws IOException {
         String extractedLine = null;
         int lineBegining = getAllExtractedLines().indexOf(inString);
-        int lineEnd;
         if (lineBegining != -1) {
-            lineEnd = getAllExtractedLines().indexOf(END_OF_LINE, lineBegining);
+            int lineEnd = getAllExtractedLines().indexOf(END_OF_LINE, lineBegining);
             extractedLine = getAllExtractedLines().substring(lineBegining, lineEnd).trim();
         }
         return extractedLine;
     }
 
     public String extractLastPartOfLine(String string) throws IOException {
-        String extractedLine = null;
-        extractedLine = extractLineOf(string);
+        String extractedLine = extractLineOf(string);
         if (extractedLine != null) {
-            extractedLine = extractedLine.substring(string.length(), extractedLine.length());
+            return extractedLine.substring(string.length(), extractedLine.length());
         }
-        return extractedLine;
+        return null;
     }
 
     public void setPassword(String password) {

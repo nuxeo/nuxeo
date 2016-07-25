@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +54,11 @@ public class PDFEncryption {
 
     private int keyLength = DEFAULT_KEYLENGTH;
 
-    private String originalOwnerPwd, ownerPwd, userPwd;
+    private String originalOwnerPwd;
+
+    private String ownerPwd;
+
+    private String userPwd;
 
     /**
      * Basic constructor.
@@ -141,14 +144,13 @@ public class PDFEncryption {
             pdfDoc = PDDocument.load(pdfBlob.getFile());
             pdfDoc.protect(spp);
             Blob result = Blobs.createBlobWithExtension(".pdf");
-            File resultFile = result.getFile();
             pdfDoc.save(result.getFile());
             result.setMimeType("application/pdf");
             if (StringUtils.isNotBlank(pdfBlob.getFilename())) {
                 result.setFilename(pdfBlob.getFilename());
             }
             pdfDoc.close();
-            FileBlob fb = new FileBlob(resultFile);
+            FileBlob fb = new FileBlob(result.getFile());
             fb.setMimeType("application/pdf");
             return fb;
         } catch (Exception e) {
@@ -184,14 +186,13 @@ public class PDFEncryption {
             pdfDoc.openProtection(new StandardDecryptionMaterial(password));
             pdfDoc.setAllSecurityToBeRemoved(true);
             Blob result = Blobs.createBlobWithExtension(".pdf");
-            File resultFile = result.getFile();
             pdfDoc.save(result.getFile());
             result.setMimeType("application/pdf");
             if (StringUtils.isNotBlank(pdfBlob.getFilename())) {
                 result.setFilename(pdfBlob.getFilename());
             }
             pdfDoc.close();
-            FileBlob fb = new FileBlob(resultFile);
+            FileBlob fb = new FileBlob(result.getFile());
             fb.setMimeType("application/pdf");
             return fb;
         } catch (Exception e) {

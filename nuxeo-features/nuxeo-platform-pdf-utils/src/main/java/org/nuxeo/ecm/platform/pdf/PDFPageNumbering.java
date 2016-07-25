@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.pdf;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -44,9 +45,9 @@ public class PDFPageNumbering {
 
     public static float DEFAULT_FONT_SIZE = 16.0f;
 
-    protected Blob blob;
+    private Blob blob;
 
-    protected String password;
+    private String password;
 
     public enum PAGE_NUMBER_POSITION {
         BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT, TOP_LEFT, TOP_CENTER, TOP_RIGHT
@@ -57,7 +58,7 @@ public class PDFPageNumbering {
     }
 
     public PDFPageNumbering(DocumentModel inDoc, String inXPath) {
-        if (inXPath == null || inXPath.isEmpty()) {
+        if (StringUtils.isBlank(inXPath)) {
             inXPath = "file:content";
         }
         blob = (Blob) inDoc.getPropertyValue(inXPath);
@@ -99,10 +100,10 @@ public class PDFPageNumbering {
         int[] rgb = PDFUtils.hex255ToRGB(inHex255Color);
         try {
             doc = PDFUtils.load(blob, password);
-            List<?> allPages;
+            List allPages;
             PDFont font;
             int max;
-            if (inFontName == null || inFontName.isEmpty()) {
+            if (StringUtils.isBlank(inFontName)) {
                 font = PDType1Font.HELVETICA;
             } else {
                 font = PDType1Font.getStandardFont(inFontName);
@@ -114,15 +115,12 @@ public class PDFPageNumbering {
             max = allPages.size();
             inStartAtPage = inStartAtPage > max ? 1 : inStartAtPage;
             for (int i = inStartAtPage; i <= max; i++) {
-                String pageNumAsStr = "" + pageNumber;
+                String pageNumAsStr = Integer.toString(pageNumber);
                 pageNumber += 1;
                 PDPage page = (PDPage) allPages.get(i - 1);
-                PDPageContentStream footercontentStream = new PDPageContentStream(
-                    doc, page, true, true);
-                float stringWidth = font.getStringWidth(pageNumAsStr)
-                    * inFontSize / 1000f;
-                float stringHeight = font.getFontDescriptor().getFontBoundingBox().getHeight()
-                    * inFontSize / 1000;
+                PDPageContentStream footercontentStream = new PDPageContentStream(doc, page, true, true);
+                float stringWidth = font.getStringWidth(pageNumAsStr) * inFontSize / 1000f;
+                float stringHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() * inFontSize / 1000;
                 PDRectangle pageRect = page.findMediaBox();
                 float xMoveAmount, yMoveAmount;
                 if (inPosition == null) {
