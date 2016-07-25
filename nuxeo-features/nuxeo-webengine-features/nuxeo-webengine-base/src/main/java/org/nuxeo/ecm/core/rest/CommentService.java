@@ -24,8 +24,6 @@ package org.nuxeo.ecm.core.rest;
 
 import java.util.Date;
 
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -88,7 +86,6 @@ public class CommentService extends DefaultAdapter {
 
     @GET
     @Path("reject")
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Response reject() {
         try {
             DocumentObject dobj = (DocumentObject) getTarget();
@@ -106,7 +103,6 @@ public class CommentService extends DefaultAdapter {
 
     @GET
     @Path("approve")
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public Response approve() {
         try {
             DocumentObject dobj = (DocumentObject) getTarget();

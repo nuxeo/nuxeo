@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.interceptor.Interceptors;
+import org.jboss.seam.annotations.intercept.Interceptors;
 
 /**
  * Annotation for Seam components that will use the automatic Document based invalidation system.
