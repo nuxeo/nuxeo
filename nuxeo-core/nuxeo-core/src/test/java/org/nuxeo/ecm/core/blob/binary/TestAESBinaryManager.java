@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_ALIAS;
 import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_PASSWORD;
 import static org.nuxeo.ecm.core.blob.binary.AESBinaryManager.PARAM_KEY_STORE_FILE;
@@ -45,6 +46,7 @@ import java.util.Collections;
 import javax.crypto.KeyGenerator;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -68,6 +70,11 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
     private static final String CONTENT_MD5 = "d25ea4f4642073b7f218024d397dbaef";
 
     private static final String UTF8 = "UTF-8";
+
+    @Before
+    public void check() {
+        assumeTrue("Cannot set Unlimited JCE Policy", AESBinaryManager.setUnlimitedJCEPolicy());
+    }
 
     @Test
     public void testEncryptDecryptWithPassword() throws Exception {

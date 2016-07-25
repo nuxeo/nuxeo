@@ -159,8 +159,10 @@ public class AESBinaryManager extends LocalBinaryManager {
      * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
      * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
      * using reflection.
+     * <p>
+     * This is not possible anymore since 8u102 and https://bugs.openjdk.java.net/browse/JDK-8149417
      */
-    protected static void setUnlimitedJCEPolicy() {
+    protected static boolean setUnlimitedJCEPolicy() {
         try {
             Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
             field.setAccessible(true);
@@ -168,8 +170,10 @@ public class AESBinaryManager extends LocalBinaryManager {
                 log.info("Setting JCE Unlimited Strength");
                 field.set(null, Boolean.FALSE);
             }
+            return true;
         } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
             log.debug("Cannot check/set JCE Unlimited Strength", e);
+            return false;
         }
     }
 
