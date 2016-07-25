@@ -147,4 +147,11 @@ public interface BatchManager {
     Object executeAndClean(String batchId, String chainOrOperationId, CoreSession session,
             Map<String, Object> contextParams, Map<String, Object> operationParams);
 
+    /**
+     * Removes a file from a batch.
+     *
+     * @since 8.4
+     */
+    boolean removeFileEntry(String batchId, String filedIdx);
+
 }

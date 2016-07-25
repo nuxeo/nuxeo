@@ -16,6 +16,7 @@
  * Contributors:
  *     dmetzler
  *     ataillefer
+ *     Gabriel Barata
  */
 package org.nuxeo.ecm.restapi.test;
 
@@ -652,6 +653,82 @@ public class BatchUploadFixture extends BaseTest {
         headers.put("X-File-Size", "a");
         assertEquals(Status.BAD_REQUEST.getStatusCode(),
                 getResponse(RequestType.POST, "upload/" + batchId + "/0", "chunkContent", headers).getStatus());
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void testRemoveFile() throws IOException {
+        // Get batch id, used as a session id
+        ClientResponse response = getResponse(RequestType.POST, "upload");
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+        assertNotNull(batchId);
+
+        int numfiles = 5;
+
+        // Upload test files
+        String fileName, data,
+               fileSize = null,
+               mimeType = "text/plain";
+        Map<String, String> headers = new HashMap<String, String>();
+        for (int i = 0; i < numfiles; i++) {
+            fileName = URLEncoder.encode("Test File " + Integer.toString(i+1) + ".txt", "UTF-8");
+            data = "Test Content " + Integer.toString(i+1);
+            if (fileSize == null) {
+                fileSize = String.valueOf(data.getBytes().length);
+                headers.put("Content-Type", "application/octet-stream");
+                headers.put("X-Upload-Type", "normal");
+                headers.put("X-File-Size", fileSize);
+                headers.put("X-File-Type", mimeType);
+            }
+            headers.put("X-File-Name", fileName);
+            response = getResponse(RequestType.POST, "upload/" + batchId + "/" + Integer.toString(i), data, headers);
+            assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+        }
+
+        // Get batch info
+        response = getResponse(RequestType.GET, "upload/" + batchId);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        ArrayNode nodes = (ArrayNode) mapper.readTree(response.getEntityInputStream());
+        assertEquals(numfiles, nodes.size());
+
+        for (int i = 0; i < numfiles; i++) {
+            node = nodes.get(i);
+            assertEquals("Test File " + Integer.toString(i+1) + ".txt", node.get("name").getValueAsText());
+            assertEquals(fileSize, node.get("size").getValueAsText());
+            assertEquals("normal", node.get("uploadType").getValueAsText());
+        }
+
+        // remove files #2 and #4
+        response = getResponse(RequestType.DELETE, "upload/" + batchId + "/1");
+        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        response = getResponse(RequestType.DELETE, "upload/" + batchId + "/3");
+        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        // check if the remaining files are the correct ones
+        response = getResponse(RequestType.GET, "upload/" + batchId);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        nodes = (ArrayNode) mapper.readTree(response.getEntityInputStream());
+        assertEquals(numfiles-2, nodes.size());
+        node = nodes.get(0);
+        assertEquals("Test File 1.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
+        node = nodes.get(1);
+        assertEquals("Test File 3.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
+        node = nodes.get(2);
+        assertEquals("Test File 5.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
+
+        // test removal of invalid file index
+        response = getResponse(RequestType.DELETE, "upload/" + batchId + "/3");
+        assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 
 }
