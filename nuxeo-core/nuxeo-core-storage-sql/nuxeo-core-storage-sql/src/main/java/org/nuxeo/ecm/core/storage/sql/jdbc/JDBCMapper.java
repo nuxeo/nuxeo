@@ -87,7 +87,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * A {@link JDBCMapper} maps objects to and from a JDBC database. It is specific to a given database connection, as it
@@ -158,16 +157,21 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void createDatabase(String ddlMode) {
-        // most databases can't create tables in a transaction, so suspend it
-        Transaction transaction = TransactionHelper.suspendTransaction();
+        // some databases (SQL Server) can't create tables/indexes/etc in a transaction, so suspend it
         try {
-            createTables(ddlMode);
+            boolean suspend = !connection.getAutoCommit();
+            try {
+                if (suspend) {
+                    connection.setAutoCommit(true);
+                }
+                createTables(ddlMode);
+            } finally {
+                if (suspend) {
+                    connection.setAutoCommit(false);
+                }
+            }
         } catch (SQLException e) {
             throw new NuxeoException(e);
-        } finally {
-            if (transaction != null) {
-                TransactionHelper.resumeTransaction(transaction);
-            }
         }
     }
 
