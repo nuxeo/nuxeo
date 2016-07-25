@@ -3183,11 +3183,15 @@ public class TestSQLRepositoryQuery {
 
         dml = session.query("SELECT dc:subjects/* FROM File WHERE ecm:name = 'doc3'");
         assertEquals(3, dml.size());
-        // order is not fixed for VCS
+        // expect a specific order (NXP-19484)
         List<String> expectedList = new ArrayList<>(Arrays.asList(doc1.getId(), doc1.getId(), doc2.getId()));
         List<String> list = new ArrayList<>(Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId()));
-        Collections.sort(expectedList);
-        Collections.sort(list);
+        assertEquals(expectedList, list);
+
+        // same without proxies
+        dml = session.query("SELECT dc:subjects/* FROM File WHERE ecm:isProxy = 0 AND ecm:name = 'doc3'");
+        assertEquals(3, dml.size());
+        list = new ArrayList<>(Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId()));
         assertEquals(expectedList, list);
     }
 

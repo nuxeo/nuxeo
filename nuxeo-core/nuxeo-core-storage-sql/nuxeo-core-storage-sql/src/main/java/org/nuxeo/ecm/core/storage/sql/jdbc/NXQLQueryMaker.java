@@ -27,9 +27,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -370,12 +372,20 @@ public class NXQLQueryMaker implements QueryMaker {
          * DISTINCT check and add additional selected columns for ORDER BY.
          */
 
-        Set<String> onlyOrderByColumnNames = new HashSet<String>(queryAnalyzer.orderByColumnNames);
-        onlyOrderByColumnNames.removeAll(queryAnalyzer.whatColumnNames);
-
+        boolean hasSelectCollection = queryAnalyzer.hasSelectCollection;
         if (doUnion || distinct) {
             // if UNION, we need all the ORDER BY columns in the SELECT list
             // for aliasing
+            List<String> whatColumnNames = queryAnalyzer.whatColumnNames;
+            if (distinct && !whatColumnNames.contains(NXQL.ECM_UUID)) {
+                // when using DISTINCT, we can't also ORDER BY on an artificial ecm:uuid + pos
+                hasSelectCollection = false;
+            }
+            Set<String> onlyOrderByColumnNames = new HashSet<>(queryAnalyzer.orderByColumnNames);
+            if (hasSelectCollection) {
+                onlyOrderByColumnNames.add(NXQL.ECM_UUID);
+            }
+            onlyOrderByColumnNames.removeAll(whatColumnNames);
             if (distinct && !onlyOrderByColumnNames.isEmpty()) {
                 // if DISTINCT, check that the ORDER BY columns are all in the
                 // SELECT list
@@ -515,12 +525,25 @@ public class NXQLQueryMaker implements QueryMaker {
 
             // ORDER BY computed just once; may use just aliases
             if (orderBy == null) {
+                if (hasSelectCollection) {
+                    if (sqlQuery.orderBy == null) {
+                        OrderByList obl = new OrderByList(null); // stupid constructor
+                        obl.clear();
+                        sqlQuery.orderBy = new OrderByClause(obl);
+                    }
+                    // always add ecm:uuid in ORDER BY
+                    sqlQuery.orderBy.elements.add(new OrderByExpr(new Reference(NXQL.ECM_UUID), false));
+                }
                 if (sqlQuery.orderBy != null) {
                     // needs aliasesByName
                     whereBuilder.aliasOrderByColumns = doUnion;
                     whereBuilder.buf.setLength(0);
                     sqlQuery.orderBy.accept(whereBuilder);
                     // ends up in WhereBuilder#visitOrderByExpr
+                    if (hasSelectCollection) {
+                        // also add all pos columns
+                        whereBuilder.visitOrderByPosColumns();
+                    }
                     orderBy = whereBuilder.buf.toString();
                 }
             }
@@ -851,6 +874,9 @@ public class NXQLQueryMaker implements QueryMaker {
     // wildcard index in xpath
     protected final static Pattern HAS_WILDCARD_INDEX = Pattern.compile(".*/(\\*|\\*\\d+)(/.*|$)");
 
+    // wildcard index at the end in xpath
+    protected final static Pattern HAS_FINAL_WILDCARD_INDEX = Pattern.compile(".*/(\\*|\\*\\d+)");
+
     // digits or star or star followed by digits, then slash, for replaceAll
     protected final static Pattern INDEX_SLASH = Pattern.compile("/(?:\\d+|\\*|\\*\\d+)(/|$)");
 
@@ -894,6 +920,20 @@ public class NXQLQueryMaker implements QueryMaker {
     public boolean hasWildcardIndex(String xpath) {
         xpath = canonicalXPath(xpath);
         return HAS_WILDCARD_INDEX.matcher(xpath).matches();
+    }
+
+    public boolean hasFinalWildcardIndex(String xpath) {
+        xpath = canonicalXPath(xpath);
+        return HAS_FINAL_WILDCARD_INDEX.matcher(xpath).matches();
+    }
+
+    /* Turns foo/*123 into foo#123 */
+    protected static String keyForPos(String name) {
+        int i = name.lastIndexOf('/');
+        if (i == -1) {
+            throw new RuntimeException("Unexpected name: " + name);
+        }
+        return name.substring(0, i) + "#" + name.substring(i + 2);
     }
 
     protected QueryAnalyzer newQueryAnalyzer(FacetFilter facetFilter) {
@@ -962,6 +1002,9 @@ public class NXQLQueryMaker implements QueryMaker {
         protected List<String> whatColumnNames;
 
         protected List<String> orderByColumnNames;
+
+        /** Do we have a SELECT somelist/* FROM ... */
+        protected boolean hasSelectCollection;
 
         protected boolean hasWildcardIndex;
 
@@ -1341,6 +1384,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
             if (inSelect) {
                 whatColumnNames.add(name);
+                if (hasFinalWildcardIndex(name)) {
+                    hasSelectCollection = true;
+                }
             } else if (inOrderBy) {
                 orderByColumnNames.add(name);
             }
@@ -1395,14 +1441,17 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final Column column;
 
+        public final Column posColumn;
+
         public final int arrayElementIndex;
 
         public final boolean isArrayElement;
 
         public final boolean needsSubSelect;
 
-        public ColumnInfo(Column column, int arrayElementIndex, boolean isArrayElement, boolean isArray) {
+        public ColumnInfo(Column column, Column posColumn, int arrayElementIndex, boolean isArrayElement, boolean isArray) {
             this.column = column;
+            this.posColumn = posColumn;
             this.arrayElementIndex = arrayElementIndex;
             this.isArrayElement = isArrayElement;
             this.needsSubSelect = !isArrayElement && isArray && !column.getType().isArray();
@@ -1460,6 +1509,9 @@ public class NXQLQueryMaker implements QueryMaker {
         protected Map<String, ArraySubQuery> propertyArraySubQueries = new HashMap<String, ArraySubQuery>();
 
         protected int arraySubQueryJoinCount = 0;
+
+        // additional collection pos columns on which to ORDER BY
+        protected Map<String, Column> orderByPosColumns = new LinkedHashMap<>(0);
 
         public WhereBuilder(boolean isProxies) {
             this.isProxies = isProxies;
@@ -1600,7 +1652,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
             Column column = table.getColumn(fragmentKey);
-            return new ColumnInfo(column, -1, false, false);
+            return new ColumnInfo(column, null, -1, false, false);
         }
 
         /**
@@ -1711,6 +1763,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     Table table = database.getTable(prop.fragmentName);
                     Column column = table.getColumn(prop.fragmentKey);
                     boolean skipJoin = !isArrayElement && prop.propertyType.isArray() && !column.isArray();
+                    Column posColumn = null;
                     if (column.isArray() && star) {
                         contextKey = contextStart + segment + contextSuffix;
                         ArraySubQuery arraySubQuery = getArraySubQuery(contextHier, contextKey, column, skipJoin);
@@ -1721,8 +1774,13 @@ public class NXQLQueryMaker implements QueryMaker {
                         table = getFragmentTable(contextHier, contextKey, prop.fragmentName,
                                 column.isArray() ? -1 : index, skipJoin);
                         column = table.getColumn(prop.fragmentKey);
+                        if (star) {
+                            // we'll have to do an ORDER BY on the pos column as well
+                            posColumn = table.getColumn(Model.COLL_TABLE_POS_KEY);
+                            orderByPosColumns.put(keyForPos(xpath), posColumn);
+                        }
                     }
-                    return new ColumnInfo(column, column.isArray() ? index : -1, isArrayElement,
+                    return new ColumnInfo(column, posColumn, column.isArray() ? index : -1, isArrayElement,
                             prop.propertyType.isArray());
                 }
             }
@@ -2291,8 +2349,16 @@ public class NXQLQueryMaker implements QueryMaker {
             if (inSelect) {
                 whatColumns.add(info.column);
                 whatKeys.add(name);
+                if (info.posColumn != null) {
+                    whatColumns.add(info.posColumn);
+                    whatKeys.add(keyForPos(name));
+                }
             } else {
                 visitReference(info.column, node.cast);
+                if (inOrderBy && info.posColumn != null) {
+                    buf.append(", ");
+                    visitReference(info.posColumn);
+                }
             }
         }
 
@@ -2454,10 +2520,30 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitOrderByList(OrderByList node) {
             inOrderBy = true;
-            for (Iterator<OrderByExpr> it = node.iterator(); it.hasNext();) {
-                it.next().accept(this);
-                if (it.hasNext()) {
+            for (OrderByExpr obe : node) {
+                if (buf.length() != 0) {
+                    // we can do this because we generate in an initially empty buffer
                     buf.append(", ");
+                }
+                obe.accept(this);
+            }
+            inOrderBy = false;
+        }
+
+        public void visitOrderByPosColumns() {
+            inOrderBy = true;
+            for (Entry<String, Column> es : orderByPosColumns.entrySet()) {
+                if (buf.length() != 0) {
+                    buf.append(", ");
+                }
+                int length = buf.length();
+                visitReference(es.getValue());
+                if (aliasOrderByColumns) {
+                    // but don't use generated values
+                    // make the ORDER BY clause uses the aliases instead
+                    buf.setLength(length);
+                    String alias = aliasesByName.get(es.getKey());
+                    buf.append(alias);
                 }
             }
             inOrderBy = false;

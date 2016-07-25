@@ -757,6 +757,10 @@ public class Model {
             // also add the propname/* path for array elements
             if (pi.propertyType.isArray()) {
                 propertyInfoByPath.put(path + "/*", pi);
+                // pseudo-syntax with ending "#" to get to the pos column
+                String posPropertyName = propertyName + "#";
+                ModelProperty posPi = map.get(typeName).get(posPropertyName);
+                propertyInfoByPath.put(path + "#", posPi);
             }
         }
         done.remove(typeName);
@@ -1520,6 +1524,11 @@ public class Model {
                             String fragmentName = collectionFragmentName(propertyName);
                             addPropertyInfo(complexType, propertyName, propertyType, fragmentName, COLL_TABLE_VALUE_KEY,
                                     false, null, columnType);
+                            // pseudo-syntax with ending "#" to get to the pos column
+                            String posPropertyName = propertyName + "#";
+                            PropertyType posPropertyType = PropertyType.LONG;
+                            addPropertyInfo(complexType, posPropertyName, posPropertyType, fragmentName,
+                                    COLL_TABLE_POS_KEY, false, null, ColumnType.INTEGER);
 
                             Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
                             keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
