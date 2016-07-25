@@ -77,9 +77,11 @@ public class PDFExtractInfoOperation {
     public DocumentModel run(DocumentModel inDoc) throws IOException {
         // Get the blob
         // If there is no blob, we empty all the values
-        Blob theBlob;
-        theBlob = (Blob) inDoc.getPropertyValue(xpath);
-        if (theBlob == null || !theBlob.getMimeType().equals("application/pdf")) {
+        if (properties == null) {
+            properties = new Properties();
+        }
+        Blob theBlob = (Blob) inDoc.getPropertyValue(xpath);
+        if (theBlob == null || (theBlob.getMimeType() != null && !theBlob.getMimeType().equals("application/pdf"))) {
             for (String inXPath : properties.keySet()) {
                 inDoc.setPropertyValue(inXPath, "");
             }
