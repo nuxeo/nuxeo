@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,7 +83,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
 
     @Before
     public void setUp() throws IOException {
-        setUnlimitedJCEPolicy();
+        assumeTrue("Cannot set Unlimited JCE Policy", setUnlimitedJCEPolicy());
         binaryManager = getBinaryManager();
         removeObjects();
     }
@@ -97,8 +98,10 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
      * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
      * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
      * using reflection.
+     * <p>
+     * This is not possible anymore since 8u102 and https://bugs.openjdk.java.net/browse/JDK-8149417
      */
-    protected static void setUnlimitedJCEPolicy() {
+    protected static boolean setUnlimitedJCEPolicy() {
         try {
             Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
             field.setAccessible(true);
@@ -106,8 +109,10 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
                 log.info("Setting JCE Unlimited Strength");
                 field.set(null, Boolean.FALSE);
             }
+            return true;
         } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
             log.debug("Cannot check/set JCE Unlimited Strength", e);
+            return false;
         }
     }
     @Test
