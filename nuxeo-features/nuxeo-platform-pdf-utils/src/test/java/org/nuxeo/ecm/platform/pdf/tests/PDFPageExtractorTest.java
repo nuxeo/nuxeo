@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.pdf.tests;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +32,11 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.pdf.PDFPageExtractor;
+import org.nuxeo.ecm.platform.pdf.operations.PDFConvertToPicturesOperation;
 import org.nuxeo.ecm.platform.pdf.operations.PDFExtractPagesOperation;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -49,9 +52,9 @@ import static org.junit.Assert.assertTrue;
 @Deploy({ "org.nuxeo.ecm.platform.pdf" })
 public class PDFPageExtractorTest {
 
-    private FileBlob pdfFileBlob;
+    private FileBlob pdfFileBlob, encryptedPdfFileBlob;
 
-    private FileBlob encryptedPdfFileBlob;
+    private DocumentModel testDocsFolder, pdfDocModel;
 
     @Inject
     CoreSession coreSession;
@@ -61,8 +64,28 @@ public class PDFPageExtractorTest {
 
     @Before
     public void setUp() {
+        testDocsFolder = coreSession.createDocumentModel("/", "test-pdf", "Folder");
+        testDocsFolder.setPropertyValue("dc:title", "test-pdfutils");
+        testDocsFolder = coreSession.createDocument(testDocsFolder);
+        testDocsFolder = coreSession.saveDocument(testDocsFolder);
+        assertNotNull(testDocsFolder);
         pdfFileBlob = new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_PATH));
+        pdfFileBlob.setMimeType("application/pdf");
+        pdfFileBlob.setFilename(pdfFileBlob.getFile().getName());
+        pdfDocModel = coreSession.createDocumentModel(testDocsFolder.getPathAsString(),
+            pdfFileBlob.getFile().getName(), "File");
+        pdfDocModel.setPropertyValue("dc:title", pdfFileBlob.getFile().getName());
+        pdfDocModel.setPropertyValue("file:content", pdfFileBlob);
+        pdfDocModel = coreSession.createDocument(pdfDocModel);
+        pdfDocModel = coreSession.saveDocument(pdfDocModel);
+        assertNotNull(pdfDocModel);
         encryptedPdfFileBlob = new FileBlob(FileUtils.getResourceFileFromContext(TestUtils.PDF_ENCRYPTED_PATH));
+    }
+
+    @After
+    public void tearDown() {
+        coreSession.removeDocument(testDocsFolder.getRef());
+        coreSession.save();
     }
 
     private void checkExtractedPDFPages1To3(File extractedPDFPages) throws Exception {
@@ -162,6 +185,22 @@ public class PDFPageExtractorTest {
         assertEquals(encryptedPdfFileBlob.getFilename().replace(".pdf", "-1-3.pdf"), result.getFilename());
         assertEquals("application/pdf", result.getMimeType());
         checkExtractedPDFPages1To3(result.getFile());
+    }
+
+    @Test
+    public void testConvertPDFToPicturesOperation() throws Exception {
+        OperationChain chain = new OperationChain("testChain");
+        OperationContext ctx = new OperationContext(coreSession);
+        assertNotNull(ctx);
+        ctx.setInput(pdfDocModel);
+        chain.add(PDFConvertToPicturesOperation.ID);
+        BlobList result = (BlobList) automationService.run(ctx, chain);
+        assertNotNull(result);
+        for (Blob pictureBlob : result) {
+            assertEquals("picture/png", pictureBlob.getMimeType());
+            assertEquals(pdfDocModel.getPropertyValue("dc:title") + "-" + (result.indexOf(pictureBlob) + 1) + ".png",
+                pictureBlob.getFilename());
+        }
     }
 
     @Test(expected = NuxeoException.class)
