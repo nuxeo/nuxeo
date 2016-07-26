@@ -120,9 +120,8 @@ public class PDFWatermarking {
      * @throws NuxeoException
      */
     public Blob watermark() throws NuxeoException {
-        Blob result = null;
-        PDDocument pdfDoc = null;
-        PDPageContentStream contentStream = null;
+        Blob result;
+        PDPageContentStream contentStream;
         if (StringUtils.isBlank(text)) {
             try {
                 File tempFile = File.createTempFile("nuxeo-pdfwatermarking-", ".pdf");
@@ -143,18 +142,16 @@ public class PDFWatermarking {
         PDExtendedGraphicsState extendedGraphicsState = new PDExtendedGraphicsState();
         // Set the transparency/opacity
         extendedGraphicsState.setNonStrokingAlphaConstant(alphaColor);
-        try {
-            pdfDoc = PDDocument.load(blob.getStream());
+        try (PDDocument pdfDoc = PDDocument.load(blob.getStream())) {
             PDFont font = PDType1Font.getStandardFont(fontFamily);
             int[] rgb = PDFUtils.hex255ToRGB(hex255Color);
             List allPages = pdfDoc.getDocumentCatalog().getAllPages();
             for (Object pageObject : allPages) {
                 PDPage page = (PDPage) pageObject;
-                contentStream = null;
                 PDRectangle pageSize = page.findMediaBox();
                 PDResources resources = page.findResources();
                 // Get the defined graphic states.
-                HashMap<String, PDExtendedGraphicsState> graphicsStateDictionary = (HashMap<String, PDExtendedGraphicsState>) resources.getGraphicsStates();
+                Map<String, PDExtendedGraphicsState> graphicsStateDictionary = (HashMap<String, PDExtendedGraphicsState>) resources.getGraphicsStates();
                 if (graphicsStateDictionary != null) {
                     graphicsStateDictionary.put("TransparentState", extendedGraphicsState);
                     resources.setGraphicsStates(graphicsStateDictionary);
@@ -190,50 +187,34 @@ public class PDFWatermarking {
                 contentStream.drawString(text);
                 contentStream.endText();
                 contentStream.close();
-                contentStream = null;
             }
             result = PDFUtils.saveInTempFile(pdfDoc);
         } catch (IOException | COSVisitorException e) {
             throw new NuxeoException(e);
-        } finally {
-            if (contentStream != null) {
-                try {
-                    contentStream.close();
-                } catch (IOException e) {
-                    // Ignore
-                }
-            }
-            PDFUtils.closeSilently(pdfDoc);
         }
         return result;
     }
 
     public Blob watermarkWithPdf(Blob inBlob) throws NuxeoException {
-        Blob result = null;
-        PDDocument pdfDoc = null;
-        PDDocument pdfOverlayDoc = null;
-        try {
-            pdfDoc = PDDocument.load(blob.getStream());
+        Blob result;
+        PDDocument pdfOverlayDoc;
+        try (PDDocument pdfDoc = PDDocument.load(blob.getStream())) {
             pdfOverlayDoc = PDDocument.load(inBlob.getStream());
             Overlay overlay = new Overlay();
             overlay.overlay(pdfOverlayDoc, pdfDoc);
             result = PDFUtils.saveInTempFile(pdfDoc);
         } catch (IOException | COSVisitorException e) {
             throw new NuxeoException(e);
-        } finally {
-            PDFUtils.closeSilently(pdfDoc, pdfOverlayDoc);
         }
         return result;
     }
 
     public Blob watermarkWithImage(Blob inBlob, int x, int y, float scale) throws NuxeoException {
-        Blob result = null;
-        PDDocument pdfDoc = null;
-        PDPageContentStream contentStream = null;
+        Blob result;
+        PDPageContentStream contentStream;
         scale = (scale <= 0f) ? 1.0f : scale;
-        try {
+        try (PDDocument pdfDoc = PDDocument.load(blob.getStream())) {
             BufferedImage tmp_image = ImageIO.read(inBlob.getStream());
-            pdfDoc = PDDocument.load(blob.getStream());
             PDXObjectImage ximage = new PDPixelMap(pdfDoc, tmp_image);
             List allPages = pdfDoc.getDocumentCatalog().getAllPages();
             for (Object allPage : allPages) {
@@ -242,20 +223,10 @@ public class PDFWatermarking {
                 contentStream.endMarkedContentSequence();
                 contentStream.drawXObject(ximage, x, y, ximage.getWidth() * scale, ximage.getHeight() * scale);
                 contentStream.close();
-                contentStream = null;
             }
             result = PDFUtils.saveInTempFile(pdfDoc);
         } catch (IOException | COSVisitorException e) {
             throw new NuxeoException(e);
-        } finally {
-            if (contentStream != null) {
-                try {
-                    contentStream.close();
-                } catch (IOException e) {
-                    // Ignore
-                }
-            }
-            PDFUtils.closeSilently(pdfDoc);
         }
         return result;
     }

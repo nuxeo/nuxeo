@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.pdf.operations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,17 +71,17 @@ public class PDFExtractLinksOperation {
         PDFLinks pdfl = new PDFLinks(inBlob);
         JSONArray array = new JSONArray();
         for (String theType : types) {
-            ArrayList<LinkInfo> links = new ArrayList<LinkInfo>();
+            List<LinkInfo> links = new ArrayList<>();
             switch (theType.toLowerCase()) {
-                case "remote go to":
-                    links = pdfl.getRemoteGoToLinks();
-                    break;
-                case "launch":
-                    links = pdfl.getLaunchLinks();
-                    break;
-                case "uri":
-                    links = pdfl.getURILinks();
-                    break;
+            case "remote go to":
+                links = pdfl.getRemoteGoToLinks();
+                break;
+            case "launch":
+                links = pdfl.getLaunchLinks();
+                break;
+            case "uri":
+                links = pdfl.getURILinks();
+                break;
             }
             for (LinkInfo li : links) {
                 JSONObject object = new JSONObject();

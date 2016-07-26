@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.platform.pdf.tests;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -63,11 +63,11 @@ public class PDFLinksTest {
         File f = FileUtils.getResourceFileFromContext(TestUtils.PDF_LINKED_1_PATH);
         FileBlob fb = new FileBlob(f);
         PDFLinks pdfl = new PDFLinks(fb);
-        ArrayList<LinkInfo> launchLinks = pdfl.getLaunchLinks();
+        List<LinkInfo> launchLinks = pdfl.getLaunchLinks();
         assertEquals(2, launchLinks.size());
         assertEquals(PDF_LINKED_2_LOCAL_PATH, launchLinks.get(0).getLink());
         assertEquals(PDF_LINKED_3_LOCAL_PATH, launchLinks.get(1).getLink());
-        ArrayList<LinkInfo> remoteLinks = pdfl.getRemoteGoToLinks();
+        List<LinkInfo> remoteLinks = pdfl.getRemoteGoToLinks();
         assertEquals(1, remoteLinks.size());
         assertEquals(PDF_LINKED_2_LOCAL_PATH, remoteLinks.get(0).getLink());
         pdfl.close();

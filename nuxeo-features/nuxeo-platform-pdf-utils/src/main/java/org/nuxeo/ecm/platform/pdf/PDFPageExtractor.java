@@ -111,9 +111,8 @@ public class PDFPageExtractor {
     public Blob extract(int inStartPage, int inEndPage, String inFileName, String inTitle, String inSubject,
                         String inAuthor) throws NuxeoException {
         Blob result;
-        PDDocument pdfDoc = null, extracted = null;
-        try {
-            pdfDoc = PDFUtils.load(pdfBlob, password);
+        PDDocument extracted = null;
+        try (PDDocument pdfDoc = PDFUtils.load(pdfBlob, password)) {
             PageExtractor pe = new PageExtractor(pdfDoc, inStartPage, inEndPage);
             extracted = pe.extract();
             PDFUtils.setInfos(extracted, inTitle, inSubject, inAuthor);
@@ -126,15 +125,6 @@ public class PDFPageExtractor {
             extracted.close();
         } catch (IOException | COSVisitorException e) {
             throw new NuxeoException("Failed to extract the pages", e);
-        } finally {
-            PDFUtils.closeSilently(pdfDoc);
-            if (extracted != null) {
-                try {
-                    extracted.close();
-                } catch (IOException e) {
-                    // Nothing
-                }
-            }
         }
         return result;
     }
@@ -142,14 +132,12 @@ public class PDFPageExtractor {
     public BlobList getPagesAsImages(String inFileName) throws NuxeoException {
         ImageIO.scanForPlugins();
         BlobList results = new BlobList();
-        PDDocument pdfDoc = null;
         String resultFileName;
         // Use file name parameter if passed, otherwise use original file name.
         if (StringUtils.isBlank(inFileName)) {
             inFileName = getFileName(pdfBlob) + ".pdf";
         }
-        try {
-            pdfDoc = PDFUtils.load(pdfBlob, password);
+        try (PDDocument pdfDoc = PDFUtils.load(pdfBlob, password)) {
             // Get all PDF pages.
             List pages = pdfDoc.getDocumentCatalog().getAllPages();
             // Convert each page to PNG.
@@ -171,8 +159,6 @@ public class PDFPageExtractor {
             pdfDoc.close();
         } catch (IOException e) {
             throw new NuxeoException("Failed to extract the pages", e);
-        } finally {
-            PDFUtils.closeSilently(pdfDoc);
         }
         return results;
     }

@@ -81,19 +81,19 @@ public class PDFPageNumberingTest {
 
     private int getIndexOfNumberingForPage(int pageNumber) {
         switch (pageNumber) {
-            case 1: return 1665;
-            case 2: return 1387;
-            case 3: return 1515;
-            case 4: return 1592;
-            case 5: return 1397;
-            case 6: return 1592;
-            case 7: return 1387;
-            case 8: return 1729;
-            case 9: return 1589;
-            case 10: return 1444;
-            case 11: return 1459;
-            case 12: return 1667;
-            case 13: return 849;
+        case 1: return 1665;
+        case 2: return 1387;
+        case 3: return 1515;
+        case 4: return 1592;
+        case 5: return 1397;
+        case 6: return 1592;
+        case 7: return 1387;
+        case 8: return 1729;
+        case 9: return 1589;
+        case 10: return 1444;
+        case 11: return 1459;
+        case 12: return 1667;
+        case 13: return 849;
         }
         return 0;
     }

@@ -62,15 +62,11 @@ public class PDFTextExtractor {
 
     public String getAllExtractedLines() throws NuxeoException {
         if (extractedAllAsString == null) {
-            PDDocument pdfDoc = null;
-            try {
-                pdfDoc = PDFUtils.load(pdfBlob, password);
+            try (PDDocument pdfDoc = PDFUtils.load(pdfBlob, password)) {
                 PDFTextStripper stripper = new PDFTextStripper();
                 extractedAllAsString = stripper.getText(pdfDoc);
             } catch (IOException e) {
                 throw new NuxeoException("Failed to handle the pdf", e);
-            } finally {
-                PDFUtils.closeSilently(pdfDoc);
             }
         }
         return extractedAllAsString;

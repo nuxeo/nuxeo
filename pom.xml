@@ -174,6 +174,8 @@
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.7.4</jackson.version>
+    <imageio.version>1.6.5</imageio.version>
+    <bouncycastle.version>1.45</bouncycastle.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -3005,12 +3007,12 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15</artifactId>
-        <version>1.45</version>
+        <version>${bouncycastle.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15</artifactId>
-        <version>1.45</version>
+        <version>${bouncycastle.version}</version>
       </dependency>
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>

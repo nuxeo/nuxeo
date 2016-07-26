@@ -92,14 +92,12 @@ public class PDFPageNumbering {
      */
     public Blob addPageNumbers(int inStartAtPage, int inStartAtNumber, String inFontName, float inFontSize,
                                String inHex255Color, PAGE_NUMBER_POSITION inPosition) throws NuxeoException {
-        Blob result = null;
-        PDDocument doc = null;
+        Blob result;
         inStartAtPage = inStartAtPage < 1 ? 1 : inStartAtPage;
         int pageNumber = inStartAtNumber < 1 ? 1 : inStartAtNumber;
         inFontSize = inFontSize <= 0 ? DEFAULT_FONT_SIZE : inFontSize;
         int[] rgb = PDFUtils.hex255ToRGB(inHex255Color);
-        try {
-            doc = PDFUtils.load(blob, password);
+        try (PDDocument doc = PDFUtils.load(blob, password)) {
             List allPages;
             PDFont font;
             int max;
@@ -127,31 +125,31 @@ public class PDFPageNumbering {
                     inPosition = PAGE_NUMBER_POSITION.BOTTOM_RIGHT;
                 }
                 switch (inPosition) {
-                    case BOTTOM_LEFT:
-                        xMoveAmount = 10;
-                        yMoveAmount = pageRect.getLowerLeftY() + 10;
-                        break;
-                    case BOTTOM_CENTER:
-                        xMoveAmount = (pageRect.getUpperRightX() / 2) - (stringWidth / 2);
-                        yMoveAmount = pageRect.getLowerLeftY() + 10;
-                        break;
-                    case TOP_LEFT:
-                        xMoveAmount = 10;
-                        yMoveAmount = pageRect.getHeight() - stringHeight - 10;
-                        break;
-                    case TOP_CENTER:
-                        xMoveAmount = (pageRect.getUpperRightX() / 2) - (stringWidth / 2);
-                        yMoveAmount = pageRect.getHeight() - stringHeight - 10;
-                        break;
-                    case TOP_RIGHT:
-                        xMoveAmount = pageRect.getUpperRightX() - 10 - stringWidth;
-                        yMoveAmount = pageRect.getHeight() - stringHeight - 10;
-                        break;
-                    // Bottom-right is the default
-                    default:
-                        xMoveAmount = pageRect.getUpperRightX() - 10 - stringWidth;
-                        yMoveAmount = pageRect.getLowerLeftY() + 10;
-                        break;
+                case BOTTOM_LEFT:
+                    xMoveAmount = 10;
+                    yMoveAmount = pageRect.getLowerLeftY() + 10;
+                    break;
+                case BOTTOM_CENTER:
+                    xMoveAmount = (pageRect.getUpperRightX() / 2) - (stringWidth / 2);
+                    yMoveAmount = pageRect.getLowerLeftY() + 10;
+                    break;
+                case TOP_LEFT:
+                    xMoveAmount = 10;
+                    yMoveAmount = pageRect.getHeight() - stringHeight - 10;
+                    break;
+                case TOP_CENTER:
+                    xMoveAmount = (pageRect.getUpperRightX() / 2) - (stringWidth / 2);
+                    yMoveAmount = pageRect.getHeight() - stringHeight - 10;
+                    break;
+                case TOP_RIGHT:
+                    xMoveAmount = pageRect.getUpperRightX() - 10 - stringWidth;
+                    yMoveAmount = pageRect.getHeight() - stringHeight - 10;
+                    break;
+                // Bottom-right is the default
+                default:
+                    xMoveAmount = pageRect.getUpperRightX() - 10 - stringWidth;
+                    yMoveAmount = pageRect.getLowerLeftY() + 10;
+                    break;
                 }
                 footercontentStream.beginText();
                 footercontentStream.setFont(font, inFontSize);
@@ -167,8 +165,6 @@ public class PDFPageNumbering {
             Framework.trackFile(tempFile, result);
         } catch (IOException | COSVisitorException e) {
             throw new NuxeoException("Failed to handle the pdf", e);
-        } finally {
-            PDFUtils.closeSilently(doc);
         }
         return result;
     }

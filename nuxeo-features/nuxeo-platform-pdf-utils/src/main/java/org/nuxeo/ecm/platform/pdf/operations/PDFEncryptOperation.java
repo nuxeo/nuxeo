@@ -77,30 +77,30 @@ public class PDFEncryptOperation {
         for (Entry<String, String> property : properties.entrySet()) {
             boolean value = Boolean.parseBoolean(property.getValue());
             switch (property.getKey().toLowerCase()) {
-                case "print":
-                    ap.setCanPrint(value);
-                    break;
-                case "modify":
-                    ap.setCanModify(value);
-                    break;
-                case "copy":
-                    ap.setCanExtractContent(value);
-                    break;
-                case "modifyannot":
-                    ap.setCanModifyAnnotations(value);
-                    break;
-                case "fillforms":
-                    ap.setCanFillInForm(value);
-                    break;
-                case "extractforaccessibility":
-                    ap.setCanExtractForAccessibility(value);
-                    break;
-                case "assemble":
-                    ap.setCanAssembleDocument(value);
-                    break;
-                case "printdegraded":
-                    ap.setCanPrintDegraded(value);
-                    break;
+            case "print":
+                ap.setCanPrint(value);
+                break;
+            case "modify":
+                ap.setCanModify(value);
+                break;
+            case "copy":
+                ap.setCanExtractContent(value);
+                break;
+            case "modifyannot":
+                ap.setCanModifyAnnotations(value);
+                break;
+            case "fillforms":
+                ap.setCanFillInForm(value);
+                break;
+            case "extractforaccessibility":
+                ap.setCanExtractForAccessibility(value);
+                break;
+            case "assemble":
+                ap.setCanAssembleDocument(value);
+                break;
+            case "printdegraded":
+                ap.setCanPrintDegraded(value);
+                break;
             }
         }
         return ap;

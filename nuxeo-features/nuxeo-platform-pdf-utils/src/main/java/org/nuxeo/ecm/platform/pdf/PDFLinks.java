@@ -61,11 +61,11 @@ public class PDFLinks {
 
     private String password;
 
-    private ArrayList<LinkInfo> remoteGoToLinks;
+    private List<LinkInfo> remoteGoToLinks;
 
-    private ArrayList<LinkInfo> launchLinks;
+    private List<LinkInfo> launchLinks;
 
-    private ArrayList<LinkInfo> uriLinks;
+    private List<LinkInfo> uriLinks;
 
     private PDFTextStripperByArea stripper;
 
@@ -117,11 +117,11 @@ public class PDFLinks {
                         y = pageSize.getHeight() - y;
                     }
                     Rectangle2D.Float awtRect = new Rectangle2D.Float(x, y, width, height);
-                    stripper.addRegion("" + pageAnnotations.indexOf(annot), awtRect);
+                    stripper.addRegion(String.valueOf(pageAnnotations.indexOf(annot)), awtRect);
                 }
             }
         } catch (IOException e) {
-            throw new NuxeoException("Cannot prefilght and prepare regions", e);
+            throw new NuxeoException("Cannot preflight and prepare regions", e);
         }
     }
 
@@ -130,7 +130,7 @@ public class PDFLinks {
      *
      * @throws IOException
      */
-    public ArrayList<LinkInfo> getRemoteGoToLinks() throws IOException {
+    public List<LinkInfo> getRemoteGoToLinks() throws IOException {
         if (remoteGoToLinks == null) {
             loadAndPreflightPdf();
             remoteGoToLinks = parseForLinks(PDActionRemoteGoTo.SUB_TYPE);
@@ -143,7 +143,7 @@ public class PDFLinks {
      *
      * @throws IOException
      */
-    public ArrayList<LinkInfo> getLaunchLinks() throws IOException {
+    public List<LinkInfo> getLaunchLinks() throws IOException {
         if (launchLinks == null) {
             loadAndPreflightPdf();
             launchLinks = parseForLinks(PDActionLaunch.SUB_TYPE);
@@ -156,7 +156,7 @@ public class PDFLinks {
      *
      * @throws IOException
      */
-    public ArrayList<LinkInfo> getURILinks() throws IOException {
+    public List<LinkInfo> getURILinks() throws IOException {
         if (uriLinks == null) {
             loadAndPreflightPdf();
             uriLinks = parseForLinks(PDActionURI.SUB_TYPE);
@@ -164,12 +164,12 @@ public class PDFLinks {
         return uriLinks;
     }
 
-    private ArrayList<LinkInfo> parseForLinks(String inSubType) throws IOException {
+    private List<LinkInfo> parseForLinks(String inSubType) throws IOException {
         PDActionRemoteGoTo goTo;
         PDActionLaunch launch;
         PDActionURI uri;
         PDFileSpecification fspec;
-        ArrayList<LinkInfo> li = new ArrayList<>();
+        List<LinkInfo> li = new ArrayList<>();
         List allPages = pdfDoc.getDocumentCatalog().getAllPages();
         for (Object pageObject : allPages) {
             PDPage page = (PDPage) pageObject;
@@ -184,24 +184,24 @@ public class PDFLinks {
                 if (!action.getSubType().equals(inSubType)) {
                     continue;
                 }
-                String urlText = stripper.getTextForRegion("" + annotations.indexOf(annot));
+                String urlText = stripper.getTextForRegion(String.valueOf(annotations.indexOf(annot)));
                 String urlValue = null;
                 switch (inSubType) {
-                    case PDActionRemoteGoTo.SUB_TYPE:
-                        goTo = (PDActionRemoteGoTo) action;
-                        fspec = goTo.getFile();
-                        urlValue = fspec.getFile();
-                        break;
-                    case PDActionLaunch.SUB_TYPE:
-                        launch = (PDActionLaunch) action;
-                        fspec = launch.getFile();
-                        urlValue = fspec.getFile();
-                        break;
-                    case PDActionURI.SUB_TYPE:
-                        uri = (PDActionURI) action;
-                        urlValue = uri.getURI();
-                        break;
-                    // others...
+                case PDActionRemoteGoTo.SUB_TYPE:
+                    goTo = (PDActionRemoteGoTo) action;
+                    fspec = goTo.getFile();
+                    urlValue = fspec.getFile();
+                    break;
+                case PDActionLaunch.SUB_TYPE:
+                    launch = (PDActionLaunch) action;
+                    fspec = launch.getFile();
+                    urlValue = fspec.getFile();
+                    break;
+                case PDActionURI.SUB_TYPE:
+                    uri = (PDActionURI) action;
+                    urlValue = uri.getURI();
+                    break;
+                // others...
                 }
                 if (StringUtils.isNotBlank(urlValue)) {
                     li.add(new LinkInfo(allPages.indexOf(page) + 1, inSubType, urlText, urlValue));

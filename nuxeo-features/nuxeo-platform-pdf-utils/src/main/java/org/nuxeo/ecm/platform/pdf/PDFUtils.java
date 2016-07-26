@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -180,11 +181,8 @@ public class PDFUtils {
 
         @Override
         public void run() throws NuxeoException {
-            if (idOrPath.startsWith("/")) {
-                doc = session.getDocument(new PathRef(idOrPath));
-            } else {
-                doc = session.getDocument(new IdRef(idOrPath));
-            }
+            DocumentRef ref = (idOrPath.startsWith("/")) ? new PathRef(idOrPath) : new IdRef(idOrPath);
+            doc = session.getDocument(ref);
             blob = (Blob) doc.getPropertyValue("file:content");
         }
 

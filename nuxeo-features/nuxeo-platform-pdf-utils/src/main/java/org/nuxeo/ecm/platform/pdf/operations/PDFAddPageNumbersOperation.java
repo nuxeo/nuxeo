@@ -71,24 +71,24 @@ public class PDFAddPageNumbersOperation {
     public Blob run(Blob inBlob) throws IOException, COSVisitorException {
         PAGE_NUMBER_POSITION pos;
         switch (position.toLowerCase()) {
-            case "bottom center":
-                pos = PAGE_NUMBER_POSITION.BOTTOM_CENTER;
-                break;
-            case "bottom left":
-                pos = PAGE_NUMBER_POSITION.BOTTOM_LEFT;
-                break;
-            case "top right":
-                pos = PAGE_NUMBER_POSITION.TOP_RIGHT;
-                break;
-            case "top center":
-                pos = PAGE_NUMBER_POSITION.TOP_CENTER;
-                break;
-            case "top left":
-                pos = PAGE_NUMBER_POSITION.TOP_LEFT;
-                break;
-            default:
-                pos = PAGE_NUMBER_POSITION.BOTTOM_RIGHT;
-                break;
+        case "bottom center":
+            pos = PAGE_NUMBER_POSITION.BOTTOM_CENTER;
+            break;
+        case "bottom left":
+            pos = PAGE_NUMBER_POSITION.BOTTOM_LEFT;
+            break;
+        case "top right":
+            pos = PAGE_NUMBER_POSITION.TOP_RIGHT;
+            break;
+        case "top center":
+            pos = PAGE_NUMBER_POSITION.TOP_CENTER;
+            break;
+        case "top left":
+            pos = PAGE_NUMBER_POSITION.TOP_LEFT;
+            break;
+        default:
+            pos = PAGE_NUMBER_POSITION.BOTTOM_RIGHT;
+            break;
         }
         PDFPageNumbering pn = new PDFPageNumbering(inBlob);
         pn.setPassword(password);

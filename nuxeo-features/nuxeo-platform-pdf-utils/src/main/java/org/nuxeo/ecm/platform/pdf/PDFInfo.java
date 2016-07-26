@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -58,8 +59,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class PDFInfo {
 
     private Blob pdfBlob;
-
-    private PDDocument pdfDoc;
 
     private int numberOfPages = -1;
 
@@ -188,97 +187,86 @@ public class PDFInfo {
      */
     public void run() throws NuxeoException {
         // In case the caller calls several time the run() method
-        if (!alreadyParsed) {
-            fileName = pdfBlob.getFilename();
-            File pdfFile = pdfBlob.getFile();
-            if (pdfFile == null) {
-                fileSize = -1;
-            } else {
-                fileSize = pdfFile.length();
+        if (alreadyParsed) {
+            return;
+        }
+        fileName = pdfBlob.getFilename();
+        File pdfFile = pdfBlob.getFile();
+        fileSize = (pdfFile == null) ? -1 : pdfFile.length();
+        //PDDocument pdfDoc = null;
+        try (PDDocument pdfDoc = PDDocument.load(pdfBlob.getStream())) {
+            //pdfDoc = PDDocument.load(pdfBlob.getStream());
+            isEncrypted = pdfDoc.isEncrypted();
+            if (isEncrypted) {
+                pdfDoc.openProtection(new StandardDecryptionMaterial(password));
+            }
+            numberOfPages = pdfDoc.getNumberOfPages();
+            PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();
+            pageLayout = checkNotNull(docCatalog.getPageLayout());
+            pdfVersion = String.valueOf(pdfDoc.getDocument().getVersion());
+            PDDocumentInformation docInfo = pdfDoc.getDocumentInformation();
+            author = checkNotNull(docInfo.getAuthor());
+            contentCreator = checkNotNull(docInfo.getCreator());
+            keywords = checkNotNull(docInfo.getKeywords());
+            try {
+                creationDate = docInfo.getCreationDate();
+            } catch (IOException e) {
+                creationDate = null;
             }
             try {
-                pdfDoc = PDDocument.load(pdfBlob.getStream());
-                isEncrypted = pdfDoc.isEncrypted();
-                if (isEncrypted) {
-                    pdfDoc.openProtection(new StandardDecryptionMaterial(password));
-                }
-                numberOfPages = pdfDoc.getNumberOfPages();
-                PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();
-                pageLayout = checkNotNull(docCatalog.getPageLayout());
-                pdfVersion = "" + pdfDoc.getDocument().getVersion();
-                PDDocumentInformation docInfo = pdfDoc.getDocumentInformation();
-                author = checkNotNull(docInfo.getAuthor());
-                contentCreator = checkNotNull(docInfo.getCreator());
-                keywords = checkNotNull(docInfo.getKeywords());
-                try {
-                    creationDate = docInfo.getCreationDate();
-                } catch(IOException e) {
-                    creationDate = null;
-                }
-                try {
-                    modificationDate = docInfo.getModificationDate();
-                } catch(IOException e) {
-                    modificationDate = null;
-                }
-                producer = checkNotNull(docInfo.getProducer());
-                subject = checkNotNull(docInfo.getSubject());
-                title = checkNotNull(docInfo.getTitle());
-                permissions = pdfDoc.getCurrentAccessPermission();
-                // Getting dimension is a bit tricky
-                mediaBoxWidthInPoints = mediaBoxHeightInPoints = cropBoxWidthInPoints = cropBoxHeightInPoints = -1;
-                List allPages = docCatalog.getAllPages();
-                boolean gotMediaBox = false, gotCropBox = false;
-                for (Object pageObject : allPages) {
-                    PDPage page = (PDPage) pageObject;
-                    if (page != null) {
-                        PDRectangle r = page.findMediaBox();
-                        if (r != null) {
-                            mediaBoxWidthInPoints = r.getWidth();
-                            mediaBoxHeightInPoints = r.getHeight();
-                            gotMediaBox = true;
-                        }
-                        r = page.findCropBox();
-                        if (r != null) {
-                            cropBoxWidthInPoints = r.getWidth();
-                            cropBoxHeightInPoints = r.getHeight();
-                            gotCropBox = true;
-                        }
-                    }
-                    if (gotMediaBox && gotCropBox) {
-                        break;
-                    }
-                }
-                if (doXMP) {
-                    xmp = null;
-                    PDMetadata metadata = docCatalog.getMetadata();
-                    if (metadata != null) {
-                        xmp = "";
-                        InputStream xmlInputStream = metadata.createInputStream();
-                        InputStreamReader isr = new InputStreamReader(xmlInputStream);
-                        BufferedReader reader = new BufferedReader(isr);
-                        String line;
-                        do {
-                            line = reader.readLine();
-                            if (line != null) {
-                                xmp += line + "\n";
-                            }
-                        } while (line != null);
-                        reader.close();
-                    }
-                }
-            } catch (IOException | BadSecurityHandlerException | CryptographyException e) {
-                throw new NuxeoException(e);
-            } finally {
-                if (pdfDoc != null) {
-                    try {
-                        pdfDoc.close();
-                    } catch (IOException e) {
-                        // Ignore
-                    }
-                    pdfDoc = null;
-                }
-                alreadyParsed = true;
+                modificationDate = docInfo.getModificationDate();
+            } catch (IOException e) {
+                modificationDate = null;
             }
+            producer = checkNotNull(docInfo.getProducer());
+            subject = checkNotNull(docInfo.getSubject());
+            title = checkNotNull(docInfo.getTitle());
+            permissions = pdfDoc.getCurrentAccessPermission();
+            // Getting dimension is a bit tricky
+            mediaBoxWidthInPoints = mediaBoxHeightInPoints = cropBoxWidthInPoints = cropBoxHeightInPoints = -1;
+            List allPages = docCatalog.getAllPages();
+            boolean gotMediaBox = false, gotCropBox = false;
+            for (Object pageObject : allPages) {
+                PDPage page = (PDPage) pageObject;
+                if (page != null) {
+                    PDRectangle r = page.findMediaBox();
+                    if (r != null) {
+                        mediaBoxWidthInPoints = r.getWidth();
+                        mediaBoxHeightInPoints = r.getHeight();
+                        gotMediaBox = true;
+                    }
+                    r = page.findCropBox();
+                    if (r != null) {
+                        cropBoxWidthInPoints = r.getWidth();
+                        cropBoxHeightInPoints = r.getHeight();
+                        gotCropBox = true;
+                    }
+                }
+                if (gotMediaBox && gotCropBox) {
+                    break;
+                }
+            }
+            if (doXMP) {
+                xmp = null;
+                PDMetadata metadata = docCatalog.getMetadata();
+                if (metadata != null) {
+                    xmp = "";
+                    InputStream xmlInputStream = metadata.createInputStream();
+                    InputStreamReader isr = new InputStreamReader(xmlInputStream);
+                    BufferedReader reader = new BufferedReader(isr);
+                    String line;
+                    do {
+                        line = reader.readLine();
+                        if (line != null) {
+                            xmp += line + "\n";
+                        }
+                    } while (line != null);
+                    reader.close();
+                }
+            }
+            alreadyParsed = true;
+        } catch (IOException | BadSecurityHandlerException | CryptographyException e) {
+            throw new NuxeoException(e);
         }
     }
 
@@ -309,12 +297,12 @@ public class PDFInfo {
             cachedMap = new LinkedHashMap<>();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             cachedMap.put("File name", fileName);
-            cachedMap.put("File size", "" + fileSize);
+            cachedMap.put("File size", String.valueOf(fileSize));
             cachedMap.put("PDF version", pdfVersion);
-            cachedMap.put("Page count", "" + numberOfPages);
-            cachedMap.put("Page size", "" + mediaBoxWidthInPoints + " x " + mediaBoxHeightInPoints + " points");
-            cachedMap.put("Page width", "" + mediaBoxWidthInPoints);
-            cachedMap.put("Page height", "" + mediaBoxHeightInPoints);
+            cachedMap.put("Page count", String.valueOf(numberOfPages));
+            cachedMap.put("Page size", String.format("%.1f x %.1f points", mediaBoxWidthInPoints, mediaBoxHeightInPoints));
+            cachedMap.put("Page width", String.valueOf(mediaBoxWidthInPoints));
+            cachedMap.put("Page height", String.valueOf(mediaBoxHeightInPoints));
             cachedMap.put("Page layout", pageLayout);
             cachedMap.put("Title", title);
             cachedMap.put("Author", author);
@@ -332,22 +320,22 @@ public class PDFInfo {
                 cachedMap.put("Modification date", "");
             }
             // "Others"
-            cachedMap.put("Encrypted", "" + isEncrypted);
+            cachedMap.put("Encrypted", String.valueOf(isEncrypted));
             cachedMap.put("Keywords", keywords);
-            cachedMap.put("Media box width", "" + mediaBoxWidthInPoints);
-            cachedMap.put("Media box height", "" + mediaBoxHeightInPoints);
-            cachedMap.put("Crop box width", "" + cropBoxWidthInPoints);
-            cachedMap.put("Crop box height", "" + cropBoxHeightInPoints);
+            cachedMap.put("Media box width", String.valueOf(mediaBoxWidthInPoints));
+            cachedMap.put("Media box height", String.valueOf(mediaBoxHeightInPoints));
+            cachedMap.put("Crop box width", String.valueOf(cropBoxWidthInPoints));
+            cachedMap.put("Crop box height", String.valueOf(cropBoxHeightInPoints));
             if(permissions != null) {
-                cachedMap.put("Can Print", Boolean.toString(permissions.canPrint()));
-                cachedMap.put("Can Modify", Boolean.toString(permissions.canModify()));
-                cachedMap.put("Can Extract", Boolean.toString(permissions.canExtractContent()));
-                cachedMap.put("Can Modify Annotations", Boolean.toString(permissions.canModifyAnnotations()));
-                cachedMap.put("Can Fill Forms", Boolean.toString(permissions.canFillInForm()));
-                cachedMap.put("Can Extract for Accessibility", Boolean.toString(
+                cachedMap.put("Can Print", String.valueOf(permissions.canPrint()));
+                cachedMap.put("Can Modify", String.valueOf(permissions.canModify()));
+                cachedMap.put("Can Extract", String.valueOf(permissions.canExtractContent()));
+                cachedMap.put("Can Modify Annotations", String.valueOf(permissions.canModifyAnnotations()));
+                cachedMap.put("Can Fill Forms", String.valueOf(permissions.canFillInForm()));
+                cachedMap.put("Can Extract for Accessibility", String.valueOf(
                     permissions.canExtractForAccessibility()));
-                cachedMap.put("Can Assemble", Boolean.toString(permissions.canAssembleDocument()));
-                cachedMap.put("Can Print Degraded", Boolean.toString(permissions.canPrintDegraded()));
+                cachedMap.put("Can Assemble", String.valueOf(permissions.canAssembleDocument()));
+                cachedMap.put("Can Print Degraded", String.valueOf(permissions.canPrintDegraded()));
             }
         }
         return cachedMap;
@@ -375,7 +363,7 @@ public class PDFInfo {
                                   CoreSession inSession) {
         // Parse if needed
         run();
-        HashMap<String, String> values = toHashMap();
+        Map<String, String> values = toHashMap();
         for (String inXPath : inMapping.keySet()) {
             String value = values.get(inMapping.get(inXPath));
             inDoc.setPropertyValue(inXPath, value);
