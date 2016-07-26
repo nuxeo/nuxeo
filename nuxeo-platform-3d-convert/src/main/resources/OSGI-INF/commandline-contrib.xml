@@ -7,8 +7,9 @@
                point="command">
         <command name="blender_render" enabled="true">
             <commandLine>blender -b</commandLine>
-            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import render -width 960
-                -height 540
+            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import render -width
+                #{width}
+                -height #{height}
             </parameterString>
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>

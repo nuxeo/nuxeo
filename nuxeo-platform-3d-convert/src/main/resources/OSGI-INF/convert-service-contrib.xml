@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.convert.converters">
+
+    <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+               point="converter">
+        <converter name="render3D"
+                   class="org.nuxeo.ecm.platform.threed.convert.RenderConverter">
+            <sourceMimeType>*</sourceMimeType>
+            <destinationMimeType>image/png</destinationMimeType>
+            <parameters>
+                <parameter name="CommandLineName">blender_pipeline</parameter>
+                <parameter name="script">scripts/pipeline.py</parameter>
+                <parameter name="operators">import render</parameter>
+                <parameter name="width">950</parameter>
+                <parameter name="height">600</parameter>
+            </parameters>
+        </converter>
+    </extension>
+</component>
