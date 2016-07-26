@@ -44,11 +44,6 @@
       <artifactId>org.osgi.core</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>
