@@ -13,9 +13,17 @@
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>
         </command>
-        <command name="blender_gltf" enabled="true">
+        <command name="blender_dae" enabled="true">
             <commandLine>blender -b</commandLine>
             <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import convert
+            </parameterString>
+            <installationDirective>You need to install blender (https://www.blender.org/download/)
+            </installationDirective>
+        </command>
+        <command name="blender_lod_dae" enabled="true">
+            <commandLine>blender -b</commandLine>
+            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import lod convert -lods
+                #{lod}
             </parameterString>
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>
