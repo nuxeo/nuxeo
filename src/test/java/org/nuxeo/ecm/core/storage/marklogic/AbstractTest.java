@@ -38,7 +38,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -59,7 +58,6 @@ import org.dom4j.util.NodeComparator;
 import org.junit.BeforeClass;
 import org.mockito.Answers;
 import org.mockito.Mockito;
-import org.nuxeo.ecm.core.storage.State;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.impl.DatabaseClientImpl;
@@ -78,6 +76,10 @@ public abstract class AbstractTest {
 
     public String readFile(String file) throws Exception {
         return new String(Files.readAllBytes(Paths.get(this.getClass().getResource("/" + file).toURI())));
+    }
+
+    public void assertFileAgainstString(String file, String actual) throws Exception {
+        assertEquals(readFile(file).replaceAll("[\\s\n]", ""), actual);
     }
 
     public void assertXMLFileAgainstString(String file, String actual) throws Exception {

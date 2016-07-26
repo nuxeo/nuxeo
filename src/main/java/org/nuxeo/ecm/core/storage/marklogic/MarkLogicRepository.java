@@ -258,31 +258,34 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public State readChildState(String parentId, String name, Set<String> ignored) {
-        RawQueryDefinition query = getChildQuery(parentId, name, ignored);
+        String query = getChildQuery(parentId, name, ignored);
         return findOne(query);
     }
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        RawQueryDefinition query = getChildQuery(parentId, name, ignored);
+        String query = getChildQuery(parentId, name, ignored);
         return exist(query);
     }
 
-    private RawQueryDefinition getChildQuery(String parentId, String name, Set<String> ignored) {
-        return new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager()).eq(KEY_PARENT_ID, parentId)
-                                                                                 .eq(KEY_NAME, name)
-                                                                                 .notIn(KEY_ID, ignored)
-                                                                                 .build();
+    private String getChildQuery(String parentId, String name, Set<String> ignored) {
+        return new MarkLogicQuerySimpleBuilder().eq(KEY_PARENT_ID, parentId)
+                                                .eq(KEY_NAME, name)
+                                                .notIn(KEY_ID, ignored)
+                                                .build();
     }
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        return queryKeyValue(key, value, ignored, this::findAll);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        builder.eq(key, value);
+        builder.notIn(KEY_ID, ignored);
+        return findAll(builder.build());
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
         builder.eq(key1, value1);
         builder.eq(key2, value2);
         builder.notIn(KEY_ID, ignored);
@@ -292,31 +295,23 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
         builder.eq(key, value);
         builder.select(KEY_ID);
         builder.select(KEY_IS_PROXY);
         builder.select(KEY_PROXY_TARGET_ID);
         builder.select(KEY_PROXY_IDS);
-        RawQueryDefinition query = builder.build();
-        if (log.isTraceEnabled()) {
-            logQuery(query);
-        }
-
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, 0)) {
-            for (DocumentRecord record : page) {
-                State state = record.getContent(new StateHandle()).get();
-                String id = (String) state.get(KEY_ID);
-                ids.add(id);
-                if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
-                    String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
-                    proxyTargets.put(id, targetId);
-                }
-                if (targetProxies != null) {
-                    Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
-                    if (proxyIds != null) {
-                        targetProxies.put(id, proxyIds);
-                    }
+        for (State state : findAll(builder.build())) {
+            String id = (String) state.get(KEY_ID);
+            ids.add(id);
+            if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
+                String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+                proxyTargets.put(id, targetId);
+            }
+            if (targetProxies != null) {
+                Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+                if (proxyIds != null) {
+                    targetProxies.put(id, proxyIds);
                 }
             }
         }
@@ -324,7 +319,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        return queryKeyValue(key, value, ignored, this::exist);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        builder.eq(key, value);
+        builder.notIn(KEY_ID, ignored);
+        return exist(builder.build());
     }
 
     @Override
@@ -537,61 +535,66 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         throw new IllegalStateException("Not implemented yet");
     }
 
-    private <T> T queryKeyValue(String key, Object value, Set<String> ignored,
-            Function<RawQueryDefinition, T> executor) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
-        builder.eq(key, value);
-        builder.notIn(KEY_ID, ignored);
-        return executor.apply(builder.build());
-    }
-
-    private boolean exist(RawQueryDefinition query) {
-        if (log.isTraceEnabled()) {
-            logQuery(query);
-        }
-        return markLogicClient.newQueryManager().findOne(query) != null;
-    }
-
-    private State findOne(RawQueryDefinition query) {
-        if (log.isTraceEnabled()) {
-            logQuery(query);
-        }
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        docManager.setPageLength(1);
-        try (DocumentPage page = docManager.search(query, 0)) {
-            if (page.hasNext()) {
-                return page.nextContent(new StateHandle()).get();
-            }
-            return null;
-        }
-    }
-
-    private List<State> findAll(RawQueryDefinition query) {
-        if (log.isTraceEnabled()) {
-            logQuery(query);
-        }
-        return findAll(query, 1);
-    }
-
-    private List<State> findAll(RawQueryDefinition query, long start) {
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, start)) {
-            List<State> states = new ArrayList<>((int) (page.getTotalSize() - start + 1));
-            for (DocumentRecord record : page) {
-                states.add(record.getContent(new StateHandle()).get());
-            }
-            if (page.hasNextPage()) {
-                states.addAll(findAll(query, start + page.getPageSize()));
-            }
-            return states;
-        }
-    }
-
-    private void logQuery(RawQueryDefinition query) {
-        log.trace("MarkLogic: QUERY " + query.getHandle());
+    private void logQuery(String query) {
+        log.trace("MarkLogic: QUERY " + query);
     }
 
     private void logQuery(RawQueryDefinition query, int limit, int offset) {
         log.trace("MarkLogic: QUERY " + query.getHandle() + " OFFSET " + offset + " LIMIT " + limit);
+    }
+
+    private boolean exist(String ctsQuery) {
+        // first build exist query from cts query
+        String query = "xdmp:exists(" + ctsQuery + ")";
+        if (log.isTraceEnabled()) {
+            logQuery(query);
+        }
+        // Run query
+        try (Session session = xccContentSource.newSession()) {
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+            return Boolean.parseBoolean(rs.asString());
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
+    }
+
+    private State findOne(String ctsQuery) {
+        // first add limit to ctsQuery
+        String query = ctsQuery + "[1 to 1]";
+        if (log.isTraceEnabled()) {
+            logQuery(query);
+        }
+        // Run query
+        try (Session session = xccContentSource.newSession()) {
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+            if (rs.hasNext()) {
+                return MarkLogicStateDeserializer.deserialize(rs.asStrings()[0]);
+            }
+            return null;
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
+    }
+
+    private List<State> findAll(String ctsQuery) {
+        if (log.isTraceEnabled()) {
+            logQuery(ctsQuery);
+        }
+        // Run query
+        try (Session session = xccContentSource.newSession()) {
+            AdhocQuery request = session.newAdhocQuery(ctsQuery);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+            return Arrays.stream(rs.asStrings())
+                         .map(MarkLogicStateDeserializer::deserialize)
+                         .collect(Collectors.toList());
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
     }
 
 }

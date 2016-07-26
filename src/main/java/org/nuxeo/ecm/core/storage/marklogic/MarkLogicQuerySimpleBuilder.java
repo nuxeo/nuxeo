@@ -19,21 +19,16 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
-
-import com.marklogic.client.io.StringHandle;
-import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.RawQueryDefinition;
-import com.marklogic.client.query.RawStructuredQueryDefinition;
-import com.marklogic.client.query.StructuredQueryBuilder;
-import com.marklogic.client.query.StructuredQueryDefinition;
 
 /**
  * Simple query builder for a MarkLogic query.
@@ -42,47 +37,49 @@ import com.marklogic.client.query.StructuredQueryDefinition;
  */
 class MarkLogicQuerySimpleBuilder {
 
-    private final QueryManager queryManager;
-
-    private final StructuredQueryBuilder sqb;
-
-    private final List<StructuredQueryDefinition> queries;
+    private final List<String> queries;
 
     private final Set<String> selectKeys;
 
-    public MarkLogicQuerySimpleBuilder(QueryManager queryManager) {
-        this.queryManager = queryManager;
-        this.sqb = queryManager.newStructuredQueryBuilder();
+    public MarkLogicQuerySimpleBuilder() {
         this.queries = new ArrayList<>();
         this.selectKeys = new HashSet<>();
     }
 
     public MarkLogicQuerySimpleBuilder eq(String key, Object value) {
-        String serializedKey = MarkLogicHelper.serializeKey(key);
-        String serializedValue = MarkLogicStateSerializer.serializeValue(value);
         Type type = DBSSession.getType(key);
         // TODO check if it's enought
-        StructuredQueryBuilder.TextIndex element;
+        String k = key;
         if (type instanceof ListType) {
-            element = sqb.element(serializedKey + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX);
-        } else {
-            element = sqb.element(serializedKey);
+            k += MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX;
         }
-        queries.add(sqb.value(element, serializedValue));
+        queries.add(elementValueQuery(k, value));
         return this;
     }
 
     public MarkLogicQuerySimpleBuilder notIn(String key, Collection<?> values) {
         if (!values.isEmpty()) {
-            String serializedKey = MarkLogicHelper.serializeKey(key);
-            String[] serializedValues = values.stream()
-                                              .map(MarkLogicStateSerializer::serializeValue)
-                                              .toArray(String[]::new);
-            StructuredQueryDefinition inQuery = sqb.value(sqb.element(serializedKey), serializedValues);
-            StructuredQueryDefinition notQuery = sqb.not(inQuery);
+            String query = elementValueQuery(key, values.toArray());
+            String notQuery = String.format("cts:not-query(%s)", query);
             queries.add(notQuery);
         }
         return this;
+    }
+
+    private String elementValueQuery(String key, Object... values) {
+        String serializedKey = MarkLogicHelper.serializeKey(key);
+        String serializedValue = serializeValues(values);
+        return String.format("cts:element-value-query(fn:QName(\"\",\"%s\"),%s)", serializedKey, serializedValue);
+    }
+
+    private String serializeValues(Object... values) {
+        if (values.length == 1) {
+            return "\"" + MarkLogicStateSerializer.serializeValue(values[0]) + "\"";
+        }
+        return Arrays.stream(values)
+                     .map(MarkLogicStateSerializer::serializeValue)
+                     .map(value -> "\"" + value + "\"")
+                     .collect(Collectors.joining(",", "(", ")"));
     }
 
     public MarkLogicQuerySimpleBuilder select(String key) {
@@ -90,36 +87,8 @@ class MarkLogicQuerySimpleBuilder {
         return this;
     }
 
-    public RawQueryDefinition build() {
-        RawStructuredQueryDefinition query = sqb.build(queries.toArray(new StructuredQueryDefinition[queries.size()]));
-        String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" //
-                + query.toString() //
-                + buildOptions() //
-                + "</search>";
-        return queryManager.newRawCombinedQueryDefinition(new StringHandle(comboQuery));
-    }
-
-    private String buildOptions() {
-        StringBuilder options = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
-        options.append("<transform-results apply=\"empty-snippet\"/>");
-        if (!selectKeys.isEmpty()) {
-            options.append(buildSelectPaths());
-        }
-        options.append("</options>");
-        return options.toString();
-    }
-
-    private String buildSelectPaths() {
-        StringBuilder extract = new StringBuilder("<extract-document-data selected=\"include-with-ancestors\">");
-        for (String selectKey : selectKeys) {
-            extract.append("<extract-path>");
-            extract.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
-                   .append('/')
-                   .append(MarkLogicHelper.serializeKey(selectKey));
-            extract.append("</extract-path>");
-        }
-        extract.append("</extract-document-data>");
-        return extract.toString();
+    public String build() {
+        return String.format("cts:search(fn:doc(),cts:and-query((%s)))", String.join(",", queries));
     }
 
 }

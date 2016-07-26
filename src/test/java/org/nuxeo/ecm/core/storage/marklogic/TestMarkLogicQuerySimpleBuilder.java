@@ -36,30 +36,30 @@ public class TestMarkLogicQuerySimpleBuilder extends AbstractTest {
 
     @Test
     public void testEq() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
-        String query = builder.eq(KEY_ID, "ID").build().toString();
-        assertXMLFileAgainstString("query-simple/query-eq.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        String query = builder.eq(KEY_ID, "ID").build();
+        assertFileAgainstString("query-simple/query-eq.txt", query);
     }
 
     @Test
     public void testEqWithList() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
-        String query = builder.eq(KEY_ANCESTOR_IDS, "ID").build().toString();
-        assertXMLFileAgainstString("query-simple/query-eq-with-list.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        String query = builder.eq(KEY_ANCESTOR_IDS, "ID").build();
+        assertFileAgainstString("query-simple/query-eq-with-key-list.txt", query);
     }
 
     @Test
     public void testNotIn() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
-        String query = builder.notIn(KEY_ID, Arrays.asList("ID1", "ID2")).build().toString();
-        assertXMLFileAgainstString("query-simple/query-not-in.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        String query = builder.notIn(KEY_ID, Arrays.asList("ID1", "ID2")).build();
+        assertFileAgainstString("query-simple/query-not-in.txt", query);
     }
 
     @Test
     public void testNotInOneElement() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
-        String query = builder.notIn(KEY_ID, Collections.singleton("ID1")).build().toString();
-        assertXMLFileAgainstString("query-simple/query-not-in-one-element.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        String query = builder.notIn(KEY_ID, Collections.singleton("ID1")).build();
+        assertFileAgainstString("query-simple/query-not-in-one-element.txt", query);
     }
 
 }
