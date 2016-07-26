@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.convert.commandline">
+
+    <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
+    <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+               point="command">
+        <command name="blender_render" enabled="true">
+            <commandLine>blender -b</commandLine>
+            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import render -width 960
+                -height 540
+            </parameterString>
+            <installationDirective>You need to install blender (https://www.blender.org/download/)
+            </installationDirective>
+        </command>
+    </extension>
+
+</component>
