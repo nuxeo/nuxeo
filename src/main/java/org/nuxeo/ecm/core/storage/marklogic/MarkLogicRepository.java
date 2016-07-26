@@ -306,11 +306,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             Map<String, Object[]> targetProxies) {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
         builder.eq(key, value);
-        builder.select(KEY_ID);
-        builder.select(KEY_IS_PROXY);
-        builder.select(KEY_PROXY_TARGET_ID);
-        builder.select(KEY_PROXY_IDS);
-        for (State state : findAll(builder.build())) {
+        for (State state : findAll(builder.build(), KEY_ID, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS)) {
             String id = (String) state.get(KEY_ID);
             ids.add(id);
             if (proxyTargets != null && TRUE.equals(state.get(KEY_IS_PROXY))) {
@@ -589,13 +585,23 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    private List<State> findAll(String ctsQuery) {
+    private List<State> findAll(String ctsQuery, String... selects) {
+        String query = ctsQuery;
+        if (selects.length > 0) {
+            query = "for $i in " + query
+                    + " return document {element document{$i/document/@*,$i/document/*[ fn:local-name(.) = ("
+                    + Arrays.stream(selects)
+                            .map(MarkLogicHelper::serializeKey)
+                            .map(select -> "\"" + select + "\"")
+                            .collect(Collectors.joining(","))
+                    + ")]}}";
+        }
         if (log.isTraceEnabled()) {
-            logQuery(ctsQuery);
+            logQuery(query);
         }
         // Run query
         try (Session session = xccContentSource.newSession()) {
-            AdhocQuery request = session.newAdhocQuery(ctsQuery);
+            AdhocQuery request = session.newAdhocQuery(query);
             // ResultSequence will be closed by Session close
             ResultSequence rs = session.submitRequest(request);
             return Arrays.stream(rs.asStrings())

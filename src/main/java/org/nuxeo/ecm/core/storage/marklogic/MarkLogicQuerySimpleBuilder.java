@@ -21,9 +21,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -39,11 +37,8 @@ class MarkLogicQuerySimpleBuilder {
 
     private final List<String> queries;
 
-    private final Set<String> selectKeys;
-
     public MarkLogicQuerySimpleBuilder() {
         this.queries = new ArrayList<>();
-        this.selectKeys = new HashSet<>();
     }
 
     public MarkLogicQuerySimpleBuilder eq(String key, Object value) {
@@ -80,11 +75,6 @@ class MarkLogicQuerySimpleBuilder {
                      .map(MarkLogicStateSerializer::serializeValue)
                      .map(value -> "\"" + value + "\"")
                      .collect(Collectors.joining(",", "(", ")"));
-    }
-
-    public MarkLogicQuerySimpleBuilder select(String key) {
-        selectKeys.add(key);
-        return this;
     }
 
     public String build() {
