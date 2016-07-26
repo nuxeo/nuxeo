@@ -36,6 +36,13 @@
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>
         </command>
+        <command name="collada2gltlf" enabled="true">
+            <commandLine>collada2gltf</commandLine>
+            <parameterString>-f #{inFilePath} -o #{outFilePath} -e</parameterString>
+            <installationDirective>You need to install collada2gltf for glTF 1.0
+                (https://github.com/KhronosGroup/glTF/releases)
+            </installationDirective>
+        </command>
     </extension>
 
 </component>
