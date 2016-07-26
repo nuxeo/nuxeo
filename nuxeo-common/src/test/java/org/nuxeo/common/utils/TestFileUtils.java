@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

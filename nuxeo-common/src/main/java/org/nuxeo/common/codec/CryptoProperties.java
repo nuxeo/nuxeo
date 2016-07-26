@@ -40,8 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
