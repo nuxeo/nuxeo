@@ -75,10 +75,11 @@ import com.marklogic.client.document.DocumentDescriptor;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
-import com.marklogic.client.document.DocumentWriteSet;
 import com.marklogic.client.document.XMLDocumentManager;
 import com.marklogic.client.query.RawQueryDefinition;
 import com.marklogic.xcc.AdhocQuery;
+import com.marklogic.xcc.Content;
+import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
 import com.marklogic.xcc.ResultSequence;
@@ -218,23 +219,31 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: CREATE " + id + ": " + state);
         }
-        markLogicClient.newXMLDocumentManager().write(ID_FORMATTER.apply(id), new StateHandle(state));
+        try (Session session = xccContentSource.newSession()) {
+            session.insertContent(convert(state));
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
     }
 
     @Override
     public void createStates(List<State> states) {
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        DocumentWriteSet writeSet = docManager.newWriteSet();
-        for (State state : states) {
-            String id = state.get(KEY_ID).toString();
-            writeSet.add(ID_FORMATTER.apply(id), new StateHandle(state));
-        }
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: CREATE ["
                     + states.stream().map(state -> state.get(KEY_ID).toString()).collect(Collectors.joining(", "))
                     + "]: " + states);
         }
-        docManager.write(writeSet);
+        try (Session session = xccContentSource.newSession()) {
+            Content[] contents = states.stream().map(this::convert).toArray(Content[]::new);
+            session.insertContent(contents);
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
+    }
+
+    private Content convert(State state) {
+        String id = state.get(KEY_ID).toString();
+        return ContentFactory.newContent(ID_FORMATTER.apply(id), MarkLogicStateSerializer.serialize(state), null);
     }
 
     @Override
