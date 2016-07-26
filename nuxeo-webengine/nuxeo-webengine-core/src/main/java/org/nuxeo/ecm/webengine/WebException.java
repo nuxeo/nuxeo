@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webengine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -188,8 +187,6 @@ public class WebException extends WebApplicationException {
             return HttpServletResponse.SC_FORBIDDEN;
         } else if (cause instanceof DocumentNotFoundException || cause instanceof WebResourceNotFoundException) {
             return HttpServletResponse.SC_NOT_FOUND;
-        } else if (cause instanceof InvalidOperationException) {
-            return HttpServletResponse.SC_BAD_REQUEST;
         } else if (cause instanceof WebSecurityException) {
             return HttpServletResponse.SC_UNAUTHORIZED;
         }

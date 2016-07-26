@@ -2058,25 +2058,21 @@
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
         <version>${apache.poi.version}</version>
-        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-scratchpad</artifactId>
         <version>${apache.poi.version}</version>
-        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
         <version>${apache.poi.version}</version>
-        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml-schemas</artifactId>
         <version>${apache.poi.version}</version>
-        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlbeans</groupId>
