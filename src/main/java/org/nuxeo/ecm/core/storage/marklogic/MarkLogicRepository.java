@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.resource.spi.ConnectionManager;
 
@@ -78,6 +78,12 @@ import com.marklogic.client.document.DocumentRecord;
 import com.marklogic.client.document.DocumentWriteSet;
 import com.marklogic.client.document.XMLDocumentManager;
 import com.marklogic.client.query.RawQueryDefinition;
+import com.marklogic.xcc.AdhocQuery;
+import com.marklogic.xcc.ContentSource;
+import com.marklogic.xcc.ContentSourceFactory;
+import com.marklogic.xcc.ResultSequence;
+import com.marklogic.xcc.Session;
+import com.marklogic.xcc.exceptions.RequestException;
 
 /**
  * MarkLogic implementation of a {@link Repository}.
@@ -96,9 +102,12 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     protected DatabaseClient markLogicClient;
 
+    protected ContentSource xccContentSource;
+
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
         markLogicClient = newMarkLogicClient(descriptor);
+        xccContentSource = newMarkLogicContentSource(descriptor);
         initRepository();
     }
 
@@ -129,6 +138,19 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         return DatabaseClientFactory.newClient(host, port, dbname);
     }
 
+    // used also by unit tests
+    public static ContentSource newMarkLogicContentSource(MarkLogicRepositoryDescriptor descriptor) {
+        String host = descriptor.host;
+        Integer port = descriptor.port;
+        if (StringUtils.isBlank(host) || port == null) {
+            throw new NuxeoException("Missing <host> or <port> in MarkLogic repository descriptor");
+        }
+        String dbname = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
+        String user = descriptor.user;
+        String password = descriptor.password;
+        return ContentSourceFactory.newContentSource(host, port + 10, user, password, dbname);
+    }
+
     protected void initRepository() {
         // Activate Optimistic Locking
         // https://docs.marklogic.com/guide/java/transactions#id_81051
@@ -157,10 +179,17 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: READ " + id);
         }
-        try {
-            return markLogicClient.newXMLDocumentManager().read(ID_FORMATTER.apply(id), new StateHandle()).get();
-        } catch (ResourceNotFoundException e) {
+        try (Session session = xccContentSource.newSession()) {
+            String query = "fn:doc('" + ID_FORMATTER.apply(id) + "')";
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+            if (rs.hasNext()) {
+                return MarkLogicStateDeserializer.deserialize(rs.asStrings()[0]);
+            }
             return null;
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
         }
     }
 
@@ -169,11 +198,18 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: READ " + ids);
         }
-        String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
-        DocumentPage page = markLogicClient.newXMLDocumentManager().read(markLogicIds);
-        return StreamSupport.stream(page.spliterator(), false)
-                            .map(document -> document.getContent(new StateHandle()).get())
-                            .collect(Collectors.toList());
+        try (Session session = xccContentSource.newSession()) {
+            String query = ids.stream().map(ID_FORMATTER).map(id -> "'" + id + "'").collect(
+                    Collectors.joining(",", "fn:doc((", "))"));
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+            return Arrays.stream(rs.asStrings())
+                         .map(MarkLogicStateDeserializer::deserialize)
+                         .collect(Collectors.toList());
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
     }
 
     @Override
@@ -501,7 +537,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         throw new IllegalStateException("Not implemented yet");
     }
 
-    private <T> T queryKeyValue(String key, Object value, Set<String> ignored, Function<RawQueryDefinition, T> executor) {
+    private <T> T queryKeyValue(String key, Object value, Set<String> ignored,
+            Function<RawQueryDefinition, T> executor) {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
         builder.eq(key, value);
         builder.notIn(KEY_ID, ignored);
