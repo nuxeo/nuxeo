@@ -195,6 +195,8 @@
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
+                    <!-- this is included by mistake in some OSGi JARs, contains the complete source code -->
+                    <exclude>OSGI-OPT/**</exclude>
                   </excludes>
                 </filter>
               </filters>
