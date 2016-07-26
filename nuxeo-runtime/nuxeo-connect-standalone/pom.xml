@@ -28,10 +28,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-launcher-commons</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-    </dependency>
 
     <!-- for command guards -->
     <dependency>

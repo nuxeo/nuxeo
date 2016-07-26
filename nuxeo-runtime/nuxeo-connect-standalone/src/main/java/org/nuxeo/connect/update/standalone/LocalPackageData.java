@@ -18,17 +18,17 @@
  */
 package org.nuxeo.connect.update.standalone;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageData;
 import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.runtime.api.SharedResourceLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,7 +37,8 @@ public class LocalPackageData implements PackageData {
 
     protected File root;
 
-    protected GroovyClassLoader loader;
+    // SharedResourceLoader is a URLClassLoader with a public addURL
+    protected SharedResourceLoader loader;
 
     public LocalPackageData(ClassLoader parent, File file) throws IOException {
         this.root = file.getCanonicalFile();
@@ -48,7 +49,7 @@ public class LocalPackageData implements PackageData {
             }
         }
         try {
-            this.loader = new GroovyClassLoader(parent);
+            this.loader = new SharedResourceLoader(new URL[] {}, parent);
             loader.addURL(root.toURI().toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException("Failed to create package class loader. Invalid package root: " + root, e);
