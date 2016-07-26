@@ -40,12 +40,10 @@
     <dependency>
       <groupId>com.levigo.jbig2</groupId>
       <artifactId>levigo-jbig2-imageio</artifactId>
-      <version>${imageio.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
-      <version>${bouncycastle.version}</version>
     </dependency>
 
   </dependencies>

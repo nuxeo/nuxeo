@@ -57,6 +57,9 @@ public class PDFPageNumberingTest {
 
     private DocumentModel testDocsFolder;
 
+    private static final int[] indexOfNumberingByPage = new int[] {
+        1665, 1387, 1515, 1592, 1397, 1592, 1387, 1729, 1589, 1444, 1459, 1667, 849 };
+
     @Inject
     CoreSession coreSession;
 
@@ -79,25 +82,6 @@ public class PDFPageNumberingTest {
         coreSession.save();
     }
 
-    private int getIndexOfNumberingForPage(int pageNumber) {
-        switch (pageNumber) {
-        case 1: return 1665;
-        case 2: return 1387;
-        case 3: return 1515;
-        case 4: return 1592;
-        case 5: return 1397;
-        case 6: return 1592;
-        case 7: return 1387;
-        case 8: return 1729;
-        case 9: return 1589;
-        case 10: return 1444;
-        case 11: return 1459;
-        case 12: return 1667;
-        case 13: return 849;
-        }
-        return 0;
-    }
-
     private void checkPageNumbering(Blob pdfBlob, int firstPage, int firstNumber) throws Exception {
         assertNotNull(pdfBlob);
         assertNotSame(pdfMD5, TestUtils.calculateMd5(pdfBlob.getFile()));
@@ -111,7 +95,7 @@ public class PDFPageNumberingTest {
         for (int page = firstPage; page <= 13; page++) {
             // every numbered page should have the right number
             int currentPageNumber = firstNumber + (page - firstPage);
-            assertEquals(getIndexOfNumberingForPage(page),
+            assertEquals(indexOfNumberingByPage[page - 1],
                 TestUtils.extractText(resultPDF, page, page).indexOf(Integer.toString(currentPageNumber)));
         }
         resultPDF.close();

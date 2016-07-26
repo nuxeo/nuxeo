@@ -193,9 +193,7 @@ public class PDFInfo {
         fileName = pdfBlob.getFilename();
         File pdfFile = pdfBlob.getFile();
         fileSize = (pdfFile == null) ? -1 : pdfFile.length();
-        //PDDocument pdfDoc = null;
         try (PDDocument pdfDoc = PDDocument.load(pdfBlob.getStream())) {
-            //pdfDoc = PDDocument.load(pdfBlob.getStream());
             isEncrypted = pdfDoc.isEncrypted();
             if (isEncrypted) {
                 pdfDoc.openProtection(new StandardDecryptionMaterial(password));
