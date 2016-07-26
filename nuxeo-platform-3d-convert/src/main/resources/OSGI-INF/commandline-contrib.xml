@@ -28,6 +28,14 @@
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>
         </command>
+        <command name="blender_pipeline" enabled="true">
+            <commandLine>blender -b</commandLine>
+            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores #{operators} -lods
+                #{lods} -width #{width} -height #{height}
+            </parameterString>
+            <installationDirective>You need to install blender (https://www.blender.org/download/)
+            </installationDirective>
+        </command>
     </extension>
 
 </component>
