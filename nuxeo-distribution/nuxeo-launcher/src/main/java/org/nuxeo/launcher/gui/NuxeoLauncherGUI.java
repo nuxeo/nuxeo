@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileChangeEvent;
@@ -45,7 +46,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
-import org.artofsolving.jodconverter.util.PlatformUtils;
 
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.NuxeoLauncher;
@@ -99,7 +99,7 @@ public class NuxeoLauncherGUI {
     public NuxeoLauncherGUI(NuxeoLauncher aLauncher) {
         launcher = aLauncher;
         // Set OS-specific decorations
-        if (PlatformUtils.isMac()) {
+        if (SystemUtils.IS_OS_MAC) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
             System.setProperty("com.apple.mrj.application.live-resize", "true");

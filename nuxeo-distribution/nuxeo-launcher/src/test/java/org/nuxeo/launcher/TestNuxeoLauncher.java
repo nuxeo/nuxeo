@@ -52,12 +52,12 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
 import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.launcher.NuxeoLauncher.SolarisProcessManager;
 import org.nuxeo.launcher.config.AbstractConfigurationTest;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.info.InstanceInfo;
+import org.nuxeo.launcher.process.SolarisProcessManager;
 
 public class TestNuxeoLauncher extends AbstractConfigurationTest {
 

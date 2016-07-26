@@ -85,19 +85,13 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.artofsolving.jodconverter.process.MacProcessManager;
-import org.artofsolving.jodconverter.process.ProcessManager;
-import org.artofsolving.jodconverter.process.PureJavaProcessManager;
-import org.artofsolving.jodconverter.process.UnixProcessManager;
-import org.artofsolving.jodconverter.process.WindowsProcessManager;
-import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -124,6 +118,12 @@ import org.nuxeo.launcher.info.KeyValueInfo;
 import org.nuxeo.launcher.info.MessageInfo;
 import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
+import org.nuxeo.launcher.process.MacProcessManager;
+import org.nuxeo.launcher.process.ProcessManager;
+import org.nuxeo.launcher.process.PureJavaProcessManager;
+import org.nuxeo.launcher.process.SolarisProcessManager;
+import org.nuxeo.launcher.process.UnixProcessManager;
+import org.nuxeo.launcher.process.WindowsProcessManager;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
@@ -702,104 +702,24 @@ public abstract class NuxeoLauncher {
         processRegex = "^(?!/bin/sh).*" + Pattern.quote(configurationGenerator.getNuxeoConf().getPath()) + ".*"
                 + Pattern.quote(getServerPrint()) + ".*$";
         // Set OS-specific decorations
-        if (PlatformUtils.isMac()) {
+        if (SystemUtils.IS_OS_MAC) {
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "NuxeoCtl");
         }
     }
 
     private ProcessManager getOSProcessManager() {
-        if (PlatformUtils.isLinux() || SystemUtils.IS_OS_AIX) {
+        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_AIX) {
             UnixProcessManager unixProcessManager = new UnixProcessManager();
             return unixProcessManager;
-        } else if (PlatformUtils.isMac()) {
+        } else if (SystemUtils.IS_OS_MAC) {
             return new MacProcessManager();
         } else if (SystemUtils.IS_OS_SUN_OS) {
             return new SolarisProcessManager();
-        } else if (PlatformUtils.isWindows()) {
+        } else if (SystemUtils.IS_OS_WINDOWS) {
             WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
             return windowsProcessManager.isUsable() ? windowsProcessManager : new PureJavaProcessManager();
         } else {
             return new PureJavaProcessManager();
-        }
-    }
-
-    public static class SolarisProcessManager extends UnixProcessManager {
-
-        protected static final String SOLARIS_11 = "5.11";
-
-        protected static final String SOLARIS_10 = "5.10";
-
-        protected static final String[] SOLARIS_11_PS = { "/usr/bin/ps", "auxww" };
-
-        protected static final String[] SOLARIS_10_PS = { "/usr/ucb/ps", "auxww" };
-
-        protected static final Pattern PS_OUTPUT_LINE = Pattern.compile("^" + "[^\\s]+\\s+" // USER
-                + "([0-9]+)\\s+" // PID
-                + "[0-9.\\s]+" // %CPU %MEM SZ RSS (may be collapsed)
-                + "[^\\s]+\\s+" // TT (no starting digit)
-                + "[^\\s]+\\s+" // S
-                + "[^\\s]+\\s+" // START
-                + "[^\\s]+\\s+" // TIME
-                + "(.*)$" // COMMAND
-        );
-
-        protected String solarisVersion;
-
-        protected String getSolarisVersion() {
-            if (solarisVersion == null) {
-                List<String> lines;
-                try {
-                    lines = execute(new String[] { "/usr/bin/uname", "-r" });
-                } catch (IOException e) {
-                    log.debug(e.getMessage(), e);
-                    lines = Collections.emptyList();
-                }
-                if (lines.isEmpty()) {
-                    solarisVersion = "?";
-                } else {
-                    solarisVersion = lines.get(0).trim();
-                }
-            }
-            return solarisVersion;
-        }
-
-        @Override
-        protected String[] psCommand() {
-            if (SOLARIS_11.equals(getSolarisVersion())) {
-                return SOLARIS_11_PS;
-            }
-            return null;
-        }
-
-        protected Matcher getLineMatcher(String line) {
-            return PS_OUTPUT_LINE.matcher(line);
-        }
-
-        @Override
-        public String findPid(String regex) throws IOException {
-            if (SOLARIS_11.equals(getSolarisVersion())) {
-                Pattern commandPattern = Pattern.compile(regex);
-                for (String line : execute(psCommand())) {
-                    Matcher lineMatcher = getLineMatcher(line);
-                    if (lineMatcher.matches()) {
-                        String pid = lineMatcher.group(1);
-                        String command = lineMatcher.group(2);
-                        Matcher commandMatcher = commandPattern.matcher(command);
-                        if (commandMatcher.find()) {
-                            return pid;
-                        }
-                    }
-                }
-            } else {
-                log.debug("Unsupported Solaris version: " + solarisVersion);
-            }
-            return null;
-        }
-
-        protected List<String> execute(String... command) throws IOException {
-            Process process = new ProcessBuilder(command).start();
-            List<String> lines = IOUtils.readLines(process.getInputStream());
-            return lines;
         }
     }
 
@@ -834,7 +754,7 @@ public abstract class NuxeoLauncher {
         // Check if process exited early
         if (nuxeoProcess == null) {
             log.error(String.format("Server start failed with command: %s", pb.command()));
-            if (PlatformUtils.isWindows() && configurationGenerator.getNuxeoHome().getPath().contains(" ")) {
+            if (SystemUtils.IS_OS_WINDOWS && configurationGenerator.getNuxeoHome().getPath().contains(" ")) {
                 // NXP-17679
                 log.error("The server path must not contain spaces under Windows.");
             }
@@ -933,7 +853,7 @@ public abstract class NuxeoLauncher {
      */
     private List<String> getOSCommand(List<String> roughCommand) {
         ArrayList<String> osCommand = new ArrayList<>();
-        if (PlatformUtils.isLinux() || PlatformUtils.isMac()) {
+        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
             String linearizedCommand = new String();
             for (String commandToken : roughCommand) {
                 if (StringUtils.isBlank(commandToken)) {
@@ -1546,7 +1466,7 @@ public abstract class NuxeoLauncher {
         int i = 0;
         boolean hasNextPage = true;
         while (true) {
-            if (i > 0 && !PlatformUtils.isWindows()) {
+            if (i > 0 && !SystemUtils.IS_OS_WINDOWS) {
                 // Remove last line to only have projects
                 System.out.print("\33[1A\33[2K");
             }
@@ -2575,7 +2495,7 @@ public abstract class NuxeoLauncher {
             // Shift params and extract command if there is one
             extractCommandAndParams(params);
         } else {
-            if (PlatformUtils.isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 useGui = true;
                 log.debug("GUI: option not set - platform is Windows -> start GUI");
             } else {
