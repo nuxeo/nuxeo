@@ -8,6 +8,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.core;singleton=true
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/lifecycle-contrib.xml,
+ OSGI-INF/mimetype-contrib.xml,
  OSGI-INF/threed-thumbnailfactory-contrib.xml
 Bundle-Category: core,stateful
 Nuxeo-Require: org.nuxeo.ecm.platform.types.api,

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.mimetype">
+  <extension point="mimetype" target="org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService">
+
+    <mimetype normalized="model/vnd.collada+xml" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>model/vnd.collada+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>dae</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/x-3ds" binary="true" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>application/x-3ds</mimetype>
+        <mimetype>image/x-3ds</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>3ds</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/octet-stream" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>application/octet-stream</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>fbx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/wavefront-obj" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>text/wavefront-obj</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>obj</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="application/sla" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>application/sla</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>stl</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="model/gltf+json" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>model/gltf+json</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>gltf</extension>
+      </extensions>
+    </mimetype>
+
+  </extension>
+</component>
