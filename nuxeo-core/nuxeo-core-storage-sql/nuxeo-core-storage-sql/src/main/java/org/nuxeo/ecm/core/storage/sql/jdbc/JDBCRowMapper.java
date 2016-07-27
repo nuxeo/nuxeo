@@ -1401,7 +1401,24 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         List<Serializable> todo = new ArrayList<>(Collections.singleton(rootId));
         List<NodeInfo> descendants = new ArrayList<NodeInfo>();
         while (!todo.isEmpty()) {
-            List<NodeInfo> infos = getChildrenNodeInfos(todo);
+            List<NodeInfo> infos;
+            int size = todo.size();
+            int chunkSize = sqlInfo.getMaximumArgsForIn();
+            if (size > chunkSize) {
+                infos = new ArrayList<>();
+                for (int start = 0; start < size; start += chunkSize) {
+                    int end = start + chunkSize;
+                    if (end > size) {
+                        end = size;
+                    }
+                    // needs to be Serializable -> copy
+                    List<Serializable> chunkTodo = new ArrayList<Serializable>(todo.subList(start, end));
+                    List<NodeInfo> chunkInfos = getChildrenNodeInfos(chunkTodo);
+                    infos.addAll(chunkInfos);
+                }
+            } else {
+                infos = getChildrenNodeInfos(todo);
+            }
             todo = new ArrayList<>();
             for (NodeInfo info : infos) {
                 Serializable id = info.id;

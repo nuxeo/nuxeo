@@ -361,6 +361,40 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    // more than 1000 children without path optimizations (for Oracle, NXP-20211)
+    @Test
+    public void testRecursiveRemovalBigWithoutPathOptimizations() throws Exception {
+        repository.close();
+        // open a repository without path optimization
+        pathOptimizationsEnabled = false;
+        repository = newRepository(-1);
+
+        testRecursiveRemovalBig();
+    }
+
+    // more than 1000 children
+    @Test
+    public void testRecursiveRemovalBig() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node base = session.addChildNode(root, "base", null, "TestDoc", false);
+        int n = 1100; // > 1000, the max for Oracle
+        List<Serializable> ids = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            String name = "doc" + i;
+            Node child = session.addChildNode(base, name, null, "TestDoc", false);
+            ids.add(child.getId());
+        }
+        session.save();
+        // delete base
+        session.removeNode(base);
+        session.save();
+        // check all children were really deleted recursively
+        for (Serializable id : ids) {
+            assertNull(id.toString(), session.getNodeById(id));
+        }
+    }
+
     @Test
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
