@@ -22,8 +22,8 @@
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
-                <parameter name="operators">import lod convert lod convert</parameter>
-                <parameter name="lods">33 11</parameter>
+                <parameter name="operators">import lod convert lod convert lod convert</parameter>
+                <parameter name="lods">33 11 3</parameter>
             </parameters>
         </converter>
         <converter name="colladaConversion"
@@ -34,6 +34,19 @@
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
                 <parameter name="operators">import convert</parameter>
+            </parameters>
+        </converter>
+        <converter name="batchConversion"
+                   class="org.nuxeo.ecm.platform.threed.convert.BatchConverter">
+            <sourceMimeType>*</sourceMimeType>
+            <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
+            <parameters>
+                <parameter name="CommandLineName">blender_pipeline</parameter>
+                <parameter name="script">scripts/pipeline.py</parameter>
+                <parameter name="operators">import convert render lod convert lod convert lod convert</parameter>
+                <parameter name="lods">33 11 3</parameter>
+                <parameter name="width">950</parameter>
+                <parameter name="height">600</parameter>
             </parameters>
         </converter>
     </extension>

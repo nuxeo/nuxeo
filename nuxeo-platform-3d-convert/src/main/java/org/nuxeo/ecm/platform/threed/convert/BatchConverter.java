@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,21 +28,18 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.HEIGHT_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.WIDTH_PARAMETER;
 
 /**
- * Render converter 3D document type to PNG
+ * Batch conversion for 3D document types Generate thumbnail render, Collada version and LOD versions
  *
  * @since 8.4
  */
-public class RenderConverter extends BaseBlenderConverter {
+public class BatchConverter extends BaseBlenderConverter {
     @Override
     public void init(ConverterDescriptor converterDescriptor) {
 
@@ -59,6 +56,7 @@ public class RenderConverter extends BaseBlenderConverter {
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
 
+        cmdStringParams.put(LODS_PARAMETER, String.valueOf(parameters.get(LODS_PARAMETER)));
         cmdStringParams.put(WIDTH_PARAMETER, String.valueOf(parameters.get(WIDTH_PARAMETER)));
         cmdStringParams.put(HEIGHT_PARAMETER, String.valueOf(parameters.get(HEIGHT_PARAMETER)));
 
@@ -68,15 +66,26 @@ public class RenderConverter extends BaseBlenderConverter {
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
+        List<String> conversions = getConversions(outDir);
         List<String> renders = getRenders(outDir);
+        String lods = cmdParams.getParameter(LODS_PARAMETER);
+        List<String> lodList = Arrays.asList(lods.split(" "));
+        if (conversions.isEmpty() || conversions.size() != lodList.size() + 1) { // + 1 for the original conversion
+            throw new ConversionException("Unable get correct number of versions");
+        }
         if (renders.isEmpty() || renders.size() != 1) {
             throw new ConversionException("Unable get result render");
         }
-        File render = new File(renders.get(0));
-        Blob blob = new FileBlob(render);
-        blob.setFilename(render.getName());
-        List<Blob> blobs = new ArrayList<>();
-        blobs.add(blob);
+
+        List<String> allResults = new ArrayList<>();
+        allResults.addAll(conversions);
+        allResults.addAll(renders);
+        List<Blob> blobs = allResults.stream().map(result -> {
+            File file = new File(result);
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
+            return blob;
+        }).collect(Collectors.toList());
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
