@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
@@ -56,6 +58,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.resource.spi.ConnectionManager;
@@ -69,6 +72,8 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
@@ -146,6 +151,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
 
+    protected static final int DEFAULT_CURSOR_TIMEOUT_S = 600;
+
     protected MongoClient mongoClient;
 
     protected DBCollection coll;
@@ -166,6 +173,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     /** Sequence allocation block size. */
     protected long sequenceBlockSize;
+
+    protected static Map<String, CursorResult> cursorResults = new ConcurrentHashMap<>();
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
@@ -874,6 +883,67 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return new PartialList<>(projections, totalSize);
     }
 
+    @Override
+    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
+        if (keepAliveInSecond != DEFAULT_CURSOR_TIMEOUT_S && log.isDebugEnabled()) {
+            log.debug("scroll keepAlive is not supported, the default MongoDB cursor timeout is 10min");
+        }
+        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
+        builder.walk();
+        if (builder.hasFulltext && isFulltextDisabled()) {
+            throw new QueryParseException("Fulltext search disabled by configuration");
+        }
+        DBObject query = builder.getQuery();
+        DBObject keys = builder.getProjection();
+        if (log.isTraceEnabled()) {
+            logQuery(query, keys, null, 0, 0);
+        }
+
+        DBCursor cursor = coll.find(query, keys);
+        String scrollId = UUID.randomUUID().toString();
+        registerCursor(scrollId, cursor, batchSize);
+        return scroll(scrollId);
+    }
+
+    protected void registerCursor(String scrollId, DBCursor cursor, int batchSize) {
+        cursorResults.put(scrollId, new CursorResult(cursor, batchSize));
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        CursorResult cursorResult = cursorResults.get(scrollId);
+        if (cursorResult == null) {
+            return emptyResult();
+        }
+        List<String> ids = new ArrayList<>(cursorResult.batchSize);
+        synchronized (cursorResult) {
+            while (ids.size() < cursorResult.batchSize) {
+                if (cursorResult.cursor == null || !cursorResult.cursor.hasNext()) {
+                    unregisterCursor(scrollId);
+                    break;
+                } else {
+                    DBObject ob = cursorResult.cursor.next();
+                    String id;
+                    if (useCustomId) {
+                        id = (String) ob.get(ECM_UUID);
+                    } else {
+                        id = (String) ob.get(MONGODB_ID);
+                    }
+                    ids.add(id);
+                }
+            }
+        }
+        return new ScrollResultImpl(scrollId, ids);
+    }
+
+    protected void unregisterCursor(String scrollId) {
+        CursorResult cursor = cursorResults.remove(scrollId);
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
     protected void addPrincipals(DBObject query, Set<String> principals) {
         if (principals != null) {
             DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<String>(principals));
@@ -1077,4 +1147,21 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void clearLockManagerCaches() {
     }
 
+    protected class CursorResult {
+        // Note that MongoDB cursor automatically timeout after 10 minutes of inactivity by default.
+        protected DBCursor cursor;
+        protected final int batchSize;
+
+        public CursorResult(DBCursor cursor, int batchSize) {
+            this.cursor = cursor;
+            this.batchSize = batchSize;
+        }
+
+        public void close() {
+            if (cursor != null) {
+                cursor.close();
+            }
+            cursor = null;
+        }
+    }
 }

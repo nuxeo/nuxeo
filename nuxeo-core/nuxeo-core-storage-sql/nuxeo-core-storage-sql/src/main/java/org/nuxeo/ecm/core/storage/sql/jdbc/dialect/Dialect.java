@@ -110,6 +110,14 @@ public abstract class Dialect {
         DIALECTS.put("DB2", DialectDB2.class);
     }
 
+    /**
+     * Does the dialect support an scroll API
+     * @since 8.4
+     */
+    public boolean supportsScroll() {
+        return true;
+    }
+
     public static final class JDBCInfo {
         public final String string;
 

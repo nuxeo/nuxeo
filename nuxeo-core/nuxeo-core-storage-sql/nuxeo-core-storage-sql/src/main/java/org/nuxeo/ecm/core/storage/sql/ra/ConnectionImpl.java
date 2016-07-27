@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -201,6 +202,16 @@ public class ConnectionImpl implements Session {
     @Override
     public boolean removeMixinType(Node node, String mixin) {
         return getSession().removeMixinType(node, mixin);
+    }
+
+    @Override
+    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+        return getSession().scroll(query, batchSize, keepAliveInSecond);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        return getSession().scroll(scrollId);
     }
 
     @Override

@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -58,6 +59,19 @@ public interface Session {
      */
     IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
             boolean distinctDocuments, Object[] params);
+
+    /**
+     * Executes the given query and returns the first batch of results of batchSize, next batch must be requested
+     * within the keepAliveInSecond delay.
+     * @since 8.4
+     */
+    ScrollResult scroll(String query, int batchSize, int keepAliveInSecond);
+
+    /**
+     * Get the next batch of result.
+     * @since 8.4
+     */
+    ScrollResult scroll(String scrollId);
 
     /**
      * Gets the lock manager for this session.

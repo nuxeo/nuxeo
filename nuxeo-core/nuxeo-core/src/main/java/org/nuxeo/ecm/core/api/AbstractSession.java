@@ -1230,6 +1230,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+        if (! isAdministrator()) {
+            throw new IllegalAccessError("Require administrator right");
+        }
+        return getSession().scroll(query, batchSize, keepAliveInSecond);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        if (! isAdministrator()) {
+            throw new IllegalAccessError("Require administrator right");
+        }
+        return getSession().scroll(scrollId);
+    }
+
+    @Override
     public void removeChildren(DocumentRef docRef) {
         // TODO: check req permissions with td
         Document doc = resolveReference(docRef);

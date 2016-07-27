@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -159,6 +161,16 @@ public class SQLSession implements Session {
 
     protected Serializable idFromString(String id) {
         return session.getModel().idFromString(id);
+    }
+
+    @Override
+    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+        return session.scroll(query, batchSize, keepAliveInSecond);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        return session.scroll(scrollId);
     }
 
     @Override

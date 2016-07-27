@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.mem;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
@@ -54,6 +55,8 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
@@ -66,7 +69,6 @@ import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
-import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
 import org.nuxeo.runtime.api.Framework;
 
@@ -353,6 +355,29 @@ public class MemRepository extends DBSRepositoryBase {
             log.trace("Mem:    -> " + projections.size());
         }
         return new PartialList<>(projections, totalSize);
+    }
+
+    @Override
+    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
+        if (log.isTraceEnabled()) {
+            log.trace("Mem: QUERY " + evaluator);
+        }
+        evaluator.parse();
+        List<String> ids = new ArrayList<>();
+        for (State state : states.values()) {
+            List<Map<String, Serializable>> matches = evaluator.matches(state);
+            if (!matches.isEmpty()) {
+                String id = matches.get(0).get(ECM_UUID).toString();
+                ids.add(id);
+            }
+        }
+        return new ScrollResultImpl("singlebatch", ids);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        // Id are already in memory, theay are returned as a single batch
+        return ScrollResultImpl.emptyResult();
     }
 
     /**

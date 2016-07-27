@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
@@ -215,4 +216,18 @@ public interface DBSRepository extends Repository, LockManager {
      */
     LockManager getLockManager();
 
+    /**
+     * Executes the given query and returns the first batch of results, next batch must be requested
+     * within the {@code keepAliveInSecond} delay.
+     *
+     * @since 8.4
+     */
+    ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond);
+
+    /**
+     * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
+     *
+     * @since 8.4
+     */
+    ScrollResult scroll(String scrollId);
 }

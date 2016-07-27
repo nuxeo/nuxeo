@@ -31,6 +31,7 @@ import javax.transaction.xa.Xid;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
 /**
@@ -49,6 +50,16 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
             Map<String, String> properties) {
         super.initialize(repositoryName, model, mapper, cachePropagator, properties);
         this.mapper = mapper;
+    }
+
+    @Override
+    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+        return mapper.scroll(query, batchSize, keepAliveInSecond);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        return mapper.scroll(scrollId);
     }
 
     @Override

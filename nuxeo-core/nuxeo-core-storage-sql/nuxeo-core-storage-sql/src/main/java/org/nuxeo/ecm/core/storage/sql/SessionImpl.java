@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -878,6 +879,16 @@ public class SessionImpl implements Session, XAResource {
         }
         node.clearCache();
         return true;
+    }
+
+    @Override
+    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+        return mapper.scroll(query, batchSize, keepAliveInSecond);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        return mapper.scroll(scrollId);
     }
 
     /**

@@ -95,6 +95,8 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -1676,6 +1678,24 @@ public class DBSSession implements Session {
             }
 
         }
+    }
+
+    @Override
+    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+        SQLQuery sqlQuery = SQLQueryParser.parse(query);
+        SelectClause selectClause = sqlQuery.select;
+            selectClause.add(new Reference(NXQL.ECM_UUID));
+        QueryOptimizer optimizer = new QueryOptimizer();
+        MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, null);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, null,
+                null, fulltextSearchDisabled);
+        return repository.scroll(evaluator, batchSize, keepAliveInSecond);
+
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+        return repository.scroll(scrollId);
     }
 
     private String countUpToAsString(long countUpTo) {

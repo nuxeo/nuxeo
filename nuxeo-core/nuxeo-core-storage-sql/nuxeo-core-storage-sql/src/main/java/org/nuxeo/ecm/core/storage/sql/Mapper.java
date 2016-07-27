@@ -29,12 +29,28 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
 /**
  * A {@link Mapper} maps {@link Row}s to and from the database.
  */
 public interface Mapper extends RowMapper, XAResource {
+
+    /**
+     * Executes the given query and returns the first batch of results, next batch must be requested
+     * within the {@code keepAliveInSecond} delay.
+     *
+     * @since 8.4
+     */
+    ScrollResult scroll(String query, int batchSize, int keepAliveInSecond);
+
+    /**
+     * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
+     *
+     * @since 8.4
+     */
+    ScrollResult scroll(String scrollId);
 
     /**
      * Identifiers assigned by a server to identify a client mapper and its repository.

@@ -27,6 +27,7 @@ import javax.resource.cci.Connection;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
@@ -129,6 +130,21 @@ public interface Session extends Connection {
      * @since 5.8
      */
     boolean removeMixinType(Node node, String mixin);
+
+    /**
+     * Executes the given query and returns the first batch of results, next batch must be requested
+     * within the {@code keepAliveInSecond} delay.
+     *
+     * @since 8.4
+     */
+    ScrollResult scroll(String query, int batchSize, int keepAliveInSecond);
+
+    /**
+     * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
+     *
+     * @since 8.4
+     */
+    ScrollResult scroll(String scrollId);
 
     /**
      * Interface for a class that knows how to resolve a node path into a node id.

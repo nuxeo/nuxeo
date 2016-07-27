@@ -21,6 +21,7 @@
  */
 package org.nuxeo.ecm.core;
 
+import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -47,10 +48,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.AssertionFailedException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.AbstractSession;
@@ -66,6 +74,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
@@ -3195,4 +3204,94 @@ public class TestSQLRepositoryQuery {
         assertEquals(expectedList, list);
     }
 
+    @Test(expected=IllegalAccessError.class)
+    public void testScrollApiRequiresAdminRights() throws Exception {
+        ScrollResult ret = session.scroll("SELECT * FROM Document", 3, 10);
+        assertFalse(ret.hasResults());
+
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            // raise an illegal access
+            ret = bobSession.scroll("SELECT * FROM Document", 3, 10);
+            Assert.fail("Should have raise and exception");
+        }
+    }
+
+    @Test
+    public void testScrollApi() throws Exception {
+        final int nbDocs = 127;
+        final int batchSize = 13;
+        DocumentModel doc;
+        for (int i=0; i<nbDocs; i++) {
+            doc = new DocumentModelImpl("/", "doc1", "File");
+            session.createDocument(doc);
+        }
+        session.save();
+
+        DocumentModelList dml;
+        dml = session.query("SELECT * FROM Document");
+        assertEquals(nbDocs, dml.size());
+
+        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        int total = 0;
+        while (ret.hasResults()) {
+            List<String> ids = ret.getResultIds();
+            total += ids.size();
+            ret = session.scroll(ret.getScrollId());
+        }
+        assertEquals(nbDocs, total);
+    }
+
+    @Test
+    public void testScrollApiConcurrency() throws Exception {
+        final int nbDocs = 127;
+        final int batchSize = 13;
+        final int nbThread = nbDocs/batchSize + 1;
+        System.out.println("nbDocs: " + nbDocs + ", batch: " + batchSize + ", thread: " + nbThread);
+        DocumentModel doc;
+        for (int i=0; i<nbDocs; i++) {
+            doc = new DocumentModelImpl("/", "doc1", "File");
+            session.createDocument(doc);
+        }
+        session.save();
+
+        DocumentModelList dml;
+        dml = session.query("SELECT * FROM Document");
+        assertEquals(nbDocs, dml.size());
+
+        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        List<String> ids = ret.getResultIds();
+        int total = ids.size();
+        String scrollId = ret.getScrollId();
+        System.out.println("first call: " + total);
+        List<CompletableFuture<Integer>> features = new ArrayList<>(nbThread);
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nbThread);
+        final CountDownLatch latch = new CountDownLatch(nbThread);
+        for (int n=0; n < nbThread; n++) {
+            CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
+                TransactionHelper.startTransaction();
+                try {
+                    // make sure all threads ask to scroll at the same time
+                    latch.countDown();
+                    try {
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    int nb = session.scroll(scrollId).getResultIds().size();
+                    System.out.println(Thread.currentThread().getName() + ": return: " + nb);
+                    return nb;
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }, executor);
+            features.add(completableFuture);
+        }
+        for (int n=0; n < nbThread; n++) {
+            int count = features.get(n).get();
+            total += count;
+        }
+        assertEquals(nbDocs, total);
+    }
+
 }
+

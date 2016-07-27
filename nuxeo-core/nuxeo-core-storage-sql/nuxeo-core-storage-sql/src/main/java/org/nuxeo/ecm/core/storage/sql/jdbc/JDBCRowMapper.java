@@ -47,6 +47,7 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
