@@ -151,7 +151,8 @@
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.14.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcomponents.version>4.3.3</apache.httpcomponents.version>
+    <apache.httpcore.version>4.4.4</apache.httpcore.version>
+    <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
     <apache.poi.version>3.10-FINAL</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
@@ -1973,7 +1974,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>${apache.httpcomponents.version}</version>
+        <version>${apache.httpcore.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -4522,7 +4523,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-osgi</artifactId>
-        <version>${apache.httpcomponents.version}</version>
+        <version>${apache.httpcore.version}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
