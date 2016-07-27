@@ -70,7 +70,7 @@ public class RenderConverter extends BaseBlenderConverter {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
         List<String> renders = getRenders(outDir);
         if (renders.isEmpty() || renders.size() == 1) {
-            return null;
+            throw new ConversionException("Unable get result render");
         }
         File render = new File(renders.get(0));
         Blob blob = new FileBlob(new File(renders.get(0)));
