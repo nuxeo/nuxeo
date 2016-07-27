@@ -35,6 +35,8 @@ public class Constants {
 
     public static final String OPERATORS_PARAMETER = "operators";
 
+    public static final String LODS_PARAMETER = "lods";
+
     public static final String WIDTH_PARAMETER = "width";
 
     public static final String HEIGHT_PARAMETER = "height";

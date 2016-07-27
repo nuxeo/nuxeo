@@ -147,6 +147,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             String operators = initParameters.get(OPERATORS_PARAMETER);
             params.addNamedParameter(OPERATORS_PARAMETER, operators);
             List<String> operatorsList = Arrays.asList(operators.split(" "));
+            operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
 
             // Deal with input blobs (main and assets)
