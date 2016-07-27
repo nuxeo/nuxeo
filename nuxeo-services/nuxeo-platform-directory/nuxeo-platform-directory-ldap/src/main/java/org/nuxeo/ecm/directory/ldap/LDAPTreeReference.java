@@ -176,7 +176,7 @@ public class LDAPTreeReference extends AbstractReference {
         LDAPSession targetSession = (LDAPSession) targetDir.getSession();
         try {
             SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId,
-                    true);
+                    false);
             if (targetLdapEntry == null) {
                 // no parent accessible => return empty list
                 return EMPTY_STRING_LIST;
@@ -260,7 +260,7 @@ public class LDAPTreeReference extends AbstractReference {
         LDAPSession sourceSession = (LDAPSession) sourceDir.getSession();
         try {
             SearchResult sourceLdapEntry = sourceSession.getLdapEntry(sourceId,
-                    true);
+                    false);
             if (sourceLdapEntry == null) {
                 throw new DirectoryException(sourceId + " does not exist in "
                         + sourceDirectoryName);
