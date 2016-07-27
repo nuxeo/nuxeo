@@ -261,8 +261,15 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: DELETE " + ids);
         }
-        String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
-        markLogicClient.newXMLDocumentManager().delete(markLogicIds);
+        try (Session session = xccContentSource.newSession()) {
+            String query = ids.stream().map(ID_FORMATTER).map(id -> "'" + id + "'").collect(
+                    Collectors.joining(",", "xdmp:document-delete((", "))"));
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            session.submitRequest(request);
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
     }
 
     @Override
