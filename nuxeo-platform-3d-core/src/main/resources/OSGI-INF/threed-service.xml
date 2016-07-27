@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.threed.service.ThreeDService">
+
+    <implementation
+            class="org.nuxeo.ecm.platform.threed.service.ThreeDServiceImpl"/>
+
+    <service>
+        <provide
+                interface="org.nuxeo.ecm.platform.threed.service.ThreeDService"/>
+    </service>
+
+    <documentation>
+        The ThreeDService provides extension points to register low level of detail version and default values for
+        transmission conversion and rendering
+    </documentation>
+
+    <extension-point name="automaticLOD">
+        <documentation>
+            <p>Since 8.4.</p>
+            <p>Extension point to contribute default level of details launched after the creation or modification of a
+                3D document
+                <ul>
+                    <li>lod: percentage of polygons remaining</li>
+                </ul>
+            </p>
+        </documentation>
+        <object class="org.nuxeo.ecm.platform.threed.service.AutomaticLOD"/>
+    </extension-point>
+
+</component>

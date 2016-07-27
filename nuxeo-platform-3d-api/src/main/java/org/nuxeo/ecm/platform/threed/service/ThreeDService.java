@@ -16,16 +16,15 @@
  * Contributors:
  *     Tiago Cardoso <tcardoso@nuxeo.com>
  */
-package org.nuxeo.ecm.platform.threed;
+package org.nuxeo.ecm.platform.threed.service;
 
-public class ThreeDConstants {
+/**
+ * Service to asynchronously launch and monitor 3D format conversions (including lod) and rendering.
+ *
+ * @since 8.4
+ */
+public interface ThreeDService {
 
-    public static final String THREED_TYPE = "ThreeD";
-
-    public static final String THREED_FACET = "ThreeD";
-
-    // Constant utility class
-    private ThreeDConstants() {
-    }
+    // XXX service still blank!
 
 }

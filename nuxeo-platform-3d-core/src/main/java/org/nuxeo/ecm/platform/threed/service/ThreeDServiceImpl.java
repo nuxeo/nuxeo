@@ -16,16 +16,19 @@
  * Contributors:
  *     Tiago Cardoso <tcardoso@nuxeo.com>
  */
-package org.nuxeo.ecm.platform.threed;
+package org.nuxeo.ecm.platform.threed.service;
 
-public class ThreeDConstants {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.model.DefaultComponent;
 
-    public static final String THREED_TYPE = "ThreeD";
+/**
+ * Default implementation of {@link ThreeDService}
+ *
+ * @since 8.4
+ */
+public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService {
 
-    public static final String THREED_FACET = "ThreeD";
-
-    // Constant utility class
-    private ThreeDConstants() {
-    }
+    protected static final Log log = LogFactory.getLog(ThreeDServiceImpl.class);
 
 }
