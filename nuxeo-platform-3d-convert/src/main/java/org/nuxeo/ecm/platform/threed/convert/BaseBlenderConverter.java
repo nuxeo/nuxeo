@@ -202,4 +202,22 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     }
 
+    public List<String> getConversions(String outDir) {
+        File directory = new File(outDir);
+        String[] files = directory.list((dir, name) -> name.startsWith("conversion") && name.endsWith(".dae"));
+        if (files == null) {
+            return null;
+        }
+        return Arrays.asList(files);
+    }
+
+    public List<String> getRenders(String outDir) {
+        File directory = new File(outDir);
+        String[] files = directory.list((dir, name) -> name.startsWith("render") && name.endsWith(".png"));
+        if (files == null) {
+            return null;
+        }
+        return Arrays.asList(files);
+    }
+
 }
