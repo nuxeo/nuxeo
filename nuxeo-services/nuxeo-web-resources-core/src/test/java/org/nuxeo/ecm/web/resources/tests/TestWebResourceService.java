@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,9 +172,11 @@ public class TestWebResourceService {
             logCaptureResult.assertHasEvent();
             List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
             assertEquals(1, events.size());
-            assertEquals("Some resources references were null or blank while setting myFaultyApp and have been supressed. "
-                    + "This probably happened because some <resource> tags were empty in the xml declaration. "
-                    + "The correct form is <resource>resource name</resource>.", events.get(0).getMessage());
+            assertEquals(
+                    "Some resources references were null or blank while setting myFaultyApp and have been supressed. "
+                            + "This probably happened because some <resource> tags were empty in the xml declaration. "
+                            + "The correct form is <resource>resource name</resource>.",
+                    events.get(0).getMessage());
         }
     }
 

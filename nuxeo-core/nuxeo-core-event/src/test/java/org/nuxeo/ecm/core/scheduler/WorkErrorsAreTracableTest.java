@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,9 @@ public class WorkErrorsAreTracableTest {
     }
 
     protected void assertIsRootWork(Work work, WorkSchedulePath.Trace error) {
-        for (Throwable cause = error.getCause(); cause != null && cause != error; error = (WorkSchedulePath.Trace) cause) {;
+        for (Throwable cause = error.getCause(); cause != null
+                && cause != error; error = (WorkSchedulePath.Trace) cause) {
+            ;
         }
         assertEquals(work.getSchedulePath(), error.path());
     }
