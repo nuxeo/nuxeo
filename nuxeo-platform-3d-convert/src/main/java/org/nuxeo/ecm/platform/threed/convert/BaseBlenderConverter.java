@@ -45,7 +45,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     protected Path tempDirectory(Map<String, Serializable> parameters) throws ConversionException {
-        Path directory = new Path(getTmpDirectory(parameters)).append(PATH_PREFIX + UUID.randomUUID());
+        Path directory = new Path(getTmpDirectory(parameters)).append(BLENDER_PATH_PREFIX + UUID.randomUUID());
         boolean dirCreated = new File(directory.toString()).mkdirs();
         if (!dirCreated) {
             throw new ConversionException("Unable to create tmp dir: " + directory);

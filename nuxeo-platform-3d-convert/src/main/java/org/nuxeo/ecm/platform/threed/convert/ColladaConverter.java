@@ -35,7 +35,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 
 /**
- * 3D conversion constants
+ * Conversion from any supported 3D type to Collada
  *
  * @since 8.4
  */

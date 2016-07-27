@@ -27,7 +27,9 @@ public class Constants {
 
     public static final String INPUT_FILE_PATH_PARAMETER = "inFilePath";
 
-    public static final String PATH_PREFIX = "blenderOut_";
+    public static final String BLENDER_PATH_PREFIX = "blenderOut_";
+
+    public static final String DAE2GLTF_PATH_PREFIX = "dae2gltfOut_";
 
     public static final String OUT_DIR_PARAMETER = "outDir";
 
@@ -40,6 +42,8 @@ public class Constants {
     public static final String WIDTH_PARAMETER = "width";
 
     public static final String HEIGHT_PARAMETER = "height";
+
+    public static final String OUTPUT_FILE_PATH_PARAMETER = "outDir";
 
     public static final String SCRIPTS_DIRECTORY = "scripts";
 

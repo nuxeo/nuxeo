@@ -39,7 +39,7 @@
         <converter name="batchConversion"
                    class="org.nuxeo.ecm.platform.threed.convert.BatchConverter">
             <sourceMimeType>*</sourceMimeType>
-            <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
+            <destinationMimeType>*</destinationMimeType>
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
@@ -47,6 +47,14 @@
                 <parameter name="lods">33 11 3</parameter>
                 <parameter name="width">950</parameter>
                 <parameter name="height">600</parameter>
+            </parameters>
+        </converter>
+        <converter name="dae2gltf"
+                   class="org.nuxeo.ecm.platform.threed.convert.Collada2glTFConverter">
+            <sourceMimeType>model/vnd.collada+xml</sourceMimeType>
+            <destinationMimeType>model/gltf+json</destinationMimeType>
+            <parameters>
+                <parameter name="CommandLineName">collada2gltlf</parameter>
             </parameters>
         </converter>
     </extension>
