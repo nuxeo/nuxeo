@@ -17,6 +17,16 @@
  */
 package org.nuxeo.automation.scripting.internals;
 
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CLASS_FILTER;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_JAVA_VERSION;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_CACHE;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER;
+import static org.nuxeo.automation.scripting.api.AutomationScriptingConstants.NASHORN_WARN_VERSION;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.checkJavaVersion;
+
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
@@ -41,41 +51,40 @@ public class ScriptingFactory {
     }
 
     protected ScriptEngineFactory newFactory() {
-        String version = Framework.getProperty("java.version", "1.8");
+        String version = Framework.getProperty("java.version");
         // Check if jdk8
-        if (version.contains(AutomationScriptingConstants.NASHORN_JAVA_VERSION)) {
-            // Check if version < jdk8u25 -> no cache.
-            if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE) < 0) {
-                log.warn(AutomationScriptingConstants.NASHORN_WARN_CACHE);
+        if (!checkJavaVersion(version, NASHORN_JAVA_VERSION)) {
+            log.warn(NASHORN_WARN_VERSION);
+            throw new UnsupportedOperationException();
+        }
+        // Check if version < jdk8u25 -> no cache.
+        if (!checkJavaVersion(version, COMPLIANT_JAVA_VERSION_CACHE)) {
+            log.warn(NASHORN_WARN_CACHE);
+            return new ScriptingCache(false);
+        }
+        // Check if jdk8u25 <= version < jdk8u40 -> only cache.
+        if (!checkJavaVersion(version, COMPLIANT_JAVA_VERSION_CLASS_FILTER)) {
+            if (Boolean.parseBoolean(
+                    Framework.getProperty(AUTOMATION_SCRIPTING_PRECOMPILE, DEFAULT_PRECOMPILE_STATUS))) {
+                log.warn(NASHORN_WARN_CLASS_FILTER);
+                return new ScriptingCache(true);
+            } else {
+                log.warn(NASHORN_WARN_CLASS_FILTER);
                 return new ScriptingCache(false);
-                // Check if jdk8u25 <= version < jdk8u40 -> only cache.
-            } else if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CACHE) >= 0
-                    && version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CLASS_FILTER) < 0) {
-                if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                        AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                    log.warn(AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER);
-                    return new ScriptingCache(true);
-                } else {
-                    log.warn(AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER);
-                    return new ScriptingCache(false);
-                }
-                // Check if version >= jdk8u40 -> cache + class filter
-            } else if (version.compareTo(AutomationScriptingConstants.COMPLIANT_JAVA_VERSION_CLASS_FILTER) >= 0) {
-                try {
-                    if (Boolean.valueOf(Framework.getProperty(
-                            AutomationScriptingConstants.AUTOMATION_SCRIPTING_PRECOMPILE,
-                            AutomationScriptingConstants.DEFAULT_PRECOMPILE_STATUS))) {
-                        return new ScriptingCacheClassFilter(true);
-                    } else {
-                        return new ScriptingCacheClassFilter(false);
-                    }
-                } catch (NoClassDefFoundError cause) {
-                    log.warn(AutomationScriptingConstants.NASHORN_WARN_CLASS_FILTER);
-                    return new ScriptingCache(true);
-                }
             }
         }
-        log.warn(AutomationScriptingConstants.NASHORN_WARN_VERSION);
-        throw new UnsupportedOperationException();
+        // Else if version >= jdk8u40 -> cache + class filter
+        try {
+            if (Boolean.parseBoolean(
+                    Framework.getProperty(AUTOMATION_SCRIPTING_PRECOMPILE, DEFAULT_PRECOMPILE_STATUS))) {
+                return new ScriptingCacheClassFilter(true);
+            } else {
+                return new ScriptingCacheClassFilter(false);
+            }
+        } catch (NoClassDefFoundError cause) {
+            log.warn(NASHORN_WARN_CLASS_FILTER);
+            return new ScriptingCache(true);
+        }
     }
+
 }
