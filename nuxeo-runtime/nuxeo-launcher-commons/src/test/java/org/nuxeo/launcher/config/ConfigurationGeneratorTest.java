@@ -23,6 +23,9 @@ package org.nuxeo.launcher.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
+
     /**
      * @throws java.lang.Exception
      */
@@ -346,6 +350,52 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("Failed to set NoSQL database to marklogic", "marklogic",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME));
+    }
+
+    @Test
+    public void testCheckJavaVersionFail() throws Exception {
+        testCheckJavaVersion(true);
+    }
+
+    @Test
+    public void testCheckJavaVersionNoFail() throws Exception {
+        testCheckJavaVersion(false);
+    }
+
+    protected void testCheckJavaVersion(boolean fail) throws ConfigurationException {
+        String old = System.getProperty(JVMCHECK_PROP);
+        try {
+            System.setProperty(JVMCHECK_PROP, fail ? JVMCHECK_FAIL : JVMCHECK_NOFAIL);
+            checkJavaVersions(!fail);
+        } finally {
+            if (old == null) {
+                System.clearProperty(JVMCHECK_PROP);
+            } else {
+                System.setProperty(JVMCHECK_PROP, old);
+            }
+        }
+    }
+
+    protected void checkJavaVersions(boolean compliant) throws ConfigurationException {
+        // ok
+        checkJavaVersion(true, "1.8.0_40", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0_45", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0_101", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0_400", "1.8.0_40");
+        checkJavaVersion(true, "1.9.0_1", "1.8.0_40");
+        // compliant if jvmcheck=nofail
+        checkJavaVersion(compliant, "1.7.0_1", "1.8.0_40");
+        checkJavaVersion(compliant, "1.7.0_40", "1.8.0_40");
+        checkJavaVersion(compliant, "1.7.0_101", "1.8.0_40");
+        checkJavaVersion(compliant, "1.7.0_400", "1.8.0_40");
+        checkJavaVersion(compliant, "1.8.0_1", "1.8.0_40");
+        checkJavaVersion(compliant, "1.8.0_25", "1.8.0_40");
+        checkJavaVersion(compliant, "1.8.0_39", "1.8.0_40");
+    }
+
+    protected void checkJavaVersion(boolean compliant, String version, String requiredVersion) {
+        assertTrue(version + " vs " + requiredVersion,
+                compliant == ConfigurationGenerator.checkJavaVersion(version, requiredVersion, true, false));
     }
 
 }
