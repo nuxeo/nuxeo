@@ -39,7 +39,7 @@ public class AutomationScriptingConstants {
 
     public static final String NX_NASHORN = "nx-nashorn";
 
-    public static final String NASHORN_JAVA_VERSION = "1.8";
+    public static final String NASHORN_JAVA_VERSION = "1.8.0_1";
 
     public static final String COMPLIANT_JAVA_VERSION_CACHE = "1.8.0_25";
 
