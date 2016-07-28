@@ -282,6 +282,11 @@
         <artifactId>nuxeo-importer-scan</artifactId>
         <version>${nuxeo.importer.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-queues</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
 
       <!-- Document Routing -->
       <dependency>
