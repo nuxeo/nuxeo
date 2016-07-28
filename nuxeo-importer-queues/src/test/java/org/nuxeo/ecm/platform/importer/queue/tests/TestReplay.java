@@ -88,6 +88,10 @@ public class TestReplay {
         // When the importer launches the import
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
 
+        // Commit for visibility with repeated read isolation (mysql)
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         // Then only buggy nodes should'nt be imported.
         DocumentModelList docs = session.query("SELECT * FROM File");
         int expected = 95;
