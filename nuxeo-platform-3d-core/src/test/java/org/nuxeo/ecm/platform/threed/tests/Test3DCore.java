@@ -37,6 +37,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 
 @RunWith(FeaturesRunner.class)
@@ -69,6 +71,7 @@ public class Test3DCore {
         DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, "/", true, path);
         assertNotNull(doc);
         assertEquals(doc.getType(), THREED_TYPE);
+        assertTrue(doc.hasFacet(THREED_FACET));
         assertEquals(doc.getName(), blob.getFilename());
         assertEquals(doc.getPropertyValue("file:filename"), blob.getFilename());
         assertEquals(doc.getPropertyValue("file:content"), blob);

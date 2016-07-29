@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Tiago Cardoso <tcardoso@nuxeo.com>
+ *     Miguel Nixo
  */
 package org.nuxeo.ecm.platform.threed;
 
@@ -24,13 +25,21 @@ public class ThreeDConstants {
 
     public static final String THREED_FACET = "ThreeD";
 
-    public static final String COLLADA_EXTENSION = "dae";
-
-    public static final String GLTF_EXTENSION = "gltf";
-
-    public static final String RENDER_EXTENSION = "png";
-
     public static final String THREED_CHANGED_EVENT = "threeDChanged";
+
+    public static final String EXTENSION_COLLADA = "dae";
+
+    public static final String EXTENSION_3DSTUDIO = "3ds";
+
+    public static final String EXTENSION_FILMBOX = "fbx";
+
+    public static final String EXTENSION_WAVEFRONT = "obj";
+
+    public static final String EXTENSION_STEREOLITHOGRAPHY = "stl";
+
+    public static final String EXTENSION_GLTF = "gltf";
+
+    public static final String EXTENSION_RENDER = "png";
 
     // Constant utility class
     private ThreeDConstants() {

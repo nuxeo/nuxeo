@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.threed.importer;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -28,13 +29,31 @@ import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_3DSTUDIO;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_COLLADA;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_FILMBOX;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_GLTF;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STEREOLITHOGRAPHY;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_WAVEFRONT;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 
 public class ThreeDImporter extends AbstractFileImporter {
 
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
             TypeManager typeService) throws IOException {
+        List supportedExtensions = new ArrayList<String>() {{
+            add(EXTENSION_COLLADA);
+            add(EXTENSION_3DSTUDIO);
+            add(EXTENSION_FILMBOX);
+            add(EXTENSION_WAVEFRONT);
+            add(EXTENSION_STEREOLITHOGRAPHY);
+            add(EXTENSION_GLTF);
+        }};
+        if (!supportedExtensions.contains(FileUtils.getFileExtension(content.getFilename()))) {
+            return null;
+        }
         DocumentModel container = session.getDocument(new PathRef(path));
         String docType = getDocType(container);
         if (docType == null) {
