@@ -3,8 +3,7 @@
   <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="plugins">
     <plugin name="ThreeDPlugin" class="org.nuxeo.ecm.platform.threed.importer.ThreeDImporter" order="0">
       <!-- .dae -->
-      <filter>model/vnd.collada+xml</filter>
-      <filter>text/xml</filter>
+      <filter>model/vnd.collada\+xml</filter>
       <!-- .3ds -->
       <filter>application/x-3ds</filter>
       <!-- .fbx -->
@@ -14,7 +13,7 @@
       <!-- .stl -->
       <filter>application/sla</filter>
       <!-- .gltf -->
-      <filter>model/gltf+json</filter>
+      <filter>model/gltf\+json</filter>
     </plugin>
   </extension>
 </component>

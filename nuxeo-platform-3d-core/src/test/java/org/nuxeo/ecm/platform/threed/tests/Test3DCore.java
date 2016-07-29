@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +43,8 @@ import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.filemanager.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.threed.core:OSGI-INF/filemanager-contrib.xml",
-        "org.nuxeo.ecm.platform.threed.core:OSGI-INF/core-types-contrib.xml" })
+    "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api",
+    "org.nuxeo.ecm.platform.threed.core", "org.nuxeo.ecm.platform.threed.api" })
 public class Test3DCore {
 
     @Inject
