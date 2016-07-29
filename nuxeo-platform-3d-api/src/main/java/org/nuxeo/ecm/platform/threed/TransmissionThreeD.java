@@ -18,22 +18,22 @@
  */
 package org.nuxeo.ecm.platform.threed;
 
-public class ThreeDConstants {
+import org.nuxeo.ecm.core.api.Blob;
 
-    public static final String THREED_TYPE = "ThreeD";
+/**
+ * Object wrapping a transmission format with {@link ThreeD} and {@code lod}
+ *
+ * @since 8.4
+ */
+public class TransmissionThreeD extends ThreeD {
 
-    public static final String THREED_FACET = "ThreeD";
+    private final float lod;
 
-    public static final String COLLADA_EXTENSION = "dae";
+    private final String name;
 
-    public static final String GLTF_EXTENSION = "gltf";
-
-    public static final String RENDER_EXTENSION = "png";
-
-    public static final String THREED_CHANGED_EVENT = "threeDChanged";
-
-    // Constant utility class
-    private ThreeDConstants() {
+    public TransmissionThreeD(Blob blob, float lod, String name) {
+        super(blob, null);
+        this.lod = lod;
+        this.name = name;
     }
-
 }

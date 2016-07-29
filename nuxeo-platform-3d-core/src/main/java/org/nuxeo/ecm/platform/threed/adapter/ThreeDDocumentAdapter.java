@@ -5,8 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     http://www.apache.org/licenses/LICENSE-2.0 *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,24 +15,13 @@
  * Contributors:
  *     Tiago Cardoso <tcardoso@nuxeo.com>
  */
-package org.nuxeo.ecm.platform.threed;
+package org.nuxeo.ecm.platform.threed.adapter;
 
-public class ThreeDConstants {
-
-    public static final String THREED_TYPE = "ThreeD";
-
-    public static final String THREED_FACET = "ThreeD";
-
-    public static final String COLLADA_EXTENSION = "dae";
-
-    public static final String GLTF_EXTENSION = "gltf";
-
-    public static final String RENDER_EXTENSION = "png";
-
-    public static final String THREED_CHANGED_EVENT = "threeDChanged";
-
-    // Constant utility class
-    private ThreeDConstants() {
-    }
+/**
+ * Default implementation of {@link ThreedDocument}.
+ *
+ * @since 8.4
+ */
+public class ThreeDDocumentAdapter {
 
 }

@@ -18,22 +18,23 @@
  */
 package org.nuxeo.ecm.platform.threed;
 
-public class ThreeDConstants {
+import org.nuxeo.ecm.core.api.Blob;
 
-    public static final String THREED_TYPE = "ThreeD";
+import java.util.List;
 
-    public static final String THREED_FACET = "ThreeD";
+/**
+ * Object wraping a 3D file {@code Blob}, resources and transmission versions.
+ *
+ * @since 8.4
+ */
+public class ThreeD {
 
-    public static final String COLLADA_EXTENSION = "dae";
+    private Blob blob;
 
-    public static final String GLTF_EXTENSION = "gltf";
+    private List<Blob> resources;
 
-    public static final String RENDER_EXTENSION = "png";
-
-    public static final String THREED_CHANGED_EVENT = "threeDChanged";
-
-    // Constant utility class
-    private ThreeDConstants() {
+    public ThreeD(Blob blob, List<Blob> resources) {
+        this.blob = blob;
+        this.resources = resources;
     }
-
 }

@@ -20,7 +20,14 @@ package org.nuxeo.ecm.platform.threed.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default implementation of {@link ThreeDService}
@@ -31,4 +38,22 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
     protected static final Log log = LogFactory.getLog(ThreeDServiceImpl.class);
 
+    @Override
+    public void launchBatchConversion(DocumentModel doc) {
+        // XXX implement
+    }
+
+    @Override
+    public List<Blob> batchConvert(ThreeD originalThreed) {
+        List<Blob> blobs = new ArrayList<>();
+        // XXX implement
+        return blobs;
+    }
+
+    @Override
+    public TransmissionThreeD convertColladaToglTF(TransmissionThreeD colladaThreeD) {
+        TransmissionThreeD gltf = null;
+        // XXX implement
+        return gltf;
+    }
 }

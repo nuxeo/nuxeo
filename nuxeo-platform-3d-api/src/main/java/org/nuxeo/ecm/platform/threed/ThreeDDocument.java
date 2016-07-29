@@ -18,22 +18,30 @@
  */
 package org.nuxeo.ecm.platform.threed;
 
-public class ThreeDConstants {
+import java.util.Collection;
 
-    public static final String THREED_TYPE = "ThreeD";
+/**
+ * Interface for document adapter wrapping a 3D document. Gives access to the transmission formats in the underlying
+ * document.
+ *
+ * @since 8.4
+ */
+public interface ThreeDDocument {
 
-    public static final String THREED_FACET = "ThreeD";
+    /**
+     * Returns the main {@link ThreeD} of this {@code ThreeDDocument}.
+     */
+    ThreeD getThreeD();
 
-    public static final String COLLADA_EXTENSION = "dae";
+    /**
+     * Returns all the {@link TransmissionThreeD}s for this {@code ThreeDDocument}.
+     */
+    Collection<TransmissionThreeD> getTransmissionThreeDs();
 
-    public static final String GLTF_EXTENSION = "gltf";
-
-    public static final String RENDER_EXTENSION = "png";
-
-    public static final String THREED_CHANGED_EVENT = "threeDChanged";
-
-    // Constant utility class
-    private ThreeDConstants() {
-    }
+    /**
+     * Returns a given {@link TransmissionThreeD} based on its {@code lod}, {@code null} if this transmission 3d video
+     * does not exist.
+     */
+    TransmissionThreeD getTransmissionThreeD(float lod);
 
 }

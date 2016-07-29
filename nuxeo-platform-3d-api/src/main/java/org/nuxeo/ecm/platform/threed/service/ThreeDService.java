@@ -18,6 +18,13 @@
  */
 package org.nuxeo.ecm.platform.threed.service;
 
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+
+import java.util.List;
+
 /**
  * Service to asynchronously launch and monitor 3D format conversions (including lod) and rendering.
  *
@@ -25,6 +32,27 @@ package org.nuxeo.ecm.platform.threed.service;
  */
 public interface ThreeDService {
 
-    // XXX service still blank!
+    /**
+     * Launch all the registered automatic lod transmission version and thumbnail render on the given {@code doc}.
+     *
+     * @param doc the video document to be converted
+     */
+    void launchBatchConversion(DocumentModel doc);
+
+    /**
+     * Batch convert the {@code originalThreed} to all needed blobs (lod transmission formats and thumbnail render)
+     *
+     * @param originalThreed the 3d to convert
+     * @return a {@code List<Blob>} object of the converted assets.
+     */
+    List<Blob> batchConvert(ThreeD originalThreed);
+
+    /**
+     * Batch convert the Collada {@code colladaThreeD} to glTF
+     *
+     * @param colladaThreeD the 3d to convert
+     * @return a {@code TransmissionThreeD} object of in glTF.
+     */
+    TransmissionThreeD convertColladaToglTF(TransmissionThreeD colladaThreeD);
 
 }
