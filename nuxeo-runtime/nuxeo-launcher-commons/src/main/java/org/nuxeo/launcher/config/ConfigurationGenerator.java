@@ -1278,12 +1278,12 @@ public class ConfigurationGenerator {
      * @param version the java version
      * @param requiredVersion the required java version
      * @param allowNoFailFlag if {@code true} then check jvmcheck=nofail flag to always have loose compliance
-     * @param warnIfLooseComliance if {@code true} then log a WARN if the is loose compliance
+     * @param warnIfLooseCompliance if {@code true} then log a WARN if the is loose compliance
      * @return true if the java version is compliant (maybe loosely) with the required version
      * @since 8.4
      */
     protected static boolean checkJavaVersion(String version, String requiredVersion, boolean allowNoFailFlag,
-            boolean warnIfLooseComliance) {
+            boolean warnIfLooseCompliance) {
         String[] versionSplit = version.split("_");
         String[] requiredVersionSplit = requiredVersion.split("_");
         String major = versionSplit[0];
@@ -1298,7 +1298,7 @@ public class ConfigurationGenerator {
         if (greaterMajor || (allowNoFailFlag
                 && JVMCHECK_NOFAIL.equalsIgnoreCase(System.getProperty(JVMCHECK_PROP, JVMCHECK_FAIL)))) {
             // greater major version or system property, considered loosely compliant but may warn
-            if (warnIfLooseComliance) {
+            if (warnIfLooseCompliance) {
                 log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
             }
             return true;
