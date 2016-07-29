@@ -102,6 +102,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
         if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             throw new NuxeoException("Cannot use a CoreSession outside a transaction");
         }
+        TransactionHelper.checkTransactionTimeout();
         SessionInfo si = sessionHolder.get();
         if (si == null || !si.session.isLive()) {
             // close old one, previously completed

@@ -409,4 +409,25 @@ public class TestSQLRepositoryJTAJCA {
         session = coreFeature.createCoreSession();
     }
 
+    @Test
+    public void testPreemptiveTransactionTimeout() throws Exception {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction(1); // 1s transaction
+        Thread.sleep(2000); // 2s sleep
+        try {
+            // any use of the session after the timeout is enough to trigger the exception
+            session.getRootDocument();
+            fail("should have preemptively timed out");
+        } catch (TransactionRuntimeException e) {
+            assertEquals("Transaction has timed out", e.getMessage());
+        }
+        try {
+            TransactionHelper.commitOrRollbackTransaction();
+            fail("commit after timeout should raise an exception");
+        } catch (TransactionRuntimeException e) {
+            assertEquals("Unable to commit/rollback: Unable to commit: Transaction timeout", e.getMessage());
+        }
+        TransactionHelper.startTransaction();
+    }
+
 }

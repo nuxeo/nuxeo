@@ -49,6 +49,17 @@ public class TransactionHelper {
 
     private static final Log log = LogFactory.getLog(TransactionHelper.class);
 
+    private static final Field GERONIMO_TRANSACTION_TIMEOUT_FIELD;
+    static {
+        try {
+            GERONIMO_TRANSACTION_TIMEOUT_FIELD = org.apache.geronimo.transaction.manager.TransactionImpl.class.getDeclaredField(
+                    "timeout");
+            GERONIMO_TRANSACTION_TIMEOUT_FIELD.setAccessible(true);
+        } catch (NoSuchFieldException | SecurityException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
     private TransactionHelper() {
         // utility class
     }
@@ -186,9 +197,7 @@ public class TransactionHelper {
             }
             if (tx instanceof org.apache.geronimo.transaction.manager.TransactionImpl) {
                 // Geronimo Transaction Manager
-                Field f = tx.getClass().getDeclaredField("timeout");
-                f.setAccessible(true);
-                Long timeout = (Long) f.get(tx);
+                Long timeout = (Long) GERONIMO_TRANSACTION_TIMEOUT_FIELD.get(tx);
                 return System.currentTimeMillis() > timeout.longValue();
             } else {
                 // unknown transaction manager
@@ -196,6 +205,21 @@ public class TransactionHelper {
             }
         } catch (SystemException | ReflectiveOperationException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Checks if the current User Transaction has already timed out, i.e., whether a commit would immediately abort with
+     * a timeout exception.
+     * <p>
+     * Throws if the transaction has timed out.
+     *
+     * @throws TransactionRuntimeException if the transaction has timed out
+     * @since 8.4
+     */
+    public static void checkTransactionTimeout() throws TransactionRuntimeException {
+        if (isTransactionTimedOut()) {
+            throw new TransactionRuntimeException("Transaction has timed out");
         }
     }
 
@@ -345,15 +369,23 @@ public class TransactionHelper {
         } catch (SystemException | RollbackException | HeuristicMixedException | HeuristicRollbackException
                 | IllegalStateException | SecurityException e) {
             String msg = "Unable to commit/rollback";
-            if (e instanceof RollbackException
-                    && "Unable to commit: transaction marked for rollback".equals(e.getMessage())) {
-                // don't log as error, this happens if there's a
-                // ConcurrentModificationException at transaction end inside VCS
-                log.debug(msg, e);
+            String message = e.getMessage();
+            if (e instanceof RollbackException) {
+                switch (message) {
+                case "Unable to commit: transaction marked for rollback":
+                    // don't log as error, this happens if there's a ConcurrentModificationException
+                    // at transaction end inside VCS
+                case "Unable to commit: Transaction timeout":
+                    // don't log either
+                    log.debug(msg, e);
+                    break;
+                default:
+                    log.error(msg, e);
+                }
             } else {
                 log.error(msg, e);
             }
-            throw new TransactionRuntimeException(msg + ": " + e.getMessage(), e);
+            throw new TransactionRuntimeException(msg + ": " + message, e);
         }
     }
 
