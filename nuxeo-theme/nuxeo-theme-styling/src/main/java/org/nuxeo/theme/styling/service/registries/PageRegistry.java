@@ -17,7 +17,7 @@
 package org.nuxeo.theme.styling.service.registries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ import org.nuxeo.theme.styling.service.descriptors.ThemePage;
  */
 public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
 
-    protected Map<String, ThemePage> themePageResources = new HashMap<String, ThemePage>();
+    protected Map<String, ThemePage> themePageResources = new LinkedHashMap<String, ThemePage>();
 
     @Override
     public String getContributionId(ThemePage contrib) {

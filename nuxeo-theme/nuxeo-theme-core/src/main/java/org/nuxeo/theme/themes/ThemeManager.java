@@ -109,7 +109,7 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, ModelType> modelsByClassname = new HashMap<String, ModelType>();
 
-    private final Map<String, Map<String, Integer>> namedObjectsByTheme = new HashMap<String, Map<String, Integer>>();
+    private final Map<String, Map<String, Integer>> namedObjectsByTheme = new LinkedHashMap<String, Map<String, Integer>>();
 
     private final Map<Integer, String> themeOfNamedObjects = new HashMap<Integer, String>();
 
