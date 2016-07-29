@@ -25,15 +25,16 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
-import org.nuxeo.ecm.platform.threed.ThreeDConstants;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 import java.io.IOException;
 
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
+
 public class ThreeDImporter extends AbstractFileImporter {
 
-    public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite,
-                                String fullname, TypeManager typeService) throws IOException {
+    public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
+            TypeManager typeService) throws IOException {
         DocumentModel container = session.getDocument(new PathRef(path));
         String docType = getDocType(container);
         if (docType == null) {
@@ -50,7 +51,7 @@ public class ThreeDImporter extends AbstractFileImporter {
 
     @Override
     public String getDefaultDocType() {
-        return ThreeDConstants.DOCTYPE;
+        return THREED_TYPE;
     }
 
     @Override

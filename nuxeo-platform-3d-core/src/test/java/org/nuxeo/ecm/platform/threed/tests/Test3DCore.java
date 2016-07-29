@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.threed.ThreeDConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,15 +37,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class})
-@Deploy({"org.nuxeo.ecm.platform.filemanager.core",
-    "org.nuxeo.ecm.platform.filemanager.api",
-    "org.nuxeo.ecm.platform.types.core",
-    "org.nuxeo.ecm.platform.types.api"})
-@LocalDeploy({"org.nuxeo.ecm.platform.threed.core:OSGI-INF/filemanager-contrib.xml",
-    "org.nuxeo.ecm.platform.threed.core:OSGI-INF/core-types-contrib.xml"})
+@Features({ CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.filemanager.api",
+        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.threed.core:OSGI-INF/filemanager-contrib.xml",
+        "org.nuxeo.ecm.platform.threed.core:OSGI-INF/core-types-contrib.xml" })
 public class Test3DCore {
 
     @Inject
@@ -70,7 +68,7 @@ public class Test3DCore {
         Blob blob = new FileBlob(file);
         DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, "/", true, path);
         assertNotNull(doc);
-        assertEquals(doc.getType(), ThreeDConstants.DOCTYPE);
+        assertEquals(doc.getType(), THREED_TYPE);
         assertEquals(doc.getName(), blob.getFilename());
         assertEquals(doc.getPropertyValue("file:filename"), blob.getFilename());
         assertEquals(doc.getPropertyValue("file:content"), blob);
