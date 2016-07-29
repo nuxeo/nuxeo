@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.event" })
-@LogCaptureFeature.FilterWith(WorkErrorsAreTracableTest.ChainFilter.class)
+@LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.core.work.api.WorkSchedulePath")
 public class WorkErrorsAreTracableTest {
 
     protected static class Fail extends AbstractWork {
@@ -77,16 +77,6 @@ public class WorkErrorsAreTracableTest {
         public void work() {
             sub = new Fail();
             manager.schedule(sub);
-        }
-
-    }
-
-    public static class ChainFilter implements LogCaptureFeature.Filter {
-
-        @Override
-        public boolean accept(LoggingEvent event) {
-            String category = event.getLogger().getName();
-            return WorkSchedulePath.class.getName().equals(category);
         }
 
     }

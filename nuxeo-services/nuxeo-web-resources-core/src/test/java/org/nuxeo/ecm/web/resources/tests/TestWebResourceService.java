@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.web.resources.api.ResourceContext;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-import org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,22 +54,11 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.web.resources.core" })
 @LocalDeploy({ TestWebResourceService.BUNDLE + ":webresources-test-config.xml" })
-@LogCaptureFeature.FilterWith(TestWebResourceService.BadRessourceDeclarationLogFilter.class)
+@LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.web.resources.core.service.WebResourceManagerImpl", logLevel = "ERROR")
 public class TestWebResourceService {
-
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
-
-    public static class BadRessourceDeclarationLogFilter implements LogCaptureFeature.Filter {
-
-        @Override
-        public boolean accept(LoggingEvent event) {
-            return (event.getLevel().equals(Level.ERROR) && event.getLoggerName().equals(WebResourceManagerImpl.class.getName()));
-
-        }
-
-    }
 
     static final String BUNDLE = "org.nuxeo.web.resources.core";
 

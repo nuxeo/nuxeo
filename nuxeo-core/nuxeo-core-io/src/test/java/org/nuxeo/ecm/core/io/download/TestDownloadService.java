@@ -40,7 +40,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +55,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature.Filter;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
@@ -166,7 +164,7 @@ public class TestDownloadService {
     }
 
     @Test
-    @LogCaptureFeature.FilterWith(DownloadServiceEtagNoDigestFilter.class)
+    @LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.core.io.download.DownloadServiceImpl", logLevel = "WARN")
     public void testETagHeaderNoDigest() throws Exception {
         String blobValue = "Hello World";
         Blob blob = Blobs.createBlob(blobValue);
@@ -197,16 +195,6 @@ public class TestDownloadService {
         assertEquals(
                 "ETag and cache has been disabled because blob doesn't have digest for reason=test, docId=null, filename=myFile.txt, xpath=null",
                 log.getMessage());
-    }
-
-    public static class DownloadServiceEtagNoDigestFilter implements Filter {
-
-        @Override
-        public boolean accept(LoggingEvent event) {
-            return event.getLevel().equals(Level.WARN)
-                    && event.getLoggerName().equals("org.nuxeo.ecm.core.io.download.DownloadServiceImpl");
-        }
-
     }
 
     @Test
