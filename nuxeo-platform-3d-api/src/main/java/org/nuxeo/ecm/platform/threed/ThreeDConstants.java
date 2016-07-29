@@ -25,6 +25,8 @@ public class ThreeDConstants {
 
     public static final String THREED_FACET = "ThreeD";
 
+    public static final String THREED_SCHEMA = "threed";
+
     public static final String THREED_CHANGED_EVENT = "threeDChanged";
 
     public static final String EXTENSION_COLLADA = "dae";

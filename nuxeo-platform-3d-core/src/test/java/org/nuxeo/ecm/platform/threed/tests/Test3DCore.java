@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -38,13 +39,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_SCHEMA;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.filemanager.api",
-    "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api",
-    "org.nuxeo.ecm.platform.threed.core", "org.nuxeo.ecm.platform.threed.api" })
+        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api",
+        "org.nuxeo.ecm.platform.threed.core", "org.nuxeo.ecm.platform.threed.api" })
 public class Test3DCore {
 
     @Inject
@@ -54,7 +56,24 @@ public class Test3DCore {
     private FileManager fileManager;
 
     @Test
-    public void test() throws IOException {
+    public void testThreeDType() {
+        DocumentType threeDType = session.getDocumentType(THREED_TYPE);
+        assertNotNull(threeDType);
+        DocumentModel documentModel = session.createDocumentModel("/", "doc", THREED_TYPE);
+        assertTrue(documentModel.hasSchema("uid"));
+        assertTrue(documentModel.hasSchema("file"));
+        assertTrue(documentModel.hasSchema("common"));
+        assertTrue(documentModel.hasSchema("files"));
+        assertTrue(documentModel.hasSchema("dublincore"));
+        assertTrue(documentModel.hasSchema(THREED_SCHEMA));
+        assertTrue(documentModel.hasFacet("Versionable"));
+        assertTrue(documentModel.hasFacet("Publishable"));
+        assertTrue(documentModel.hasFacet("Commentable"));
+        assertTrue(documentModel.hasFacet(THREED_FACET));
+    }
+
+    @Test
+    public void testThreeDImporter() throws IOException {
         String path = "duck.dae";
         URL url = this.getClass().getClassLoader().getResource(path);
         File file = null;
