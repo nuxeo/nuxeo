@@ -102,17 +102,29 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         // Saving thumbnail to the document
         setStatus("Saving thumbnail");
         List<Blob> renderBlobs = BatchConverterHelper.getRenders(blobs);
-        startTransaction();
-        openSystemSession();
-        DocumentModel doc = session.getDocument(new IdRef(docId));
+
         if (!renderBlobs.isEmpty() && renderBlobs.size() == 1) {
-            saveNewThumbnail(doc, renderBlobs.get(0));
+            try {
+                startTransaction();
+                openSystemSession();
+                DocumentModel doc = session.getDocument(new IdRef(docId));
+                saveNewThumbnail(doc, renderBlobs.get(0));
+                commitOrRollbackTransaction();
+            } finally {
+                cleanUp(true, null);
+            }
         }
+
+        setStatus("Converting Collada to glTF");
         List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissons(blobs);
         List<TransmissionThreeD> transmissionThreeDs = colladaThreeDs.stream()
                                                                      .map(service::convertColladaToglTF)
                                                                      .collect(Collectors.toList());
 
+        startTransaction();
+        setStatus("Saving transmission formats");
+        openSystemSession();
+        DocumentModel doc = session.getDocument(new IdRef(docId));
         saveNewTransmissionThreeDs(doc, transmissionThreeDs);
 
         fireVideoConversionsDoneEvent(doc);
