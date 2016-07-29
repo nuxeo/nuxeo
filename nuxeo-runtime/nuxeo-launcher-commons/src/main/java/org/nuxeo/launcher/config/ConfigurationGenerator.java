@@ -77,7 +77,7 @@ public class ConfigurationGenerator {
     /**
      * @since 5.7
      */
-    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.7" };
+    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.7.0_1" };
 
     /**
      * @since 5.6
@@ -219,6 +219,15 @@ public class ConfigurationGenerator {
      */
     @Deprecated
     public static final String SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE = "seam-debug.properties";
+
+    /** @since 8.4 */
+    public static final String JVMCHECK_PROP = "jvmcheck";
+
+    /** @since 8.4 */
+    public static final String JVMCHECK_FAIL = "fail";
+
+    /** @since 8.4 */
+    public static final String JVMCHECK_NOFAIL = "nofail";
 
     private final File nuxeoHome;
 
@@ -1272,29 +1281,65 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public void checkJavaVersion() throws ConfigurationException {
+        String requiredVersion = COMPLIANT_JAVA_VERSIONS[0];
         String version = System.getProperty("java.version");
-        boolean isCompliant = false;
-        boolean isGreater = false;
-        for (String compliantJava : COMPLIANT_JAVA_VERSIONS) {
-            if (version.startsWith(compliantJava)) {
-                isCompliant = true;
-                break;
-            } else if (version.compareTo(compliantJava) > 0) {
-                isGreater = true;
-            }
+        if (!checkJavaVersion(version, requiredVersion, true, true)) {
+            String message = String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version);
+            throw new ConfigurationException(message + " See '" + JVMCHECK_PROP + "' option to bypass version check.");
         }
-        if (!isCompliant) {
-            String message = String.format(
-                    "Nuxeo requires Java %s (detected %s).",
-                    ArrayUtils.toString(COMPLIANT_JAVA_VERSIONS), version);
-            if (isGreater
-                    || "nofail".equalsIgnoreCase(System.getProperty("jvmcheck",
-                            "fail"))) {
-                log.warn(message);
-            } else {
-                throw new ConfigurationException(message);
-            }
+    }
+
+    /**
+     * Checks the java version compared to the required one.
+     * <p>
+     * Loose compliance is assumed if the major version is greater than the required major version or a jvmcheck=nofail
+     * flag is set.
+     *
+     * @param version the java version
+     * @param requiredVersion the required java version
+     * @param allowNoFailFlag if {@code true} then check jvmcheck=nofail flag to always have loose compliance
+     * @param warnIfLooseComliance if {@code true} then log a WARN if the is loose compliance
+     * @return true if the java version is compliant (maybe loosely) with the required version
+     * @since 8.4
+     */
+    protected static boolean checkJavaVersion(String version, String requiredVersion, boolean allowNoFailFlag,
+            boolean warnIfLooseComliance) {
+        String[] versionSplit = version.split("_");
+        String[] requiredVersionSplit = requiredVersion.split("_");
+        String major = versionSplit[0];
+        String requiredMajor = requiredVersionSplit[0];
+        int minor = Integer.parseInt(versionSplit[1]);
+        int requiredMinor = Integer.parseInt(requiredVersionSplit[1]);
+        boolean sameMajorAndGreaterMinor = major.equals(requiredMajor) && minor >= requiredMinor;
+        if (sameMajorAndGreaterMinor) {
+            return true;
         }
+        boolean greaterMajor = major.compareTo(requiredMajor) > 0;
+        if (greaterMajor || (allowNoFailFlag
+                && JVMCHECK_NOFAIL.equalsIgnoreCase(System.getProperty(JVMCHECK_PROP, JVMCHECK_FAIL)))) {
+            // greater major version or system property, considered loosely compliant but may warn
+            if (warnIfLooseComliance) {
+                log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks the java version compared to the required one.
+     * <p>
+     * If major version is same as required major version and minor is greater or equal, it is compliant.
+     * <p>
+     * If major version is greater than required major version, it is compliant.
+     *
+     * @param version the java version
+     * @param requiredVersion the required java version
+     * @return true if the java version is compliant with the required version
+     * @since 8.4
+     */
+    public static boolean checkJavaVersion(String version, String requiredVersion) {
+        return checkJavaVersion(version, requiredVersion, false, false);
     }
 
     /**
