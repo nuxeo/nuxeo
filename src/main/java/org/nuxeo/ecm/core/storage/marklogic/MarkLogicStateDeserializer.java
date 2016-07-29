@@ -19,17 +19,23 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.io.Serializable;
+import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
@@ -40,46 +46,65 @@ import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
  */
 final class MarkLogicStateDeserializer {
 
+    private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
     private MarkLogicStateDeserializer() {
         // nothing
     }
 
     public static State deserialize(String s) {
+        XMLEventReader xmler = null;
         try {
-            Document document = DocumentHelper.parseText(s);
-            return deserializeState(document.getRootElement());
-        } catch (DocumentException e) {
+            xmler = xmlInputFactory.createXMLEventReader(new StringReader(s));
+            XMLEvent event;
+            while (xmler.hasNext()) {
+                event = xmler.nextEvent();
+                if (event.isStartElement()) {
+                    return deserializeState(xmler);
+                }
+            }
+        } catch (XMLStreamException e) {
             // TODO change that
             throw new RuntimeException(e);
+        } finally {
+            if (xmler != null) {
+                try {
+                    xmler.close();
+                } catch (XMLStreamException e) {
+                    // TODO change that
+                    throw new RuntimeException(e);
+                }
+            }
         }
+        throw new NuxeoException("An error occured during xml deserialization.");
     }
 
-    private static State deserializeState(Element parent) {
-        State state = new State(parent.nodeCount());
-        Iterator elements = parent.elementIterator();
-        while (elements.hasNext()) {
-            Element element = (Element) elements.next();
-            state.put(MarkLogicHelper.deserializeKey(element.getQualifiedName()), deserializeValue(element));
+    private static State deserializeState(XMLEventReader xmler) throws XMLStreamException {
+        State state = new State();
+        XMLEvent event;
+        while (xmler.hasNext()) {
+            event = xmler.nextEvent();
+            if (event.isStartElement()) {
+                StartElement startElement = event.asStartElement();
+                state.put(MarkLogicHelper.deserializeKey(startElement.getName().getLocalPart()),
+                        deserializeValue(xmler, startElement));
+            } else if (event.isEndElement()) {
+                break;
+            }
         }
         return state;
     }
 
-    private static Serializable deserializeValue(Element element) {
+    private static Serializable deserializeValue(XMLEventReader xmler, StartElement element) throws XMLStreamException {
+        // Here previous event was a start element (element parameter), several possible cases for next event:
+        // - start element for a sub state or list
+        // - character for an element value
+        // - character for a whitespace between tag
         Serializable result;
-        Iterator children = element.elementIterator();
-        if (children.hasNext()) {
-            Element first = (Element) children.next();
-            if (first.getQualifiedName().endsWith(MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX)) {
-                result = deserializeList(element);
-            } else {
-                result = deserializeState(element);
-            }
-        } else {
-            ElementType type = getElementType(element)
-            // fallback on String
-            .orElse(ElementType.STRING);
-            String text = element.getText();
-            switch (type) {
+        Optional<ElementType> typeOpt = getElementType(element);
+        if (typeOpt.isPresent()) {
+            String text = xmler.peek().isEndElement() ? "" : xmler.nextEvent().asCharacters().getData();
+            switch (typeOpt.get()) {
             case BOOLEAN:
                 result = Boolean.parseBoolean(text);
                 break;
@@ -100,44 +125,71 @@ final class MarkLogicStateDeserializer {
             case STRING:
             default:
                 result = text;
-                if (element.attribute(MarkLogicHelper.ATTRIBUTE_TYPE) == null && "".equals(result)) {
-                    // element is not xs:string type, so it's an empty list or an empty state
-                    result = null;
-                }
                 break;
             }
-        }
-        return result;
-    }
-
-    private static Serializable deserializeList(Element array) {
-        Serializable result;
-        List items = array.elements();
-        if (items.isEmpty()) {
-            result = null;
+            // consume end element event
+            XMLEvent event = xmler.nextEvent();
+            if (event.isCharacters() && event.asCharacters().isIgnorableWhiteSpace()) {
+                xmler.nextEvent();
+            }
         } else {
-            Element first = (Element) items.get(0);
-            Optional<ElementType> type = getElementType(first);
-            if (first.elements().isEmpty() && type.isPresent()) {
-                List<Object> l = new ArrayList<>(items.size());
-                for (Object element : items) {
-                    l.add(deserializeValue((Element) element));
-                }
-                Class<?> scalarType = scalarTypeToSerializableClass(type.get(), first.getText());
-                result = l.toArray((Object[]) Array.newInstance(scalarType, l.size()));
+            // Remove whitespace event
+            if (xmler.peek().isCharacters() && xmler.peek().asCharacters().isWhiteSpace()) {
+                xmler.nextEvent();
+            }
+            XMLEvent event = xmler.peek();
+            if (event.isEndElement()) {
+                result = null;
+            } else if (event.asStartElement()
+                            .getName()
+                            .getLocalPart()
+                            .endsWith(MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX)) {
+                result = deserializeList(xmler);
             } else {
-                ArrayList<Serializable> l = new ArrayList<>(items.size());
-                for (Object element : items) {
-                    l.add(deserializeState((Element) element));
-                }
-                result = l;
+                result = deserializeState(xmler);
             }
         }
         return result;
     }
 
-    private static Optional<ElementType> getElementType(Element element) {
-        return Optional.ofNullable(element.attributeValue(MarkLogicHelper.ATTRIBUTE_TYPE)).map(ElementType::of);
+    private static Serializable deserializeList(XMLEventReader xmler) throws XMLStreamException {
+        Serializable result;
+        // try to retrieve element type
+        Optional<ElementType> type = getElementType(xmler.peek().asStartElement());
+        if (type.isPresent()) {
+            List<Object> l = new ArrayList<>();
+            while (xmler.hasNext()) {
+                XMLEvent event = xmler.nextEvent();
+                if (event.isStartElement()) {
+                    l.add(deserializeValue(xmler, event.asStartElement()));
+                } else if (event.isEndElement()) {
+                    // end of list
+                    break;
+                }
+            }
+            Class<?> scalarType = scalarTypeToSerializableClass(type.get(), l.get(0).toString());
+            result = l.toArray((Object[]) Array.newInstance(scalarType, l.size()));
+        } else {
+            ArrayList<Serializable> l = new ArrayList<>();
+            while (xmler.hasNext()) {
+                XMLEvent event = xmler.nextEvent();
+                if (event.isStartElement()) {
+                    l.add(deserializeState(xmler));
+                } else if (event.isEndElement()) {
+                    // end of list
+                    break;
+                }
+            }
+            result = l;
+        }
+        return result;
+    }
+
+    private static Optional<ElementType> getElementType(StartElement element) {
+        return Optional.ofNullable(
+                element.getAttributeByName(new QName(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type", "xsi")))
+                       .map(Attribute::getValue)
+                       .map(ElementType::of);
     }
 
     private static Class<?> scalarTypeToSerializableClass(ElementType type, String content) {

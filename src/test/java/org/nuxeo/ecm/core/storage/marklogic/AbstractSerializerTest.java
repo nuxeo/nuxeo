@@ -38,6 +38,12 @@ import org.nuxeo.ecm.core.storage.State;
 
 public abstract class AbstractSerializerTest extends AbstractTest {
 
+    protected State createStateWithEmptyValue() {
+        State state = new State();
+        state.put(KEY_ID, "");
+        return state;
+    }
+
     protected State createStateWithSimpleValue() {
         State state = new State();
         state.put(KEY_ID, "ID");

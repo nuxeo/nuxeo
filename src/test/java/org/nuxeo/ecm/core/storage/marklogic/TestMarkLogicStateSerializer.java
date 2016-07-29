@@ -37,9 +37,16 @@ public class TestMarkLogicStateSerializer extends AbstractSerializerTest {
 
     @Test
     public void testStateWithNullValue() throws Exception {
+        State state = createStateWithEmptyValue();
+        String xml = MarkLogicStateSerializer.serialize(state);
+        assertNotNull(xml);
+        assertXMLFileAgainstString("serializer/state-with-empty-value.xml", xml);
+    }
+
+    @Test
+    public void testStateWithEmptyValue() throws Exception {
         State state = new State();
         state.put("ecm:id", "ID");
-        state.put("subState", null);
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-null-value.xml", xml);

@@ -37,6 +37,15 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
     }
 
     @Test
+    public void testStateWithEmptyValue() throws Exception {
+        String xml = readFile("serializer/state-with-empty-value.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = createStateWithEmptyValue();
+        assertEquals(expectedState, state);
+    }
+
+    @Test
     public void testStateWithSimpleValue() throws Exception {
         String xml = readFile("serializer/state-with-simple-value.xml");
         State state = MarkLogicStateDeserializer.deserialize(xml);
@@ -75,6 +84,15 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
     @Test
     public void testStateWithArray() throws Exception {
         String xml = readFile("serializer/state-with-array.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = createStateWithArray();
+        assertEquals(expectedState, state);
+    }
+
+    @Test
+    public void testStateWithArrayInline() throws Exception {
+        String xml = readFile("serializer/state-with-array-inline.xml");
         State state = MarkLogicStateDeserializer.deserialize(xml);
         assertNotNull(state);
         State expectedState = createStateWithArray();
