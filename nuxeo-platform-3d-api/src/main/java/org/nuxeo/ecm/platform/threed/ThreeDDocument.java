@@ -39,8 +39,8 @@ public interface ThreeDDocument {
     Collection<TransmissionThreeD> getTransmissionThreeDs();
 
     /**
-     * Returns a given {@link TransmissionThreeD} based on its {@code lod}, {@code null} if this transmission 3d video
-     * does not exist.
+     * Returns a given {@link TransmissionThreeD} based on its {@code lod}, {@code null} if this transmission 3d does
+     * not exist.
      */
     TransmissionThreeD getTransmissionThreeD(float lod);
 

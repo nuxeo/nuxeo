@@ -12,7 +12,8 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/mimetype-contrib.xml,
  OSGI-INF/threed-thumbnailfactory-contrib.xml,
  OSGI-INF/threed-workmanager-config.xml,
- OSGI-INF/threed-service.xml
+ OSGI-INF/threed-service.xml,
+ OSGI-INF/listeners-contrib.xml
 Bundle-Category: core,stateful
 Nuxeo-Require: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.core.api,

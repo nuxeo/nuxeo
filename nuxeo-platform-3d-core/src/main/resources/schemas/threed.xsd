@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/video"
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/threed"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://www.nuxeo.org/ecm/schemas/video">
+           targetNamespace="http://www.nuxeo.org/ecm/schemas/threed">
 
     <xs:include schemaLocation="core-types.xsd"/>
 

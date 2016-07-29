@@ -35,7 +35,7 @@ public interface ThreeDService {
     /**
      * Launch all the registered automatic lod transmission version and thumbnail render on the given {@code doc}.
      *
-     * @param doc the video document to be converted
+     * @param doc the 3D document to be converted
      */
     void launchBatchConversion(DocumentModel doc);
 

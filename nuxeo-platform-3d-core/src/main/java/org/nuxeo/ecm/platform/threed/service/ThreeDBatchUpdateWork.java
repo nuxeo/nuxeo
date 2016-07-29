@@ -52,12 +52,12 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     private static final Log log = LogFactory.getLog(ThreeDBatchUpdateWork.class);
 
-    public static final String CATEGORY_VIDEO_CONVERSION = "threeDConversion";
+    public static final String CATEGORY_THREED_CONVERSION = "threeDConversion";
 
-    public static final String VIDEO_CONVERSIONS_DONE_EVENT = "threeDConversionsDone";
+    public static final String THREED_CONVERSIONS_DONE_EVENT = "threeDConversionsDone";
 
     protected static String computeIdPrefix(String repositoryName, String docId) {
-        return repositoryName + ':' + docId + ":videoconv:";
+        return repositoryName + ':' + docId + ":threedbatch:";
     }
 
     public ThreeDBatchUpdateWork(String repositoryName, String docId) {
@@ -67,7 +67,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     @Override
     public String getCategory() {
-        return CATEGORY_VIDEO_CONVERSION;
+        return CATEGORY_THREED_CONVERSION;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         DocumentModel doc = session.getDocument(new IdRef(docId));
         saveNewTransmissionThreeDs(doc, transmissionThreeDs);
 
-        fireVideoConversionsDoneEvent(doc);
+        fireThreeDConversionsDoneEvent(doc);
         setStatus("Done");
     }
 
@@ -141,7 +141,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         return threed;
     }
 
-    protected void saveNewTransmissionThreeDs(DocumentModel doc, List<TransmissionThreeD> transcodedVideo) {
+    protected void saveNewTransmissionThreeDs(DocumentModel doc, List<TransmissionThreeD> transmissionThreeDs) {
         // XXX save transmission threed
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
@@ -149,7 +149,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         session.saveDocument(doc);
     }
 
-    protected void saveNewThumbnail(DocumentModel doc, Blob transcodedVideo) {
+    protected void saveNewThumbnail(DocumentModel doc, Blob transmissionThreeD) {
         // XXX save blob as thumbnail on document model
 
         if (doc.isVersion()) {
@@ -164,9 +164,9 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
      *
      * @since 5.8
      */
-    protected void fireVideoConversionsDoneEvent(DocumentModel doc) {
+    protected void fireThreeDConversionsDoneEvent(DocumentModel doc) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        List<String> workIds = workManager.listWorkIds(CATEGORY_VIDEO_CONVERSION, null);
+        List<String> workIds = workManager.listWorkIds(CATEGORY_THREED_CONVERSION, null);
         String idPrefix = computeIdPrefix(repositoryName, docId);
         int worksCount = 0;
         for (String workId : workIds) {
@@ -179,7 +179,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         }
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
-        Event event = ctx.newEvent(THREED_CHANGED_EVENT);
+        Event event = ctx.newEvent(THREED_CONVERSIONS_DONE_EVENT);
         Framework.getLocalService(EventService.class).fireEvent(event);
     }
 
