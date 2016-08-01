@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
 /**
@@ -72,6 +74,8 @@ final class MarkLogicStateSerializer {
             } else {
                 result = Optional.of(serialize(key, state));
             }
+        } else if (value instanceof ListDiff) {
+            result = Optional.of(serialize(key, (ListDiff) value));
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> values = (List<Object>) value;
@@ -97,10 +101,36 @@ final class MarkLogicStateSerializer {
         return result;
     }
 
+    private static Element serialize(String key, ListDiff listDiff) {
+        Element diffParent = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
+
+        // diff serialization
+        Element diff = DocumentHelper.createElement(MarkLogicHelper.serializeKey("diff"));
+        if (listDiff.diff != null) {
+            for (Object object : listDiff.diff) {
+                serialize(key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, object == null ? "NULL" : object).ifPresent(
+                        diff::add);
+            }
+        }
+        diffParent.add(diff);
+
+        // rpush serialization
+        List<Object> rpush = listDiff.rpush;
+        if (rpush == null) {
+            rpush = Collections.emptyList();
+        }
+        diffParent.add(serialize("rpush", key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, rpush));
+        return diffParent;
+    }
+
     private static Element serialize(String key, List<Object> list) {
+        return serialize(key, key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, list);
+    }
+
+    private static Element serialize(String key, String itemKey, List<Object> list) {
         Element array = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
         for (Object object : list) {
-            serialize(key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, object).ifPresent(array::add);
+            serialize(itemKey, object).ifPresent(array::add);
         }
         return array;
     }
