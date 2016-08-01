@@ -287,10 +287,12 @@ public class TableReference extends AbstractReference {
     }
 
     public void removeLinksForSource(String sourceId, SQLSession session) throws DirectoryException {
+        maybeInitialize(session);
         removeLinksFor(sourceColumn, sourceId, session);
     }
 
     public void removeLinksForTarget(String targetId, SQLSession session) throws DirectoryException {
+        maybeInitialize(session);
         removeLinksFor(targetColumn, targetId, session);
     }
 
