@@ -37,8 +37,10 @@ public class SystemPathExistTester implements CommandTester {
     @Override
     public CommandTestResult test(CommandLineDescriptor cmdDescriptor) {
         String cmd = cmdDescriptor.getCommand();
+        String params = cmdDescriptor.getTestParametersString();
+        String[] cmdWithParams = (cmd + " " + params).split(" ");
         try {
-            Runtime.getRuntime().exec(new String[] { cmd });
+            Runtime.getRuntime().exec(cmdWithParams);
         } catch (IOException e) {
             return new CommandTestResult(
                     "command " + cmd + " not found in system path (descriptor " + cmdDescriptor + ")");
