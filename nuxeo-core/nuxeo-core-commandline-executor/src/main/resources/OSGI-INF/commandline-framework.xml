@@ -61,6 +61,11 @@
 
       - winCommand: command to execute specifically for windows. Use commandLine is WinCommand is null;
 
+      - testParameterString: the parameters to pass to the CommandTester. The CommandTester will run the command with
+      these params
+
+      - winTestParameterString: same as above but used in windows environments.
+
       - tester:  name of the CommandTester. The CommandTester defined in commandTester extension point. Default is
       SystemPathExistTester, which looks if the command is available in system Path.
 
@@ -74,6 +79,8 @@
           <commandLine>commandName</commandLine>
           <parameterString> -any -parameters '%specific' %parameters #{blobOrPath}</parameterString>
           <winParameterString> -any -parameters "%specific" %parameters " #{blobOrPath}</winParameterString>
+          <testParameterString> -any -parameters</testParameterString>
+          <winTestParameterString> -any -specific -windows -parameters</winTestParameterString>
           <installationDirective>You need to install commandName.</installationDirective>
         </command>
       </code>
