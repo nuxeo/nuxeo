@@ -757,10 +757,12 @@ public class Model {
             // also add the propname/* path for array elements
             if (pi.propertyType.isArray()) {
                 propertyInfoByPath.put(path + "/*", pi);
-                // pseudo-syntax with ending "#" to get to the pos column
-                String posPropertyName = propertyName + "#";
-                ModelProperty posPi = map.get(typeName).get(posPropertyName);
-                propertyInfoByPath.put(path + "#", posPi);
+                if (!supportsArrayColumns) {
+                    // pseudo-syntax with ending "#" to get to the pos column
+                    String posPropertyName = propertyName + "#";
+                    ModelProperty posPi = map.get(typeName).get(posPropertyName);
+                    propertyInfoByPath.put(path + "#", posPi);
+                }
             }
         }
         done.remove(typeName);
