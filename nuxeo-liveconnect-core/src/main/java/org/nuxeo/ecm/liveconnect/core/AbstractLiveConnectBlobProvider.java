@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -74,6 +75,10 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
 
     private static final char BLOB_KEY_SEPARATOR = ':';
 
+    static {
+        ComplexTypeJSONDecoder.registerBlobDecoder(new JSONLiveConnectBlobDecoder());
+    }
+
     /** Resource cache */
     private Cache cache;
 
@@ -89,7 +94,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
      */
     @Override
     public Blob readBlob(BlobInfo blobInfo) throws IOException {
-        return new SimpleManagedBlob(blobInfo);
+        return toBlob(toFileInfo(blobInfo.key));
     }
 
     /**
@@ -225,7 +230,13 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     }
 
     protected LiveConnectFileInfo toFileInfo(ManagedBlob blob) {
-        String key = blob.getKey();
+        return toFileInfo(blob.getKey());
+    }
+
+    /**
+     * @since 8.4
+     */
+    protected LiveConnectFileInfo toFileInfo(String key) {
         List<String> keyParts = Splitter.on(BLOB_KEY_SEPARATOR).splitToList(key);
         // According to buildBlobKey we have :
         // 0 - blobProviderId
