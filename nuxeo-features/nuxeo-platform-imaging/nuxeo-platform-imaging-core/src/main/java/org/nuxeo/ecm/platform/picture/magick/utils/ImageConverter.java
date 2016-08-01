@@ -20,11 +20,11 @@
 
 package org.nuxeo.ecm.platform.picture.magick.utils;
 
-import org.nuxeo.ecm.core.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandException;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.core.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
 import org.nuxeo.runtime.api.Framework;
 

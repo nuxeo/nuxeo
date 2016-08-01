@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.platform.picture.api",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core" })
 public class TestImageInfo {
 

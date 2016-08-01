@@ -36,7 +36,7 @@ public class TestWPD2TextConverter extends BaseConverterTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.commandline.executor");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
     }
 
     @Test

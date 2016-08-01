@@ -43,8 +43,8 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-    "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.platform.convert" })
+    "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.convert" })
 @LocalDeploy("org.nuxeo.ecm.platform.convert:test-command-line-converter-contrib.xml")
 public class TestCommandLineConverter {
 

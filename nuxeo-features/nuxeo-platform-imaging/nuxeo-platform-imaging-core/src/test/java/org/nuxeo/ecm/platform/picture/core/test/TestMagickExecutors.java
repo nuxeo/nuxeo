@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.commandline.executor" })
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/commandline-imagemagick-contrib.xml" })
 public class TestMagickExecutors {
 

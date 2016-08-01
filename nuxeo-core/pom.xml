@@ -26,7 +26,6 @@
     <module>nuxeo-core-io</module>
     <module>nuxeo-core-storage</module>
     <module>nuxeo-core-storage-sql</module>
-    <module>nuxeo-core-commandline-executor</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-cache</module>
     <module>nuxeo-core-convert</module>

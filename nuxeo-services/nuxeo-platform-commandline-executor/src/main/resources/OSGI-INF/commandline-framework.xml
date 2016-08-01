@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent">
+  <implementation class="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" />
+
+  <documentation>
+    The CommandLineExecutor component let you define command line call using the command extension point.
+    You can call those commands with your own arguments like blobs or properties. The result is available
+    in the ExecResult object.
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService" />
+  </service>
+
+  <extension-point name="environment">
+    <documentation>
+      Extension point to contribute environment configuration.
+
+      Available options are:
+      - name: comma-separated string attribute used as the environment parameters scope.
+      It can be empty to set environment parameters common to all commands, equal to a command name to set parameters
+      for that command only, or equal to a command line to set parameters common to all commands using that command line.
+      You can associate multiple commands using a comma as separator.
+
+      - workingDirectory: the Folder when command should be executed. Default is the system temporary folder.
+
+      - parameters/parameter
+
+      @author Thierry Delprat (td@nuxeo.com)
+
+      CommandLine contribution
+      example:
+      <code>
+        <environment name="aCommandName,aCommandLine">
+          <parameters>
+            <parameter name="SOME_VAR">some value</parameter>
+          </parameters>
+        </environment>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor" />
+  </extension-point>
+
+  <extension-point name="command">
+    <documentation>
+      Extension point to contribute new commands.
+
+      Available options are:
+      - name: string attribute used as the command identifier.
+
+      - enabled: boolean attribute, command is unavailable if false.
+
+      - commandLine: the command to execute.
+
+      - parameterString: the parameters to pass to the command. Parameters like #{parameter} represents a file. So you
+      can use either a path to a file or a blob. Parameters like %parameters are literals.
+
+      - winParameterString: Same as above but used in windows environments. For instance you have to use double quotes
+      in windows instead of simple quote.
+
+      - winCommand: command to execute specifically for windows. Use commandLine is WinCommand is null;
+
+      @since 8.4
+      - testParameterString: the parameters to pass to the CommandTester. The CommandTester will run the command with
+      these params
+
+      @since 8.4
+      - winTestParameterString: same as above but used in windows environments.
+
+      - tester:  name of the CommandTester. The CommandTester defined in commandTester extension point. Default is
+      DefaultCommandTester, which looks if the command is available.
+
+      - readOutput: Boolean, default is true. If false, command output is never read.
+
+      - installationDirective: a String that is returned instead of the usual output when the command isn't available.
+
+      CommandLine contribution example:
+      <code>
+        <command name="myCommand" enabled="true">
+          <commandLine>commandName</commandLine>
+          <parameterString> -any -parameters '%specific' %parameters #{blobOrPath}</parameterString>
+          <winParameterString> -any -parameters "%specific" %parameters " #{blobOrPath}</winParameterString>
+          <testParameterString> -any -parameters</testParameterString>
+          <winTestParameterString> -any -specific -windows -parameters</winTestParameterString>
+          <installationDirective>You need to install commandName.</installationDirective>
+        </command>
+      </code>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor" />
+  </extension-point>
+
+  <extension-point name="commandTester">
+    <documentation>
+      Extension point to contribute new command testers.
+      It's a class that provides a way to test if a command is installed on the target server OS.
+
+      Available options are:
+      -name: the name of the commandTester.
+
+      -class: the class
+      implementing CommandTester interface.
+
+      Command tester contribution example:
+      <code>
+        <commandTester name="DefaultCommandTester"
+          class="org.nuxeo.ecm.core.commandline.executor.service.cmdtesters.DefaultCommandTester">
+        </commandTester>
+      </code>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.commandline.executor.service.CommandTesterDescriptor" />
+  </extension-point>
+
+</component>

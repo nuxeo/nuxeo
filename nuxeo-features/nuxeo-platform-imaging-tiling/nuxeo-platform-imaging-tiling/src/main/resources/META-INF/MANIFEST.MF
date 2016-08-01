@@ -11,4 +11,4 @@ Nuxeo-Component: OSGI-INF/pictures-tiles-framework.xml,
  OSGI-INF/pictures-tiles-adapter-contrib.xml,
  OSGI-INF/restAPI-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
- org.nuxeo.ecm.core.commandline.executor
+ org.nuxeo.ecm.platform.commandline.executor

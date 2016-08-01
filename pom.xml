@@ -518,11 +518,6 @@
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-commandline-executor</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
 
       <!-- Nuxeo Services -->
       <dependency>
@@ -545,6 +540,11 @@
         <artifactId>nuxeo-platform-api-test</artifactId>
         <version>${nuxeo.services.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-commandline-executor</artifactId>
+        <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

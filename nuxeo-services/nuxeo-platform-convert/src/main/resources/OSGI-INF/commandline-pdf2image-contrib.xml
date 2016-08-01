@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.convert.commandexecutor.imagemagick">
 
-  <require>org.nuxeo.ecm.core.commandline.executor.service.defaultContrib</require>
-  <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent"
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
 
     <command name="pdftoimage" enabled="true">

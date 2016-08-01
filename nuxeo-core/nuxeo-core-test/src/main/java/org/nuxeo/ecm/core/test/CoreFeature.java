@@ -80,7 +80,6 @@ import com.google.inject.Provider;
         "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
-        "org.nuxeo.ecm.core.commandline.executor", //
         "org.nuxeo.ecm.core.storage", //
         "org.nuxeo.ecm.core.storage.sql", //
         "org.nuxeo.ecm.core.storage.sql.test", //

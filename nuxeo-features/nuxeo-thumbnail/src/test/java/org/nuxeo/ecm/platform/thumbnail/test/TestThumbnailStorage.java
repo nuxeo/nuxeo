@@ -52,7 +52,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail", //
-        "org.nuxeo.ecm.core.commandline.executor", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
         "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.url.core", //
         "org.nuxeo.ecm.platform.web.common" //

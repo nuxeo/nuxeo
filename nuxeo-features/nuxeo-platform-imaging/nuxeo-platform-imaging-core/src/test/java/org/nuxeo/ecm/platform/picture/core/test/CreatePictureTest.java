@@ -50,7 +50,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Features({ CoreFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.server",
         "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 public class CreatePictureTest {
 

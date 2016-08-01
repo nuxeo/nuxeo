@@ -1,5 +1,4 @@
-Export-Package: org.nuxeo.ecm.core.convert.plugins.text.extractors,
- org.nuxeo.ecm.core.convert.plugins
+Export-Package: org.nuxeo.ecm.core.convert.plugins.text.extractors
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
@@ -9,8 +8,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
- OSGI-INF/commandline-pdf2text-contrib.xml
+Nuxeo-Component: OSGI-INF/convert-service-contrib.xml
 Import-Package: javax.mail,
  javax.mail.internet,
  javax.xml.parsers,

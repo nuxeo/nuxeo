@@ -50,7 +50,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.core.commandline.executor",
+@Deploy({ "org.nuxeo.ecm.platform.thumbnail", "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml" })
 public class TestThumbnailFactories {

@@ -56,7 +56,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert" })
 @LocalDeploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-listeners-override.xml")

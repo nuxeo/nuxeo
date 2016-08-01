@@ -56,7 +56,7 @@ public class TestService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.platform.pictures.tiles", "OSGI-INF/pictures-tiles-framework.xml");
-        deployBundle("org.nuxeo.ecm.core.commandline.executor");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
 
         deployContrib("org.nuxeo.ecm.platform.picture.core", "OSGI-INF/commandline-imagemagick-contrib.xml");
         PictureTilingComponent.getCache().clear();

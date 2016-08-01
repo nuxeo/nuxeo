@@ -39,7 +39,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.commandline.executor");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployContrib("org.nuxeo.ecm.platform.picture.core", "OSGI-INF/commandline-imagemagick-contrib.xml");
     }
 

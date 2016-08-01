@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.picture.commandline.imagemagick">
 
-  <require>org.nuxeo.ecm.core.commandline.executor.service.defaultContrib</require>
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
 
-  <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent"
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
     point="command">
 
     <command name="identify" enabled="true">

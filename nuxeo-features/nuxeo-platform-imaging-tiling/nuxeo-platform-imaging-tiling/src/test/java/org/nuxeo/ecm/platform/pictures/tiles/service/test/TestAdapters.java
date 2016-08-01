@@ -55,7 +55,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api", //
-        "org.nuxeo.ecm.core.commandline.executor", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
         "org.nuxeo.ecm.platform.picture.api", //
         "org.nuxeo.ecm.platform.picture.core", //
 })

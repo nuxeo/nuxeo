@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
     point="converter">
 
-    <converter name="testCommandLineConverter" class="org.nuxeo.ecm.core.convert.plugins.CommandLineConverter">
+    <converter name="testCommandLineConverter" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <sourceMimeType>application/pdf</sourceMimeType>
       <destinationMimeType>image/jpeg</destinationMimeType>
       <destinationMimeType>image/png</destinationMimeType>
