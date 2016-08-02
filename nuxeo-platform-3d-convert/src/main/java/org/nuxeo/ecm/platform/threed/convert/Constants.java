@@ -48,4 +48,18 @@ public class Constants {
     public static final String SCRIPTS_DIRECTORY = "scripts";
 
     public static final String SCRIPTS_PIPELINE_DIRECTORY = "pipeline";
+
+    public static final String RENDER_3D_CONVERTER = "render3D";
+
+    public static final String COLLADA2GLTF_CONVERTER = "dae2gltf";
+
+    public static final String COLLADA_CONVERTER = "colladaConversion";
+
+    public static final String LOD_CONVERTER = "lodConversion";
+
+    public static final String BATCH_CONVERTE = "batchConversion";
+
+    public static final String BLENDER_PIPELINE_COMMAND = "blender_pipeline";
+
+    public static final String COLLADA2GLTF_COMMAND = "collada2gltlf";
 }

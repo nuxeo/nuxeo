@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo 3D Convert
-Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.convert
+Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.convert;singleton=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: plugin
 Bundle-Category: core,stateful

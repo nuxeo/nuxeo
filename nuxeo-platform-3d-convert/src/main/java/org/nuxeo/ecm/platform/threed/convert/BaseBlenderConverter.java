@@ -145,8 +145,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             // Deal with operators and script files (blender and pipeline)
             String operators = initParameters.get(OPERATORS_PARAMETER);
-            params.addNamedParameter(OPERATORS_PARAMETER, operators);
             List<String> operatorsList = Arrays.asList(operators.split(" "));
+            params.addNamedParameter(OPERATORS_PARAMETER, operatorsList);
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
 

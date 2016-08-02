@@ -1,37 +1,15 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.threed.convert.commandline">
 
-    <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+    <require>org.nuxeo.ecm.core.commandline.executor.service.defaultContrib</require>
 
-    <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent"
                point="command">
-        <command name="blender_render" enabled="true">
-            <commandLine>blender -b</commandLine>
-            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import render -width
-                #{width}
-                -height #{height}
-            </parameterString>
-            <installationDirective>You need to install blender (https://www.blender.org/download/)
-            </installationDirective>
-        </command>
-        <command name="blender_dae" enabled="true">
-            <commandLine>blender -b</commandLine>
-            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import convert
-            </parameterString>
-            <installationDirective>You need to install blender (https://www.blender.org/download/)
-            </installationDirective>
-        </command>
-        <command name="blender_lod_dae" enabled="true">
-            <commandLine>blender -b</commandLine>
-            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores import lod convert -lods
-                #{lod}
-            </parameterString>
-            <installationDirective>You need to install blender (https://www.blender.org/download/)
-            </installationDirective>
-        </command>
+
         <command name="blender_pipeline" enabled="true">
-            <commandLine>blender -b</commandLine>
-            <parameterString>-P #{script} -- -input #{inFilePath} -outdir #{outDir} -operatores #{operators} -lods
+            <commandLine>blender</commandLine>
+            <testParameterString>-b</testParameterString>
+            <parameterString>-b -P #{script} -- -input #{inFilePath} -outdir #{outDir} -operators #{operators} -lods
                 #{lods} -width #{width} -height #{height}
             </parameterString>
             <installationDirective>You need to install blender (https://www.blender.org/download/)

@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 
 import java.io.File;
 import java.io.Serializable;
@@ -42,11 +43,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.WIDTH_PARAMETER;
  *
  * @since 8.4
  */
-public class RenderConverter extends BaseBlenderConverter {
-    @Override
-    public void init(ConverterDescriptor converterDescriptor) {
-
-    }
+public class RenderConverter extends BaseBlenderConverter implements ExternalConverter {
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
@@ -58,9 +55,16 @@ public class RenderConverter extends BaseBlenderConverter {
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
-
-        cmdStringParams.put(WIDTH_PARAMETER, String.valueOf(parameters.get(WIDTH_PARAMETER)));
-        cmdStringParams.put(HEIGHT_PARAMETER, String.valueOf(parameters.get(HEIGHT_PARAMETER)));
+        String width = initParameters.get(WIDTH_PARAMETER);
+        if (parameters.containsKey(WIDTH_PARAMETER)) {
+            width = String.valueOf(parameters.get(WIDTH_PARAMETER));
+        }
+        String height = initParameters.get(HEIGHT_PARAMETER);
+        if (parameters.containsKey(HEIGHT_PARAMETER)) {
+            height = String.valueOf(parameters.get(HEIGHT_PARAMETER));
+        }
+        cmdStringParams.put(WIDTH_PARAMETER, width);
+        cmdStringParams.put(HEIGHT_PARAMETER, height);
 
         return cmdStringParams;
     }
