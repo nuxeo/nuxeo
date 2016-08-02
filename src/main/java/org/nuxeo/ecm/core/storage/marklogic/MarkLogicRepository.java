@@ -82,6 +82,7 @@ import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
+import com.marklogic.xcc.ModuleInvoke;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.Session;
 import com.marklogic.xcc.exceptions.RequestException;
@@ -248,12 +249,19 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public void updateState(String id, StateDiff diff) {
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        PatchHandle patch = new MarkLogicStateUpdateBuilder(docManager::newPatchBuilder).apply(diff);
+        String patch = MarkLogicStateSerializer.serialize(diff);
         if (log.isTraceEnabled()) {
-            log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
+            log.trace("MarkLogic: UPDATE " + id + ": " + patch);
         }
-        docManager.patch(ID_FORMATTER.apply(id), patch);
+        try (Session session = xccContentSource.newSession()) {
+            ModuleInvoke request = session.newModuleInvoke("/ext/patch.xqy");
+            request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
+            request.setNewStringVariable("patch-string", patch);
+            // ResultSequence will be closed by Session close
+            session.submitRequest(request);
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
     }
 
     @Override
