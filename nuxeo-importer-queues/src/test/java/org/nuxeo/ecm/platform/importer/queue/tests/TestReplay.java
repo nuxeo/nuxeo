@@ -88,7 +88,7 @@ public class TestReplay {
         // When the importer launches the import
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
 
-        // Commit for visibility with repeated read isolation (mysql)
+        // Commit for visibility with repeatable read isolation (mysql)
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
