@@ -174,7 +174,11 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             if (strParams != null) {
                 for (String paramName : strParams.keySet()) {
-                    params.addNamedParameter(paramName, strParams.get(paramName));
+                    if (LODS_PARAMETER.equals(paramName)) {
+                        params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
+                    } else {
+                        params.addNamedParameter(paramName, strParams.get(paramName));
+                    }
                 }
             }
 

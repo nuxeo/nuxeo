@@ -31,11 +31,11 @@ import org.nuxeo.ecm.core.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.core.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -43,7 +43,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PIPELINE_COMMAND;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_COMMAND;
 
@@ -59,19 +63,25 @@ public class ThreeDConvertersTest {
 
     public static final Log log = LogFactory.getLog(ThreeDConvertersTest.class);
 
-    public static final String TEST_MODEL = "suzane";
+    protected static final String TEST_MODEL = "suzane";
+
+    @Inject
+    protected ConversionService cs;
+
+    @Inject
+    protected CommandLineExecutorService commandLES;
 
     protected static BlobHolder getTestThreeDBlobs() throws IOException {
         List<Blob> blobs = new ArrayList<>();
         Blob blob = null;
         try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".obj")) {
-            Assert.assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".obj"), is);
+            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".obj"), is);
             blob = Blobs.createBlob(is);
             blob.setFilename(TEST_MODEL + ".obj");
             blobs.add(blob);
         }
         try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".mtl")) {
-            Assert.assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".mtl"), is);
+            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".mtl"), is);
             blob = Blobs.createBlob(is);
             blob.setFilename(TEST_MODEL + ".mtl");
             blobs.add(blob);
@@ -82,7 +92,7 @@ public class ThreeDConvertersTest {
     protected static BlobHolder getTestColladaBlob() throws IOException {
         List<Blob> blobs = new ArrayList<>();
         try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".dae")) {
-            Assert.assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".dae"), is);
+            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".dae"), is);
             Blob blob = Blobs.createBlob(is);
             blob.setFilename(TEST_MODEL + ".dae");
             blobs.add(blob);
@@ -91,52 +101,61 @@ public class ThreeDConvertersTest {
     }
 
     protected BlobHolder applyConverter(String converter, BlobHolder blobs) throws Exception {
-        ConversionService cs = Framework.getService(ConversionService.class);
-        Assert.assertNotNull(cs.getRegistredConverters().contains(converter));
+        assertNotNull(cs.getRegistredConverters().contains(converter));
         Map<String, Serializable> params = new HashMap<>();
         BlobHolder result = cs.convert(converter, blobs, params);
-        Assert.assertNotNull(result);
+        assertNotNull(result);
         return result;
     }
 
     @Test
     public void testBlenderPipelineCommand() throws Exception {
-        CommandLineExecutorService commandLES = Framework.getService(CommandLineExecutorService.class);
-        Assert.assertNotNull(commandLES);
         CommandAvailability ca = commandLES.getCommandAvailability(BLENDER_PIPELINE_COMMAND);
-        Assert.assertTrue("blender_pipeline is not available, skipping test", ca.isAvailable());
+        assertTrue("blender_pipeline is not available, skipping test", ca.isAvailable());
     }
 
     @Test
     public void testDae2GltfCommand() throws Exception {
-        CommandLineExecutorService commandLES = Framework.getService(CommandLineExecutorService.class);
-        Assert.assertNotNull(commandLES);
         CommandAvailability ca = commandLES.getCommandAvailability(COLLADA2GLTF_COMMAND);
-        Assert.assertTrue("dae2gltf is not available, skipping test", ca.isAvailable());
+        assertTrue("dae2gltf is not available, skipping test", ca.isAvailable());
     }
 
     @Test
     public void testRenderConverter() throws Exception {
         BlobHolder result = applyConverter(Constants.RENDER_3D_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        Assert.assertEquals(1, blobs.size());
-        Assert.assertEquals("render-100.png", blobs.get(0).getFilename());
+        assertEquals(1, blobs.size());
+        assertEquals("render-100.png", blobs.get(0).getFilename());
     }
 
     @Test
     public void testCollada2glTFConverter() throws Exception {
         BlobHolder result = applyConverter(Constants.COLLADA2GLTF_CONVERTER, getTestColladaBlob());
         List<Blob> blobs = result.getBlobs();
-        Assert.assertEquals(1, blobs.size());
-        Assert.assertEquals(TEST_MODEL + ".gltf", blobs.get(0).getFilename());
+        assertEquals(1, blobs.size());
+        assertEquals(TEST_MODEL + ".gltf", blobs.get(0).getFilename());
     }
 
     @Test
     public void testColladaConverter() throws Exception {
         BlobHolder result = applyConverter(Constants.COLLADA_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        Assert.assertEquals(1, blobs.size());
-        Assert.assertEquals("conversion-100.dae", blobs.get(0).getFilename());
+        assertEquals(1, blobs.size());
+        assertEquals("conversion-100.dae", blobs.get(0).getFilename());
     }
 
+    @Test
+    public void testLODConverter() throws Exception {
+        BlobHolder result = applyConverter(Constants.LOD_CONVERTER, getTestThreeDBlobs());
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(3, blobs.size());
+        List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
+        assertTrue(fileNames.containsAll(new ArrayList<String>() {
+            {
+                add("conversion-3.dae");
+                add("conversion-33.dae");
+                add("conversion-11.dae");
+            }
+        }));
+    }
 }
