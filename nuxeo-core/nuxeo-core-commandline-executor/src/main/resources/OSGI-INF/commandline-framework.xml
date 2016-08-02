@@ -61,9 +61,11 @@
 
       - winCommand: command to execute specifically for windows. Use commandLine is WinCommand is null;
 
+      @since 8.4
       - testParameterString: the parameters to pass to the CommandTester. The CommandTester will run the command with
       these params
 
+      @since 8.4
       - winTestParameterString: same as above but used in windows environments.
 
       - tester:  name of the CommandTester. The CommandTester defined in commandTester extension point. Default is

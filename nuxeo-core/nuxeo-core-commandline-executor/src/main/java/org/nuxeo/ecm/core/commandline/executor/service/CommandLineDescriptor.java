@@ -53,12 +53,18 @@ public class CommandLineDescriptor implements Serializable {
     @XNode("parameterString")
     protected String parameterString = "";
 
+    /*
+     * @since 8.4
+     */
     @XNode("testParameterString")
     protected String testParameterString = "";
 
     @XNode("winParameterString")
     protected String winParameterString;
 
+    /*
+     * @since 8.4
+     */
     @XNode("winTestParameterString")
     protected String winTestParameterString = "";
 
@@ -129,6 +135,9 @@ public class CommandLineDescriptor implements Serializable {
         return parameterString;
     }
 
+    /*
+     * @since 8.4
+     */
     public String getTestParametersString() {
         if (SystemUtils.IS_OS_WINDOWS && winTestParameterString != null) {
             return winTestParameterString;
