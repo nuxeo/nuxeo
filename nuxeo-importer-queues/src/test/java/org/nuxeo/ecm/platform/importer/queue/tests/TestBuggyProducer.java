@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.importer.queue.manager.RandomQueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -68,6 +69,10 @@ public class TestBuggyProducer {
 
         // When consumer are slow
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
+
+        // Commit for visibility with repeatable read isolation (mysql)
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // Then only buggy nodes should'nt be imported.
         DocumentModelList docs = session.query("SELECT * FROM File");
