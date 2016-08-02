@@ -1,6 +1,9 @@
 (function() {
 
   function escapeHTML(string) {
+    if (string == null) {
+      return string;
+    }
     // prototype.js allows us to use escapeHTML on strings
     return string.escapeHTML();
   }
