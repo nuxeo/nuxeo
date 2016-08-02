@@ -40,10 +40,6 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
  * @since 8.4
  */
 public class ColladaConverter extends BaseBlenderConverter {
-    @Override
-    public void init(ConverterDescriptor converterDescriptor) {
-
-    }
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)

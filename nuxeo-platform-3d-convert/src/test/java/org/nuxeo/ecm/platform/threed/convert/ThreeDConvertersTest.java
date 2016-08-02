@@ -131,4 +131,12 @@ public class ThreeDConvertersTest {
         Assert.assertEquals(TEST_MODEL + ".gltf", blobs.get(0).getFilename());
     }
 
+    @Test
+    public void testColladaConverter() throws Exception {
+        BlobHolder result = applyConverter(Constants.COLLADA_CONVERTER, getTestThreeDBlobs());
+        List<Blob> blobs = result.getBlobs();
+        Assert.assertEquals(1, blobs.size());
+        Assert.assertEquals("conversion-100.dae", blobs.get(0).getFilename());
+    }
+
 }
