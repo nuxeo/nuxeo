@@ -31,7 +31,6 @@
     <module>nuxeo-platform-notification</module>
     <module>preview</module>
     <module>nuxeo-platform-publisher</module>
-    <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-userworkspace</module>
     <module>nuxeo-platform-virtualnavigation</module>
     <module>nuxeo-automation</module>
