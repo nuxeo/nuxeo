@@ -102,7 +102,7 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
             if (!dirCreated) {
                 throw new ConversionException("Unable to create tmp dir for transformer output: " + outDir);
             }
-            Path outputFile = new Path(outPath.toString()).append(FilenameUtils.getBaseName(inputFile));
+            Path outputFile = new Path(outPath.toString()).append(FilenameUtils.getBaseName(inputFile) + ".gltf");
 
             params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outputFile.toString());
 
