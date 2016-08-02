@@ -40,10 +40,6 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.HEIGHT_PARAMETER;
  * @since 8.4
  */
 public class BatchConverter extends BaseBlenderConverter {
-    @Override
-    public void init(ConverterDescriptor converterDescriptor) {
-
-    }
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
@@ -55,11 +51,24 @@ public class BatchConverter extends BaseBlenderConverter {
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
+        String width = initParameters.get(WIDTH_PARAMETER);
+        if (parameters.containsKey(WIDTH_PARAMETER)) {
+            width = String.valueOf(parameters.get(WIDTH_PARAMETER));
+        }
+        String height = initParameters.get(HEIGHT_PARAMETER);
+        if (parameters.containsKey(HEIGHT_PARAMETER)) {
+            height = String.valueOf(parameters.get(HEIGHT_PARAMETER));
+        }
+        cmdStringParams.put(WIDTH_PARAMETER, width);
+        cmdStringParams.put(HEIGHT_PARAMETER, height);
 
-        cmdStringParams.put(LODS_PARAMETER, String.valueOf(parameters.get(LODS_PARAMETER)));
-        cmdStringParams.put(WIDTH_PARAMETER, String.valueOf(parameters.get(WIDTH_PARAMETER)));
-        cmdStringParams.put(HEIGHT_PARAMETER, String.valueOf(parameters.get(HEIGHT_PARAMETER)));
-
+        String lods = null;
+        if (parameters.containsKey(LODS_PARAMETER)) {
+            lods = (String) parameters.get(LODS_PARAMETER);
+        } else if (initParameters.containsKey(LODS_PARAMETER)) {
+            lods = initParameters.get(LODS_PARAMETER);
+        }
+        cmdStringParams.put(LODS_PARAMETER, lods);
         return cmdStringParams;
     }
 
@@ -68,8 +77,7 @@ public class BatchConverter extends BaseBlenderConverter {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
         List<String> conversions = getConversions(outDir);
         List<String> renders = getRenders(outDir);
-        String lods = cmdParams.getParameter(LODS_PARAMETER);
-        List<String> lodList = Arrays.asList(lods.split(" "));
+        List<String> lodList = cmdParams.getParameters().get(LODS_PARAMETER).getValues();
         if (conversions.isEmpty() || conversions.size() != lodList.size() + 1) { // + 1 for the original conversion
             throw new ConversionException("Unable get correct number of versions");
         }

@@ -57,7 +57,7 @@ public class Constants {
 
     public static final String LOD_CONVERTER = "lodConversion";
 
-    public static final String BATCH_CONVERTE = "batchConversion";
+    public static final String BATCH_CONVERTER = "batchConversion";
 
     public static final String BLENDER_PIPELINE_COMMAND = "blender_pipeline";
 

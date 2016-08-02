@@ -158,4 +158,22 @@ public class ThreeDConvertersTest {
             }
         }));
     }
+
+    @Test
+    public void testBatchConverter() throws Exception {
+        BlobHolder result = applyConverter(Constants.BATCH_CONVERTER, getTestThreeDBlobs());
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(5, blobs.size());
+        List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
+
+        assertTrue(fileNames.containsAll(new ArrayList<String>() {
+            {
+                add("conversion-3.dae");
+                add("conversion-33.dae");
+                add("conversion-11.dae");
+                add("conversion-100.dae");
+                add("render-100.png");
+            }
+        }));
+    }
 }
