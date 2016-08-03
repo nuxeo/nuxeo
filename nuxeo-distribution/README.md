@@ -1,6 +1,6 @@
 # About the Nuxeo Distribution module
 
-See <http://doc.nuxeo.org/> for full documentation.
+See <https://doc.nuxeo.com/> for full documentation.
 
 This module builds, packages and tests the Nuxeo products.
 
