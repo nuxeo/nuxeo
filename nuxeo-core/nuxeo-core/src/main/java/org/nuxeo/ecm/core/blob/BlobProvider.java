@@ -16,6 +16,7 @@
  * Contributors:
  *     Florent Guillaume
  *     Nelson Silva
+ *     Gabriel Barata
  */
 package org.nuxeo.ecm.core.blob;
 
@@ -198,6 +199,17 @@ public interface BlobProvider {
      */
     default BinaryManager getBinaryManager() {
         return null;
+    }
+
+    /**
+     * Checks if the blob provider performs external access control checks.
+     *
+     * @param blobInfo the blob information to be read
+     * @return {@code true} if the provider performs security checks before reading a blob, {@code false} otherwise
+     * @since 8.4
+     */
+    default boolean performsExternalAccessControl(BlobInfo blobInfo) {
+        return false;
     }
 
 }

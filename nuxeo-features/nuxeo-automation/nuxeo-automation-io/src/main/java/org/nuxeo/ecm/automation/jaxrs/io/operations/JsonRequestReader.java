@@ -71,6 +71,8 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     static {
         addInputResolver(new DocumentInputResolver());
         addInputResolver(new DocumentsInputResolver());
+        addInputResolver(new BlobInputResolver());
+        addInputResolver(new BlobsInputResolver());
     }
 
     public static void addInputResolver(InputResolver<?> resolver) {
