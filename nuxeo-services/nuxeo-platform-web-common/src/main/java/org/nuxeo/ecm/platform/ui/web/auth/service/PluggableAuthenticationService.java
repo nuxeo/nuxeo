@@ -355,7 +355,8 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public NuxeoAuthenticationPlugin getPlugin(String pluginName) {
-        if (authenticatorsDescriptors.containsKey(pluginName) && authenticatorsDescriptors.get(pluginName).getEnabled()) {
+        if (authenticatorsDescriptors.containsKey(pluginName)
+                && authenticatorsDescriptors.get(pluginName).getEnabled()) {
             if (authenticators.containsKey(pluginName)) {
                 return authenticators.get(pluginName);
             }
