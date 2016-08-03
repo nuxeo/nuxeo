@@ -101,6 +101,23 @@ public class ShallowDocumentModel implements DocumentModel {
         }
     }
 
+    public ShallowDocumentModel(String id, String repoName, String name, Path path, String type, boolean isFolder,
+            boolean isVersion, boolean isProxy, boolean isImmutable, ScopedMap contextData, Set<String> facets,
+            String lifecycleState) {
+        this.id=id;
+        this.repoName=repoName;
+        this.name=name;
+        this.path=path;
+        this.type=type;
+        this.isFolder=isFolder;
+        this.isVersion=isVersion;
+        this.isProxy=isProxy;
+        this.isImmutable=isImmutable;
+        this.contextData=contextData;
+        this.facets=facets;
+        this.lifecycleState=lifecycleState;
+    }
+
     @Override
     public String getId() {
         return id;

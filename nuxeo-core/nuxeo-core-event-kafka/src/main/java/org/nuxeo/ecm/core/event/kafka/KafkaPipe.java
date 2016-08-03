@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.kafka;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,11 +30,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
@@ -63,20 +56,13 @@ public class KafkaPipe extends AbstractEventBundlePipe<String> {
 
     protected KafkaConsumer<String, String> consumer;
 
-    protected static JsonFactory jsonFactory = null;
-
     protected boolean stop = false;
 
     public static List<String> DEBUG_MSG = new LinkedList<String>();
 
-    protected static JsonFactory getJsonFactory() {
-        if (jsonFactory == null) {
-            jsonFactory = new JsonFactory(new ObjectMapper());
-        }
-        return jsonFactory;
-    }
-
     protected ThreadPoolExecutor consumerTPE;
+
+    protected EventBundleJSONIO io = new EventBundleJSONIO();
 
     @Override
     public void initPipe(String name, Map<String, String> params) {
@@ -119,6 +105,7 @@ public class KafkaPipe extends AbstractEventBundlePipe<String> {
                 String message = record.value();
                 // XXX !
                 DEBUG_MSG.add(message);
+                EventBundle bundle = io.unmarshal(message);
             }
 
             @Override
@@ -156,31 +143,7 @@ public class KafkaPipe extends AbstractEventBundlePipe<String> {
 
     @Override
     protected String marshall(EventBundle events) {
-
-        StringWriter writer = new StringWriter();
-
-        try {
-            JsonGenerator jg = getJsonFactory().createJsonGenerator(writer);
-            jg.writeStartArray();
-            for (Event event : events) {
-                writeEvent(jg, event);
-            }
-            jg.writeEndArray();
-            jg.flush();
-            return writer.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected void writeEvent(JsonGenerator jg, Event event) throws JsonGenerationException, IOException {
-
-        jg.writeStartObject();
-        jg.writeStringField("eventName", event.getName());
-        jg.writeNumberField("dateTime", event.getTime());
-        jg.writeStringField("principal", event.getContext().getPrincipal().getName());
-        jg.writeEndObject();
-
+        return io.marshall(events);
     }
 
     @Override
