@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.event.kafka;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,7 +30,10 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.nuxeo.ecm.core.event.EventBundle;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
+import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
+import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.runtime.api.Framework;
 
@@ -57,8 +59,6 @@ public class KafkaPipe extends AbstractEventBundlePipe<String> {
     protected KafkaConsumer<String, String> consumer;
 
     protected boolean stop = false;
-
-    public static List<String> DEBUG_MSG = new LinkedList<String>();
 
     protected ThreadPoolExecutor consumerTPE;
 
@@ -103,9 +103,15 @@ public class KafkaPipe extends AbstractEventBundlePipe<String> {
 
             protected void process(ConsumerRecord<String, String> record) {
                 String message = record.value();
-                // XXX !
-                DEBUG_MSG.add(message);
+
                 EventBundle bundle = io.unmarshal(message);
+
+                // direct exec ?!
+                EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);
+                EventListenerList listeners = eventService.getListenerList();
+                List<EventListenerDescriptor> postCommitAsync = listeners.getEnabledAsyncPostCommitListenersDescriptors();
+
+                asyncExec.run(postCommitAsync, bundle);
             }
 
             @Override

@@ -34,7 +34,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ KafkaEventBusFeature.class })
-@LocalDeploy("org.nuxeo.ecm.core.event.kafka.test:test-KafkaPipes.xml")
+@LocalDeploy({"org.nuxeo.ecm.core.event.kafka.test:test-KafkaPipes.xml", "org.nuxeo.ecm.core.event.kafka.test:test-async-listeners.xml"})
 public class TestKafkaPipe {
 
     @Inject
@@ -49,8 +49,7 @@ public class TestKafkaPipe {
         eventService.fireEvent(ctx.newEvent("Test2"));
         eventService.waitForAsyncCompletion();
 
-        Assert.assertEquals(2, KafkaPipe.DEBUG_MSG.size());
-
+        Assert.assertEquals(2, DummyEventListener.events.size());
     }
 
 }
