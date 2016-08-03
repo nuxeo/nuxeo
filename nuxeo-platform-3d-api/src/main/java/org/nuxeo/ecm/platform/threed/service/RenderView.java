@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 8.4
  */
 @XObject("renderView")
-public class RenderView implements Cloneable, Comparable<RenderView> {
+public class RenderView implements Comparable<RenderView> {
 
     @XNode("@name")
     protected String name;
@@ -47,6 +47,15 @@ public class RenderView implements Cloneable, Comparable<RenderView> {
 
     @XNode("@renditionVisible")
     protected Boolean renditionVisible;
+
+    public RenderView(RenderView aRenderView) {
+        name = aRenderView.getName();
+        zenith = aRenderView.getZenith();
+        azimuth = aRenderView.getAzimuth();
+        enabled = aRenderView.isEnabled();
+        rendition = aRenderView.isRendition();
+        renditionVisible = aRenderView.isRenditionVisible();
+    }
 
     public String getName() {
         return name;
@@ -96,16 +105,8 @@ public class RenderView implements Cloneable, Comparable<RenderView> {
         this.renditionVisible = renditionVisible;
     }
 
-    @Override
-    public RenderView clone() throws CloneNotSupportedException {
-        RenderView clone = new RenderView();
-        clone.name = name;
-        clone.zenith = zenith;
-        clone.azimuth = azimuth;
-        clone.enabled = enabled;
-        clone.rendition = rendition;
-        clone.renditionVisible = renditionVisible;
-        return clone;
+    public void merge(RenderView src) {
+        enabled = src.isEnabled();
     }
 
     @Override

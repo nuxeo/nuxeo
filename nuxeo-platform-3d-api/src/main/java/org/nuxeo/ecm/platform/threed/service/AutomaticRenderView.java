@@ -28,13 +28,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 8.4
  */
 @XObject("automaticRenderView")
-public class AutomaticRenderView implements Cloneable, Comparable<AutomaticRenderView> {
+public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
 
     @XNode("@name")
     protected String name;
 
     @XNode("@enabled")
     protected Boolean enabled;
+
+    public AutomaticRenderView(AutomaticRenderView anAutomaticRenderView) {
+        name = anAutomaticRenderView.getName();
+        enabled = anAutomaticRenderView.isEnabled();
+    }
 
     public String getName() {
         return name;
@@ -53,15 +58,11 @@ public class AutomaticRenderView implements Cloneable, Comparable<AutomaticRende
     }
 
     @Override
-    public AutomaticRenderView clone() throws CloneNotSupportedException {
-        AutomaticRenderView clone = new AutomaticRenderView();
-        clone.name = name;
-        clone.enabled = enabled;
-        return clone;
-    }
-
-    @Override
     public int compareTo(AutomaticRenderView o) {
         return name.compareTo(o.getName());
+    }
+
+    public void merge(AutomaticRenderView src) {
+        enabled = src.isEnabled();
     }
 }

@@ -57,15 +57,11 @@ public class AutomaticLODContributionHandler extends ContributionFragmentRegistr
 
     @Override
     public AutomaticLOD clone(AutomaticLOD automaticLOD) {
-        try {
-            return automaticLOD.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e); // cannot happens.
-        }
+        return new AutomaticLOD(automaticLOD);
     }
 
     @Override
     public void merge(AutomaticLOD srcAutoLOD, AutomaticLOD dstAutoLOD) {
-        dstAutoLOD.setEnabled(srcAutoLOD.isEnabled());
+        dstAutoLOD.merge(srcAutoLOD);
     }
 }

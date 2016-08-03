@@ -57,16 +57,12 @@ public class AutomaticRenderViewContributionHandler extends ContributionFragment
 
     @Override
     public AutomaticRenderView clone(AutomaticRenderView orig) {
-        try {
-            return orig.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e); // cannot happens.
-        }
+        return new AutomaticRenderView(orig);
     }
 
     @Override
     public void merge(AutomaticRenderView src, AutomaticRenderView dst) {
-        dst.setEnabled(src.isEnabled());
+        dst.merge(src);
     }
 
 }

@@ -57,15 +57,11 @@ public class RenderViewContributionHandler extends ContributionFragmentRegistry<
 
     @Override
     public RenderView clone(RenderView orig) {
-        try {
-            return orig.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new Error(e); // cannot happens.
-        }
+        return new RenderView(orig);
     }
 
     @Override
     public void merge(RenderView src, RenderView dst) {
-        dst.setEnabled(src.isEnabled());
+        dst.merge(src);
     }
 }

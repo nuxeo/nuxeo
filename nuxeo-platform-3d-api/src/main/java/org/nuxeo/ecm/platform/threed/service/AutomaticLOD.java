@@ -28,13 +28,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 8.4
  */
 @XObject("automaticLOD")
-public class AutomaticLOD implements Cloneable, Comparable<AutomaticLOD> {
+public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     @XNode("@percentage")
     private float percentage = 100.0f;
 
     @XNode("@enabled")
     private boolean enabled = true;
+
+    public AutomaticLOD(AutomaticLOD anAutomaticLOD) {
+        percentage = anAutomaticLOD.getPercentage();
+        enabled = anAutomaticLOD.isEnabled();
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -53,12 +58,11 @@ public class AutomaticLOD implements Cloneable, Comparable<AutomaticLOD> {
     }
 
     @Override
-    public AutomaticLOD clone() throws CloneNotSupportedException {
-        return (AutomaticLOD) super.clone();
-    }
-
-    @Override
     public int compareTo(AutomaticLOD o) {
         return Float.valueOf(o.percentage).compareTo(percentage);
+    }
+
+    public void merge(AutomaticLOD src) {
+        enabled = src.isEnabled();
     }
 }
