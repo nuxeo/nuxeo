@@ -32,16 +32,21 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
 public class TestConverters extends SimpleConverterTest {
 
     @Inject
     protected ConversionService cs;
+
+    @Inject
+    protected CommandLineExecutorService cles;
 
     @Test
     public void testHTMLConverter() throws Exception {

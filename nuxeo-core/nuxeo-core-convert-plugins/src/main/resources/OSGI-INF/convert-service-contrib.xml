@@ -4,9 +4,12 @@
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
     point="converter">
 
-    <converter name="pdf2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter">
+    <converter name="pdf2text" class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
       <sourceMimeType>application/pdf</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">pdftotext</parameter>
+      </parameters>
     </converter>
 
     <converter name="xml2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XML2TextConverter">
