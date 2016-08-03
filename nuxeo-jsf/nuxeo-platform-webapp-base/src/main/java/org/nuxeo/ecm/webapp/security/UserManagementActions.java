@@ -35,6 +35,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -300,22 +302,49 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      * @since 8.2
      */
     public String updateProfilePassword() {
-        try {
-            UpdateProfilePasswordUnrestricted runner = new UpdateProfilePasswordUnrestricted(
-                    getDefaultRepositoryName(), currentUser.getName(), oldPassword,
-                    (String) selectedUser.getPropertyValue("user:password"));
-            runner.runUnrestricted();
-        } catch (NuxeoException reason) {
+
+        if (userManager.checkUsernamePassword(currentUser.getName(), oldPassword)) {
+            doAsSystemUser(new Runnable() {
+                @Override
+                public void run() {
+                    userManager.updateUser(selectedUser);
+                }
+
+            });
+        } else {
             String message = resourcesAccessor.getMessages().get("label.userManager.old.password.error");
             facesMessages.add(FacesMessage.SEVERITY_ERROR, message);
             return null;
         }
+
         String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
         facesMessages.add(FacesMessage.SEVERITY_INFO, message);
         detailsMode = DETAILS_VIEW_MODE;
         fireSeamEvent(USERS_LISTING_CHANGED);
 
         return null;
+    }
+
+    protected void doAsSystemUser(Runnable runnable) {
+        LoginContext loginContext;
+        try {
+            loginContext = Framework.login();
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
+        }
+
+        try {
+            runnable.run();
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (loginContext != null) {
+                    loginContext.logout();
+                }
+            } catch (LoginException e) {
+                throw new NuxeoException("Cannot log out system user", e);
+            }
+        }
     }
 
     public void deleteUser() {
@@ -327,8 +356,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     public void validateUserName(FacesContext context, UIComponent component, Object value) {
         if (!(value instanceof String) || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    "label.userManager.wrong.username"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "label.userManager.wrong.username"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -389,8 +418,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      * @since 5.9.2
      */
     private void throwValidationException(FacesContext context, String message, Object... messageArgs) {
-        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                message, messageArgs), null);
+        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                ComponentUtils.translate(context, message, messageArgs), null);
         throw new ValidatorException(fmessage);
     }
 
