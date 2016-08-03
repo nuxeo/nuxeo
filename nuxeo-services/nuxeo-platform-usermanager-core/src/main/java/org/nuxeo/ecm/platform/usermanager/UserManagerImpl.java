@@ -457,19 +457,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
-    @Override
-    public void updatePassword(String username, String oldPassword, String newPassword) {
-        if (checkUsernamePassword(username, oldPassword)) {
-            DocumentModel userModel = getUserModel(username);
-            try (Session userDir = dirService.open(userDirectoryName, null)) {
-                userModel.setProperty(userSchemaName, userDir.getPasswordField(), newPassword);
-            }
-            updateUser(userModel);
-            return;
-        }
-        throw new NuxeoException("Invalid old password");
-    }
-
     protected NuxeoPrincipal makeAnonymousPrincipal() {
         DocumentModel userEntry = makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
         // XXX: pass anonymous user groups, but they will be ignored
