@@ -197,7 +197,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
                     log.error("Unable to create session manager", e);
                 }
             } else {
-                sessionManagers.remove(smContrib.getName());
+                if (sessionManagers.containsKey(smContrib.getName())) {
+                    sessionManagers.remove(smContrib.getName());
+                }
             }
         } else if (extensionPoint.equals(EP_SPECIFIC_CHAINS)) {
             SpecificAuthChainDescriptor desc = (SpecificAuthChainDescriptor) contribution;
@@ -207,7 +209,14 @@ public class PluggableAuthenticationService extends DefaultComponent {
             if (preFiltersDesc == null) {
                 preFiltersDesc = new HashMap<String, AuthPreFilterDescriptor>();
             }
-            preFiltersDesc.put(desc.getName(), desc);
+
+            if (desc.enabled) {
+                preFiltersDesc.put(desc.getName(), desc);
+            } else {
+                if (preFiltersDesc.containsKey(desc.getName())) {
+                    preFiltersDesc.remove(desc.getName());
+                }
+            }
         } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
             LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
             loginScreenConfigRegistry.addContribution(newConfig);
