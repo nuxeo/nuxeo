@@ -1,7 +1,7 @@
 if args.outdir == None or args.width == None or args.height == None:
     sys.exit()
 
-outfile = args.outdir + "/render-" + str(lod) + ".png"
+outfile = args.outdir + "/render-" + str(lod) + "-" + str(coords[0]) + "-" + str(coords[1]) + ".png"
 width = args.width
 height = args.height
 # get the meshes

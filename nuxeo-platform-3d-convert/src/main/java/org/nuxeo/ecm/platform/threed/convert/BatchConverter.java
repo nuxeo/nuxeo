@@ -81,7 +81,8 @@ public class BatchConverter extends BaseBlenderConverter {
         if (conversions.isEmpty() || conversions.size() != lodList.size() + 1) { // + 1 for the original conversion
             throw new ConversionException("Unable get correct number of versions");
         }
-        if (renders.isEmpty() || renders.size() != 1) {
+        List<String> coordList = cmdParams.getParameters().get(COORDS_PARAMETER).getValues();
+        if (renders.isEmpty() || renders.size() != coordList.size()) {
             throw new ConversionException("Unable get result render");
         }
 

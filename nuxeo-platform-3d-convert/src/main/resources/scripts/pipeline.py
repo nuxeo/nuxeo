@@ -10,7 +10,7 @@ def sphericalCoords(s):
     try:
         if s == "":
             return 0, 0
-        zenith, azimuth = map(float, s.split(','))
+        zenith, azimuth = map(int, s.split(','))
         return zenith, azimuth
     except:
         raise argparse.ArgumentTypeError("Coordinates must be zenith,azimuth")

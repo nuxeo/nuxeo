@@ -123,7 +123,7 @@ public class ThreeDConvertersTest {
         BlobHolder result = applyConverter(RENDER_3D_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
-        assertEquals("render-100.png", blobs.get(0).getFilename());
+        assertEquals("render-100-0-0.png", blobs.get(0).getFilename());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class ThreeDConvertersTest {
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(5, blobs.size());
+        assertEquals(6, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
 
         assertTrue(fileNames.containsAll(new ArrayList<String>() {
@@ -170,7 +170,8 @@ public class ThreeDConvertersTest {
                 add("conversion-33.dae");
                 add("conversion-11.dae");
                 add("conversion-100.dae");
-                add("render-100.png");
+                add("render-100-0-0.png");
+                add("render-100-90-0.png");
             }
         }));
     }
