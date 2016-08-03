@@ -32,6 +32,11 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-commandline-executor</artifactId>
+      <version>8.4-SNAPSHOT</version>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
