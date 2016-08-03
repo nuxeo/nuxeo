@@ -34,13 +34,13 @@ public class RenderView implements Comparable<RenderView> {
     protected String name;
 
     @XNode("@zenith")
-    protected Float zenith = 0f;
+    protected Integer zenith;
 
     @XNode("@azimuth")
-    protected Float azimuth = 0f;
+    protected Integer azimuth;
 
     @XNode("@enabled")
-    protected Boolean enabled = true;
+    protected Boolean enabled;
 
     @XNode("@rendition")
     protected Boolean rendition;
@@ -48,13 +48,13 @@ public class RenderView implements Comparable<RenderView> {
     @XNode("@renditionVisible")
     protected Boolean renditionVisible;
 
-    public RenderView(RenderView aRenderView) {
-        name = aRenderView.getName();
-        zenith = aRenderView.getZenith();
-        azimuth = aRenderView.getAzimuth();
-        enabled = aRenderView.isEnabled();
-        rendition = aRenderView.isRendition();
-        renditionVisible = aRenderView.isRenditionVisible();
+    public RenderView(RenderView other) {
+        name = other.name;
+        zenith = other.zenith;
+        azimuth = other.azimuth;
+        enabled = other.enabled;
+        rendition = other.rendition;
+        renditionVisible = other.renditionVisible;
     }
 
     public String getName() {
@@ -65,48 +65,62 @@ public class RenderView implements Comparable<RenderView> {
         this.name = name;
     }
 
-    public Float getZenith() {
+    public Integer getZenith() {
         return zenith;
     }
 
-    public void setZenith(Float zenith) {
+    public void setZenith(Integer zenith) {
         this.zenith = zenith;
     }
 
-    public Float getAzimuth() {
+    public Integer getAzimuth() {
         return azimuth;
     }
 
-    public void setAzimuth(Float azimuth) {
+    public void setAzimuth(Integer azimuth) {
         this.azimuth = azimuth;
     }
 
-    public Boolean isEnabled() {
-        return enabled;
+    public boolean isEnabled() {
+        return (enabled == null) || enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public Boolean isRendition() {
-        return rendition;
+    public boolean isRendition() {
+        return (rendition == null) || rendition;
     }
 
-    public void setRendition(Boolean rendition) {
+    public void setRendition(boolean rendition) {
         this.rendition = rendition;
     }
 
-    public Boolean isRenditionVisible() {
-        return renditionVisible;
+    public boolean isRenditionVisible() {
+        return (renditionVisible == null) || renditionVisible;
     }
 
-    public void setRenditionVisible(Boolean renditionVisible) {
+    public void setRenditionVisible(boolean renditionVisible) {
         this.renditionVisible = renditionVisible;
     }
 
     public void merge(RenderView src) {
-        enabled = src.isEnabled();
+        if (src.enabled != null) {
+            enabled = src.enabled;
+        }
+        if (src.rendition != null) {
+            rendition = src.rendition;
+        }
+        if (src.renditionVisible != null) {
+            renditionVisible = src.renditionVisible;
+        }
+        if (src.zenith != null) {
+            zenith = src.zenith;
+        }
+        if (src.azimuth != null) {
+            azimuth = src.azimuth;
+        }
     }
 
     @Override

@@ -36,9 +36,9 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
     @XNode("@enabled")
     protected Boolean enabled;
 
-    public AutomaticRenderView(AutomaticRenderView anAutomaticRenderView) {
-        name = anAutomaticRenderView.getName();
-        enabled = anAutomaticRenderView.isEnabled();
+    public AutomaticRenderView(AutomaticRenderView other) {
+        name = other.name;
+        enabled = other.enabled;
     }
 
     public String getName() {
@@ -49,20 +49,22 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
         this.name = name;
     }
 
-    public Boolean isEnabled() {
-        return enabled;
+    public boolean isEnabled() {
+        return (enabled == null) || enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
     @Override
     public int compareTo(AutomaticRenderView o) {
-        return name.compareTo(o.getName());
+        return name.compareTo(o.name);
     }
 
     public void merge(AutomaticRenderView src) {
-        enabled = src.isEnabled();
+        if (src.enabled != null) {
+            enabled = src.enabled;
+        }
     }
 }

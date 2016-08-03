@@ -31,38 +31,40 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     @XNode("@percentage")
-    private float percentage = 100.0f;
+    protected Integer percentage = 100;
 
     @XNode("@enabled")
-    private boolean enabled = true;
+    protected Boolean enabled;
 
-    public AutomaticLOD(AutomaticLOD anAutomaticLOD) {
-        percentage = anAutomaticLOD.getPercentage();
-        enabled = anAutomaticLOD.isEnabled();
+    public AutomaticLOD(AutomaticLOD other) {
+        percentage = other.percentage;
+        enabled = other.enabled;
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return (enabled == null) || enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public float getPercentage() {
+    public Integer getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(float percentage) {
+    public void setPercentage(Integer percentage) {
         this.percentage = percentage;
     }
 
     @Override
     public int compareTo(AutomaticLOD o) {
-        return Float.valueOf(o.percentage).compareTo(percentage);
+        return o.percentage.compareTo(percentage);
     }
 
     public void merge(AutomaticLOD src) {
-        enabled = src.isEnabled();
+        if (src.enabled != null) {
+            enabled = src.enabled;
+        }
     }
 }
