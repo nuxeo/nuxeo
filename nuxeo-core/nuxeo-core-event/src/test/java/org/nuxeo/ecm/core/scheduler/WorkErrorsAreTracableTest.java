@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.event" })
-@LogCaptureFeature.FilterWith(WorkErrorsAreTracableTest.ChainFilter.class)
+@LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.core.work.api.WorkSchedulePath")
 public class WorkErrorsAreTracableTest {
 
     protected static class Fail extends AbstractWork {
@@ -81,16 +81,6 @@ public class WorkErrorsAreTracableTest {
 
     }
 
-    public static class ChainFilter implements LogCaptureFeature.Filter {
-
-        @Override
-        public boolean accept(LoggingEvent event) {
-            String category = event.getLogger().getName();
-            return WorkSchedulePath.class.getName().equals(category);
-        }
-
-    }
-
     @Inject
     protected WorkManager manager;
 
@@ -127,7 +117,9 @@ public class WorkErrorsAreTracableTest {
     }
 
     protected void assertIsRootWork(Work work, WorkSchedulePath.Trace error) {
-        for (Throwable cause = error.getCause(); cause != null && cause != error; error = (WorkSchedulePath.Trace) cause) {;
+        for (Throwable cause = error.getCause(); cause != null
+                && cause != error; error = (WorkSchedulePath.Trace) cause) {
+            ;
         }
         assertEquals(work.getSchedulePath(), error.path());
     }

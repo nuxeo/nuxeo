@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ package org.nuxeo.ecm.automation.core;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +45,7 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LogCaptureFeature.FilterWith(TestRestoreInputFromScriptAndLogOperation.MyLogFilter.class)
+@LogCaptureFeature.FilterOn(loggerName = "loggerName", logLevel =  "ERROR")
 public class TestRestoreInputFromScriptAndLogOperation {
     @Inject
     AutomationService service;
@@ -57,21 +55,6 @@ public class TestRestoreInputFromScriptAndLogOperation {
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
-
-    public static class MyLogFilter implements LogCaptureFeature.Filter {
-
-        @Override
-        public boolean accept(LoggingEvent event) {
-            if (!event.getLevel().equals(Level.ERROR)) {
-                return false;
-            }
-            if (!event.getLoggerName().equals("loggerName")) {
-                return false;
-            }
-            return true;
-        }
-
-    }
 
     @Test
     public void testRestoreInput() throws Exception {

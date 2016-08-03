@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,18 +28,22 @@ import java.util.List;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.junit.runners.model.FrameworkMethod;
 
+import com.google.common.base.Strings;
+
 /**
- * Test feature to capture from a log4j appender to check that some log4j calls have been correctly called.</br> On a
- * test class or a test method using this feature, a custom {@link LogCaptureFeature.Filter} class is to be provided
- * with the annotation {@link LogCaptureFeature.FilterWith} to select the log events to capture.</br> A
- * {@link LogCaptureFeature.Result} instance is to be injected with {@link Inject} as an attribute of the test.</br> The
- * method {@link LogCaptureFeature.Result#assertHasEvent()} can then be called from test methods to check that matching
- * log calls (events) have been captured.
+ * Test feature to capture from a log4j appender to check that some log4j calls have been correctly called.</br>
+ * On a test class or a test method using this feature, a default filter can be configured with the annotation
+ * {@link LogCaptureFeature.FilterOn} or a custom one implementing {@link LogCaptureFeature.Filter} class can be
+ * provided with the annotation {@link LogCaptureFeature.FilterWith} to select the log events to capture.</br>
+ * A {@link LogCaptureFeature.Result} instance is to be injected with {@link Inject} as an attribute of the test.</br>
+ * The method {@link LogCaptureFeature.Result#assertHasEvent()} can then be called from test methods to check that
+ * matching log calls (events) have been captured.
  *
  * @since 5.7
  */
@@ -57,6 +61,44 @@ public class LogCaptureFeature extends SimpleFeature {
          * Custom implementation of a filter to select event to capture.
          */
         Class<? extends LogCaptureFeature.Filter> value();
+    }
+
+    @Inherited
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE, ElementType.METHOD })
+    public @interface FilterOn {
+        /**
+         * Configuration for the default filter
+         */
+        String loggerName() default "";
+
+        String logLevel() default "";
+    }
+
+    private static class DefaultFilter implements LogCaptureFeature.Filter {
+
+        String loggerName;
+
+        Level logLevel;
+
+        public DefaultFilter(String loggerName, String logLevel) {
+            super();
+            this.loggerName = Strings.emptyToNull(loggerName);
+            if (!"".equals(logLevel)) {
+                this.logLevel = Level.toLevel(logLevel);
+            }
+        }
+
+        @Override
+        public boolean accept(LoggingEvent event) {
+            if (logLevel != null && !logLevel.equals(event.getLevel())) {
+                return false;
+            }
+            if (loggerName != null && !loggerName.equals(event.getLoggerName())) {
+                return false;
+            }
+            return true;
+        }
     }
 
     public class Result {
@@ -130,12 +172,19 @@ public class LogCaptureFeature extends SimpleFeature {
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
         super.beforeSetup(runner);
+        Filter filter;
         FilterWith filterProvider = runner.getConfig(FilterWith.class);
         if (filterProvider.value() == null) {
-            return;
+            FilterOn defaultFilterConfig = runner.getConfig(FilterOn.class);
+            if (defaultFilterConfig == null) {
+                return;
+            } else {
+                filter = new DefaultFilter(defaultFilterConfig.loggerName(), defaultFilterConfig.logLevel());
+            }
+        } else {
+            filter = filterProvider.value().newInstance();
         }
-        Class<? extends Filter> filterClass = filterProvider.value();
-        enable(filterClass);
+        enable(filter);
     }
 
     @Override
@@ -145,12 +194,19 @@ public class LogCaptureFeature extends SimpleFeature {
 
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        Filter filter;
         FilterWith filterProvider = runner.getConfig(method, FilterWith.class);
         if (filterProvider.value() == null) {
-            return;
+            FilterOn defaultFilterConfig = runner.getConfig(method, FilterOn.class);
+            if (defaultFilterConfig == null) {
+                return;
+            } else {
+                filter = new DefaultFilter(defaultFilterConfig.loggerName(), defaultFilterConfig.logLevel());
+            }
+        } else {
+            filter = filterProvider.value().newInstance();
         }
-        Class<? extends Filter> filterClass = filterProvider.value();
-        enable(filterClass);
+        enable(filter);
     }
 
     @Override
@@ -159,15 +215,17 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     /**
-     * @since 6.0
+     * @param filter
+     * @since 8.4
      */
-    protected void enable(Class<? extends Filter> filterClass) throws InstantiationException, IllegalAccessException {
+    protected void enable(Filter filter) throws InstantiationException, IllegalAccessException {
+
         if (logCaptureFilter != null) {
             setupCaptureFiler = logCaptureFilter;
         } else {
             rootLogger.addAppender(logAppender);
         }
-        logCaptureFilter = filterClass.newInstance();
+        logCaptureFilter = filter;
     }
 
     /**
