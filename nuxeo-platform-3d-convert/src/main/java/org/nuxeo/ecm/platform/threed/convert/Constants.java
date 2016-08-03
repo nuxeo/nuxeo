@@ -43,6 +43,8 @@ public class Constants {
 
     public static final String HEIGHT_PARAMETER = "height";
 
+    public static final String COORDS_PARAMETER = "coords";
+
     public static final String OUTPUT_FILE_PATH_PARAMETER = "outDir";
 
     public static final String SCRIPTS_DIRECTORY = "scripts";

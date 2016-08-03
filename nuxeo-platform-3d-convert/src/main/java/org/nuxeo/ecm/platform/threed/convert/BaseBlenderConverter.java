@@ -150,6 +150,16 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
 
+            // Initialize LOD params
+            String lods = initParameters.getOrDefault(LODS_PARAMETER, "");
+            List<String> lodList = Arrays.asList(lods.split(" "));
+            params.addNamedParameter(LODS_PARAMETER, lodList);
+
+            // Initialize spherical coordinates params
+            String coords = initParameters.getOrDefault(COORDS_PARAMETER, "");
+            List<String> coordList = Arrays.asList(coords.split(" "));
+            params.addNamedParameter(COORDS_PARAMETER, coordList);
+
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder);
             params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, new File(inputFiles.get(0)));
@@ -174,7 +184,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             if (strParams != null) {
                 for (String paramName : strParams.keySet()) {
-                    if (LODS_PARAMETER.equals(paramName)) {
+                    if (LODS_PARAMETER.equals(paramName) || COORDS_PARAMETER.equals(paramName)) {
                         params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
                     } else {
                         params.addNamedParameter(paramName, strParams.get(paramName));

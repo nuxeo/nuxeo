@@ -13,6 +13,7 @@
                 <parameter name="operators">import render</parameter>
                 <parameter name="width">950</parameter>
                 <parameter name="height">600</parameter>
+                <parameter name="coords">0,0</parameter>
             </parameters>
         </converter>
         <converter name="lodConversion"
@@ -43,10 +44,11 @@
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
-                <parameter name="operators">import convert render lod convert lod convert lod convert</parameter>
+                <parameter name="operators">import convert render render lod convert lod convert lod convert</parameter>
                 <parameter name="lods">33 11 3</parameter>
                 <parameter name="width">950</parameter>
                 <parameter name="height">600</parameter>
+                <parameter name="coords">0,0 90,0</parameter>
             </parameters>
         </converter>
         <converter name="dae2gltf"

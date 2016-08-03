@@ -36,6 +36,8 @@ greatest = max(dx, dy, dz)
 
 print("Greatest length is %f " % greatest)
 
+print(coords)
+
 cam_location = [greatest * 1.5] * 3
 cam_look_at = [
     (dx / 2) + m_min[0],

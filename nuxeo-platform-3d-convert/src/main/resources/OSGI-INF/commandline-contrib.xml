@@ -9,8 +9,8 @@
         <command name="blender_pipeline" enabled="true">
             <commandLine>blender</commandLine>
             <testParameterString>-b</testParameterString>
-            <parameterString>-b -P #{script} -- -input #{inFilePath} -outdir #{outDir} -operators #{operators} -lods
-                #{lods} -width #{width} -height #{height}
+            <parameterString>-b -P #{script} -- --input #{inFilePath} --outdir #{outDir} --operators #{operators} --lods
+                #{lods} --width #{width} --height #{height} --coords #{coords}
             </parameterString>
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>
