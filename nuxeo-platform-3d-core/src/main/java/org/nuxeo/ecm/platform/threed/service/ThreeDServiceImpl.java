@@ -22,12 +22,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
  * Default implementation of {@link ThreeDService}
@@ -38,22 +49,146 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
     protected static final Log log = LogFactory.getLog(ThreeDServiceImpl.class);
 
+    public static final String RENDER_VIEWS_EP = "renderViews";
+
+    public static final String DEFAULT_RENDER_VIEWS_EP = "automaticRenderViews";
+
+    public static final String DEFAULT_LODS_EP = "automaticLOD";
+
+    protected AutomaticLODContributionHandler automaticLODs;
+
+    protected AutomaticRenderViewContributionHandler automaticRenderViews;
+
+    protected RenderViewContributionHandler renderViews;
+
     @Override
-    public void launchBatchConversion(DocumentModel doc) {
-        // XXX implement
+    public void activate(ComponentContext context) {
+        automaticLODs = new AutomaticLODContributionHandler();
+        automaticRenderViews = new AutomaticRenderViewContributionHandler();
+        renderViews = new RenderViewContributionHandler();
     }
 
     @Override
-    public List<Blob> batchConvert(ThreeD originalThreed) {
-        List<Blob> blobs = new ArrayList<>();
-        // XXX implement
-        return blobs;
+    public void deactivate(ComponentContext context) {
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        if (workManager != null && workManager.isStarted()) {
+            try {
+                workManager.shutdownQueue(
+                        workManager.getCategoryQueueId(ThreeDBatchUpdateWork.CATEGORY_THREED_CONVERSION), 10,
+                        TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                // restore interrupted status
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
+        automaticLODs = null;
+        automaticRenderViews = null;
+        renderViews = null;
+    }
+
+    @Override
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        switch (extensionPoint) {
+        case RENDER_VIEWS_EP:
+            renderViews.addContribution((RenderView) contribution);
+            break;
+        case DEFAULT_RENDER_VIEWS_EP:
+            automaticRenderViews.addContribution((AutomaticRenderView) contribution);
+            break;
+        case DEFAULT_LODS_EP:
+            automaticLODs.addContribution((AutomaticLOD) contribution);
+        }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        switch (extensionPoint) {
+        case RENDER_VIEWS_EP:
+            renderViews.removeContribution((RenderView) contribution);
+            break;
+        case DEFAULT_RENDER_VIEWS_EP:
+            automaticRenderViews.removeContribution((AutomaticRenderView) contribution);
+            break;
+        case DEFAULT_LODS_EP:
+            automaticLODs.removeContribution((AutomaticLOD) contribution);
+        }
+    }
+
+    @Override
+    public void launchBatchConversion(DocumentModel doc) {
+        ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+    }
+
+    @Override
+    public Collection<Blob> batchConvert(ThreeD originalThreed) {
+        ConversionService cs = Framework.getService(ConversionService.class);
+        // get all the 3d content blobs
+        List<Blob> in = new ArrayList<>();
+        in.add(originalThreed.getBlob());
+        in.addAll(originalThreed.getResources());
+
+        // gather 3D contribution default contributions
+        List<RenderView> renderViews = automaticRenderViews.registry.values()
+                                                                    .stream()
+                                                                    .filter(AutomaticRenderView::isEnabled)
+                                                                    .map(AutomaticRenderView::getName)
+                                                                    .map(this::getRenderView)
+                                                                    .filter(RenderView::isEnabled)
+                                                                    .collect(Collectors.toList());
+
+        List<AutomaticLOD> lods = (List<AutomaticLOD>) automaticLODs.registry.values()
+                                                                             .stream()
+                                                                             .filter(AutomaticLOD::isEnabled)
+                                                                             .collect(Collectors.toList());
+
+        // setup all work to be done in batch process (renders, lods)
+        Map<String, Serializable> params = new HashMap<>();
+
+        // operators
+        String operators = "import";
+        // add renders
+        operators += new String(new char[renderViews.size()]).replace("\0", " render");
+        // add conversion
+        operators += " conversion";
+        // add lods
+        operators += new String(new char[lods.size()]).replace("\0", " lod conversion");
+        params.put(OPERATORS_PARAMETER, operators);
+
+        // lods
+        params.put(LODS_PARAMETER,
+                lods.stream().map(AutomaticLOD::getPercentage).map(String::valueOf).collect(Collectors.joining(" ")));
+
+        // spherical coordinates
+        params.put(COORDS_PARAMETER,
+                renderViews.stream().map(renderView -> renderView.getZenith() + "," + renderView.getAzimuth()).collect(
+                        Collectors.joining(" ")));
+
+        BlobHolder result = cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
+
+        return result.getBlobs();
+    }
+
+    @Override
+    public Collection<RenderView> getAvailableRenderViews() {
+        return renderViews.registry.values();
+    }
+
+    @Override
+    public RenderView getRenderView(String renderViewName) {
+        return renderViews.registry.get(renderViewName);
     }
 
     @Override
     public TransmissionThreeD convertColladaToglTF(TransmissionThreeD colladaThreeD) {
-        TransmissionThreeD gltf = null;
-        // XXX implement
-        return gltf;
+        ConversionService cs = Framework.getService(ConversionService.class);
+        Map<String, Serializable> parameters = new HashMap<>();
+
+        BlobHolder result = cs.convert(COLLADA2GLTF_CONVERTER, new SimpleBlobHolder(colladaThreeD.getBlob()),
+                parameters);
+        List<Blob> blobs = result.getBlobs();
+        return new TransmissionThreeD(blobs.get(0), colladaThreeD.getLod(), colladaThreeD.getName());
     }
 }

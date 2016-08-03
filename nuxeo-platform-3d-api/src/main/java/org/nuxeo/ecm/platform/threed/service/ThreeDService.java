@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Service to asynchronously launch and monitor 3D format conversions (including lod) and rendering.
@@ -45,7 +45,7 @@ public interface ThreeDService {
      * @param originalThreed the 3d to convert
      * @return a {@code List<Blob>} object of the converted assets.
      */
-    List<Blob> batchConvert(ThreeD originalThreed);
+    Collection<Blob> batchConvert(ThreeD originalThreed);
 
     /**
      * Batch convert the Collada {@code colladaThreeD} to glTF
@@ -54,5 +54,15 @@ public interface ThreeDService {
      * @return a {@code TransmissionThreeD} object of in glTF.
      */
     TransmissionThreeD convertColladaToglTF(TransmissionThreeD colladaThreeD);
+
+    /**
+     * Returns the available registered render views on a 3D content.
+     */
+    Collection<RenderView> getAvailableRenderViews();
+
+    /**
+     * Returns the available registered render views by name.
+     */
+    RenderView getRenderView(String renderViewName);
 
 }

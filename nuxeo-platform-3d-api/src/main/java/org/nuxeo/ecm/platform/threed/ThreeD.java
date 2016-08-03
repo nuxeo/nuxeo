@@ -29,12 +29,20 @@ import java.util.List;
  */
 public class ThreeD {
 
-    private Blob blob;
+    protected Blob blob;
 
-    private List<Blob> resources;
+    protected List<Blob> resources;
 
     public ThreeD(Blob blob, List<Blob> resources) {
         this.blob = blob;
         this.resources = resources;
+    }
+
+    public Blob getBlob() {
+        return blob;
+    }
+
+    public List<Blob> getResources() {
+        return resources;
     }
 }

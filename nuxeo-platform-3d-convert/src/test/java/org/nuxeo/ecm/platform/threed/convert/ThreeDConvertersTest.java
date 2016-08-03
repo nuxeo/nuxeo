@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.threed.convert;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -48,8 +47,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PIPELINE_COMMAND;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_COMMAND;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
  * Test 3D converters
@@ -122,7 +120,7 @@ public class ThreeDConvertersTest {
 
     @Test
     public void testRenderConverter() throws Exception {
-        BlobHolder result = applyConverter(Constants.RENDER_3D_CONVERTER, getTestThreeDBlobs());
+        BlobHolder result = applyConverter(RENDER_3D_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("render-100.png", blobs.get(0).getFilename());
@@ -130,7 +128,7 @@ public class ThreeDConvertersTest {
 
     @Test
     public void testCollada2glTFConverter() throws Exception {
-        BlobHolder result = applyConverter(Constants.COLLADA2GLTF_CONVERTER, getTestColladaBlob());
+        BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, getTestColladaBlob());
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals(TEST_MODEL + ".gltf", blobs.get(0).getFilename());
@@ -138,7 +136,7 @@ public class ThreeDConvertersTest {
 
     @Test
     public void testColladaConverter() throws Exception {
-        BlobHolder result = applyConverter(Constants.COLLADA_CONVERTER, getTestThreeDBlobs());
+        BlobHolder result = applyConverter(COLLADA_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals("conversion-100.dae", blobs.get(0).getFilename());
@@ -146,7 +144,7 @@ public class ThreeDConvertersTest {
 
     @Test
     public void testLODConverter() throws Exception {
-        BlobHolder result = applyConverter(Constants.LOD_CONVERTER, getTestThreeDBlobs());
+        BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(3, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
@@ -161,7 +159,7 @@ public class ThreeDConvertersTest {
 
     @Test
     public void testBatchConverter() throws Exception {
-        BlobHolder result = applyConverter(Constants.BATCH_CONVERTER, getTestThreeDBlobs());
+        BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(5, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());

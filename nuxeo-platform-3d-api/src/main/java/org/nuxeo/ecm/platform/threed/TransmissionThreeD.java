@@ -27,13 +27,21 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public class TransmissionThreeD extends ThreeD {
 
-    private final float lod;
+    protected final float lod;
 
-    private final String name;
+    protected final String name;
 
     public TransmissionThreeD(Blob blob, float lod, String name) {
         super(blob, null);
         this.lod = lod;
         this.name = name;
+    }
+
+    public float getLod() {
+        return lod;
+    }
+
+    public String getName() {
+        return name;
     }
 }
