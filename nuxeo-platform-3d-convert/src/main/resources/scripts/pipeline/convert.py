@@ -45,8 +45,8 @@ elif out_ext == 'gltf':
     }
     # Copy properties to settings
     settings = blendergltf.default_settings.copy()
-    #settings['materials_export_shader'] = BoolProperty(name='Export Shaders', default=False)
-    #settings['images_embed_data'] = BoolProperty(name='Embed Image Data', default=False)
+    # settings['materials_export_shader'] = BoolProperty(name='Export Shaders', default=False)
+    # settings['images_embed_data'] = BoolProperty(name='Embed Image Data', default=False)
 
     gltf = blendergltf.export_gltf(scene, settings)
     with open(outfile, 'w') as fout:
