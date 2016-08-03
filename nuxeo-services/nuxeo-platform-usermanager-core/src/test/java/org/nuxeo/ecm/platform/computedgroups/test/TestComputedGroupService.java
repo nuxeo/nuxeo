@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.platform.computedgroups.test;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor;
 import org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,7 +70,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 })
 @LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml", //
         "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
-        })
+})
 public class TestComputedGroupService {
 
     @Inject
@@ -164,6 +166,13 @@ public class TestComputedGroupService {
 
         group = um.getGroup("Grp2");
         assertEquals(2, group.getMemberUsers().size());
+
+    }
+
+    @Test
+    public void testResolveMembersInVirtualGroup() throws Exception {
+        List<String> users = um.getUsersInGroupAndSubGroups("Grp1");
+        assertEquals(2, users.size());
     }
 
     @Test

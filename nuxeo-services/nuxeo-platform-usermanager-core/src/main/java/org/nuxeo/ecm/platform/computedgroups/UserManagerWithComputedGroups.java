@@ -120,6 +120,18 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
+    public NuxeoGroup getGroup(String groupName, DocumentModel context) {
+        NuxeoGroup grp = super.getGroup(groupName, context);
+        if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
+            NuxeoGroup computed = getService().getComputedGroup(groupName);
+            if (computed != null) {
+                grp = computed;
+            }
+        }
+        return grp;
+    }
+
+    @Override
     public List<String> getGroupIds() {
         List<String> ids = super.getGroupIds();
         if (activateComputedGroup()) {
