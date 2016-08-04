@@ -226,6 +226,27 @@ public final class Framework {
     }
 
     /**
+     * Runs the given {@link Runnable} while logged in as a system user.
+     *
+     * @param runnable what to run
+     * @since 8.4
+     */
+    public static void doPrivileged(Runnable runnable) {
+        try {
+            LoginContext loginContext = login();
+            try {
+                runnable.run();
+            } finally {
+                if (loginContext != null) { // may be null in tests
+                    loginContext.logout();
+                }
+            }
+        } catch (LoginException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Login in the system as the system user (a pseudo-user having all
      * privileges).
      *
