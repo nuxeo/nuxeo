@@ -123,6 +123,10 @@ public class RenderView implements Comparable<RenderView> {
         }
     }
 
+    public String getId() {
+        return String.valueOf(azimuth) + "," + String.valueOf(zenith);
+    }
+
     @Override
     public int compareTo(RenderView o) {
         return name.compareTo(o.getName());

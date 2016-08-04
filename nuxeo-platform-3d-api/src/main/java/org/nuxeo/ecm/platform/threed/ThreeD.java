@@ -29,9 +29,9 @@ import java.util.List;
  */
 public class ThreeD {
 
-    protected Blob blob;
+    protected final Blob blob;
 
-    protected List<Blob> resources;
+    protected final List<Blob> resources;
 
     public ThreeD(Blob blob, List<Blob> resources) {
         this.blob = blob;

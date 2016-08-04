@@ -20,8 +20,13 @@ package org.nuxeo.ecm.platform.threed;
 
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.threed.service.RenderView;
+import org.nuxeo.ecm.platform.threed.service.ThreeDService;
+import org.nuxeo.runtime.api.Framework;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +39,7 @@ public class BatchConverterHelper {
     private BatchConverterHelper() {
     }
 
-    public static final List<TransmissionThreeD> getTransmissons(List<Blob> blobs) {
+    public static final List<TransmissionThreeD> getTransmissons(Collection<Blob> blobs) {
 
         return blobs.stream().filter(blob -> "dae".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
             String baseName = FilenameUtils.getBaseName(blob.getFilename());
@@ -44,8 +49,20 @@ public class BatchConverterHelper {
         }).collect(Collectors.toList());
     }
 
-    public static final List<Blob> getRenders(List<Blob> blobs) {
-        return blobs.stream().filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))).collect(
-                Collectors.toList());
+    public static final List<ThreeDRenderView> getRenders(Collection<Blob> blobs) {
+        ThreeDService threeDService = Framework.getService(ThreeDService.class);
+        Collection<RenderView> renderViews = threeDService.getAvailableRenderViews();
+        return blobs.stream().filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
+            String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
+            if (fileNameArray.length != 4) {
+                return null;
+            }
+            String coords = fileNameArray[2] + "," + fileNameArray[3];
+            RenderView currentRV = renderViews.stream()
+                                              .filter(renderView -> coords.equals(renderView.getId()))
+                                              .findFirst()
+                                              .get();
+            return new ThreeDRenderView(currentRV.getName(), blob, currentRV.getAzimuth(), currentRV.getZenith());
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }
