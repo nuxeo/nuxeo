@@ -27,12 +27,12 @@ import java.io.IOException;
 import org.nuxeo.ecm.core.commandline.executor.service.CommandLineDescriptor;
 
 /**
- * Default implementation of the {@link CommandTester} interface. Simple check for the target command in the system
- * path.
+ * Default implementation of the {@link CommandTester} interface. Simple check for the target command. Checks execution
+ * on system with contributed test parameters.
  *
  * @author tiry
  */
-public class SystemPathExistTester implements CommandTester {
+public class DefaultCommandTester implements CommandTester {
 
     @Override
     public CommandTestResult test(CommandLineDescriptor cmdDescriptor) {

@@ -69,7 +69,7 @@
       - winTestParameterString: same as above but used in windows environments.
 
       - tester:  name of the CommandTester. The CommandTester defined in commandTester extension point. Default is
-      SystemPathExistTester, which looks if the command is available in system Path.
+      DefaultCommandTester, which looks if the command is available.
 
       - readOutput: Boolean, default is true. If false, command output is never read.
 
@@ -105,8 +105,8 @@
 
       Command tester contribution example:
       <code>
-        <commandTester name="SystemPathTester"
-          class="org.nuxeo.ecm.core.commandline.executor.service.cmdtesters.SystemPathExistTester">
+        <commandTester name="DefaultCommandTester"
+          class="org.nuxeo.ecm.core.commandline.executor.service.cmdtesters.DefaultCommandTester">
         </commandTester>
       </code>
 
