@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+import org.apache.commons.lang.mutable.MutableObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
@@ -101,38 +102,21 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public KeyStore getUserKeystore(String userID, String userKeystorePassword) throws CertException {
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
-            // Open directory session
+        MutableObject mo = new MutableObject();
+        Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
-                KeyStore keystore = null;
                 DocumentModel entry = session.getEntry(userID);
                 if (entry != null) {
-                    String keystore64Encoded = (String) entry.getPropertyValue("cert:keystore");
-                    byte[] keystoreBytes = Base64.decode(keystore64Encoded);
-                    ByteArrayInputStream byteIS = new ByteArrayInputStream(keystoreBytes);
-                    keystore = getCertService().getKeyStore(byteIS, userKeystorePassword);
+                    mo.setValue(entry.getPropertyValue("cert:keystore"));
                 } else {
                     throw new CertException("No directory entry for " + userID);
                 }
-                return keystore;
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
+        String keystore64Encoded = (String) mo.getValue();
+        byte[] keystoreBytes = Base64.decode(keystore64Encoded);
+        ByteArrayInputStream byteIS = new ByteArrayInputStream(keystoreBytes);
+        return getCertService().getKeyStore(byteIS, userKeystorePassword);
     }
 
     @Override
