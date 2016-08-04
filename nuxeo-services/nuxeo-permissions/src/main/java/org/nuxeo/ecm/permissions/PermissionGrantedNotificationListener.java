@@ -115,22 +115,27 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
                 I18NUtils.getMessageString("messages", LABEL_SUBJECT_NEW_PERMISSION, new Object[] { doc.getTitle() },
                         Locale.ENGLISH));
 
-        DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
-            String id = PermissionHelper.computeDirectoryId(doc, aclName, ace.getId());
-            DocumentModel entry = session.getEntry(id);
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(doc);
+        ctx.put("ace", ace);
 
-            OperationContext ctx = new OperationContext(coreSession);
-            ctx.setInput(doc);
-            ctx.put("ace", ace);
-            if (entry != null) {
-                String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
-                if (comment != null) {
-                    comment = StringEscapeUtils.escapeHtml(comment);
-                    comment = comment.replaceAll("\n", "<br/>");
-                    ctx.put("comment", comment);
+        Framework.doPrivileged(() -> {
+            DirectoryService directoryService = Framework.getService(DirectoryService.class);
+            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+                String id = PermissionHelper.computeDirectoryId(doc, aclName, ace.getId());
+                DocumentModel entry = session.getEntry(id);
+                if (entry != null) {
+                    String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
+                    if (comment != null) {
+                        comment = StringEscapeUtils.escapeHtml(comment);
+                        comment = comment.replaceAll("\n", "<br/>");
+                        ctx.put("comment", comment);
+                    }
                 }
             }
+        });
+
+        try {
             String aceCreator = ace.getCreator();
             if (aceCreator != null) {
                 UserManager userManager = Framework.getService(UserManager.class);

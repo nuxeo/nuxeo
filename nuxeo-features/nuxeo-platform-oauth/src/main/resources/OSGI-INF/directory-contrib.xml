@@ -13,6 +13,11 @@
       <idField>consumerKey</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauthServiceProviders">
@@ -25,6 +30,11 @@
       <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <substringMatchType>subfinal</substringMatchType>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauthTokens">
@@ -36,6 +46,11 @@
       <idField>token</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauth2ServiceProviders">
@@ -48,6 +63,11 @@
       <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <substringMatchType>subfinal</substringMatchType>
+      <permissions>
+        <permission name="Read">
+          <group>___Nobody___</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauth2Tokens">
@@ -59,6 +79,11 @@
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauth2Clients">
@@ -70,6 +95,11 @@
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
   </extension>

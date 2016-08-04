@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
@@ -33,20 +34,27 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,10 +71,23 @@ import com.google.inject.Inject;
 public class TestPermissionListener {
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected CoreSession session;
 
     @Inject
     protected DirectoryService directoryService;
+
+    protected LoginContext loginContext;
+
+    protected void login(String username) throws LoginException {
+        loginContext = Framework.login(username, username);
+    }
+
+    protected void logout() throws LoginException {
+        loginContext.logout();
+    }
 
     @Test
     public void shouldFillDirectory() {
@@ -105,40 +126,68 @@ public class TestPermissionListener {
     }
 
     @Test
-    public void shouldUpdateDirectory() {
-        DocumentModel doc = createTestDocument();
+    public void shouldUpdateDirectory() throws Exception {
+        String repositoryName = session.getRepositoryName();
+        String docId;
+        String fryACEId;
 
-        ACE fryACE = new ACE("fry", WRITE, true);
-        ACE leelaACE = new ACE("leela", READ, true);
-        ACP acp = doc.getACP();
-        acp.addACE(ACL.LOCAL_ACL, fryACE);
-        acp.addACE(ACL.LOCAL_ACL, leelaACE);
-        doc.setACP(acp, true);
+        DocumentModel root = session.getRootDocument();
+        ACP rootACP = root.getACP();
+        rootACP.addACE(ACL.LOCAL_ACL, new ACE("joe", EVERYTHING, true));
+        root.setACP(rootACP, true);
 
-        acp = doc.getACP();
-        acp.removeACE(ACL.LOCAL_ACL, leelaACE);
-        acp.removeACE(ACL.LOCAL_ACL, fryACE);
-        fryACE = new ACE("fry", READ, true);
-        acp.addACE(ACL.LOCAL_ACL, fryACE);
-        doc.setACP(acp, true);
+        login("joe");
+        try (CoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+            DocumentModel doc = joeSession.createDocumentModel("/", "file", "File");
+            doc = joeSession.createDocument(doc);
+            docId = doc.getId();
+
+            ACE fryACE = new ACE("fry", WRITE, true);
+            ACE leelaACE = new ACE("leela", READ, true);
+            ACP acp = doc.getACP();
+            acp.addACE(ACL.LOCAL_ACL, fryACE);
+            acp.addACE(ACL.LOCAL_ACL, leelaACE);
+            doc.setACP(acp, true);
+
+            acp = doc.getACP();
+            acp.removeACE(ACL.LOCAL_ACL, leelaACE);
+            acp.removeACE(ACL.LOCAL_ACL, fryACE);
+            fryACE = new ACE("fry", READ, true);
+            acp.addACE(ACL.LOCAL_ACL, fryACE);
+            doc.setACP(acp, true);
+            fryACEId = fryACE.getId();
+        } finally {
+            logout();
+        }
 
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
             Map<String, Serializable> filter = new HashMap<>();
-            filter.put("docId", doc.getId());
+            filter.put("docId", docId);
             DocumentModelList entries = session.query(filter);
             assertEquals(1, entries.size());
 
             DocumentModel entry = entries.get(0);
-            assertEquals(doc.getRepositoryName(), entry.getPropertyValue("aceinfo:repositoryName"));
+            assertEquals(repositoryName, entry.getPropertyValue("aceinfo:repositoryName"));
             assertEquals("local", entry.getPropertyValue("aceinfo:aclName"));
-            assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
+            assertEquals(fryACEId, entry.getPropertyValue("aceinfo:aceId"));
+        }
 
-            acp = doc.getACP();
+        login("joe");
+        try (CoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+            DocumentModel doc = joeSession.getDocument(new IdRef(docId));
+            ACP acp = doc.getACP();
             ACL acl = acp.getOrCreateACL();
             acl.clear();
             acp.addACL(acl);
             doc.setACP(acp, true);
-            entries = session.query(filter);
+        } finally {
+            logout();
+        }
+
+        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("docId", docId);
+            DocumentModelList entries = session.query(filter);
             assertTrue(entries.isEmpty());
         }
     }

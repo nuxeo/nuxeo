@@ -16,34 +16,11 @@
       <idField>consumerKey</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
-    </directory>
-
-    <directory name="oauthTokens" remove="true">
-    </directory>
-
-   <directory name="oauthTokens">
-      <schema>oauthToken</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>oauthTokens</table>
-      <idField>token</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
-    </directory>
-
-    <directory name="oauth2Tokens" remove="true">
-    </directory>
-
-    <directory name="oauth2Tokens">
-      <schema>oauth2Token</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>oauth2Tokens</table>
-      <idField>id</idField>
-      <autoincrementIdField>true</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauthServiceProviders" remove="true">
@@ -59,6 +36,69 @@
       <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <substringMatchType>subfinal</substringMatchType>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="oauthTokens" remove="true">
+    </directory>
+
+    <directory name="oauthTokens">
+      <schema>oauthToken</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauthTokens</table>
+      <idField>token</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="oauth2ServiceProviders" remove="true">
+    </directory>
+
+    <directory name="oauth2ServiceProviders">
+      <schema>oauth2ServiceProvider</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauth2ServiceProviders</table>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <substringMatchType>subfinal</substringMatchType>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
+    </directory>
+
+    <directory name="oauth2Tokens" remove="true">
+    </directory>
+
+    <directory name="oauth2Tokens">
+      <schema>oauth2Token</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauth2Tokens</table>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
     <directory name="oauth2Clients" remove="true">
@@ -73,6 +113,12 @@
       <idField>clientId</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>always</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
+
   </extension>
 </component>

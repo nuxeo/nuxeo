@@ -178,20 +178,16 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
         Map<String, Serializable> m = new HashMap<>();
 
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = directoryService.open(ACE_INFO_DIRECTORY);
-            String id = computeDirectoryId(doc, aclName, aceId);
-            DocumentModel entry = session.getEntry(id);
-            if (entry != null) {
-                m.put("notify", entry.getPropertyValue(ACE_INFO_NOTIFY));
-                m.put("comment", entry.getPropertyValue(ACE_INFO_COMMENT));
+        Framework.doPrivileged(() -> {
+            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+                String id = computeDirectoryId(doc, aclName, aceId);
+                DocumentModel entry = session.getEntry(id);
+                if (entry != null) {
+                    m.put("notify", entry.getPropertyValue(ACE_INFO_NOTIFY));
+                    m.put("comment", entry.getPropertyValue(ACE_INFO_COMMENT));
+                }
             }
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        });
 
         return m;
     }
