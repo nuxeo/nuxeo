@@ -20,12 +20,22 @@ package org.nuxeo.ecm.platform.threed;
 
 import org.nuxeo.ecm.core.api.Blob;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Object wrapping a transmission format with {@link ThreeD} and {@code lod}
  *
  * @since 8.4
  */
 public class TransmissionThreeD extends ThreeD {
+
+    public static final String NAME = "name";
+
+    public static final String CONTENT = "content";
+
+    public static final String LOD = "lod";
 
     protected final float lod;
 
@@ -43,5 +53,13 @@ public class TransmissionThreeD extends ThreeD {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, Serializable> toMap() {
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(NAME, name);
+        map.put(CONTENT, (Serializable) blob);
+        map.put(LOD, lod);
+        return map;
     }
 }

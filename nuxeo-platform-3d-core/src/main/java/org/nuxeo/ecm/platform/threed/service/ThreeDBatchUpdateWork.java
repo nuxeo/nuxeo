@@ -28,16 +28,20 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
-import org.nuxeo.ecm.platform.threed.ThreeD;
-import org.nuxeo.ecm.platform.threed.ThreeDDocument;
-import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
+import org.nuxeo.ecm.platform.threed.*;
 
 import org.nuxeo.runtime.api.Framework;
-import java.util.List;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.STATIC_3D_PCTURE_TITLE;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TITLE;
 
 /**
  * Work running batch conversions to update 3D document type preview assets
@@ -97,18 +101,19 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         // Perform batch conversion
         ThreeDService service = Framework.getLocalService(ThreeDService.class);
         setStatus("Batch conversion");
-        List<Blob> blobs = service.batchConvert(originalThreeD);
+        Collection<Blob> blobs = service.batchConvert(originalThreeD);
 
         // Saving thumbnail to the document
         setStatus("Saving thumbnail");
-        List<Blob> renderBlobs = BatchConverterHelper.getRenders(blobs);
-
-        if (!renderBlobs.isEmpty() && renderBlobs.size() == 1) {
+        List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(blobs);
+        long numRenderViews = service.getAvailableRenderViews().stream().filter(RenderView::isEnabled).count();
+        if (!threeDRenderViews.isEmpty() && threeDRenderViews.size() == numRenderViews) {
             try {
                 startTransaction();
                 openSystemSession();
                 DocumentModel doc = session.getDocument(new IdRef(docId));
-                saveNewThumbnail(doc, renderBlobs.get(0));
+                saveNewThumbnail(doc, threeDRenderViews.get(0));
+                saveNewRenderViews(doc, threeDRenderViews);
                 commitOrRollbackTransaction();
             } finally {
                 cleanUp(true, null);
@@ -142,15 +147,45 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
     }
 
     protected void saveNewTransmissionThreeDs(DocumentModel doc, List<TransmissionThreeD> transmissionThreeDs) {
-        // XXX save transmission threed
+        List<Map<String, Serializable>> transmissionList = new ArrayList<>();
+        transmissionList.addAll(
+                transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
+        doc.setPropertyValue("threed:transmissionFormats", (Serializable) transmissionList);
+
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
         session.saveDocument(doc);
     }
 
-    protected void saveNewThumbnail(DocumentModel doc, Blob transmissionThreeD) {
-        // XXX save blob as thumbnail on document model
+    protected void saveNewRenderViews(DocumentModel doc, List<ThreeDRenderView> threeDRenderViews) {
+        List<Map<String, Serializable>> renderViewList = new ArrayList<>();
+        renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
+        doc.setPropertyValue("threed:renderViews", (Serializable) renderViewList);
+
+        if (doc.isVersion()) {
+            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
+        session.saveDocument(doc);
+    }
+
+    protected void saveNewThumbnail(DocumentModel doc, ThreeDRenderView threeDRenderView) {
+        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
+        ArrayList<Map<String, Object>> thumbnailTemplates = new ArrayList<>();
+        Map<String, Object> thumbnailView = new LinkedHashMap<>();
+        thumbnailView.put("title", THUMBNAIL_PICTURE_TITLE);
+        thumbnailView.put("maxsize", (long) AbstractPictureAdapter.SMALL_SIZE);
+        thumbnailTemplates.add(thumbnailView);
+        Map<String, Object> static3DView = new HashMap<>();
+        static3DView.put("title", STATIC_3D_PCTURE_TITLE);
+        static3DView.put("maxsize", (long) AbstractPictureAdapter.MEDIUM_SIZE);
+        thumbnailTemplates.add(thumbnailView);
+        try {
+            picture.fillPictureViews(threeDRenderView.getContent(), threeDRenderView.getContent().getFilename(),
+                    threeDRenderView.getTitle(), new ArrayList<>(thumbnailTemplates));
+        } catch (IOException e) {
+            log.warn("failed to compute thumbnail 3D render view for " + doc.getTitle() + ": " + e.getMessage());
+        }
 
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
@@ -161,8 +196,6 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
     /**
      * Fire a {@code THREED_CONVERSIONS_DONE_EVENT} event when no other ThreeDBatchUpdateWork is scheduled for this
      * document.
-     *
-     * @since 5.8
      */
     protected void fireThreeDConversionsDoneEvent(DocumentModel doc) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);

@@ -43,6 +43,10 @@ public class ThreeDConstants {
 
     public static final String EXTENSION_RENDER = "png";
 
+    public static final String THUMBNAIL_PICTURE_TITLE = "Thumbnail";
+
+    public static final String STATIC_3D_PCTURE_TITLE = "Static3D";
+
     // Constant utility class
     private ThreeDConstants() {
     }
