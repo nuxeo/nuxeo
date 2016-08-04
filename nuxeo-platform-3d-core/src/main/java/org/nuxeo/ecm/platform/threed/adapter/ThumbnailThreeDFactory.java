@@ -18,13 +18,18 @@
  */
 package org.nuxeo.ecm.platform.threed.adapter;
 
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
+import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+
+import java.io.File;
+import java.io.IOException;
 
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TITLE;
 
 /**
  * 3D content thumbnail factory
@@ -38,8 +43,23 @@ public class ThumbnailThreeDFactory implements ThumbnailFactory {
         if (!documentModel.hasFacet(THREED_FACET)) {
             throw new NuxeoException("Document is not 3D");
         }
-        // XXX - implement thumbnail rendering
-        return null;
+
+        MultiviewPicture mViewPicture = documentModel.getAdapter(MultiviewPicture.class);
+        PictureView thumbnailView = mViewPicture.getView(THUMBNAIL_PICTURE_TITLE);
+        if (thumbnailView == null || thumbnailView.getBlob() == null) {
+            // try thumbnail view
+            thumbnailView = mViewPicture.getView("Thumbnail");
+            if (thumbnailView == null || thumbnailView.getBlob() == null) {
+                TypeInfo docType = documentModel.getAdapter(TypeInfo.class);
+                try {
+                    return Blobs.createBlob(
+                            FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator + docType.getBigIcon()));
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
+            }
+        }
+        return thumbnailView.getBlob();
     }
 
     @Override
