@@ -55,7 +55,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     public static final String EP_CMDTESTER = "commandTester";
 
-    public static final String DEFAULT_TESTER = "SystemPathTester";
+    public static final String DEFAULT_TESTER = "DefaultCommandTester";
 
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 

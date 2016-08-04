@@ -18,8 +18,8 @@
 
   <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent" point="commandTester">
     <documentation>Simple default tester that only checks for command existence in the system path.</documentation>
-    <commandTester name="SystemPathTester"
-      class="org.nuxeo.ecm.core.commandline.executor.service.cmdtesters.SystemPathExistTester">
+    <commandTester name="DefaultCommandTester"
+      class="org.nuxeo.ecm.core.commandline.executor.service.cmdtesters.DefaultCommandTester">
     </commandTester>
   </extension>
 
