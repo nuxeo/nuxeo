@@ -79,30 +79,8 @@ public class PermissionListener implements EventListener {
         }
     }
 
-    protected void doAsSystemUser(Runnable runnable) {
-        LoginContext loginContext;
-        try {
-            loginContext = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException(e);
-        }
-
-        try {
-            runnable.run();
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (loginContext != null) {
-                    loginContext.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
-    }
-
     protected void handleUpdateACP(DocumentEventContext docCtx, ACP oldACP, ACP newACP) {
-        doAsSystemUser(() -> {
+        Framework.doPrivileged(() -> {
             DocumentModel doc = docCtx.getSourceDocument();
             List<ACLDiff> aclDiffs = extractACLDiffs(oldACP, newACP);
             DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
@@ -145,7 +123,7 @@ public class PermissionListener implements EventListener {
      */
     @Deprecated
     protected void handleReplaceACE(DocumentEventContext docCtx, String changedACLName, ACE oldACE, ACE newACE) {
-        doAsSystemUser(() -> {
+        Framework.doPrivileged(() -> {
             DocumentModel doc = docCtx.getSourceDocument();
 
             DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
