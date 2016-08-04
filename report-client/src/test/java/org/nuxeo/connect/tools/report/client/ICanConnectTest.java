@@ -54,32 +54,32 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
         super();
     }
 
-    static class Given extends Stage<Given> {
+    public static class Given extends Stage<Given> {
 
         @ProvidedScenarioState
         RuntimeService runtime = Framework.getRuntime();
 
-        Given the_runtime_is_started() {
+        public Given the_runtime_is_started() {
             Assert.assertTrue(runtime.isStarted());
             return self();
         }
 
-        Given the_connect_report_component_is_installed() {
+        public Given the_connect_report_component_is_installed() {
             Assert.assertNotNull(runtime.getComponent("service:org.nuxeo.connect.tools.report"));
             return self();
         }
     }
 
-    static class When extends Stage<When> {
+    public static class When extends Stage<When> {
         @ProvidedScenarioState
         ReportConnector connector;
 
-        When i_connect_with_providers() {
+        public When i_connect_with_providers() {
             connector = ReportConnector.of();
             return self();
         }
 
-        When there_is_at_least_one_server_available() {
+        public When there_is_at_least_one_server_available() {
             Assert.assertTrue(connector.discover().iterator().hasNext());
             return self();
         }
@@ -87,13 +87,13 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
         @ProvidedScenarioState
         JsonObject json;
 
-        When i_feed_a_report() throws IOException, InterruptedException, ExecutionException {
+        public When i_feed_a_report() throws IOException, InterruptedException, ExecutionException {
             json = connector.feed(Json.createObjectBuilder()).build();
             return self();
         }
     }
 
-    static class Then extends Stage<Then> {
+    public static class Then extends Stage<Then> {
         @ExpectedScenarioState
         JsonObject json;
 
@@ -102,6 +102,9 @@ public class ICanConnectTest extends ScenarioTest<Given, When, Then> {
             return self();
         }
 
+        public <T extends Stage<T>> T which(T t) {
+            return t;
+        }
     }
 
     @Test

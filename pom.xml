@@ -19,6 +19,25 @@
     <module>report-client</module>
     <module>report-core</module>
     <module>report-web</module>
+    <module>report-viewer</module>
   </modules>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.tngtech.jgiven</groupId>
+        <artifactId>jgiven-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <format>html</format>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
