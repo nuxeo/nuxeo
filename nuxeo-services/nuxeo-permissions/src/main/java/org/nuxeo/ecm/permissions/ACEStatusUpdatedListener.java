@@ -92,19 +92,21 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
 
             for (ACE ace : acl) {
                 if (ace.isGranted() && ace.isEffective()) {
-                    try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
-                        String id = computeDirectoryId(doc, acl.getName(), ace.getId());
-                        DocumentModel entry = dirSession.getEntry(id);
-                        if (entry != null) {
-                            boolean notify = (boolean) entry.getPropertyValue(ACE_INFO_NOTIFY);
-                            String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
-                            if (notify) {
-                                // send the event for the notification
-                                ace.putContextData(COMMENT_KEY, comment);
-                                firePermissionNotificationEvent(session, doc, aclName, ace);
+                    Framework.doPrivileged(() -> {
+                        try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
+                            String id = computeDirectoryId(doc, acl.getName(), ace.getId());
+                            DocumentModel entry = dirSession.getEntry(id);
+                            if (entry != null) {
+                                Boolean notify = (Boolean) entry.getPropertyValue(ACE_INFO_NOTIFY);
+                                String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
+                                if (Boolean.TRUE.equals(notify)) {
+                                    // send the event for the notification
+                                    ace.putContextData(COMMENT_KEY, comment);
+                                    firePermissionNotificationEvent(session, doc, aclName, ace);
+                                }
                             }
                         }
-                    }
+                    });
                 }
             }
         }

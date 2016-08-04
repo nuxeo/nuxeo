@@ -23,11 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginContext;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -42,6 +44,7 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,7 +65,9 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     @Inject
     private CoreSession session;
 
-    private ACE ace;
+    private ACE ace1;
+
+    private ACE ace2;
 
     @Before
     public void before() {
@@ -71,11 +76,13 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         Map<String, Serializable> contextData = new HashMap<>();
         contextData.put(Constants.NOTIFY_KEY, false);
         contextData.put(Constants.COMMENT_KEY, "sample comment");
-        ace = ACE.builder("Administrator", "Read")
+        ace1 = ACE.builder("Administrator", "Read")
                 .creator("Administrator")
                 .contextData(contextData)
                 .build();
-        acp.addACE(ACL.LOCAL_ACL, ace);
+        ace2 = new ACE("joe", "Read");
+        acp.addACE(ACL.LOCAL_ACL, ace1);
+        acp.addACE(ACL.LOCAL_ACL, ace2);
         root.setACP(acp, true);
     }
 
@@ -83,7 +90,8 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     public void tearDown() {
         DocumentModel root = session.getDocument(new PathRef("/"));
         ACP acp = root.getACP();
-        acp.removeACE(ACL.LOCAL_ACL, ace);
+        acp.removeACE(ACL.LOCAL_ACL, ace1);
+        acp.removeACE(ACL.LOCAL_ACL, ace2);
         root.setACP(acp, true);
     }
 
@@ -134,4 +142,22 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json.has("notify").isEquals(false);
         json.has("comment").isEquals("sample comment");
     }
+
+
+    @Test
+    public void testExtendedFetchingAsRegularUser() throws Exception {
+        CoreSession systemSession = session;
+        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+            session = joeSession;
+            LoginContext loginContext = Framework.login("joe", "joe");
+            try {
+                testExtendedFetching();
+            } finally {
+                loginContext.logout();
+            }
+        } finally {
+            session = systemSession;
+        }
+    }
+
 }

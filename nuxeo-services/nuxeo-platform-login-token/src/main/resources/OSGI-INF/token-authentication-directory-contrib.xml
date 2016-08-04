@@ -14,6 +14,11 @@
       <!-- Set cache to 5 minutes -->
       <cacheTimeout>300</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
 
   </extension>
