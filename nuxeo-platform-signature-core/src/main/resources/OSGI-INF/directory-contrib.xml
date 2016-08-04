@@ -15,6 +15,11 @@
       <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <permissions>
+        <permission name="Read">
+          <group>__Nobody__</group>
+        </permission>
+      </permissions>
     </directory>
   </extension>
 </component>
