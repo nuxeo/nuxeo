@@ -173,16 +173,28 @@ REM ***** All checks failed *****
 echo Could not find java.exe in the path, the environment or the registry
 goto END
 
+:FIND_JAVA_HOME
+%JAVA% -XshowSettings:properties -version 2>&1 | find "java.home" | "%NUXEO_HOME%\bin\repl.bat" "^ *java.home = (.*)" "set JAVA_HOME=$1"  | "%NUXEO_HOME%\bin\repl.bat" jre jdk > "%NUXEO_HOME%\bin\java-home.bat"
+call "%NUXEO_HOME%\bin\java-home.bat"
+goto HAS_JAVA_HOME
+
 :HAS_JAVA_HOME
 echo Found JAVA_HOME = %JAVA_HOME%
 set PATH=%JAVA_HOME%\bin;%PATH%
 set JAVA=%JAVA_HOME%\bin\java.exe
 set JAVA_TOOLS=%JAVA_HOME%\lib\tools.jar
-if exist "%JAVA%" goto HAS_JAVA
-echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java is properly installed.
+if not exist "%JAVA_TOOLS%" (
+echo Could not find tools.jar in JAVA_HOME\lib. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
 goto END
+)
+if not exist "%JAVA%" (
+echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
+goto END
+)
+goto HAS_JAVA
 
 :HAS_JAVA
+if  "%JAVA_HOME%" == "" goto FIND_JAVA_HOME
 echo Using JAVA = %JAVA%
 REM ***** Check Java version
 set REQUIRED_JAVA_VERSION=1.8
