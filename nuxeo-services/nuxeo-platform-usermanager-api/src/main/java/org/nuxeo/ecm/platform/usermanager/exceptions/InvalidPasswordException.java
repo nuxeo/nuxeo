@@ -20,7 +20,13 @@
 package org.nuxeo.ecm.platform.usermanager.exceptions;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 
+/**
+ * Exception thrown when a password did not validate the {@link UserManager#validatePassword} method.
+ *
+ * @since 8.4
+ */
 public class InvalidPasswordException extends NuxeoException {
 
     /**
@@ -28,4 +34,18 @@ public class InvalidPasswordException extends NuxeoException {
      */
     private static final long serialVersionUID = 1L;
 
+    public InvalidPasswordException() {
+    }
+
+    public InvalidPasswordException(String message) {
+        super(message);
+    }
+
+    public InvalidPasswordException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidPasswordException(Throwable cause) {
+        super(cause);
+    }
 }
