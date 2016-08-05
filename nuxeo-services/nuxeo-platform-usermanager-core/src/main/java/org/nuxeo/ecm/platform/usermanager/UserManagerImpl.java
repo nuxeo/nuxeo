@@ -1250,7 +1250,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
-    private void checkPasswordValidity(DocumentModel userModel) throws InvalidPasswordException {
+    protected void checkPasswordValidity(DocumentModel userModel) throws InvalidPasswordException {
         String schema = dirService.getDirectorySchema(userDirectoryName);
         String passwordField = dirService.getDirectory(userDirectoryName).getPasswordField();
 
