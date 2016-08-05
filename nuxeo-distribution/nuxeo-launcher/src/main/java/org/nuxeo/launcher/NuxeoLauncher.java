@@ -382,7 +382,7 @@ public abstract class NuxeoLauncher {
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
             "mp-update", "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP,
-            "register", "register-trial" };
+            "register", "register-trial", "connect-report" };
 
     private static final String[] COMMANDS_NO_RUNNING_SERVER = { "pack", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
