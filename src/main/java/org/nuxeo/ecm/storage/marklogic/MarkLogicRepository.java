@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.storage.marklogic;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
@@ -51,6 +52,8 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -345,6 +348,34 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         } catch (FailedRequestException fre) {
             throw new QueryParseException("Request was rejected by server", fre);
         }
+    }
+
+    @Override
+    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
+        // Not yet implemented, return all result in one shot for now
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(), evaluator,
+                null, false);
+        RawQueryDefinition query = builder.buildQuery();
+        final int pageSize = 200;
+        List<String> ids = new ArrayList<>(pageSize);
+        if (log.isTraceEnabled()) {
+            logQuery(query, 0, 0);
+        }
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        docManager.setPageLength(pageSize);
+        try (DocumentPage page = docManager.search(query, 0)) {
+            for (DocumentRecord record : page) {
+                State state = record.getContent(new StateHandle()).get();
+                ids.add(state.get(KEY_ID).toString());
+            }
+        }
+        return new ScrollResultImpl("noscroll", ids);
+    }
+
+    @Override
+    public ScrollResult scroll(String scrollId) {
+       // there is only one batch
+       return emptyResult();
     }
 
     @Override
