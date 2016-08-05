@@ -36,6 +36,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.elasticsearch.Timestamp;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * œ Worker to index a bucket of documents
@@ -75,6 +76,8 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
             if ((ids.size() % bucketSize) == 0) {
                 esi.indexNonRecursive(getIndexingCommands(session, ids));
                 ids.clear();
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
             }
         }
         if (!ids.isEmpty()) {
