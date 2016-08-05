@@ -77,8 +77,6 @@ public class ITCopyPasteTest extends AbstractTest {
      */
     @Test
     public void testSimpleCopyAndPaste() throws UserNotConnectedException, IOException, ParseException {
-        // NXP-18344, to be removed once upgraded to more recent webdriver lib
-        doNotRunOnWindowsWithFF26();
 
         DocumentBasePage documentBasePage;
 

@@ -117,9 +117,6 @@ public class ITCollectionsTest extends AbstractTest {
     @Test
     public void testAddDocumentToCollectionAndRemove() throws UserNotConnectedException, IOException {
 
-        // NXP-17848, to be removed once upgraded to more recent selenium
-        doNotRunOnWindowsWithFF26();
-
         DocumentBasePage documentBasePage = login();
         // Check we can not add Domain to a collection
         assertFalse(documentBasePage.isAddToCollectionUpperActionAvailable());
