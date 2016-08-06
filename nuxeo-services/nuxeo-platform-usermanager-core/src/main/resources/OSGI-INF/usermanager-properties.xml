@@ -8,7 +8,7 @@
 
       @since 8.4
     </documentation>
-    <property name="nuxeo.usermanager.check.password">true</property>
+    <property name="nuxeo.usermanager.check.password">false</property>
   </extension>
 
 </component>
