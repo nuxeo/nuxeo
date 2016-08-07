@@ -20,11 +20,11 @@
  *
  */
 
-package org.nuxeo.ecm.core.commandline.executor.service.cmdtesters;
+package org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters;
 
 import java.io.IOException;
 
-import org.nuxeo.ecm.core.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
  * Default implementation of the {@link CommandTester} interface. Simple check for the target command. Checks execution

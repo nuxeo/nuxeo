@@ -25,7 +25,7 @@ import java.util.List;
  * Wraps the exec result of an ImageMagick command line.
  *
  * @author tiry
- * @deprecated Since 5.7.3. Not used, duplicates {@link org.nuxeo.ecm.core.commandline.executor.api.ExecResult}
+ * @deprecated Since 5.7.3. Not used, duplicates {@link org.nuxeo.ecm.platform.commandline.executor.api.ExecResult}
  */
 @Deprecated
 public class ExecResult {

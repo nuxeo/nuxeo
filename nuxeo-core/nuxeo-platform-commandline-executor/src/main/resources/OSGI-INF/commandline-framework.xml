@@ -106,7 +106,7 @@
       Command tester contribution example:
       <code>
         <commandTester name="DefaultCommandTester"
-          class="org.nuxeo.ecm.core.commandline.executor.service.cmdtesters.DefaultCommandTester">
+          class="org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.DefaultCommandTester">
         </commandTester>
       </code>
 
