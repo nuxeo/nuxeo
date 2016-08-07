@@ -35,7 +35,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-commandline-executor</artifactId>
-      <version>8.4-SNAPSHOT</version>
     </dependency>
 
     <dependency>
