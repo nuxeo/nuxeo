@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
@@ -54,6 +55,11 @@ public class MemoryDirectorySession extends BaseSession {
     public MemoryDirectorySession(MemoryDirectory directory) {
         this.directory = directory;
         data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
+    }
+
+    @Override
+    public Directory getDirectory() {
+        return directory;
     }
 
     public boolean authenticate(String username, String password)

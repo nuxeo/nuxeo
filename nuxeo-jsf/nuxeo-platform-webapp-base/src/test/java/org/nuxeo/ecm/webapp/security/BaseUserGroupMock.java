@@ -27,11 +27,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author dmetzler
  */
-public class BaseUserGroupMock {
+public class BaseUserGroupMock extends NXRuntimeTestCase {
 
     /**
      * Return a mocked principal wich is admin or not
