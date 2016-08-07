@@ -45,10 +45,10 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Base implementation of the user certificate service.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
+ *
  */
 public class CUserServiceImpl  extends DefaultComponent implements CUserService {
 
@@ -74,7 +74,7 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
      * Configurable organizational unit name
      */
     protected String organizationalUnit;
-    
+
 
     @Override
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException {
@@ -140,12 +140,12 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
         Session session = getDirectoryService().open(
                 CERTIFICATE_DIRECTORY_NAME);
 
-        // make sure that no certificates are associated with the current userid 
+        // make sure that no certificates are associated with the current userid
         boolean certificateExists= session.hasEntry(userID);
         if(certificateExists){
             throw new CertException(userID+" already has a certificate");
         }
-        
+
         LOG.info("Starting certificate generation for: " + userID);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("userid", userID);
@@ -213,13 +213,13 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
         return certificate;
     }
 
-    
+
     @Override
     public byte[] getRootCertificateData() throws ClientException {
         byte[] certificateData= getRootService().getRootPublicCertificate();
         return certificateData;
     }
-    
+
     @Override
     public boolean hasCertificate(String userID) throws CertException,
             ClientException {
@@ -251,7 +251,7 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
         }
     }
 
-    
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -263,7 +263,7 @@ public class CUserServiceImpl  extends DefaultComponent implements CUserService 
             this.organizationalUnit=desc.getOrganizationalUnit();
         }
     }
-    
+
     protected CertService getCertService() throws ClientException {
         if (certService == null) {
             try {
