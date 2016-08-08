@@ -98,6 +98,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ObjectParentDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringImpl;
 import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisTypeContainer;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractCmisService;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
@@ -180,6 +181,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public static final int DEFAULT_MAX_RELATIONSHIPS = 100;
 
     public static final String PERMISSION_NOTHING = "Nothing";
+
+    /** Synthetic property for change log entries recording the log entry id. */
+    public static final String NX_CHANGE_LOG_ID = "nuxeo:changeLogId";
 
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
@@ -1239,19 +1243,15 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             throw new CmisInvalidArgumentException("Missing change log token holder");
         }
         String changeLogToken = changeLogTokenHolder.getValue();
-        long minDate;
+        long minId;
         if (changeLogToken == null) {
-            minDate = 0;
+            minId = 0;
         } else {
             try {
-                minDate = Long.parseLong(changeLogToken);
+                minId = Long.parseLong(changeLogToken);
             } catch (NumberFormatException e) {
                 throw new CmisInvalidArgumentException("Invalid change log token");
             }
-        }
-        AuditReader reader = Framework.getService(AuditReader.class);
-        if (reader == null) {
-            throw new CmisRuntimeException("Cannot find audit service");
         }
         int max = maxItems == null ? -1 : maxItems.intValue();
         if (max <= 0) {
@@ -1268,7 +1268,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             if (pageSize < 0) { // overflow
                 pageSize = Integer.MAX_VALUE;
             }
-            ods = readAuditLog(repositoryId, minDate, max, pageSize);
+            ods = readAuditLog(repositoryId, minId, max, pageSize);
             if (ods != null) {
                 break;
             }
@@ -1290,7 +1290,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             latestChangeLogToken = null;
         } else {
             ObjectData last = ods.get(ods.size() - 1);
-            latestChangeLogToken = String.valueOf(last.getChangeEventInfo().getChangeTime().getTimeInMillis());
+            latestChangeLogToken = (String) last.getProperties().getProperties().get(NX_CHANGE_LOG_ID).getFirstValue();
         }
         ObjectListImpl ol = new ObjectListImpl();
         ol.setHasMoreItems(Boolean.valueOf(hasMoreItems));
@@ -1305,26 +1305,27 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
      *
      * @return null if not enough elements found with the current page size
      */
-    protected List<ObjectData> readAuditLog(String repositoryId, long minDate, int max, int pageSize) {
+    protected List<ObjectData> readAuditLog(String repositoryId, long minId, int max, int pageSize) {
         AuditReader reader = Framework.getLocalService(AuditReader.class);
         if (reader == null) {
             throw new CmisRuntimeException("Cannot find audit service");
         }
         List<ObjectData> ods = new ArrayList<ObjectData>();
         String query = "FROM LogEntry log" //
-                + " WHERE log.eventDate >= :minDate" //
+                + " WHERE log.id >= :minId" //
                 + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
                 + "   AND log.repositoryId = :repoId" //
-                + " ORDER BY log.eventDate";
+                + " ORDER BY log.id";
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("minDate", new Date(minDate));
+        params.put("minId", Long.valueOf(minId));
         params.put("evCreated", DOCUMENT_CREATED);
         params.put("evModified", DOCUMENT_UPDATED);
         params.put("evRemoved", DOCUMENT_REMOVED);
         params.put("repoId", repositoryId);
-        List<?> entries = reader.nativeQuery(query, params, 1, pageSize);
-        for (Object entry : entries) {
-            ObjectData od = getLogEntryObjectData((LogEntry) entry);
+        @SuppressWarnings("unchecked")
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(query, params, 1, pageSize);
+        for (LogEntry entry : entries) {
+            ObjectData od = getLogEntryObjectData(entry);
             if (od != null) {
                 ods.add(od);
                 if (ods.size() > max) {
@@ -1370,10 +1371,11 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         cei.setChangeTime(changeTime);
         ObjectDataImpl od = new ObjectDataImpl();
         od.setChangeEventInfo(cei);
-        // properties: id, doc type
+        // properties: id, doc type, change log id
         PropertiesImpl properties = new PropertiesImpl();
         properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_ID, logEntry.getDocUUID()));
         properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_TYPE_ID, docType));
+        properties.addProperty(new PropertyStringImpl(NX_CHANGE_LOG_ID, String.valueOf(logEntry.getId())));
         od.setProperties(properties);
         return od;
     }
@@ -1385,15 +1387,21 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             return "0";
             // throw new CmisRuntimeException("Cannot find audit service");
         }
-        // TODO XXX repositoryId as well
-        String[] events = new String[] { DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED };
-        String[] category = null;
-        List<?> entries = reader.queryLogsByPage(events, new Date(0), category, null, 1, 1);
-        if (entries.size() == 0) {
+        String query = "FROM LogEntry log" //
+                + " WHERE log.eventId IN (:evCreated, :evModified, :evRemoved)" //
+                + "   AND log.repositoryId = :repoId" //
+                + " ORDER BY log.id DESC";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("evCreated", DOCUMENT_CREATED);
+        params.put("evModified", DOCUMENT_UPDATED);
+        params.put("evRemoved", DOCUMENT_REMOVED);
+        params.put("repoId", repositoryId);
+        @SuppressWarnings("unchecked")
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(query, params, 1, 1);
+        if (entries.isEmpty()) {
             return "0";
         }
-        LogEntry logEntry = (LogEntry) entries.get(0);
-        return String.valueOf(logEntry.getEventDate().getTime());
+        return String.valueOf(entries.get(0).getId());
     }
 
     protected String addProxyClause(String query) {
