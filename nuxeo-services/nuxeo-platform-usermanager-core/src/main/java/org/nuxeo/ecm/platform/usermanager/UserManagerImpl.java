@@ -71,7 +71,7 @@ import org.nuxeo.runtime.services.event.EventService;
  */
 public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
-    static final String VALIDATE_PASSWORD_PARAM = "nuxeo.usermanager.check.password";
+    public static final String VALIDATE_PASSWORD_PARAM = "nuxeo.usermanager.check.password";
 
     private static final long serialVersionUID = 1L;
 
@@ -228,10 +228,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         if (descriptor.userCacheName != null) {
             principalCache = cacheService.getCache(descriptor.userCacheName);
             try {
-				principalCache.invalidateAll();
-			} catch (IOException e) {
-				throw new ClientException("Cannot invalidate cache", e);
-			}
+                principalCache.invalidateAll();
+            } catch (IOException e) {
+                throw new ClientException("Cannot invalidate cache", e);
+            }
         }
 
     }
@@ -1517,7 +1517,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     private boolean mustCheckPasswordValidity() {
-    	return Framework.getProperty(VALIDATE_PASSWORD_PARAM,"false").equals("true");
+        return Boolean.parseBoolean(Framework.getProperty(VALIDATE_PASSWORD_PARAM,"false"));
     }
 
     @Override
