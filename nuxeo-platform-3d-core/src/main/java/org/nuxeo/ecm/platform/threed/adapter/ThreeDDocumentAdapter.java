@@ -17,11 +17,73 @@
  */
 package org.nuxeo.ecm.platform.threed.adapter;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDDocument;
+import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
+import static org.nuxeo.ecm.platform.threed.ThreeDRenderView.TITLE;
+import static org.nuxeo.ecm.platform.threed.TransmissionThreeD.LOD;
+
 /**
- * Default implementation of {@link ThreedDocument}.
+ * Default implementation of {@link ThreeDDocument}.
  *
  * @since 8.4
  */
-public class ThreeDDocumentAdapter {
+public class ThreeDDocumentAdapter implements ThreeDDocument {
 
+    final DocumentModel docModel;
+
+    public ThreeDDocumentAdapter(DocumentModel threed) {
+        docModel = threed;
+    }
+
+    @Override
+    public ThreeD getThreeD() {
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<TransmissionThreeD> getTransmissionThreeDs() {
+        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(TRANSMISSIONS_PROPERTY);
+        return list.stream().map(TransmissionThreeD::new).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public TransmissionThreeD getTransmissionThreeD(int lod) {
+        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(TRANSMISSIONS_PROPERTY);
+        return list.stream()
+                   .filter(item -> lod == (int) item.get(LOD))
+                   .map(TransmissionThreeD::new)
+                   .findFirst()
+                   .orElse(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<ThreeDRenderView> getRenderViews() {
+        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(RENDER_VIEWS_PROPERTY);
+        return list.stream().map(ThreeDRenderView::new).collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ThreeDRenderView getRenderView(String title) {
+        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(RENDER_VIEWS_PROPERTY);
+        return list.stream()
+                   .filter(item -> title.equals(item.get(TITLE)))
+                   .map(ThreeDRenderView::new)
+                   .findFirst()
+                   .orElse(null);
+    }
 }

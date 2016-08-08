@@ -42,6 +42,17 @@ public interface ThreeDDocument {
      * Returns a given {@link TransmissionThreeD} based on its {@code lod}, {@code null} if this transmission 3d does
      * not exist.
      */
-    TransmissionThreeD getTransmissionThreeD(float lod);
+    TransmissionThreeD getTransmissionThreeD(int lod);
+
+    /**
+     * Returns all the {@link ThreeDRenderView}s for this {@code ThreeDDocument}.
+     */
+    Collection<ThreeDRenderView> getRenderViews();
+
+    /**
+     * Returns a given {@link ThreeDRenderView} based on its {@code title}, {@code null} if this render view does not
+     * exist.
+     */
+    ThreeDRenderView getRenderView(String title);
 
 }

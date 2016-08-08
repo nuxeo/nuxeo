@@ -37,17 +37,27 @@ public class TransmissionThreeD extends ThreeD {
 
     public static final String LOD = "lod";
 
-    protected final float lod;
+    protected final int lod;
 
     protected final String name;
 
-    public TransmissionThreeD(Blob blob, float lod, String name) {
+    public TransmissionThreeD(Blob blob, int lod, String name) {
         super(blob, null);
         this.lod = lod;
         this.name = name;
     }
 
-    public float getLod() {
+    public TransmissionThreeD(Map<String, Object> map) {
+        super((Blob) map.get(CONTENT), null);
+        name = (String) map.get(NAME);
+        lod = (int) map.get(LOD);
+    }
+
+    public String getTitle() {
+        return String.valueOf(lod);
+    }
+
+    public int getLod() {
         return lod;
     }
 
