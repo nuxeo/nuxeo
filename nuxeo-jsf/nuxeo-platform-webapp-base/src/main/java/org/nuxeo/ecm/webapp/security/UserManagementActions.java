@@ -53,6 +53,8 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
+import org.nuxeo.ecm.platform.usermanager.UserAdapterImpl;
+import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.runtime.api.Framework;
@@ -247,6 +249,17 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
+        } catch (InvalidPasswordException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
+        } catch (Exception e) {
+            String message = e.getLocalizedMessage();
+            if (e.getCause() != null) {
+                message += e.getCause().getLocalizedMessage();
+            }
+            log.error(message, e);
+
+            facesMessages.add(StatusMessage.Severity.ERROR, message);
         }
     }
 
@@ -266,16 +279,25 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         try {
         	UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
             runner.runUnrestricted();
-
             detailsMode = DETAILS_VIEW_MODE;
             fireSeamEvent(USERS_LISTING_CHANGED);
+        } catch (InvalidPasswordException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
+
         } catch (Exception t) {
             throw ClientException.wrap(t);
         }
     }
 
     public String changePassword() throws ClientException {
-        updateUser();
+		try {
+            updateUser();
+        } catch (InvalidPasswordException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
+            return null;
+        }
         detailsMode = DETAILS_VIEW_MODE;
 
         String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
@@ -285,7 +307,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return null;
     }
 
-    public void deleteUser() throws ClientException {
+	public void deleteUser() throws ClientException {
         try {
             userManager.deleteUser(selectedUser);
             selectedUser = null;

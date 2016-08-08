@@ -55,3 +55,5 @@ nuxeo.cache.type=redis
 nuxeo.cache.ttl=20
 nuxeo.cache.maxsize=100
 nuxeo.cache.concurrencylevel=500
+
+nuxeo.usermanager.check.password=false
