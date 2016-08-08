@@ -177,8 +177,28 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     }
 
     @Override
+    public Collection<AutomaticLOD> getAutomaticLODs() {
+        return automaticLODs.registry.values();
+    }
+
+    @Override
+    public AutomaticLOD getAutomaticLOD(int percentage) {
+        return automaticLODs.registry.get(percentage);
+    }
+
+    @Override
     public RenderView getRenderView(String renderViewName) {
         return renderViews.registry.get(renderViewName);
+    }
+
+    @Override
+    public RenderView getRenderView(Integer azimuth, Integer zenith) {
+        return renderViews.registry.values()
+                                   .stream()
+                                   .filter(renderView -> renderView.getAzimuth().equals(azimuth)
+                                           && renderView.getZenith().equals(zenith))
+                                   .findFirst()
+                                   .orElse(null);
     }
 
     @Override

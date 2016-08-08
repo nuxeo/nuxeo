@@ -36,9 +36,17 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     @XNode("@enabled")
     protected Boolean enabled;
 
+    @XNode("@rendition")
+    protected Boolean rendition;
+
+    @XNode("@renditionVisible")
+    protected Boolean renditionVisible;
+
     public AutomaticLOD(AutomaticLOD other) {
         percentage = other.percentage;
         enabled = other.enabled;
+        rendition = other.rendition;
+        renditionVisible = other.renditionVisible;
     }
 
     public boolean isEnabled() {
@@ -57,6 +65,26 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
         this.percentage = percentage;
     }
 
+    public boolean isRendition() {
+        return (rendition == null) || rendition;
+    }
+
+    public void setRendition(boolean rendition) {
+        this.rendition = rendition;
+    }
+
+    public boolean isRenditionVisible() {
+        return (renditionVisible == null) || renditionVisible;
+    }
+
+    public void setRenditionVisible(boolean renditionVisible) {
+        this.renditionVisible = renditionVisible;
+    }
+
+    public String getId() {
+        return String.valueOf(percentage);
+    }
+
     @Override
     public int compareTo(AutomaticLOD o) {
         return o.percentage.compareTo(percentage);
@@ -65,6 +93,12 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     public void merge(AutomaticLOD src) {
         if (src.enabled != null) {
             enabled = src.enabled;
+        }
+        if (src.rendition != null) {
+            rendition = src.rendition;
+        }
+        if (src.renditionVisible != null) {
+            renditionVisible = src.renditionVisible;
         }
     }
 }

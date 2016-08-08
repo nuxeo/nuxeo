@@ -20,6 +20,11 @@
             <p>Extension point to contribute default level of details launched after the creation or modification of a
                 3D document
                 <ul>
+                    <li>rendition: true if this render view should be exposed as a rendition, false otherwise.</li>
+                    <li>renditionVisible: equivalent of the 'visible' attribute on a rendition definition,
+                        true if this render view conversion is a rendition and should be visible in the UI, false
+                        otherwise
+                    </li>
                     <li>lod: percentage of polygons remaining</li>
                 </ul>
             </p>

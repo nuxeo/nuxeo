@@ -61,8 +61,23 @@ public interface ThreeDService {
     Collection<RenderView> getAvailableRenderViews();
 
     /**
+     * Returns the available registered automatic LODs on a 3D content.
+     */
+    Collection<AutomaticLOD> getAutomaticLODs();
+
+    /**
+     * Returns the available registered Automatic LOD by percentage.
+     */
+    AutomaticLOD getAutomaticLOD(int percentage);
+
+    /**
      * Returns the available registered render views by name.
      */
     RenderView getRenderView(String renderViewName);
+
+    /**
+     * Returns the available registered render views by azimuth and zenith (the combination is always unique).
+     */
+    RenderView getRenderView(Integer azimuth, Integer Zenith);
 
 }

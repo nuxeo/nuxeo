@@ -129,6 +129,6 @@ public class RenderView implements Comparable<RenderView> {
 
     @Override
     public int compareTo(RenderView o) {
-        return name.compareTo(o.getName());
+        return getId().compareTo(o.getId());
     }
 }

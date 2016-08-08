@@ -38,7 +38,7 @@ public class AutomaticLODContributionHandler extends ContributionFragmentRegistr
 
     @Override
     public String getContributionId(AutomaticLOD automaticLOD) {
-        return String.valueOf(automaticLOD.getPercentage());
+        return automaticLOD.getId();
     }
 
     @Override
