@@ -44,24 +44,24 @@ public class BatchConverterHelper {
         return blobs.stream().filter(blob -> "dae".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
             String baseName = FilenameUtils.getBaseName(blob.getFilename());
             String[] baseArray = baseName.split("-");
-            float lod = Float.valueOf(baseArray[baseArray.length - 1]);
+            int lod = Integer.valueOf(baseArray[baseArray.length - 1]);
             return new TransmissionThreeD(blob, lod, blob.getFilename());
         }).collect(Collectors.toList());
     }
 
     public static final List<ThreeDRenderView> getRenders(Collection<Blob> blobs) {
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        Collection<RenderView> renderViews = threeDService.getAvailableRenderViews();
         return blobs.stream().filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
             String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
             if (fileNameArray.length != 4) {
                 return null;
             }
             String coords = fileNameArray[2] + "," + fileNameArray[3];
-            RenderView currentRV = renderViews.stream()
-                                              .filter(renderView -> coords.equals(renderView.getId()))
-                                              .findFirst()
-                                              .get();
+            RenderView currentRV = threeDService.getRenderView(Integer.parseInt(fileNameArray[2]),
+                    Integer.parseInt(fileNameArray[3]));
+            if (currentRV == null) {
+                return null;
+            }
             return new ThreeDRenderView(currentRV.getName(), blob, currentRV.getAzimuth(), currentRV.getZenith());
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }

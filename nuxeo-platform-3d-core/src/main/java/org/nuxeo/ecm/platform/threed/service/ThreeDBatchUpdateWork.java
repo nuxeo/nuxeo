@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.STATIC_3D_PCTURE_TITLE;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TITLE;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
 
 /**
  * Work running batch conversions to update 3D document type preview assets
@@ -146,27 +148,25 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         return threed;
     }
 
-    protected void saveNewTransmissionThreeDs(DocumentModel doc, List<TransmissionThreeD> transmissionThreeDs) {
-        List<Map<String, Serializable>> transmissionList = new ArrayList<>();
-        transmissionList.addAll(
-                transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
-        doc.setPropertyValue("threed:transmissionFormats", (Serializable) transmissionList);
-
+    protected void saveNewProperties(DocumentModel doc, List<Map<String, Serializable>> properties, String schema) {
+        doc.setPropertyValue(schema, (Serializable) properties);
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
         session.saveDocument(doc);
     }
 
+    protected void saveNewTransmissionThreeDs(DocumentModel doc, List<TransmissionThreeD> transmissionThreeDs) {
+        List<Map<String, Serializable>> transmissionList = new ArrayList<>();
+        transmissionList.addAll(
+                transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
+        saveNewProperties(doc, transmissionList, TRANSMISSIONS_PROPERTY);
+    }
+
     protected void saveNewRenderViews(DocumentModel doc, List<ThreeDRenderView> threeDRenderViews) {
         List<Map<String, Serializable>> renderViewList = new ArrayList<>();
         renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
-        doc.setPropertyValue("threed:renderViews", (Serializable) renderViewList);
-
-        if (doc.isVersion()) {
-            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-        }
-        session.saveDocument(doc);
+        saveNewProperties(doc, renderViewList, RENDER_VIEWS_PROPERTY);
     }
 
     protected void saveNewThumbnail(DocumentModel doc, ThreeDRenderView threeDRenderView) {
