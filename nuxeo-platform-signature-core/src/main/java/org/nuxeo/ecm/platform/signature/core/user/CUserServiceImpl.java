@@ -23,15 +23,10 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
-import org.apache.commons.lang.mutable.MutableObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -100,18 +95,16 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public KeyStore getUserKeystore(String userID, String userKeystorePassword) throws CertException {
-        MutableObject mo = new MutableObject();
-        Framework.doPrivileged(() -> {
+        String keystore64Encoded = Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 DocumentModel entry = session.getEntry(userID);
                 if (entry != null) {
-                    mo.setValue(entry.getPropertyValue("cert:keystore"));
+                    return (String) entry.getPropertyValue("cert:keystore");
                 } else {
                     throw new CertException("No directory entry for " + userID);
                 }
             }
         });
-        String keystore64Encoded = (String) mo.getValue();
         byte[] keystoreBytes = Base64.decode(keystore64Encoded);
         ByteArrayInputStream byteIS = new ByteArrayInputStream(keystoreBytes);
         return getCertService().getKeyStore(byteIS, userKeystorePassword);
@@ -119,14 +112,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException {
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
+        return Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 String userKeystorePassword = userKeyPassword;
                 DocumentModel certificate = null;
@@ -159,16 +145,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 LOG.error(e);
                 throw new CertException(e);
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     protected static DirectoryService getDirectoryService() {
@@ -196,29 +173,12 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public DocumentModel getCertificate(String userID) {
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
-            // Open directory session
+        return Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 DocumentModel certificate = session.getEntry(userID);
                 return certificate;
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
@@ -227,58 +187,25 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         return certificateData;
     }
 
+    @SuppressWarnings("boxing")
     @Override
     public boolean hasCertificate(String userID) throws CertException {
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
-            // Open directory session
+        return Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 return session.getEntry(userID) != null;
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
     public void deleteCertificate(String userID) throws CertException {
-        // Log in as system user
-        LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException e) {
-            throw new NuxeoException("Cannot log in as system user", e);
-        }
-        try {
-            // Open directory session
+        Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 DocumentModel certEntry = session.getEntry(userID);
                 session.deleteEntry(certEntry);
                 assert (null == session.getEntry(userID));
             }
-        } finally {
-            try {
-                // Login context may be null in tests
-                if (lc != null) {
-                    lc.logout();
-                }
-            } catch (LoginException e) {
-                throw new NuxeoException("Cannot log out system user", e);
-            }
-        }
+        });
     }
 
     @Override
