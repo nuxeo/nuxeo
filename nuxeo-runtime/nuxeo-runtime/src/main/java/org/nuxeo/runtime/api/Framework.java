@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
@@ -253,6 +254,28 @@ public final class Framework {
             LoginContext loginContext = login();
             try {
                 runnable.run();
+            } finally {
+                if (loginContext != null) { // may be null in tests
+                    loginContext.logout();
+                }
+            }
+        } catch (LoginException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Calls the given {@link Supplier} while logged in as a system user and returns its result.
+     *
+     * @param supplier what to call
+     * @return the supplier's result
+     * @since 8.4
+     */
+    public static <T> T doPrivileged(Supplier<T> supplier) {
+        try {
+            LoginContext loginContext = login();
+            try {
+                return supplier.get();
             } finally {
                 if (loginContext != null) { // may be null in tests
                     loginContext.logout();
