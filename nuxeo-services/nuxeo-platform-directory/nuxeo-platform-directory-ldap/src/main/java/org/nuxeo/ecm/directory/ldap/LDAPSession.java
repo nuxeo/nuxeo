@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
@@ -143,6 +144,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @SuppressWarnings("unchecked")
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return null;
+        }
         if (isReadOnly()) {
             return null;
         }
@@ -232,12 +236,15 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModel getEntry(String id) throws DirectoryException {
-        return directory.getCache().getEntry(id, this);
+        return getEntry(id, true);
     }
 
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
+        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+            return null;
+        }
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
@@ -371,6 +378,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return;
+        }
         if (isReadOnlyEntry(docModel)) {
             // do not edit readonly entries
             return;
@@ -484,6 +494,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     public void deleteEntry(String id) throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return;
+        }
         if (isReadOnly()) {
             return;
         }
@@ -863,6 +876,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
             NamingEnumeration<SearchResult> results, boolean fetchReferences)
             throws DirectoryException, NamingException {
         DocumentModelListImpl list = new DocumentModelListImpl();
+        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+            return list;
+        }
         try {
             while (results.hasMore()) {
                 SearchResult result = results.next();

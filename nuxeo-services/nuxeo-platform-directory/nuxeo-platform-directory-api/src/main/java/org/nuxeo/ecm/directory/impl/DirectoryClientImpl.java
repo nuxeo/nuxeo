@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryClient;
 import org.nuxeo.ecm.directory.api.DirectoryManager;
@@ -65,6 +66,11 @@ public class DirectoryClientImpl extends BaseSession implements DirectoryClient 
             }
         }
         return manager;
+    }
+
+    @Override
+    public Directory getDirectory() {
+        return null;
     }
 
     public long getSessionId() {

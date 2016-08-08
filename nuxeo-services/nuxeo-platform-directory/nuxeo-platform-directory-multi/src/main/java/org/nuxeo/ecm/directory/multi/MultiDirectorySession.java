@@ -37,10 +37,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -83,6 +85,11 @@ public class MultiDirectorySession extends BaseSession {
         this.schemaName = descriptor.schemaName;
         this.schemaIdField = descriptor.idField;
         this.schemaPasswordField = descriptor.passwordField;
+    }
+
+    @Override
+    public Directory getDirectory() {
+        return directory;
     }
 
     protected class SubDirectoryInfo {
@@ -415,6 +422,9 @@ public class MultiDirectorySession extends BaseSession {
 
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
+        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+            return null;
+        }
         init();
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             boolean isReadOnlyEntry = true;
@@ -478,6 +488,9 @@ public class MultiDirectorySession extends BaseSession {
 
     @SuppressWarnings("boxing")
     public DocumentModelList getEntries() throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+            return null;
+        }
         init();
 
         // list of entries
@@ -583,6 +596,9 @@ public class MultiDirectorySession extends BaseSession {
 
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return null;
+        }
         init();
         final Object rawid = fieldMap.get(schemaIdField);
         if (rawid == null) {
@@ -614,6 +630,9 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     public void deleteEntry(String id) throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return;
+        }
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
@@ -664,6 +683,9 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     public void updateEntry(DocumentModel docModel) throws ClientException {
+        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
+            return;
+        }
         if (isReadOnly() || isReadOnlyEntry(docModel)) {
             return;
         }
@@ -711,6 +733,9 @@ public class MultiDirectorySession extends BaseSession {
         init();
         // list of entries
         final DocumentModelList results = new DocumentModelListImpl();
+        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+            return results;
+        }
         // entry ids already seen (mapped to the source name)
         final Map<String, String> seen = new HashMap<String, String>();
         if (fulltext == null) {

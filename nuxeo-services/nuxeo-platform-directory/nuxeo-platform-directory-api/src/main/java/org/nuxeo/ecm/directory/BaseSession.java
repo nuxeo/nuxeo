@@ -30,10 +30,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Base session class with helper methods common to all kinds of directory
@@ -44,11 +48,63 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  */
 public abstract class BaseSession implements Session {
 
+    protected static final String POWER_USERS_GROUP = "powerusers";
+
     protected static final String READONLY_ENTRY_FLAG = "READONLY_ENTRY";
 
     protected static final String MULTI_TENANT_ID_FORMAT = "tenant_%s_%s";
 
+    protected static final String RESTRICTED_DIRS_PROP = "nuxeo.directory.restricted";
+
+    protected static final String RESTRICTED_DIRS_DEFAULT = "oauthConsumers,oauthServiceProviders,oauthTokens,oauth2ServiceProviders,oauth2Tokens,certificate";
+
+    protected static final List<String> RESTRICTED_DIRS = Arrays.asList(
+            Framework.getProperty(RESTRICTED_DIRS_PROP,
+                    RESTRICTED_DIRS_DEFAULT).split(","));
+
     private final static Log log = LogFactory.getLog(BaseSession.class);
+
+    public abstract Directory getDirectory();
+
+    /**
+     * Check if the current user has access to the directory.
+     *
+     * @return true if the user has adequate privileges
+     *
+     * @since 6.0, minimal backport in 5.8.0-HF41
+     */
+    public boolean isCurrentUserAllowed(String permissionTocheck) {
+        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
+        if (currentUser == null) {
+            return true;
+        }
+        String username = currentUser.getName();
+        if (username.equals(LoginComponent.SYSTEM_USERNAME)) {
+            return true;
+        }
+        if (currentUser.isAdministrator()) {
+            return true;
+        }
+        if (currentUser.isMemberOf(POWER_USERS_GROUP)) {
+            return true;
+        }
+        String directoryName;
+        try {
+            directoryName = getDirectory().getName();
+        } catch (DirectoryException e) {
+            throw new RuntimeException(e);
+        }
+        if (RESTRICTED_DIRS.contains(directoryName)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "User '%s' is not allowed for permission '%s' on the directory '%s'",
+                        currentUser, permissionTocheck, directoryName));
+            }
+            return false;
+        }
+        // default to permissive behavior
+        return true;
+    }
 
     /**
      * Returns a bare document model suitable for directory implementations.
