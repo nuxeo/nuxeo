@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.threed.ThreeDDocument;
-import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 
 import java.util.Collections;
@@ -38,7 +37,8 @@ public class TransmissionThreeDRenditionProvider implements RenditionProvider {
     @Override
     public boolean isAvailable(DocumentModel documentModel, RenditionDefinition renditionDefinition) {
         ThreeDDocument threeDDocument = documentModel.getAdapter(ThreeDDocument.class);
-        return threeDDocument != null && threeDDocument.getTransmissionThreeD(Integer.parseInt(renditionDefinition.getName()))  != null;
+        return threeDDocument != null
+                && threeDDocument.getTransmissionThreeD(Integer.parseInt(renditionDefinition.getName())) != null;
     }
 
     @Override
@@ -47,7 +47,8 @@ public class TransmissionThreeDRenditionProvider implements RenditionProvider {
         if (threeDDocument == null) {
             return Collections.emptyList();
         }
-        TransmissionThreeD transmissionThreeD = threeDDocument.getTransmissionThreeD(Integer.parseInt(renditionDefinition.getName()));
+        TransmissionThreeD transmissionThreeD = threeDDocument.getTransmissionThreeD(
+                Integer.parseInt(renditionDefinition.getName()));
         return (transmissionThreeD.getBlob() != null) ? Collections.singletonList(transmissionThreeD.getBlob())
                 : Collections.emptyList();
     }
