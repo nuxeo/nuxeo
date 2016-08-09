@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.threed.service.ThreeDService.defaull.override">
+    <documentation>
+        Defines default override contributions for 3D service test
+    </documentation>
+
+    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
+               point="automaticLOD">
+        <automaticLOD percentage="11" enabled="true" rendition="true" renditionVisible="false"/>
+        <automaticLOD percentage="3" enabled="true" rendition="false"/>
+        <automaticLOD percentage="53" enabled="true" rendition="false"/>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
+               point="renderViews">
+        <renderView name="isometric" rendition="false"/>
+    </extension>
+
+    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
+               point="automaticRenderViews">
+        <automaticRenderView name="top" enabled="false"/>
+    </extension>
+</component>
