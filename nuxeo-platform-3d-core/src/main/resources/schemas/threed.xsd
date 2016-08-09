@@ -6,12 +6,12 @@
     <xs:include schemaLocation="core-types.xsd"/>
 
     <xs:element name="transmissionFormats" type="nxs:transmissionFormatItems"/>
-    <xs:element name="renderViews" type="nxs:renderViewsitems"/>
+    <xs:element name="renderViews" type="nxs:renderViewsItems"/>
 
     <xs:complexType name="transmissionFormatItems">
         <xs:sequence>
             <xs:element maxOccurs="unbounded" minOccurs="0"
-                        name="transmissionFormatItems" type="nxs:transmissionFormatItems"/>
+                        name="transmissionFormatItem" type="nxs:transmissionFormatItem"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -23,14 +23,14 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="renderViewsitems">
+    <xs:complexType name="renderViewsItems">
         <xs:sequence>
             <xs:element maxOccurs="unbounded" minOccurs="0"
-                        name="renderViewsitem" type="nxs:renderViewsitem"/>
+                        name="renderViewsItem" type="nxs:renderViewsItem"/>
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="renderViewsitem">
+    <xs:complexType name="renderViewsItem">
         <xs:sequence>
             <xs:element name="content" type="nxs:content"/>
             <xs:element name="title" type="xs:string"/>
