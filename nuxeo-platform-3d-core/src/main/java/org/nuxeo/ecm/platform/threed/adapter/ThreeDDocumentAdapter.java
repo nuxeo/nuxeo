@@ -63,7 +63,7 @@ public class ThreeDDocumentAdapter implements ThreeDDocument {
     public TransmissionThreeD getTransmissionThreeD(int lod) {
         List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(TRANSMISSIONS_PROPERTY);
         return list.stream()
-                   .filter(item -> lod == (int) item.get(LOD))
+                   .filter(item -> ((Long) item.get(LOD)) != null && lod == ((Long) item.get(LOD)).intValue())
                    .map(TransmissionThreeD::new)
                    .findFirst()
                    .orElse(null);
