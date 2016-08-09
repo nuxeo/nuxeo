@@ -144,7 +144,12 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             CmdParameters params = new CmdParameters();
 
             // Deal with operators and script files (blender and pipeline)
-            String operators = initParameters.get(OPERATORS_PARAMETER);
+            String operators = null;
+            if (parameters.containsKey(OPERATORS_PARAMETER)) {
+                operators = (String) parameters.get(OPERATORS_PARAMETER);
+            } else if (initParameters.containsKey(OPERATORS_PARAMETER)) {
+                operators = initParameters.get(OPERATORS_PARAMETER);
+            }
             List<String> operatorsList = Arrays.asList(operators.split(" "));
             params.addNamedParameter(OPERATORS_PARAMETER, operatorsList);
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
@@ -156,7 +161,12 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             params.addNamedParameter(LODS_PARAMETER, lodList);
 
             // Initialize spherical coordinates params
-            String coords = initParameters.getOrDefault(COORDS_PARAMETER, "");
+            String coords = "";
+            if (parameters.containsKey(COORDS_PARAMETER)) {
+                coords = (String) parameters.get(COORDS_PARAMETER);
+            } else if (initParameters.containsKey(COORDS_PARAMETER)) {
+                coords = initParameters.get(COORDS_PARAMETER);
+            }
             List<String> coordList = Arrays.asList(coords.split(" "));
             params.addNamedParameter(COORDS_PARAMETER, coordList);
 

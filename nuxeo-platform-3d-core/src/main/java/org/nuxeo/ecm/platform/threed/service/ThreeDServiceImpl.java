@@ -152,9 +152,9 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         // add renders
         operators += new String(new char[renderViews.size()]).replace("\0", " render");
         // add conversion
-        operators += " conversion";
+        operators += " convert";
         // add lods
-        operators += new String(new char[lods.size()]).replace("\0", " lod conversion");
+        operators += new String(new char[lods.size()]).replace("\0", " lod convert");
         params.put(OPERATORS_PARAMETER, operators);
 
         // lods
@@ -163,7 +163,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
         // spherical coordinates
         params.put(COORDS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getZenith() + "," + renderView.getAzimuth()).collect(
+                renderViews.stream().map(renderView -> renderView.getId()).collect(
                         Collectors.joining(" ")));
 
         BlobHolder result = cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
