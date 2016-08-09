@@ -8,7 +8,7 @@
 
         <command name="blender_pipeline" enabled="true">
             <commandLine>blender</commandLine>
-            <testParameterString>-b</testParameterString>
+            <testParameterString>-v</testParameterString>
             <parameterString>-b -P #{script} -- --input #{inFilePath} --outdir #{outDir} --operators #{operators} --lods
                 #{lods} --width #{width} --height #{height} --coords #{coords}
             </parameterString>
