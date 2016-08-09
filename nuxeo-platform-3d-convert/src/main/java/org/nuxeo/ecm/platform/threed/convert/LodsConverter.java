@@ -72,7 +72,7 @@ public class LodsConverter extends BaseBlenderConverter {
         }
 
         List<Blob> blobs = conversions.stream().map(conversion -> {
-            File file = new File(conversion);
+            File file = new File(outDir + File.separatorChar + conversion);
             Blob blob = new FileBlob(file);
             blob.setFilename(file.getName());
             return blob;

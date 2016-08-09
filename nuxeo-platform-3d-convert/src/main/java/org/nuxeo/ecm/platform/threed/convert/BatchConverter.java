@@ -90,7 +90,7 @@ public class BatchConverter extends BaseBlenderConverter {
         allResults.addAll(conversions);
         allResults.addAll(renders);
         List<Blob> blobs = allResults.stream().map(result -> {
-            File file = new File(result);
+            File file = new File(outDir + File.separatorChar + result);
             Blob blob = new FileBlob(file);
             blob.setFilename(file.getName());
             return blob;

@@ -60,7 +60,7 @@ public class ColladaConverter extends BaseBlenderConverter {
         if (conversions.isEmpty() || conversions.size() != 1) {
             throw new ConversionException("Unable to get Collada conversion result file.");
         }
-        File collada = new File(conversions.get(0));
+        File collada = new File(outDir + File.separatorChar + conversions.get(0));
         if (!"dae".equals(FileUtils.getFileExtension(conversions.get(0)))) {
             throw new ConversionException("Wrong result file type (not Collada).");
         }

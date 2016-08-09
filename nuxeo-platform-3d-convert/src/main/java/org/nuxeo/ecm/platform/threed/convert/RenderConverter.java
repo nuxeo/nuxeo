@@ -76,7 +76,7 @@ public class RenderConverter extends BaseBlenderConverter implements ExternalCon
         if (renders.isEmpty() || renders.size() != 1) {
             throw new ConversionException("Unable get result render");
         }
-        File render = new File(renders.get(0));
+        File render = new File(outDir + File.separatorChar + renders.get(0));
         Blob blob = new FileBlob(render);
         blob.setFilename(render.getName());
         List<Blob> blobs = new ArrayList<>();
