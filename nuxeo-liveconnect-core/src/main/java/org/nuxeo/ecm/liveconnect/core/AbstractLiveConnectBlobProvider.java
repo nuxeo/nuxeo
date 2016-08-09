@@ -100,6 +100,11 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         throw new UnsupportedOperationException("Writing a blob to live connect service is not supported");
     }
 
+    @Override
+    public boolean performsExternalAccessControl(BlobInfo blobInfo) {
+        return true;
+    }
+
     /**
      * Should be overriden by subclasses needing something different.
      */
