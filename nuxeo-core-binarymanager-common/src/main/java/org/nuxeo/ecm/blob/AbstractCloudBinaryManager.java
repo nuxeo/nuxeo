@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
@@ -137,6 +138,11 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     public String writeBlob(Blob blob, Document doc) throws IOException {
         // just delegate to avoid copy/pasting code
         return new BinaryBlobProvider(this).writeBlob(blob, doc);
+    }
+
+    @Override
+    public boolean performsExternalAccessControl(BlobInfo blobInfo) {
+        return new BinaryBlobProvider(this).performsExternalAccessControl(blobInfo);
     }
 
     @Override
