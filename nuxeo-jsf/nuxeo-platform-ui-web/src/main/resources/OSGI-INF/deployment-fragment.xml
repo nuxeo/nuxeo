@@ -146,6 +146,11 @@
       <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+      <servlet-name>Faces Servlet</servlet-name>
+      <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
     <servlet>
       <servlet-name>Seam Ressource Servlet</servlet-name>
       <servlet-class>org.jboss.seam.servlet.SeamResourceServlet</servlet-class>
