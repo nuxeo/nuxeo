@@ -3037,11 +3037,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
         if (addHidden) {
             // add a doc whose type is not known to CMIS
             DocumentModel doc = coreSession.createDocumentModel("/", "hidden", "HiddenFolder");
+            Helper.sleepForAuditGranularity();
             coreSession.createDocument(doc);
             coreSession.save();
             nextTransaction();
         }
 
+        sleepForAudit();
         String clt1 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
         assertNotNull(clt1);
 
@@ -3076,6 +3078,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         nextTransaction();
 
         // get latest change log token
+        sleepForAudit();
         String clt2 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
         assertNotNull(clt2);
         assertNotEquals(clt2, clt1);
@@ -3096,15 +3099,18 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // add docs whose type is not known to CMIS
         for (int i = 0; i < 15; i++) {
             DocumentModel doc = coreSession.createDocumentModel("/", "hidden" + i, "HiddenFolder");
+            Helper.sleepForAuditGranularity();
             doc = coreSession.createDocument(doc);
             coreSession.save();
         }
         // add a regular doc
         DocumentModel doc = coreSession.createDocumentModel("/", "regular", "File");
+        Helper.sleepForAuditGranularity();
         doc = coreSession.createDocument(doc);
         coreSession.save();
         nextTransaction();
 
+        sleepForAudit();
         String clt1 = repoService.getRepositoryInfo(repositoryId, null).getLatestChangeLogToken();
         assertNotNull(clt1);
 
@@ -3150,6 +3156,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
             skipFirst = true;
         } while (Boolean.TRUE.equals(changes.hasMoreItems()));
         return allObjects;
+    }
+
+    protected void sleepForAudit() throws InterruptedException {
+        Thread.sleep(5 * 1000); // wait for audit log to catch up
     }
 
     protected void checkChange(ObjectData data, String id, ChangeType changeType, String type) throws Exception {
