@@ -23,7 +23,6 @@ import java.io.File;
 import java.security.InvalidParameterException;
 
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -34,7 +33,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
 /**
@@ -55,15 +53,15 @@ public class BareElasticSearchFeature extends SimpleFeature {
         if (!esDirectory.exists() && !esDirectory.mkdir()) {
             throw new InvalidParameterException("Can not create directory: " + esDirectory.getAbsolutePath());
         }
-        Settings settings = ImmutableSettings.settingsBuilder()
-                                             .put("node.http.enabled", true)
-                                             .put("path.logs", esDirectory.getPath() + "/logs")
-                                             .put("path.data", esDirectory.getPath() + "/data")
-                                             .put("gateway.type", "none")
-                                             .put("index.store.type", "memory")
-                                             .put("index.number_of_shards", 1)
-                                             .put("index.number_of_replicas", 1)
-                                             .build();
+        Settings settings = Settings.settingsBuilder()
+                                    .put("node.http.enabled", true)
+                                    .put("path.home", esDirectory.getPath())
+                                    .put("path.logs", esDirectory.getPath() + "/logs")
+                                    .put("path.data", esDirectory.getPath() + "/data")
+                                    .put("index.store.type", "mmapfs")
+                                    .put("index.number_of_shards", 1)
+                                    .put("index.number_of_replicas", 1)
+                                    .build();
         node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         super.start(runner);

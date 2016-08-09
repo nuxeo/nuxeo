@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
     <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode"
-      indexStoreType="memory" httpEnabled="true" />
+      indexStoreType="mmapfs" httpEnabled="true" />
   </extension>
 
   <!-- custom writer to be used with the dynamic mapper -->
@@ -70,9 +70,6 @@
       </settings>
       <mapping>
 {
-   "_size" : {
-      "enabled" : true
-   },
    "_all" : {
       "analyzer" : "fulltext"
    },
@@ -112,8 +109,8 @@
          "type" : "multi_field",
          "fields" : {
             "children" : {
+               "analyzer" : "path_analyzer",
                "search_analyzer" : "keyword",
-               "index_analyzer" : "path_analyzer",
                "type" : "string"
             },
             "ecm:path" : {
@@ -134,10 +131,10 @@
         "type": "date"
       },
       "files:files": {
-        "filename": {
-          "type": "string"
-        },
         "properties": {
+          "filename": {
+            "type": "string"
+          },
           "file": {
             "type" : "nested",
             "include_in_parent": true,

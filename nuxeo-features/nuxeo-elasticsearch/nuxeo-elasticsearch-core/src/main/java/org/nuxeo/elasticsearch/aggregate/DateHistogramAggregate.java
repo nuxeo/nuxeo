@@ -37,14 +37,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -53,6 +53,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 
 /**
  * @since 6.0
@@ -71,7 +72,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
                                                       .timeZone(DateTimeZone.getDefault().getID());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
-            ret.interval(new DateHistogram.Interval(props.get(AGG_INTERVAL_PROP)));
+            ret.interval(new DateHistogramInterval(props.get(AGG_INTERVAL_PROP)));
         }
         if (props.containsKey(AGG_MIN_DOC_COUNT_PROP)) {
             ret.minDocCount(Long.parseLong(props.get(AGG_MIN_DOC_COUNT_PROP)));
@@ -111,17 +112,17 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
     @JsonIgnore
     @Override
-    public FilterBuilder getEsFilter() {
+    public QueryBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
             return null;
         }
-        OrFilterBuilder ret = FilterBuilders.orFilter();
+        BoolQueryBuilder ret = QueryBuilders.boolQuery();
         for (String sel : getSelection()) {
-            RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
+            RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery(getField());
             DateTime from = convertStringToDate(sel);
             DateTime to = DateHelper.plusDuration(from, getInterval());
-            rangeFilter.gte(from.getMillis()).lt(to.getMillis());
-            ret.add(rangeFilter);
+            rangeFilter.gte(from.getMillis()).lt(to.getMillis()).format(ElasticSearchConstants.EPOCH_MILLIS_FORMAT);
+            ret.should(rangeFilter);
         }
         return ret;
     }
@@ -145,10 +146,9 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            DateHistogram.Bucket dateHistoBucket = (DateHistogram.Bucket) bucket;
-            DateTime from = getDateTime(dateHistoBucket.getKeyAsDate());
+            DateTime from = (DateTime) bucket.getKey();
             DateTime to = DateHelper.plusDuration(from, getInterval());
-            nxBuckets.add(new BucketRangeDate(bucket.getKey(), from, to, dateHistoBucket.getDocCount()));
+            nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), from, to, bucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }

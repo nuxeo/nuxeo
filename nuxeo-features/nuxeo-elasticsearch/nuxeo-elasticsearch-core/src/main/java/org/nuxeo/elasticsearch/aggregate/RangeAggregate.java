@@ -25,9 +25,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
@@ -66,21 +67,21 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
 
     @JsonIgnore
     @Override
-    public OrFilterBuilder getEsFilter() {
+    public QueryBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
             return null;
         }
-        OrFilterBuilder ret = FilterBuilders.orFilter();
+        BoolQueryBuilder ret = QueryBuilders.boolQuery();
         for (AggregateRangeDefinition range : getRanges()) {
             if (getSelection().contains(range.getKey())) {
-                RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
+                RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery(getField());
                 if (range.getFrom() != null) {
                     rangeFilter.gte(range.getFrom());
                 }
                 if (range.getTo() != null) {
                     rangeFilter.lt(range.getTo());
                 }
-                ret.add(rangeFilter);
+                ret.should(rangeFilter);
             }
         }
         return ret;
@@ -92,8 +93,9 @@ public class RangeAggregate extends AggregateEsBase<BucketRange> {
         List<BucketRange> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Range.Bucket rangeBucket = (Range.Bucket) bucket;
-            nxBuckets.add(new BucketRange(bucket.getKey(), rangeBucket.getFrom(), rangeBucket.getTo(),
-                    rangeBucket.getDocCount()));
+            double from = (double) rangeBucket.getFrom();
+            double to = (double) rangeBucket.getTo();
+            nxBuckets.add(new BucketRange(bucket.getKeyAsString(), from, to, rangeBucket.getDocCount()));
         }
         Collections.sort(nxBuckets, new BucketRangeComparator());
         this.buckets = nxBuckets;

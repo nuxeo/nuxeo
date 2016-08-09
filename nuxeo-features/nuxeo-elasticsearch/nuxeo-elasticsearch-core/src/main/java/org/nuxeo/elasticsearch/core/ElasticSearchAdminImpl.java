@@ -39,14 +39,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.ImmutableSettings.Builder;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -143,9 +142,10 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             log.warn("Elasticsearch embedded configuration is ONLY for testing"
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
-        Builder sBuilder = ImmutableSettings.settingsBuilder();
+        Builder sBuilder = Settings.settingsBuilder();
         sBuilder.put("http.enabled", conf.httpEnabled())
                 .put("network.host", conf.getNetworkHost())
+                .put("path.home", conf.getHomePath())
                 .put("path.data", conf.getDataPath())
                 .put("index.number_of_shards", 1)
                 .put("index.number_of_replicas", 0)
@@ -157,9 +157,6 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 .put("http.port", conf.getHttpPort());
         if (conf.getIndexStorageType() != null) {
             sBuilder.put("index.store.type", conf.getIndexStorageType());
-            if (conf.getIndexStorageType().equals("memory")) {
-                sBuilder.put("gateway.type", "none");
-            }
         }
         Settings settings = sBuilder.build();
         log.debug("Using settings: " + settings.toDelimitedString(','));
@@ -177,17 +174,17 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private Client connectToRemote(ElasticSearchRemoteConfig config) {
         log.info("Connecting to remote ES cluster: " + config);
-        Builder builder = ImmutableSettings.settingsBuilder()
-                                           .put("cluster.name", config.getClusterName())
-                                           .put("client.transport.nodes_sampler_interval", config.getSamplerInterval())
-                                           .put("client.transport.ping_timeout", config.getPingTimeout())
-                                           .put("client.transport.ignore_cluster_name", config.isIgnoreClusterName())
-                                           .put("client.transport.sniff", config.isClusterSniff());
+        Builder builder = Settings.settingsBuilder()
+                                  .put("cluster.name", config.getClusterName())
+                                  .put("client.transport.nodes_sampler_interval", config.getSamplerInterval())
+                                  .put("client.transport.ping_timeout", config.getPingTimeout())
+                                  .put("client.transport.ignore_cluster_name", config.isIgnoreClusterName())
+                                  .put("client.transport.sniff", config.isClusterSniff());
         Settings settings = builder.build();
         if (log.isDebugEnabled()) {
             log.debug("Using settings: " + settings.toDelimitedString(','));
         }
-        TransportClient ret = new TransportClient(settings);
+        TransportClient ret = TransportClient.builder().settings(settings).build();
         String[] addresses = config.getAddresses();
         if (addresses == null) {
             log.error("You need to provide an addressList to join a cluster");
@@ -334,7 +331,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         log.warn("Optimizing index: " + indexName);
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             if (conf.getName().equals(indexName)) {
-                getClient().admin().indices().prepareOptimize(indexName).get();
+                getClient().admin().indices().prepareForceMerge(indexName).get();
             }
         }
         log.info("Optimize done");

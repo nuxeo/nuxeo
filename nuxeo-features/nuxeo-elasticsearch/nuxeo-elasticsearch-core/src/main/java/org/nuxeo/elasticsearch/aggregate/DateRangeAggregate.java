@@ -28,13 +28,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
-import org.elasticsearch.search.aggregations.bucket.range.date.DateRange;
+import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateRangeDateDefinition;
@@ -73,21 +75,21 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
 
     @JsonIgnore
     @Override
-    public OrFilterBuilder getEsFilter() {
+    public QueryBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
             return null;
         }
-        OrFilterBuilder ret = FilterBuilders.orFilter();
+        BoolQueryBuilder ret = QueryBuilders.boolQuery();
         for (AggregateRangeDateDefinition range : getDateRanges()) {
             if (getSelection().contains(range.getKey())) {
-                RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
+                RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery(getField());
                 if (range.getFromAsString() != null) {
                     rangeFilter.gte(range.getFromAsString());
                 }
                 if (range.getToAsString() != null) {
                     rangeFilter.lt(range.getToAsString());
                 }
-                ret.add(rangeFilter);
+                ret.should(rangeFilter);
             }
         }
         return ret;
@@ -98,9 +100,9 @@ public class DateRangeAggregate extends AggregateEsBase<BucketRangeDate> {
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketRangeDate> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            DateRange.Bucket rangeBucket = (DateRange.Bucket) bucket;
-            nxBuckets.add(new BucketRangeDate(bucket.getKey(), getDateTime(rangeBucket.getFromAsDate()),
-                    getDateTime(rangeBucket.getToAsDate()), rangeBucket.getDocCount()));
+            Range.Bucket rangeBucket = (Range.Bucket) bucket;
+            nxBuckets.add(new BucketRangeDate(bucket.getKeyAsString(), (DateTime) rangeBucket.getFrom(),
+                    (DateTime) rangeBucket.getTo(), rangeBucket.getDocCount()));
         }
         Collections.sort(nxBuckets, new BucketRangeDateComparator());
         this.buckets = nxBuckets;

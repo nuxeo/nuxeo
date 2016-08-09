@@ -74,16 +74,17 @@ public class TestDynamicMapping extends TestMapping {
         startTransaction();
         // check that the custom mapping applied
 
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE type1:id_int = 11"));
+        // Since ES 2.x we need to express the full path of property: type1:id_int becomes dynamic/type1/type1:id_int
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 11"));
         Assert.assertEquals(0, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE type1:id_int = 10"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE type1:name_string LIKE 'test'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test'"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02'"));
         Assert.assertEquals(1, ret.totalSize());
     }
 }

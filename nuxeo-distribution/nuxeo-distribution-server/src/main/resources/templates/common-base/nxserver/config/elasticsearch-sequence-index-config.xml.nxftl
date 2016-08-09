@@ -18,7 +18,6 @@
         {
         "_source" : {"enabled": false},
         "_all" : {"enabled": false},
-        "_type" : {"index": "no"},
         "enabled" : false
         }
       </mapping>

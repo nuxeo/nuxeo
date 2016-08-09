@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.TermsFilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -93,11 +93,11 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
 
     @JsonIgnore
     @Override
-    public TermsFilterBuilder getEsFilter() {
+    public QueryBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
             return null;
         }
-        return FilterBuilders.termsFilter(getField(), getSelection());
+        return QueryBuilders.termsQuery(getField(), getSelection());
     }
 
     @JsonIgnore
@@ -105,7 +105,7 @@ public class TermAggregate extends AggregateEsBase<BucketTerm> {
     public void parseEsBuckets(Collection<? extends MultiBucketsAggregation.Bucket> buckets) {
         List<BucketTerm> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
-            nxBuckets.add(new BucketTerm(bucket.getKey(), bucket.getDocCount()));
+            nxBuckets.add(new BucketTerm(bucket.getKeyAsString(), bucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }

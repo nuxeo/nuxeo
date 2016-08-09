@@ -44,8 +44,6 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.CommonTermsQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -80,7 +78,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;
-
 
 /**
  * Helper class that holds the conversion logic. Conversion is based on the existing NXQL Parser, we are just using a
@@ -179,14 +176,15 @@ final public class NxqlQueryConverter {
                     }
                     // add expression to the last builder
                     EsHint hint = (ref != null) ? ref.esHint : null;
-                    builders.getLast().add(makeQueryFromSimpleExpression(op.toString(), name, value, values, hint, session));
+                    builders.getLast()
+                            .add(makeQueryFromSimpleExpression(op.toString(), name, value, values, hint, session));
                 }
             }
         });
         QueryBuilder queryBuilder = ret.get();
         if (!fromList.isEmpty()) {
-            return QueryBuilders.filteredQuery(queryBuilder,
-                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null, fromList.toArray(), null, null).filter);
+            return QueryBuilders.boolQuery().must(queryBuilder).filter(makeQueryFromSimpleExpression("IN",
+                    NXQL.ECM_PRIMARYTYPE, null, fromList.toArray(), null, null).filter);
         }
         return queryBuilder;
     }
@@ -205,10 +203,10 @@ final public class NxqlQueryConverter {
         return nxqlQuery;
     }
 
-    protected static SQLQuery addSecurityPolicy(CoreSession session,  SQLQuery query) {
-        Collection<SQLQuery.Transformer> transformers = NXCore.getSecurityService().getPoliciesQueryTransformers
-                (session.getRepositoryName());
-        for (SQLQuery.Transformer trans: transformers) {
+    protected static SQLQuery addSecurityPolicy(CoreSession session, SQLQuery query) {
+        Collection<SQLQuery.Transformer> transformers = NXCore.getSecurityService().getPoliciesQueryTransformers(
+                session.getRepositoryName());
+        for (SQLQuery.Transformer trans : transformers) {
             query = trans.transform(session.getPrincipal(), query);
         }
         return query;
@@ -227,7 +225,7 @@ final public class NxqlQueryConverter {
     public static QueryAndFilter makeQueryFromSimpleExpression(String op, String nxqlName, Object value,
             Object[] values, EsHint hint, CoreSession session) {
         QueryBuilder query = null;
-        FilterBuilder filter = null;
+        QueryBuilder filter = null;
         String name = getFieldName(nxqlName, hint);
         if (hint != null && hint.operator != null) {
             if (hint.operator.startsWith("geo")) {
@@ -235,58 +233,58 @@ final public class NxqlQueryConverter {
             } else {
                 query = makeHintQuery(name, value, hint);
             }
-        } else if (nxqlName.startsWith(NXQL.ECM_FULLTEXT)
-                && ("=".equals(op) || "!=".equals(op) || "<>".equals(op) || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
+        } else if (nxqlName.startsWith(NXQL.ECM_FULLTEXT) && ("=".equals(op) || "!=".equals(op) || "<>".equals(op)
+                || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
             query = makeFulltextQuery(nxqlName, (String) value, hint);
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
-                filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
+                filter = QueryBuilders.boolQuery().mustNot(query);
                 query = null;
             }
         } else if (nxqlName.startsWith(NXQL.ECM_ANCESTORID)) {
             filter = makeAncestorIdFilter((String) value, session);
             if ("!=".equals(op) || "<>".equals(op)) {
-                filter = FilterBuilders.notFilter(filter);
+                filter = QueryBuilders.boolQuery().mustNot(filter);
             }
         } else
             switch (op) {
             case "=":
-                filter = FilterBuilders.termFilter(name, value);
+                filter = QueryBuilders.termQuery(name, value);
                 break;
             case "<>":
             case "!=":
-                filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name, value));
+                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery(name, value));
                 break;
             case ">":
-                filter = FilterBuilders.rangeFilter(name).gt(value);
+                filter = QueryBuilders.rangeQuery(name).gt(value);
                 break;
             case "<":
-                filter = FilterBuilders.rangeFilter(name).lt(value);
+                filter = QueryBuilders.rangeQuery(name).lt(value);
                 break;
             case ">=":
-                filter = FilterBuilders.rangeFilter(name).gte(value);
+                filter = QueryBuilders.rangeQuery(name).gte(value);
                 break;
             case "<=":
-                filter = FilterBuilders.rangeFilter(name).lte(value);
+                filter = QueryBuilders.rangeQuery(name).lte(value);
                 break;
             case "BETWEEN":
             case "NOT BETWEEN":
-                filter = FilterBuilders.rangeFilter(name).from(values[0]).to(values[1]);
+                filter = QueryBuilders.rangeQuery(name).from(values[0]).to(values[1]);
                 if (op.startsWith("NOT")) {
-                    filter = FilterBuilders.notFilter(filter);
+                    filter = QueryBuilders.boolQuery().mustNot(filter);
                 }
                 break;
             case "IN":
             case "NOT IN":
-                filter = FilterBuilders.inFilter(name, values);
+                filter = QueryBuilders.termsQuery(name, values);
                 if (op.startsWith("NOT")) {
-                    filter = FilterBuilders.notFilter(filter);
+                    filter = QueryBuilders.boolQuery().mustNot(filter);
                 }
                 break;
             case "IS NULL":
-                filter = FilterBuilders.missingFilter(name).nullValue(true);
+                filter = QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery(name));
                 break;
             case "IS NOT NULL":
-                filter = FilterBuilders.existsFilter(name);
+                filter = QueryBuilders.existsQuery(name);
                 break;
             case "LIKE":
             case "ILIKE":
@@ -294,7 +292,7 @@ final public class NxqlQueryConverter {
             case "NOT ILIKE":
                 query = makeLikeQuery(op, name, (String) value, hint);
                 if (op.startsWith("NOT")) {
-                    filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
+                    filter = QueryBuilders.boolQuery().mustNot(query);
                     query = null;
                 }
                 break;
@@ -307,67 +305,58 @@ final public class NxqlQueryConverter {
         return new QueryAndFilter(query, filter);
     }
 
-    private static FilterBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
-        FilterBuilder ret;
+    private static QueryBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
+        QueryBuilder ret;
         switch (hint.operator) {
         case "geo_bounding_box":
             if (values.length != 2) {
-                throw new IllegalArgumentException(String.format("Operator: %s requires 2 parameters: bottomLeft "
-                        + "and topRight point", hint.operator));
+                throw new IllegalArgumentException(String.format(
+                        "Operator: %s requires 2 parameters: bottomLeft " + "and topRight point", hint.operator));
             }
             GeoPoint bottomLeft = parseGeoPointString((String) values[0]);
             GeoPoint topRight = parseGeoPointString((String) values[1]);
-            ret = FilterBuilders.geoBoundingBoxFilter(name)
-                                .bottomLeft(bottomLeft)
-                                .topRight(topRight);
+            ret = QueryBuilders.geoBoundingBoxQuery(name).bottomLeft(bottomLeft).topRight(topRight);
             break;
         case "geo_distance":
             if (values.length != 2) {
-                throw new IllegalArgumentException(String.format("Operator: %s requires 2 parameters: point and "
-                        + "distance", hint.operator));
+                throw new IllegalArgumentException(
+                        String.format("Operator: %s requires 2 parameters: point and " + "distance", hint.operator));
             }
             GeoPoint center = parseGeoPointString((String) values[0]);
             String distance = (String) values[1];
-            ret = FilterBuilders.geoDistanceFilter(name)
-                                .point(center.lat(), center.lon())
-                                .distance(distance);
+            ret = QueryBuilders.geoDistanceQuery(name).point(center.lat(), center.lon()).distance(distance);
             break;
         case "geo_distance_range":
             if (values.length != 3) {
-                throw new IllegalArgumentException(String.format("Operator: %s requires 3 parameters: point, "
-                        + "minimal and maximal distance", hint.operator));
+                throw new IllegalArgumentException(String.format(
+                        "Operator: %s requires 3 parameters: point, " + "minimal and maximal distance", hint.operator));
             }
             center = parseGeoPointString((String) values[0]);
             String from = (String) values[1];
             String to = (String) values[2];
-            ret = FilterBuilders.geoDistanceRangeFilter(name)
-                                .point(center.lat(), center.lon())
-                                .from(from)
-                                .to(to);
+            ret = QueryBuilders.geoDistanceRangeQuery(name).point(center.lat(), center.lon()).from(from).to(to);
             break;
         case "geo_hash_cell":
             if (values.length != 2) {
-                throw new IllegalArgumentException(String.format("Operator: %s requires 2 parameters: point and "
-                        + "geohash precision", hint.operator));
+                throw new IllegalArgumentException(String.format(
+                        "Operator: %s requires 2 parameters: point and " + "geohash precision", hint.operator));
             }
             center = parseGeoPointString((String) values[0]);
             String precision = (String) values[1];
-            ret = FilterBuilders.geoHashCellFilter(name)
-                                .point(center)
-                                .precision(precision);
+            ret = QueryBuilders.geoHashCellQuery(name).point(center).precision(precision);
             break;
         case "geo_shape":
             if (values.length != 4) {
-                throw new IllegalArgumentException(String.format("Operator: %s requires 4 parameters: shapeId, type, " +
-                        "index and path", hint
-                        .operator));
+                throw new IllegalArgumentException(String.format(
+                        "Operator: %s requires 4 parameters: shapeId, type, " + "index and path", hint.operator));
             }
             String shapeId = (String) values[0];
             String shapeType = (String) values[1];
             String shapeIndex = (String) values[2];
             String shapePath = (String) values[3];
-            ret = FilterBuilders.geoShapeFilter(name, shapeId, shapeType, ShapeRelation.WITHIN).indexedShapeIndex
-                    (shapeIndex).indexedShapePath(shapePath);
+            ret = QueryBuilders.geoShapeQuery(name, shapeId, shapeType, ShapeRelation.WITHIN)
+                               .indexedShapeIndex(shapeIndex)
+                               .indexedShapePath(shapePath);
             break;
         default:
             throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
@@ -470,12 +459,12 @@ final public class NxqlQueryConverter {
         return ret;
     }
 
-    private static FilterBuilder makeStartsWithQuery(String name, Object value) {
-        FilterBuilder filter;
+    private static QueryBuilder makeStartsWithQuery(String name, Object value) {
+        QueryBuilder filter;
         String indexName = name + ".children";
         if ("/".equals(value)) {
             // match all document with a path
-            filter = FilterBuilders.existsFilter(indexName);
+            filter = QueryBuilders.existsQuery(indexName);
         } else {
             String v = String.valueOf(value);
             if (v.endsWith("/")) {
@@ -483,26 +472,25 @@ final public class NxqlQueryConverter {
             }
             if (NXQL.ECM_PATH.equals(name)) {
                 // we don't want to return the parent when searching on ecm:path, see NXP-18955
-                filter = FilterBuilders.andFilter(
-                        FilterBuilders.termFilter(indexName, v),
-                        FilterBuilders.notFilter(FilterBuilders.termFilter(name, value)));
+                filter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(indexName, v)).mustNot(
+                        QueryBuilders.termQuery(name, value));
             } else {
-                filter = FilterBuilders.termFilter(indexName, v);
+                filter = QueryBuilders.termQuery(indexName, v);
             }
         }
         return filter;
     }
 
-    private static FilterBuilder makeAncestorIdFilter(String value, CoreSession session) {
+    private static QueryBuilder makeAncestorIdFilter(String value, CoreSession session) {
         String path;
         if (session == null) {
-            return FilterBuilders.existsFilter("ancestorid-without-session");
+            return QueryBuilders.existsQuery("ancestorid-without-session");
         } else {
             try {
                 DocumentModel doc = session.getDocument(new IdRef(value));
                 path = doc.getPathAsString();
             } catch (DocumentNotFoundException e) {
-                return FilterBuilders.existsFilter("ancestorid-not-found");
+                return QueryBuilders.existsQuery("ancestorid-not-found");
             }
         }
         return makeStartsWithQuery(NXQL.ECM_PATH, path);
@@ -603,9 +591,9 @@ final public class NxqlQueryConverter {
             defaultOperator = SimpleQueryStringBuilder.Operator.AND;
         }
         String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer : "fulltext";
-        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(queryString).defaultOperator
-                (defaultOperator).analyzer(
-                analyzer);
+        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(queryString)
+                                                      .defaultOperator(defaultOperator)
+                                                      .analyzer(analyzer);
         if (hint != null && hint.index != null) {
             for (String index : hint.getIndex()) {
                 query.field(index);
@@ -689,9 +677,9 @@ final public class NxqlQueryConverter {
 
         public final QueryBuilder query;
 
-        public final FilterBuilder filter;
+        public final QueryBuilder filter;
 
-        public QueryAndFilter(QueryBuilder query, FilterBuilder filter) {
+        public QueryAndFilter(QueryBuilder query, QueryBuilder filter) {
             this.query = query;
             this.filter = filter;
         }
@@ -718,7 +706,7 @@ final public class NxqlQueryConverter {
             add(q, null);
         }
 
-        public void add(final QueryBuilder q, final FilterBuilder f) {
+        public void add(final QueryBuilder q, final QueryBuilder f) {
             if (q == null && f == null) {
                 return;
             }

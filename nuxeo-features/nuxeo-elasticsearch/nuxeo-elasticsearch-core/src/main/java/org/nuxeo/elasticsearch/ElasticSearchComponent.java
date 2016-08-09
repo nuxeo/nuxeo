@@ -493,11 +493,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public EsScrollResult scanAndScroll(NxQueryBuilder queryBuilder, long keepAlive) {
-        return ess.scanAndScroll(queryBuilder, keepAlive);
-    }
-
-    @Override
     public EsScrollResult scroll(EsScrollResult scrollResult) {
         return ess.scroll(scrollResult);
     }

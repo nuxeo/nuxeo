@@ -158,8 +158,8 @@ public class ElasticSearchIndexConfig {
             + "         \"type\" : \"multi_field\",\n" //
             + "         \"fields\" : {\n" //
             + "            \"children\" : {\n" //
+            + "               \"analyzer\" : \"path_analyzer\",\n" //
             + "               \"search_analyzer\" : \"keyword\",\n" //
-            + "               \"index_analyzer\" : \"path_analyzer\",\n" //
             + "               \"type\" : \"string\"\n" //
             + "            },\n" //
             + "            \"ecm:path\" : {\n" //

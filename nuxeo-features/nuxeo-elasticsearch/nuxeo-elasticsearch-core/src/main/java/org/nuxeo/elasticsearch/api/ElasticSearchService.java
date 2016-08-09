@@ -59,17 +59,6 @@ public interface ElasticSearchService {
     EsScrollResult scroll(NxQueryBuilder queryBuilder, long keepAlive);
 
     /**
-     * Performs the initial search of a scan-and-scroll search request using an {@link NxQueryBuilder}.
-     *
-     * @param queryBuilder
-     * @param keepAlive the search context lifetime
-     * @return an {@link EsScrollResult} including the search results and a scroll id, to be passed to the subsequent
-     *         calls to {@link #scroll(EsScrollResult)}
-     * @since 8.3
-     */
-    EsScrollResult scanAndScroll(NxQueryBuilder queryBuilder, long keepAlive);
-
-    /**
      * Retrieves the next batch of results of a scrollable search request for the given {@link EsScrollResult}.
      *
      * @return an {@link EsScrollResult} including the search results and a scroll id, to be passed to the subsequent

@@ -127,11 +127,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         return scroll(queryBuilder, SearchType.DFS_QUERY_THEN_FETCH, keepAlive);
     }
 
-    @Override
-    public EsScrollResult scanAndScroll(NxQueryBuilder queryBuilder, long keepAlive) {
-        return scroll(queryBuilder, SearchType.SCAN, keepAlive);
-    }
-
     protected EsScrollResult scroll(NxQueryBuilder queryBuilder, SearchType searchType, long keepAlive) {
         SearchResponse response = searchScroll(queryBuilder, searchType, keepAlive);
         return getScrollResults(queryBuilder, response, response.getScrollId(), keepAlive);

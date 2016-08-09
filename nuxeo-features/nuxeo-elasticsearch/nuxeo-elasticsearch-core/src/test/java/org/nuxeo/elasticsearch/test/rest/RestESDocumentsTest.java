@@ -143,7 +143,7 @@ public class RestESDocumentsTest extends BaseTest {
         ppdefinition.getProperties().put("maxResults", "1");
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                        ppdefinition, null, null, null, null, props, null),
+                        ppdefinition, null, null, 10000L, null, props, null),
                 null);
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");

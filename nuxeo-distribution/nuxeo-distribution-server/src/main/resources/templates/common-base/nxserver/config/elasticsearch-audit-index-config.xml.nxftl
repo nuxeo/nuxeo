@@ -95,8 +95,8 @@
               "type" : "multi_field",
               "fields" : {
                 "children" : {
+                  "analyzer" : "path_analyzer",
                   "search_analyzer" : "keyword",
-                  "index_analyzer" : "path_analyzer",
                   "type" : "string"
                 },
                 "docPath" : {

@@ -34,9 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
@@ -92,17 +93,17 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
 
     @JsonIgnore
     @Override
-    public OrFilterBuilder getEsFilter() {
+    public QueryBuilder getEsFilter() {
         if (getSelection().isEmpty()) {
             return null;
         }
-        OrFilterBuilder ret = FilterBuilders.orFilter();
+        BoolQueryBuilder ret = QueryBuilders.boolQuery();
         for (String sel : getSelection()) {
-            RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
+            RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery(getField());
             long from = Long.parseLong(sel);
             long to = from + getInterval();
             rangeFilter.gte(from).lt(to);
-            ret.add(rangeFilter);
+            ret.should(rangeFilter);
         }
         return ret;
     }
@@ -113,8 +114,9 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
         List<BucketRange> nxBuckets = new ArrayList<>(buckets.size());
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             Histogram.Bucket histoBucket = (Histogram.Bucket) bucket;
-            nxBuckets.add(new BucketRange(bucket.getKey(), histoBucket.getKeyAsNumber(),
-                    histoBucket.getKeyAsNumber().intValue() + getInterval(), histoBucket.getDocCount()));
+            int from = parseInt(histoBucket.getKeyAsString());
+            nxBuckets.add(
+                    new BucketRange(bucket.getKeyAsString(), from, from + getInterval(), histoBucket.getDocCount()));
         }
         this.buckets = nxBuckets;
     }
@@ -129,5 +131,14 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
             }
         }
         return interval;
+    }
+
+    protected int parseInt(String key) {
+        if ("-Infinity".equals(key)) {
+            return Integer.MIN_VALUE;
+        } else if ("+Infinity".equals(key)) {
+            return Integer.MAX_VALUE;
+        }
+        return Integer.parseInt(key);
     }
 }

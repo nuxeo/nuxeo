@@ -117,4 +117,6 @@ final public class ElasticSearchConstants {
     /** @since 7.4 */
     public static final String INDEXING_QUEUE_ID = "elasticSearchIndexing";
 
+    public static final String EPOCH_MILLIS_FORMAT = "epoch_millis";
+
 }

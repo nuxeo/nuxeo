@@ -19,10 +19,10 @@
  */
 package org.nuxeo.ecm.core.storage.sql.db;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Constructor;
+import java.nio.file.Paths;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -47,12 +47,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -60,12 +60,12 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.LeafCollector;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.h2.message.DbException;
 import org.h2.store.fs.FileUtils;
 import org.h2.tools.SimpleResultSet;
@@ -76,8 +76,6 @@ import org.h2.util.StringUtils;
  * An optimized Lucene-based fulltext indexing trigger and search.
  */
 public class H2Fulltext {
-
-    private static final Version LUCENE_VERSION = Version.LUCENE_4_10_4;
 
     private static final Map<String, Analyzer> analyzers = new ConcurrentHashMap<>();
 
@@ -346,16 +344,16 @@ public class H2Fulltext {
 
         // search index
         try {
-            BooleanQuery query = new BooleanQuery();
+            BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
             String defaultField = fieldForIndex(indexName);
             Analyzer analyzer = getAnalyzer(analyzerName);
-            QueryParser parser = new QueryParser(LUCENE_VERSION, defaultField, analyzer);
-            query.add(parser.parse(text), BooleanClause.Occur.MUST);
+            QueryParser parser = new QueryParser(defaultField, analyzer);
+            queryBuilder.add(parser.parse(text), BooleanClause.Occur.MUST);
 
             try (IndexReader reader = DirectoryReader.open(writer.getDirectory())) {
                 IndexSearcher searcher = new IndexSearcher(reader);
                 Collector collector = new ResultSetCollector(rs, reader, type);
-                searcher.search(query, collector);
+                searcher.search(queryBuilder.build(), collector);
             }
         } catch (SQLException | ParseException | IOException e) {
             throw convertException(e);
@@ -363,7 +361,7 @@ public class H2Fulltext {
         return rs;
     }
 
-    protected static class ResultSetCollector extends Collector {
+    protected static class ResultSetCollector implements Collector, LeafCollector {
         protected final SimpleResultSet rs;
 
         protected IndexReader reader;
@@ -379,8 +377,9 @@ public class H2Fulltext {
         }
 
         @Override
-        public void setNextReader(AtomicReaderContext context) {
+        public LeafCollector getLeafCollector(LeafReaderContext context) throws IOException {
             docBase = context.docBase;
+            return this;
         }
 
         @Override
@@ -388,8 +387,8 @@ public class H2Fulltext {
         }
 
         @Override
-        public boolean acceptsDocsOutOfOrder() {
-            return true;
+        public boolean needsScores() {
+            return false;
         }
 
         @Override
@@ -399,7 +398,7 @@ public class H2Fulltext {
             Object key;
             try {
                 key = asObject(doc.get(FIELD_KEY), type);
-                rs.addRow(new Object[] { key });
+                rs.addRow(key);
             } catch (SQLException e) {
                 throw new IOException(e);
             }
@@ -434,8 +433,8 @@ public class H2Fulltext {
         if (analyzer == null) {
             try {
                 Class<?> klass = Class.forName(analyzerName);
-                Constructor<?> constructor = klass.getConstructor(Version.class);
-                analyzer = (Analyzer) constructor.newInstance(LUCENE_VERSION);
+                Constructor<?> constructor = klass.getConstructor();
+                analyzer = (Analyzer) constructor.newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new SQLException(e.toString());
             }
@@ -477,9 +476,9 @@ public class H2Fulltext {
                 return indexWriter;
             }
             try {
-                Directory dir = path == null ? new RAMDirectory() : FSDirectory.open(new File(path));
+                Directory dir = path == null ? new RAMDirectory() : FSDirectory.open(Paths.get(path));
                 Analyzer an = getAnalyzer(analyzer);
-                IndexWriterConfig iwc = new IndexWriterConfig(LUCENE_VERSION, an);
+                IndexWriterConfig iwc = new IndexWriterConfig(an);
                 iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
                 indexWriter = new IndexWriter(dir, iwc);
             } catch (LockObtainFailedException e) {

@@ -26,6 +26,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,19 +39,19 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
-import org.elasticsearch.action.deletebyquery.IndexDeleteByQueryResponse;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.io.stream.BytesStreamOutput;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -301,24 +302,44 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             }
             return;
         }
-        QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders.termFilter(CHILDREN_FIELD, docPath));
-        DeleteByQueryRequestBuilder deleteRequest = esa.getClient()
-                                                       .prepareDeleteByQuery(indexName)
-                                                       .setTypes(DOC_TYPE)
-                                                       .setQuery(query);
+        QueryBuilder query = QueryBuilders.constantScoreQuery(QueryBuilders.termQuery(CHILDREN_FIELD, docPath));
+        TimeValue keepAlive = TimeValue.timeValueMinutes(1);
+        SearchRequestBuilder request = esa.getClient()
+                                          .prepareSearch(indexName)
+                                          .setTypes(DOC_TYPE)
+                                          .setScroll(keepAlive)
+                                          .setSize(100)
+                                          .setFetchSource(false)
+                                          .setQuery(query);
         if (log.isDebugEnabled()) {
-            log.debug(
-                    String.format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                            indexName, DOC_TYPE, query.toString()));
+            log.debug(String.format(
+                    "Search with scroll request: curl -XGET 'http://localhost:9200/%s/%s/_search?scroll=%s' -d '%s'",
+                    indexName, DOC_TYPE, keepAlive, query.toString()));
         }
-        DeleteByQueryResponse responses = deleteRequest.execute().actionGet();
-        for (IndexDeleteByQueryResponse response : responses) {
-            // there is no way to trace how many docs are removed
-            if (response.getFailedShards() > 0) {
-                log.error(String.format("Delete byQuery fails on shard: %d out of %d", response.getFailedShards(),
-                        response.getTotalShards()));
+        for (SearchResponse response = request.execute().actionGet(); //
+        response.getHits().getHits().length > 0; //
+        response = runNextScroll(response, keepAlive)) {
+
+            // Build bulk delete request
+            BulkRequestBuilder bulkBuilder = esa.getClient().prepareBulk();
+            for (SearchHit hit : response.getHits().getHits()) {
+                bulkBuilder.add(esa.getClient().prepareDelete(hit.getIndex(), hit.getType(), hit.getId()));
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Bulk delete request on %s elements", bulkBuilder.numberOfActions()));
+            }
+            // Run bulk delete request
+            bulkBuilder.execute().actionGet();
         }
+    }
+
+    SearchResponse runNextScroll(SearchResponse response, TimeValue keepAlive) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Scroll request: -XGET 'localhost:9200/_search/scroll' -d '{\"scroll\": \"%s\", \"scroll_id\": \"%s\" }'",
+                    keepAlive, response.getScrollId()));
+        }
+        return esa.getClient().prepareSearchScroll(response.getScrollId()).setScroll(keepAlive).execute().actionGet();
     }
 
     /**
@@ -351,13 +372,13 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         try {
             JsonFactory factory = new JsonFactory();
-            XContentBuilder builder = jsonBuilder();
-            JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
+            OutputStream out = new BytesStreamOutput();
+            JsonGenerator jsonGen = factory.createJsonGenerator(out);
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
             IndexRequestBuilder ret = esa.getClient()
                                          .prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
                                                  cmd.getTargetDocumentId())
-                                         .setSource(builder);
+                                         .setSource(jsonBuilder(out));
             if (useExternalVersion && cmd.getOrder() > 0) {
                 ret.setVersionType(VersionType.EXTERNAL).setVersion(cmd.getOrder());
             }

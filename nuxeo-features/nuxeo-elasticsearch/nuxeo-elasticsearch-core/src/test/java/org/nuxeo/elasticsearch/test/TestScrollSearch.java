@@ -106,41 +106,6 @@ public class TestScrollSearch {
                 docPaths);
     }
 
-    @Test
-    public void testScanAndScroll() throws Exception {
-
-        buildAndIndexTree(100);
-
-        // Initial search request, doesn't include any hits, sort is disabled
-        String query = "select * from Document order by ecm:path";
-        EsScrollResult res = ess.scanAndScroll(new NxQueryBuilder(session).nxql(query).limit(20), 10000);
-        assertNotNull(res);
-        assertNotNull(res.getQueryBuilder());
-        assertEquals(10000, res.getKeepAlive());
-        assertNotNull(res.getScrollId());
-
-        // Result batches
-        int totalDocCount = 0;
-        List<String> docPaths = new ArrayList<>();
-        res = ess.scroll(res);
-        DocumentModelList docs = res.getDocuments();
-        while (!docs.isEmpty()) {
-            int hitCount = docs.size();
-            assertEquals(20, hitCount);
-            totalDocCount += hitCount;
-            docPaths.addAll(docs.stream().map(doc -> doc.getPathAsString()).collect(Collectors.toList()));
-            res = ess.scroll(res);
-            docs = res.getDocuments();
-        }
-        assertEquals(100, totalDocCount);
-
-        // Order is not determined, this is a scan
-        assertTrue(CollectionUtils.isEqualCollection(session.query(query)
-                                                            .stream()
-                                                            .map(doc -> doc.getPathAsString())
-                                                            .collect(Collectors.toList()), docPaths));
-    }
-
     protected void buildAndIndexTree(int docCount) throws Exception {
         startTransaction();
         buildTree(docCount);

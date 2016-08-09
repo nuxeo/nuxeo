@@ -22,6 +22,7 @@ package org.nuxeo.elasticsearch.config;
 import java.io.File;
 import java.io.Serializable;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -42,6 +43,10 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     @XNode("@nodeName")
     protected String nodeName = "Nuxeo";
+
+    // @since 8.4
+    @XNode("@pathHome")
+    private String homePath;
 
     @XNode("@pathData")
     protected String dataPath;
@@ -66,6 +71,18 @@ public class ElasticSearchLocalConfig implements Serializable {
         return clusterName;
     }
 
+    /**
+     * @since 8.4
+     */
+    public String getHomePath() {
+        if (homePath == null) {
+            // Since ES 2.X we need to set a home path for embedded node, but it is not used by the bundle
+            File dir = new File(Environment.getDefault().getTemp(), "elasticsearch");
+            homePath = dir.getPath();
+        }
+        return homePath;
+    }
+
     public String getDataPath() {
         if (dataPath == null) {
             File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
@@ -76,11 +93,7 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public String getIndexStorageType() {
         if (indexStoreType == null) {
-            if (Framework.isTestModeSet()) {
-                indexStoreType = "memory";
-            } else {
-                indexStoreType = "mmapfs";
-            }
+            indexStoreType = "mmapfs";
         }
         return indexStoreType;
     }
@@ -110,6 +123,13 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public void setDataPath(String dataPath) {
         this.dataPath = dataPath;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public void setHomePath(String homePath) {
+        this.homePath = homePath;
     }
 
     public void setEnabled(boolean isEnabled) {

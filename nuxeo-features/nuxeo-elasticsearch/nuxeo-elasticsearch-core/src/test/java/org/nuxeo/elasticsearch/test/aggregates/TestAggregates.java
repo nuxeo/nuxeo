@@ -53,7 +53,6 @@ import org.nuxeo.ecm.platform.query.core.AggregateRangeDateDescriptor;
 import org.nuxeo.ecm.platform.query.core.AggregateRangeDescriptor;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
-import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
 import org.nuxeo.elasticsearch.aggregate.DateHistogramAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -417,21 +416,22 @@ public class TestAggregates {
                 + "    \"match_all\" : { }\n" //
                 + "  },\n" //
                 + "  \"post_filter\" : {\n" //
-                + "    \"and\" : {\n" //
-                + "      \"filters\" : [ {\n" //
-                + "        \"or\" : {\n" //
-                + "          \"filters\" : [ {\n" //
+                + "    \"bool\" : {\n" //
+                + "      \"must\" : {\n" //
+                + "        \"bool\" : {\n" //
+                + "          \"should\" : {\n" //
                 + "            \"range\" : {\n" //
                 + "              \"dc:created\" : {\n" //
                 + "                \"from\" : 1470009600000,\n" // Mon Aug  1 00:00:00 UTC 2016
                 + "                \"to\" : 1472688000000,\n" // Thu Sep  1 00:00:00 UTC 2016
+                + "                \"format\" : \"epoch_millis\",\n"
                 + "                \"include_lower\" : true,\n" //
                 + "                \"include_upper\" : false\n" //
                 + "              }\n" //
                 + "            }\n" //
-                + "          } ]\n" //
+                + "          }\n" //
                 + "        }\n" //
-                + "      } ]\n" //
+                + "      }\n" //
                 + "    }\n" //
                 + "  },\n" //
                 + "  \"fields\" : \"_id\",\n" //
@@ -448,7 +448,7 @@ public class TestAggregates {
                 + "            \"order\" : {\n" //
                 + "              \"_count\" : \"desc\"\n" //
                 + "            },\n" //
-                + "            \"pre_zone\" : \"UTC\",\n" //
+                + "            \"time_zone\" : \"UTC\",\n" //
                 + "            \"format\" : \"yyy-MM\"\n" //
                 + "          }\n" //
                 + "        }\n" //
@@ -494,7 +494,7 @@ public class TestAggregates {
                         + "            \"order\" : {\n" //
                         + "              \"_count\" : \"desc\"\n" //
                         + "            },\n" //
-                        + "            \"pre_zone\" : \"" + DateTimeZone.getDefault().getID() + "\"\n" //
+                        + "            \"time_zone\" : \"" + DateTimeZone.getDefault().getID() + "\"\n" //
                         + "          }\n" //
                         + "        }\n" //
                         + "      }\n" //

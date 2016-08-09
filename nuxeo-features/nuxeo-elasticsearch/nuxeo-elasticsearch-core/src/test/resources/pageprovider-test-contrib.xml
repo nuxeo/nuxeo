@@ -32,7 +32,7 @@
     <genericPageProvider name="nxql_search"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <property name="maxResults">-1</property>
+      <property name="maxResults">10000</property>
       <pattern quoteParameters="false" escapeParameters="false">?</pattern>
       <parameter>#{documentSearchActions.nxqlQuery}</parameter>
       <pageSize>20</pageSize>
@@ -135,7 +135,7 @@
     <genericPageProvider name="aggregates_1"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <property name="maxResults">-1</property>
+      <property name="maxResults">10000</property>
       <pageSize>20</pageSize>
       <pattern>SELECT * FROM Document</pattern>
       <aggregates>
@@ -183,6 +183,7 @@
             <property name="interval">1024</property>
             <property name="extendedBoundsMin">0</property>
             <property name="extendedBoundsMax">1234567</property>
+            <property name="minDocCount">1</property>
             <property name="order">key asc</property>
           </properties>
         </aggregate>
@@ -193,6 +194,7 @@
             <property name="format">dd-MM-yyy</property>
             <property name="extendedBoundsMin">now-1m</property>
             <property name="extendedBoundsMax">now</property>
+            <property name="minDocCount">1</property>
             <property name="timeZone">-02:00</property>
             <property name="preZone">-00:42</property>
             <!-- property name="order">count desc</property-->
@@ -236,7 +238,7 @@
     <genericPageProvider name="aggregates_2"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
-      <property name="maxResults">-1</property>
+      <property name="maxResults">10000</property>
       <pageSize>20</pageSize>
       <pattern>SELECT * FROM Document</pattern>
       <aggregates>
