@@ -152,11 +152,11 @@ public class TestFetchDocumentsFromEs {
 
         for (SearchHit sh : result.getElasticsearchResponse().getHits()) {
             String path = (String) sh.getSource().get("ecm:path");
-            int pathDepth = (int) sh.getSource().get("ecm:path.depth");
+            int pathDepth = (int) sh.getSource().get("ecm:path@depth");
             String[] split =path.split("/");
             Assert.assertEquals(split.length, pathDepth);
             for (int i = 1; i < split.length; i++) {
-                Assert.assertEquals(split[i], sh.getSource().get("ecm:path.level" + i));
+                Assert.assertEquals(split[i], sh.getSource().get("ecm:path@level" + i));
             }
         }
 
