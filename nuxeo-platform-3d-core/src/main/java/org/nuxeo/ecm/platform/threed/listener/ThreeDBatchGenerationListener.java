@@ -30,6 +30,7 @@ import org.nuxeo.ecm.platform.threed.service.ThreeDBatchUpdateWork;
 import org.nuxeo.runtime.api.Framework;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
 
 /**
  * Listener batch updating transmission formats and renders if the main Blob has changed.
@@ -49,7 +50,7 @@ public class ThreeDBatchGenerationListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         Property origThreeDProperty = doc.getProperty("file:content");
         Blob threedMain = (Blob) origThreeDProperty.getValue();
-        if (threedMain != null && (DOCUMENT_CREATED.equals(event.getName()) || origThreeDProperty.isDirty())) {
+        if (doc.hasFacet(THREED_FACET) && threedMain != null && !doc.isProxy()) {
             ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
             WorkManager workManager = Framework.getLocalService(WorkManager.class);
             workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);

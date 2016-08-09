@@ -128,7 +128,9 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         // get all the 3d content blobs
         List<Blob> in = new ArrayList<>();
         in.add(originalThreed.getBlob());
-        in.addAll(originalThreed.getResources());
+        if (originalThreed.getResources() != null) {
+            in.addAll(originalThreed.getResources());
+        }
 
         // gather 3D contribution default contributions
         List<RenderView> renderViews = automaticRenderViews.registry.values()
@@ -163,8 +165,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
         // spherical coordinates
         params.put(COORDS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getId()).collect(
-                        Collectors.joining(" ")));
+                renderViews.stream().map(renderView -> renderView.getId()).collect(Collectors.joining(" ")));
 
         BlobHolder result = cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
 

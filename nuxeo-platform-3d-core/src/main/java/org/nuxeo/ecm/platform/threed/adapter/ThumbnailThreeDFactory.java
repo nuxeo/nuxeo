@@ -21,8 +21,7 @@ package org.nuxeo.ecm.platform.threed.adapter;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
-import org.nuxeo.ecm.platform.picture.api.PictureView;
-import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
+import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
 import java.io.File;
@@ -43,23 +42,20 @@ public class ThumbnailThreeDFactory implements ThumbnailFactory {
         if (!documentModel.hasFacet(THREED_FACET)) {
             throw new NuxeoException("Document is not 3D");
         }
+        PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
+        Blob thumbnailBlob = picture.getPictureFromTitle(THUMBNAIL_PICTURE_TITLE);
 
-        MultiviewPicture mViewPicture = documentModel.getAdapter(MultiviewPicture.class);
-        PictureView thumbnailView = mViewPicture.getView(THUMBNAIL_PICTURE_TITLE);
-        if (thumbnailView == null || thumbnailView.getBlob() == null) {
-            // try thumbnail view
-            thumbnailView = mViewPicture.getView("Thumbnail");
-            if (thumbnailView == null || thumbnailView.getBlob() == null) {
-                TypeInfo docType = documentModel.getAdapter(TypeInfo.class);
-                try {
-                    return Blobs.createBlob(
-                            FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator + docType.getBigIcon()));
-                } catch (IOException e) {
-                    throw new NuxeoException(e);
-                }
+        if (thumbnailBlob == null) {
+            // do default
+            TypeInfo docType = documentModel.getAdapter(TypeInfo.class);
+            try {
+                return Blobs.createBlob(
+                        FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator + docType.getBigIcon()));
+            } catch (IOException e) {
+                throw new NuxeoException(e);
             }
         }
-        return thumbnailView.getBlob();
+        return thumbnailBlob;
     }
 
     @Override
