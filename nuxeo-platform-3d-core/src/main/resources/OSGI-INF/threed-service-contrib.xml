@@ -6,12 +6,10 @@
     </documentation>
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
-               point="pictureConversions">
+               point="automaticLOD">
 
         <automaticLOD percentage="33" enabled="true" rendition="true" renditionVisible="true"/>
-
         <automaticLOD percentage="11" enabled="true" rendition="true" renditionVisible="true"/>
-
         <automaticLOD percentage="3" enabled="true" rendition="true" renditionVisible="true"/>
 
     </extension>
@@ -20,30 +18,21 @@
                point="renderViews">
 
         <renderView name="isometric" azimuth="45" zenith="45" enabled="true" rendition="true" renditionVisible="true"/>
-
         <renderView name="top" azimuth="90" zenith="0" enabled="true" rendition="true" renditionVisible="true"/>
-
         <renderView name="left" azimuth="0" zenith="90" enabled="true" rendition="true" renditionVisible="true"/>
-
         <renderView name="right" azimuth="0" zenith="-90" enabled="true" rendition="true" renditionVisible="true"/>
-
         <renderView name="front" azimuth="0" zenith="0" enabled="true" rendition="true" renditionVisible="true"/>
-
         <renderView name="behind" azimuth="0" zenith="180" enabled="true" rendition="true" renditionVisible="true"/>
-
         <renderView name="bottom" azimuth="-90" zenith="0" enabled="true" rendition="true" renditionVisible="true"/>
 
     </extension>
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
-               point="renderViews">
+               point="automaticRenderViews">
 
         <automaticRenderView name="isometric" enable="true"/>
-
         <automaticRenderView name="top" enable="true"/>
-
         <automaticRenderView name="front" enable="true"/>
-
         <automaticRenderView name="left" enable="true"/>
 
     </extension>

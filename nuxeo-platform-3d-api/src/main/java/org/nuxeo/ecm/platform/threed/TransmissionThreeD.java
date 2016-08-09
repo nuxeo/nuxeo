@@ -50,7 +50,8 @@ public class TransmissionThreeD extends ThreeD {
     public TransmissionThreeD(Map<String, Object> map) {
         super((Blob) map.get(CONTENT), null);
         name = (String) map.get(NAME);
-        lod = (int) map.get(LOD);
+        Long lodLong = (Long) map.get(LOD);
+        lod = (lodLong != null) ? lodLong.intValue() : 0;
     }
 
     public String getTitle() {

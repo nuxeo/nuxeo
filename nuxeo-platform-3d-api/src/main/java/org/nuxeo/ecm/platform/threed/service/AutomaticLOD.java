@@ -49,6 +49,10 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
         renditionVisible = other.renditionVisible;
     }
 
+    public AutomaticLOD() {
+        super();
+    }
+
     public boolean isEnabled() {
         return (enabled == null) || enabled;
     }

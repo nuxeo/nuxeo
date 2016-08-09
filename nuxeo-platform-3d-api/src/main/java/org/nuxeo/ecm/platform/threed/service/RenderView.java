@@ -57,6 +57,10 @@ public class RenderView implements Comparable<RenderView> {
         renditionVisible = other.renditionVisible;
     }
 
+    public RenderView() {
+        super();
+    }
+
     public String getName() {
         return name;
     }

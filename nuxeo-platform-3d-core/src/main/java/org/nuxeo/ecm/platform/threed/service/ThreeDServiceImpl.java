@@ -183,7 +183,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
 
     @Override
     public AutomaticLOD getAutomaticLOD(int percentage) {
-        return automaticLODs.registry.get(percentage);
+        return automaticLODs.registry.get(String.valueOf(percentage));
     }
 
     @Override

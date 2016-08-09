@@ -57,8 +57,10 @@ public class ThreeDRenderView {
     public ThreeDRenderView(Map<String, Object> map) {
         title = (String) map.get(TITLE);
         content = (Blob) map.get(CONTENT);
-        azimuth = (int) map.get(AZIMUTH);
-        zenith = (int) map.get(ZENITH);
+        Long azimuthLong = (Long) map.get(AZIMUTH);
+        azimuth = (azimuthLong != null) ? azimuthLong.intValue() : 0;
+        Long zenithLong = (Long) map.get(ZENITH);
+        zenith = (zenithLong != null) ? zenithLong.intValue() : 0;
     }
 
     public Blob getContent() {

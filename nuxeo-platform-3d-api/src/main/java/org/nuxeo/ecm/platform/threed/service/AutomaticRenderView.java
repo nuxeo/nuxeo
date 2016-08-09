@@ -41,6 +41,10 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
         enabled = other.enabled;
     }
 
+    public AutomaticRenderView() {
+        super();
+    }
+
     public String getName() {
         return name;
     }
