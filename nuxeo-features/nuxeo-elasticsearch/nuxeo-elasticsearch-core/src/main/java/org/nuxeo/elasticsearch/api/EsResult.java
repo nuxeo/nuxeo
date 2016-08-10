@@ -24,7 +24,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
-
+import org.nuxeo.ecm.platform.query.api.Bucket;
 
 /**
  * @since 6.0
@@ -34,18 +34,18 @@ public class EsResult {
 
     private final IterableQueryResult rows;
 
-    private final List<Aggregate> aggregates;
+    private final List<Aggregate<Bucket>> aggregates;
 
     private final SearchResponse response;
 
-    public EsResult(DocumentModelList documents, List<Aggregate> aggregates, SearchResponse response) {
+    public EsResult(DocumentModelList documents, List<Aggregate<Bucket>> aggregates, SearchResponse response) {
         this.documents = documents;
         this.rows = null;
         this.aggregates = aggregates;
         this.response = response;
     }
 
-    public EsResult(IterableQueryResult rows, List<Aggregate> aggregates, SearchResponse response) {
+    public EsResult(IterableQueryResult rows, List<Aggregate<Bucket>> aggregates, SearchResponse response) {
         this.documents = null;
         this.rows = rows;
         this.aggregates = aggregates;
@@ -79,9 +79,9 @@ public class EsResult {
     }
 
     /**
-     * Get the aggretages list or null if onlyElasticsearchResponse option is set.
+     * Get the aggregates list or null if onlyElasticsearchResponse option is set.
      */
-    public List<Aggregate> getAggregates() {
+    public List<Aggregate<Bucket>> getAggregates() {
         return aggregates;
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@
  */
 
 package org.nuxeo.elasticsearch.test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -58,9 +61,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @SuppressWarnings("unchecked")
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -85,6 +85,7 @@ public class TestPageProvider {
     ElasticSearchService ess;
 
     private int commandProcessed;
+
     private Priority consoleThresold;
 
     // Number of processed command since the startTransaction
@@ -181,11 +182,11 @@ public class TestPageProvider {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN");
         Assert.assertNotNull(ppdef);
 
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
-        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN",
-                ppdef, null, null, pageSize, (long) 0, props);
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN", ppdef,
+                null, null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -201,7 +202,7 @@ public class TestPageProvider {
 
         startTransaction();
         // get current page
-        List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
+        List<DocumentModel> p = pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertNotNull(p);
         Assert.assertEquals(pageSize, p.size());
@@ -210,7 +211,7 @@ public class TestPageProvider {
         Assert.assertEquals("TestMe9", doc.getTitle());
 
         pp.nextPage();
-        p = (List<DocumentModel>) pp.getCurrentPage();
+        p = pp.getCurrentPage();
         Assert.assertEquals(pageSize, p.size());
         doc = p.get((int) pageSize - 1);
         Assert.assertEquals("TestMe0", doc.getTitle());
@@ -218,10 +219,10 @@ public class TestPageProvider {
         pageSize = 0;
         ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN2");
         Assert.assertNotNull(ppdef);
-        pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN2",
-                ppdef, null, null, pageSize, (long) 0, props);
+        pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN2", ppdef, null, null, pageSize,
+                (long) 0, props);
         Assert.assertNotNull(pp);
-        p = (List<DocumentModel>) pp.getCurrentPage();
+        p = pp.getCurrentPage();
         Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertEquals(10, p.size());
         doc = p.get(0);
@@ -236,7 +237,7 @@ public class TestPageProvider {
 
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("nxql_search");
         Assert.assertNotNull(ppdef);
-        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> props = new HashMap<>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null, null, pageSize, (long) 0, props);
@@ -257,11 +258,13 @@ public class TestPageProvider {
         pp.setParameters(params);
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
         String esquery = ((ElasticSearchNxqlPageProvider) pp).getCurrentQueryAsEsBuilder().toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"filtered\" : {\n" + "    \"query\" : {\n" + "      \"match\" : {\n"
-                + "        \"dc:title\" : {\n" + "          \"query\" : \"Test\",\n"
-                + "          \"type\" : \"phrase_prefix\"\n" + "        }\n" + "      }\n" + "    },\n"
-                + "    \"filter\" : {\n" + "      \"terms\" : {\n" + "        \"ecm:primaryType\" : [ \"File\" ]\n"
-                + "      }\n" + "    }\n" + "  }\n" + "}", esquery);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"filtered\" : {\n" + "    \"query\" : {\n" + "      \"match\" : {\n"
+                        + "        \"dc:title\" : {\n" + "          \"query\" : \"Test\",\n"
+                        + "          \"type\" : \"phrase_prefix\"\n" + "        }\n" + "      }\n" + "    },\n"
+                        + "    \"filter\" : {\n" + "      \"terms\" : {\n"
+                        + "        \"ecm:primaryType\" : [ \"File\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                esquery);
 
         Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertNotNull(p);
@@ -325,9 +328,7 @@ public class TestPageProvider {
         restoreConsoleLog();
         assertNotNull(p);
         assertEquals(0, p.size());
-        assertEquals(
-                "Syntax error: Invalid token <ORDER BY> at offset 29",
-                pp.getErrorMessage());
+        assertEquals("Syntax error: Invalid token <ORDER BY> at offset 29", pp.getErrorMessage());
     }
 
     @Test
@@ -348,8 +349,8 @@ public class TestPageProvider {
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" + "  \"bool\" : {\n" + "    \"must\" : {\n"
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"terms\" : {\n"
-                + "            \"dc:title\" : [ \"foo\" ]\n" + "          }\n" + "        }\n" + "      }\n"
-                + "    }\n" + "  }\n" + "}", qb.toString());
+                + "            \"dc:title\" : [ \"foo\" ]\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n"
+                + "  }\n" + "}", qb.toString());
 
         // criteria with no values are removed
         model.setPropertyValue("dc:subjects", new String[] {});
@@ -442,8 +443,8 @@ public class TestPageProvider {
                 + "      }\n" + "    }, {\n" + "      \"wildcard\" : {\n" + "        \"dc:title\" : {\n"
                 + "          \"wildcard\" : \"bar\"\n" + "        }\n" + "      }\n" + "    }, {\n"
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"missing\" : {\n"
-                + "            \"field\" : \"dc:modified\",\n" + "            \"null_value\" : true\n"
-                + "          }\n" + "        }\n" + "      }\n" + "    } ]\n" + "  }\n" + "}", qb.toString());
+                + "            \"field\" : \"dc:modified\",\n" + "            \"null_value\" : true\n" + "          }\n"
+                + "        }\n" + "      }\n" + "    } ]\n" + "  }\n" + "}", qb.toString());
 
         // only boolean available in schema without default value
         model.setPropertyValue("search:isPresent", Boolean.FALSE);
@@ -453,11 +454,11 @@ public class TestPageProvider {
                 + "      }\n" + "    }, {\n" + "      \"wildcard\" : {\n" + "        \"dc:title\" : {\n"
                 + "          \"wildcard\" : \"bar\"\n" + "        }\n" + "      }\n" + "    }, {\n"
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"missing\" : {\n"
-                + "            \"field\" : \"dc:modified\",\n" + "            \"null_value\" : true\n"
-                + "          }\n" + "        }\n" + "      }\n" + "    } ]\n" + "  }\n" + "}", qb.toString());
+                + "            \"field\" : \"dc:modified\",\n" + "            \"null_value\" : true\n" + "          }\n"
+                + "        }\n" + "      }\n" + "    } ]\n" + "  }\n" + "}", qb.toString());
 
-        qb = PageProviderQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'", new Object[] { "Document", "dc:title",
-                null }, false, true, true);
+        qb = PageProviderQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'",
+                new Object[] { "Document", "dc:title", null }, false, true, true);
         assertEqualsEvenUnderWindows("{\n" + "  \"query_string\" : {\n"
                 + "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\"\n" + "  }\n" + "}", qb.toString());
 
@@ -474,12 +475,13 @@ public class TestPageProvider {
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
         model.setPropertyValue("search:fulltext_all", "you know for search");
         qb = PageProviderQueryBuilder.makeQuery(model, whereClause, params, true);
-        assertEqualsEvenUnderWindows("{\n" + "  \"bool\" : {\n" + "    \"must\" : [ {\n"
-                + "      \"query_string\" : {\n" + "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n"
-                + "      }\n" + "    }, {\n" + "      \"simple_query_string\" : {\n"
-                + "        \"query\" : \"you know for search\",\n" + "        \"fields\" : [ \"_all\" ],\n"
-                + "        \"analyzer\" : \"fulltext\",\n" + "        \"default_operator\" : \"and\"\n" + "      }\n"
-                + "    } ]\n" + "  }\n" + "}", qb.toString());
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"bool\" : {\n" + "    \"must\" : [ {\n" + "      \"query_string\" : {\n"
+                        + "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" + "      }\n" + "    }, {\n"
+                        + "      \"simple_query_string\" : {\n" + "        \"query\" : \"you know for search\",\n"
+                        + "        \"fields\" : [ \"_all\" ],\n" + "        \"analyzer\" : \"fulltext\",\n"
+                        + "        \"default_operator\" : \"and\"\n" + "      }\n" + "    } ]\n" + "  }\n" + "}",
+                qb.toString());
     }
 
     @Test

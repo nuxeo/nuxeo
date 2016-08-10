@@ -81,8 +81,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
-    public static final String QUERY = "select * from Document where " +
-            "ecm:currentLifeCycleState <> 'deleted'";
+    public static final String QUERY = "select * from Document where " + "ecm:currentLifeCycleState <> 'deleted'";
 
     @Inject
     PageProviderService pageProviderService;
@@ -135,15 +134,17 @@ public class RestESDocumentsTest extends BaseTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void isQueryEndpointCanSwitchToES(){
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+    public void isQueryEndpointCanSwitchToES() {
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-                PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(SearchAdapter.pageProviderName);
+        PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
+                SearchAdapter.pageProviderName);
         ppdefinition.setPattern(QUERY);
         ppdefinition.getProperties().put("maxResults", "1");
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                        ppdefinition, null, null, null, null, props, null), null);
+                        ppdefinition, null, null, null, null, props, null),
+                null);
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");
         }

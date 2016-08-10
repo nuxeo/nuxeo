@@ -79,7 +79,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             log.debug(String.format("Perform query for provider '%s': with pageSize=%d, offset=%d", getName(),
                     getMinMaxPageSize(), getCurrentPageOffset()));
         }
-        currentPageDocuments = new ArrayList<DocumentModel>();
+        currentPageDocuments = new ArrayList<>();
         CoreSession coreSession = getCoreSession();
         if (query == null) {
             buildQuery(coreSession);
@@ -90,8 +90,10 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         // Build and execute the ES query
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
-            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query).offset(
-                    (int) getCurrentPageOffset()).limit(getLimit()).addAggregates(buildAggregates());
+            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query)
+                                                                         .offset((int) getCurrentPageOffset())
+                                                                         .limit(getLimit())
+                                                                         .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -165,7 +167,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         if (value == null) {
             return false;
         }
-        return Boolean.valueOf(value);
+        return Boolean.parseBoolean(value);
     }
 
     @Override
@@ -182,7 +184,6 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     /**
      * Extends the default implementation to add results of aggregates
      *
-     * @param eventProps
      * @since 7.4
      */
     @Override
@@ -190,12 +191,12 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
 
         super.incorporateAggregates(eventProps);
         if (currentAggregates != null) {
-            HashMap<String, Serializable> aggregateMatches = new HashMap<String, Serializable>();
+            HashMap<String, Serializable> aggregateMatches = new HashMap<>();
             for (String key : currentAggregates.keySet()) {
                 Aggregate<? extends Bucket> ag = currentAggregates.get(key);
-                ArrayList<HashMap<String, Serializable>> buckets = new ArrayList<HashMap<String, Serializable>>();
+                ArrayList<HashMap<String, Serializable>> buckets = new ArrayList<>();
                 for (Bucket bucket : ag.getBuckets()) {
-                    HashMap<String, Serializable> b = new HashMap<String, Serializable>();
+                    HashMap<String, Serializable> b = new HashMap<>();
                     b.put("key", bucket.getKey());
                     b.put("count", bucket.getDocCount());
                     buckets.add(b);

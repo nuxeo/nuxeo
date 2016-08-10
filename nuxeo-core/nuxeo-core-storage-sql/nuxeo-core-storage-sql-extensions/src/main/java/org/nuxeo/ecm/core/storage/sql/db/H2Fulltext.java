@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,9 +79,9 @@ public class H2Fulltext {
 
     private static final Version LUCENE_VERSION = Version.LUCENE_4_10_4;
 
-    private static final Map<String, Analyzer> analyzers = new ConcurrentHashMap<String, Analyzer>();
+    private static final Map<String, Analyzer> analyzers = new ConcurrentHashMap<>();
 
-    private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
+    private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<>();
 
     private static final String FT_SCHEMA = "NXFT";
 
@@ -118,8 +118,6 @@ public class H2Fulltext {
      *      &quot;org.nuxeo.ecm.core.storage.sql.db.H2Fulltext.init&quot;;
      *  CALL NXFT_INIT();
      * </pre>
-     *
-     * @param conn
      */
     public static void init(Connection conn) throws SQLException {
         try (Statement st = conn.createStatement()) {
@@ -176,8 +174,8 @@ public class H2Fulltext {
             ps.setString(1, indexName);
             ps.execute();
         }
-        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO " + FT_TABLE
-                + "(NAME, SCHEMA, TABLE, COLUMNS, ANALYZER) VALUES(?, ?, ?, ?, ?)")) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO " + FT_TABLE + "(NAME, SCHEMA, TABLE, COLUMNS, ANALYZER) VALUES(?, ?, ?, ?, ?)")) {
             ps.setString(1, indexName);
             ps.setString(2, schema);
             ps.setString(3, table);
@@ -196,7 +194,7 @@ public class H2Fulltext {
         removeIndexFiles(conn);
         try (Statement st = conn.createStatement()) {
             try (ResultSet rs = st.executeQuery("SELECT * FROM " + FT_TABLE)) {
-                Set<String> done = new HashSet<String>();
+                Set<String> done = new HashSet<>();
                 while (rs.next()) {
                     String schema = rs.getString("SCHEMA");
                     String table = rs.getString("TABLE");
@@ -247,9 +245,9 @@ public class H2Fulltext {
             schema = StringUtils.quoteIdentifier(schema);
             String trigger = schema + '.' + StringUtils.quoteIdentifier(PREFIX + table);
             st.execute("DROP TRIGGER IF EXISTS " + trigger);
-            st.execute(String.format("CREATE TRIGGER %s " + "AFTER INSERT, UPDATE, DELETE ON %s.%s "
-                    + "FOR EACH ROW CALL \"%s\"", trigger, schema, StringUtils.quoteIdentifier(table),
-                    H2Fulltext.Trigger.class.getName()));
+            st.execute(String.format(
+                    "CREATE TRIGGER %s " + "AFTER INSERT, UPDATE, DELETE ON %s.%s " + "FOR EACH ROW CALL \"%s\"",
+                    trigger, schema, StringUtils.quoteIdentifier(table), H2Fulltext.Trigger.class.getName()));
         }
     }
 
@@ -314,8 +312,8 @@ public class H2Fulltext {
         String analyzerName;
 
         // find schema, table and analyzer
-        try (PreparedStatement ps = conn.prepareStatement("SELECT SCHEMA, TABLE, ANALYZER FROM " + FT_TABLE
-                + " WHERE NAME = ?")) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT SCHEMA, TABLE, ANALYZER FROM " + FT_TABLE + " WHERE NAME = ?")) {
             ps.setString(1, indexName);
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
@@ -629,7 +627,8 @@ public class H2Fulltext {
             try (ResultSet rs = meta.getPrimaryKeys(null, schema, table)) {
                 while (rs.next()) {
                     if (primaryKeyName != null) {
-                        throw new SQLException("Can only index primary keys on one column for: " + schema + '.' + table);
+                        throw new SQLException(
+                                "Can only index primary keys on one column for: " + schema + '.' + table);
                     }
                     primaryKeyName = rs.getString("COLUMN_NAME");
                 }
@@ -648,8 +647,8 @@ public class H2Fulltext {
             }
 
             // find all columns info
-            Map<String, Integer> allColumnTypes = new HashMap<String, Integer>();
-            Map<String, Integer> allColumnIndices = new HashMap<String, Integer>();
+            Map<String, Integer> allColumnTypes = new HashMap<>();
+            Map<String, Integer> allColumnIndices = new HashMap<>();
             try (ResultSet rs = meta.getColumns(null, schema, table, null)) {
                 while (rs.next()) {
                     String name = rs.getString("COLUMN_NAME");
@@ -661,13 +660,13 @@ public class H2Fulltext {
             }
 
             // find columns configured for indexing
-            try (PreparedStatement ps = conn.prepareStatement("SELECT NAME, COLUMNS, ANALYZER FROM " + FT_TABLE
-                    + " WHERE SCHEMA = ? AND TABLE = ?")) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT NAME, COLUMNS, ANALYZER FROM " + FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?")) {
                 ps.setString(1, schema);
                 ps.setString(2, table);
                 try (ResultSet rs = ps.executeQuery()) {
-                    columnTypes = new HashMap<String, int[]>();
-                    columnIndices = new HashMap<String, int[]>();
+                    columnTypes = new HashMap<>();
+                    columnIndices = new HashMap<>();
                     while (rs.next()) {
                         String index = rs.getString(1);
                         String columns = rs.getString(2);
@@ -741,9 +740,8 @@ public class H2Fulltext {
                 throw convertException(e);
             } catch (org.apache.lucene.store.AlreadyClosedException e) {
                 // DEBUG
-                log.error(
-                        "org.apache.lucene.store.AlreadyClosedException in thread " + Thread.currentThread().getName()
-                                + ", last close was in thread " + lastIndexWriterCloseThread, lastIndexWriterClose);
+                log.error("org.apache.lucene.store.AlreadyClosedException in thread " + Thread.currentThread().getName()
+                        + ", last close was in thread " + lastIndexWriterCloseThread, lastIndexWriterClose);
                 throw e;
             }
         }

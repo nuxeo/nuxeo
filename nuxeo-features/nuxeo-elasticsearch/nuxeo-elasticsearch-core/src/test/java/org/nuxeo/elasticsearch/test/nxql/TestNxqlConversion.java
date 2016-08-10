@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,22 +98,39 @@ public class TestNxqlConversion {
 
         buildDocs();
 
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.queryStringQuery(" dc\\:nature:\"Nature1\" AND dc\\:title:\"File1\"")).setFrom(0).setSize
-                (60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setQuery(QueryBuilders.queryStringQuery(
+                                                   " dc\\:nature:\"Nature1\" AND dc\\:title:\"File1\""))
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.queryStringQuery(" dc\\:nature:\"Nature2\" AND dc\\:title:\"File1\"")).setFrom(0).setSize
-                (60).execute().actionGet();
+        searchResponse = esa.getClient()
+                            .prepareSearch(IDX_NAME)
+                            .setTypes(TYPE_NAME)
+                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                            .setQuery(
+                                    QueryBuilders.queryStringQuery(" dc\\:nature:\"Nature2\" AND dc\\:title:\"File1\""))
+                            .setFrom(0)
+                            .setSize(60)
+                            .execute()
+                            .actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.queryStringQuery(" NOT " +
-                "dc\\:nature:\"Nature2\"")).setFrom(
-                0).setSize(60).execute().actionGet();
+        searchResponse = esa.getClient()
+                            .prepareSearch(IDX_NAME)
+                            .setTypes(TYPE_NAME)
+                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                            .setQuery(QueryBuilders.queryStringQuery(" NOT " + "dc\\:nature:\"Nature2\""))
+                            .setFrom(0)
+                            .setSize(60)
+                            .execute()
+                            .actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
         checkNXQL("select * from Document where dc:nature='Nature2' and dc:title='File2'", 1);
@@ -172,8 +189,8 @@ public class TestNxqlConversion {
                 + "        \"ecm:primaryType\" : [ \"File\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from File, Note").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"filtered\" : {\n" + "    \"query\" : {\n"
-                        + "      \"match_all\" : { }\n" + "    },\n" + "    \"filter\" : {\n" + "      \"terms\" : {\n"
-                        + "        \"ecm:primaryType\" : [ \"File\", \"Note\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                + "      \"match_all\" : { }\n" + "    },\n" + "    \"filter\" : {\n" + "      \"terms\" : {\n"
+                + "        \"ecm:primaryType\" : [ \"File\", \"Note\" ]\n" + "      }\n" + "    }\n" + "  }\n" + "}",
                 es);
     }
 
@@ -184,16 +201,18 @@ public class TestNxqlConversion {
                 + "      \"term\" : {\n" + "        \"f1\" : \"1\"\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 != 1").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"not\" : {\n" + "        \"filter\" : {\n" + "          \"term\" : {\n"
-                + "            \"f1\" : \"1\"\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n"
-                + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"not\" : {\n"
+                        + "        \"filter\" : {\n" + "          \"term\" : {\n" + "            \"f1\" : \"1\"\n"
+                        + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 <> 1").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"not\" : {\n" + "        \"filter\" : {\n" + "          \"term\" : {\n"
-                + "            \"f1\" : \"1\"\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n"
-                + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"not\" : {\n"
+                        + "        \"filter\" : {\n" + "          \"term\" : {\n" + "            \"f1\" : \"1\"\n"
+                        + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
 
     }
 
@@ -219,12 +238,13 @@ public class TestNxqlConversion {
         assertEqualsEvenUnderWindows("{\n" + "  \"wildcard\" : {\n" + "    \"f1\" : {\n"
                 + "      \"wildcard\" : \"*Foo*\"\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 NOT LIKE 'Foo%'").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"not\" : {\n" + "        \"filter\" : {\n" + "          \"query\" : {\n"
-                + "            \"match\" : {\n" + "              \"f1\" : {\n"
-                + "                \"query\" : \"Foo\",\n" + "                \"type\" : \"phrase_prefix\"\n"
-                + "              }\n" + "            }\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n"
-                + "  }\n" + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"not\" : {\n"
+                        + "        \"filter\" : {\n" + "          \"query\" : {\n" + "            \"match\" : {\n"
+                        + "              \"f1\" : {\n" + "                \"query\" : \"Foo\",\n"
+                        + "                \"type\" : \"phrase_prefix\"\n" + "              }\n" + "            }\n"
+                        + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
         // invalid input
         NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 LIKE '(foo.*$#@^'").toString();
     }
@@ -286,12 +306,13 @@ public class TestNxqlConversion {
         assertEqualsEvenUnderWindows("{\n" + "  \"wildcard\" : {\n" + "    \"f1.lowercase\" : {\n"
                 + "      \"wildcard\" : \"*foo*\"\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 NOT ILIKE 'Foo%'").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"not\" : {\n" + "        \"filter\" : {\n" + "          \"query\" : {\n"
-                + "            \"match\" : {\n" + "              \"f1.lowercase\" : {\n"
-                + "                \"query\" : \"foo\",\n" + "                \"type\" : \"phrase_prefix\"\n"
-                + "              }\n" + "            }\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n"
-                + "  }\n" + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"not\" : {\n"
+                        + "        \"filter\" : {\n" + "          \"query\" : {\n" + "            \"match\" : {\n"
+                        + "              \"f1.lowercase\" : {\n" + "                \"query\" : \"foo\",\n"
+                        + "                \"type\" : \"phrase_prefix\"\n" + "              }\n" + "            }\n"
+                        + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
     }
 
     @Test
@@ -302,7 +323,7 @@ public class TestNxqlConversion {
                 + "      }\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 IS NOT NULL").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                        + "      \"exists\" : {\n" + "        \"field\" : \"f1\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                + "      \"exists\" : {\n" + "        \"field\" : \"f1\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
                 es);
     }
 
@@ -314,16 +335,19 @@ public class TestNxqlConversion {
                 + "          \"to\" : \"2\",\n" + "          \"include_lower\" : true,\n"
                 + "          \"include_upper\" : true\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 NOT BETWEEN 1 AND 2").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"not\" : {\n" + "        \"filter\" : {\n" + "          \"range\" : {\n"
-                + "            \"f1\" : {\n" + "              \"from\" : \"1\",\n" + "              \"to\" : \"2\",\n"
-                + "              \"include_lower\" : true,\n" + "              \"include_upper\" : true\n"
-                + "            }\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"not\" : {\n"
+                        + "        \"filter\" : {\n" + "          \"range\" : {\n" + "            \"f1\" : {\n"
+                        + "              \"from\" : \"1\",\n" + "              \"to\" : \"2\",\n"
+                        + "              \"include_lower\" : true,\n" + "              \"include_upper\" : true\n"
+                        + "            }\n" + "          }\n" + "        }\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
     }
 
     @Test
     public void testConverterSTARTSWITH() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path'")
+                                      .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -355,7 +379,8 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path/'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path/'")
+                               .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -378,7 +403,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
         // for other field than ecm:path we want to match the root
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:coverage STARTSWITH 'Europe/France'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:coverage STARTSWITH 'Europe/France'")
+                               .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -392,7 +418,8 @@ public class TestNxqlConversion {
 
     @Test
     public void testConverterAncestorId() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:ancestorId = 'c5904f77-299a-411e-8477-81d3102a81f9'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:ancestorId = 'c5904f77-299a-411e-8477-81d3102a81f9'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -402,7 +429,9 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:ancestorId != 'c5904f77-299a-411e-8477-81d3102a81f9'", session).toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:ancestorId != 'c5904f77-299a-411e-8477-81d3102a81f9'", session)
+                               .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -421,27 +450,32 @@ public class TestNxqlConversion {
     @Test
     public void testConverterIsVersion() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:isVersion = 1").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"ecm:isVersion\" : \"1\"\n" + "      }\n" + "    }\n" + "  }\n"
-                + "}", es);
-        String es2 = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:isCheckedInVersion = 1").toString();
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"ecm:isVersion\" : \"1\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
+        String es2 = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:isCheckedInVersion = 1")
+                                       .toString();
         assertEqualsEvenUnderWindows(es, es2);
     }
 
     @Test
     public void testConverterFulltext() throws Exception {
         // Given a search on a fulltext field
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:fulltext='+foo -bar'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:fulltext='+foo -bar'")
+                                      .toString();
         // then we have a simple query text and not a filter
         assertEqualsEvenUnderWindows("{\n" + "  \"simple_query_string\" : {\n" + "    \"query\" : \"+foo -bar\",\n"
                 + "    \"fields\" : [ \"_all\" ],\n" + "    \"analyzer\" : \"fulltext\",\n"
                 + "    \"default_operator\" : \"and\"\n" + "  }\n" + "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:fulltext_someindex LIKE '+foo -bar'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:fulltext_someindex LIKE '+foo -bar'")
+                               .toString();
         // don't handle nxql fulltext index definition, match to _all field
         assertEqualsEvenUnderWindows("{\n" + "  \"simple_query_string\" : {\n" + "    \"query\" : \"+foo -bar\",\n"
                 + "    \"fields\" : [ \"_all\" ],\n" + "    \"analyzer\" : \"fulltext\",\n"
                 + "    \"default_operator\" : \"and\"\n" + "  }\n" + "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:fulltext.dc:title!='+foo -bar'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:fulltext.dc:title!='+foo -bar'")
+                               .toString();
         // request on field match field.fulltext
         assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
                 + "      \"not\" : {\n" + "        \"filter\" : {\n" + "          \"query\" : {\n"
@@ -455,7 +489,8 @@ public class TestNxqlConversion {
     public void testConverterFulltextElasticsearchPrefix() throws Exception {
         // Given a search on a fulltext field with the
         // elasticsearch-specific prefix
-        String es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE ecm:fulltext = 'es: foo bar'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE ecm:fulltext = 'es: foo bar'")
+                                      .toString();
         // then we have a simple query text and not a filter
         // and we have the OR operator
         assertEqualsEvenUnderWindows("{\n" + "  \"simple_query_string\" : {\n" + "    \"query\" : \"foo bar\",\n"
@@ -470,15 +505,15 @@ public class TestNxqlConversion {
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"term\" : {\n"
                 + "            \"f1\" : \"1\"\n" + "          }\n" + "        }\n" + "      }\n" + "    }, {\n"
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"term\" : {\n"
-                + "            \"f2\" : \"2\"\n" + "          }\n" + "        }\n" + "      }\n" + "    } ]\n"
-                + "  }\n" + "}", es);
+                + "            \"f2\" : \"2\"\n" + "          }\n" + "        }\n" + "      }\n" + "    } ]\n" + "  }\n"
+                + "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1=1 OR f2=2").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"bool\" : {\n" + "    \"should\" : [ {\n"
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"term\" : {\n"
                 + "            \"f1\" : \"1\"\n" + "          }\n" + "        }\n" + "      }\n" + "    }, {\n"
                 + "      \"constant_score\" : {\n" + "        \"filter\" : {\n" + "          \"term\" : {\n"
-                + "            \"f2\" : \"2\"\n" + "          }\n" + "        }\n" + "      }\n" + "    } ]\n"
-                + "  }\n" + "}", es);
+                + "            \"f2\" : \"2\"\n" + "          }\n" + "        }\n" + "      }\n" + "    } ]\n" + "  }\n"
+                + "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1=1 AND f2=2 AND f3=3").toString();
         // Assert.assertEquals("foo", es);
@@ -486,7 +521,8 @@ public class TestNxqlConversion {
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1=1 OR f2=2 OR f3=3").toString();
         // Assert.assertEquals("foo", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1=1 OR f2 LIKE 'foo' OR f3=3").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1=1 OR f2 LIKE 'foo' OR f3=3")
+                               .toString();
         // Assert.assertEquals("foo", es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where (f1=1 OR f2=2) AND f3=3").toString();
@@ -510,13 +546,14 @@ public class TestNxqlConversion {
                 + "              \"query\" : \"1\",\n" + "              \"type\" : \"phrase_prefix\"\n"
                 + "            }\n" + "          }\n" + "        }, {\n" + "          \"match\" : {\n"
                 + "            \"f2\" : {\n" + "              \"query\" : \"2\",\n"
-                + "              \"type\" : \"phrase_prefix\"\n" + "            }\n" + "          }\n"
-                + "        } ]\n" + "      }\n" + "    }, {\n" + "      \"constant_score\" : {\n"
-                + "        \"filter\" : {\n" + "          \"term\" : {\n" + "            \"f3\" : \"3\"\n"
-                + "          }\n" + "        }\n" + "      }\n" + "    } ]\n" + "  }\n" + "}", es);
+                + "              \"type\" : \"phrase_prefix\"\n" + "            }\n" + "          }\n" + "        } ]\n"
+                + "      }\n" + "    }, {\n" + "      \"constant_score\" : {\n" + "        \"filter\" : {\n"
+                + "          \"term\" : {\n" + "            \"f3\" : \"3\"\n" + "          }\n" + "        }\n"
+                + "      }\n" + "    } ]\n" + "  }\n" + "}", es);
         // Assert.assertEquals("foo", es);
         es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where ecm:fulltext='foo bar' AND ecm:path STARTSWITH '/foo/bar' OR ecm:path='/foo/'").toString();
+                "select * from Document where ecm:fulltext='foo bar' AND ecm:path STARTSWITH '/foo/bar' OR ecm:path='/foo/'")
+                               .toString();
         // Assert.assertEquals("foo", es);
 
         es = NxqlQueryConverter.toESQueryBuilder(
@@ -550,45 +587,56 @@ public class TestNxqlConversion {
 
     @Test
     public void testConvertComplexProperties() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where file:content/name = 'foo'").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"file:content.name\" : \"foo\"\n" + "      }\n" + "    }\n"
-                + "  }\n" + "}", es);
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where file:content/name = 'foo'")
+                                      .toString();
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"file:content.name\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
     }
 
     @Test
     public void testConvertComplexListProperties() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:subjects/* = 'foo'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:subjects/* = 'foo'")
+                                      .toString();
         // this is supported and match any element of the list
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"dc:subjects\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n"
-                + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"dc:subjects\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where files:files/*/file/length=123").toString();
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"files:files.file.length\" : \"123\"\n" + "      }\n" + "    }\n"
-                + "  }\n" + "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where files:files/*/file/length=123")
+                               .toString();
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"files:files.file.length\" : \"123\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
 
     }
 
     @Test
     public void testConvertComplexListPropertiesUnsupported() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:subjects/3 = 'foo'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:subjects/3 = 'foo'")
+                                      .toString();
         // This is not supported and generate query that is going to match nothing
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"dc:subjects.3\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n"
-                + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"dc:subjects.3\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
 
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:subjects/*1 = 'foo'").toString();
         // This is not supported and generate query that is going to match nothing
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"dc:subjects1\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n"
-                + "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where files:files/*1/file/length=123").toString();
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"dc:subjects1\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where files:files/*1/file/length=123")
+                               .toString();
         // This is not supported and generate query that is going to match nothing
-        assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"files:files1.file.length\" : \"123\"\n" + "      }\n" + "    }\n"
-                + "  }\n" + "}", es);
+        assertEqualsEvenUnderWindows(
+                "{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n" + "      \"term\" : {\n"
+                        + "        \"files:files1.file.length\" : \"123\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
 
     }
 
@@ -597,7 +645,8 @@ public class TestNxqlConversion {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("name='foo' ORDER BY name DESC");
         String es = qb.makeQuery().toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"constant_score\" : {\n" + "    \"filter\" : {\n"
-                + "      \"term\" : {\n" + "        \"name\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}", es);
+                + "      \"term\" : {\n" + "        \"name\" : \"foo\"\n" + "      }\n" + "    }\n" + "  }\n" + "}",
+                es);
         Assert.assertEquals(1, qb.getSortInfos().size());
         Assert.assertEquals("SortInfo [sortColumn=name, sortAscending=false]", qb.getSortInfos().get(0).toString());
     }
@@ -607,25 +656,26 @@ public class TestNxqlConversion {
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM File ORDER BY file:content/name DESC");
         String es = qb.makeQuery().toString();
         assertEqualsEvenUnderWindows("{\n" + //
-                        "  \"filtered\" : {\n" + //
-                        "    \"query\" : {\n" + //
-                        "      \"match_all\" : { }\n" + //
-                        "    },\n" + //
-                        "    \"filter\" : {\n" + //
-                        "      \"terms\" : {\n" + //
-                        "        \"ecm:primaryType\" : [ \"File\" ]\n" + //
-                        "      }\n" + //
-                        "    }\n" + //
-                        "  }\n" + //
-                        "}", es);
+                "  \"filtered\" : {\n" + //
+                "    \"query\" : {\n" + //
+                "      \"match_all\" : { }\n" + //
+                "    },\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"terms\" : {\n" + //
+                "        \"ecm:primaryType\" : [ \"File\" ]\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
         Assert.assertEquals(1, qb.getSortInfos().size());
-        Assert.assertEquals("SortInfo [sortColumn=file:content.name, sortAscending=false]", qb.getSortInfos().get(0)
-                .toString());
-   }
+        Assert.assertEquals("SortInfo [sortColumn=file:content.name, sortAscending=false]",
+                qb.getSortInfos().get(0).toString());
+    }
 
     @Test
     public void testConvertHint() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:title = 'foo'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(some:field) */ dc:title = 'foo'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -636,7 +686,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:title != 'foo'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(some:field) */ dc:title != 'foo'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -654,9 +705,10 @@ public class TestNxqlConversion {
 
     @Test
     public void testConvertHintOperator() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) OPERATOR(match) */ dc:subjects = 'foo'").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"match\" : {\n" + //
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) OPERATOR(match) */ dc:subjects = 'foo'")
+                                      .toString();
+        assertEqualsEvenUnderWindows("{\n" + "  \"match\" : {\n" + //
                 "    \"some:field\" : {\n" + //
                 "      \"query\" : \"foo\",\n" + //
                 "      \"type\" : \"boolean\",\n" + //
@@ -664,7 +716,8 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(match_phrase) */ dc:title = 'foo'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(match_phrase) */ dc:title = 'foo'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"match\" : {\n" + //
                 "    \"dc:title\" : {\n" + //
@@ -673,7 +726,9 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(match_phrase_prefix) */ dc:title = 'this is a test'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(match_phrase_prefix) */ dc:title = 'this is a test'")
+                               .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"match\" : {\n" + //
                 "    \"dc:title\" : {\n" + //
@@ -682,7 +737,9 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title^3,dc:description) OPERATOR(multi_match) */ dc:title = 'this is a test'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(dc:title^3,dc:description) OPERATOR(multi_match) */ dc:title = 'this is a test'")
+                               .toString();
         // fields are not ordered
         assertIn(es,
                 "{\n" + //
@@ -698,34 +755,39 @@ public class TestNxqlConversion {
                         "  }\n" + //
                         "}");
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(regex) */ dc:title = 's.*y'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(regex) */ dc:title = 's.*y'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"regexp\" : {\n" + //
                 "    \"dc:title\" : {\n" + //
-                "      \"value\" : \"s.*y\"\n" +  //
+                "      \"value\" : \"s.*y\"\n" + //
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(fuzzy) */ dc:title = 'ki'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(fuzzy) */ dc:title = 'ki'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"fuzzy\" : {\n" + //
                 "    \"dc:title\" : {\n" + //
-                "      \"value\" : \"ki\"\n" +  //
+                "      \"value\" : \"ki\"\n" + //
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(wildcard) */ dc:title = 'ki*y'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(wildcard) */ dc:title = 'ki*y'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"wildcard\" : {\n" + //
                 "    \"dc:title\" : {\n" + //
-                "      \"wildcard\" : \"ki*y\"\n" +  //
+                "      \"wildcard\" : \"ki*y\"\n" + //
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(simple_query_string) */ dc:title = '\"fried eggs\" +(eggplant | potato) -frittata'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(simple_query_string) */ dc:title = '\"fried eggs\" +(eggplant | potato) -frittata'")
+                               .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"simple_query_string\" : {\n" + //
                 "    \"query\" : \"\\\"fried eggs\\\" +(eggplant | potato) -frittata\",\n" + //
@@ -733,7 +795,9 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) */ dc:title = 'this AND that OR thus'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(dc:title,dc:description) ANALYZER(fulltext) OPERATOR(query_string) */ dc:title = 'this AND that OR thus'")
+                               .toString();
         // fields are not ordered
         assertIn(es,
                 "{\n" + //
@@ -751,7 +815,8 @@ public class TestNxqlConversion {
                         "  }\n" + //
                         "}");
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(common) */ dc:title = 'this is bonsai cool'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(common) */ dc:title = 'this is bonsai cool'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"common\" : {\n" + //
                 "    \"dc:title\" : {\n" + //
@@ -764,7 +829,9 @@ public class TestNxqlConversion {
 
     @Test
     public void testConvertHintLike() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) */ dc:subjects LIKE 'foo*'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(some:field) ANALYZER(my_analyzer) */ dc:subjects LIKE 'foo*'")
+                                      .toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"match\" : {\n" + //
                 "    \"some:field\" : {\n" + //
@@ -775,7 +842,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:subjects LIKE '%foo%'").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(some:field) */ dc:subjects LIKE '%foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"wildcard\" : {\n" + //
                 "    \"some:field\" : {\n" + //
@@ -789,7 +857,9 @@ public class TestNxqlConversion {
     @Test
     public void testConvertHintFulltext() throws Exception {
         // search on title and description, boost title
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(dc:title.fulltext^3,dc:description.fulltext) */ ecm:fulltext = 'foo'").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: INDEX(dc:title.fulltext^3,dc:description.fulltext) */ ecm:fulltext = 'foo'")
+                                      .toString();
         // fields are not ordered
         assertIn(es,
                 "{\n" + //
@@ -839,7 +909,9 @@ public class TestNxqlConversion {
 
     @Test
     public void testConvertHintGeo() throws Exception {
-        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('40.73, -74.1', '40.01, -71.12')").toString();
+        String es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('40.73, -74.1', '40.01, -71.12')")
+                                      .toString();
         String response = "{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -853,14 +925,16 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}";
         assertEqualsEvenUnderWindows(response, es);
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('dr5r9y', 'drj7tee')").toString();
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('dr5r9y', 'drj7tee')")
+                               .toString();
         // we can not do this because lat and lon are not rounded to match the input
-        //assertTruEqualsEvenUnderWindows(response, es);
+        // assertTruEqualsEvenUnderWindows(response, es);
         Assert.assertTrue(es.contains("geo_bbox"));
         Assert.assertTrue(es.contains("bottom_right"));
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance) */ " +
-                "osm:location IN ('40.73, -74.1', '20km')").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance) */ "
+                + "osm:location IN ('40.73, -74.1', '20km')").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -872,8 +946,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */" +
-                "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */"
+                + "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -888,8 +962,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */" +
-                "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */"
+                + "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -904,8 +978,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_hash_cell) */" +
-                "osm:location IN ('40.73, -74.1', '2')").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_hash_cell) */"
+                + "osm:location IN ('40.73, -74.1', '2')").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //
@@ -917,8 +991,8 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
 
-        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_shape) */" +
-                "osm:location IN ('FRA', 'countries', 'shapes', 'location')").toString();
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_shape) */"
+                + "osm:location IN ('FRA', 'countries', 'shapes', 'location')").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
                 "    \"filter\" : {\n" + //

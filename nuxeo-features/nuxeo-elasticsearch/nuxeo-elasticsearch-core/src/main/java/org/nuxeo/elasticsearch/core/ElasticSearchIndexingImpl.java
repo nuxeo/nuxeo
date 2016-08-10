@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,16 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -56,15 +62,10 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * @since 6.0
@@ -154,7 +155,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             if (cmd.getType() == Type.DELETE || cmd.getType() == Type.UPDATE_DIRECT_CHILDREN) {
                 continue;
             }
-            if (! docIds.add(cmd.getTargetDocumentId()) ) {
+            if (!docIds.add(cmd.getTargetDocumentId())) {
                 // do not submit the same doc 2 times
                 continue;
             }
@@ -266,8 +267,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         try {
             request.execute().actionGet();
         } catch (VersionConflictEngineException e) {
-            log.info("Ignore indexing of doc " + cmd.getTargetDocumentId() +
-                    " a more recent version has already been indexed: " + e.getMessage());
+            log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
+                    + " a more recent version has already been indexed: " + e.getMessage());
         }
     }
 
@@ -301,12 +302,14 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return;
         }
         QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders.termFilter(CHILDREN_FIELD, docPath));
-        DeleteByQueryRequestBuilder deleteRequest = esa.getClient().prepareDeleteByQuery(indexName).setTypes(DOC_TYPE).setQuery(
-                query);
+        DeleteByQueryRequestBuilder deleteRequest = esa.getClient()
+                                                       .prepareDeleteByQuery(indexName)
+                                                       .setTypes(DOC_TYPE)
+                                                       .setQuery(query);
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'", indexName,
-                    DOC_TYPE, query.toString()));
+            log.debug(
+                    String.format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
+                            indexName, DOC_TYPE, query.toString()));
         }
         DeleteByQueryResponse responses = deleteRequest.execute().actionGet();
         for (IndexDeleteByQueryResponse response : responses) {
@@ -325,8 +328,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         String indexName = esa.getIndexNameForRepository(repository);
         GetRequestBuilder getRequest = esa.getClient().prepareGet(indexName, DOC_TYPE, docId).setFields(PATH_FIELD);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'",
-                    indexName, DOC_TYPE, docId, PATH_FIELD));
+            log.debug(String.format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'", indexName,
+                    DOC_TYPE, docId, PATH_FIELD));
         }
         GetResponse ret = getRequest.execute().actionGet();
         if (!ret.isExists() || ret.getField(PATH_FIELD) == null) {
@@ -351,8 +354,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            IndexRequestBuilder ret = esa.getClient().prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
-                    cmd.getTargetDocumentId()).setSource(builder);
+            IndexRequestBuilder ret = esa.getClient()
+                                         .prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
+                                                 cmd.getTargetDocumentId())
+                                         .setSource(builder);
             if (useExternalVersion && cmd.getOrder() > 0) {
                 ret.setVersionType(VersionType.EXTERNAL).setVersion(cmd.getOrder());
             }

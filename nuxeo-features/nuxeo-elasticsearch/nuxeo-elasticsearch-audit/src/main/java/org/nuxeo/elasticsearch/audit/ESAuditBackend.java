@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -140,10 +139,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return !entries.isEmpty();
     }
 
-
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent)Framework.getRuntime().getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent")).getApplicationStartedOrder()+1;
+        return ((DefaultComponent) Framework.getRuntime()
+                                            .getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent"))
+                                                                                                            .getApplicationStartedOrder()
+                + 1;
     }
 
     @Override
@@ -222,14 +223,15 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected SearchRequestBuilder getSearchRequestBuilder(Client esClient) {
-        return esClient.prepareSearch(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
+        return esClient.prepareSearch(getESIndexName())
+                       .setTypes(ElasticSearchConstants.ENTRY_TYPE)
+                       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
     public LogEntry getLogEntryByID(long id) {
-        GetResponse ret = esClient.prepareGet(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
-                String.valueOf(id)).get();
+        GetResponse ret = esClient.prepareGet(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, String.valueOf(id))
+                                  .get();
         if (!ret.isExists()) {
             return null;
         }
@@ -397,8 +399,11 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public Long getEventsCount(String eventId) {
-        CountResponse res = esClient.prepareCount(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setQuery(
-                QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("eventId", eventId))).get();
+        CountResponse res = esClient.prepareCount(getESIndexName())
+                                    .setTypes(ElasticSearchConstants.ENTRY_TYPE)
+                                    .setQuery(QueryBuilders.constantScoreQuery(
+                                            FilterBuilders.termFilter("eventId", eventId)))
+                                    .get();
         return res.getCount();
     }
 
@@ -444,11 +449,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 if (val[0] instanceof Iterable<?>) {
                     List<String> l = new ArrayList<>();
                     Iterable<?> vals = (Iterable<?>) val[0];
-                    Iterator<?> valueIterator = vals.iterator();
 
-                    while (valueIterator.hasNext()) {
-
-                        Object v = valueIterator.next();
+                    for (Object v : vals) {
                         if (v != null) {
                             l.add(v.toString());
                         }
@@ -541,12 +543,16 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
     }
 
-
     /**
      * Ensures the audit sequence returns an UID greater or equal than the maximum log entry id.
      */
     protected void ensureUIDSequencer(Client esClient) {
-        boolean auditIndexExists = esClient.admin().indices().prepareExists(getESIndexName()).execute().actionGet().isExists();
+        boolean auditIndexExists = esClient.admin()
+                                           .indices()
+                                           .prepareExists(getESIndexName())
+                                           .execute()
+                                           .actionGet()
+                                           .isExists();
         if (!auditIndexExists) {
             return;
         }

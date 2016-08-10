@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,10 +55,15 @@ public class BareElasticSearchFeature extends SimpleFeature {
         if (!esDirectory.exists() && !esDirectory.mkdir()) {
             throw new InvalidParameterException("Can not create directory: " + esDirectory.getAbsolutePath());
         }
-        Settings settings = ImmutableSettings.settingsBuilder().put("node.http.enabled", true).put("path.logs",
-                esDirectory.getPath() + "/logs").put("path.data", esDirectory.getPath() + "/data").put("gateway.type",
-                "none").put("index.store.type", "memory").put("index.number_of_shards", 1).put(
-                "index.number_of_replicas", 1).build();
+        Settings settings = ImmutableSettings.settingsBuilder()
+                                             .put("node.http.enabled", true)
+                                             .put("path.logs", esDirectory.getPath() + "/logs")
+                                             .put("path.data", esDirectory.getPath() + "/data")
+                                             .put("gateway.type", "none")
+                                             .put("index.store.type", "memory")
+                                             .put("index.number_of_shards", 1)
+                                             .put("index.number_of_replicas", 1)
+                                             .build();
         node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         client = node.client();
         super.start(runner);
@@ -67,18 +72,8 @@ public class BareElasticSearchFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         super.configure(runner, binder);
-        binder.bind(Node.class).toProvider(new Provider<Node>() {
-            @Override
-            public Node get() {
-                return node;
-            }
-        }).in(Scopes.SINGLETON);
-        binder.bind(Client.class).toProvider(new Provider<Client>() {
-            @Override
-            public Client get() {
-                return client;
-            }
-        }).in(Scopes.SINGLETON);
+        binder.bind(Node.class).toProvider(() -> node).in(Scopes.SINGLETON);
+        binder.bind(Client.class).toProvider(() -> client).in(Scopes.SINGLETON);
     }
 
     @Override
