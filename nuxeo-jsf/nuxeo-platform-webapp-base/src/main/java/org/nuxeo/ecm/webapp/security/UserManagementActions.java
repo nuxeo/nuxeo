@@ -33,6 +33,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -45,6 +47,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -52,6 +55,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserAdapterImpl;
+import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.runtime.api.Framework;
@@ -249,6 +253,9 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
+        } catch (InvalidPasswordException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
         } catch (Exception e) {
             String message = e.getLocalizedMessage();
             if (e.getCause() != null) {
@@ -273,15 +280,26 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public void updateUser() {
-        UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
-        runner.runUnrestricted();
+        try {
+            UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
+            runner.runUnrestricted();
+        } catch (InvalidPasswordException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
+        }
 
         detailsMode = DETAILS_VIEW_MODE;
         fireSeamEvent(USERS_LISTING_CHANGED);
     }
 
     public String changePassword() {
-        updateUser();
+        try {
+            updateUser();
+        } catch (InvalidPasswordException e) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get("error.userManager.invalidPassword"));
+            return null;
+        }
         detailsMode = DETAILS_VIEW_MODE;
 
         String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
@@ -289,6 +307,29 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         fireSeamEvent(USERS_LISTING_CHANGED);
 
         return null;
+    }
+
+
+    protected void doAsSystemUser(Runnable runnable) {
+        LoginContext loginContext;
+        try {
+            loginContext = Framework.login();
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
+        }
+
+        try {
+            runnable.run();
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (loginContext != null) {
+                    loginContext.logout();
+                }
+            } catch (LoginException e) {
+                throw new NuxeoException("Cannot log out system user", e);
+            }
+        }
     }
 
     public void deleteUser() {

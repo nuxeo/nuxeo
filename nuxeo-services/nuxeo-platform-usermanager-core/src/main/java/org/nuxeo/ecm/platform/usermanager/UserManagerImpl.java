@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -61,8 +62,10 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.platform.usermanager.exceptions.InvalidPasswordException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 
@@ -70,6 +73,8 @@ import org.nuxeo.runtime.services.event.EventService;
  * Standard implementation of the Nuxeo UserManager.
  */
 public class UserManagerImpl implements UserManager, MultiTenantUserManager, AdministratorGroupsProvider {
+
+    private static final String VALIDATE_PASSWORD_PARAM = "nuxeo.usermanager.check.password";
 
     private static final long serialVersionUID = 1L;
 
@@ -1226,6 +1231,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 throw new UserAlreadyExistsException();
             }
 
+            if (mustCheckPasswordValidity()) {
+                checkPasswordValidity(userModel);
+            }
+
             String schema = dirService.getDirectorySchema(userDirectoryName);
             String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
             String clearPassword = (String) userModel.getProperty(schema, userDir.getPasswordField());
@@ -1241,6 +1250,20 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
     }
 
+    protected void checkPasswordValidity(DocumentModel userModel) throws InvalidPasswordException {
+        String schema = dirService.getDirectorySchema(userDirectoryName);
+        String passwordField = dirService.getDirectory(userDirectoryName).getPasswordField();
+
+        Property passwordProperty = userModel.getProperty(String.format("%s:%s", schema, passwordField));
+
+        if (passwordProperty.isDirty()) {
+            String clearPassword = passwordProperty.getValue(String.class);
+            if (StringUtils.isNotBlank(clearPassword) && !validatePassword(clearPassword)) {
+                throw new InvalidPasswordException();
+            }
+        }
+    }
+
     @Override
     public void updateUser(DocumentModel userModel, DocumentModel context) {
         try (Session userDir = dirService.open(userDirectoryName, context)) {
@@ -1251,6 +1274,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             }
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
+
+            if (mustCheckPasswordValidity()) {
+                checkPasswordValidity(userModel);
+            }
+
             String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
             String clearPassword = (String) userModel.getProperty(schema, userDir.getPasswordField());
 
@@ -1261,6 +1289,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             notifyUserChanged(userId);
             notify(userId, USERMODIFIED_EVENT_ID);
         }
+    }
+
+    private boolean mustCheckPasswordValidity() {
+        return Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(VALIDATE_PASSWORD_PARAM);
     }
 
     @Override

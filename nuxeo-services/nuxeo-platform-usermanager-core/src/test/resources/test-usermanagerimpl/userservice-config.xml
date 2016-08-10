@@ -4,6 +4,17 @@
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
     point="userManager">
     <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+      <userPasswordPattern>
+        ^\w*(?=.{8,})(?=.*\d)(?=(.*[a-z]){2,})(?=.*[A-Z])\w*$
+      </userPasswordPattern>
+      <!-- The password is valid if :
+        - it has only word characters : [a-zA-Z0-9_]
+        - it's at least 8 long
+        - it has at least one digit
+        - it has at least two lowercase letter
+        - it has at least one uppercase letter -->
+
+
       <userCacheName>userManagerCache</userCacheName>
       <users>
         <directory>userDirectory</directory>
