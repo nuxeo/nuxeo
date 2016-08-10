@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.chemistry.opencmis.client.api.ObjectId;
-import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
@@ -76,7 +75,6 @@ import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
@@ -136,7 +134,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
@@ -150,7 +147,6 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
@@ -163,8 +159,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Nuxeo implementation of the CMIS Services, on top of a {@link CoreSession}.
  */
-public class NuxeoCmisService extends AbstractCmisService implements CallContextAwareCmisService,
-        ProgressControlCmisService {
+public class NuxeoCmisService extends AbstractCmisService
+        implements CallContextAwareCmisService, ProgressControlCmisService {
 
     public static final int DEFAULT_TYPE_LEVELS = 2;
 
@@ -715,7 +711,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public String create(String repositoryId, Properties properties, String folderId, ContentStream contentStream,
             VersioningState versioningState, List<String> policies, ExtensionsData extension) {
         // TODO policies
-        NuxeoObjectData object = createObject(repositoryId, properties, new ObjectIdImpl(folderId), null, contentStream);
+        NuxeoObjectData object = createObject(repositoryId, properties, new ObjectIdImpl(folderId), null,
+                contentStream);
         return setInitialVersioningState(object, versioningState);
     }
 
@@ -752,8 +749,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     }
 
     @Override
-    public String createDocumentFromSource(String repositoryId, String sourceId, Properties properties,
-            String folderId, VersioningState versioningState, List<String> policies, Acl addAces, Acl removeAces,
+    public String createDocumentFromSource(String repositoryId, String sourceId, Properties properties, String folderId,
+            VersioningState versioningState, List<String> policies, Acl addAces, Acl removeAces,
             ExtensionsData extension) {
         if (folderId == null) {
             // no unfileable objects for now
@@ -1237,8 +1234,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     @Override
     public ObjectList getContentChanges(String repositoryId, Holder<String> changeLogTokenHolder,
-            Boolean includeProperties, String filter, Boolean includePolicyIds, Boolean includeAcl,
-            BigInteger maxItems, ExtensionsData extension) {
+            Boolean includeProperties, String filter, Boolean includePolicyIds, Boolean includeAcl, BigInteger maxItems,
+            ExtensionsData extension) {
         if (changeLogTokenHolder == null) {
             throw new CmisInvalidArgumentException("Missing change log token holder");
         }
@@ -1459,8 +1456,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                         if (doc == null) {
                             doc = getDocumentModel(id);
                         }
-                        List<RenditionData> renditions = NuxeoObjectData.getRenditions(doc, renditionFilter, null,
-                                null, callContext);
+                        List<RenditionData> renditions = NuxeoObjectData.getRenditions(doc, renditionFilter, null, null,
+                                callContext);
                         od.setRenditions(renditions);
                     }
                 }
@@ -1550,7 +1547,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         return queryAndFetch(query, searchAllVersions, null);
     }
 
-    protected ObjectDataImpl makeObjectData(Map<String, Serializable> map, Map<String, PropertyDefinition<?>> typeInfo) {
+    protected ObjectDataImpl makeObjectData(Map<String, Serializable> map,
+            Map<String, PropertyDefinition<?>> typeInfo) {
         ObjectDataImpl od = new ObjectDataImpl();
         PropertiesImpl properties = new PropertiesImpl();
         for (Entry<String, Serializable> en : map.entrySet()) {
@@ -1578,7 +1576,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     }
 
     @Override
-    public void removeObjectFromFolder(String repositoryId, String objectId, String folderId, ExtensionsData extension) {
+    public void removeObjectFromFolder(String repositoryId, String objectId, String folderId,
+            ExtensionsData extension) {
         if (folderId != null) {
             // check it's the actual parent
             DocumentModel folder = getDocumentModel(folderId);
@@ -1699,9 +1698,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         if (maxLevels != -1 && level >= maxLevels) {
             return null;
         }
-        ObjectInFolderList children = getChildrenInternal(repositoryId, folderId, filter, null,
-                includeAllowableActions, includeRelationships, renditionFilter, includePathSegments, null, null,
-                folderOnly);
+        ObjectInFolderList children = getChildrenInternal(repositoryId, folderId, filter, null, includeAllowableActions,
+                includeRelationships, renditionFilter, includePathSegments, null, null, folderOnly);
         if (children == null) {
             return Collections.emptyList();
         }
