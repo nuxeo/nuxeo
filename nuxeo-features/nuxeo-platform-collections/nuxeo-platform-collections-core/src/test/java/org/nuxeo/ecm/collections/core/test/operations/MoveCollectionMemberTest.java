@@ -165,8 +165,8 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         assertEquals(NB_FILES, members.size());
 
-        assertEquals(listDocs.get(0).getId(), members.get(NB_FILES - 1));
-        assertEquals(listDocs.get(NB_FILES - 1).getId(), members.get(0));
+        assertEquals(listDocs.get(0).getId(), members.get(NB_FILES - 1).getId());
+        assertEquals(listDocs.get(NB_FILES - 1).getId(), members.get(NB_FILES - 2).getId());
 
     }
 
@@ -199,8 +199,8 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         assertEquals(NB_FILES, members.size());
 
-        assertEquals(listDocs.get(0).getId(), members.get(1));
-        assertEquals(listDocs.get(NB_FILES - 1).getId(), members.get(0));
+        assertEquals(listDocs.get(0).getId(), members.get(1).getId());
+        assertEquals(listDocs.get(NB_FILES - 1).getId(), members.get(0).getId());
     }
 
     @Test
@@ -236,8 +236,10 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         assertEquals(NB_FILES, members.size());
 
-        assertEquals(listDocs.get(0).getId(), members.get(NB_FILES - 1));
-        assertEquals(listDocs.get(NB_FILES - 1).getId(), members.get(0));
+        assertEquals(listDocs.get(NB_FILES / 2).getId(),
+                members.get((NB_FILES / 2) + 1).getId());
+        assertEquals(listDocs.get((NB_FILES / 2) + 1).getId(),
+                members.get(NB_FILES / 2).getId());
 
     }
 
