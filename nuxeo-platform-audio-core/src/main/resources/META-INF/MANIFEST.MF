@@ -11,7 +11,6 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
 Eclipse-LazyStart: true
 Bundle-Category: core,stateful
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
- org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core.commandline.executor
+ org.nuxeo.ecm.core.api
 Export-Package: org.nuxeo.ecm.platform.audio.core
 Bundle-ClassPath: .
