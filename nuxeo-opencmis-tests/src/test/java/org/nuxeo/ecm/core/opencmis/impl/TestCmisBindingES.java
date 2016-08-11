@@ -18,10 +18,16 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * Test the high-level session using a local connection.
  * <p>
  * Uses CMISQL -> NXQL -> Elasticsearch conversion for queries.
+ * <p>
+ * Uses Elasticsearch audit.
  */
 @Deploy({ "org.nuxeo.ecm.automation.io", //
         "org.nuxeo.ecm.webengine.core", //
+        "org.nuxeo.ecm.core.persistence", //
+        "org.nuxeo.ecm.platform.uidgen.core", //
         "org.nuxeo.elasticsearch.core", //
+        "org.nuxeo.elasticsearch.seqgen", //
+        "org.nuxeo.elasticsearch.audit", //
 })
 @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
 public class TestCmisBindingES extends TestCmisBinding {
