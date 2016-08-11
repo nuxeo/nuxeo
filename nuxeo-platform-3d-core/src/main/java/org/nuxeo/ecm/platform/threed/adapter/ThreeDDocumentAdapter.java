@@ -17,7 +17,9 @@
  */
 package org.nuxeo.ecm.platform.threed.adapter;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.ThreeDDocument;
 import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
@@ -44,11 +46,15 @@ public class ThreeDDocumentAdapter implements ThreeDDocument {
 
     public ThreeDDocumentAdapter(DocumentModel threed) {
         docModel = threed;
+
     }
 
     @Override
     public ThreeD getThreeD() {
-        return null;
+        BlobHolder bh = docModel.getAdapter(BlobHolder.class);
+        List<Blob> resources = ((List<Map<String, Object>>) docModel.getPropertyValue(
+                "files:files")).stream().map(file -> (Blob) file.get("file")).collect(Collectors.toList());
+        return new ThreeD(bh.getBlob(), resources);
     }
 
     @SuppressWarnings("unchecked")

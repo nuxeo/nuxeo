@@ -108,7 +108,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         // Saving thumbnail to the document
         setStatus("Saving thumbnail");
         List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(blobs);
-        long numRenderViews = service.getAvailableRenderViews().stream().filter(RenderView::isEnabled).count();
+        long numRenderViews = service.getAutomaticRenderViews().stream().filter(RenderView::isEnabled).count();
         if (!threeDRenderViews.isEmpty() && threeDRenderViews.size() == numRenderViews) {
             try {
                 startTransaction();

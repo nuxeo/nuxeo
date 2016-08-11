@@ -48,12 +48,14 @@ public class ThreeDBatchGenerationListener implements EventListener {
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        Property origThreeDProperty = doc.getProperty("file:content");
-        Blob threedMain = (Blob) origThreeDProperty.getValue();
-        if (doc.hasFacet(THREED_FACET) && threedMain != null && !doc.isProxy()) {
-            ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+        if (doc.hasFacet(THREED_FACET) && !doc.isProxy()) {
+            Property origThreeDProperty = doc.getProperty("file:content");
+            Blob threedMain = (Blob) origThreeDProperty.getValue();
+            if ((origThreeDProperty.isDirty() || doc.getProperty("files:files").isDirty()) && threedMain != null) {
+                ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
+                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+            }
         }
     }
 }
