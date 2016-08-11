@@ -1,12 +1,12 @@
 <component name="org.nuxeo.binary.metadata.contribs">
 
-  <require>org.nuxeo.ecm.core.commandline.executor.service.defaultContrib</require>
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
 
   <extension target="org.nuxeo.binary.metadata" point="metadataProcessors">
     <processor id="exifTool" class="org.nuxeo.binary.metadata.internals.ExifToolProcessor" prefix="true" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent" point="environment">
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="environment">
     <environment name="exiftool">
       <parameters>
         <!-- See http://search.cpan.org/dist/PAR/lib/PAR.pm#Notes -->
@@ -17,7 +17,7 @@
     </environment>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.commandline.executor.service.CommandLineExecutorComponent" point="command">
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
 
     <command name="exiftool-read-taglist" enabled="true">
       <commandLine>exiftool</commandLine>
