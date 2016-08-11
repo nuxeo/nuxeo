@@ -686,6 +686,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     closeStatement(ps);
                 }
             } catch (SQLException e) {
+                checkConcurrentUpdate(e);
                 throw new NuxeoException("Could not update: " + update.sql, e);
             }
         }
