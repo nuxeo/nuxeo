@@ -178,12 +178,10 @@ public class ConvertAdapter extends DefaultAdapter {
             throw new IllegalParameterException("No converter, type or format parameter specified");
         }
 
-        String serverURL = ctx.getServerURL().toString();
-        if (serverURL.endsWith("/")) {
-            serverURL = serverURL.substring(0, serverURL.length() - 1);
-        }
+        String serverURL = StringUtils.stripEnd(ctx.getServerURL().toString(), "/");
         String pollingURL = String.format("%s%s/conversions/%s/poll", serverURL, ctx.getModulePath(), conversionId);
-        ConversionScheduled conversionScheduled = new ConversionScheduled(conversionId, pollingURL);
+        String resultURL = String.format("%s%s/conversions/%s/result", serverURL, ctx.getModulePath(), conversionId);
+        ConversionScheduled conversionScheduled = new ConversionScheduled(conversionId, pollingURL, resultURL);
         try {
             return Response.status(Response.Status.ACCEPTED)
                            .location(new URI(pollingURL))
