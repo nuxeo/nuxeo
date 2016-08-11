@@ -80,9 +80,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
 
     public ManagedConnectionFactoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
-        if (repositoryDescriptor.properties == null) {
-            repositoryDescriptor.properties = new HashMap<String, String>();
-        }
     }
 
     /*
@@ -96,30 +93,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
     @Override
     public String getName() {
         return repositoryDescriptor.name;
-    }
-
-    public void setXaDataSource(String xaDataSourceName) {
-        repositoryDescriptor.xaDataSourceName = xaDataSourceName;
-    }
-
-    public String getXaDataSource() {
-        return repositoryDescriptor.xaDataSourceName;
-    }
-
-    /**
-     * Properties are specified in the format key=val1[;key2=val2;...]
-     * <p>
-     * If a value has to contain a semicolon, it can be escaped by doubling it.
-     *
-     * @see #parseProperties(String)
-     * @param property
-     */
-    public void setProperty(String property) {
-        repositoryDescriptor.properties.putAll(parseProperties(property));
-    }
-
-    public String getProperty() {
-        return null;
     }
 
     /*

@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.persistence;
 
 import java.util.List;
-import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -30,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -44,23 +42,8 @@ public class TestPersistenceProvider {
 
     protected PersistenceProvider persistenceProvider;
 
-    // subclass to test single-datasource mode has this returning true
-    protected boolean useSingleDataSource() {
-        return false;
-    }
-
     @Before
     public void setUp() {
-        final Properties properties = Framework.getProperties();
-        if (useSingleDataSource()) {
-            // the name doesn't actually matter, as code in
-            // ConnectionHelper.getDataSource ignores it and uses
-            // nuxeo.test.vcs.url etc. for connections in test mode
-            properties.put(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
-        } else {
-            properties.remove(ConnectionHelper.SINGLE_DS);
-        }
-
         activatePersistenceProvider();
     }
 

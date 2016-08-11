@@ -24,9 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,12 +104,6 @@ public class DatabaseOracle extends DatabaseHelper {
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.xaDataSourceName = "oracle.jdbc.xa.client.OracleXADataSource";
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", Framework.getProperty(URL_PROPERTY));
-        properties.put("User", Framework.getProperty(USER_PROPERTY));
-        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
-        descriptor.properties = properties;
         descriptor.idType = Framework.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,21 +31,15 @@ import java.util.Properties;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;
-import org.hibernate.ejb.transaction.JoinableCMTTransaction;
 import org.hibernate.ejb.transaction.JoinableCMTTransactionFactory;
-import org.hibernate.jdbc.JDBCContext;
 import org.hibernate.transaction.JDBCTransactionFactory;
-import org.hibernate.transaction.TransactionFactory;
 import org.hibernate.transaction.TransactionManagerLookup;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -53,7 +47,6 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.jtajca.NamingContextFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -130,13 +123,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
         properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
         if (txType.equals(JTA)) {
-            Class<?> transactionFactoryClass;
-            if (ConnectionHelper.useSingleConnection(null)) {
-                transactionFactoryClass = NuxeoTransactionFactory.class;
-            } else {
-                transactionFactoryClass = JoinableCMTTransactionFactory.class;
-            }
-            properties.put(Environment.TRANSACTION_STRATEGY, transactionFactoryClass.getName());
+            properties.put(Environment.TRANSACTION_STRATEGY, JoinableCMTTransactionFactory.class.getName());
             properties.put(Environment.TRANSACTION_MANAGER_STRATEGY, NuxeoTransactionManagerLookup.class.getName());
         } else if (txType.equals(RESOURCE_LOCAL)) {
             properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
@@ -162,49 +149,6 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
                     NuxeoContainer.class.getPackage().getName());
         }
         return createEntityManagerFactory(properties);
-    }
-
-    /**
-     * Don't close the connection aggressively after each statement.
-     */
-    // needs to be public as hibernate calls newInstance
-    public static class NuxeoTransactionFactory extends JoinableCMTTransactionFactory {
-        @Override
-        public ConnectionReleaseMode getDefaultReleaseMode() {
-            return ConnectionReleaseMode.AFTER_TRANSACTION;
-        }
-
-        @Override
-        public org.hibernate.Transaction createTransaction(JDBCContext jdbcContext,
-                TransactionFactory.Context transactionContext) throws HibernateException {
-            return new NuxeoHibernateTransaction(jdbcContext, transactionContext);
-        }
-    }
-
-    /**
-     * Hibernate transaction that will register a synchronization that runs before the one from ConnectionHelper in
-     * single-datasource mode.
-     * <p>
-     * Needed because the sync from org.hibernate.ejb.EntityManagerImpl#close must run before the one from
-     * ConnectionHelper.
-     */
-    public static class NuxeoHibernateTransaction extends JoinableCMTTransaction {
-        public NuxeoHibernateTransaction(JDBCContext jdbcContext, TransactionFactory.Context transactionContext) {
-            super(jdbcContext, transactionContext);
-        }
-
-        @Override
-        public void registerSynchronization(Synchronization sync) throws HibernateException {
-            boolean registered;
-            try {
-                registered = ConnectionHelper.registerSynchronization(sync);
-            } catch (SystemException e) {
-                throw new HibernateException(e);
-            }
-            if (!registered) {
-                super.registerSynchronization(sync);
-            }
-        }
     }
 
     // this must be executed always outside a transaction

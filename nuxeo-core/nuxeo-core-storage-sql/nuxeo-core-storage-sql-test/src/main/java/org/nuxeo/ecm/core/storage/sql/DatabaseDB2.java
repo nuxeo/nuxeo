@@ -25,9 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,8 +51,6 @@ public class DatabaseDB2 extends DatabaseHelper {
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-db2-contrib.xml";
 
     private static final String DRIVER = "com.ibm.db2.jcc.DB2Driver";
-
-    private static final String XA_DATASOURCE = "com.ibm.db2.jcc.DB2XADataSource";
 
     protected void setProperties() {
         databaseName = DEFAULT_DATABASE_NAME;
@@ -114,12 +110,6 @@ public class DatabaseDB2 extends DatabaseHelper {
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.xaDataSourceName = XA_DATASOURCE;
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", Framework.getProperty(URL_PROPERTY));
-        properties.put("User", Framework.getProperty(USER_PROPERTY));
-        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
-        descriptor.properties = properties;
         return descriptor;
     }
 

@@ -386,12 +386,6 @@ public class RepositoryDescriptor {
     @XNode("usersSeparator@key")
     public String usersSeparatorKey;
 
-    @XNode("xa-datasource")
-    public String xaDataSourceName;
-
-    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> properties = new HashMap<>();
-
     public RepositoryDescriptor() {
     }
 
@@ -426,8 +420,6 @@ public class RepositoryDescriptor {
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
         readAclMaxSize = other.readAclMaxSize;
         usersSeparatorKey = other.usersSeparatorKey;
-        xaDataSourceName = other.xaDataSourceName;
-        properties = new HashMap<>(other.properties);
     }
 
     public void merge(RepositoryDescriptor other) {
@@ -520,10 +512,6 @@ public class RepositoryDescriptor {
         if (other.usersSeparatorKey != null) {
             usersSeparatorKey = other.usersSeparatorKey;
         }
-        if (other.xaDataSourceName != null) {
-            xaDataSourceName = other.xaDataSourceName;
-        }
-        properties.putAll(other.properties);
     }
 
 }

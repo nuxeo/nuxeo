@@ -22,8 +22,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -109,13 +107,6 @@ public class DatabaseDerby extends DatabaseHelper {
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.xaDataSourceName = "org.apache.derby.jdbc.EmbeddedXADataSource";
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("createDatabase", "create");
-        properties.put("databaseName", Framework.getProperty(DATABASE_PROPERTY));
-        properties.put("user", Framework.getProperty(USER_PROPERTY));
-        properties.put("password", Framework.getProperty(PASSWORD_PROPERTY));
-        descriptor.properties = properties;
         return descriptor;
     }
 

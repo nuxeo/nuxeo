@@ -123,12 +123,4 @@ public class DataSourceHelper {
         return datasourcesByName;
     }
 
-    /**
-     * @param repositoryName
-     * @return
-     * @since TODO
-     */
-    public static String getDataSourceRepositoryJNDIName(String repositoryName) {
-        return getDataSourceJNDIName(ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName));
-    }
 }

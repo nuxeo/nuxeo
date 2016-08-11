@@ -22,8 +22,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.nuxeo.runtime.api.Framework;
 
@@ -74,12 +72,6 @@ public class DatabaseMySQL extends DatabaseHelper {
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.xaDataSourceName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", Framework.getProperty(URL_PROPERTY));
-        properties.put("User", Framework.getProperty(USER_PROPERTY));
-        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
-        descriptor.properties = properties;
         return descriptor;
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -51,8 +49,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import javax.sql.XADataSource;
-import javax.transaction.Transaction;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -126,13 +122,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param model the model
      * @param pathResolver the path resolver (used for startswith queries)
      * @param sqlInfo the sql info
-     * @param xadatasource the XA datasource to use to get connections
      * @param clusterInvalidator the cluster invalidator
+     * @param noSharing whether to use no-sharing mode for the connection
      * @param repository
      */
-    public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, XADataSource xadatasource,
-            ClusterInvalidator clusterInvalidator, boolean noSharing, RepositoryImpl repository) {
-        super(model, sqlInfo, xadatasource, clusterInvalidator, repository.getInvalidationsPropagator(), noSharing);
+    public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
+            boolean noSharing, RepositoryImpl repository) {
+        super(model, sqlInfo, clusterInvalidator, repository.getInvalidationsPropagator(), noSharing);
         this.pathResolver = pathResolver;
         this.repository = repository;
         clusteringEnabled = clusterInvalidator != null;

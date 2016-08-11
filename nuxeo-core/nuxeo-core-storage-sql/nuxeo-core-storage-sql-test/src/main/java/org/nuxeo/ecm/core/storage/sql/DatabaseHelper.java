@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 public abstract class DatabaseHelper {
 
@@ -49,8 +48,6 @@ public abstract class DatabaseHelper {
     public static final String DB_DEFAULT = "H2";
 
     public static final String DEF_ID_TYPE = "varchar"; // "varchar", "uuid", "sequence"
-
-    private static final boolean SINGLEDS_DEFAULT = false;
 
     public static DatabaseHelper DATABASE;
 
@@ -71,9 +68,6 @@ public abstract class DatabaseHelper {
     public static final String DRIVER_PROPERTY = "nuxeo.test.vcs.driver";
 
     // available for JDBC tests
-    public static final String XA_DATASOURCE_PROPERTY = "nuxeo.test.vcs.xadatasource";
-
-    // available for JDBC tests
     public static final String URL_PROPERTY = "nuxeo.test.vcs.url";
 
     public static final String SERVER_PROPERTY = "nuxeo.test.vcs.server";
@@ -87,9 +81,6 @@ public abstract class DatabaseHelper {
     public static final String PASSWORD_PROPERTY = "nuxeo.test.vcs.password";
 
     public static final String ID_TYPE_PROPERTY = "nuxeo.test.vcs.idtype";
-
-    // set this to true to activate single datasource for all tests
-    public static final String SINGLEDS_PROPERTY = "nuxeo.test.vcs.singleds";
 
     protected Error owner;
 
@@ -208,7 +199,6 @@ public abstract class DatabaseHelper {
         setOwner();
         setDatabaseName(DEFAULT_DATABASE_NAME);
         setBinaryManager(defaultBinaryManager, "");
-        setSingleDataSourceMode();
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
@@ -248,16 +238,6 @@ public abstract class DatabaseHelper {
     public abstract String getDeploymentContrib();
 
     public abstract RepositoryDescriptor getRepositoryDescriptor();
-
-    public static void setSingleDataSourceMode() {
-        if (Boolean.parseBoolean(System.getProperty(SINGLEDS_PROPERTY)) || SINGLEDS_DEFAULT) {
-            // the name doesn't actually matter, as code in
-            // ConnectionHelper.getDataSource ignores it and uses
-            // nuxeo.test.vcs.url etc. for connections in test mode
-            String dataSourceName = "jdbc/NuxeoTestDS";
-            Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, dataSourceName);
-        }
-    }
 
     /**
      * For databases that do asynchronous fulltext indexing, sleep a bit.

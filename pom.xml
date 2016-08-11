@@ -4842,7 +4842,6 @@
             <nuxeo.test.vcs.database>${nuxeo.test.vcs.database}</nuxeo.test.vcs.database>
             <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
             <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
-            <nuxeo.test.vcs.singleds>${nuxeo.test.vcs.singleds}</nuxeo.test.vcs.singleds>
             <!-- Used by org.nuxeo.ecm.core.test.StorageConfiguration -->
             <!-- (and org.nuxeo.ecm.core.storage.mongodb.TestGridFSBinaryManager) -->
             <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>

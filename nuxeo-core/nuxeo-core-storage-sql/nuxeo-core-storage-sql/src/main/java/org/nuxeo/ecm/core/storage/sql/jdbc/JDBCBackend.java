@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,10 @@ import static java.lang.Boolean.TRUE;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map.Entry;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -46,7 +42,6 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
@@ -59,10 +54,6 @@ public class JDBCBackend implements RepositoryBackend {
     private static final Log log = LogFactory.getLog(JDBCBackend.class);
 
     private RepositoryImpl repository;
-
-    private String pseudoDataSourceName;
-
-    private XADataSource xadatasource;
 
     private Dialect dialect;
 
@@ -79,64 +70,22 @@ public class JDBCBackend implements RepositoryBackend {
     @Override
     public void initialize(RepositoryImpl repository) {
         this.repository = repository;
-        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
-        pseudoDataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryDescriptor.name);
+        String dataSourceName = getDataSourceName();
 
         try {
-            DataSource ds = DataSourceHelper.getDataSource(pseudoDataSourceName);
+            DataSource ds = DataSourceHelper.getDataSource(dataSourceName);
             if (ds instanceof PooledDataSource) {
                 isPooledDataSource = true;
-                return;
             }
-        } catch (NamingException cause) {;
+        } catch (NamingException cause) {
+            throw new NuxeoException("Cannot acquire datasource: " + dataSourceName, cause);
         }
 
-        // try single-datasource non-XA mode
-        try (Connection connection = ConnectionHelper.getConnection(pseudoDataSourceName)) {
-            if (connection != null) {
-                return;
-            }
+        // check early that the connection is valid
+        try (Connection connection = ConnectionHelper.getConnection(dataSourceName)) {
+            // do nothing, just acquire it to test
         } catch (SQLException cause) {
-            throw new NuxeoException("Connection error", cause);
-        }
-
-        // standard XA mode
-        // instantiate the XA datasource
-        String className = repositoryDescriptor.xaDataSourceName;
-        Class<?> klass;
-        try {
-            klass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new NuxeoException("Unknown class: " + className, e);
-        }
-        Object instance;
-        try {
-            instance = klass.newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException("Cannot instantiate class: " + className, e);
-        }
-        if (!(instance instanceof XADataSource)) {
-            throw new NuxeoException("Not a XADataSource: " + className);
-        }
-        xadatasource = (XADataSource) instance;
-
-        // set JavaBean properties on the datasource
-        for (Entry<String, String> entry : repositoryDescriptor.properties.entrySet()) {
-            String name = entry.getKey();
-            Object value = Framework.expandVars(entry.getValue());
-            if (name.contains("/")) {
-                // old syntax where non-String types were explicited
-                name = name.substring(0, name.indexOf('/'));
-            }
-            // transform to proper JavaBean convention
-            if (Character.isLowerCase(name.charAt(1))) {
-                name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
-            }
-            try {
-                BeanUtils.setProperty(xadatasource, name, value);
-            } catch (ReflectiveOperationException e) {
-                log.error(String.format("Cannot set %s = %s", name, value));
-            }
+            throw new NuxeoException("Cannot get connection from datasource: " + dataSourceName, cause);
         }
     }
 
@@ -147,25 +96,9 @@ public class JDBCBackend implements RepositoryBackend {
      */
     @Override
     public void initializeModelSetup(ModelSetup modelSetup) {
-        try {
-            XAConnection xaconnection = null;
-            // try single-datasource non-XA mode
-            Connection connection = ConnectionHelper.getConnection(pseudoDataSourceName);
-            try {
-                if (connection == null) {
-                    // standard XA mode
-                    xaconnection = xadatasource.getXAConnection();
-                    connection = xaconnection.getConnection();
-                }
-                dialect = Dialect.createDialect(connection, repository.getRepositoryDescriptor());
-            } finally {
-                if (connection != null) {
-                    connection.close();
-                }
-                if (xaconnection != null) {
-                    xaconnection.close();
-                }
-            }
+        String dataSourceName = getDataSourceName();
+        try (Connection connection = ConnectionHelper.getConnection(dataSourceName)) {
+            dialect = Dialect.createDialect(connection, repository.getRepositoryDescriptor());
         } catch (SQLException cause) {
             throw new NuxeoException("Cannot connect to database", cause);
         }
@@ -182,6 +115,11 @@ public class JDBCBackend implements RepositoryBackend {
         default:
             throw new AssertionError(dialect.getIdType().toString());
         }
+    }
+
+    protected String getDataSourceName() {
+        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+        return JDBCConnection.getDataSourceName(repositoryDescriptor.name);
     }
 
     /**
@@ -205,7 +143,7 @@ public class JDBCBackend implements RepositoryBackend {
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
         ClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
-        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, xadatasource, cnh, noSharing, repository);
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, noSharing, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper);
             if (noSharing) {

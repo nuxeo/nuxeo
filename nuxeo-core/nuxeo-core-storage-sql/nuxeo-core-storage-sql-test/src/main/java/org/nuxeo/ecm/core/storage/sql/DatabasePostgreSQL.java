@@ -23,8 +23,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.nuxeo.runtime.api.Framework;
 
@@ -89,14 +87,6 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", Framework.getProperty(SERVER_PROPERTY));
-        properties.put("PortNumber", Framework.getProperty(PORT_PROPERTY));
-        properties.put("DatabaseName", Framework.getProperty(DATABASE_PROPERTY));
-        properties.put("User", Framework.getProperty(USER_PROPERTY));
-        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
-        descriptor.properties = properties;
         descriptor.setFulltextAnalyzer("french");
         descriptor.setPathOptimizationsEnabled(true);
         descriptor.setAclOptimizationsEnabled(true);

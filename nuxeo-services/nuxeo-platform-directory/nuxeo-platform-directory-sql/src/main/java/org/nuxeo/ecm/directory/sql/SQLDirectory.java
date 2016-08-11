@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -48,7 +45,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class SQLDirectory extends AbstractDirectory {
@@ -222,59 +218,16 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
-    /** DO NOT USE, use getConnection() instead. */
-    protected DataSource getDataSource() throws DirectoryException {
-        if (dataSource != null) {
-            return dataSource;
-        }
-        SQLDirectoryDescriptor descriptor = getDescriptor();
-        try {
-            if (!StringUtils.isEmpty(descriptor.dataSourceName)) {
-                dataSource = DataSourceHelper.getDataSource(descriptor.dataSourceName);
-                // InitialContext context = new InitialContext();
-                // dataSource = (DataSource)
-                // context.lookup(config.dataSourceName);
-            } else {
-                dataSource = new SimpleDataSource(descriptor.dbUrl, descriptor.dbDriver, descriptor.dbUser,
-                        descriptor.dbPassword);
-            }
-            log.trace("found datasource: " + dataSource);
-            return dataSource;
-        } catch (NamingException e) {
-            log.error("dataSource lookup failed", e);
-            throw new DirectoryException("dataSource lookup failed", e);
-        }
-    }
-
     public Connection getConnection() throws DirectoryException {
         SQLDirectoryDescriptor descriptor = getDescriptor();
+        if (StringUtils.isBlank(descriptor.dataSourceName)) {
+            throw new DirectoryException("Missing dataSource for SQL directory: " + getName());
+        }
         try {
-            if (!StringUtils.isEmpty(descriptor.dataSourceName)) {
-                // try single-datasource non-XA mode
-                Connection connection = ConnectionHelper.getConnection(descriptor.dataSourceName);
-                if (connection != null) {
-                    if (ConnectionHelper.useSingleConnection(descriptor.dataSourceName)) {
-                        connection.setAutoCommit(TransactionHelper.isNoTransaction());
-                    }
-                    return connection;
-                }
-            }
-            return getConnection(getDataSource());
+            return ConnectionHelper.getConnection(descriptor.dataSourceName);
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '" + getName() + "': " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Gets a physical connection from a datasource.
-     * <p>
-     * A few retries are done to work around databases that have problems with many open/close in a row.
-     *
-     * @param aDataSource the datasource
-     * @return the connection
-     */
-    protected Connection getConnection(DataSource aDataSource) throws SQLException {
-        return JDBCUtils.getConnection(aDataSource);
     }
 
     @Override
@@ -305,11 +258,7 @@ public class SQLDirectory extends AbstractDirectory {
         if (!TransactionHelper.isTransactionActive()) {
             return;
         }
-        try {
-            ConnectionHelper.registerSynchronization(new TxSessionCleaner(session));
-        } catch (SystemException e) {
-            throw new DirectoryException("Cannot register in tx for session cleanup handling " + this, e);
-        }
+        TransactionHelper.registerSynchronization(new TxSessionCleaner(session));
     }
 
     public Map<String, Field> getSchemaFieldMap() {

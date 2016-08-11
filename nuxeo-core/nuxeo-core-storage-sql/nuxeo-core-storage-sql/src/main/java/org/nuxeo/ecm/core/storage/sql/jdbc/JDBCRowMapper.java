@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
@@ -50,12 +49,8 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
-import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
-import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
-import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
-import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -97,9 +92,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     private final CollectionIO scalarCollectionIO;
 
-    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource, ClusterInvalidator clusterInvalidator,
+    public JDBCRowMapper(Model model, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
             InvalidationsPropagator invalidationsPropagator, boolean noSharing) {
-        super(model, sqlInfo, xadatasource, noSharing);
+        super(model, sqlInfo, noSharing);
         this.clusterInvalidator = clusterInvalidator;
         this.invalidationsPropagator = invalidationsPropagator;
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);

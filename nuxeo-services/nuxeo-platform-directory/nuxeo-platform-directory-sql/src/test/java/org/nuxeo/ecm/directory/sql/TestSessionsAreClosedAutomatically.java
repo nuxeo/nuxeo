@@ -32,7 +32,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -72,11 +71,6 @@ public class TestSessionsAreClosedAutomatically {
     protected Directory userDirectory;
 
     protected @Inject LogCaptureFeature.Result caughtEvents;
-
-    @Before
-    public void setSingleDataSourceMode() {
-        Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
-    }
 
     @Before
     public void fetchUserDirectory() throws DirectoryException {

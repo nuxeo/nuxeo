@@ -50,18 +50,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     @XNode("dataSource")
     public String dataSourceName;
 
-    @XNode("dbDriver")
-    public String dbDriver;
-
-    @XNode("dbUrl")
-    public String dbUrl;
-
-    @XNode("dbUser")
-    public String dbUser;
-
-    @XNode("dbPassword")
-    public String dbPassword;
-
     @XNode("dataFile")
     public String dataFileName;
 
@@ -97,22 +85,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public void setDataSourceName(String dataSourceName) {
         this.dataSourceName = dataSourceName;
-    }
-
-    public String getDbDriver() {
-        return dbDriver;
-    }
-
-    public String getDbPassword() {
-        return dbPassword;
-    }
-
-    public String getDbUrl() {
-        return dbUrl;
-    }
-
-    public String getDbUser() {
-        return dbUser;
     }
 
     public String getDataFileName() {
@@ -175,22 +147,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         this.autoincrementIdField = Boolean.valueOf(autoincrementIdField);
     }
 
-    public void setDbDriver(String dbDriver) {
-        this.dbDriver = dbDriver;
-    }
-
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
-    }
-
-    public void setDbUrl(String dbUrl) {
-        this.dbUrl = dbUrl;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
     public void setInverseReferences(InverseReference[] inverseReferences) {
         this.inverseReferences = inverseReferences;
     }
@@ -239,18 +195,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     protected void merge(SQLDirectoryDescriptor other) {
         if (other.dataSourceName != null) {
             dataSourceName = other.dataSourceName;
-        }
-        if (other.dbDriver != null) {
-            dbDriver = other.dbDriver;
-        }
-        if (other.dbUrl != null) {
-            dbUrl = other.dbUrl;
-        }
-        if (other.dbUser != null) {
-            dbUser = other.dbUser;
-        }
-        if (other.dbPassword != null) {
-            dbPassword = other.dbPassword;
         }
         if (other.dataFileName != null) {
             dataFileName = other.dataFileName;

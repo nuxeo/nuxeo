@@ -12,6 +12,7 @@
     </datasource>
 
     <link name="jdbc/repository_test" global="jdbc/${nuxeo.test.vcs.database}"/>
+    <link name="jdbc/repository_repo2" global="jdbc/${nuxeo.test.vcs.database}"/>
 
   </extension>
 

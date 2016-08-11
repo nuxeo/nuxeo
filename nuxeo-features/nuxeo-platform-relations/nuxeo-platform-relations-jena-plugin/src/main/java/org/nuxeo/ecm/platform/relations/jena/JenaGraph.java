@@ -38,9 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.relations.api.Blank;
@@ -55,7 +52,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.NodeFactory;
 import org.nuxeo.ecm.platform.relations.api.impl.QueryResultImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.datasource.DataSourceHelper;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.db.DBConnection;
@@ -196,15 +192,7 @@ public class JenaGraph implements Graph {
             // create a database connection
             Connection baseConnection;
             try {
-                // try single-datasource non-XA mode
                 baseConnection = ConnectionHelper.getConnection(datasource);
-                if (baseConnection == null) {
-                    // standard datasource usage
-                    DataSource ds = DataSourceHelper.getDataSource(datasource);
-                    baseConnection = ds.getConnection();
-                }
-            } catch (NamingException e) {
-                throw new IllegalArgumentException(String.format("Datasource %s not found", datasource), e);
             } catch (SQLException e) {
                 throw new IllegalArgumentException(String.format("SQLException while opening %s", datasource), e);
             }

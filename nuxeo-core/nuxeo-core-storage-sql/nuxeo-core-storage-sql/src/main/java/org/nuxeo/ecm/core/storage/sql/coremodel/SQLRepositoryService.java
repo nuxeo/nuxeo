@@ -234,21 +234,4 @@ public class SQLRepositoryService extends DefaultComponent {
         return getRepositoryImpl(repositoryName).getModel().getFulltextConfiguration();
     }
 
-    /**
-     * Returns the datasource definition for the given repository and fills the properties map with the datasource
-     * configuration.
-     *
-     * @param repositoryName the repository name
-     * @param properties a return map of properties
-     * @return the XA datasource name, or null if single datasource is configured
-     * @since 5.9.5
-     */
-    public String getRepositoryDataSourceAndProperties(String repositoryName, Map<String, String> properties) {
-        RepositoryDescriptor desc = getRepositoryImpl(repositoryName).getRepositoryDescriptor();
-        if (desc.properties != null) {
-            properties.putAll(desc.properties);
-        }
-        return desc.xaDataSourceName;
-    }
-
 }

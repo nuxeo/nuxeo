@@ -58,7 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.audit" })
+@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
 public class LogEntryWriterTest {
 
     @Inject
