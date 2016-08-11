@@ -47,6 +47,13 @@ public abstract class TransientStoreWork extends AbstractWork {
     protected String entryKey;
 
     /**
+     * @since 8.4
+     */
+    public static String computeEntryKey(String id) {
+        return id + KEY_SUFFIX;
+    }
+
+    /**
      * Stores the given {@link BlobHolder} as an entry with the given {@code key} in the transient store used by the
      * {@code TransientStoreWork}.
      */
@@ -99,7 +106,7 @@ public abstract class TransientStoreWork extends AbstractWork {
     }
 
     protected void computeEntryKey() {
-        entryKey = getId() + KEY_SUFFIX;
+        entryKey = computeEntryKey(getId());
     }
 
     protected void putBlobHolder(BlobHolder bh) {
