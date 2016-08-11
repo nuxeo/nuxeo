@@ -178,6 +178,16 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     }
 
     @Override
+    public Collection<RenderView> getAutomaticRenderViews() {
+        return automaticRenderViews.registry.values()
+                                            .stream()
+                                            .filter(AutomaticRenderView::isEnabled)
+                                            .map(AutomaticRenderView::getName)
+                                            .map(this::getRenderView)
+                                            .collect(Collectors.toList());
+    }
+
+    @Override
     public Collection<AutomaticLOD> getAutomaticLODs() {
         return automaticLODs.registry.values();
     }

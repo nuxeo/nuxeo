@@ -61,6 +61,11 @@ public interface ThreeDService {
     Collection<RenderView> getAvailableRenderViews();
 
     /**
+     * Returns the automatic registered render views on a 3D content.
+     */
+    Collection<RenderView> getAutomaticRenderViews();
+
+    /**
      * Returns the available registered automatic LODs on a 3D content.
      */
     Collection<AutomaticLOD> getAutomaticLODs();
