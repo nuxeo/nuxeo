@@ -42,6 +42,7 @@ import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -255,41 +256,36 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         try {
-            if (blob.getDigest() == null) {
-                String msg = "ETag and cache has been disabled because blob doesn't have digest for ";
-                msg += "reason=" + reason + ", ";
-                msg += "docId=" + (doc == null ? null : doc.getId()) + ", ";
-                msg += "filename=" + (filename == null ? blob.getFilename() : filename) + ", ";
-                msg += "xpath=" + xpath;
-                log.warn(msg);
-            } else {
-                String etag = '"' + blob.getDigest() + '"'; // with quotes per RFC7232 2.3
-                response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
-                addCacheControlHeaders(request, response);
+            String digest = blob.getDigest();
+            if (digest == null) {
+                digest = DigestUtils.md5Hex(blob.getStream());
+            }
+            String etag = '"' + digest + '"'; // with quotes per RFC7232 2.3
+            response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
+            addCacheControlHeaders(request, response);
 
-                String ifNoneMatch = request.getHeader("If-None-Match");
-                if (ifNoneMatch != null) {
-                    boolean match = false;
-                    if (ifNoneMatch.equals("*")) {
-                        match = true;
+            String ifNoneMatch = request.getHeader("If-None-Match");
+            if (ifNoneMatch != null) {
+                boolean match = false;
+                if (ifNoneMatch.equals("*")) {
+                    match = true;
+                } else {
+                    for (String previousEtag : StringUtils.split(ifNoneMatch, ", ")) {
+                        if (previousEtag.equals(etag)) {
+                            match = true;
+                            break;
+                        }
+                    }
+                }
+                if (match) {
+                    String method = request.getMethod();
+                    if (method.equals("GET") || method.equals("HEAD")) {
+                        response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
                     } else {
-                        for (String previousEtag : StringUtils.split(ifNoneMatch, ", ")) {
-                            if (previousEtag.equals(etag)) {
-                                match = true;
-                                break;
-                            }
-                        }
+                        // per RFC7232 3.2
+                        response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
                     }
-                    if (match) {
-                        String method = request.getMethod();
-                        if (method.equals("GET") || method.equals("HEAD")) {
-                            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-                        } else {
-                            // per RFC7232 3.2
-                            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
-                        }
-                        return;
-                    }
+                    return;
                 }
             }
 

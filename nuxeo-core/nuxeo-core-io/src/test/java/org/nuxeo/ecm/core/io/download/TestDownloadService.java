@@ -22,7 +22,6 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -40,7 +39,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -54,20 +52,16 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, LogCaptureFeature.class })
+@Features({ RuntimeFeature.class })
 @Deploy("org.nuxeo.ecm.core.io")
 @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service.xml")
 public class TestDownloadService {
 
     @Inject
     protected DownloadService downloadService;
-
-    @Inject
-    private LogCaptureFeature.Result logCaptureResults;
 
     @Test
     public void testBasicDownload() throws Exception {
@@ -164,7 +158,6 @@ public class TestDownloadService {
     }
 
     @Test
-    @LogCaptureFeature.FilterOn(loggerName = "org.nuxeo.ecm.core.io.download.DownloadServiceImpl", logLevel = "WARN")
     public void testETagHeaderNoDigest() throws Exception {
         String blobValue = "Hello World";
         Blob blob = Blobs.createBlob(blobValue);
@@ -172,7 +165,7 @@ public class TestDownloadService {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getHeader("If-None-Match")).thenReturn("\"1234\"");
+        when(req.getHeader("If-None-Match")).thenReturn("\"b10a8db164e0754105b7a99be72e3fe5\"");
         when(req.getMethod()).thenReturn("GET");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -189,12 +182,9 @@ public class TestDownloadService {
 
         downloadService.downloadBlob(req, resp, null, null, blob, null, "test");
 
-        verify(req, never()).getHeader("If-None-Match");
-        logCaptureResults.assertHasEvent();
-        LoggingEvent log = logCaptureResults.getCaughtEvents().get(0);
-        assertEquals(
-                "ETag and cache has been disabled because blob doesn't have digest for reason=test, docId=null, filename=myFile.txt, xpath=null",
-                log.getMessage());
+        verify(req, atLeastOnce()).getHeader("If-None-Match");
+        assertEquals(0, out.toByteArray().length);
+        verify(resp).sendError(HttpServletResponse.SC_NOT_MODIFIED);
     }
 
     @Test
