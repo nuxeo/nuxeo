@@ -76,7 +76,7 @@ public class Collection {
      * @param member1Id
      * @param member2Id
      * @return true if successful
-     * @since 8.3
+     * @since 8.4
      */
     public boolean moveMembers(String member1Id, String member2Id) {
         List<String> documentIds = getCollectedDocumentIds();

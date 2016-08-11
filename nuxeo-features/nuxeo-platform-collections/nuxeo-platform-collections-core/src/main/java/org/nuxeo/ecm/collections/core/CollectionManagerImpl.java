@@ -167,7 +167,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     /**
-     * @since 8.3
+     * @since 8.4
      */
     protected void checkCanCollectInCollection(final DocumentModel collection,
             final CoreSession session) {

@@ -47,7 +47,7 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 /**
  * Class testing the MoveCollectionMemberOpeartion operation.
  *
- * @since 8.3
+ * @since 8.4
  */
 public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 

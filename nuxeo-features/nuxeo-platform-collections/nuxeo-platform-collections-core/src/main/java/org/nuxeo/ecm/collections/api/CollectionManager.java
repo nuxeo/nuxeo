@@ -163,7 +163,7 @@ public interface CollectionManager {
      * @param member1 the member1
      * @param member2 the member2
      * @return true if successfully moved
-     * @since 8.3
+     * @since 8.4
      */
     boolean moveMembers(final CoreSession session, final DocumentModel collection, final DocumentModel member1,
             final DocumentModel member2);
