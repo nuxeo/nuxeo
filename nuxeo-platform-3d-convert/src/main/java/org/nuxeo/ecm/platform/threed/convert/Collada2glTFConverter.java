@@ -96,7 +96,7 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
             filesToDelete.add(directory.toString());
 
             String baseDir = getTmpDirectory(parameters);
-            Path outPath = new Path(baseDir).append(DAE2GLTF_PATH_PREFIX + UUID.randomUUID());
+            Path outPath = new Path(baseDir).append(DAE2GLTF_OUTPUT_PATH_PREFIX + UUID.randomUUID());
             File outDir = new File(outPath.toString());
             dirCreated = outDir.mkdir();
             if (!dirCreated) {

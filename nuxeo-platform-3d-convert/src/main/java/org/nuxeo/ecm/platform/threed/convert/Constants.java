@@ -31,6 +31,8 @@ public class Constants {
 
     public static final String DAE2GLTF_PATH_PREFIX = "dae2gltf_";
 
+    public static final String DAE2GLTF_OUTPUT_PATH_PREFIX = "dae2gltf_out_";
+
     public static final String OUT_DIR_PARAMETER = "outDir";
 
     public static final String SCRIPT_PARAMETER = "script";
@@ -45,7 +47,7 @@ public class Constants {
 
     public static final String COORDS_PARAMETER = "coords";
 
-    public static final String OUTPUT_FILE_PATH_PARAMETER = "outDir";
+    public static final String OUTPUT_FILE_PATH_PARAMETER = "outFilePath";
 
     public static final String SCRIPTS_DIRECTORY = "scripts";
 
