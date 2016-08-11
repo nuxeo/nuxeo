@@ -263,8 +263,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         String srcMt = blobHolder.getBlob().getMimeType();
         String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException("Cannot find converter from type " + srcMt + " to type "
-                    + destinationMimeType);
+            throw new ConversionException(
+                    "Cannot find converter from type " + srcMt + " to type " + destinationMimeType);
         }
         return convert(converterName, blobHolder, parameters);
     }
@@ -339,11 +339,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     @Override
-    public String scheduleConversion(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters) {
+    public String scheduleConversion(String converterName, BlobHolder blobHolder,
+            Map<String, Serializable> parameters) {
         WorkManager workManager = Framework.getService(WorkManager.class);
         ConversionWork work = new ConversionWork(converterName, null, blobHolder, parameters);
         workManager.schedule(work);
-        return work.getEntryKey();
+        return work.getId();
     }
 
     @Override
@@ -352,7 +353,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         WorkManager workManager = Framework.getService(WorkManager.class);
         ConversionWork work = new ConversionWork(null, destinationMimeType, blobHolder, parameters);
         workManager.schedule(work);
-        return work.getEntryKey();
+        return work.getId();
     }
 
     @Override
@@ -360,7 +361,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         WorkManager workManager = Framework.getService(WorkManager.class);
         Work.State workState = workManager.getWorkState(id);
         if (workState == null) {
-            if (TransientStoreWork.containsBlobHolder(id)) {
+            String entryKey = TransientStoreWork.computeEntryKey(id);
+            if (TransientStoreWork.containsBlobHolder(entryKey)) {
                 return new ConversionStatus(id, ConversionStatus.Status.COMPLETED);
             }
             return null;
@@ -371,9 +373,10 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     @Override
     public BlobHolder getConversionResult(String id, boolean cleanTransientStoreEntry) {
-        BlobHolder bh = TransientStoreWork.getBlobHolder(id);
+        String entryKey = TransientStoreWork.computeEntryKey(id);
+        BlobHolder bh = TransientStoreWork.getBlobHolder(entryKey);
         if (cleanTransientStoreEntry) {
-            TransientStoreWork.removeBlobHolder(id);
+            TransientStoreWork.removeBlobHolder(entryKey);
         }
         return bh;
     }

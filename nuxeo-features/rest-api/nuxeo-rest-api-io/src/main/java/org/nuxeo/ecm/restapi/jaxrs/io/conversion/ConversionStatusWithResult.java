@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,22 @@
  *
  * Contributors:
  *     Thomas Roger
+ *
  */
 
 package org.nuxeo.ecm.restapi.jaxrs.io.conversion;
 
+import org.nuxeo.ecm.core.convert.api.ConversionStatus;
+
 /**
- * @since 7.4
+ * @since 8.4
  */
-public class ConversionScheduled {
-
-    public final String id;
-
-    public final String pollingURL;
+public class ConversionStatusWithResult extends ConversionStatus {
 
     public final String resultURL;
 
-    /**
-     * @since 8.4
-     */
-    public ConversionScheduled(String id, String pollingURL, String resultURL) {
-        this.id = id;
-        this.pollingURL = pollingURL;
+    public ConversionStatusWithResult(ConversionStatus conversionStatus, String resultURL) {
+        super(conversionStatus.id, conversionStatus.status);
         this.resultURL = resultURL;
-    }
-
-    public ConversionScheduled(String id, String pollingURL) {
-        this(id, pollingURL, null);
     }
 }
