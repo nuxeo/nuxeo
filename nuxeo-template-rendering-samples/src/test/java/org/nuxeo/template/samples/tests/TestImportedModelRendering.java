@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +55,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
     "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.template.manager.api",
     "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.manager.xdocreport",
     "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples", "org.nuxeo.ecm.core.io",
-    "studio.extensions.template-module-demo" })
+    "studio.extensions.template-module-demo", "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestImportedModelRendering {
 
   DocumentModel rootDocument;
@@ -68,6 +69,9 @@ public class TestImportedModelRendering {
 
   @Inject
   protected ConversionService cs;
+
+  @Inject
+  protected CommandLineExecutorService commandLineExecutorService;
 
   @Test
   public void testNote4Web() throws Exception {

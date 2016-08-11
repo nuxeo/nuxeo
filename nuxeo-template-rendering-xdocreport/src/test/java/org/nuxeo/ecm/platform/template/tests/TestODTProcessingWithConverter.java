@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.convert.ConvertHelper;
 import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -65,6 +66,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
         "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.preview", //
         "org.nuxeo.ecm.platform.dublincore", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
         "org.nuxeo.template.manager.api", //
         "org.nuxeo.template.manager", //
         "org.nuxeo.template.manager.xdocreport", //
@@ -79,6 +81,9 @@ public class TestODTProcessingWithConverter {
 
     @Inject
     protected OOoManagerService oooManagerService;
+
+    @Inject
+    protected CommandLineExecutorService commandLineExecutorService;
 
     private DocumentModel templateDoc;
 
