@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -382,7 +382,7 @@ public class NuxeoCmisService extends AbstractCmisService
     @Override
     public List<RepositoryInfo> getRepositoryInfos(ExtensionsData extension) {
         List<NuxeoRepository> repos = Framework.getService(NuxeoRepositories.class).getRepositories();
-        List<RepositoryInfo> infos = new ArrayList<RepositoryInfo>(repos.size());
+        List<RepositoryInfo> infos = new ArrayList<>(repos.size());
         for (NuxeoRepository repo : repos) {
             String latestChangeLogToken = getLatestChangeLogToken(repo.getId());
             infos.add(repo.getRepositoryInfo(latestChangeLogToken, callContext));
@@ -433,7 +433,7 @@ public class NuxeoCmisService extends AbstractCmisService
                 includePropertyDefinitions);
         // clone
         // TODO copy only when local binding
-        List<CmisTypeContainer> tmp = new ArrayList<CmisTypeContainer>(types.size());
+        List<CmisTypeContainer> tmp = new ArrayList<>(types.size());
         WSConverter.convertTypeContainerList(types, tmp);
         return WSConverter.convertTypeContainerList(tmp);
     }
@@ -1036,7 +1036,7 @@ public class NuxeoCmisService extends AbstractCmisService
 
     protected Map<String, ObjectInfo> getObjectInfo() {
         if (objectInfos == null) {
-            objectInfos = new HashMap<String, ObjectInfo>();
+            objectInfos = new HashMap<>();
         }
         return objectInfos;
     }
@@ -1137,12 +1137,11 @@ public class NuxeoCmisService extends AbstractCmisService
     public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(String repositoryId,
             List<BulkUpdateObjectIdAndChangeToken> objectIdAndChangeToken, Properties properties,
             List<String> addSecondaryTypeIds, List<String> removeSecondaryTypeIds, ExtensionsData extension) {
-        List<BulkUpdateObjectIdAndChangeToken> list = new ArrayList<BulkUpdateObjectIdAndChangeToken>(
-                objectIdAndChangeToken.size());
+        List<BulkUpdateObjectIdAndChangeToken> list = new ArrayList<>(objectIdAndChangeToken.size());
         for (BulkUpdateObjectIdAndChangeToken idt : objectIdAndChangeToken) {
             String id = idt.getId();
-            Holder<String> objectIdHolder = new Holder<String>(id);
-            Holder<String> changeTokenHolder = new Holder<String>(idt.getChangeToken());
+            Holder<String> objectIdHolder = new Holder<>(id);
+            Holder<String> changeTokenHolder = new Holder<>(idt.getChangeToken());
             updateProperties(objectIdHolder, changeTokenHolder, properties);
             list.add(new BulkUpdateObjectIdAndChangeTokenImpl(id, objectIdHolder.getValue(),
                     changeTokenHolder.getValue()));
@@ -1347,7 +1346,7 @@ public class NuxeoCmisService extends AbstractCmisService
                     + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
                     + "   AND log.repositoryId = :repoId" //
                     + " ORDER BY log.id";
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("minId", Long.valueOf(minId));
             params.put("evCreated", DOCUMENT_CREATED);
             params.put("evModified", DOCUMENT_UPDATED);
@@ -1375,7 +1374,7 @@ public class NuxeoCmisService extends AbstractCmisService
         } else {
             throw new CmisRuntimeException("Unknown audit backend: " + reader.getClass().getName());
         }
-        List<ObjectData> ods = new ArrayList<ObjectData>();
+        List<ObjectData> ods = new ArrayList<>();
         for (LogEntry entry : entries) {
             ObjectData od = getLogEntryObjectData(entry);
             if (od != null) {
@@ -1445,7 +1444,7 @@ public class NuxeoCmisService extends AbstractCmisService
                     + " WHERE log.eventId IN (:evCreated, :evModified, :evRemoved)" //
                     + "   AND log.repositoryId = :repoId" //
                     + " ORDER BY log.id DESC";
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("evCreated", DOCUMENT_CREATED);
             params.put("evModified", DOCUMENT_UPDATED);
             params.put("evRemoved", DOCUMENT_REMOVED);
@@ -1504,12 +1503,12 @@ public class NuxeoCmisService extends AbstractCmisService
         List<ObjectData> list;
         IterableQueryResult res = null;
         try {
-            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
+            Map<String, PropertyDefinition<?>> typeInfo = new HashMap<>();
             // searchAllVersions defaults to false, spec 2.2.6.1.1
             res = queryAndFetch(statement, Boolean.TRUE.equals(searchAllVersions), typeInfo);
 
             // convert from Nuxeo to CMIS format
-            list = new ArrayList<ObjectData>();
+            list = new ArrayList<>();
             if (skip > 0) {
                 res.skipTo(skip);
             }
@@ -1685,7 +1684,7 @@ public class NuxeoCmisService extends AbstractCmisService
             String renditionFilter, Boolean includePathSegment, BigInteger maxItems, BigInteger skipCount,
             boolean folderOnly) {
         ObjectInFolderListImpl result = new ObjectInFolderListImpl();
-        List<ObjectInFolderData> list = new ArrayList<ObjectInFolderData>();
+        List<ObjectInFolderData> list = new ArrayList<>();
         DocumentModel folder = getDocumentModel(folderId);
         if (!folder.isFolder()) {
             return null;
@@ -1783,7 +1782,7 @@ public class NuxeoCmisService extends AbstractCmisService
         if (children == null) {
             return Collections.emptyList();
         }
-        List<ObjectInFolderContainer> res = new ArrayList<ObjectInFolderContainer>(children.getObjects().size());
+        List<ObjectInFolderContainer> res = new ArrayList<>(children.getObjects().size());
         for (ObjectInFolderData child : children.getObjects()) {
             ObjectInFolderContainerImpl oifc = new ObjectInFolderContainerImpl();
             oifc.setObject(child);
@@ -2016,7 +2015,7 @@ public class NuxeoCmisService extends AbstractCmisService
             // same as query names
         }
         // clause from folderId
-        List<String> clauses = new ArrayList<String>(3);
+        List<String> clauses = new ArrayList<>(3);
         clauses.add(NuxeoTypeHelper.NX_ISVERSION + " = false");
         clauses.add(NuxeoTypeHelper.NX_ISCHECKEDIN + " = false");
         if (folderId != null) {
@@ -2053,7 +2052,7 @@ public class NuxeoCmisService extends AbstractCmisService
             throw new CmisInvalidArgumentException("Missing object ID or version series ID");
         }
         List<DocumentRef> versions = coreSession.getVersionsRefs(doc.getRef());
-        List<ObjectData> list = new ArrayList<ObjectData>(versions.size());
+        List<ObjectData> list = new ArrayList<>(versions.size());
         for (DocumentRef verRef : versions) {
             String verId = getIdFromDocumentRef(verRef);
             ObjectData od = getObject(repositoryId, verId, filter, includeAllowableActions, IncludeRelationships.NONE,
