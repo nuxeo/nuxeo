@@ -5,6 +5,8 @@
   // Here is 40 x 100ms = 4sec
   var maxWaitingIteration = 30;
 
+  var saveFormFunc;
+
   function getInputValue(domInput) {
     if (domInput.tagName == "INPUT") {
       if (domInput.type == 'text' || domInput.type == 'hidden') {
@@ -73,7 +75,11 @@
       for ( var i = 0, len = formIds.length; i < len; i++) {
         var formId = formIds[i].split(":").join("\\:")
         if (jQuery("#" + formId).data("dirtyPage")) {
-          return confirm(message);
+          var r = confirm(message);
+          if (r == true) {
+            jQuery("#" + formId).cleanupSavedData();
+          }
+          return r;
         }
       }
     }
@@ -109,7 +115,7 @@
     var dataToStore = JSON.stringify(data);
     var $form = jQuery(this);
     if (dataToStore == $form.data('lastSavedJSONData')) {
-      // console.log("skip save ... no change");
+      //console.log("skip save ... no change");
     } else {
       localStorage.setItem(jQuery(this).data('key'), dataToStore);
       $form.data('lastSavedJSONData', dataToStore);
@@ -118,7 +124,7 @@
       }
     }
     if (savePeriod > 0 && !$form.data('blockAutoSave')) {
-      window.setTimeout(function() {
+      saveFormFunc = window.setTimeout(function() {
         $form.saveForm(savePeriod, saveCB)
       }, savePeriod);
     }
@@ -126,8 +132,9 @@
   }
 
   $.fn.cleanupSavedData = function() {
-    // console.log("Cleanup custom storage");
+    //console.log("Cleanup custom storage");
     localStorage.removeItem(jQuery(this).data('key'));
+    window.clearTimeout(saveFormFunc);
   }
 
   $.fn.processRestore = function(elts, data) {
@@ -171,7 +178,7 @@
         }
         $form.data('blockAutoSave', false);
         if (savePeriod > 0) {
-          window.setTimeout(function() {
+          saveFormFunc = window.setTimeout(function() {
             $form.saveForm(savePeriod, saveCB)
           }, savePeriod);
         }
@@ -245,7 +252,6 @@
   $.fn.initSafeEdit = function(key, savePeriod, saveCB, loadCB, message) {
 
     var $form = jQuery(this);
-    var $safeEditInitDone = $form.data('safeEditInitDone');
 
     doInitSafeEdit = function(savePeriod, saveCB, loadCB, message) {
       var loaded = $form.restoreDraftFormData(loadCB, savePeriod, saveCB);
@@ -305,7 +311,7 @@
       }
     }
 
-    if (!$safeEditInitDone) {
+    if ($form.data('safeEditInitDone') !== true) {
 
       $form.data('safeEditInitDone', true);
 
