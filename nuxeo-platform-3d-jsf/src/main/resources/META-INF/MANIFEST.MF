@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.jsf;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
-Nuxeo-Component: OSGI-INF/threed-types-contrib.xml
+Nuxeo-Component: OSGI-INF/threed-types-contrib.xml, OSGI-INF/threed-layouts-contrib.xml
 Eclipse-LazyStart: true
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.webapp.base,

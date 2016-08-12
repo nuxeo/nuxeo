@@ -3,7 +3,6 @@
 
     <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-
         <type id="ThreeD">
             <label>3D</label>
             <default-view>view_documents</default-view>
@@ -13,16 +12,13 @@
             <description>ThreeD.description</description>
             <layouts mode="any">
                 <layout>heading</layout>
-                <layout>threed</layout>
             </layouts>
             <layouts mode="edit">
                 <layout>heading</layout>
-                <layout>threed</layout>
                 <layout>dublincore</layout>
             </layouts>
             <layouts mode="drive">
                 <layout>heading</layout>
-                <layout>threed</layout>
                 <layout>dublincore</layout>
             </layouts>
         </type>
@@ -38,11 +34,6 @@
             </subtypes>
         </type>
         <type id="Workspace">
-            <subtypes>
-                <type>ThreeD</type>
-            </subtypes>
-        </type>
-        <type id="PictureBook">
             <subtypes>
                 <type>ThreeD</type>
             </subtypes>
