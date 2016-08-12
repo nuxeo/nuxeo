@@ -555,6 +555,10 @@ public abstract class ExpressionEvaluator {
         if (left == null || right == null) {
             return null;
         }
+        if (left instanceof Calendar && right instanceof Calendar) {
+            // avoid timezone issues (NXP-20260)
+            return ((Calendar) left).getTimeInMillis() == ((Calendar) right).getTimeInMillis();
+        }
         return left.equals(right);
     }
 
