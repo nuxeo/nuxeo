@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.AbstractSession;
@@ -79,7 +78,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -1167,15 +1165,7 @@ public class TestSQLRepositoryQuery {
         // equality testing
         sql = "SELECT * FROM File WHERE DATE(dc:created) = DATE '2007-03-01'";
         dml = session.query(sql);
-        if (dml.size() != 1) { // additional debug info, NXP-20260
-            try {
-                List<String> list = ExpressionEvaluator.DEBUG_INFO = new ArrayList<>();
-                dml = session.query(sql);
-                assertEquals(StringUtils.join(list, ", "), 1, dml.size());
-            } finally {
-                ExpressionEvaluator.DEBUG_INFO = null;
-            }
-        }
+        assertEquals(1, dml.size());
 
         // switched order
         sql = "SELECT * FROM File WHERE DATE '2007-01-01' <= DATE(dc:created)";
@@ -2261,15 +2251,6 @@ public class TestSQLRepositoryQuery {
                 "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s" + " AND ecm:isProxy = 0",
                 formatTimestamp(currentDate));
         DocumentModelList docs = session.query(testQuery);
-        if (docs.size() != 1) { // additional debug info, NXP-20260
-            try {
-                List<String> list = ExpressionEvaluator.DEBUG_INFO = new ArrayList<>();
-                docs = session.query(testQuery);
-                assertEquals(StringUtils.join(list, ", "), 1, docs.size());
-            } finally {
-                ExpressionEvaluator.DEBUG_INFO = null;
-            }
-        }
         assertEquals(1, docs.size());
     }
 

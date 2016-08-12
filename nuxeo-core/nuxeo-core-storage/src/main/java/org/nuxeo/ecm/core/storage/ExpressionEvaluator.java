@@ -295,8 +295,6 @@ public abstract class ExpressionEvaluator {
         return or(left, right);
     }
 
-    public static List<String> DEBUG_INFO;
-
     public Boolean walkEq(Operand lvalue, Operand rvalue) {
         Object right = walkOperand(rvalue);
         if (isMixinTypes(lvalue)) {
@@ -306,13 +304,7 @@ public abstract class ExpressionEvaluator {
             return walkMixinTypes(Collections.singletonList((String) right), true);
         }
         Object left = walkOperand(lvalue);
-        Boolean eq = eqMaybeList(left, right);
-        if (DEBUG_INFO != null && left != null && right != null) {
-            DEBUG_INFO.add("left(" + left + ") "
-                    + (TRUE.equals(eq) ? "=" : "!=")
-                    + " right(" + right + ")");
-        }
-        return eq;
+        return eqMaybeList(left, right);
     }
 
     public Boolean walkNotEq(Operand lvalue, Operand rvalue) {
