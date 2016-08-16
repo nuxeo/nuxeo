@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
@@ -31,23 +32,34 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.core.util.DateTimeFormat;
+import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,15 +69,36 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Provider
 @Produces({ JsonESDocumentWriter.MIME_TYPE })
-// TODO: remove the use of JsonDocumentWriter - refactor the ES marshalling and use nuxeo-core-io marshalling instead
-@SuppressWarnings("deprecation")
-public class JsonESDocumentWriter extends JsonDocumentWriter {
+public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     public static final String MIME_TYPE = "application/json+esentity";
 
+    public static final String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
+
+    @Context
+    protected HttpHeaders headers;
+
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return super.isWriteable(type, genericType, annotations, mediaType) && MIME_TYPE.equals(mediaType.toString());
+        return DocumentModel.class.isAssignableFrom(type) && MIME_TYPE.equals(mediaType.toString());
+    }
+
+    @Override
+    public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4) {
+        return -1L;
+    }
+
+    @Override
+    public void writeTo(DocumentModel doc, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+        // schema names: dublincore, file, ... or *
+        List<String> props = headers.getRequestHeader(DOCUMENT_PROPERTIES_HEADER);
+        String[] schemas = null;
+        if (props != null && !props.isEmpty()) {
+            schemas = StringUtils.split(props.get(0), ", ");
+        }
+        writeDocument(entityStream, doc, schemas, null);
     }
 
     public void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas, Map<String, String> contextParameters,
@@ -189,14 +222,39 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         }
     }
 
-    @Override
     public void writeDocument(OutputStream out, DocumentModel doc, String[] schemas,
             Map<String, String> contextParameters) throws IOException {
-        writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas, contextParameters, headers);
+        writeDoc(JsonHelper.createJsonGenerator(out), doc, schemas, contextParameters, headers);
     }
 
     public void writeESDocument(JsonGenerator jg, DocumentModel doc, String[] schemas,
             Map<String, String> contextParameters) throws IOException {
         writeDoc(jg, doc, schemas, contextParameters, null);
     }
+
+    protected static void writeProperties(JsonGenerator jg, DocumentModel doc, String schema, ServletRequest request)
+            throws IOException {
+        DocumentPart part = doc.getPart(schema);
+        if (part == null) {
+            return;
+        }
+        String prefix = part.getSchema().getNamespace().prefix;
+        if (prefix == null || prefix.length() == 0) {
+            prefix = schema;
+        }
+        prefix = prefix + ":";
+
+        String blobUrlPrefix = null;
+        if (request != null) {
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            blobUrlPrefix = VirtualHostHelper.getBaseURL(request) + downloadService.getDownloadUrl(doc, null, null)
+                    + "/";
+        }
+
+        for (Property p : part.getChildren()) {
+            jg.writeFieldName(prefix + p.getField().getName().getLocalName());
+            JSONPropertyWriter.writePropertyValue(jg, p, DateTimeFormat.W3C, blobUrlPrefix);
+        }
+    }
+
 }
