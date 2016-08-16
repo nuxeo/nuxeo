@@ -32,26 +32,6 @@
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" home="${catalina.base}/nxserver" />
 </#noparse>
 
-  <!-- Define JDBC datasources: the JNDI names will be: java:comp/env/jdbc/DATABASE_NAME.
-    For example java:comp/env/jdbc/nxsqldirectory This means you need to update corresponding
-    JNDI bindings in nuxeo data source definitions in the config directory -->
-
-<#if nuxeo.db.embeddedDatasources == "false">
-  <ResourceLink name="jdbc/NuxeoDS" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxsqldirectory" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxrelations-default-jena" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/comment-relations" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxaudit-logs" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxjbpm" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/placeful_service_ds" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxwebwidgets" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxuidsequencer" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-<#if "${nuxeo.quartz.enable}" == "true">
-  <ResourceLink name="jdbc/nxquartz" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-  <ResourceLink name="jdbc/nxquartz_no_tx" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
-</#if>
-</#if>
-
   <Resource name="TransactionManager" auth="Container"
     type="javax.transaction.TransactionManager" factory="org.nuxeo.runtime.jtajca.NuxeoTransactionManagerFactory"
     transactionTimeoutSeconds="${nuxeo.db.transactiontimeout}" />

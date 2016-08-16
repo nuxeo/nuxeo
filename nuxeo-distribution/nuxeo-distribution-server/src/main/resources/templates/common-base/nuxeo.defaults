@@ -11,7 +11,6 @@ nuxeo.server.jvmRoute=nuxeo
 NuxeoContainer.autoactivation=false
 
 # GlobalNamingResources datasource (not visible from webapp)
-nuxeo.db.embeddedDatasources=true
 nuxeo.db.xaMode=false
 nuxeo.db.commonds=jdbc/nuxeo
 

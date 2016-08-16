@@ -2,7 +2,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.datasource.server.contrib">
 
-<#if nuxeo.db.embeddedDatasources == "true">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
 <#if nuxeo.db.xaMode == "false">
     <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
@@ -41,6 +40,5 @@
     <link name="jdbc/nxquartz_no_tx" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
 </#if>
   </extension>
-</#if>
 </component>
 </#escape>

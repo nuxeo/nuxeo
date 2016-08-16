@@ -47,16 +47,6 @@
               description="User database that can be updated and saved"
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
-
-  <#if !isWizard && nuxeo.db.embeddedDatasources == "false">
-    <!-- Common datasource for all basic nuxeo datasources -->
-    <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
-        maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
-        url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
-        username="${nuxeo.db.user}" password="${nuxeo.db.password}"
-        accessToUnderlyingConnectionAllowed="true" />
-  </#if>
-
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
