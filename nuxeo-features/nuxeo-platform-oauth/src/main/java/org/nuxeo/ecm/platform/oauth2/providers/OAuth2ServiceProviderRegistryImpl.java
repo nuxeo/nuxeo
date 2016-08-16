@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.mutable.MutableObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -85,43 +86,49 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
         return serviceName;
     }
 
-    protected NuxeoOAuth2ServiceProvider getEntry(String serviceName,
-            Set<String> ftFilter) throws Exception {
+    protected NuxeoOAuth2ServiceProvider getEntry(String serviceNameIn,
+            final Set<String> ftFilter) throws Exception {
 
         // normalize "empty" service name
-        serviceName = preProcessServiceName(serviceName);
+        final String serviceName = preProcessServiceName(serviceNameIn);
 
         if (serviceName == null) {
             log.warn("Can not find provider with null serviceName !");
             return null;
         }
 
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        NuxeoOAuth2ServiceProvider provider = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            if (serviceName != null) {
-                filter.put("serviceName", serviceName);
+        final MutableObject mo = new MutableObject();
+        Framework.doPrivileged(new Runnable() {
+            @Override
+            public void run() {
+                DirectoryService ds = Framework.getService(DirectoryService.class);
+                Session session = null;
+                try {
+                    session = ds.open(DIRECTORY_NAME);
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    if (serviceName != null) {
+                        filter.put("serviceName", serviceName);
+                    }
+                    DocumentModelList entries = session.query(filter, ftFilter);
+                    if (entries == null || entries.isEmpty()) {
+                        return;
+                    }
+                    if (entries.size() > 1) {
+                        log.warn("Found several entries for  serviceName=" + serviceName);
+                    }
+                    // XXX do better than that !
+                    DocumentModel entry = entries.get(0);
+                    NuxeoOAuth2ServiceProvider provider = NuxeoOAuth2ServiceProvider.createFromDirectoryEntry(entry);
+                    mo.setValue(provider);
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
             }
-            DocumentModelList entries = session.query(filter, ftFilter);
-            if (entries == null || entries.size() == 0) {
-                return null;
-            }
-            if (entries.size() > 1) {
-                log.warn("Found several entries for  serviceName="
-                        + serviceName);
-            }
-            // XXX do better than that !
-            DocumentModel entry = entries.get(0);
-            provider = NuxeoOAuth2ServiceProvider.createFromDirectoryEntry(entry);
-            return provider;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        });
+        NuxeoOAuth2ServiceProvider provider = (NuxeoOAuth2ServiceProvider) mo.getValue();
+        return provider;
     }
 
 }

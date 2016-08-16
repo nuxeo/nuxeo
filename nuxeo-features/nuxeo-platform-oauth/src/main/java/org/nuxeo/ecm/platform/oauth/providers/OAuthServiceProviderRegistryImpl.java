@@ -219,24 +219,29 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
     @Override
     public List<NuxeoOAuthServiceProvider> listProviders() {
 
-        List<NuxeoOAuthServiceProvider> result = new ArrayList<NuxeoOAuthServiceProvider>();
+        final List<NuxeoOAuthServiceProvider> result = new ArrayList<NuxeoOAuthServiceProvider>();
         for (NuxeoOAuthServiceProvider provider : inMemoryProviders.values()) {
             result.add(provider);
         }
         try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
-                DocumentModelList entries = session.getEntries();
-                for (DocumentModel entry : entries) {
-                    result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
+            Framework.doPrivileged(new Runnable() {
+                @Override
+                public void run() {
+                    DirectoryService ds = Framework.getService(DirectoryService.class);
+                    Session session = null;
+                    try {
+                        session = ds.open(DIRECTORY_NAME);
+                        DocumentModelList entries = session.getEntries();
+                        for (DocumentModel entry : entries) {
+                            result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
+                        }
+                    } finally {
+                        if (session != null) {
+                            session.close();
+                        }
+                    }
                 }
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
-            }
+            });
         } catch (Exception e) {
             log.error("Error while fetching provider directory", e);
         }
