@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected Client esClient = null;
 
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
+            int limit) {
 
         SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName())
                                                   .setTypes(ElasticSearchConstants.ENTRY_TYPE)
@@ -115,7 +116,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     }
 
     protected FilterBuilder buildFilterClauses(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
+            int limit) {
         AndFilterBuilder filterBuilder = FilterBuilders.andFilter();
 
         // from LogEntry log where log.repositoryId = :repositoryId
@@ -144,8 +146,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                     "documentUnlocked" };
             OrFilterBuilder orEventsFilter = FilterBuilders.orFilter();
             orEventsFilter.add(getEventsClause("eventDocumentCategory", eventIds, true));
-            orEventsFilter.add(getEventsClause("eventLifeCycleCategory", new String[] { "lifecycle_transition_event" },
-                    true));
+            orEventsFilter.add(
+                    getEventsClause("eventLifeCycleCategory", new String[] { "lifecycle_transition_event" }, true));
             orEventsFilter.add(getEventsClause("eventLifeCycleCategory", new String[] { "deleted" }, false));
 
             // ROOT_PATHS log.docPath like :rootPath1
@@ -160,8 +162,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                 // 'rootUnregistered') )
                 orFilterBuilderIfActiveRoots.add(FilterBuilders.andFilter(orEventsFilter, rootsOrCollectionsFilter));
             } else {
-                orFilterBuilderIfActiveRoots.add(FilterBuilders.andFilter(orEventsFilter,
-                        getCurrentRootsClause(activeRoots.getPaths())));
+                orFilterBuilderIfActiveRoots.add(
+                        FilterBuilders.andFilter(orEventsFilter, getCurrentRootsClause(activeRoots.getPaths())));
             }
 
             orFilterBuilderIfActiveRoots.add(getDriveLogsQueryClause());
@@ -257,8 +259,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         long clusteringDelay = getClusteringDelay(repositoryNames);
         if (clusteringDelay > -1) {
             long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            FilterBuilder filterBuilder = FilterBuilders.rangeFilter("logDate").lt(
-                    new Date(lastClusteringInvalidationDate));
+            FilterBuilder filterBuilder = FilterBuilders.rangeFilter("logDate")
+                                                        .lt(new Date(lastClusteringInvalidationDate));
             builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
         } else {
             builder.setQuery(queryBuilder);
@@ -295,13 +297,14 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     protected List<LogEntry> queryAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
-            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
+            Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
+            int limit) {
         List<LogEntry> entries = queryESAuditEntries(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
                 upperBound, integerBounds, limit);
         // Post filter the output to remove (un)registration that are unrelated
         // to the current user.
         // TODO move this to the ES query
-        List<LogEntry> postFilteredEntries = new ArrayList<LogEntry>();
+        List<LogEntry> postFilteredEntries = new ArrayList<>();
         String principalName = session.getPrincipal().getName();
         for (LogEntry entry : entries) {
             ExtendedInfo impactedUserInfo = entry.getExtendedInfos().get("impactedUserName");
