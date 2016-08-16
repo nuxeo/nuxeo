@@ -102,14 +102,16 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
 
     protected List<DocumentModel> queryProviders(Map<String, Serializable> filter, int limit) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            Set<String> fulltext = Collections.emptySet();
-            Map<String, String> orderBy = Collections.emptyMap();
-            return session.query(filter, fulltext, orderBy, true, limit, 0);
-        } catch (DirectoryException e) {
-            log.error("Error while fetching provider directory", e);
-        }
-        return Collections.emptyList();
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                Set<String> fulltext = Collections.emptySet();
+                Map<String, String> orderBy = Collections.emptyMap();
+                return session.query(filter, fulltext, orderBy, true, limit, 0);
+            } catch (DirectoryException e) {
+                log.error("Error while fetching provider directory", e);
+                return Collections.emptyList();
+            }
+        });
     }
 
     /**
