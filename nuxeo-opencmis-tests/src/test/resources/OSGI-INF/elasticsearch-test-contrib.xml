@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
     <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode"
-      indexStoreType="memory" httpEnabled="true" />
+      indexStoreType="mmapfs" httpEnabled="true" />
   </extension>
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
@@ -19,7 +19,6 @@
         {
         "_source" : {"enabled": false},
         "_all" : {"enabled": false},
-        "_type" : {"index": "no"},
         "enabled" : false
         }
       </mapping>

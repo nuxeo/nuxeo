@@ -195,13 +195,17 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Before
     public void setUp() throws Exception {
+        // wait indexing of /default-domain as we need to delete it in setUpData
+        waitForIndexing();
         setUpBinding(coreSession);
         setUpData(coreSession);
+        waitForIndexing();
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         tearDownBinding();
+        waitForIndexing();
     }
 
     public void reSetUp(String username) {

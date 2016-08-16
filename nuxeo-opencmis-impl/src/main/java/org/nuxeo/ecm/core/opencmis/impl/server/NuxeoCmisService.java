@@ -120,8 +120,7 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.AndFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
@@ -1355,12 +1354,13 @@ public class NuxeoCmisService extends AbstractCmisService
             entries = (List<LogEntry>) reader.nativeQuery(query, params, 1, pageSize);
         } else if (reader instanceof ESAuditBackend) {
             SearchRequestBuilder builder = getElasticsearchBuilder();
-            AndFilterBuilder filterBuilder = FilterBuilders.andFilter();
-            filterBuilder.add(FilterBuilders.termFilter(ES_AUDIT_REPOSITORY_ID, repositoryId));
-            filterBuilder.add(FilterBuilders.termsFilter(ES_AUDIT_EVENT_ID,
-                    new String[] { DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED }));
-            filterBuilder.add(FilterBuilders.rangeFilter(ES_AUDIT_ID).gte(minId));
-            builder.setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filterBuilder));
+            BoolQueryBuilder query = QueryBuilders.boolQuery()
+                                                  .must(QueryBuilders.matchAllQuery())
+                                                  .filter(QueryBuilders.termQuery(ES_AUDIT_REPOSITORY_ID, repositoryId))
+                                                  .filter(QueryBuilders.termsQuery(ES_AUDIT_EVENT_ID, DOCUMENT_CREATED,
+                                                          DOCUMENT_UPDATED, DOCUMENT_REMOVED))
+                                                  .filter(QueryBuilders.rangeQuery(ES_AUDIT_ID).gte(minId));
+            builder.setQuery(query);
             builder.addSort(ES_AUDIT_ID, SortOrder.ASC);
             entries = new ArrayList<>();
             SearchResponse searchResponse = builder.setSize(pageSize).execute().actionGet();
@@ -1454,11 +1454,12 @@ public class NuxeoCmisService extends AbstractCmisService
             id = entries.isEmpty() ? 0 : entries.get(0).getId();
         } else if (reader instanceof ESAuditBackend) {
             SearchRequestBuilder builder = getElasticsearchBuilder();
-            AndFilterBuilder filterBuilder = FilterBuilders.andFilter();
-            filterBuilder.add(FilterBuilders.termFilter(ES_AUDIT_REPOSITORY_ID, repositoryId));
-            filterBuilder.add(FilterBuilders.termsFilter(ES_AUDIT_EVENT_ID,
-                    new String[] { DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED }));
-            builder.setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), filterBuilder));
+            BoolQueryBuilder query = QueryBuilders.boolQuery()
+                                                  .must(QueryBuilders.matchAllQuery())
+                                                  .filter(QueryBuilders.termQuery(ES_AUDIT_REPOSITORY_ID, repositoryId))
+                                                  .filter(QueryBuilders.termsQuery(ES_AUDIT_EVENT_ID, DOCUMENT_CREATED,
+                                                          DOCUMENT_UPDATED, DOCUMENT_REMOVED));
+            builder.setQuery(query);
             builder.addSort(ES_AUDIT_ID, SortOrder.DESC);
             builder.setSize(1);
             // TODO refactor this to use max clause
