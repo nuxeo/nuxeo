@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.login.LoginContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -96,30 +98,37 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent
             return null;
         }
 
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        NuxeoOAuth2ServiceProvider provider = null;
+        LoginContext loginContext = Framework.login();
         try {
-            session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            if (serviceName != null) {
-                filter.put("serviceName", serviceName);
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = null;
+            try {
+                session = ds.open(DIRECTORY_NAME);
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                if (serviceName != null) {
+                    filter.put("serviceName", serviceName);
+                }
+                DocumentModelList entries = session.query(filter, ftFilter);
+                if (entries == null || entries.isEmpty()) {
+                    return null;
+                }
+                if (entries.size() > 1) {
+                    log.warn("Found several entries for  serviceName="
+                            + serviceName);
+                }
+                // XXX do better than that !
+                DocumentModel entry = entries.get(0);
+                NuxeoOAuth2ServiceProvider provider = NuxeoOAuth2ServiceProvider.createFromDirectoryEntry(
+                        entry);
+                return provider;
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
             }
-            DocumentModelList entries = session.query(filter, ftFilter);
-            if (entries == null || entries.size() == 0) {
-                return null;
-            }
-            if (entries.size() > 1) {
-                log.warn("Found several entries for  serviceName="
-                        + serviceName);
-            }
-            // XXX do better than that !
-            DocumentModel entry = entries.get(0);
-            provider = NuxeoOAuth2ServiceProvider.createFromDirectoryEntry(entry);
-            return provider;
         } finally {
-            if (session != null) {
-                session.close();
+            if (loginContext != null) {
+                loginContext.logout();
             }
         }
     }

@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -219,6 +222,12 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
         for (NuxeoOAuthServiceProvider provider : inMemoryProviders.values()) {
             result.add(provider);
         }
+        LoginContext loginContext;
+        try {
+            loginContext = Framework.login();
+        } catch (LoginException e) {
+            throw new RuntimeException(e);
+        }
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             Session session = null;
@@ -235,6 +244,14 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
             }
         } catch (Exception e) {
             log.error("Error while fetching provider directory", e);
+        } finally {
+            if (loginContext != null) {
+                try {
+                    loginContext.logout();
+                } catch (LoginException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         return result;
     }
