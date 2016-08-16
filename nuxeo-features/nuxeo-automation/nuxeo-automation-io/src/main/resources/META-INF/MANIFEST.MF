@@ -8,7 +8,5 @@ Bundle-Version: 5.7.2.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.automation.io;singleton:=true
 Nuxeo-Component: OSGI-INF/codec-service.xml,
- OSGI-INF/content-enricher-service.xml,
  OSGI-INF/marshaller-contrib.xml,
- OSGI-INF/content-enricher-contrib.xml,
  OSGI-INF/codec-contrib.xml
