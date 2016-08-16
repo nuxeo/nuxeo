@@ -31,15 +31,11 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.AndFilterBuilder;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeFilterBuilder;
-import org.elasticsearch.index.query.TermsFilterBuilder;
+import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
@@ -96,9 +92,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                                                   .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
-        FilterBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
+        QueryBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
                 upperBound, integerBounds, limit);
-        builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
+        builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
 
         builder.addSort("repositoryId", SortOrder.ASC);
         builder.addSort("eventDate", SortOrder.DESC);
@@ -115,21 +111,21 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         return entries;
     }
 
-    protected FilterBuilder buildFilterClauses(CoreSession session, SynchronizationRoots activeRoots,
+    protected QueryBuilder buildFilterClauses(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds,
             int limit) {
-        AndFilterBuilder filterBuilder = FilterBuilders.andFilter();
+        BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
 
         // from LogEntry log where log.repositoryId = :repositoryId
-        FilterBuilder repositoryClauseFilter = FilterBuilders.termFilter("repositoryId", session.getRepositoryName());
-        filterBuilder.add(repositoryClauseFilter);
+        QueryBuilder repositoryClauseFilter = QueryBuilders.termQuery("repositoryId", session.getRepositoryName());
+        filterBuilder.must(repositoryClauseFilter);
 
         if (activeRoots.getPaths().isEmpty()) {
             // AND (log.category = 'NuxeoDrive' and log.eventId != 'rootUnregistered')
-            filterBuilder.add(getDriveLogsQueryClause());
+            filterBuilder.must(getDriveLogsQueryClause());
         } else {
 
-            OrFilterBuilder orFilterBuilderIfActiveRoots = FilterBuilders.orFilter();
+            BoolQueryBuilder orFilterBuilderIfActiveRoots = QueryBuilders.boolQuery();
 
             // LIST_DOC_EVENTS_IDS_QUERY
 
@@ -144,79 +140,80 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             String eventIds[] = { "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
                     "documentRestored", "addedToCollection", "documentProxyPublished", "documentLocked",
                     "documentUnlocked" };
-            OrFilterBuilder orEventsFilter = FilterBuilders.orFilter();
-            orEventsFilter.add(getEventsClause("eventDocumentCategory", eventIds, true));
-            orEventsFilter.add(
+            BoolQueryBuilder orEventsFilter = QueryBuilders.boolQuery();
+            orEventsFilter.should(getEventsClause("eventDocumentCategory", eventIds, true));
+            orEventsFilter.should(
                     getEventsClause("eventLifeCycleCategory", new String[] { "lifecycle_transition_event" }, true));
-            orEventsFilter.add(getEventsClause("eventLifeCycleCategory", new String[] { "deleted" }, false));
+            orEventsFilter.should(getEventsClause("eventLifeCycleCategory", new String[] { "deleted" }, false));
 
             // ROOT_PATHS log.docPath like :rootPath1
             if (collectionSyncRootMemberIds != null && collectionSyncRootMemberIds.size() > 0) {
-                OrFilterBuilder rootsOrCollectionsFilter = FilterBuilders.orFilter();
-                rootsOrCollectionsFilter.add(getCurrentRootsClause(activeRoots.getPaths()));
-                rootsOrCollectionsFilter.add(getCollectionSyncRootClause(collectionSyncRootMemberIds));
+                BoolQueryBuilder rootsOrCollectionsFilter = QueryBuilders.boolQuery();
+                rootsOrCollectionsFilter.should(getCurrentRootsClause(activeRoots.getPaths()));
+                rootsOrCollectionsFilter.should(getCollectionSyncRootClause(collectionSyncRootMemberIds));
 
                 // ( LIST_DOC_EVENTS_IDS_QUERY and ( ROOT_PATHS or
                 // COLECTIONS_PATHS)
                 // or (log.category = 'NuxeoDrive' and log.eventId !=
                 // 'rootUnregistered') )
-                orFilterBuilderIfActiveRoots.add(FilterBuilders.andFilter(orEventsFilter, rootsOrCollectionsFilter));
+                orFilterBuilderIfActiveRoots.should(
+                        QueryBuilders.boolQuery().must(orEventsFilter).must(rootsOrCollectionsFilter));
             } else {
-                orFilterBuilderIfActiveRoots.add(
-                        FilterBuilders.andFilter(orEventsFilter, getCurrentRootsClause(activeRoots.getPaths())));
+                orFilterBuilderIfActiveRoots.should(QueryBuilders.boolQuery().must(orEventsFilter).must(
+                        getCurrentRootsClause(activeRoots.getPaths())));
             }
 
-            orFilterBuilderIfActiveRoots.add(getDriveLogsQueryClause());
+            orFilterBuilderIfActiveRoots.should(getDriveLogsQueryClause());
 
-            filterBuilder.add(orFilterBuilderIfActiveRoots);
+            filterBuilder.must(orFilterBuilderIfActiveRoots);
         }
 
-        filterBuilder.add(getLogIdBoundsClause(lowerBound, upperBound));
+        filterBuilder.must(getLogIdBoundsClause(lowerBound, upperBound));
         return filterBuilder;
 
     }
 
-    protected RangeFilterBuilder getLogIdBoundsClause(long lowerBound, long upperBound) {
-        RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter("id");
+    protected RangeQueryBuilder getLogIdBoundsClause(long lowerBound, long upperBound) {
+        RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery("id");
         rangeFilter.gt(lowerBound);
         rangeFilter.lte(upperBound);
         return rangeFilter;
     }
 
-    protected TermsFilterBuilder getCollectionSyncRootClause(Set<String> collectionSyncRootMemberIds) {
-        return FilterBuilders.termsFilter("docUUID", collectionSyncRootMemberIds);
+    protected TermsQueryBuilder getCollectionSyncRootClause(Set<String> collectionSyncRootMemberIds) {
+        return QueryBuilders.termsQuery("docUUID", collectionSyncRootMemberIds);
     }
 
-    protected OrFilterBuilder getCurrentRootsClause(Set<String> rootPaths) {
-        OrFilterBuilder orFilterRoots = FilterBuilders.orFilter();
+    protected BoolQueryBuilder getCurrentRootsClause(Set<String> rootPaths) {
+        BoolQueryBuilder orFilterRoots = QueryBuilders.boolQuery();
         for (String rootPath : rootPaths) {
-            orFilterRoots.add(FilterBuilders.prefixFilter("docPath", rootPath));
+            orFilterRoots.should(QueryBuilders.prefixQuery("docPath", rootPath));
         }
         return orFilterRoots;
     }
 
-    protected BoolFilterBuilder getDriveLogsQueryClause() {
-        BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
-        filterBuilder.must(FilterBuilders.termFilter("category", "NuxeoDrive"));
-        filterBuilder.mustNot(FilterBuilders.termFilter("eventId", "rootUnregistered"));
+    protected BoolQueryBuilder getDriveLogsQueryClause() {
+        BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
+        filterBuilder.must(QueryBuilders.termQuery("category", "NuxeoDrive"));
+        filterBuilder.mustNot(QueryBuilders.termQuery("eventId", "rootUnregistered"));
         return filterBuilder;
     }
 
-    protected BoolFilterBuilder getEventsClause(String category, String[] eventIds, boolean shouldMatch) {
-        BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
-        filterBuilder.must(FilterBuilders.termFilter("category", category));
+    protected BoolQueryBuilder getEventsClause(String category, String[] eventIds, boolean shouldMatch) {
+        BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
+        filterBuilder.must(QueryBuilders.termQuery("category", category));
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
                 if (shouldMatch) {
-                    filterBuilder.must(FilterBuilders.termFilter("eventId", eventIds[0]));
+                    filterBuilder.must(QueryBuilders.termQuery("eventId", eventIds[0]));
                 } else {
-                    filterBuilder.mustNot(FilterBuilders.termFilter("eventId", eventIds[0]));
+                    filterBuilder.mustNot(QueryBuilders.termQuery("eventId", eventIds[0]));
                 }
             } else {
                 if (shouldMatch) {
-                    filterBuilder.must(FilterBuilders.termsFilter("eventId", eventIds));
+                    filterBuilder.must(QueryBuilders.termsQuery("eventId", eventIds));
                 } else {
-                    filterBuilder.mustNot(FilterBuilders.termsFilter("eventId", eventIds));
+                    filterBuilder.mustNot(QueryBuilders.termsQuery("eventId", eventIds));
                 }
             }
         }
@@ -259,9 +256,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         long clusteringDelay = getClusteringDelay(repositoryNames);
         if (clusteringDelay > -1) {
             long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            FilterBuilder filterBuilder = FilterBuilders.rangeFilter("logDate")
-                                                        .lt(new Date(lastClusteringInvalidationDate));
-            builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
+            RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate")
+                                                           .lt(new Date(lastClusteringInvalidationDate));
+            builder.setQuery(QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder));
         } else {
             builder.setQuery(queryBuilder);
         }
