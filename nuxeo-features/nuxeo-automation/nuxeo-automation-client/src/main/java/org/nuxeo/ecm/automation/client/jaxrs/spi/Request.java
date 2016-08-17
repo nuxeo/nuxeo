@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,8 @@ public class Request extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
 
-    protected static Pattern RFC2231_ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*\\\\*.*\\*=([^']*)'([^']*)'\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
+    protected static Pattern RFC2231_ATTR_PATTERN = Pattern.compile(
+            ";?\\s*filename\\s*\\\\*.*\\*=([^']*)'([^']*)'\\s*([^;]+)\\s*", Pattern.CASE_INSENSITIVE);
 
     protected static Pattern ATTR_PATTERN = Pattern.compile(";?\\s*filename\\s*=\\s*([^;]+)\\s*",
             Pattern.CASE_INSENSITIVE);
@@ -116,8 +117,8 @@ public class Request extends HashMap<String, String> {
      * Must read the object from the server response and return it or throw a {@link RemoteException} if server sent an
      * error.
      */
-    public Object handleResult(int status, String ctype, String disp, InputStream stream) throws RemoteException,
-            IOException {
+    public Object handleResult(int status, String ctype, String disp, InputStream stream)
+            throws RemoteException, IOException {
         if (status == 204) { // no content
             return null;
         } else if (status >= 400) {
@@ -144,8 +145,7 @@ public class Request extends HashMap<String, String> {
         Blobs files = new Blobs();
         // save the stream to a temporary file
         File file = IOUtils.copyToTempFile(in);
-        FileInputStream fin = new FileInputStream(file);
-        try {
+        try (FileInputStream fin = new FileInputStream(file)) {
             MimeMultipart mp = new MimeMultipart(new InputStreamDataSource(fin, ctype));
             int size = mp.getCount();
             for (int i = 0; i < size; i++) {
@@ -156,10 +156,6 @@ public class Request extends HashMap<String, String> {
         } catch (MessagingException e) {
             throw new IOException(e);
         } finally {
-            try {
-                fin.close();
-            } catch (IOException e) {
-            }
             file.delete();
         }
         return files;
@@ -194,7 +190,7 @@ public class Request extends HashMap<String, String> {
     protected void handleException(int status, String ctype, InputStream stream) throws RemoteException, IOException {
         if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             String content = IOUtils.read(stream);
-            RemoteException e = null;
+            RemoteException e;
             try {
                 e = ExceptionMarshaller.readException(content);
             } catch (IOException t) {

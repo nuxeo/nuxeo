@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,14 +75,19 @@ public class ResponseHelper {
         if (type == null || "???".equals(type)) {
             type = MediaType.APPLICATION_OCTET_STREAM;
         }
-        return Response.status(httpStatus).entity(blob).type(type).header("Content-Disposition",
-                "attachment; filename=" + blob.getFilename()).build();
+        return Response.status(httpStatus)
+                       .entity(blob)
+                       .type(type)
+                       .header("Content-Disposition", "attachment; filename=" + blob.getFilename())
+                       .build();
     }
 
     public static Response blobs(List<Blob> blobs, int httpStatus) throws MessagingException, IOException {
         MultipartBlobs multipartBlobs = new MultipartBlobs(blobs);
-        return Response.status(httpStatus).entity(multipartBlobs).type(
-                new BoundaryMediaType(multipartBlobs.getContentType())).build();
+        return Response.status(httpStatus)
+                       .entity(multipartBlobs)
+                       .type(new BoundaryMediaType(multipartBlobs.getContentType()))
+                       .build();
     }
 
     /**
@@ -97,8 +102,8 @@ public class ResponseHelper {
      *
      * @since 7.1
      */
-    public static Object getResponse(Object result, HttpServletRequest request, int httpStatus) throws IOException,
-            MessagingException {
+    public static Object getResponse(Object result, HttpServletRequest request, int httpStatus)
+            throws IOException, MessagingException {
         if (result == null || "true".equals(request.getHeader("X-NXVoidOperation"))) {
             return emptyContent();
         }

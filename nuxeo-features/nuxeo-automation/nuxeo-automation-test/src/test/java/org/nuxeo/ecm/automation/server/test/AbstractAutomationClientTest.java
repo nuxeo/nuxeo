@@ -43,7 +43,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -316,7 +315,8 @@ public abstract class AbstractAutomationClientTest {
         assertEquals(2, docs.size());
         String title1 = docs.get(0).getTitle();
         String title2 = docs.get(1).getTitle();
-        assertTrue(title1.equals("Note1") && title2.equals("Note2") || title1.equals("Note2") && title2.equals("Note1"));
+        assertTrue(
+                title1.equals("Note1") && title2.equals("Note2") || title1.equals("Note2") && title2.equals("Note1"));
 
         // now get children of /testQuery
         docs = (Documents) session.newRequest(GetDocumentChildren.ID).setInput(folder).execute();
@@ -324,7 +324,8 @@ public abstract class AbstractAutomationClientTest {
 
         title1 = docs.get(0).getTitle();
         title2 = docs.get(1).getTitle();
-        assertTrue(title1.equals("Note1") && title2.equals("Note2") || title1.equals("Note2") && title2.equals("Note1"));
+        assertTrue(
+                title1.equals("Note1") && title2.equals("Note2") || title1.equals("Note2") && title2.equals("Note1"));
 
     }
 

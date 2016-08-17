@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,18 +98,12 @@ public class MockedHttpAutomationClient extends AbstractAutomationClient {
 
     class MockedOperationDocumentation extends OperationDocumentation {
 
-        /**
-         *
-         */
         private static final long serialVersionUID = 1L;
 
         public MockedOperationDocumentation(String operationId) {
             super(operationId);
         }
 
-        /**
-         * @param string
-         */
         public void withParams(String... paramIds) {
             for (String paramId : paramIds) {
                 Param p = new Param();
@@ -119,10 +113,6 @@ public class MockedHttpAutomationClient extends AbstractAutomationClient {
         }
     }
 
-    /**
-     * @param string
-     * @return
-     */
     public MockedOperationDocumentation addOperation(String opeationId) {
         MockedOperationDocumentation opDoc = new MockedOperationDocumentation(opeationId);
         when(registry.getOperation(opeationId)).thenReturn(opDoc);

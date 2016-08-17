@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.core.Response;
 
-import java.nio.charset.StandardCharsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -42,7 +42,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
@@ -100,12 +99,12 @@ public class HttpConnector implements Connector {
 
     @Override
     public Object execute(Request request) {
-        HttpRequestBase httpRequest = null;
+        HttpRequestBase httpRequest;
         if (request.getMethod() == Request.POST) {
             HttpPost post = new HttpPost(request.getUrl());
             Object obj = request.getEntity();
             if (obj != null) {
-                HttpEntity entity = null;
+                HttpEntity entity;
                 if (request.isMultiPart()) {
                     entity = new MultipartRequestEntity((MimeMultipart) obj);
                 } else {
