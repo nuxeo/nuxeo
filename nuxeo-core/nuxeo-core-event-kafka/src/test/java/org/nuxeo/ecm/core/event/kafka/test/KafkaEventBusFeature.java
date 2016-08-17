@@ -14,32 +14,22 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.event.kafka;
+package org.nuxeo.ecm.core.event.kafka.test;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
 /**
+ * Test feature to deploy Nuxeo Event Bus with Kafka plug.
+ * Because of startup ordering issue, we need to define a specific feature so that core-event and kafka are deploted in the right order !
  *
  * @since TODO
  */
-public class DummyEventListener implements PostCommitEventListener {
-
-    public static List<Event> events = new ArrayList<Event>();
-
-    public static void init() {
-        events = new ArrayList<Event>();
-    }
-
-    @Override
-    public void handleEvent(EventBundle bundle) {
-        for (Event event : bundle) {
-            events.add(event);
-        }
-    }
+@Features({ KafkaFeature.class, RuntimeFeature.class })
+@Deploy("org.nuxeo.ecm.core.event")
+public class KafkaEventBusFeature extends SimpleFeature {
 
 }

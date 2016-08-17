@@ -129,6 +129,10 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         }
     }
 
+    public EventBundleDispatcher getEventBundleDispatcher() {
+        return pipeDispatcher;
+    }
+
     public void shutdown(long timeoutMillis) throws InterruptedException {
         postCommitExec.shutdown(timeoutMillis);
         Set<AsyncWaitHook> notTerminated = new HashSet<AsyncWaitHook>();

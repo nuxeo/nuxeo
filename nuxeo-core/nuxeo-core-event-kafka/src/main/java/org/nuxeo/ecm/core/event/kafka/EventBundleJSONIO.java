@@ -77,7 +77,8 @@ public class EventBundleJSONIO {
             }
             jg.writeEndArray();
             jg.flush();
-            return writer.toString();
+            String json = writer.toString();
+            return json;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -162,8 +163,7 @@ public class EventBundleJSONIO {
         ObjectMapper mapper = new ObjectMapper();
 
         Principal principal = new SimplePrincipal(ctxNode.get("principal").getValueAsText());
-        String repository = ctxNode.get("repository").getValueAsText();
-
+        String repository = ctxNode.get("repository").getTextValue();
         String type = ctxNode.get("type").getValueAsText();
 
 
@@ -179,14 +179,16 @@ public class EventBundleJSONIO {
         } else {
             ctx = new EventContextImpl(args);
         }
-
+        ctx.setRepositoryName(repository);
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         JsonNode propsNode = ctxNode.get("props");
-        for (JsonNode propNode : propsNode) {
-
+        Iterator<String> propsNameIT = propsNode.getFieldNames();
+        while (propsNameIT.hasNext()) {
+            String key = propsNameIT.next();
+            String value = propsNode.get(key).getValueAsText();
+            props.put(key, value);
         }
-
         ctx.setProperties(props);
         return ctx;
     }
@@ -208,9 +210,16 @@ public class EventBundleJSONIO {
             Set<String> facets = new HashSet<String>();
             facets.addAll(lfacets);
 
-            return new ShallowDocumentModel(node.get("id").getTextValue(), node.get("repoName").getTextValue(), node.get("name").getTextValue(), new Path(node.get("path").getTextValue()), node.get("type").getTextValue(), node.get("isFolder").getBooleanValue(),
-                    node.get("isVersion").getBooleanValue(), node.get("isproxy").getBooleanValue(), node.get("isImmutable").getBooleanValue(), smap, facets,
-                    node.get("lifeCycleState").getTextValue());
+            return new ShallowDocumentModel(node.get("id").getTextValue(),
+                    node.get("repoName").getTextValue(),
+                    node.get("name").getTextValue(),
+                    new Path(node.get("path").getTextValue()),
+                    node.get("type").getTextValue(),
+                    node.get("isFolder").getBooleanValue(),
+                    node.get("isVersion").getBooleanValue(),
+                    node.get("isProxy").getBooleanValue(),
+                    node.get("isImmutable").getBooleanValue(), smap, facets,
+                    node.get("lifecycleState").getTextValue());
         }
         return mapper.reader().readValue(node);
     }

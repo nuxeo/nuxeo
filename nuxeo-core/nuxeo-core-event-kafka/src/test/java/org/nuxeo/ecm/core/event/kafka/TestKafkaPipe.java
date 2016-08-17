@@ -21,7 +21,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
+import org.nuxeo.ecm.core.event.kafka.test.KafkaEventBusFeature;
+import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -41,7 +44,13 @@ public class TestKafkaPipe {
     EventService eventService;
 
     @Test
-    public void sendEventviaKafka() {
+    public void sendEventviaKafka() throws Exception {
+
+        EventBundleDispatcher dispatcher = ((EventServiceImpl) eventService).getEventBundleDispatcher();
+        // check that kafka pipe is indeed deployed !
+        Assert.assertNotNull(dispatcher);
+
+        DummyEventListener.init();
 
         UnboundEventContext ctx = new UnboundEventContext(new SimplePrincipal("titi"), null);
 

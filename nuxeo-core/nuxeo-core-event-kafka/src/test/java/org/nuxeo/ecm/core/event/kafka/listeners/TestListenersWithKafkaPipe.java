@@ -18,7 +18,7 @@ package org.nuxeo.ecm.core.event.kafka.listeners;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.ecm.core.event.kafka.KafkaEventBusFeature;
+import org.nuxeo.ecm.core.event.kafka.test.KafkaEventBusFeature;
 import org.nuxeo.ecm.core.event.test.PostCommitEventListenerTest;
 import org.nuxeo.ecm.core.event.test.virusscan.TestDummyVirusScanner;
 import org.nuxeo.ecm.core.uidgen.TestDocUIDGeneratorListener;

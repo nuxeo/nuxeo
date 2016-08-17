@@ -204,35 +204,35 @@ public class EventListenerDescriptor {
 
     public void merge(EventListenerDescriptor other) {
 
-        this.isEnabled = other.isEnabled;
+        isEnabled = other.isEnabled;
 
         if (other.clazz != null) {
-            this.clazz = other.clazz;
-            this.rc = other.rc;
+            clazz = other.clazz;
+            rc = other.rc;
         } else if (other.script != null) {
-            this.script = other.script;
-            this.clazz = null;
-            this.rc = other.rc;
+            script = other.script;
+            clazz = null;
+            rc = other.rc;
         }
 
         if (other.isAsync != null) {
-            this.isAsync = other.isAsync;
+            isAsync = other.isAsync;
         }
 
         if (other.events != null) {
-            this.events = other.events;
+            events = other.events;
         }
 
         if (other.transactionTimeOut != null) {
-            this.transactionTimeOut = other.transactionTimeOut;
+            transactionTimeOut = other.transactionTimeOut;
         }
 
         if (other.priority != null) {
-            this.priority = other.priority;
+            priority = other.priority;
         }
 
         if (other.retryCount != null) {
-            this.retryCount = other.retryCount;
+            retryCount = other.retryCount;
         }
     }
 
@@ -259,6 +259,7 @@ public class EventListenerDescriptor {
      */
     public EventBundle filterBundle(EventBundle bundle) {
         EventBundle filtered = new EventBundleImpl();
+
         for (Event event : bundle) {
             if (!acceptEvent(event.getName())) {
                 continue;

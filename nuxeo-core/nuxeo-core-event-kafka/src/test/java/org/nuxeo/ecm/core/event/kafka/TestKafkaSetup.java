@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.event.kafka;
 
 import java.util.Arrays;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -25,6 +26,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.event.kafka.test.KafkaFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 

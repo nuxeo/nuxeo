@@ -20,13 +20,16 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -38,6 +41,7 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Executor of async listeners passing them to the WorkManager.
@@ -78,6 +82,35 @@ public class AsyncEventExecutor {
     }
 
     public void run(final List<EventListenerDescriptor> listeners, EventBundle bundle) {
+
+        // EventBundle that have gone through bus have been serialized
+        // we need to reconnect them before filtering
+        // this means we need a valid transaction !
+        if (bundle instanceof ReconnectedEventBundleImpl) {
+            EventBundle connectedBundle = new EventBundleImpl();
+            Map<String, CoreSession> sessions = new HashMap<String, CoreSession>();
+            boolean txStarted = false;
+            if (TransactionHelper.isNoTransaction()) {
+                txStarted = TransactionHelper.startTransaction();
+            }
+            List<Event> events = ((ReconnectedEventBundleImpl)bundle).getReconnectedEvents();
+            for (Event event : events) {
+                connectedBundle.push(event);
+                CoreSession session = event.getContext().getCoreSession();
+                if (!(sessions.keySet().contains(session.getRepositoryName()))) {
+                    sessions.put(session.getRepositoryName(), session);
+                }
+            }
+            if (txStarted) {
+                TransactionHelper.commitOrRollbackTransaction();
+                for (CoreSession session : sessions.values()) {
+                    session.close();
+                }
+            }
+
+            bundle = connectedBundle;
+        }
+
         for (EventListenerDescriptor listener : listeners) {
             EventBundle filtered = listener.filterBundle(bundle);
             if (filtered.isEmpty()) {

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="test-async-listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener async="true" postCommit="false" class="org.nuxeo.ecm.core.event.kafka.DummyEventListener" name="testPostCommit">
+      <event>documentModified</event>
+      <event>documentCreated</event>
+    </listener>
+  </extension>
+
+</component>

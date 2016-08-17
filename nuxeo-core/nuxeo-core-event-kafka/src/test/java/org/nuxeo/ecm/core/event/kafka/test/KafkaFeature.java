@@ -14,7 +14,7 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.event.kafka;
+package org.nuxeo.ecm.core.event.kafka.test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,6 +37,7 @@ import kafka.zk.EmbeddedZookeeper;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.kafka.KafkaPipe;
 /*
  * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -56,7 +57,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-//@Features({ RuntimeFeature.class })
+/**
+ * Simple test feature used to deploy a Kafka/Zookeeper infrastructure
+ *
+ * @since 8.4
+ */
 public class KafkaFeature extends SimpleFeature {
 
     public static final String ZKHOST = "127.0.0.1";
