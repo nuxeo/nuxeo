@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.core.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,7 +56,8 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api",
+    "org.nuxeo.ecm.platform.commandline.executor" })
 public class ThreeDConvertersTest {
 
     public static final Log log = LogFactory.getLog(ThreeDConvertersTest.class);

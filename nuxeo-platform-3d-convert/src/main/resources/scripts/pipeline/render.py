@@ -1,67 +1,57 @@
-if args.outdir == None or args.width == None or args.height == None:
-    sys.exit()
-
-outfile = args.outdir + "/render-" + str(lod) + "-" + str(coords[0]) + "-" + str(coords[1]) + ".png"
+outfile = args.outdir + '/render-' + str(base_lod) + '-' + str(coords[0]) + '-' + str(coords[1]) + '.png'
 width = args.width
 height = args.height
-# get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
 
-print("Found %d meshes" % len(meshes))
-
-# get min/max for X, Y and Z
-m_min = [None, None, None]
-m_max = [None, None, None]
-
+# min and max coordinate values of the mesh cluster (set of all mesh objects)
+mc_min = [None, None, None]
+mc_max = [None, None, None]
 for mesh in meshes:
-    m_matrix = mesh.matrix_world
     for local_pt in mesh.bound_box:
-        pt = m_matrix * Vector(local_pt)
+        pt = mesh.matrix_world * Vector(local_pt)
         for i in range(3):
             num = pt[i]
-            if not m_min[i]:
-                m_min[i] = num
-                m_max[i] = num
+            if not mc_min[i]:
+                mc_min[i] = num
+                mc_max[i] = num
             else:
-                if m_min[i] > num:
-                    m_min[i] = num
-                if m_max[i] < num:
-                    m_max[i] = num
+                if mc_min[i] > num:
+                    mc_min[i] = num
+                if mc_max[i] < num:
+                    mc_max[i] = num
 
-dx = abs(m_min[0] - m_max[0])
-dy = abs(m_min[1] - m_max[1])
-dz = abs(m_min[2] - m_max[2])
+# dimensions of the mesh cluster
+mc_d = [abs(mc_min[0] - mc_max[0]), abs(mc_min[1] - mc_max[1]), abs(mc_min[2] - mc_max[2])]
 
-greatest = max(dx, dy, dz)
+# coordinates of the center of the mesh cluster
+mc_c = [mc_min[0] + (mc_d[0] * 0.5), mc_min[1] + (mc_d[1] * 0.5), mc_min[2] + (mc_d[2] * 0.5)]
 
-print("Greatest length is %f " % greatest)
-
-print(coords)
-
-cam_location = [greatest * 1.5] * 3
-cam_look_at = [
-    (dx / 2) + m_min[0],
-    (dy / 2) + m_min[1],
-    (dz / 2) + m_min[2]
+# position of the camera in cartesian coords from spherical coords
+radial = (Vector(mc_max) - Vector(mc_min)).length
+azimuth = radians(coords[0])
+zenith = radians(coords[1])
+cam_location = [
+    mc_c[0] + radial * cos(azimuth) * sin(zenith),
+    mc_c[1] + radial * sin(azimuth) * sin(zenith),
+    mc_c[2] + radial * cos(zenith)
 ]
 
-# add and setup the camera
-bpy.ops.object.camera_add(view_align=False, enter_editmode=False,
-                          location=cam_location)
+# camera should look at the center point of the cluster
+cam_look_at = mc_c
+
+# set the orthographic camera
+bpy.ops.object.camera_add(view_align=False, enter_editmode=False, location=cam_location)
 camera_ob = bpy.context.object
 camera = camera_ob.data
-camera.clip_end = greatest * 10
-camera.ortho_scale = greatest * 1.5
-camera.type = "ORTHO"
+# the clip end needs to be distance from the camera position to the minimum point of the mesh cluster
+# added 1% to avoid losing points due to floating point errors
+camera.clip_end = (Vector(mc_min) - Vector(cam_location)).length * 1.01
+camera.type = 'ORTHO'
 
-# add an empty for focusing the camera
-bpy.ops.object.add(
-    type='EMPTY',
-    location=cam_look_at)
+# set the camera target and constraints
+bpy.ops.object.add(type='EMPTY', location=cam_look_at)
 target = bpy.context.object
 target.name = 'Target'
-
-# add track to constraints
 cns = camera_ob.constraints.new('TRACK_TO')
 cns.name = 'TrackTarget'
 cns.target = target
@@ -70,52 +60,41 @@ cns.up_axis = 'UP_Y'
 cns.owner_space = 'WORLD'
 cns.target_space = 'WORLD'
 
-# attempt to render
+# set render properties
 scene = bpy.data.scenes.values()[0]
 scene.camera = camera_ob
-# scene.render.file_format = 'PNG'
 scene.render.resolution_x = int(width)
 scene.render.resolution_y = int(height)
 scene.render.resolution_percentage = 100
 scene.render.alpha_mode = 'TRANSPARENT'
 bpy.context.scene.render.image_settings.color_mode = 'RGBA'
-
-# scene.world.ambient_color = [0.08, 0.01, 0.045]
-
 print("""World settings:
-
-- ambient color : %s
-- horizon color : %s
-- zenith color : %s
-- exposure : %d
-""" % (
+- Ambient color: %s
+- Horizon color: %s
+- Zenith color: %s
+- Exposure: %d""" % (
     scene.world.ambient_color,
     scene.world.horizon_color,
     scene.world.zenith_color,
-    scene.world.exposure
-))
+    scene.world.exposure))
 
+# set lighting
 scene.world.light_settings.use_environment_light = True
 scene.world.light_settings.environment_energy = .5
-
 scene.world.light_settings.use_ambient_occlusion = True
-
 scene.world.light_settings.sample_method = 'CONSTANT_JITTERED'
 scene.world.light_settings.samples = 10
 scene.world.light_settings.bias = .5
-
 print("""Environment Lighting settings:
-
-- color : %s
-- energy : %f
-- use ambient occlusion : %s
-- ambient occlusion factor: %f
-- ambient occlusion blend: %s
+- Color: %s
+- Energy: %f
+- Use ambient occlusion: %s
+- Ambient occlusion factor: %f
+- Ambient occlusion blend: %s
 - Gather method: %s
 - Sample method: %s
 - Samples: %f
-- Bias: %f
-""" % (
+- Bias: %f""" % (
     scene.world.light_settings.environment_color,
     scene.world.light_settings.environment_energy,
     scene.world.light_settings.use_ambient_occlusion,
@@ -126,8 +105,49 @@ print("""Environment Lighting settings:
     scene.world.light_settings.samples,
     scene.world.light_settings.bias))
 
-print("Camera(%f, %f, %f)" % (camera_ob.location.x, camera_ob.location.y, camera_ob.location.z))
+# mesh cluster bounding box points, that should be in the camera's field of view
+mc_bb_points = [
+    mc_min,
+    [mc_max[0], mc_min[1], mc_min[2]],
+    [mc_min[0], mc_max[1], mc_min[2]],
+    [mc_min[0], mc_min[1], mc_max[2]],
+    [mc_min[0], mc_max[1], mc_max[2]],
+    [mc_max[0], mc_min[1], mc_max[2]],
+    [mc_max[0], mc_max[1], mc_min[2]],
+    mc_max
+]
 
+# for point in mc_bb_points:
+#     bpy.ops.mesh.primitive_uv_sphere_add(size=(max(mc_d) * 0.02), location=point)
+
+# from an orthographic scale of 1, project the bounding box points to 2d
+# the axis with the biggest range defines the new scale value, so that all points fit in the view
+camera.ortho_scale = 1
+bpy.context.scene.update()
+min_x = None
+max_x = None
+min_y = None
+max_y = None
+for point in mc_bb_points:
+    projected_point = world_to_camera_view(scene, camera_ob, Vector(point))
+    if min_x is None or projected_point.x < min_x:
+        min_x = projected_point.x
+    if max_x is None or projected_point.x > max_x:
+        max_x = projected_point.x
+    if min_y is None or projected_point.y < min_y:
+        min_y = projected_point.y
+    if max_y is None or projected_point.y > max_y:
+        max_y = projected_point.y
+camera.ortho_scale = max([max_x - min_x, max_y - min_y])
+bpy.context.scene.update()
+
+# render and write file
 scene.render.filepath = outfile
-
 bpy.ops.render.render(write_still=True)
+
+# clean up afterwards (delete the created camera and target)
+# bpy.ops.object.select_pattern(pattern='Sphere*')
+# bpy.ops.object.delete()
+for obj in scene.objects:
+    obj.select = obj.type == 'CAMERA' or obj.type == 'EMPTY'
+bpy.ops.object.delete()

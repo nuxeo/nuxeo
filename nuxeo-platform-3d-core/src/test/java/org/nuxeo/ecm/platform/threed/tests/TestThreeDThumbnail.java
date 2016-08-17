@@ -60,7 +60,7 @@ import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TI
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core.commandline.executor", "org.nuxeo.ecm.automation.core",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.threed.api", "org.nuxeo.ecm.platform.threed.core",

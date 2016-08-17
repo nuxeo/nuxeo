@@ -1,7 +1,7 @@
 if args.outdir == None:
     sys.exit()
 
-outfile = args.outdir + "/conversion-" + str(lod) + ".dae"
+outfile = args.outdir + "/conversion-" + str(base_lod) + ".dae"
 
 # get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']

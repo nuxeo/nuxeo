@@ -1,8 +1,9 @@
-import bpy, json, os, sys
+import bpy, json, os, sys, time
+from bpy import context
+from bpy_extras.object_utils import world_to_camera_view
 from copy import copy
-from math import pi, cos, sin, degrees
+from math import pi, cos, sin, degrees, radians
 from mathutils import Vector
-from blendergltf import blendergltf
 import argparse
 
 
@@ -38,11 +39,18 @@ if args.operators == None:
     sys.exit()
 
 base_path = os.path.dirname(os.path.abspath(__file__)) + "/pipeline/"
-lod = 100
+base_lod = current_lod = calculated_lod = 100
 for operator in args.operators:
     print("Running: " + operator)
+    # turn all elements of the lods list into integers
+    if not (len(args.lods) == 1 and args.lods[0] == ''):
+        args.lods = [int(lod) for lod in args.lods]
     if operator == "lod" and args.lods and len(args.lods):
-        lod = int(args.lods.pop())
+        # get the biggest lod value from the lods list
+        if len(args.lods) > 0:
+            current_lod = int(args.lods.pop(args.lods.index(max(args.lods))))
+        calculated_lod = int((current_lod / base_lod) * 100)
+        base_lod = current_lod
     if operator == "render" and args.coords and len(args.coords):
         coords = args.coords.pop()
     filename = base_path + operator + ".py"
