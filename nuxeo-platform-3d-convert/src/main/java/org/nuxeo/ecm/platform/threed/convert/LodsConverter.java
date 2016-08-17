@@ -18,21 +18,22 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 
 /**
  * Level of details converter for 3D document type

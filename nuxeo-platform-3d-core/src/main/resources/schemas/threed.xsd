@@ -25,8 +25,7 @@
 
     <xs:complexType name="renderViewsItems">
         <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="0"
-                        name="renderViewsItem" type="nxs:renderViewsItem"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="renderViewsItem" type="nxs:renderViewsItem"/>
         </xs:sequence>
     </xs:complexType>
 

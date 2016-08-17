@@ -36,12 +36,20 @@ import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
-import org.nuxeo.runtime.test.runner.*;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -118,30 +126,27 @@ public class TestThreeDRenditions {
     }
 
     protected List<RenditionDefinition> getThreeDRenditionDefinitions(DocumentModel doc) {
-        return renditionService.getAvailableRenditionDefinitions(doc).stream().filter(renditionDefinition -> {
-            return THREED_RENDITION_DEFINITION_KINDS.contains(renditionDefinition.getKind());
-        }).collect(Collectors.toList());
+        return renditionService.getAvailableRenditionDefinitions(doc).stream().filter(renditionDefinition ->
+            THREED_RENDITION_DEFINITION_KINDS.contains(renditionDefinition.getKind())).collect(Collectors.toList());
     }
 
     protected List<Rendition> getThreeDAvailableRenditions(DocumentModel doc, boolean onlyVisible) {
-        return renditionService.getAvailableRenditions(doc, onlyVisible).stream().filter(rendition -> {
-            return THREED_RENDITION_DEFINITION_KINDS.contains(rendition.getKind());
-        }).collect(Collectors.toList());
+        return renditionService.getAvailableRenditions(doc, onlyVisible).stream().filter(rendition ->
+            THREED_RENDITION_DEFINITION_KINDS.contains(rendition.getKind())).collect(Collectors.toList());
     }
 
     protected static ThreeD getTestThreeD() throws IOException {
         List<Blob> resources = new ArrayList<>();
-        Blob blob = null;
-        Blob main = null;
+        Blob blob, main;
         try (InputStream is = TestThreeDRenditions.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".obj")) {
-            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".obj"), is);
+            assertNotNull(String.format("Failed to load resource: %s.obj", TEST_MODEL), is);
             main = Blobs.createBlob(is);
             main.setFilename(TEST_MODEL + ".obj");
 
         }
 
         try (InputStream is = TestThreeDRenditions.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".mtl")) {
-            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".mtl"), is);
+            assertNotNull(String.format("Failed to load resource: %s.mtl", TEST_MODEL), is);
             blob = Blobs.createBlob(is);
             blob.setFilename(TEST_MODEL + ".mtl");
             resources.add(blob);

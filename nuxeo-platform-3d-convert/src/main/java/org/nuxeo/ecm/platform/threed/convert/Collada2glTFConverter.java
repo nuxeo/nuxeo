@@ -25,8 +25,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.commandline.executor.api.*;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.runtime.api.Framework;
 
@@ -34,10 +38,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.DAE2GLTF_OUTPUT_PATH_PREFIX;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.DAE2GLTF_PATH_PREFIX;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.INPUT_FILE_PATH_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
 
 /**
  * Conversion from Collada to glTF format
@@ -45,8 +56,6 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
  * @since 8.4
  */
 public class Collada2glTFConverter extends CommandLineBasedConverter {
-
-    public static final String NAME = "dae2gltf";
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)

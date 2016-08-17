@@ -19,7 +19,11 @@
 package org.nuxeo.ecm.platform.threed.adapter;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;

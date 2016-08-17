@@ -1,12 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.threed.service.ThreeDService">
 
-    <implementation
-            class="org.nuxeo.ecm.platform.threed.service.ThreeDServiceImpl"/>
+    <implementation class="org.nuxeo.ecm.platform.threed.service.ThreeDServiceImpl"/>
 
     <service>
-        <provide
-                interface="org.nuxeo.ecm.platform.threed.service.ThreeDService"/>
+        <provide interface="org.nuxeo.ecm.platform.threed.service.ThreeDService"/>
     </service>
 
     <documentation>
@@ -47,8 +45,7 @@
                 </ul>
             </p>
         </documentation>
-        <object
-                class="org.nuxeo.ecm.platform.threed.service.RenderView"/>
+        <object class="org.nuxeo.ecm.platform.threed.service.RenderView"/>
     </extension-point>
 
     <extension-point name="automaticRenderViews">
@@ -57,8 +54,7 @@
             launched after the creation/update of a 3D document.
             Identify render views by name.
         </documentation>
-        <object
-                class="org.nuxeo.ecm.platform.threed.service.AutomaticRenderView"/>
+        <object class="org.nuxeo.ecm.platform.threed.service.AutomaticRenderView"/>
     </extension-point>
 
 </component>

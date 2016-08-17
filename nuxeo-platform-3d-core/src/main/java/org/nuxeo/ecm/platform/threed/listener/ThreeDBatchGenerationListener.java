@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.threed.service.ThreeDBatchUpdateWork;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
 
 /**

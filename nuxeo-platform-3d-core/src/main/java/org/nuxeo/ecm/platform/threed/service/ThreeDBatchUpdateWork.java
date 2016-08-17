@@ -30,13 +30,22 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
-import org.nuxeo.ecm.platform.threed.*;
 
+import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDDocument;
+import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;

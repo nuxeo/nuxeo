@@ -67,7 +67,7 @@ public class TransmissionThreeD extends ThreeD {
     }
 
     public Map<String, Serializable> toMap() {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, name);
         map.put(CONTENT, (Serializable) blob);
         map.put(LOD, lod);

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -59,8 +57,6 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 @LocalDeploy({ "org.nuxeo.ecm.platform.threed.convert", "org.nuxeo.ecm.platform.threed.api",
     "org.nuxeo.ecm.platform.commandline.executor" })
 public class ThreeDConvertersTest {
-
-    public static final Log log = LogFactory.getLog(ThreeDConvertersTest.class);
 
     protected static final String TEST_MODEL = "suzane";
 

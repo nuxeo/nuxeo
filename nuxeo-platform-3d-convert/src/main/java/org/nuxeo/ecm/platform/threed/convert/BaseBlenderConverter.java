@@ -31,8 +31,17 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.*;
-import java.util.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.platform.threed.convert.Constants.*;

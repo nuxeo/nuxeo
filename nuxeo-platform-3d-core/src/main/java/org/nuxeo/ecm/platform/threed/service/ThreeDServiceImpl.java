@@ -34,11 +34,19 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.OPERATORS_PARAMETER;
 
 /**
  * Default implementation of {@link ThreeDService}

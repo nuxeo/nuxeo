@@ -5,8 +5,7 @@
         Defines default contributions for 3D service
     </documentation>
 
-    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
-               point="automaticLOD">
+    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticLOD">
 
         <automaticLOD percentage="33" enabled="true" rendition="true" renditionVisible="true"/>
         <automaticLOD percentage="11" enabled="true" rendition="true" renditionVisible="true"/>
@@ -14,8 +13,7 @@
 
     </extension>
 
-    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
-               point="renderViews">
+    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="renderViews">
 
         <renderView name="isometric" azimuth="45" zenith="45" enabled="true" rendition="true" renditionVisible="true"/>
         <renderView name="top" azimuth="90" zenith="0" enabled="true" rendition="true" renditionVisible="true"/>
@@ -27,8 +25,7 @@
 
     </extension>
 
-    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
-               point="automaticRenderViews">
+    <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticRenderViews">
 
         <automaticRenderView name="isometric" enable="true"/>
         <automaticRenderView name="top" enable="true"/>

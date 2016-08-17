@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 
 import java.io.File;

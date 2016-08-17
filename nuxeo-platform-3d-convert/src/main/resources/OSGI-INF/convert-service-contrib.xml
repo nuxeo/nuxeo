@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.threed.convert.converters">
 
-    <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
-               point="converter">
-        <converter name="render3D"
-                   class="org.nuxeo.ecm.platform.threed.convert.RenderConverter">
+    <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+        <converter name="render3D" class="org.nuxeo.ecm.platform.threed.convert.RenderConverter">
             <sourceMimeType>*</sourceMimeType>
             <destinationMimeType>image/png</destinationMimeType>
             <parameters>
@@ -16,8 +14,7 @@
                 <parameter name="coords">0,0</parameter>
             </parameters>
         </converter>
-        <converter name="lodConversion"
-                   class="org.nuxeo.ecm.platform.threed.convert.LodsConverter">
+        <converter name="lodConversion" class="org.nuxeo.ecm.platform.threed.convert.LodsConverter">
             <sourceMimeType>*</sourceMimeType>
             <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
             <parameters>
@@ -27,8 +24,7 @@
                 <parameter name="lods">33 11 3</parameter>
             </parameters>
         </converter>
-        <converter name="colladaConversion"
-                   class="org.nuxeo.ecm.platform.threed.convert.ColladaConverter">
+        <converter name="colladaConversion" class="org.nuxeo.ecm.platform.threed.convert.ColladaConverter">
             <sourceMimeType>*</sourceMimeType>
             <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
             <parameters>
@@ -37,8 +33,7 @@
                 <parameter name="operators">import convert</parameter>
             </parameters>
         </converter>
-        <converter name="batchConversion"
-                   class="org.nuxeo.ecm.platform.threed.convert.BatchConverter">
+        <converter name="batchConversion" class="org.nuxeo.ecm.platform.threed.convert.BatchConverter">
             <sourceMimeType>*</sourceMimeType>
             <destinationMimeType>*</destinationMimeType>
             <parameters>
@@ -51,8 +46,7 @@
                 <parameter name="coords">0,0 90,0</parameter>
             </parameters>
         </converter>
-        <converter name="dae2gltf"
-                   class="org.nuxeo.ecm.platform.threed.convert.Collada2glTFConverter">
+        <converter name="dae2gltf" class="org.nuxeo.ecm.platform.threed.convert.Collada2glTFConverter">
             <sourceMimeType>model/vnd.collada+xml</sourceMimeType>
             <destinationMimeType>model/gltf+json</destinationMimeType>
             <parameters>
@@ -60,4 +54,5 @@
             </parameters>
         </converter>
     </extension>
+
 </component>
