@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_AUTOMATION;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_ENTITY;
+import static org.nuxeo.ecm.automation.client.Constants.CTYPE_MULTIPART_EMPTY;
 import static org.nuxeo.ecm.automation.client.Constants.CTYPE_MULTIPART_MIXED;
 
 import java.io.File;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.ExceptionMarshaller;
@@ -119,11 +121,27 @@ public class Request extends HashMap<String, String> {
      */
     public Object handleResult(int status, String ctype, String disp, InputStream stream)
             throws RemoteException, IOException {
-        if (status == 204) { // no content
-            return null;
-        } else if (status >= 400) {
+        // Specific http status handling
+        if (status >= Response.Status.BAD_REQUEST.getStatusCode()) {
             handleException(status, ctype, stream);
+        } else if (status == Response.Status.NO_CONTENT.getStatusCode() || stream == null) {
+            if (ctype != null && ctype.toLowerCase().startsWith(CTYPE_MULTIPART_EMPTY)) {
+                // empty entity and content type of nuxeo empty list
+                return new Blobs();
+            }
+            // no content
+            return null;
         }
+        // Check content type
+        if (ctype == null) {
+            if (status != Response.Status.OK.getStatusCode()) {
+                // this may happen when login failed
+                throw new RemoteException(status, "ServerError", "Server Error", "");
+            }
+            // cannot handle responses with no content type
+            return null;
+        }
+        // Handle result
         String lctype = ctype.toLowerCase();
         if (lctype.startsWith(CTYPE_ENTITY)) {
             return JsonMarshalling.readEntity(IOUtils.read(stream));
@@ -188,7 +206,9 @@ public class Request extends HashMap<String, String> {
     }
 
     protected void handleException(int status, String ctype, InputStream stream) throws RemoteException, IOException {
-        if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
+        if (stream == null) {
+            throw new RemoteException(status, "ServerError", "Server Error", "");
+        } else if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             String content = IOUtils.read(stream);
             RemoteException e;
             try {

@@ -75,6 +75,7 @@ public class MockedHttpAutomationClient extends AbstractAutomationClient {
         HttpResponse response = new BasicHttpResponse(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1),
                 expectedResponseStatus, ""));
         response.setStatusCode(expectedResponseStatus);
+        response.setHeader("Content-Type", contentType);
         try {
             StringEntity entity = new StringEntity(expectedResponseBody);
             entity.setContentType(contentType);

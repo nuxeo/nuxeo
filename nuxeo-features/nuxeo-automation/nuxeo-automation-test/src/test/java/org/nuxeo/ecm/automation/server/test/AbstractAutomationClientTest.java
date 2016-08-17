@@ -727,4 +727,25 @@ public abstract class AbstractAutomationClientTest {
         assertEquals(folder.getTitle(), title);
     }
 
+    /*
+     * NXP-19835
+     */
+    @Test
+    public void testGetEmptyBlobsList() throws Exception {
+        // create a file
+        Document file = (Document) session.newRequest(CreateDocument.ID)
+                                          .setInput(automationTestFolder)
+                                          .set("type", "File")
+                                          .set("name", "blobs")
+                                          .set("properties", "dc:title=Blobs Test")
+                                          .execute();
+
+        // Get blobs
+        Blobs blobs = (Blobs) session.newRequest(GetDocumentBlobs.ID)
+                                     .setInput(file)
+                                     .execute();
+        assertNotNull(blobs);
+        assertTrue(blobs.isEmpty());
+    }
+
 }

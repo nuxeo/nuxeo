@@ -58,6 +58,10 @@ public class ResponseHelper {
         return Response.status(204).build();
     }
 
+    public static Response emptyBlobs() {
+        return Response.status(204).type("application/nuxeo-empty-list").build();
+    }
+
     public static Response notAllowed() {
         return Response.status(401).build();
     }
@@ -83,6 +87,9 @@ public class ResponseHelper {
     }
 
     public static Response blobs(List<Blob> blobs, int httpStatus) throws MessagingException, IOException {
+        if (blobs.isEmpty()) {
+            return emptyBlobs();
+        }
         MultipartBlobs multipartBlobs = new MultipartBlobs(blobs);
         return Response.status(httpStatus)
                        .entity(multipartBlobs)

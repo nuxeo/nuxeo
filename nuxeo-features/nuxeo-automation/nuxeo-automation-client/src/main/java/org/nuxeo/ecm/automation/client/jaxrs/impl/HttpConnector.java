@@ -20,12 +20,12 @@
 package org.nuxeo.ecm.automation.client.jaxrs.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import javax.mail.internet.MimeMultipart;
-import javax.ws.rs.core.Response;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -136,27 +136,11 @@ public class HttpConnector implements Connector {
         HttpEntity entity = resp.getEntity();
         try {
             int status = resp.getStatusLine().getStatusCode();
-            if (entity == null) {
-                if (status < Response.Status.BAD_REQUEST.getStatusCode()) {
-                    return null;
-                }
-                throw new RemoteException(status, "ServerError", "Server Error", "");
-            }
-            Header ctypeHeader = entity.getContentType();
-            if (ctypeHeader == null) { // handle broken responses with no ctype
-                if (status != Response.Status.OK.getStatusCode()) {
-                    // this may happen when login failed
-                    throw new RemoteException(status, "ServerError", "Server Error", "");
-                }
-                return null; // cannot handle responses with no ctype
-            }
-            String ctype = ctypeHeader.getValue();
-            String disp = null;
-            Header[] hdisp = resp.getHeaders("Content-Disposition");
-            if (hdisp != null && hdisp.length > 0) {
-                disp = hdisp[0].getValue();
-            }
-            return request.handleResult(status, ctype, disp, entity.getContent());
+            // TODO kevin: check if it's enough regarding to entity content type
+            String ctype = getHeaderValue(resp, "Content-Type");
+            String disp = getHeaderValue(resp, "Content-Disposition");
+            InputStream content = entity == null ? null : entity.getContent();
+            return request.handleResult(status, ctype, disp, content);
         } finally {
             // needed to properly release resources and return the connection to the pool
             EntityUtils.consume(entity);
@@ -173,6 +157,14 @@ public class HttpConnector implements Connector {
             httpParams.setIntParameter("http.connection.timeout", httpConnectionTimeout);
         }
         return http.execute(httpReq, ctx);
+    }
+
+    private String getHeaderValue(HttpResponse response, String key) {
+        Header header = response.getFirstHeader(key);
+        if (header == null) {
+            return null;
+        }
+        return header.getValue();
     }
 
 }
