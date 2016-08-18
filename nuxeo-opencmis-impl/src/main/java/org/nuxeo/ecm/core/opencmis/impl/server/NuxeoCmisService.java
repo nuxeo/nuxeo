@@ -1959,11 +1959,9 @@ public class NuxeoCmisService extends AbstractCmisService
                 pwc = doc;
             }
             if (pwc.isCheckedOut()) {
-                log.warn("DEBUG Already checked out: " + objectId);
                 throw new CmisConstraintException("Already checked out: " + objectId);
             }
             if (pwc.isLocked()) {
-                log.warn("DEBUG Cannot check out since currently locked: " + objectId);
                 throw new CmisConstraintException("Cannot check out since currently locked: " + objectId);
             }
             pwc.setLock();
@@ -1975,7 +1973,6 @@ public class NuxeoCmisService extends AbstractCmisService
         } catch (NuxeoException e) { // TODO use a core LockException
             String message = e.getMessage();
             if (message != null && message.startsWith("Document already locked")) {
-                log.warn("DEBUG Cannot check out since currently locked: " + objectId + " " + e);
                 throw new CmisConstraintException("Cannot check out since currently locked: " + objectId);
             }
             throw new CmisRuntimeException(e.toString(), e);
