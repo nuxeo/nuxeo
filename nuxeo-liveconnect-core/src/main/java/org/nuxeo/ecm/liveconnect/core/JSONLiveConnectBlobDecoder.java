@@ -43,16 +43,17 @@ public class JSONLiveConnectBlobDecoder implements JSONBlobDecoder {
 
         String providerId = jsonObject.get("providerId").getTextValue();
         BlobProvider provider = Framework.getService(BlobManager.class).getBlobProvider(providerId);
-        if (provider instanceof LiveConnectBlobProvider) {
-            try {
-                return ((LiveConnectBlobProvider) provider).toBlob(
-                    new LiveConnectFileInfo(jsonObject.get("user").getTextValue(),
-                        jsonObject.get("fileId").getTextValue()));
-            } catch (IOException e) {
-                throw new NuxeoException(e);
-            }
+        if (!(provider instanceof LiveConnectBlobProvider)) {
+            return null;
         }
-        return null;
+        try {
+            return ((LiveConnectBlobProvider) provider).toBlob(
+                new LiveConnectFileInfo(jsonObject.get("user").getTextValue(),
+                    jsonObject.get("fileId").getTextValue()));
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        
     }
 
 }
