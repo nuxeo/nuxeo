@@ -77,6 +77,8 @@
         if (jQuery("#" + formId).data("dirtyPage")) {
           var r = confirm(message);
           if (r == true) {
+            jQuery("#" + formId).data('dirtyPage', false);
+            jQuery(window).unbind('beforeunload');
             jQuery("#" + formId).cleanupSavedData();
           }
           return r;
