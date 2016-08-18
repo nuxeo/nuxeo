@@ -74,7 +74,7 @@ public class Test3DCore {
 
     @Test
     public void testThreeDImporter() throws IOException {
-        String path = "duck.dae";
+        String path = "test-data/suzane.dae";
         URL url = this.getClass().getClassLoader().getResource(path);
         File file = null;
         try {
