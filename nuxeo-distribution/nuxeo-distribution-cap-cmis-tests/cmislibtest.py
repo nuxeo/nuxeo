@@ -33,6 +33,7 @@ from cmislib import messages
 import os
 from time import sleep, time
 import settings
+from cmislib.net import RESTService as Rest
 
 ## Fix test file paths in case test is launched using nosetests
 my_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,7 +47,17 @@ except OSError:
     settings.TEST_BINARY_2 = os.path.join(my_dir, settings.TEST_BINARY_2)
 
 
-class CmisTestBase(unittest.TestCase):
+class CmisTestLogging(unittest.TestCase):
+    """ Base for logging. """
+
+    def serverLog(self, message):
+        """ Send a log to the server, for debug. """
+        url = settings.REPOSITORY_URL.replace('/atom/cmis', '').replace('/json/cmis', '')
+        url += '/restAPI/systemLog'
+        Rest().get(url, token="dolog", level="WARN", message='----- cmislibtest: ' + message)
+
+
+class CmisTestBase(CmisTestLogging):
 
     """ Common ancestor class for most cmislib unit test classes. """
 
@@ -67,13 +78,13 @@ class CmisTestBase(unittest.TestCase):
         except NotSupportedException:
             print "Couldn't delete test folder because deleteTree is not supported"
 
-
-class CmisClientTest(unittest.TestCase):
+class CmisClientTest(CmisTestLogging):
 
     """ Tests for the :class:`CmisClient` class. """
 
     def testCmisClient(self):
         """Instantiate a CmisClient object"""
+        self.serverLog("testCmisClient")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -83,6 +94,7 @@ class CmisClientTest(unittest.TestCase):
         """Call getRepositories and make sure at least one comes back with
         an ID and a name
         """
+        self.serverLog("testGetRepositories")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -93,6 +105,7 @@ class CmisClientTest(unittest.TestCase):
 
     def testDefaultRepository(self):
         """Get the default repository by calling the repo's service URL"""
+        self.serverLog("testDefaultRepository")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -102,6 +115,7 @@ class CmisClientTest(unittest.TestCase):
 
     def testGetRepository(self):
         """Get a repository by repository ID"""
+        self.serverLog("testGetRepository")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -115,6 +129,7 @@ class CmisClientTest(unittest.TestCase):
     # Error conditions
     def testCmisClientBadUrl(self):
         """Try to instantiate a CmisClient object with a known bad URL"""
+        self.serverLog("testCmisClientBadUrl")
         cmisClient = CmisClient(settings.REPOSITORY_URL + 'foobar', settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -122,6 +137,7 @@ class CmisClientTest(unittest.TestCase):
 
     def testGetRepositoryBadId(self):
         """Try to get a repository with a bad repo ID"""
+        self.serverLog("testGetRepositoryBadId")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -166,12 +182,14 @@ class QueryTest(CmisTestBase):
 
     def testSimpleSelect(self):
         """Execute simple select star from cmis:document"""
+        self.serverLog("testSimpleSelect")
         querySimpleSelect = "SELECT * FROM cmis:document"
         resultSet = self._repo.query(querySimpleSelect)
         self.assertTrue(isInResultSet(resultSet, self._testContent))
 
     def testWildcardPropertyMatch(self):
         """Find content w/wildcard match on cmis:name property"""
+        self.serverLog("testWildcardPropertyMatch")
         name = self._testContent.getProperties()['cmis:name']
         querySimpleSelect = "SELECT * FROM cmis:document where cmis:name like '" + name[:7] + "%'"
         resultSet = self._repo.query(querySimpleSelect)
@@ -179,6 +197,7 @@ class QueryTest(CmisTestBase):
 
     def testPropertyMatch(self):
         """Find content matching cmis:name property"""
+        self.serverLog("testPropertyMatch")
         name = self._testContent2.getProperties()['cmis:name']
         querySimpleSelect = "SELECT * FROM cmis:document where cmis:name = '" + name + "'"
         resultSet = self._repo.query(querySimpleSelect)
@@ -186,6 +205,7 @@ class QueryTest(CmisTestBase):
 
     def testFullText(self):
         """Find content using a full-text query"""
+        self.serverLog("testFullText")
         queryFullText = "SELECT cmis:objectId, cmis:name FROM cmis:document " \
                         "WHERE contains('whitepaper')"
         # on the first full text search the indexer may need a chance to
@@ -203,6 +223,7 @@ class QueryTest(CmisTestBase):
 
     def testScore(self):
         """Find content using FT, sorted by relevance score"""
+        self.serverLog("testScore")
         queryScore = "SELECT cmis:objectId, cmis:name, Score() as relevance " \
                      "FROM cmis:document WHERE contains('sample') " \
                      "order by relevance DESC"
@@ -227,6 +248,7 @@ class RepositoryTest(CmisTestBase):
 
     def testRepositoryInfo(self):
         """Retrieve repository info"""
+        self.serverLog("testRepositoryInfo")
         repoInfo = self._repo.getRepositoryInfo()
         self.assertTrue('repositoryId' in repoInfo)
         self.assertTrue('repositoryName' in repoInfo)
@@ -239,6 +261,7 @@ class RepositoryTest(CmisTestBase):
 
     def testRepositoryCapabilities(self):
         """Retrieve repository capabilities"""
+        self.serverLog("testRepositoryCapabilities")
         caps = self._repo.getCapabilities()
         self.assertTrue('ACL' in caps)
         self.assertTrue('AllVersionsSearchable' in caps)
@@ -257,12 +280,14 @@ class RepositoryTest(CmisTestBase):
 
     def testGetRootFolder(self):
         """Get the root folder of the repository"""
+        self.serverLog("testGetRootFolder")
         rootFolder = self._repo.getRootFolder()
         self.assert_(rootFolder is not None)
         self.assert_(rootFolder.getObjectId() is not None)
 
     def testCreateFolder(self):
         """Create a new folder in the root folder"""
+        self.serverLog("testCreateFolder")
         folderName = 'testCreateFolder folder'
         newFolder = self._repo.createFolder(self._rootFolder, folderName)
         self.assertEquals(folderName, newFolder.getName())
@@ -270,12 +295,14 @@ class RepositoryTest(CmisTestBase):
 
     def testCreateDocument(self):
         """Create a new 'content-less' document"""
+        self.serverLog("testCreateDocument")
         documentName = 'testDocument'
         newDoc = self._repo.createDocument(documentName, parentFolder=self._testFolder)
         self.assertEquals(documentName, newDoc.getName())
 
     def testCreateDocumentFromString(self):
         """Create a new document from a string"""
+        self.serverLog("testCreateDocumentFromString")
         documentName = 'testDocument'
         contentString = 'Test content string'
         newDoc = self._repo.createDocumentFromString(documentName,
@@ -288,6 +315,7 @@ class RepositoryTest(CmisTestBase):
     # CMIS-279
     def testCreateDocumentUnicode(self):
         """Create a new doc with unicode characters in the name"""
+        self.serverLog("testCreateDocumentUnicode")
         documentName = u'abc cdeöäüß%§-_caféè.txt'
         newDoc = self._repo.createDocument(documentName, parentFolder=self._testFolder)
         self.assertEquals(documentName, newDoc.getName())
@@ -295,6 +323,7 @@ class RepositoryTest(CmisTestBase):
     def testGetObject(self):
         """Create a test folder then attempt to retrieve it as a
         :class:`CmisObject` object using its object ID"""
+        self.serverLog("testGetObject")
         folderName = 'testGetObject folder'
         newFolder = self._repo.createFolder(self._testFolder, folderName)
         objectId = newFolder.getObjectId()
@@ -304,6 +333,7 @@ class RepositoryTest(CmisTestBase):
 
     def testReturnVersion(self):
         """Get latest and latestmajor versions of an object"""
+        self.serverLog("testReturnVersion")
         f = open(settings.TEST_BINARY_1, 'rb')
         fileName = settings.TEST_BINARY_1.split('/')[-1]
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
@@ -339,6 +369,7 @@ class RepositoryTest(CmisTestBase):
     def testGetFolder(self):
         """Create a test folder then attempt to retrieve the Folder object
         using its object ID"""
+        self.serverLog("testGetFolder")
         folderName = 'testGetFolder folder'
         newFolder = self._repo.createFolder(self._testFolder, folderName)
         objectId = newFolder.getObjectId()
@@ -349,6 +380,7 @@ class RepositoryTest(CmisTestBase):
     def testGetObjectByPath(self):
         """Create test objects (one folder, one document) then try to get
         them by path"""
+        self.serverLog("testGetObjectByPath")
         # names of folders and test docs
         parentFolderName = 'testGetObjectByPath folder'
         subFolderName = 'subfolder'
@@ -382,6 +414,7 @@ class RepositoryTest(CmisTestBase):
     '''
     def testGetUnfiledDocs(self):
         """Tests the repository's unfiled collection"""
+        self.serverLog("testGetUnfiledDocs")
 
         if not self._repo.getCapabilities()['Unfiling']:
             print 'Repo does not support unfiling, skipping'
@@ -414,6 +447,7 @@ class RepositoryTest(CmisTestBase):
     # Create document without a parent folder is not yet implemented
     # def testCreateUnfiledDocument(self):
     #     '''Create a new unfiled document'''
+    #     self.serverLog("testCreateUnfiledDocument")
     #     if self._repo.getCapabilities()['Unfiling'] != True:
     #         print 'Repo does not support unfiling, skipping'
     #         return
@@ -423,6 +457,7 @@ class RepositoryTest(CmisTestBase):
 
     def testMoveDocument(self):
         """Move a Document from one folder to another folder"""
+        self.serverLog("testMoveDocument")
         subFolder1 = self._testFolder.createFolder('sub1')
         doc = subFolder1.createDocument('testdoc1')
         self.assertEquals(len(subFolder1.getChildren()), 1)
@@ -437,6 +472,7 @@ class RepositoryTest(CmisTestBase):
 
     def testGetObjectBadId(self):
         """Attempt to get an object using a known bad ID"""
+        self.serverLog("testGetObjectBadId")
         # this object ID is implementation specific (Alfresco) but is universally
         # bad so it should work for all repositories
         self.assertRaises(ObjectNotFoundException,
@@ -445,6 +481,7 @@ class RepositoryTest(CmisTestBase):
 
     def testGetObjectBadPath(self):
         """Attempt to get an object using a known bad path"""
+        self.serverLog("testGetObjectBadPath")
         self.assertRaises(ObjectNotFoundException,
                           self._repo.getObjectByPath,
                           '/123foo/BAR.jtp')
@@ -456,6 +493,7 @@ class FolderTest(CmisTestBase):
 
     def testGetChildren(self):
         """Get the children of the test folder"""
+        self.serverLog("testGetChildren")
         childFolderName1 = 'testchild1'
         childFolderName2 = 'testchild2'
         grandChildFolderName = 'testgrandchild'
@@ -471,6 +509,7 @@ class FolderTest(CmisTestBase):
 
     def testGetDescendants(self):
         """Get the descendants of the root folder"""
+        self.serverLog("testGetDescendants")
         childFolderName1 = 'testchild1'
         childFolderName2 = 'testchild2'
         grandChildFolderName1 = 'testgrandchild'
@@ -504,6 +543,7 @@ class FolderTest(CmisTestBase):
 
     def testGetTree(self):
         """Get the folder tree of the test folder"""
+        self.serverLog("testGetTree")
         childFolderName1 = 'testchild1'
         childFolderName2 = 'testchild2'
         grandChildFolderName1 = 'testgrandchild'
@@ -532,6 +572,7 @@ class FolderTest(CmisTestBase):
 
     def testDeleteEmptyFolder(self):
         """Create a test folder, then delete it"""
+        self.serverLog("testDeleteEmptyFolder")
         folderName = 'testDeleteEmptyFolder folder'
         testFolder = self._testFolder.createFolder(folderName)
         self.assertEquals(folderName, testFolder.getName())
@@ -544,6 +585,7 @@ class FolderTest(CmisTestBase):
 
     def testDeleteNonEmptyFolder(self):
         """Create a test folder with something in it, then delete it"""
+        self.serverLog("testDeleteNonEmptyFolder")
         folderName = 'testDeleteNonEmptyFolder folder'
         testFolder = self._testFolder.createFolder(folderName)
         self.assertEquals(folderName, testFolder.getName())
@@ -558,6 +600,7 @@ class FolderTest(CmisTestBase):
 
     def testGetProperties(self):
         """Get the root folder, then get its properties"""
+        self.serverLog("testGetProperties")
         props = self._testFolder.getProperties()
         self.assert_(props is not None)
         self.assert_('cmis:objectId' in props)
@@ -569,6 +612,7 @@ class FolderTest(CmisTestBase):
 
     def testPropertyFilter(self):
         """Test the properties filter"""
+        self.serverLog("testPropertyFilter")
         # names of folders and test docs
         parentFolderName = 'testGetObjectByPath folder'
         subFolderName = 'subfolder'
@@ -626,6 +670,7 @@ class FolderTest(CmisTestBase):
 
     def testUpdateProperties(self):
         """Create a test folder, then update its properties"""
+        self.serverLog("testUpdateProperties")
         folderName = 'testUpdateProperties folder'
         newFolder = self._testFolder.createFolder(folderName)
         self.assertEquals(folderName, newFolder.getName())
@@ -636,6 +681,7 @@ class FolderTest(CmisTestBase):
 
     def testSubFolder(self):
         """Create a test folder, then create a test folder within that."""
+        self.serverLog("testSubFolder")
         parentFolder = self._testFolder.createFolder('testSubFolder folder')
         self.assert_('cmis:objectId' in parentFolder.getProperties())
         childFolder = parentFolder.createFolder('child folder')
@@ -644,17 +690,20 @@ class FolderTest(CmisTestBase):
 
     def testAllowableActions(self):
         """Create a test folder, then get its allowable actions"""
+        self.serverLog("testAllowableActions")
         actions = self._testFolder.getAllowableActions()
         self.assert_(len(actions) > 0)
 
     def testGetParent(self):
         """Get a folder's parent using the getParent call"""
+        self.serverLog("testGetParent")
         childFolder = self._testFolder.createFolder('parentTest')
         parentFolder = childFolder.getParent()
         self.assertEquals(self._testFolder.getObjectId(), parentFolder.getObjectId())
 
     def testAddObject(self):
         """Add an existing object to another folder"""
+        self.serverLog("testAddObject")
         if not self._repo.getCapabilities()['Multifiling']:
             print 'This repository does not allow multifiling, skipping'
             return
@@ -670,6 +719,7 @@ class FolderTest(CmisTestBase):
 
     def testRemoveObject(self):
         """Remove an existing object from a secondary folder"""
+        self.serverLog("testRemoveObject")
         if not self._repo.getCapabilities()['Unfiling']:
             print 'This repository does not allow unfiling, skipping'
             return
@@ -689,6 +739,7 @@ class FolderTest(CmisTestBase):
 
     def testGetPaths(self):
         """Get a folder's paths"""
+        self.serverLog("testGetPaths")
         # ask the root for its path
         root = self._repo.getRootFolder()
         paths = root.getPaths()
@@ -703,6 +754,7 @@ class FolderTest(CmisTestBase):
     def testBadParentFolder(self):
         """Try to create a folder on a bad/bogus/deleted parent
         folder object"""
+        self.serverLog("testBadParentFolder")
         firstFolder = self._testFolder.createFolder('testBadParentFolder folder')
         self.assert_('cmis:objectId' in firstFolder.getProperties())
         firstFolder.delete()
@@ -717,6 +769,7 @@ class FolderTest(CmisTestBase):
 # when a duplicate folder is created, so this test is really not necessary.
 #    def testDuplicateFolder(self):
 #        '''Try to create a folder that already exists'''
+#        self.serverLog("testDuplicateFolder")
 #        folderName = 'testDupFolder folder'
 #        firstFolder = self._testFolder.createFolder(folderName)
 #        self.assert_('cmis:objectId' in firstFolder.getProperties())
@@ -734,6 +787,7 @@ class ChangeEntryTest(CmisTestBase):
     def testGetContentChanges(self):
 
         """Get the content changes and inspect Change Entry props"""
+        self.serverLog("testGetContentChanges")
 
         # need to check changes capability
         if not self._repo.capabilities['Changes']:
@@ -752,6 +806,7 @@ class ChangeEntryTest(CmisTestBase):
     def testGetACL(self):
 
         """Gets the ACL that is included with a Change Entry."""
+        self.serverLog("testGetACL")
 
         # need to check changes capability
         if not self._repo.capabilities['Changes']:
@@ -786,6 +841,7 @@ class ChangeEntryTest(CmisTestBase):
     def testGetProperties(self):
 
         """Gets the properties of an object included with a Change Entry."""
+        self.serverLog("testGetProperties")
 
         # need to check changes capability
         changeCap = self._repo.capabilities['Changes']
@@ -814,6 +870,7 @@ class DocumentTest(CmisTestBase):
 
     def testCheckout(self):
         """Create a document in a test folder, then check it out"""
+        self.serverLog("testCheckout")
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
         newDoc = self._testFolder.createDocument('testDocument', properties=props)
         if not newDoc.allowableActions['canCheckOut']:
@@ -830,6 +887,7 @@ class DocumentTest(CmisTestBase):
     #CMIS-743
     def testCheckoutAfterFetchByID(self):
         """Create a test doc, fetch it by ID, then check it out"""
+        self.serverLog("testCheckoutAfterFetchByID")
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
         newDoc = self._testFolder.createDocument('testDocument', properties=props)
         if not newDoc.allowableActions['canCheckOut']:
@@ -847,6 +905,7 @@ class DocumentTest(CmisTestBase):
 
     def testCheckin(self):
         """Create a document in a test folder, check it out, then in"""
+        self.serverLog("testCheckin")
         testFilename = settings.TEST_BINARY_1.split('/')[-1]
         contentFile = open(testFilename, 'rb')
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
@@ -870,6 +929,7 @@ class DocumentTest(CmisTestBase):
 
     def testCheckinComment(self):
         """Checkin a document with a comment"""
+        self.serverLog("testCheckinComment")
         testFilename = settings.TEST_BINARY_1.split('/')[-1]
         contentFile = open(testFilename, 'rb')
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
@@ -893,6 +953,7 @@ class DocumentTest(CmisTestBase):
 
     def testCheckinAfterGetPWC(self):
         """Create a document in a test folder, check it out, call getPWC, then checkin"""
+        self.serverLog("testCheckinAfterGetPWC")
         if not self._repo.getCapabilities()['PWCUpdatable'] == True:
             print 'Repository does not support PWCUpdatable, skipping'
             return
@@ -923,6 +984,7 @@ class DocumentTest(CmisTestBase):
     def testCancelCheckout(self):
         """Create a document in a test folder, check it out, then cancel
         checkout"""
+        self.serverLog("testCancelCheckout")
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
         newDoc = self._testFolder.createDocument('testDocument', properties=props)
         if not newDoc.allowableActions['canCheckOut']:
@@ -939,6 +1001,7 @@ class DocumentTest(CmisTestBase):
 
     def testDeleteDocument(self):
         """Create a document in a test folder, then delete it"""
+        self.serverLog("testDeleteDocument")
         newDoc = self._testFolder.createDocument('testDocument')
         children = self._testFolder.getChildren()
         self.assertEquals(1, len(children.getResults()))
@@ -948,6 +1011,7 @@ class DocumentTest(CmisTestBase):
 
     def testGetLatestVersion(self):
         """Get latest version of an object"""
+        self.serverLog("testGetLatestVersion")
         f = open(settings.TEST_BINARY_1, 'rb')
         fileName = settings.TEST_BINARY_1.split('/')[-1]
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
@@ -981,6 +1045,7 @@ class DocumentTest(CmisTestBase):
 
     def testGetPropertiesOfLatestVersion(self):
         """Get properties of latest version of an object"""
+        self.serverLog("testGetPropertiesOfLatestVersion")
         f = open(settings.TEST_BINARY_1, 'rb')
         fileName = settings.TEST_BINARY_1.split('/')[-1]
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
@@ -1018,6 +1083,7 @@ class DocumentTest(CmisTestBase):
 
     def testGetProperties(self):
         """Create a document in a test folder, then get its properties"""
+        self.serverLog("testGetProperties")
         newDoc = self._testFolder.createDocument('testDocument')
         self.assertEquals('testDocument', newDoc.getName())
         self.assertTrue('cmis:objectTypeId' in newDoc.getProperties())
@@ -1025,12 +1091,14 @@ class DocumentTest(CmisTestBase):
 
     def testAllowableActions(self):
         """Create document in a test folder, then get its allowable actions"""
+        self.serverLog("testAllowableActions")
         newDoc = self._testFolder.createDocument('testDocument')
         actions = newDoc.getAllowableActions()
         self.assert_(len(actions) > 0)
 
     def testUpdateProperties(self):
         """Create a document in a test folder, then update its properties"""
+        self.serverLog("testUpdateProperties")
         newDoc = self._testFolder.createDocument('testDocument')
         self.assertEquals('testDocument', newDoc.getName())
         props = {'cmis:name': 'testDocument2'}
@@ -1039,6 +1107,7 @@ class DocumentTest(CmisTestBase):
 
     def testSetContentStreamPWC(self):
         """Set the content stream on the PWC"""
+        self.serverLog("testSetContentStreamPWC")
         if self._repo.getCapabilities()['ContentStreamUpdatability'] == 'none':
             print 'This repository does not allow content stream updates, skipping'
             return
@@ -1097,6 +1166,7 @@ class DocumentTest(CmisTestBase):
 
     def testSetContentStreamPWCMimeType(self):
         """Check the mimetype after the PWC checkin"""
+        self.serverLog("testSetContentStreamPWCMimeType")
         if self._repo.getCapabilities()['ContentStreamUpdatability'] == 'none':
             print 'This repository does not allow content stream updates, skipping'
             return
@@ -1132,6 +1202,7 @@ class DocumentTest(CmisTestBase):
 
     def testSetContentStreamDoc(self):
         """Set the content stream on a doc that's not checked out"""
+        self.serverLog("testSetContentStreamDoc")
         if self._repo.getCapabilities()['ContentStreamUpdatability'] != 'anytime':
             print 'This repository does not allow content stream updates on the doc, skipping'
             return
@@ -1179,6 +1250,7 @@ class DocumentTest(CmisTestBase):
 
     def testDeleteContentStreamPWC(self):
         """Delete the content stream of a PWC"""
+        self.serverLog("testDeleteContentStreamPWC")
         if self._repo.getCapabilities()['ContentStreamUpdatability'] == 'none':
             print 'This repository does not allow content stream updates, skipping'
             return
@@ -1202,6 +1274,7 @@ class DocumentTest(CmisTestBase):
 
     def testCreateDocumentBinary(self):
         """Create a binary document using a file from the file system"""
+        self.serverLog("testCreateDocumentBinary")
         testFilename = settings.TEST_BINARY_1
         contentFile = open(testFilename, 'rb')
         newDoc = self._testFolder.createDocument(testFilename, contentFile=contentFile)
@@ -1224,6 +1297,7 @@ class DocumentTest(CmisTestBase):
 
     def testCreateDocumentFromString(self):
         """Create a new document from a string"""
+        self.serverLog("testCreateDocumentFromString")
         documentName = 'testDocument'
         contentString = 'Test content string'
         newDoc = self._testFolder.createDocumentFromString(documentName,
@@ -1233,6 +1307,7 @@ class DocumentTest(CmisTestBase):
 
     def testCreateDocumentPlain(self):
         """Create a plain document using a file from the file system"""
+        self.serverLog("testCreateDocumentPlain")
         testFilename = 'plain.txt'
         testFile = open(testFilename, 'w')
         testFile.write('This is a sample text file line 1.\n')
@@ -1261,6 +1336,7 @@ class DocumentTest(CmisTestBase):
 
     def testGetAllVersions(self):
         """Get all versions of an object"""
+        self.serverLog("testGetAllVersions")
         props = {'cmis:objectTypeId': settings.VERSIONABLE_TYPE_ID}
         testDoc = self._testFolder.createDocument('testdoc', properties=props)
         if not testDoc.allowableActions['canCheckOut']:
@@ -1289,17 +1365,20 @@ class DocumentTest(CmisTestBase):
 
     def testGetObjectParents(self):
         """Gets all object parents of an CmisObject"""
+        self.serverLog("testGetObjectParents")
         childFolder = self._testFolder.createFolder('parentTest')
         parentFolder = childFolder.getObjectParents().getResults()[0]
         self.assertEquals(self._testFolder.getObjectId(), parentFolder.getObjectId())
 
     def testGetObjectParentsWithinRootFolder(self):
         """Gets all object parents of a root folder"""
+        self.serverLog("testGetObjectParentsWithinRootFolder")
         rootFolder = self._repo.getRootFolder()
         self.assertRaises(NotSupportedException, rootFolder.getObjectParents)
 
     def testGetObjectParentsMultiple(self):
         """Gets all parents of a multi-filed object"""
+        self.serverLog("testGetObjectParentsMultiple")
         if not self._repo.getCapabilities()['Multifiling']:
             print 'This repository does not allow multifiling, skipping'
             return
@@ -1319,6 +1398,7 @@ class DocumentTest(CmisTestBase):
 
     def testGetPaths(self):
         """Get the paths of a document"""
+        self.serverLog("testGetPaths")
         testDoc = self._testFolder.createDocument('testdoc')
         # ask the test doc for its paths
         paths = testDoc.getPaths()
@@ -1326,6 +1406,7 @@ class DocumentTest(CmisTestBase):
 
     def testRenditions(self):
         """Get the renditions for a document"""
+        self.serverLog("testRenditions")
         if not self._repo.getCapabilities().has_key('Renditions'):
             print 'Repo does not support unfiling, skipping'
             return
@@ -1341,7 +1422,7 @@ class DocumentTest(CmisTestBase):
             return
 
 
-class TypeTest(unittest.TestCase):
+class TypeTest(CmisTestLogging):
 
     """
     Tests for the :class:`ObjectType` class (and related methods in the
@@ -1350,6 +1431,7 @@ class TypeTest(unittest.TestCase):
 
     def testTypeDescendants(self):
         """Get the descendant types of the repository."""
+        self.serverLog("testTypeDescendants")
 
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
@@ -1366,6 +1448,7 @@ class TypeTest(unittest.TestCase):
 
     def testTypeChildren(self):
         """Get the child types for this repository and make sure cmis:folder
+        self.serverLog("testTypeChildren")
         is in the list."""
 
         #This test would be more interesting if there was a standard way to
@@ -1386,6 +1469,7 @@ class TypeTest(unittest.TestCase):
 
     def testTypeDefinition(self):
         """Get the cmis:document type and test a few props of the type."""
+        self.serverLog("testTypeDefinition")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -1396,6 +1480,7 @@ class TypeTest(unittest.TestCase):
 
     def testTypeProperties(self):
         """Get the properties for a type."""
+        self.serverLog("testTypeProperties")
         cmisClient = CmisClient(settings.REPOSITORY_URL, settings.USERNAME, settings.PASSWORD,
                                 binding=settings.BINDING,
                                 **settings.EXT_ARGS)
@@ -1418,6 +1503,7 @@ class ACLTest(CmisTestBase):
 
     def testSupportedPermissions(self):
         """Test the value of supported permissions enum"""
+        self.serverLog("testSupportedPermissions")
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1425,6 +1511,7 @@ class ACLTest(CmisTestBase):
 
     def testPermissionDefinitions(self):
         """Test the list of permission definitions"""
+        self.serverLog("testPermissionDefinitions")
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1433,6 +1520,7 @@ class ACLTest(CmisTestBase):
 
     def testPermissionMap(self):
         """Test the permission mapping"""
+        self.serverLog("testPermissionMap")
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1442,6 +1530,7 @@ class ACLTest(CmisTestBase):
 
     def testPropagation(self):
         """Test the propagation setting"""
+        self.serverLog("testPropagation")
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1449,6 +1538,7 @@ class ACLTest(CmisTestBase):
 
     def testGetObjectACL(self):
         """Test getting an object's ACL"""
+        self.serverLog("testGetObjectACL")
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
@@ -1459,6 +1549,7 @@ class ACLTest(CmisTestBase):
 
     def testApplyACL(self):
         """Test updating an object's ACL"""
+        self.serverLog("testApplyACL")
         if not self._repo.getCapabilities()['ACL']:
             print messages.NO_ACL_SUPPORT
             return
