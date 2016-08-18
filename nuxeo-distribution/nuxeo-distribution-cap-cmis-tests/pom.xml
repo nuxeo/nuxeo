@@ -39,7 +39,6 @@
               <buildFile>${basedir}/itests.xml</buildFile>
               <targets>
                 <target>prepare-environment</target>
-                <target>prepare-tomcat-logs-trace-storage</target>
                 <target>start</target>
               </targets>
             </configuration>
