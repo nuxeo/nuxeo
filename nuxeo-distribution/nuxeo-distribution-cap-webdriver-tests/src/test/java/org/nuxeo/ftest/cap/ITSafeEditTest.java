@@ -102,6 +102,10 @@ public class ITSafeEditTest extends AbstractTest {
             return !(js.executeScript(String.format("return window.localStorage.getItem('%s');", item)) == null);
         }
 
+        public Object dumpLocalStorage() {
+            return (js.executeScript("return JSON.stringify(window.localStorage);"));
+        }
+
         public void removeItemFromLocalStorage(String item) {
             js.executeScript(String.format("window.localStorage.removeItem('%s');", item));
         }
@@ -118,6 +122,8 @@ public class ITSafeEditTest extends AbstractTest {
             + new Date().getTime();
 
     private final static String NEW_WORKSPACE_TITLE = "newWorkspaceName";
+
+    private final static String NEW_FILE_TITLE = "new file title";
 
     private final static String DESCRIPTION_ELT_ID = "document_edit:nxl_heading:nxw_description";
 
@@ -145,7 +151,13 @@ public class ITSafeEditTest extends AbstractTest {
         fileId = null;
     }
 
-    private void byPassPopup(String message, boolean accept) {
+    private void bypassPopup() {
+        ((JavascriptExecutor) driver).executeScript("window.onbeforeunload = function(e){};");
+        ((JavascriptExecutor) driver).executeScript("jQuery(window).unbind('unload');");
+        ((JavascriptExecutor) driver).executeScript("jQuery(window).unbind('beforeunload');");
+    }
+
+    private void leavePopup(String message, boolean accept) {
         Alert alert = driver.switchTo().alert();
         assertEquals(message, alert.getText());
         if (accept) {
@@ -155,14 +167,14 @@ public class ITSafeEditTest extends AbstractTest {
         }
     }
 
-    private void byPassLeavePagePopup(boolean accept) {
-        byPassPopup(
+    private void leavePagePopup(boolean accept) {
+        leavePopup(
                 "This page is asking you to confirm that you want to leave - data you have entered may not be saved.",
                 accept);
     }
 
-    private void byPassLeaveTabPopup(boolean accept) {
-        byPassPopup("This draft contains unsaved changes.", accept);
+    private void leaveTabPopup(boolean accept) {
+        leavePopup("This draft contains unsaved changes.", accept);
     }
 
     private void checkSafeEditRestoreProvided() {
@@ -253,6 +265,14 @@ public class ITSafeEditTest extends AbstractTest {
         descriptionElt.clear();
         log.debug("2 - " + localStorage.getLocalStorageLength());
 
+        // avoid randoms: wait for the local storage to actually hold the saved values after 10s
+        Locator.waitUntilGivenFunction(input -> {
+            LocalStorage ls = new LocalStorage(driver);
+            String content = ls.getItemFromLocalStorage(wsId);
+            log.debug(content);
+            return content != null && content.contains(NEW_WORKSPACE_TITLE);
+        });
+
         // Now must have something saved in the localstorage
         String lsItem = localStorage.getItemFromLocalStorage(currentDocumentId);
         final String lookupString = "\"" + TITLE_ELT_ID + "\":\"" + NEW_WORKSPACE_TITLE + "\"";
@@ -260,26 +280,15 @@ public class ITSafeEditTest extends AbstractTest {
         assertTrue(lsItem != null && lsItem.length() > 0);
         assertTrue(lsItem.contains(lookupString));
 
-        // Let's leave the document page with unsaved changes and check the popup
+        // Let's leave the edit tab of the workspace with unsaved changes. A
+        // popup should also prevent us from doing that, let's bypass it for tests
         log.debug("3 - " + localStorage.getLocalStorageLength());
+        bypassPopup();
         driver.findElement(By.linkText("Sections")).click();
-        byPassLeavePagePopup(false);
         log.debug("4 - " + localStorage.getLocalStorageLength());
 
-        // Let's leave the edit tab of the workspace with unsaved changes. A
-        // popup should also prevent us from doing that
-        if (documentBasePage.useAjaxTabs()) {
-            AjaxRequestManager arm = new AjaxRequestManager(driver);
-            arm.begin();
-            documentBasePage.clickOnDocumentTabLink(documentBasePage.contentTabLink, false);
-            byPassLeaveTabPopup(true);
-            arm.end();
-        } else {
-            documentBasePage.clickOnDocumentTabLink(documentBasePage.contentTabLink, false);
-            byPassLeavePagePopup(true);
-        }
-
         // Get back to edit tab. Since we didn't save, the title must be the initial one.
+        open(String.format(NXDOC_URL_FORMAT, wsId));
         documentBasePage = asPage(DocumentBasePage.class);
         documentBasePage.getEditTab();
         localStorage = new LocalStorage(driver);
@@ -291,6 +300,7 @@ public class ITSafeEditTest extends AbstractTest {
         // We must find in the localstorage an entry matching the previous
         // document which contains the title we edited
         lsItem = localStorage.getItemFromLocalStorage(currentDocumentId);
+        assertNotNull(lsItem);
         assertTrue(lsItem.contains(lookupString));
         log.debug("6 - " + localStorage.getLocalStorageLength());
 
@@ -308,15 +318,15 @@ public class ITSafeEditTest extends AbstractTest {
             AjaxRequestManager arm = new AjaxRequestManager(driver);
             arm.begin();
             documentBasePage.clickOnDocumentTabLink(documentBasePage.contentTabLink, false);
-            byPassLeaveTabPopup(false);
+            leaveTabPopup(false);
             arm.end();
         } else {
             documentBasePage.clickOnDocumentTabLink(documentBasePage.contentTabLink, false);
-            byPassLeavePagePopup(false);
+            leavePagePopup(false);
         }
 
         driver.findElement(By.linkText("Sections")).click();
-        byPassLeavePagePopup(true);
+        leavePagePopup(true);
 
         logout();
     }
@@ -334,29 +344,29 @@ public class ITSafeEditTest extends AbstractTest {
             return;
         }
 
-        // Log as test user and edit the created workdspace
+        // Log as test user and edit the created workspace
         login(TEST_USERNAME, TEST_PASSWORD);
         open(String.format(NXDOC_URL_FORMAT, fileId));
         DocumentBasePage documentBasePage = asPage(DocumentBasePage.class);
         EditTabSubPage editTabSubPage = documentBasePage.getEditTab();
+        editTabSubPage.setTitle(NEW_FILE_TITLE);
 
         Select2WidgetElement coverageWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")));
         coverageWidget.selectValue(COVERAGE);
 
+        // avoid randoms: wait for the local storage to actually hold the saved values after 10s
+        Locator.waitUntilGivenFunction(input -> {
+            LocalStorage ls = new LocalStorage(driver);
+            String content = ls.getItemFromLocalStorage(fileId);
+            return content != null && content.contains(COVERAGE) && content.contains(NEW_FILE_TITLE);
+        });
+
         waitForSavedNotification();
 
-        // We leave the page without saving, the safeEdit mechanism should be triggered
-        if (documentBasePage.useAjaxTabs()) {
-            AjaxRequestManager arm = new AjaxRequestManager(driver);
-            arm.begin();
-            documentBasePage.clickOnDocumentTabLink(documentBasePage.summaryTabLink, false);
-            byPassLeaveTabPopup(true);
-            arm.end();
-        } else {
-            documentBasePage.clickOnDocumentTabLink(documentBasePage.summaryTabLink, false);
-            byPassLeavePagePopup(true);
-        }
+        // Let's leave the page. A popup should prevent us from doing that, let's bypass it for tests
+        bypassPopup();
+        open(String.format(NXDOC_URL_FORMAT, fileId));
 
         FileDocumentBasePage filePage = asPage(FileDocumentBasePage.class);
         filePage.getEditTab();
@@ -366,6 +376,10 @@ public class ITSafeEditTest extends AbstractTest {
         triggerSafeEditRestore();
 
         waitForSavedNotification();
+
+        WebElement titleElt = driver.findElement(By.name(TITLE_ELT_ID));
+        String titleEltValue = titleElt.getAttribute("value");
+        assertEquals(NEW_FILE_TITLE, titleEltValue);
 
         WebElement savedCoverage = driver.findElement(By.xpath(ITSelect2Test.S2_COVERAGE_FIELD_XPATH));
         final String text = savedCoverage.getText();
