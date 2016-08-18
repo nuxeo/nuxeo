@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
@@ -86,6 +87,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         }
         workingDocument.putContextData("disableNotificationService", Boolean.TRUE);
         workingDocument.putContextData("disableAuditLogger", Boolean.TRUE);
+        workingDocument.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
         session.saveDocument(workingDocument);
 
         firePictureViewsGenerationDoneEvent(workingDocument);
