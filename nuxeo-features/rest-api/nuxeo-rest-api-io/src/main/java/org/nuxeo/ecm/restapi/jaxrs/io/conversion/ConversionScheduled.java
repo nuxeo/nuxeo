@@ -26,8 +26,18 @@ public class ConversionScheduled {
 
     public final String pollingURL;
 
-    public ConversionScheduled(String id, String pollingURL) {
+    public final String resultURL;
+
+    /**
+     * @since 8.4
+     */
+    public ConversionScheduled(String id, String pollingURL, String resultURL) {
         this.id = id;
         this.pollingURL = pollingURL;
+        this.resultURL = resultURL;
+    }
+
+    public ConversionScheduled(String id, String pollingURL) {
+        this(id, pollingURL, null);
     }
 }

@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
+import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -255,8 +256,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         String srcMt = blobHolder.getBlob().getMimeType();
         String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException("Cannot find converter from type " + srcMt + " to type "
-                    + destinationMimeType);
+            throw new ConversionException(
+                    "Cannot find converter from type " + srcMt + " to type " + destinationMimeType);
         }
         return convert(converterName, blobHolder, parameters);
     }
@@ -331,7 +332,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     @Override
-    public String scheduleConversion(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters) {
+    public String scheduleConversion(String converterName, BlobHolder blobHolder,
+            Map<String, Serializable> parameters) {
         WorkManager workManager = Framework.getService(WorkManager.class);
         ConversionWork work = new ConversionWork(converterName, null, blobHolder, parameters);
         workManager.schedule(work);
@@ -352,6 +354,10 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         WorkManager workManager = Framework.getService(WorkManager.class);
         Work.State workState = workManager.getWorkState(id);
         if (workState == null) {
+            String entryKey = TransientStoreWork.computeEntryKey(id);
+            if (TransientStoreWork.containsBlobHolder(entryKey)) {
+                return new ConversionStatus(id, ConversionStatus.Status.COMPLETED);
+            }
             return null;
         }
 
@@ -360,15 +366,10 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     @Override
     public BlobHolder getConversionResult(String id, boolean cleanTransientStoreEntry) {
-        WorkManager workManager = Framework.getService(WorkManager.class);
-        String result = workManager.findResult(id);
-        if (result == null) {
-            return null;
-        }
-
-        BlobHolder bh = ConversionWork.getBlobHolder(result);
+        String entryKey = TransientStoreWork.computeEntryKey(id);
+        BlobHolder bh = TransientStoreWork.getBlobHolder(entryKey);
         if (cleanTransientStoreEntry) {
-            ConversionWork.removeBlobHolder(result);
+            TransientStoreWork.removeBlobHolder(entryKey);
         }
         return bh;
     }

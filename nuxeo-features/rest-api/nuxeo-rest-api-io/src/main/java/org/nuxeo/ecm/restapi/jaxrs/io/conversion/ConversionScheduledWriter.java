@@ -39,6 +39,7 @@ public class ConversionScheduledWriter extends EntityWriter<ConversionScheduled>
     protected void writeEntityBody(JsonGenerator jg, ConversionScheduled conversionScheduled) throws IOException {
         jg.writeStringField("conversionId", conversionScheduled.id);
         jg.writeStringField("pollingURL", conversionScheduled.pollingURL);
+        jg.writeStringField("resultURL", conversionScheduled.resultURL);
     }
 
     @Override

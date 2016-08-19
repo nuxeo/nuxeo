@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConversionStatus;
+import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionStatusWithResult;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -49,21 +50,10 @@ public class ConversionRootObject extends DefaultObject {
             throw new WebResourceNotFoundException("No conversion job for id: " + id);
         }
 
-        // conversion finished
-        if (conversionStatus.status == ConversionStatus.Status.COMPLETED) {
-            String serverURL = ctx.getServerURL().toString();
-            if (serverURL.endsWith("/")) {
-                serverURL = serverURL.substring(0, serverURL.length() - 1);
-            }
-            String url = String.format("%s%s/conversions/%s/result", serverURL, ctx.getModulePath(), id);
-            try {
-                return Response.seeOther(new URI(url)).build();
-            } catch (URISyntaxException e) {
-                throw new NuxeoException(e);
-            }
-        }
-
-        return Response.ok(conversionStatus).build();
+        String serverURL = ctx.getServerURL().toString().replaceAll("/$", "");
+        String resultURL = String.format("%s%s/conversions/%s/result", serverURL, ctx.getModulePath(), conversionStatus.id);
+        ConversionStatusWithResult conversionStatusWithResult = new ConversionStatusWithResult(conversionStatus, resultURL);
+        return Response.ok(conversionStatusWithResult).build();
     }
 
     @GET

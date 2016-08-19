@@ -45,6 +45,13 @@ public abstract class TransientStoreWork extends AbstractWork {
     protected String entryKey;
 
     /**
+     * @since 8.4
+     */
+    public static String computeEntryKey(String id) {
+        return id + KEY_SUFFIX;
+    }
+
+    /**
      * Stores the given {@link BlobHolder} as an entry with the given {@code key} in the transient store used by the
      * {@code TransientStoreWork}.
      */
@@ -69,6 +76,14 @@ public abstract class TransientStoreWork extends AbstractWork {
         return new SimpleBlobHolderWithProperties(blobs, params);
     }
 
+    /**
+     * Returns true if a {@link BlobHolder} is stored for the given {@code key}.
+     * @since 8.3
+     */
+    public static boolean containsBlobHolder(String key) {
+        return getStore().exists(key);
+    }
+
     public static void removeBlobHolder(String key) {
         getStore().remove(key);
     }
@@ -89,7 +104,7 @@ public abstract class TransientStoreWork extends AbstractWork {
     }
 
     protected void computeEntryKey() {
-        entryKey = getId() + KEY_SUFFIX;
+        entryKey = computeEntryKey(getId());
     }
 
     protected void putBlobHolder(BlobHolder bh) {

@@ -19,10 +19,10 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -122,36 +122,39 @@ public class ConverterTest extends BaseTest {
         assertNotNull(node);
         assertEquals("conversionScheduled", node.get("entity-type").getTextValue());
         String id = node.get("conversionId").getTextValue();
-        assertNotNull(id, node.get("conversionId"));
-        String pollingURL = node.get("pollingURL")
-                .getTextValue();
+        assertNotNull(id);
+        String pollingURL = node.get("pollingURL").getTextValue();
         String computedPollingURL = String.format("http://localhost:18090/api/v1/conversions/%s/poll", id);
-        assertNotNull(computedPollingURL, pollingURL);
-        MultivaluedMap<String, String> headers = response.getHeaders();
-        List<String> location = headers.get("Location");
-        assertEquals(1, location.size());
-        assertEquals(computedPollingURL, location.get(0));
+        assertEquals(computedPollingURL, pollingURL);
+        String resultURL = node.get("resultURL").getTextValue();
+        String computedResultURL = String.format("http://localhost:18090/api/v1/conversions/%s/result", id);
+        assertEquals(computedResultURL, resultURL);
+
+        wr = client.resource(pollingURL);
+        response = wr.get(ClientResponse.class);
+        assertEquals(200, response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertNotNull(node);
+        assertEquals("conversionStatus", node.get("entity-type").getTextValue());
+        id = node.get("conversionId").getTextValue();
+        assertNotNull(id);
+        resultURL = node.get("resultURL").getTextValue();
+        assertEquals(computedResultURL, resultURL);
+        String status = node.get("status").getTextValue();
+        assertTrue(status.equals("running") || status.equals("completed"));
 
         // wait for the conversion to finish
         eventService.waitForAsyncCompletion();
 
         // polling URL should redirect to the result URL when done
-        client.setFollowRedirects(false);
-        wr = client.resource(pollingURL);
-        response = wr.get(ClientResponse.class);
-        assertEquals(303, response.getStatus());
-        headers = response.getHeaders();
-        location = headers.get("Location");
-        assertEquals(1, location.size());
-        String resultURL = location.get(0);
-        assertEquals(String.format("http://localhost:18090/api/v1/conversions/%s/result", id), resultURL);
-
-        // retrieve the converted blob following redirect
-        client.setFollowRedirects(true);
         wr = client.resource(pollingURL);
         response = wr.get(ClientResponse.class);
         assertEquals(200, response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        resultURL = node.get("resultURL").getTextValue();
+        assertEquals(computedResultURL, resultURL);
 
+        // retrieve the converted blob
         wr = client.resource(resultURL);
         response = wr.get(ClientResponse.class);
         assertEquals(200, response.getStatus());
