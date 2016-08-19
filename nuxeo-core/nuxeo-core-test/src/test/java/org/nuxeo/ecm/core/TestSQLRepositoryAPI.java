@@ -75,6 +75,7 @@ import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -188,6 +189,27 @@ public class TestSQLRepositoryAPI {
      */
     protected void maybeSleepToNextSecond() {
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void testIsVersionWritable() {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        assertTrue(doc.addFacet("Aged"));
+        assertTrue(doc.hasFacet("Aged"));
+        doc = session.saveDocument(doc);
+
+        DocumentRef refVersion = doc.checkIn(VersioningOption.MAJOR, "blbabla");
+
+        DocumentModel version = session.getDocument(refVersion);
+
+        version.setPropertyValue("age:age", "123");
+        session.saveDocument(version);
     }
 
     @Test

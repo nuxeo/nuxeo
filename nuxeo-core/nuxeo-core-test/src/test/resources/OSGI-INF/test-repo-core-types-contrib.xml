@@ -9,7 +9,7 @@
     <schema name="complexschema" src="schemas/complexschema.xsd" prefix="cmpf" />
     <schema name="test-properties" src="schemas/test-properties.xsd"
       prefix="tp" />
-    <schema name="age" src="schemas/age.xsd" prefix="age" />
+    <schema name="age" src="schemas/age.xsd" prefix="age" isVersionWritable="true" />
     <schema name="info" src="schemas/info.xsd" prefix="info" />
   </extension>
 
