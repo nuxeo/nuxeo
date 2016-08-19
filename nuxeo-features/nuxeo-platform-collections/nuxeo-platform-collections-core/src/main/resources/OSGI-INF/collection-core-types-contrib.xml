@@ -9,7 +9,7 @@
     <schema name="collection" src="schemas/collection.xsd" prefix="collection" />
 
     <schema name="collectionMember" src="schemas/collectionMember.xsd"
-      prefix="collectionMember" />
+      prefix="collectionMember" isVersionWritable="true"/>
 
   </extension>
 
@@ -24,6 +24,10 @@
     <facet name="CollectionMember">
       <schema name="collectionMember" />
     </facet>
+
+    <proxies>
+      <schema name="collectionMember" />
+    </proxies>
 
     <doctype name="Collection" extends="Document">
       <schema name="uid"/>

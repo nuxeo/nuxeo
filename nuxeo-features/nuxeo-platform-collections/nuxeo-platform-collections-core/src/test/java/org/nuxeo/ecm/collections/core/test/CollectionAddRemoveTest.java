@@ -31,6 +31,7 @@ import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
  * @since 5.9.3
@@ -214,6 +215,101 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         assertFalse(copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collection.getId()));
         assertTrue(copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collectionBis.getId()));
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void testAddVersionToNewCollectionAndRemove() throws Exception {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        testFile = session.createDocument(testFile);
+        DocumentRef refVersion =  testFile.checkIn(VersioningOption.MAJOR, "blbabla");
+        DocumentModel version = session.getDocument(refVersion);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, version, session);
+
+        assertTrue(session.exists(new PathRef(COLLECTION_FOLDER_PATH)));
+
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
+
+        DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+        assertTrue(session.exists(newCollectionRef));
+
+        DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
+        final String newlyCreatedCollectionId = newlyCreatedCollection.getId();
+
+        assertEquals(COLLECTION_NAME, newlyCreatedCollection.getTitle());
+
+        assertEquals(COLLECTION_DESCRIPTION, newlyCreatedCollection.getProperty("dc:description").getValue());
+
+        Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
+
+        assertTrue(collectionAdapter.getCollectedDocumentIds().contains(version.getId()));
+
+        version = session.getDocument(version.getRef());
+
+        CollectionMember collectionMemberAdapter = version.getAdapter(CollectionMember.class);
+
+        assertTrue(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
+
+        collectionManager.removeFromCollection(newlyCreatedCollection, version, session);
+
+        assertFalse(collectionAdapter.getCollectedDocumentIds().contains(testFile.getId()));
+        assertFalse(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void testAddVProxyToNewCollectionAndRemove() throws Exception {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        testFile = session.createDocument(testFile);
+
+        PathRef sectionsRootRef = new PathRef("/default-domain/sections");
+        assertTrue(session.exists(sectionsRootRef));
+        DocumentModel sectionDoc = session.getDocument(sectionsRootRef);
+        sectionDoc = session.createDocumentModel("Section");
+        sectionDoc.setPathInfo(sectionDoc.getPathAsString(), "section1");
+        sectionDoc = session.createDocument(sectionDoc);
+
+        DocumentModel proxy = session.publishDocument(testFile, sectionDoc);
+        collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, proxy, session);
+
+        assertTrue(session.exists(new PathRef(COLLECTION_FOLDER_PATH)));
+
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
+
+        DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+        assertTrue(session.exists(newCollectionRef));
+
+        DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
+        final String newlyCreatedCollectionId = newlyCreatedCollection.getId();
+
+        assertEquals(COLLECTION_NAME, newlyCreatedCollection.getTitle());
+
+        assertEquals(COLLECTION_DESCRIPTION, newlyCreatedCollection.getProperty("dc:description").getValue());
+
+        Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
+
+        assertTrue(collectionAdapter.getCollectedDocumentIds().contains(proxy.getId()));
+
+        proxy = session.getDocument(proxy.getRef());
+
+        CollectionMember collectionMemberAdapter = proxy.getAdapter(CollectionMember.class);
+
+        assertTrue(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
+
+        collectionManager.removeFromCollection(newlyCreatedCollection, proxy, session);
+
+        assertFalse(collectionAdapter.getCollectedDocumentIds().contains(testFile.getId()));
+        assertFalse(collectionMemberAdapter.getCollectionIds().contains(newlyCreatedCollectionId));
     }
 
 }

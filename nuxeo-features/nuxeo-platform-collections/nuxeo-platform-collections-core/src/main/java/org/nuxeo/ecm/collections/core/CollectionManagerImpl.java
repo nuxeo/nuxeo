@@ -291,7 +291,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public boolean isCollectable(final DocumentModel doc) {
-        return !doc.hasFacet(CollectionConstants.NOT_COLLECTABLE_FACET) && !doc.isVersion() && !doc.isProxy();
+        return !doc.hasFacet(CollectionConstants.NOT_COLLECTABLE_FACET);
     }
 
     @Override

@@ -33,10 +33,10 @@
     <coreQueryPageProvider name="default_collection_candidate">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
-        SELECT * FROM Document where dc:title ILIKE '?%' AND ecm:isProxy = 0
+        SELECT * FROM Document where dc:title ILIKE '?%'
         AND ecm:mixinType != 'SystemDocument' AND ecm:mixinType !=
         'NotCollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+        ecm:currentLifeCycleState != 'deleted'
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
@@ -46,7 +46,7 @@
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        ecm:currentLifeCycleState !=
         'deleted' AND collectionMember:collectionIds/* = ?
       </pattern>
       <sort column="dc:title" ascending="true" />
