@@ -36,11 +36,18 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
 
     private final Map<String, Type> types = new HashMap<String, Type>();
 
+    public boolean isVersionWritabe;
+
     /**
      * Constructor for a schema. Its types (fields) are then added through {@link #registerType}.
      */
     public SchemaImpl(String name, Namespace ns) {
+        this(name, ns, false);
+    }
+
+    public SchemaImpl(String name, Namespace ns, boolean isVersionWritabe) {
         super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
+        this.isVersionWritabe = isVersionWritabe;
     }
 
     /**
@@ -51,8 +58,9 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
      * @param name
      * @param ns
      */
-    public SchemaImpl(ComplexType complexType, String name, Namespace ns) {
+    public SchemaImpl(ComplexType complexType, String name, Namespace ns, boolean isVersionWritabe) {
         super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
+        this.isVersionWritabe = isVersionWritabe;
         if (complexType != null) {
             for (Field field : complexType.getFields()) {
                 QName fieldname = QName.valueOf(field.getName().getLocalName(), ns.prefix);
@@ -89,6 +97,11 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
     @Override
     public Schema getSchema() {
         return this;
+    }
+
+    @Override
+    public boolean isVersionWritabe() {
+        return isVersionWritabe;
     }
 
 }

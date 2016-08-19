@@ -219,9 +219,21 @@ public class XSDLoader {
         return loadSchema(name, prefix, file, null);
     }
 
-    // called by SchemaManagerImpl
-    // @since 5.7
+    /**
+     * Called by schema manager.
+     *
+     * @since 5.7
+     */
     public Schema loadSchema(String name, String prefix, File file, String xsdElement)
+            throws SAXException, IOException, TypeException {
+        return loadSchema(name, prefix, file, null, false);
+    }
+
+    /**
+     * @param isVersionWritable if true, the schema's fields will be writable even for Version document.
+     * @since 8.4
+     */
+    public Schema loadSchema(String name, String prefix, File file, String xsdElement, boolean isVersionWritable)
             throws SAXException, IOException, TypeException {
         XSOMParser parser = getParser();
         String systemId = file.toURI().toURL().toExternalForm();
@@ -243,7 +255,7 @@ public class XSDLoader {
         if (collectReferencedXSD) {
             collectReferencedXSD(xsSchemas);
         }
-        return loadSchema(name, prefix, xsSchemas, xsdElement);
+        return loadSchema(name, prefix, xsSchemas, xsdElement, isVersionWritable);
     }
 
     protected void collectReferencedXSD(XSSchemaSet xsSchemas) {
@@ -281,7 +293,8 @@ public class XSDLoader {
      * @throws TypeException
      * @since 5.7
      */
-    public Schema loadSchema(String name, String prefix, URL url, String xsdElement) throws SAXException, TypeException {
+    public Schema loadSchema(String name, String prefix, URL url, String xsdElement)
+            throws SAXException, TypeException {
         XSOMParser parser = getParser();
         parser.parse(url);
         XSSchemaSet xsSchemas = parser.getResult();
@@ -293,8 +306,16 @@ public class XSDLoader {
         return loadSchema(name, prefix, url, null);
     }
 
+    /**
+     * @since 8.4
+     */
     protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, String xsdElement)
             throws SAXException, TypeException {
+        return loadSchema(name, prefix, schemaSet, xsdElement, false);
+    }
+
+    protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, String xsdElement,
+            boolean isVersionWritable) throws SAXException, TypeException {
         if (schemaSet == null) {
             return null;
         }
@@ -311,7 +332,7 @@ public class XSDLoader {
         if (schema == null) {
             return null;
         }
-        Schema ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
+        Schema ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix), isVersionWritable);
 
         // load elements
         Collection<XSElementDecl> elements = schema.getElementDecls().values();
@@ -346,7 +367,8 @@ public class XSDLoader {
             } else {
                 if (singleComplexField.getType().isComplexType()) {
                     ComplexType singleComplexFieldType = (ComplexType) singleComplexField.getType();
-                    ecmSchema = new SchemaImpl(singleComplexFieldType, name, new Namespace(ns, prefix));
+                    ecmSchema = new SchemaImpl(singleComplexFieldType, name, new Namespace(ns, prefix),
+                            isVersionWritable);
                 } else {
                     log.warn("can not rebase schema " + name + " on " + xsdElement + " that is not a complex type");
                 }
@@ -624,7 +646,8 @@ public class XSDLoader {
         log.warn(msg.toString());
     }
 
-    protected ListType loadListType(Schema schema, XSListSimpleType type, String fieldName) throws TypeBindingException {
+    protected ListType loadListType(Schema schema, XSListSimpleType type, String fieldName)
+            throws TypeBindingException {
         String name = type.getName();
         if (name == null) {
             // probably a local type
@@ -677,8 +700,8 @@ public class XSDLoader {
         return processModelGroup(schema, superType, name, ct, mg, false);
     }
 
-    protected Type processModelGroup(Schema schema, ComplexType superType, String name, ComplexType ct,
-            XSModelGroup mg, boolean abstractType) throws TypeBindingException {
+    protected Type processModelGroup(Schema schema, ComplexType superType, String name, ComplexType ct, XSModelGroup mg,
+            boolean abstractType) throws TypeBindingException {
         if (mg == null) {
             // TODO don't know how to handle this for now
             throw new TypeBindingException("unsupported complex type");

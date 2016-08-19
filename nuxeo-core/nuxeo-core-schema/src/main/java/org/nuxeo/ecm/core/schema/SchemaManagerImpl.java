@@ -370,7 +370,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
         // loadSchema calls this.registerSchema
         XSDLoader schemaLoader = new XSDLoader(this, sd);
-        schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.xsdRootElement);
+        schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.xsdRootElement, sd.isVersionWritable);
         log.info("Registered schema: " + sd.name + " from " + sd.file);
     }
 

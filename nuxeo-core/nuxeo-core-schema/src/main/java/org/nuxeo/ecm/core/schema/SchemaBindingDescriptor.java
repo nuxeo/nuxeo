@@ -47,6 +47,9 @@ public class SchemaBindingDescriptor {
     @XNode("@override")
     public boolean override = false;
 
+    @XNode("@isVersionWritable")
+    public boolean isVersionWritable = false;
+
     @XNode("@xsdRootElement")
     public String xsdRootElement;
 

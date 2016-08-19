@@ -48,4 +48,12 @@ public interface Schema extends ComplexType {
      */
     void registerType(Type type);
 
+    /**
+     * @return true if the schema's fields are writable even for Version document.
+     * @since 8.4
+     */
+    default boolean isVersionWritabe() {
+        return false;
+    };
+
 }

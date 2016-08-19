@@ -272,7 +272,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (!isVersion()) {
             throw new PropertyException("Cannot write readonly property: " + name);
         }
-        if (!name.startsWith(DC_PREFIX)) {
+        if (!name.startsWith(DC_PREFIX) && !(property.getField().getDeclaringType() instanceof Schema
+                && ((Schema) property.getField().getDeclaringType()).isVersionWritabe())) {
             throw new PropertyException("Cannot set property on a version: " + name);
         }
         // ignore if value is unchanged (only for dublincore)
