@@ -85,7 +85,8 @@
     };
     var contextPath = '<%= request.getContextPath() %>';
     System.import('app')
-      .then(function(app) { app.run(contextPath); })
+      .then(function(app) { return app.run(contextPath); })
+      .then(function() { window.nuxeoSpreadsheetReady = true; })
       .catch(console.error.bind(console));
   </script>
 </body>

@@ -87,7 +87,7 @@ function doQuery() {
     var q = $('#query').val();
     sheet.nxql = parseNXQL(q);
   }
-  sheet.update().catch(function(err) {
+  return sheet.update().catch(function(err) {
     log.error(err.message);
   });
 }
@@ -98,56 +98,53 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
   var nx = new Connection(baseURL, username, password);
   nx.schemas(['*']);
 
-  $(() => {
+  setupUI();
 
-    setupUI();
+  return nx.connect().then(() => {
+    // Extract content view configuration
+    var layout = (cv && cv.resultLayout && cv.resultLayout.name) || 'spreadsheet_listing',
+        resultColumns = cv && cv.resultColumns;
 
-    nx.connect().then(() => {
-      // Extract content view configuration
-      var layout = (cv && cv.resultLayout && cv.resultLayout.name) || 'spreadsheet_listing',
-          resultColumns = cv && cv.resultColumns;
+    var pageProvider = (cv) ? cv.pageProviderName : (pp || 'spreadsheet_query');
 
-      var pageProvider = (cv) ? cv.pageProviderName : (pp || 'spreadsheet_query');
+    // Setup the language
+    var language = (nuxeo && nuxeo.spreadsheet && nuxeo.spreadsheet.language) ? nuxeo.spreadsheet.language.split('_')[0] : 'en';
 
-      // Setup the language
-      var language = (nuxeo && nuxeo.spreadsheet && nuxeo.spreadsheet.language) ? nuxeo.spreadsheet.language.split('_')[0] : 'en';
+    // Setup the SpreadSheet
+    sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider, language);
 
-      // Setup the SpreadSheet
-      sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider, language);
+    // If we don't have a content view we're done...
+    if (isStandalone) {
+      return;
+    }
+    // ... otherwise let's set it up
 
-      // If we don't have a content view we're done...
-      if (isStandalone) {
-        return;
-      }
-      // ... otherwise let's set it up
+    // Add query parameters
+    if (cv.queryParameters) {
+      sheet.queryParameters = cv.queryParameters;
+    }
 
-      // Add query parameters
-      if (cv.queryParameters) {
-        sheet.queryParameters = cv.queryParameters;
-      }
-
-      // Add the search document
-      if (cv.searchDocument) {
-        var namedParameters = {};
-        for (var k in cv.searchDocument.properties) {
-          var v = cv.searchDocument.properties[k];
-          // skip empty values
-          if ((typeof(v.length) !== 'undefined') && (v.length === 0)) {
-            continue;
-          }
-          namedParameters[k] = (typeof v === 'string') ? v : JSON.stringify(v);
+    // Add the search document
+    if (cv.searchDocument) {
+      var namedParameters = {};
+      for (var k in cv.searchDocument.properties) {
+        var v = cv.searchDocument.properties[k];
+        // skip empty values
+        if ((typeof(v.length) !== 'undefined') && (v.length === 0)) {
+          continue;
         }
-        sheet.namedParameters = namedParameters;
+        namedParameters[k] = (typeof v === 'string') ? v : JSON.stringify(v);
       }
+      sheet.namedParameters = namedParameters;
+    }
 
-      // Add sort infos
-      if (cv.sortInfos) {
-        sheet.sortInfos = cv.sortInfos;
-      }
+    // Add sort infos
+    if (cv.sortInfos) {
+      sheet.sortInfos = cv.sortInfos;
+    }
 
-      // Run the query
-      doQuery();
-    });
+    // Run the query
+    return doQuery();
   });
 }
 
