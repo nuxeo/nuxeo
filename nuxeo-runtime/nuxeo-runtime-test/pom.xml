@@ -73,6 +73,21 @@
 
     <!-- Use of compile scope for external dependencies -->
     <dependency>
+      <groupId>com.tngtech.jgiven</groupId>
+      <artifactId>jgiven-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.jgiven</groupId>
+      <artifactId>jgiven-junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.java</groupId>
+      <artifactId>junit-dataprovider</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.jmock</groupId>
       <artifactId>jmock</artifactId>
       <scope>compile</scope>
