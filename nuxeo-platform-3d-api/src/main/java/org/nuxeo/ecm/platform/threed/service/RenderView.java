@@ -128,7 +128,7 @@ public class RenderView implements Comparable<RenderView> {
     }
 
     public String getId() {
-        return String.valueOf(azimuth) + "," + String.valueOf(zenith);
+        return String.valueOf(name.hashCode());
     }
 
     @Override

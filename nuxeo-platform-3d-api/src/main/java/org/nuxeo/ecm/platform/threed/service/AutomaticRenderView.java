@@ -53,6 +53,10 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
         this.name = name;
     }
 
+    public String getId() {
+        return String.valueOf(name.hashCode());
+    }
+
     public boolean isEnabled() {
         return (enabled == null) || enabled;
     }

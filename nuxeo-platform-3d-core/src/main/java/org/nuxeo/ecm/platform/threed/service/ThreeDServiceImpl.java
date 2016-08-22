@@ -47,6 +47,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVE
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OPERATORS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
 
 /**
  * Default implementation of {@link ThreeDService}
@@ -144,7 +145,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         List<RenderView> renderViews = automaticRenderViews.registry.values()
                                                                     .stream()
                                                                     .filter(AutomaticRenderView::isEnabled)
-                                                                    .map(AutomaticRenderView::getName)
+                                                                    .map(AutomaticRenderView::getId)
                                                                     .map(this::getRenderView)
                                                                     .filter(RenderView::isEnabled)
                                                                     .collect(Collectors.toList());
@@ -167,13 +168,18 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         operators += new String(new char[lods.size()]).replace("\0", " lod convert");
         params.put(OPERATORS_PARAMETER, operators);
 
+        // titles
+        params.put(RENDER_IDS_PARAMETER,
+                renderViews.stream().map(renderView -> renderView.getId()).collect(Collectors.joining(" ")));
+
         // lods
         params.put(LODS_PARAMETER,
                 lods.stream().map(AutomaticLOD::getPercentage).map(String::valueOf).collect(Collectors.joining(" ")));
 
         // spherical coordinates
-        params.put(COORDS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getId()).collect(Collectors.joining(" ")));
+        params.put(COORDS_PARAMETER, renderViews.stream()
+            .map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith())
+            .collect(Collectors.joining(" ")));
 
         BlobHolder result = cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
 
@@ -206,8 +212,8 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     }
 
     @Override
-    public RenderView getRenderView(String renderViewName) {
-        return renderViews.registry.get(renderViewName);
+    public RenderView getRenderView(String renderViewId) {
+        return renderViews.registry.get(renderViewId);
     }
 
     @Override

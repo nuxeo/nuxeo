@@ -53,12 +53,14 @@ public class BatchConverterHelper {
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
         return blobs.stream().filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
             String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
-            if (fileNameArray.length != 4) {
+            if (fileNameArray.length != 7) {
                 return null;
             }
-            String coords = fileNameArray[2] + "," + fileNameArray[3];
-            RenderView currentRV = threeDService.getRenderView(Integer.parseInt(fileNameArray[2]),
-                    Integer.parseInt(fileNameArray[3]));
+            String id = fileNameArray[1];
+            String lod = fileNameArray[2];
+            String coords = fileNameArray[3] + "," + fileNameArray[4];
+            String dimensions = fileNameArray[5] + "," + fileNameArray[6];
+            RenderView currentRV = threeDService.getRenderView(id);
             if (currentRV == null) {
                 return null;
             }

@@ -60,6 +60,10 @@ public class ThreeDConvertersTest {
 
     protected static final String TEST_MODEL = "suzane";
 
+    private static final String renderId1 = "renderId1";
+
+    private static final String renderId2 = "renderId2";
+
     @Inject
     protected ConversionService cs;
 
@@ -98,6 +102,7 @@ public class ThreeDConvertersTest {
     protected BlobHolder applyConverter(String converter, BlobHolder blobs) throws Exception {
         assertNotNull(cs.getRegistredConverters().contains(converter));
         Map<String, Serializable> params = new HashMap<>();
+        params.put(RENDER_IDS_PARAMETER, renderId1 + " " + renderId2);
         BlobHolder result = cs.convert(converter, blobs, params);
         assertNotNull(result);
         return result;
@@ -120,7 +125,7 @@ public class ThreeDConvertersTest {
         BlobHolder result = applyConverter(RENDER_3D_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
-        assertEquals("render-100-0-0.png", blobs.get(0).getFilename());
+        assertEquals("render-" + renderId1 + "-100-0-0-100-62.png", blobs.get(0).getFilename());
     }
 
     @Test
@@ -167,8 +172,8 @@ public class ThreeDConvertersTest {
                 add("conversion-33.dae");
                 add("conversion-11.dae");
                 add("conversion-100.dae");
-                add("render-100-0-0.png");
-                add("render-100-90-0.png");
+                add("render-" + renderId1 + "-100-90-0-100-62.png");
+                add("render-" + renderId2 + "-100-0-0-100-62.png");
             }
         }));
     }

@@ -38,7 +38,7 @@ public class AutomaticRenderViewContributionHandler extends ContributionFragment
 
     @Override
     public String getContributionId(AutomaticRenderView contrib) {
-        return contrib.getName();
+        return contrib.getId();
     }
 
     @Override

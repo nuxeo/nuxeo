@@ -38,7 +38,7 @@ public class RenderViewContributionHandler extends ContributionFragmentRegistry<
 
     @Override
     public String getContributionId(RenderView contrib) {
-        return contrib.getName();
+        return contrib.getId();
     }
 
     @Override

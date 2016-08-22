@@ -164,6 +164,16 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
 
+            // Initialize render id params
+            String renderIds = "";
+            if (parameters.containsKey(RENDER_IDS_PARAMETER)) {
+                renderIds = (String) parameters.get(RENDER_IDS_PARAMETER);
+            } else if (initParameters.containsKey(RENDER_IDS_PARAMETER)) {
+                renderIds = initParameters.get(RENDER_IDS_PARAMETER);
+            }
+            List<String> titleList = Arrays.asList(renderIds.split(" "));
+            params.addNamedParameter(RENDER_IDS_PARAMETER, titleList);
+
             // Initialize LOD params
             String lods = initParameters.getOrDefault(LODS_PARAMETER, "");
             List<String> lodList = Arrays.asList(lods.split(" "));
@@ -203,7 +213,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             if (strParams != null) {
                 for (String paramName : strParams.keySet()) {
-                    if (LODS_PARAMETER.equals(paramName) || COORDS_PARAMETER.equals(paramName)) {
+                    if (RENDER_IDS_PARAMETER.equals(paramName) ||
+                        LODS_PARAMETER.equals(paramName) ||
+                        COORDS_PARAMETER.equals(paramName)) {
                         params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
                     } else {
                         params.addNamedParameter(paramName, strParams.get(paramName));

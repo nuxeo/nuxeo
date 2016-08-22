@@ -1,6 +1,7 @@
-outfile = args.outdir + '/render-' + str(base_lod) + '-' + str(coords[0]) + '-' + str(coords[1]) + '.png'
 width = args.width
 height = args.height
+outfile = args.outdir + '/render-' + str(id) + '-' + str(base_lod) + '-' + str(coords[0]) + '-' + str(coords[1]) +\
+          '-' + width + '-' + height + '.png'
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
 
 # min and max coordinate values of the mesh cluster (set of all mesh objects)

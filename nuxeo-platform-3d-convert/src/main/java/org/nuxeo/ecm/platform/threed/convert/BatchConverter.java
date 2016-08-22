@@ -37,6 +37,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.HEIGHT_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.WIDTH_PARAMETER;
 
 /**
@@ -87,7 +88,8 @@ public class BatchConverter extends BaseBlenderConverter {
             throw new ConversionException("Unable get correct number of versions");
         }
         List<String> coordList = cmdParams.getParameters().get(COORDS_PARAMETER).getValues();
-        if (renders.isEmpty() || renders.size() != coordList.size()) {
+        List<String> renderIdList = cmdParams.getParameters().get(RENDER_IDS_PARAMETER).getValues();
+        if (renders.isEmpty() || renders.size() != coordList.size() || renders.size() != renderIdList.size()) {
             throw new ConversionException("Unable get result render");
         }
 
