@@ -20,10 +20,14 @@ package org.nuxeo.binary.metadata.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +84,7 @@ public class TestBinaryMetadataService {
             add("EXIF:ImageHeight");
             add("EXIF:Software");
             add("IPTC:Keywords");
+            add("EXIF:DateTimeOriginal");
         }
     };
 
@@ -90,6 +95,15 @@ public class TestBinaryMetadataService {
         inputPSDMetadata.put("EXIF:ImageHeight", "200");
         inputPSDMetadata.put("EXIF:Software", "Nuxeo");
         inputPSDMetadata.put("IPTC:Keywords", new String[] {"keyword1", "keyword2"});
+        inputPSDMetadata.put("IPTC:Keywords", new String[] {"keyword1", "keyword2"});
+        try {
+            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            inputPSDMetadata.put("EXIF:DateTimeOriginal", calendar);
+        } catch (ParseException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -129,6 +143,7 @@ public class TestBinaryMetadataService {
         assertEquals(2, blobProperties.size());
         assertEquals(100, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Adobe Photoshop CS4 Macintosh", blobProperties.get("EXIF:Software").toString());
+        assertNull(blobProperties.get("EXIF:DateTimeOriginal"));
 
         // Write a new content
         Blob blob = binaryMetadataService.writeMetadata(psdBlobHolder.getBlob(), inputPSDMetadata, false);
@@ -137,13 +152,20 @@ public class TestBinaryMetadataService {
         // Check the content
         blobProperties = binaryMetadataService.readMetadata(blob, PSDMetadata, false);
         assertNotNull(blobProperties);
-        assertEquals(3, blobProperties.size());
+        assertEquals(4, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));
         assertEquals("Nuxeo", blobProperties.get("EXIF:Software").toString());
         // Check keywords were written to the binary
         List<String> keywords = (List<String>) blobProperties.get("IPTC:Keywords");
         assertEquals("keyword1", keywords.get(0));
         assertEquals("keyword2", keywords.get(1));
+        // Check date was written to the binary
+        try {
+            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
+            assertEquals(date, blobProperties.get("EXIF:DateTimeOriginal"));
+        } catch (ParseException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
