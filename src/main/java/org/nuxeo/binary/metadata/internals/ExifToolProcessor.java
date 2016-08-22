@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -208,6 +209,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
                 commandTags.addAll(buildCommandTagsFromCollection(tag, (Collection<Object>) metadataValue));
             } else if (metadataValue instanceof Object[]) {
                 commandTags.addAll(buildCommandTagsFromCollection(tag, Arrays.asList((Object[]) metadataValue)));
+            } else if (metadataValue instanceof Calendar) {
+                commandTags.add(buildCommandTagFromDate(tag, ((Calendar) metadataValue).getTime()));
             } else {
                 commandTags.add(buildCommandTag(tag, metadataValue));
             }
@@ -229,6 +232,14 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         return values.isEmpty() ? Collections.singletonList("-" + tag + "=") : values.stream().map(
             val -> buildCommandTag(tag, val)
         ).collect(Collectors.toList());
+    }
+
+    /**
+     * @since 8.4
+     */
+    private String buildCommandTagFromDate(String tag, Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+        return "-" + tag + "=" + formatter.format(date);
     }
 
     protected Pattern VALID_EXT = Pattern.compile("[a-zA-Z0-9]*");
