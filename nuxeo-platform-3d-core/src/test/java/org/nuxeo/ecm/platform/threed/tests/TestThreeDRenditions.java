@@ -205,4 +205,23 @@ public class TestThreeDRenditions {
                 "OSGI-INF/threed-service-contrib-override.xml");
     }
 
+    @Test
+    public void testBatchConverterHelper() throws Exception {
+        ThreeD threeD = getTestThreeD();
+        Collection<Blob> results = threeDService.batchConvert(threeD);
+        List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
+        List<TransmissionThreeD> transmissions = BatchConverterHelper.getTransmissons(results);
+        assertEquals(4, renderviews.size());
+        assertEquals(4, transmissions.size());
+        assertEquals("top", renderviews.get(0).getTitle());
+        assertEquals("left", renderviews.get(1).getTitle());
+        assertEquals("isometric", renderviews.get(2).getTitle());
+        assertEquals("front", renderviews.get(3).getTitle());
+        assertEquals(100, transmissions.get(0).getLod());
+        assertEquals(11, transmissions.get(1).getLod());
+        assertEquals(3, transmissions.get(2).getLod());
+        assertEquals(33, transmissions.get(3).getLod());
+        threeD.getBlob();
+    }
+
 }
