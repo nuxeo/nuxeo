@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunnerWithParms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +56,9 @@ import org.nuxeo.connect.tools.report.ICanReportTest.Then;
 import org.nuxeo.connect.tools.report.ICanReportTest.When;
 
 /**
+ * Runs registered reports and checks they can be reloaded.
  *
- *
+ * @since 8.3
  */
 @RunWith(FeaturesRunnerWithParms.class)
 @Features(ReportFeature.class)

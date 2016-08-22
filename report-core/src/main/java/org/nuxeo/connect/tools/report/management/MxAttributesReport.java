@@ -20,6 +20,11 @@ import java.io.OutputStream;
 
 import org.nuxeo.connect.tools.report.ReportWriter;
 
+/**
+ * Registered MBean attribute/value assertions report.
+ *
+ * @since 8.3
+ */
 public class MxAttributesReport implements ReportWriter {
 
     @Override

@@ -20,11 +20,11 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.connect.tools.report.FeaturesRunnerWithParms;
 import org.nuxeo.connect.tools.report.ICanReportTest;
 import org.nuxeo.connect.tools.report.ReportFeature;
 import org.nuxeo.connect.tools.report.ICanReportTest.Then.RuntimeSnapshotReport;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunnerWithParms;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -43,8 +43,9 @@ import org.nuxeo.connect.tools.report.viewer.ICanPrintTheThreadDumpTest.When;
 import org.nuxeo.connect.tools.report.viewer.ICanPrintTheThreadDumpTest.Then;
 
 /**
+ * Verify that we could print thread info serialized in JSON
  *
- * @since 8.3
+ * @since 8.4
  */
 @RunWith(FeaturesRunnerWithParms.class)
 @Features(ReportFeature.class)

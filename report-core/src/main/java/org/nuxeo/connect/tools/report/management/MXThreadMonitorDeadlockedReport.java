@@ -17,11 +17,14 @@
 package org.nuxeo.connect.tools.report.management;
 
 import java.io.OutputStream;
+import java.lang.management.ThreadMXBean;
 
 import org.nuxeo.connect.tools.report.ReportWriter;
 
 /**
+ * Monitor deadlocked threads
  *
+ * @see ThreadMXBean#findMonitorDeadlockedThreads()
  *
  */
 public class MXThreadMonitorDeadlockedReport implements ReportWriter {

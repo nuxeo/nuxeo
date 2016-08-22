@@ -20,7 +20,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Writes a report in an output stream in JSON format
+ * Writes a report in an output stream in JSON format.
+ *
+ * Contributors should implement that interface in order to contribute a report
+ * to the service.
  *
  * @since 8.3
  */

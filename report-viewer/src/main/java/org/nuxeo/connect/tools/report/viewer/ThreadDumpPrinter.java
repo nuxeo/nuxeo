@@ -33,8 +33,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import sun.management.MappedMXBeanType;
 
 /**
+ * Prints thread dumps included in the report.
  *
- * @since 8.3
+ * @since 8.4
  */
 public class ThreadDumpPrinter {
 

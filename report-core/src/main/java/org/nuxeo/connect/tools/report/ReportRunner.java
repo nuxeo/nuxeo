@@ -21,7 +21,7 @@ import java.io.OutputStream;
 import java.util.Set;
 
 /**
- * Run reports and feed the output with.
+ * Run reports and feed the output with, exposed as a service in the runtime.
  *
  * @since 8.3
  */

@@ -25,7 +25,9 @@ import org.nuxeo.connect.tools.report.ReportWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
+ * Distribution snapshot report.
  *
+ * @see DistributionSnapshot
  *
  * @since 8.3
  */

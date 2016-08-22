@@ -9,14 +9,15 @@ to nuxeo JIRA's ticket.
 
 # Installing
 
-Install the jar in the nuxeo's bundles folder.
+    build and install the [Nuxeo Connect Tools Marketplace](https://github.com/nuxeo/marketplace-connect-tools)
 
 # Running
 
-Invoke  a MBean
+    follow these [instructions](https://doc.nuxeo.com/x/8oLjAQ)
+
 ## QA results
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-activity-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-activity-master/)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-connect-tools-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-connect-tools-master/)
 
 
 ## About Nuxeo

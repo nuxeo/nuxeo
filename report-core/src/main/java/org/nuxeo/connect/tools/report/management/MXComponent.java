@@ -38,7 +38,7 @@ import org.json.simple.JSONObject;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- *
+ * Platform mbean server invoker which output results in json based on jolokia.
  *
  * @since 8.3
  */
@@ -50,6 +50,7 @@ public class MXComponent extends DefaultComponent {
         instance = this;
     }
 
+    // jolokia configuration
     final Configuration config = new Configuration(ConfigKey.AGENT_ID, "false", ConfigKey.IGNORE_ERRORS, "true");
 
     final BackendManager manager = new BackendManager(config, new LogHandler() {
@@ -72,6 +73,11 @@ public class MXComponent extends DefaultComponent {
         }
     });
 
+    /**
+     * Jolokia request builder
+     *
+     *
+     */
     class RequestBuilder {
 
         RequestBuilder(RequestType oftype) {

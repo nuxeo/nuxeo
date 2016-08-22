@@ -17,9 +17,15 @@
 package org.nuxeo.connect.tools.report.management;
 
 import java.io.OutputStream;
+import java.lang.management.ThreadMXBean;
 
 import org.nuxeo.connect.tools.report.ReportWriter;
 
+/**
+ * Threads dump report
+ *
+ * @see ThreadMXBean#dumpAllThreads
+ */
 public class MxThreadDumpReport implements ReportWriter {
 
     @Override
