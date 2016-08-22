@@ -15,6 +15,10 @@ nuxeo.db.embeddedDatasources=true
 nuxeo.db.xaMode=false
 nuxeo.db.commonds=jdbc/nuxeo
 
+nuxeo.db.blocking-timeout-millis=10000
+nuxeo.db.idle-timeout-minutes=0
+nuxeo.db.min-pool-size=5
+
 nuxeo.db.validationQuery=
 nuxeo.db.user_separator_key=,
 
