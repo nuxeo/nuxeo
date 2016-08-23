@@ -72,7 +72,7 @@ public class ThreeDConvertersTest {
 
     protected static BlobHolder getTestThreeDBlobs() throws IOException {
         List<Blob> blobs = new ArrayList<>();
-        Blob blob = null;
+        Blob blob;
         try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".obj")) {
             assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".obj"), is);
             blob = Blobs.createBlob(is);
@@ -150,13 +150,9 @@ public class ThreeDConvertersTest {
         List<Blob> blobs = result.getBlobs();
         assertEquals(3, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
-        assertTrue(fileNames.containsAll(new ArrayList<String>() {
-            {
-                add("conversion-3.dae");
-                add("conversion-33.dae");
-                add("conversion-11.dae");
-            }
-        }));
+        assertEquals("conversion-11.dae", fileNames.get(0));
+        assertEquals("conversion-3.dae", fileNames.get(1));
+        assertEquals("conversion-33.dae", fileNames.get(2));
     }
 
     @Test
@@ -165,16 +161,11 @@ public class ThreeDConvertersTest {
         List<Blob> blobs = result.getBlobs();
         assertEquals(6, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
-
-        assertTrue(fileNames.containsAll(new ArrayList<String>() {
-            {
-                add("conversion-3.dae");
-                add("conversion-33.dae");
-                add("conversion-11.dae");
-                add("conversion-100.dae");
-                add("render-" + renderId1 + "-100-90-0-100-62.png");
-                add("render-" + renderId2 + "-100-0-0-100-62.png");
-            }
-        }));
+        assertEquals("conversion-100.dae", fileNames.get(0));
+        assertEquals("conversion-11.dae", fileNames.get(1));
+        assertEquals("conversion-3.dae", fileNames.get(2));
+        assertEquals("conversion-33.dae", fileNames.get(3));
+        assertEquals("render-" + renderId1 + "-100-0-0-100-62.png", fileNames.get(4));
+        assertEquals("render-" + renderId2 + "-100-90-0-100-62.png", fileNames.get(5));
     }
 }

@@ -40,7 +40,7 @@ parser.add_argument('-c', '--coords',
 args_to_parse = sys.argv[sys.argv.index('--') + 1:]
 print(args_to_parse)
 args = parser.parse_args(args_to_parse)
-print("opeartors: ")
+print("operators: ")
 print(args)
 if args.operators == None:
     sys.exit()
@@ -59,7 +59,7 @@ for operator in args.operators:
         calculated_lod = int((current_lod / base_lod) * 100)
         base_lod = current_lod
     if operator == "render" and args.coords and len(args.coords):
-        coords = args.coords.pop()
+        coords = args.coords.pop(0)
         id = args.renderids.pop(0)
     filename = base_path + operator + ".py"
     exec (compile(open(filename).read(), filename, 'exec'))
