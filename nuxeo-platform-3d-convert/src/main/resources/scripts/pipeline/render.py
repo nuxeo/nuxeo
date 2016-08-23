@@ -1,8 +1,11 @@
-width = args.width
-height = args.height
+width = dim[0]
+height = dim[1]
 outfile = args.outdir + '/render-' + str(id) + '-' + str(base_lod) + '-' + str(coords[0]) + '-' + str(coords[1]) +\
-          '-' + width + '-' + height + '.png'
+          '-' + str(width) + '-' + str(height) + '.png'
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
+
+print('width: ' + str(width))
+print('height: ' + str(height))
 
 # min and max coordinate values of the mesh cluster (set of all mesh objects)
 mc_min = [None, None, None]
@@ -67,7 +70,7 @@ scene.camera = camera_ob
 scene.render.resolution_x = int(width)
 scene.render.resolution_y = int(height)
 scene.render.resolution_percentage = 100
-scene.render.alpha_mode = 'TRANSPARENT'
+# scene.render.alpha_mode = 'TRANSPARENT'
 bpy.context.scene.render.image_settings.color_mode = 'RGBA'
 print("""World settings:
 - Ambient color: %s

@@ -34,11 +34,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.HEIGHT_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.DIMENSIONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.WIDTH_PARAMETER;
 
 /**
  * Batch conversion for 3D document types Generate thumbnail render, Collada version and LOD versions
@@ -57,17 +56,6 @@ public class BatchConverter extends BaseBlenderConverter {
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
-        String width = initParameters.get(WIDTH_PARAMETER);
-        if (parameters.containsKey(WIDTH_PARAMETER)) {
-            width = String.valueOf(parameters.get(WIDTH_PARAMETER));
-        }
-        String height = initParameters.get(HEIGHT_PARAMETER);
-        if (parameters.containsKey(HEIGHT_PARAMETER)) {
-            height = String.valueOf(parameters.get(HEIGHT_PARAMETER));
-        }
-        cmdStringParams.put(WIDTH_PARAMETER, width);
-        cmdStringParams.put(HEIGHT_PARAMETER, height);
-
         String lods = null;
         if (parameters.containsKey(LODS_PARAMETER)) {
             lods = (String) parameters.get(LODS_PARAMETER);
@@ -75,6 +63,13 @@ public class BatchConverter extends BaseBlenderConverter {
             lods = initParameters.get(LODS_PARAMETER);
         }
         cmdStringParams.put(LODS_PARAMETER, lods);
+        String dimensions = null;
+        if (parameters.containsKey(DIMENSIONS_PARAMETER)) {
+            dimensions = (String) parameters.get(DIMENSIONS_PARAMETER);
+        } else if (initParameters.containsKey(DIMENSIONS_PARAMETER)) {
+            dimensions = initParameters.get(DIMENSIONS_PARAMETER);
+        }
+        cmdStringParams.put(DIMENSIONS_PARAMETER, dimensions);
         return cmdStringParams;
     }
 

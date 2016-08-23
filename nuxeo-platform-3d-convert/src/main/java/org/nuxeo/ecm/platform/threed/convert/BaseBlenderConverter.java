@@ -189,6 +189,16 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             List<String> coordList = Arrays.asList(coords.split(" "));
             params.addNamedParameter(COORDS_PARAMETER, coordList);
 
+            // Initialize dimension params
+            String dimensions = "";
+            if (parameters.containsKey(DIMENSIONS_PARAMETER)) {
+                dimensions = (String) parameters.get(DIMENSIONS_PARAMETER);
+            } else if (initParameters.containsKey(DIMENSIONS_PARAMETER)) {
+                dimensions = initParameters.get(DIMENSIONS_PARAMETER);
+            }
+            List<String> dimensionList = Arrays.asList(dimensions.split(" "));
+            params.addNamedParameter(DIMENSIONS_PARAMETER, dimensionList);
+
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder);
             params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, new File(inputFiles.get(0)));
@@ -215,7 +225,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
                 for (String paramName : strParams.keySet()) {
                     if (RENDER_IDS_PARAMETER.equals(paramName) ||
                         LODS_PARAMETER.equals(paramName) ||
-                        COORDS_PARAMETER.equals(paramName)) {
+                        COORDS_PARAMETER.equals(paramName) ||
+                        DIMENSIONS_PARAMETER.equals(paramName)) {
                         params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
                     } else {
                         params.addNamedParameter(paramName, strParams.get(paramName));

@@ -39,6 +39,12 @@ public class RenderView implements Comparable<RenderView> {
     @XNode("@azimuth")
     protected Integer azimuth;
 
+    @XNode("@width")
+    protected Integer width;
+
+    @XNode("@height")
+    protected Integer height;
+
     @XNode("@enabled")
     protected Boolean enabled;
 
@@ -52,6 +58,8 @@ public class RenderView implements Comparable<RenderView> {
         name = other.name;
         zenith = other.zenith;
         azimuth = other.azimuth;
+        width = other.width;
+        height = other.height;
         enabled = other.enabled;
         rendition = other.rendition;
         renditionVisible = other.renditionVisible;
@@ -83,6 +91,22 @@ public class RenderView implements Comparable<RenderView> {
 
     public void setAzimuth(Integer azimuth) {
         this.azimuth = azimuth;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
     }
 
     public boolean isEnabled() {
@@ -124,6 +148,12 @@ public class RenderView implements Comparable<RenderView> {
         }
         if (src.azimuth != null) {
             azimuth = src.azimuth;
+        }
+        if (src.width != null) {
+            width = src.width;
+        }
+        if (src.height != null) {
+            height = src.height;
         }
     }
 

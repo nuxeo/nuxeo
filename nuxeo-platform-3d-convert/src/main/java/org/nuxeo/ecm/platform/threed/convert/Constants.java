@@ -43,9 +43,7 @@ public class Constants {
 
     public static final String LODS_PARAMETER = "lods";
 
-    public static final String WIDTH_PARAMETER = "width";
-
-    public static final String HEIGHT_PARAMETER = "height";
+    public static final String DIMENSIONS_PARAMETER = "dimensions";
 
     public static final String COORDS_PARAMETER = "coords";
 

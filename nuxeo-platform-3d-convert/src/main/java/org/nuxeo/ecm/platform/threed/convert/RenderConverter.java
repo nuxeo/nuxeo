@@ -33,9 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.nuxeo.ecm.platform.threed.convert.Constants.HEIGHT_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.DIMENSIONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.WIDTH_PARAMETER;
 
 /**
  * Render converter 3D document type to PNG
@@ -54,17 +53,13 @@ public class RenderConverter extends BaseBlenderConverter implements ExternalCon
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
-        String width = initParameters.get(WIDTH_PARAMETER);
-        if (parameters.containsKey(WIDTH_PARAMETER)) {
-            width = String.valueOf(parameters.get(WIDTH_PARAMETER));
+        String dimensions = null;
+        if (parameters.containsKey(DIMENSIONS_PARAMETER)) {
+            dimensions = (String) parameters.get(DIMENSIONS_PARAMETER);
+        } else if (initParameters.containsKey(DIMENSIONS_PARAMETER)) {
+            dimensions = initParameters.get(DIMENSIONS_PARAMETER);
         }
-        String height = initParameters.get(HEIGHT_PARAMETER);
-        if (parameters.containsKey(HEIGHT_PARAMETER)) {
-            height = String.valueOf(parameters.get(HEIGHT_PARAMETER));
-        }
-        cmdStringParams.put(WIDTH_PARAMETER, width);
-        cmdStringParams.put(HEIGHT_PARAMETER, height);
-
+        cmdStringParams.put(DIMENSIONS_PARAMETER, dimensions);
         return cmdStringParams;
     }
 
