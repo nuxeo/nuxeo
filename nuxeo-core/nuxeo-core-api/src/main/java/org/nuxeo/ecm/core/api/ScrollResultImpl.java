@@ -1,4 +1,3 @@
-package org.nuxeo.ecm.core.api;
 /*
  * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -17,6 +16,7 @@ package org.nuxeo.ecm.core.api;
  * Contributors:
  *     bdelbosc
  */
+package org.nuxeo.ecm.core.api;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +51,7 @@ public class ScrollResultImpl implements ScrollResult {
 
     @Override
     public boolean hasResults() {
-        return (ids != null && (!ids.isEmpty()));
+        return ids != null && !ids.isEmpty();
     }
 
 }

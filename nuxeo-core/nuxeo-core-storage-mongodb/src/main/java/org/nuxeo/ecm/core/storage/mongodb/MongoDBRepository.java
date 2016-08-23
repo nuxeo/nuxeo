@@ -151,8 +151,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
 
-    protected static final int DEFAULT_CURSOR_TIMEOUT_S = 600;
-
     protected MongoClient mongoClient;
 
     protected DBCollection coll;
@@ -884,9 +882,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
-        if (keepAliveInSecond != DEFAULT_CURSOR_TIMEOUT_S && log.isDebugEnabled()) {
-            log.debug("scroll keepAlive is not supported, the default MongoDB cursor timeout is 10min");
+    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
+        if (keepAliveSeconds != -1 && log.isInfoEnabled()) {
+            log.info("scroll keepAlive is not supported, the default MongoDB cursor timeout is 10min");
         }
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);

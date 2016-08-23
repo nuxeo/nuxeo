@@ -21,7 +21,6 @@
  */
 package org.nuxeo.ecm.core;
 
-import static com.sun.org.apache.xerces.internal.util.PropertyState.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -49,7 +48,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -57,10 +55,11 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.AssertionFailedException;
-import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -118,6 +117,9 @@ public class TestSQLRepositoryQuery {
     protected CoreSession session;
 
     protected boolean proxies;
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     protected boolean isDBS() {
         return coreFeature.getStorageConfiguration().isDBS();
@@ -3204,15 +3206,16 @@ public class TestSQLRepositoryQuery {
         assertEquals(expectedList, list);
     }
 
-    @Test(expected=IllegalAccessError.class)
+    @Test
     public void testScrollApiRequiresAdminRights() throws Exception {
-        ScrollResult ret = session.scroll("SELECT * FROM Document", 3, 10);
+        ScrollResult ret = session.scroll("SELECT * FROM Document", 3, -1);
         assertFalse(ret.hasResults());
 
         try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            exception.expect(NuxeoException.class);
+            exception.expectMessage("Only Administrators can scroll");
             // raise an illegal access
-            ret = bobSession.scroll("SELECT * FROM Document", 3, 10);
-            Assert.fail("Should have raise and exception");
+            ret = bobSession.scroll("SELECT * FROM Document", 3, -1);
         }
     }
 
@@ -3231,7 +3234,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document");
         assertEquals(nbDocs, dml.size());
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, -1);
         int total = 0;
         while (ret.hasResults()) {
             List<String> ids = ret.getResultIds();
@@ -3246,7 +3249,7 @@ public class TestSQLRepositoryQuery {
         final int nbDocs = 127;
         final int batchSize = 13;
         final int nbThread = nbDocs/batchSize + 1;
-        System.out.println("nbDocs: " + nbDocs + ", batch: " + batchSize + ", thread: " + nbThread);
+        // System.out.println("nbDocs: " + nbDocs + ", batch: " + batchSize + ", thread: " + nbThread);
         DocumentModel doc;
         for (int i=0; i<nbDocs; i++) {
             doc = new DocumentModelImpl("/", "doc1", "File");
@@ -3258,12 +3261,12 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document");
         assertEquals(nbDocs, dml.size());
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
+        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, -1);
         List<String> ids = ret.getResultIds();
         int total = ids.size();
         String scrollId = ret.getScrollId();
-        System.out.println("first call: " + total);
-        List<CompletableFuture<Integer>> features = new ArrayList<>(nbThread);
+        // System.out.println("first call: " + total);
+        List<CompletableFuture<Integer>> futures = new ArrayList<>(nbThread);
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(nbThread);
         final CountDownLatch latch = new CountDownLatch(nbThread);
         for (int n=0; n < nbThread; n++) {
@@ -3275,19 +3278,19 @@ public class TestSQLRepositoryQuery {
                     try {
                         latch.await();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        ExceptionUtils.checkInterrupt(e);
                     }
                     int nb = session.scroll(scrollId).getResultIds().size();
-                    System.out.println(Thread.currentThread().getName() + ": return: " + nb);
+                    // System.out.println(Thread.currentThread().getName() + ": return: " + nb);
                     return nb;
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
             }, executor);
-            features.add(completableFuture);
+            futures.add(completableFuture);
         }
         for (int n=0; n < nbThread; n++) {
-            int count = features.get(n).get();
+            int count = futures.get(n).get();
             total += count;
         }
         assertEquals(nbDocs, total);

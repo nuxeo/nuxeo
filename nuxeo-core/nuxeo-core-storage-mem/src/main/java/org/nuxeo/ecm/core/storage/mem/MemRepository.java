@@ -358,7 +358,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
+    public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: QUERY " + evaluator);
         }
@@ -371,7 +371,7 @@ public class MemRepository extends DBSRepositoryBase {
                 ids.add(id);
             }
         }
-        return new ScrollResultImpl("singlebatch", ids);
+        return new ScrollResultImpl("noscroll", ids);
     }
 
     @Override

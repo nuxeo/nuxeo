@@ -62,10 +62,10 @@ public interface Session {
 
     /**
      * Executes the given query and returns the first batch of results of batchSize, next batch must be requested
-     * within the keepAliveInSecond delay.
+     * within the keepAliveSeconds delay.
      * @since 8.4
      */
-    ScrollResult scroll(String query, int batchSize, int keepAliveInSecond);
+    ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
      * Get the next batch of result.

@@ -205,8 +205,8 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
-        return getSession().scroll(query, batchSize, keepAliveInSecond);
+    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
+        return getSession().scroll(query, batchSize, keepAliveSeconds);
     }
 
     @Override

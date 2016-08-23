@@ -1070,14 +1070,18 @@ public interface CoreSession extends AutoCloseable {
 
     /**
      * Executes the given query and returns the first batch of results, next batch must be requested
-     * within the {@code keepAliveInSecond} delay.
+     * within the {@code keepAliveSeconds} delay.
      *
-     * Note that the result may contain more than {@code batchSize} results when the backend don't implement properly
-     * this feature.
+     * @param query The NXQL query to execute
+     * @param batchSize The expected result batch size, note that more results can be returned when the backend don't
+     *                  implement properly this feature
+     * @param keepAliveSeconds The scroll context lifetime in seconds, use {@code -1} for a default value.
+     * @return A {@link ScrollResult} including the search results and a scroll id, to be passed to the subsequent
+     * calls to {@link #scroll(String)}
      *
      * @since 8.4
      */
-    ScrollResult scroll(String query, int batchSize, int keepAliveInSecond);
+    ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
 
     /**
      * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.

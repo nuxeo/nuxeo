@@ -1681,16 +1681,15 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         SelectClause selectClause = sqlQuery.select;
-            selectClause.add(new Reference(NXQL.ECM_UUID));
+        selectClause.add(new Reference(NXQL.ECM_UUID));
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, null);
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, null,
                 null, fulltextSearchDisabled);
-        return repository.scroll(evaluator, batchSize, keepAliveInSecond);
-
+        return repository.scroll(evaluator, batchSize, keepAliveSeconds);
     }
 
     @Override

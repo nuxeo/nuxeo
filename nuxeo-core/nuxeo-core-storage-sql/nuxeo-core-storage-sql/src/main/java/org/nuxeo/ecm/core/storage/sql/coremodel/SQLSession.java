@@ -164,8 +164,8 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
-        return session.scroll(query, batchSize, keepAliveInSecond);
+    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
+        return session.scroll(query, batchSize, keepAliveSeconds);
     }
 
     @Override

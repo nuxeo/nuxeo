@@ -218,11 +218,11 @@ public interface DBSRepository extends Repository, LockManager {
 
     /**
      * Executes the given query and returns the first batch of results, next batch must be requested
-     * within the {@code keepAliveInSecond} delay.
+     * within the {@code keepAliveSeconds} delay.
      *
      * @since 8.4
      */
-    ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond);
+    ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds);
 
     /**
      * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.

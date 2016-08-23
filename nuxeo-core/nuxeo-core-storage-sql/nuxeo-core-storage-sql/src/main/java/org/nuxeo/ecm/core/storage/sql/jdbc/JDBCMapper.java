@@ -929,14 +929,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public ScrollResult scroll(String query, int batchSize, int keepAliveInSecond) {
+    public ScrollResult scroll(String query, int batchSize, int keepAliveSeconds) {
         if (!dialect.supportsScroll()) {
             return defaultScroll(query);
         }
-        return scrollSearch(query, batchSize, keepAliveInSecond);
+        return scrollSearch(query, batchSize, keepAliveSeconds);
     }
 
-    protected ScrollResult scrollSearch(String query, int batchSize, int keepAliveInSecond) {
+    protected ScrollResult scrollSearch(String query, int batchSize, int keepAliveSeconds) {
         // TODO: handle keepAlive, at least check for timeout cursor at registerCluster to prevent leak or DOS
         QueryMaker queryMaker = findQueryMaker("NXQL");
         QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);

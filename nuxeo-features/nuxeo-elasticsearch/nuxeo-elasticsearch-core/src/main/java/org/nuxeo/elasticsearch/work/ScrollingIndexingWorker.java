@@ -19,24 +19,18 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_READ_PROPERTY;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_BUCKET_READ_PROPERTY;
 
 /**
  * Worker to reindex a large amount of document
@@ -81,7 +75,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
         int bucketCount = 0;
         boolean warnAtEnd = false;
         try {
-            while(ret.hasResults()) {
+            while (ret.hasResults()) {
                 documentCount += ret.getResultIds().size();
                 scheduleBucketWorker(ret.getResultIds(), false);
                 bucketCount += 1;

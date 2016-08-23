@@ -1,4 +1,3 @@
-package org.nuxeo.ecm.core.api;
 /*
  * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -17,16 +16,19 @@ package org.nuxeo.ecm.core.api;
  * Contributors:
  *     bdelbosc
  */
+package org.nuxeo.ecm.core.api;
 
 import java.util.List;
 
 /**
+ * The result of a {@link CoreSession#scroll} call, giving access to result and the scroll id.
+ *
  * @since 8.4
  */
 public interface ScrollResult {
 
     /**
-     * Returns the scroll identifier.
+     * Returns the scroll identifier, which can be passed to CoreSession.scroll(String scrollId) to get more results.
      */
     String getScrollId();
 
@@ -36,7 +38,7 @@ public interface ScrollResult {
     List<String> getResultIds();
 
     /**
-     * Returns {code true} when this {code ScrollResult} contains results.
+     * Returns {@code true} when this {@code ScrollResult} contains results.
      */
     boolean hasResults();
 
