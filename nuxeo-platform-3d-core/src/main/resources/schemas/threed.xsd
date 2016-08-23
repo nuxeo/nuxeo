@@ -32,6 +32,7 @@
     <xs:complexType name="renderViewsItem">
         <xs:sequence>
             <xs:element name="content" type="nxs:content"/>
+            <xs:element name="thumbnail" type="nxs:content"/>
             <xs:element name="title" type="xs:string"/>
             <xs:element name="azimuth" type="xs:integer"/>
             <xs:element name="zenith" type="xs:integer"/>

@@ -35,11 +35,15 @@ public class ThreeDRenderView {
 
     public static final String CONTENT = "content";
 
+    public static final String THUMBNAIL = "thumbnail";
+
     public static final String AZIMUTH = "azimuth";
 
     public static final String ZENITH = "zenith";
 
     protected final Blob content;
+
+    protected final Blob thumbnail;
 
     protected final String title;
 
@@ -47,9 +51,10 @@ public class ThreeDRenderView {
 
     protected final int zenith;
 
-    public ThreeDRenderView(String title, Blob content, int azimuth, int zenith) {
+    public ThreeDRenderView(String title, Blob content, Blob thumbnail, int azimuth, int zenith) {
         this.title = title;
         this.content = content;
+        this.thumbnail = thumbnail;
         this.azimuth = azimuth;
         this.zenith = zenith;
     }
@@ -57,6 +62,7 @@ public class ThreeDRenderView {
     public ThreeDRenderView(Map<String, Object> map) {
         title = (String) map.get(TITLE);
         content = (Blob) map.get(CONTENT);
+        thumbnail = (Blob) map.get(THUMBNAIL);
         Long azimuthLong = (Long) map.get(AZIMUTH);
         azimuth = (azimuthLong != null) ? azimuthLong.intValue() : 0;
         Long zenithLong = (Long) map.get(ZENITH);
@@ -65,6 +71,10 @@ public class ThreeDRenderView {
 
     public Blob getContent() {
         return content;
+    }
+
+    public Blob getThumbnail() {
+        return thumbnail;
     }
 
     public String getTitle() {
@@ -83,6 +93,7 @@ public class ThreeDRenderView {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(TITLE, title);
         map.put(CONTENT, (Serializable) content);
+        map.put(THUMBNAIL, (Serializable) thumbnail);
         map.put(AZIMUTH, azimuth);
         map.put(ZENITH, zenith);
         return map;

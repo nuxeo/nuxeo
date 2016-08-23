@@ -123,7 +123,6 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
                 startTransaction();
                 openSystemSession();
                 DocumentModel doc = session.getDocument(new IdRef(docId));
-                saveNewThumbnail(doc, threeDRenderViews.get(0));
                 saveNewRenderViews(doc, threeDRenderViews);
                 commitOrRollbackTransaction();
             } finally {
@@ -175,31 +174,8 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
     protected void saveNewRenderViews(DocumentModel doc, List<ThreeDRenderView> threeDRenderViews) {
         List<Map<String, Serializable>> renderViewList = new ArrayList<>();
         renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
+
         saveNewProperties(doc, renderViewList, RENDER_VIEWS_PROPERTY);
-    }
-
-    protected void saveNewThumbnail(DocumentModel doc, ThreeDRenderView threeDRenderView) {
-        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-        ArrayList<Map<String, Object>> thumbnailTemplates = new ArrayList<>();
-        Map<String, Object> thumbnailView = new LinkedHashMap<>();
-        thumbnailView.put("title", THUMBNAIL_PICTURE_TITLE);
-        thumbnailView.put("maxsize", (long) AbstractPictureAdapter.SMALL_SIZE);
-        thumbnailTemplates.add(thumbnailView);
-        Map<String, Object> static3DView = new HashMap<>();
-        static3DView.put("title", STATIC_3D_PCTURE_TITLE);
-        static3DView.put("maxsize", (long) AbstractPictureAdapter.MEDIUM_SIZE);
-        thumbnailTemplates.add(thumbnailView);
-        try {
-            picture.fillPictureViews(threeDRenderView.getContent(), threeDRenderView.getContent().getFilename(),
-                    threeDRenderView.getTitle(), new ArrayList<>(thumbnailTemplates));
-        } catch (IOException e) {
-            log.warn("failed to compute thumbnail 3D render view for " + doc.getTitle() + ": " + e.getMessage());
-        }
-
-        if (doc.isVersion()) {
-            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-        }
-        session.saveDocument(doc);
     }
 
     /**

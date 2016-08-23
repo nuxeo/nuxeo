@@ -20,6 +20,9 @@ package org.nuxeo.ecm.platform.threed;
 
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
+import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.threed.service.RenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.api.Framework;
@@ -64,7 +67,18 @@ public class BatchConverterHelper {
             if (currentRV == null) {
                 return null;
             }
-            return new ThreeDRenderView(currentRV.getName(), blob, currentRV.getAzimuth(), currentRV.getZenith());
+            ImagingService imagingService = Framework.getService(ImagingService.class);
+            ImageInfo imageInfo = imagingService.getImageInfo(blob);
+
+            // calculate thumbnail size
+            float scale = Math.min(AbstractPictureAdapter.SMALL_SIZE / imageInfo.getWidth(),
+                    AbstractPictureAdapter.SMALL_SIZE / imageInfo.getHeight());
+
+            Blob thumbnail = imagingService.resize(blob, imageInfo.getFormat(),
+                    Math.round(imageInfo.getWidth() * scale), Math.round(imageInfo.getHeight() * scale),
+                    imageInfo.getDepth());
+            return new ThreeDRenderView(currentRV.getName(), blob, thumbnail, currentRV.getAzimuth(),
+                    currentRV.getZenith());
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

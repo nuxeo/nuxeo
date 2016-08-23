@@ -12,7 +12,6 @@
             <schema name="file"/>
             <schema name="files"/>
             <schema name="threed"/>
-            <schema name="picture"/>
         </facet>
 
         <doctype name="ThreeD" extends="Document">
