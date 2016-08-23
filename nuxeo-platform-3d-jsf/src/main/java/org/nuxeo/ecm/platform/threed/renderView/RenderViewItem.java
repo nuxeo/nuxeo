@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
+import java.util.Calendar;
+
 /**
  * Small DTO to precompute the thumbnail URLs for JSF
  *
@@ -40,18 +42,34 @@ public class RenderViewItem {
 
     protected final String blobPropertyName;
 
+    protected final String thumbnailPropertyName;
+
+    protected final String titlePropertyName;
+
     protected String filename;
+
+    protected String thumbFilename;
+
+    protected String title;
 
     public RenderViewItem(DocumentModel doc, String basePropertyPath, int position) {
         this.doc = doc;
         this.position = position;
         String propertyPath = basePropertyPath + "/" + position;
         blobPropertyName = propertyPath + "/content";
+        thumbnailPropertyName = propertyPath + "/thumbnail";
+        titlePropertyName = propertyPath + "/title";
         try {
             filename = ((Blob) doc.getPropertyValue(blobPropertyName)).getFilename();
+            thumbFilename = ((Blob) doc.getPropertyValue(blobPropertyName)).getFilename();
+            title = (String) doc.getPropertyValue(titlePropertyName);
         } catch (PropertyException e) {
             log.warn(e);
         }
+    }
+
+    public String getThumbnailUrl() {
+        return DocumentModelFunctions.bigFileUrl(doc, thumbnailPropertyName, thumbFilename);
     }
 
     public String getUrl() {

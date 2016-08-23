@@ -12,7 +12,10 @@
 
         <ui:repeat var="item" value="#{renderViewActions.getItems(fieldOrValue)}">
             <span class="threeDRenderViewItem">
-              <nxh:graphicImage url="#{item.url}"/>
+                <nxh:outputLink
+                        value="#{item.url}">
+                    <nxh:graphicImage url="#{item.thumbnailUrl}"/>
+                </nxh:outputLink>
             </span>
         </ui:repeat>
     </c:if>
