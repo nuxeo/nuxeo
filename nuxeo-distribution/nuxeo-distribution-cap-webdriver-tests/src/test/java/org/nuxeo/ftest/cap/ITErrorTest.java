@@ -33,7 +33,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import static org.junit.Assert.assertEquals;
@@ -58,23 +58,26 @@ public class ITErrorTest extends AbstractTest {
 
     @Test
     public void testErrorPathNotFound() throws Exception {
-        WebClient client = new WebClient();
-        client.setJavaScriptEnabled(false);
-        client.setThrowExceptionOnFailingStatusCode(false);
-        client.getPage(NUXEO_URL + "/logout");
-        client.getPage(NUXEO_URL + "/nxstartup.faces?user_name=Administrator&user_password=Administrator");
-        HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/nosuchdomain@view_documents");
-        assertEquals(HttpServletResponse.SC_NOT_FOUND, page.getWebResponse().getStatusCode()); // 404
-        assertEquals("An error occurred.", page.getTitleText());
-        assertEquals("An error occurred.", page.getElementsByTagName("h1").get(0).getTextContent());
-        client.getPage(NUXEO_URL + "/logout");
+        try (WebClient client = new WebClient()) {
+            WebClientOptions options = client.getOptions();
+            options.setJavaScriptEnabled(false);
+            options.setThrowExceptionOnFailingStatusCode(false);
+            client.getPage(NUXEO_URL + "/logout");
+            client.getPage(NUXEO_URL + "/nxstartup.faces?user_name=Administrator&user_password=Administrator");
+            HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/nosuchdomain@view_documents");
+            assertEquals(HttpServletResponse.SC_NOT_FOUND, page.getWebResponse().getStatusCode()); // 404
+            assertEquals("An error occurred.", page.getTitleText());
+            assertEquals("An error occurred.", page.getElementsByTagName("h1").get(0).getTextContent());
+            client.getPage(NUXEO_URL + "/logout");
+        }
     }
 
     @Test
     public void testErrorPermissionDenied() throws Exception {
-        WebClient client = new WebClient();
-        client.setJavaScriptEnabled(false);
-        client.setThrowExceptionOnFailingStatusCode(false);
+        try (WebClient client = new WebClient()) {
+            WebClientOptions options = client.getOptions();
+            options.setJavaScriptEnabled(false);
+            options.setThrowExceptionOnFailingStatusCode(false);
         getAllPage(client, NUXEO_URL + "/logout");
         getAllPage(client,
                 NUXEO_URL + "/nxstartup.faces?user_name=" + TEST_USERNAME + "&user_password=" + TEST_PASSWORD);
@@ -82,9 +85,10 @@ public class ITErrorTest extends AbstractTest {
         assertEquals(page.getWebResponse().getContentAsString(), HttpServletResponse.SC_FORBIDDEN,
                 page.getWebResponse().getStatusCode()); // 403
         assertEquals("Security Error", page.getTitleText());
-        HtmlElement h1 = page.getElementsByTagName("h1").get(0);
-        assertEquals("You don't have the necessary permission to do the requested action.", h1.getTextContent());
+            assertEquals("You don't have the necessary permission to do the requested action.",
+                    page.getElementsByTagName("h1").get(0).getTextContent());
         client.getPage(NUXEO_URL + "/logout");
+        }
     }
 
     /** Fully reads the stream of a page. */

@@ -75,11 +75,6 @@
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
     </dependency>
-    <dependency>
-      <!-- needed by htmlunit -->
-      <groupId>org.apache.james</groupId>
-      <artifactId>apache-mime4j</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

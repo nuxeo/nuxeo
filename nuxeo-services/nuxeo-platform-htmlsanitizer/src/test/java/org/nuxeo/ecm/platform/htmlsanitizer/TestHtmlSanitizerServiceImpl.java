@@ -54,7 +54,8 @@ public class TestHtmlSanitizerServiceImpl {
     // script tag is added here just to be sure sanitizer is not run
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
 
-    public static final String BAD_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src\"image\"/></video>";
+    public static final String BAD_HTML5 =
+            "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src=\"a wrong image location specification\"/></video>";
 
     public static final String SANITIZED_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\" /></video>";
 
