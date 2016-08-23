@@ -33,6 +33,7 @@ import java.io.IOException;
 
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TITLE;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 
 /**
  * 3D content thumbnail factory
@@ -46,8 +47,7 @@ public class ThumbnailThreeDFactory implements ThumbnailFactory {
         if (!documentModel.hasFacet(THREED_FACET)) {
             throw new NuxeoException("Document is not 3D");
         }
-        PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
-        Blob thumbnailBlob = picture.getPictureFromTitle(THUMBNAIL_PICTURE_TITLE);
+        Blob thumbnailBlob = (Blob) documentModel.getPropertyValue(RENDER_VIEWS_PROPERTY + "/0/thumbnail");
 
         if (thumbnailBlob == null) {
             // do default
