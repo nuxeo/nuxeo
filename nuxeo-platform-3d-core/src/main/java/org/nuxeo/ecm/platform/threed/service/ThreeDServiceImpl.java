@@ -202,7 +202,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         return automaticRenderViews.registry.values()
                                             .stream()
                                             .filter(AutomaticRenderView::isEnabled)
-                                            .map(AutomaticRenderView::getName)
+                                            .map(AutomaticRenderView::getId)
                                             .map(this::getRenderView)
                                             .collect(Collectors.toList());
     }
