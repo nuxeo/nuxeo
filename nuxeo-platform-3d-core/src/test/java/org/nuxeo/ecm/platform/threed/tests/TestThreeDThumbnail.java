@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
 import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
@@ -44,14 +43,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter.SMALL_SIZE;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TITLE;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 
 /**
  * Test 3D thumbnail
@@ -88,18 +88,10 @@ public class TestThreeDThumbnail {
 
     protected void updateThreeDDocument(DocumentModel doc, ThreeD threeD) throws IOException {
         Collection<Blob> results = threeDService.batchConvert(threeD);
-
-        ThreeDRenderView threeDRenderView = BatchConverterHelper.getRenders(results).get(0);
-        PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-        ArrayList<Map<String, Object>> thumbnailTemplates = new ArrayList<>();
-        Map<String, Object> thumbnailView = new LinkedHashMap<>();
-        thumbnailView.put("title", THUMBNAIL_PICTURE_TITLE);
-        thumbnailView.put("maxsize", (long) SMALL_SIZE);
-        thumbnailTemplates.add(thumbnailView);
-
-        picture.fillPictureViews(threeDRenderView.getContent(), threeDRenderView.getContent().getFilename(),
-                threeDRenderView.getTitle(), new ArrayList<>(thumbnailTemplates));
-
+        List<Map<String, Serializable>> renderViewList = new ArrayList<>();
+        List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(results);
+        renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
+        doc.setPropertyValue(RENDER_VIEWS_PROPERTY, (Serializable) renderViewList);
     }
 
     @Test
@@ -112,12 +104,9 @@ public class TestThreeDThumbnail {
         session.saveDocument(threed);
         session.save();
 
-        // Get picture thumbnail view
-        PictureResourceAdapter picture = threed.getAdapter(PictureResourceAdapter.class);
-        Blob pictureUsualThumbnail = picture.getPictureFromTitle(THUMBNAIL_PICTURE_TITLE);
-
         // Thumbnail service should return the default picture thumbnail
         ThumbnailAdapter pictureThumbnail = threed.getAdapter(ThumbnailAdapter.class);
+        Blob pictureUsualThumbnail = (Blob) threed.getPropertyValue(RENDER_VIEWS_PROPERTY + "/0/thumbnail");
         assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
     }
 }
