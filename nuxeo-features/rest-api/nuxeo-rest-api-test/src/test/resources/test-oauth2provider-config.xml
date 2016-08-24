@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="test-oauth2provider-config.xml">
+
+  <require>org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry</require>
+
+  <documentation>
+    Test OAuth2 provider configuration.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry" point="providers">
+    <provider>
+      <name>test-oauth2-provider</name>
+      <description>Test OAuth2 Provider</description>
+      <class>org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider</class>
+      <tokenServerURL>https://test.oauth2.provider/token</tokenServerURL>
+      <authorizationServerURL>https://test.oauth2.provider/authorization</authorizationServerURL>
+      <scope>https://test.oauth2.provider/scopes/scope0</scope>
+      <scope>https://test.oauth2.provider/scopes/scope1</scope>
+      <clientId>clientId</clientId>
+    </provider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry" point="providers">
+    <provider>
+      <name>test-oauth2-provider-2</name>
+      <description>Test OAuth2 Provider 2</description>
+      <class>org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider</class>
+      <tokenServerURL>https://test.oauth2.provider/token</tokenServerURL>
+      <authorizationServerURL>https://test.oauth2.provider/authorization</authorizationServerURL>
+      <scope>https://test.oauth2.provider/scopes/scope0</scope>
+      <scope>https://test.oauth2.provider/scopes/scope1</scope>
+      <clientId>clientId</clientId>
+    </provider>
+  </extension>
+
+</component>

@@ -85,6 +85,10 @@
         {
             "path": "/convertAdapter.{format}",
             "description": "Convert Blobs"
+        },
+        {
+            "path": "/oauth2.{format}",
+            "description": "Retrieve OAuth2 authentication data for the current user"
         }
     ],
     "authorizations": {
