@@ -70,7 +70,9 @@ scene.camera = camera_ob
 scene.render.resolution_x = int(width)
 scene.render.resolution_y = int(height)
 scene.render.resolution_percentage = 100
+scene.world.horizon_color = [1.0, 1.0, 1.0]
 # scene.render.alpha_mode = 'TRANSPARENT'
+
 bpy.context.scene.render.image_settings.color_mode = 'RGBA'
 print("""World settings:
 - Ambient color: %s
