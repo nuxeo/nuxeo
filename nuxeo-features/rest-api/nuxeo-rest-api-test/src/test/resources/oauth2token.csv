@@ -1,0 +1,2 @@
+serviceName,accessToken,refreshToken,nuxeoLogin,serviceLogin,clientId,isShared,sharedWith,expirationTimeMilliseconds
+"test-oauth2-provider","y38Hs3_sdas98l","kjds897.sda","Administrator","Administrator@email.com","clientId",false,null,33029035368000
