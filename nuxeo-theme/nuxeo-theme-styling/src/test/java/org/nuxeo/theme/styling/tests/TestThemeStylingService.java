@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,18 @@
  */
 package org.nuxeo.theme.styling.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
@@ -33,10 +37,6 @@ import org.nuxeo.theme.styling.service.descriptors.IconDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * @since 5.5
@@ -51,17 +51,16 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
     protected ThemeStylingService service;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.web.resources.core");
         deployBundle("org.nuxeo.theme.styling");
         deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config.xml");
         deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-addon-config.xml");
+    }
 
-        // force application start
-        fireFrameworkStarted();
-
+    @Override
+    protected void postSetUp() throws Exception {
         service = Framework.getService(ThemeStylingService.class);
         assertNotNull(service);
     }
@@ -169,7 +168,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
         // override conf, by adding additional nuxeo_dm_default2 css to the
         // page
-        deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config2.xml");
+        pushInlineDeployments("org.nuxeo.theme.styling.tests:theme-styling-test-config2.xml");
 
         assertEquals("default", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
@@ -189,9 +188,8 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("addon_style.css", globalBundle.getResources().get(0));
         assertEquals("jquery.addon.js", globalBundle.getResources().get(1));
 
-        // undeploy, check theme styling is back to first definition
-        undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config2.xml");
-
+        removeInlineDeployments();
+        postSetUp();
         checkOriginalTheme();
     }
 
@@ -200,7 +198,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         checkOriginalTheme();
 
         // override conf, by changing dark flavor colors and default flavor
-        deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config3.xml");
+        pushInlineDeployments("org.nuxeo.theme.styling.tests:theme-styling-test-config3.xml");
 
         assertEquals("dark", service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
 
@@ -297,8 +295,8 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("shortcut icon", icons.get(1).getName());
         assertEquals("/icons/dark_favicon.ico", icons.get(1).getValue());
 
-        // undeploy, check theme styling is back to first definition
-        undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config3.xml");
+        removeInlineDeployments();
+        postSetUp();
         checkOriginalTheme();
     }
 
@@ -307,7 +305,11 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         checkOriginalTheme();
 
         // undeploy => check web resources manage service status
+        ComponentManager mgr = getContext().getRuntime().getComponentManager();
+        mgr.stop();
         undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config.xml");
+        mgr.start();
+        postSetUp();
 
         assertNull(service.getDefaultFlavorName(DEFAULT_PAGE_NAME));
         assertNull(service.getFlavorNames(DEFAULT_PAGE_NAME));

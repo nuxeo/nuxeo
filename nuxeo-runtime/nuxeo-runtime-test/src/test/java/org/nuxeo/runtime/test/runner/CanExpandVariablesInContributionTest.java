@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@ package org.nuxeo.runtime.test.runner;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -39,23 +36,19 @@ public class CanExpandVariablesInContributionTest {
 
     RuntimeService runtime = Framework.getRuntime();
 
-    @Before
-    public void deployComponent() throws Exception {
+    @Test
+    public void variablesAreExpanded() throws Exception {
         RuntimeContext ctx = runtime.getContext();
         System.setProperty("nuxeo.test.domain", "test");
         Framework.getProperties().setProperty("nuxeo.test.contrib", "contrib");
         InlineRef contribRef = new InlineRef("test", "<component name=\"${nuxeo.test.domain}:${nuxeo.test.contrib}\"/>");
-        ctx.deploy(contribRef);
-    }
 
-    @Test
-    public void variablesAreExpanded() throws Exception {
+        ctx.deploy(contribRef);
+        // force components refresh since components are already started in @Before methods
+        runtime.getComponentManager().refresh(false);
+
         ComponentInstance component = runtime.getComponentInstance("test:contrib");
         assertThat("component is installed", component, notNullValue());
-    }
-
-    @After
-    public void tearDown() {
         System.clearProperty("nuxeo.test.domain");
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,14 +72,14 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
 
     @Test
     public void testCustomCleaner() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.query.api.test", "configuration-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.query.api.test:configuration-test-contrib.xml");
+
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
         String s = cs.getProperty(NXQLQueryBuilder.IGNORED_CHARS_KEY);
         assertEquals("&/{}()", s);
         assertNotNull(s);
         assertEquals("= 'a $ b'", NXQLQueryBuilder.serializeFullText("a $ b"));
         assertEquals("= '10.3'", NXQLQueryBuilder.serializeFullText("10.3"));
-        undeployContrib("org.nuxeo.ecm.platform.query.api.test", "configuration-test-contrib.xml");
     }
 
 }

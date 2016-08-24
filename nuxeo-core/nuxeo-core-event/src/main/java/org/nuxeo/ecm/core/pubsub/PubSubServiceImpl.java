@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.pubsub;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,7 +64,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (provider == null) {
             return;
         }
@@ -73,7 +72,7 @@ public class PubSubServiceImpl extends DefaultComponent implements PubSubService
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         if (provider == null) {
             return;
         }

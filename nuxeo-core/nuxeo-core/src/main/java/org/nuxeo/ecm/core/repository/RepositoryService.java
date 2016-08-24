@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.repository;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,21 +66,31 @@ public class RepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
-        TransactionHelper.runInTransaction(this::initRepositories);
+    public void start(ComponentContext context) {
+        initRepositories();
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         TransactionHelper.runInTransaction(this::shutdown);
     }
 
     /**
-     * Initializes all repositories. Run in a transaction.
+     * Start a tx and initialize repositories content. This method is publicly exposed since it is needed by tests to
+     * initialize repositories after cleanups (see CoreFeature).
      *
      * @since 8.4
      */
-    protected void initRepositories() {
+    public void initRepositories() {
+        TransactionHelper.runInTransaction(this::doInitRepositories);
+    }
+
+    /**
+     * Initializes all repositories. Requires an active transaction.
+     *
+     * @since 9.2
+     */
+    protected void doInitRepositories() {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String name : repositoryManager.getRepositoryNames()) {
             openRepository(name);
@@ -110,7 +119,6 @@ public class RepositoryService extends DefaultComponent {
 
             @Override
             public void run() {
-                ;
             }
 
         }.runUnrestricted();
@@ -130,10 +138,8 @@ public class RepositoryService extends DefaultComponent {
      * <p>
      * Null is returned if no repository with that name was registered.
      *
-     * @param repositoryName
-     *            the repository name
-     * @return the repository instance or null if no repository with that name
-     *         was registered
+     * @param repositoryName the repository name
+     * @return the repository instance or null if no repository with that name was registered
      */
     public Repository getRepository(String repositoryName) {
         synchronized (repositories) {
@@ -184,11 +190,9 @@ public class RepositoryService extends DefaultComponent {
     }
 
     /**
-     * Creates a new session with the given session id from the given
-     * repository.
+     * Creates a new session with the given session id from the given repository.
      * <p/>
-     * Locks repositories before entering the pool. That allows concurrency with
-     * shutdown.
+     * Locks repositories before entering the pool. That allows concurrency with shutdown.
      *
      * @since 7.2
      */

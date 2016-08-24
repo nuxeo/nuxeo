@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *     Tiry
  */
-
 package org.nuxeo.ecm.core.transientstore;
 
 import java.util.HashMap;
@@ -69,7 +68,8 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
         }
     }
 
-    public void doGC() {
+    @Override
+	public void doGC() {
         stores.values().forEach(TransientStore::doGC);
     }
 
@@ -92,7 +92,7 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         for (TransientStoreConfig config : configs.values()) {
             registerStore(config);
         }
@@ -107,6 +107,8 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     @Override
     public void deactivate(ComponentContext context) {
         stores.values().forEach(TransientStore::shutdown);
+        stores.clear();
+        configs.values().forEach(TransientStoreConfig::flush);
         super.deactivate(context);
     }
 

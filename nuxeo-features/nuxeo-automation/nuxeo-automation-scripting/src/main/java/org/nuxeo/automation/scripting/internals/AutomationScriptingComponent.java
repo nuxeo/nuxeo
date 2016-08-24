@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,12 +48,11 @@ public class AutomationScriptingComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         boolean inlinedContext = Framework.getService(ConfigurationService.class)
-                .isBooleanPropertyTrue("nuxeo.automation.scripting.inline-context-in-params");
+                                          .isBooleanPropertyTrue("nuxeo.automation.scripting.inline-context-in-params");
 
-        service.paramsInjector = AutomationScriptingParamsInjector
-                .newInstance(inlinedContext);
+        service.paramsInjector = AutomationScriptingParamsInjector.newInstance(inlinedContext);
     }
 
     @Override

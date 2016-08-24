@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ public class TestRedisWorkManager extends WorkManagerTest {
     }
 
     @Override
-    protected void doDeploy() throws Exception {
-        super.doDeploy();
-        RedisFeature.setup(this);
+    public void setUp() throws Exception {
+        super.setUp();
+        RedisFeature.setup(harness);
         if (monitorRedis) {
             redisExecutor = Framework.getLocalService(RedisExecutor.class);
             redisExecutor.startMonitor();

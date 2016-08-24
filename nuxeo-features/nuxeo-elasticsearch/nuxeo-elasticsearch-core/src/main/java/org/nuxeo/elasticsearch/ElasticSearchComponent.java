@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,12 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -82,8 +80,8 @@ import com.google.common.util.concurrent.MoreExecutors;
 /**
  * Component used to configure and manage ElasticSearch integration
  */
-public class ElasticSearchComponent extends DefaultComponent implements ElasticSearchAdmin, ElasticSearchIndexing,
-        ElasticSearchService {
+public class ElasticSearchComponent extends DefaultComponent
+        implements ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
 
     private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
 
@@ -191,7 +189,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (!isElasticsearchEnabled()) {
             log.info("Elasticsearch service is disabled");
             return;
@@ -205,7 +203,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         try {
             shutdownListenerThreadPool();
         } finally {
@@ -243,7 +241,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     protected boolean isElasticsearchEnabled() {
         return Boolean.parseBoolean(Framework.getProperty(ES_ENABLED_PROPERTY, "true"));
     }
-
 
     @Override
     public int getApplicationStartedOrder() {
@@ -341,20 +338,18 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public ListenableFuture<Boolean> prepareWaitForIndexing() {
-        return waiterExecutorService.submit(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                WorkManager wm = Framework.getLocalService(WorkManager.class);
-                boolean completed = false;
-                do {
-                    completed = wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
-                } while (!completed);
-                return true;
-            }
+        return waiterExecutorService.submit(() -> {
+            WorkManager wm = Framework.getLocalService(WorkManager.class);
+            boolean completed = false;
+            do {
+                completed = wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
+            } while (!completed);
+            return true;
         });
     }
 
     private static class NamedThreadFactory implements ThreadFactory {
+        @SuppressWarnings("NullableProblems")
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r, "waitForEsIndexing");

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo
  */
-
 package org.nuxeo.ecm.platform.publisher.test;
 
 import static org.junit.Assert.assertEquals;
@@ -48,8 +47,7 @@ import org.nuxeo.ecm.platform.publisher.impl.finder.AbstractRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.impl.finder.DefaultRootSectionsFinder;
 import org.nuxeo.ecm.platform.publisher.test.TestServiceRootFinder.Populate;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -59,6 +57,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-content-template-contrib.xml")
 @RepositoryConfig(init = Populate.class)
 public class TestServiceRootFinder extends PublisherTestCase {
+
+    @Inject
+    HotDeployer deployer;
 
     @Inject
     PublisherService service;
@@ -245,13 +246,8 @@ public class TestServiceRootFinder extends PublisherTestCase {
 
         assertTrue(finder instanceof DefaultRootSectionsFinder);
 
-        RegistrationInfo info = new DefaultRuntimeContext().deploy("OSGI-INF/publisher-finder-contrib-test.xml");
-        try {
-            finder = service.getRootSectionFinder(session);
-        } finally {
-            info.getManager().unregister(info);
-        }
-
+        deployer.deploy("org.nuxeo.ecm.platform.publisher.core:OSGI-INF/publisher-finder-contrib-test.xml");
+        finder = service.getRootSectionFinder(session);
         assertTrue(finder instanceof SampleRootSectionFinder);
 
     }

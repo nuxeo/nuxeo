@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,10 +46,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
@@ -67,9 +67,6 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Features({ TransientStoreFeature.class, EmbeddedAutomationServerFeature.class })
 @Jetty(port = 18080)
 public class TestBatchResource {
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected CoreSession session;
@@ -101,14 +98,11 @@ public class TestBatchResource {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.automation.test.test:test-batchmanager-client-generated-id-allowed-contrib.xml")
     public void testBatchUploadClientGeneratedIdAllowed() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.automation.test.test",
-                "test-batchmanager-client-generated-id-allowed-contrib.xml");
         String batchId = UUID.randomUUID().toString();
         String responseBatchId = batchUpload(uploadURL, batchId, fileIndex, fileName, mimeType, content);
         assertEquals(batchId, responseBatchId);
-        harness.undeployContrib("org.nuxeo.ecm.automation.test.test",
-                "test-batchmanager-client-generated-id-allowed-contrib.xml");
     }
 
     @Test

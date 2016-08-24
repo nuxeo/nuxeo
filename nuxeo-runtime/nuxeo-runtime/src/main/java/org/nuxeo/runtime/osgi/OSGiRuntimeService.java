@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     private final BundleContext bundleContext;
 
     private final Map<String, RuntimeContext> contexts;
+
+    private boolean appStarted = false;
 
     /**
      * OSGi doesn't provide a method to lookup bundles by symbolic name. This table is used to map symbolic names to
@@ -189,19 +191,15 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     @Override
     protected void doStart() {
-        super.doStart();
         bundleContext.addFrameworkListener(this);
         loadComponents(bundleContext.getBundle(), context);
     }
 
     @Override
     protected void doStop() {
+        // do not destroy context since component manager is already shutdown
         bundleContext.removeFrameworkListener(this);
-        try {
-            super.doStop();
-        } finally {
-            context.destroy();
-        }
+        super.doStop();
     }
 
     protected void loadComponents(Bundle bundle, RuntimeContext ctx) {
@@ -441,13 +439,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         }.processText(expression);
     }
 
-
-    /* --------------- FrameworkListener API ------------------ */
-
-    @Override
-    public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() != FrameworkEvent.STARTED) {
-            return;
+    protected void startComponents() {
+        synchronized (this) {
+            if (appStarted) {
+                return;
+            }
+            appStarted = true;
         }
         try {
             persistence.loadPersistedComponents();
@@ -459,8 +456,23 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         // requirement
         // on this marker component
         deployFrameworkStartedComponent();
-        resume();
+        // ============ activate and start components =======
+        manager.start();
+        // create a snapshot of the started components - TODO should this be optional?
+        manager.snapshot();
+        // ==================================================
+        // print the startup message
         printStatusMessage();
+    }
+
+    /* --------------- FrameworkListener API ------------------ */
+
+    @Override
+    public void frameworkEvent(FrameworkEvent event) {
+        if (event.getType() != FrameworkEvent.STARTED) {
+            return;
+        }
+        startComponents();
     }
 
     private void printStatusMessage() {

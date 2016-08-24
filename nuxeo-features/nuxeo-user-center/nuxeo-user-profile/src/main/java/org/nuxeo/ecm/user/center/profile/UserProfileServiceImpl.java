@@ -185,7 +185,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (config == null || config.getDataFileName() == null) {
             return;
         }

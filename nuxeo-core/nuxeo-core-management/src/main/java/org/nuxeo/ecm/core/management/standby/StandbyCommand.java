@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Contributors:
+ *     Stephane Lacoin
  */
 package org.nuxeo.ecm.core.management.standby;
 
-import java.time.Duration;
-import java.time.Instant;
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
+import org.nuxeo.runtime.model.ComponentManager;
 
-public class StandbyCommand  implements StandbyMXBean {
-
+public class StandbyCommand implements StandbyMXBean {
     @Override
     public void standby(int delay) throws InterruptedException {
-        if (Framework.getRuntime().isStandby()) {
+        ComponentManager mgr = Framework.getRuntime().getComponentManager();
+        if (mgr.isStandby()) {
             return;
         }
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
         try {
-            Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(delay)));
+            mgr.standby(delay);
         } finally {
             Thread.currentThread().setContextClassLoader(loader);
         }
@@ -42,13 +44,14 @@ public class StandbyCommand  implements StandbyMXBean {
 
     @Override
     public void resume() {
-        if (!Framework.getRuntime().isStandby()) {
+        ComponentManager mgr = Framework.getRuntime().getComponentManager();
+        if (!mgr.isStandby()) {
             return;
         }
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
         try {
-            Framework.getRuntime().resume();
+            mgr.resume();
         } finally {
             Thread.currentThread().setContextClassLoader(loader);
         }
@@ -56,7 +59,7 @@ public class StandbyCommand  implements StandbyMXBean {
 
     @Override
     public boolean isStandby() {
-        return Framework.getRuntime().isStandby();
+        return Framework.getRuntime().getComponentManager().isStandby();
     }
 
     protected final Registration registration = new Registration();

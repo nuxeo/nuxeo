@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.redis;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.time.Instant;
 import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
@@ -74,7 +73,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         public void clear() {
             config = null;
         }
-    };
+    }
 
     protected String delsha;
 
@@ -114,7 +113,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         RedisPoolDescriptor config = getConfig();
         if (config == null || config.disabled) {
             return;
@@ -123,7 +122,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         if (executor == null) {
             return;
         }
@@ -136,7 +135,10 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent) Framework.getRuntime().getComponentInstance("org.nuxeo.ecm.core.work.service").getInstance()).getApplicationStartedOrder() - 1;
+        return ((DefaultComponent) Framework.getRuntime()
+                                            .getComponentInstance("org.nuxeo.ecm.core.work.service")
+                                            .getInstance()).getApplicationStartedOrder()
+                - 1;
     }
 
     public void handleNewExecutor(RedisExecutor executor) {
@@ -161,7 +163,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         if (loc == null) {
             throw new RuntimeException("Fail to load lua script: " + scriptName);
         }
-        InputStream is = null;
+        InputStream is;
         final StrBuilder builder;
         try {
             is = loc.openStream();

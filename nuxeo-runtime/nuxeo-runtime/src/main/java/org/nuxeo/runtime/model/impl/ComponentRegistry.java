@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +33,8 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
+ * This class is synchronized to safely update and access the different maps managed by the registry
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ComponentRegistry {
@@ -42,6 +46,14 @@ public class ComponentRegistry {
      * unresolved ones.
      */
     protected Map<ComponentName, RegistrationInfoImpl> components;
+
+    /**
+     * The list of resolved components. We need to use a linked hash map preserve the resolve order. We don't use a
+     * simple list to optimize removal by name (used by unregister operations).
+     *
+     * @since 9.2
+     */
+    protected LinkedHashMap<ComponentName, RegistrationInfoImpl> resolved;
 
     /** Map of aliased name to canonical name. */
     protected Map<ComponentName, ComponentName> aliases;
@@ -57,26 +69,42 @@ public class ComponentRegistry {
      */
     protected MappedSet pendings;
 
+    /**
+     * Map deployment source ids to component names This was previously managed by DefaultRuntimeContext - but is no
+     * more usable in the original form. This map is only useful for unregister by location - which is used by some
+     * tests. Remove this if the unregister API will be removed.
+     *
+     * @since 9.2
+     */
+    protected Map<String, ComponentName> deployedFiles;
+
     public ComponentRegistry() {
-        components = new HashMap<ComponentName, RegistrationInfoImpl>();
-        aliases = new HashMap<ComponentName, ComponentName>();
+        components = new HashMap<>();
+        aliases = new HashMap<>();
         requirements = new MappedSet();
         pendings = new MappedSet();
+        resolved = new LinkedHashMap<>();
+        deployedFiles = new HashMap<>();
     }
 
-    public void destroy() {
+    public ComponentRegistry(ComponentRegistry reg) {
+        components = new HashMap<>(reg.components);
+        aliases = new HashMap<>(reg.aliases);
+        requirements = new MappedSet(reg.requirements);
+        pendings = new MappedSet(reg.pendings);
+        resolved = new LinkedHashMap<>(reg.resolved);
+        deployedFiles = new HashMap<>(reg.deployedFiles);
+    }
+
+    public synchronized void destroy() {
         components = null;
         aliases = null;
         requirements = null;
         pendings = null;
+        deployedFiles = null;
     }
 
-    protected ComponentName unaliased(ComponentName name) {
-        ComponentName alias = aliases.get(name);
-        return alias == null ? name : alias;
-    }
-
-    public final boolean isResolved(ComponentName name) {
+    public synchronized final boolean isResolved(ComponentName name) {
         RegistrationInfo ri = components.get(unaliased(name));
         if (ri == null) {
             return false;
@@ -85,11 +113,124 @@ public class ComponentRegistry {
     }
 
     /**
+     * @return true if the component was resolved, false if the component is pending
+     */
+    public synchronized boolean addComponent(RegistrationInfoImpl ri) {
+        ComponentName name = ri.getName();
+        Set<ComponentName> al = ri.getAliases();
+        String aliasInfo = al.isEmpty() ? "" : ", aliases=" + al;
+        log.info("Registering component: " + name + aliasInfo);
+        ri.register();
+        // map the source id with the component name - see ComponentManager.unregisterByLocation
+        if (ri.sourceId != null) {
+            deployedFiles.put(ri.sourceId, ri.getName());
+        }
+        components.put(name, ri);
+        for (ComponentName n : al) {
+            aliases.put(n, name);
+        }
+        boolean hasUnresolvedDependencies = computePendings(ri);
+        if (!hasUnresolvedDependencies) {
+            resolveComponent(ri);
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized RegistrationInfoImpl removeComponent(ComponentName name) {
+        RegistrationInfoImpl ri = components.remove(name);
+        if (ri != null) {
+            try {
+                unresolveComponent(ri);
+            } finally {
+                ri.unregister();
+            }
+        }
+        return ri;
+    }
+
+    /**
+     * @return an unmodifiable map of resolved registration info by component name, sorted by {@link LinkedHashMap}.
+     * @since 9.2
+     */
+    public synchronized Map<ComponentName, RegistrationInfoImpl> getResolvedMap() {
+        return Collections.unmodifiableMap(resolved);
+    }
+
+    /**
+     * @return an unmodifiable collection of resolved registration infos, sorted by {@link LinkedHashMap}
+     * @since 9.2
+     */
+    public synchronized Collection<RegistrationInfoImpl> getResolvedRegistrationInfo() {
+        return Collections.unmodifiableCollection(resolved.values());
+    }
+
+    /**
+     * @return an unmodifiable collection of resolved component names, sorted by {@link LinkedHashMap}
+     * @since 9.2
+     */
+    public synchronized Collection<ComponentName> getResolvedNames() {
+        return Collections.unmodifiableCollection(resolved.keySet());
+    }
+
+    /**
+     * @return an unmodifiable collection of missing dependencies
+     * @since 9.2
+     */
+    public synchronized Set<ComponentName> getMissingDependencies(ComponentName name) {
+        return Collections.unmodifiableSet(pendings.get(name));
+    }
+
+    /**
+     * Get the registration info for the given component name or null if none was registered.
+     */
+    public synchronized RegistrationInfoImpl getComponent(ComponentName name) {
+        return components.get(unaliased(name));
+    }
+
+    /**
+     * Check if the component is already registered against this registry
+     */
+    public synchronized boolean contains(ComponentName name) {
+        return components.containsKey(unaliased(name));
+    }
+
+    /**
+     * Get the registered components count
+     */
+    public synchronized int size() {
+        return components.size();
+    }
+
+    /**
+     * @return an unmodifiable collection of registered components
+     */
+    public synchronized Collection<RegistrationInfo> getComponents() {
+        return Collections.unmodifiableCollection(components.values());
+    }
+
+    /**
+     * Get a copy of the registered components as an array.
+     */
+    public synchronized RegistrationInfoImpl[] getComponentsArray() {
+        return components.values().toArray(new RegistrationInfoImpl[components.size()]);
+    }
+
+    /**
+     * @return an unmodifiable map of pending components
+     */
+    public synchronized Map<ComponentName, Set<ComponentName>> getPendingComponents() {
+        return Collections.unmodifiableMap(pendings.map);
+    }
+
+    protected ComponentName unaliased(ComponentName name) {
+        ComponentName alias = aliases.get(name);
+        return alias == null ? name : alias;
+    }
+
+    /**
      * Fill the pending map with all unresolved dependencies of the given component. Returns false if no unresolved
      * dependencies are found, otherwise returns true.
-     *
-     * @param ri
-     * @return
      */
     protected final boolean computePendings(RegistrationInfo ri) {
         Set<ComponentName> set = ri.getRequiredComponents();
@@ -108,78 +249,18 @@ public class ComponentRegistry {
         return hasUnresolvedDependencies;
     }
 
-    /**
-     * @param ri
-     * @return true if the component was resolved, false if the component is pending
-     */
-    public boolean addComponent(RegistrationInfoImpl ri) {
-        ComponentName name = ri.getName();
-        Set<ComponentName> al = ri.getAliases();
-        String aliasInfo = al.isEmpty() ? "" : ", aliases=" + al;
-        log.info("Registering component: " + name + aliasInfo);
-        ri.register();
-        components.put(name, ri);
-        for (ComponentName n : al) {
-            aliases.put(n, name);
-        }
-        boolean hasUnresolvedDependencies = computePendings(ri);
-        if (!hasUnresolvedDependencies) {
-            resolveComponent(ri);
-            return true;
-        }
-        return false;
-    }
-
-    public RegistrationInfoImpl removeComponent(ComponentName name) {
-        RegistrationInfoImpl ri = components.remove(name);
-        if (ri != null) {
-            try {
-                unresolveComponent(ri);
-            } finally {
-                ri.unregister();
-            }
-        }
-        return ri;
-    }
-
-    public Set<ComponentName> getMissingDependencies(ComponentName name) {
-        return pendings.get(name);
-    }
-
-    public RegistrationInfoImpl getComponent(ComponentName name) {
-        return components.get(unaliased(name));
-    }
-
-    public boolean contains(ComponentName name) {
-        return components.containsKey(unaliased(name));
-    }
-
-    public int size() {
-        return components.size();
-    }
-
-    public Collection<RegistrationInfoImpl> getComponents() {
-        return components.values();
-    }
-
-    public RegistrationInfoImpl[] getComponentsArray() {
-        return components.values().toArray(new RegistrationInfoImpl[components.size()]);
-    }
-
-    public Map<ComponentName, Set<ComponentName>> getPendingComponents() {
-        return pendings.map;
-    }
-
     protected void resolveComponent(RegistrationInfoImpl ri) {
         ComponentName riName = ri.getName();
-        Set<ComponentName> names = new HashSet<ComponentName>();
+        Set<ComponentName> names = new HashSet<>();
         names.add(riName);
         names.addAll(ri.getAliases());
 
         ri.resolve();
+        resolved.put(ri.getName(), ri); // track resolved components
+
         // try to resolve pending components that are waiting the newly
         // resolved component
-        Set<ComponentName> dependsOnMe = new HashSet<ComponentName>();
+        Set<ComponentName> dependsOnMe = new HashSet<>();
         for (ComponentName n : names) {
             Set<ComponentName> reqs = requirements.get(n);
             if (reqs != null) {
@@ -205,6 +286,7 @@ public class ComponentRegistry {
         Set<ComponentName> reqs = ri.getRequiredComponents();
         ComponentName name = ri.getName();
         ri.unresolve();
+        resolved.remove(name);
         pendings.remove(name);
         if (reqs != null) {
             for (ComponentName req : reqs) {
@@ -222,11 +304,25 @@ public class ComponentRegistry {
         }
     }
 
-    static class MappedSet {
+    protected static class MappedSet {
+
         protected Map<ComponentName, Set<ComponentName>> map;
 
         public MappedSet() {
-            map = new HashMap<ComponentName, Set<ComponentName>>();
+            map = new HashMap<>();
+        }
+
+        /**
+         * Create a clone of a mapped set (set values are cloned too)
+         */
+        public MappedSet(MappedSet mset) {
+            this();
+            for (Map.Entry<ComponentName, Set<ComponentName>> entry : mset.map.entrySet()) {
+                ComponentName name = entry.getKey();
+                Set<ComponentName> set = entry.getValue();
+                Set<ComponentName> newSet = new HashSet<>(set);
+                map.put(name, newSet);
+            }
         }
 
         public Set<ComponentName> get(ComponentName name) {
@@ -236,7 +332,7 @@ public class ComponentRegistry {
         public Set<ComponentName> put(ComponentName key, ComponentName value) {
             Set<ComponentName> set = map.get(key);
             if (set == null) {
-                set = new HashSet<ComponentName>();
+                set = new HashSet<>();
                 map.put(key, set);
             }
             set.add(value);

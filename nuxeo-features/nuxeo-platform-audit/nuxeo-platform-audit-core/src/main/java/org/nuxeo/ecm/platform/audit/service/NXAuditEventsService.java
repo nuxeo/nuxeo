@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.audit.service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,15 +66,15 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
-    protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
+    protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<>();
 
-    protected final Map<String, List<ExtendedInfoDescriptor>> eventExtendedInfoDescriptors = new HashMap<String, List<ExtendedInfoDescriptor>>();
+    protected final Map<String, List<ExtendedInfoDescriptor>> eventExtendedInfoDescriptors = new HashMap<>();
 
     // the adapters that will injected in the EL context for extended
     // information
-    protected final Set<AdapterDescriptor> documentAdapters = new HashSet<AdapterDescriptor>();
+    protected final Set<AdapterDescriptor> documentAdapters = new HashSet<>();
 
-    protected final Set<String> eventNames = new HashSet<String>();
+    protected final Set<String> eventNames = new HashSet<>();
 
     protected AuditBackend backend;
 
@@ -94,7 +90,7 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         backend = backendConfig.newInstance(this);
         backend.onApplicationStarted();
         bulker = bulkerConfig.newInstance(backend);
@@ -102,7 +98,7 @@ public class NXAuditEventsService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         try {
             bulker.onApplicationStopped();
         } finally {
@@ -130,7 +126,7 @@ public class NXAuditEventsService extends DefaultComponent {
                     if (eventExtendedInfoDescriptors.containsKey(eventName)) {
                         eventExtendedInfoDescriptors.get(eventName).add(extInfoDesc);
                     } else {
-                        List<ExtendedInfoDescriptor> toBeAdded = new ArrayList<ExtendedInfoDescriptor>();
+                        List<ExtendedInfoDescriptor> toBeAdded = new ArrayList<>();
                         toBeAdded.add(extInfoDesc);
                         eventExtendedInfoDescriptors.put(eventName, toBeAdded);
                     }

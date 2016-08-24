@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 
 import javax.faces.context.FacesContext;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
@@ -44,15 +43,17 @@ public class TestActionFilter extends NXRuntimeTestCase {
 
     protected MockFacesContext facesContext;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
         deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-filters-contrib.xml");
         deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-filters-override-contrib.xml");
-        as = (ActionService) runtime.getComponent(ActionService.ID);
+    }
 
+    @Override
+    protected void postSetUp() throws Exception {
+        as = (ActionService) runtime.getComponent(ActionService.ID);
         facesContext = new MockFacesContext();
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
@@ -244,7 +245,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
 
     @Test
     public void testGetAction() throws Exception {
-        deployContrib("org.nuxeo.ecm.actions.jsf.tests", "test-actions-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.actions.jsf.tests:test-actions-contrib.xml");
 
         DocumentModel doc = new MockDocumentModel("Workspace", new String[0]);
         Action action = as.getAction("singleActionRetrievedWithFilter", getActionContext(doc), true);

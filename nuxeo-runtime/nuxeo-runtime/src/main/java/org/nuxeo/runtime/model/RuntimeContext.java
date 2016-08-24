@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.runtime.model;
 
 import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
@@ -32,11 +30,12 @@ import org.osgi.framework.Bundle;
  * <p>
  * Runtime contexts are used to create components. They provides custom methods to load classes and find resources.
  * <p>
- * Runtime contexts are generally attached to a bundle context (or module deployment context)
+ * Runtime contexts are generally attached to a bundle context (or module deployment context) Note that all undeploy
+ * methods are deprectaed! see {@link DefaultRuntimeContext} for more information
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface RuntimeContext extends AutoCloseable {
+public interface RuntimeContext {
 
     /**
      * Gets the current runtime service.
@@ -49,6 +48,14 @@ public interface RuntimeContext extends AutoCloseable {
      * Gets the container bundle or null if we are not running in an OSGi environment.
      */
     Bundle getBundle();
+
+    /**
+     * Get the component names deployed by this context
+     *
+     * @return the list of components. Return an empty array if no components where deployed.
+     * @since 9.2
+     */
+    ComponentName[] getComponents();
 
     /**
      * Loads the class given its name.
@@ -94,9 +101,6 @@ public interface RuntimeContext extends AutoCloseable {
 
     /**
      * Same as {@link #deploy(URL)} but using a {@link StreamRef} as argument.
-     *
-     * @param ref
-     * @return
      */
     RegistrationInfo deploy(StreamRef ref) throws IOException;
 
@@ -111,8 +115,6 @@ public interface RuntimeContext extends AutoCloseable {
 
     /**
      * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream reference.
-     *
-     * @param ref
      */
     void undeploy(StreamRef ref) throws IOException;
 
@@ -126,9 +128,6 @@ public interface RuntimeContext extends AutoCloseable {
 
     /**
      * Checks whether the component XML file given by the StreamRef argument was deployed.
-     *
-     * @param ref
-     * @return
      */
     boolean isDeployed(StreamRef ref);
 
@@ -168,15 +167,5 @@ public interface RuntimeContext extends AutoCloseable {
      * Destroys this context.
      */
     void destroy();
-
-    /**
-     * Destroys the context on close.
-     *
-     * @since 8.1
-     */
-    @Override
-    default void close() {
-        destroy();
-    }
 
 }

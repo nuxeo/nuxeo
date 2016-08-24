@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 import com.google.inject.Inject;
 
@@ -44,7 +44,7 @@ public abstract class AbstractUserProfileImporterTest {
     protected CoreFeature coreFeature;
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected CoreSession session;
@@ -75,8 +75,7 @@ public abstract class AbstractUserProfileImporterTest {
         return coreFeature.openCoreSession(principal);
     }
 
-    protected NuxeoPrincipal createUser(String username, String tenant)
-            {
+    protected NuxeoPrincipal createUser(String username, String tenant) {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);

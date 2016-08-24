@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 import org.nuxeo.runtime.test.TargetResourceLocator;
-import org.nuxeo.runtime.test.runner.FeaturesLoader.Callable;
 import org.nuxeo.runtime.test.runner.FeaturesLoader.Direction;
-import org.nuxeo.runtime.test.runner.FeaturesLoader.Holder;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -85,6 +83,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return super.getTestClass().getJavaClass();
     }
 
+    /**
+     * May return null if the test class was not yet instantiated
+     */
+    public Object getTargetTestInstance() {
+        return underTest;
+    }
+
     public Path getTargetTestBasepath() {
         return locator.getBasepath();
     }
@@ -106,13 +111,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         if (annotation != null) {
             configs.add(annotation);
         }
-        loader.apply(Direction.BACKWARD, new Callable() {
-            @Override
-            public void call(Holder holder) throws Exception {
-                T hAnnotation = scanner.getAnnotation(holder.type, type);
-                if (hAnnotation != null) {
-                    configs.add(hAnnotation);
-                }
+        loader.apply(Direction.BACKWARD, holder -> {
+            T hAnnotation = scanner.getAnnotation(holder.type, type);
+            if (hAnnotation != null) {
+                configs.add(hAnnotation);
             }
         });
         return Defaults.of(type, configs);
@@ -150,88 +152,36 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void beforeRun() throws Exception {
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.beforeRun(FeaturesRunner.this);
-            }
-        });
+        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeRun(FeaturesRunner.this));
     }
 
     protected void beforeMethodRun(final FrameworkMethod method, final Object test) throws Exception {
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.beforeMethodRun(FeaturesRunner.this, method, test);
-            }
-        });
+        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeMethodRun(FeaturesRunner.this, method, test));
     }
 
     protected void afterMethodRun(final FrameworkMethod method, final Object test) throws Exception {
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.afterMethodRun(FeaturesRunner.this, method, test);
-            }
-        });
+        loader.apply(Direction.FORWARD, holder -> holder.feature.afterMethodRun(FeaturesRunner.this, method, test));
     }
 
     protected void afterRun() throws Exception {
-        loader.apply(Direction.BACKWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.afterRun(FeaturesRunner.this);
-            }
-        });
+        loader.apply(Direction.BACKWARD, holder -> holder.feature.afterRun(FeaturesRunner.this));
     }
 
     protected void start() throws Exception {
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.start(FeaturesRunner.this);
-            }
-        });
+        loader.apply(Direction.FORWARD, holder -> holder.feature.start(FeaturesRunner.this));
     }
 
     protected void stop() throws Exception {
-        loader.apply(Direction.BACKWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.stop(FeaturesRunner.this);
-            }
-        });
+        loader.apply(Direction.BACKWARD, holder -> holder.feature.stop(FeaturesRunner.this));
     }
 
     protected void beforeSetup() throws Exception {
-
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.beforeSetup(FeaturesRunner.this);
-            }
-
-        });
-
+        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeSetup(FeaturesRunner.this));
         injector.injectMembers(underTest);
     }
 
     protected void afterTeardown() {
-        loader.apply(Direction.BACKWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.afterTeardown(FeaturesRunner.this);
-            }
-
-        });
+        loader.apply(Direction.BACKWARD, holder -> holder.feature.afterTeardown(FeaturesRunner.this));
     }
 
     public Injector getInjector() {
@@ -309,19 +259,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected List<TestRule> classRules() {
         final RulesFactory<ClassRule, TestRule> factory = new RulesFactory<>(ClassRule.class, TestRule.class);
 
-        factory.withRule(new TestRule() {
-            @Override
-            public Statement apply(Statement base, Description description) {
-                return new BeforeClassStatement(base);
-            }
-        }).withRules(super.classRules());
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                factory.withRules(holder.testClass, null);
-            }
-        });
+        factory.withRule((base, description) -> new BeforeClassStatement(base)).withRules(super.classRules());
+        loader.apply(Direction.FORWARD, holder -> factory.withRules(holder.testClass, null));
 
         return factory.build();
     }
@@ -429,14 +368,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     protected List<TestRule> getTestRules(Object target) {
         final RulesFactory<Rule, TestRule> factory = new RulesFactory<>(Rule.class, TestRule.class);
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                factory.withRules(holder.testClass, holder.feature);
-            }
-
-        });
+        loader.apply(Direction.FORWARD, holder -> factory.withRules(holder.testClass, holder.feature));
         factory.withRules(getTestClass(), target);
         return factory.build();
     }
@@ -444,30 +376,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     protected List<MethodRule> rules(Object target) {
         final RulesFactory<Rule, MethodRule> factory = new RulesFactory<>(Rule.class, MethodRule.class);
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                factory.withRules(holder.testClass, holder.feature);
-            }
-
-        });
+        loader.apply(Direction.FORWARD, holder -> factory.withRules(holder.testClass, holder.feature));
         factory.withRules(getTestClass(), target);
         return factory.build();
-    }
-
-    @Override
-    protected Statement methodInvoker(FrameworkMethod method, Object test) {
-        final Statement actual = super.methodInvoker(method, test);
-        return new Statement() {
-
-            @Override
-            public void evaluate() throws Throwable {
-                injector.injectMembers(underTest);
-                actual.evaluate();
-            }
-
-        };
     }
 
     protected Object underTest;
@@ -475,14 +386,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() throws Exception {
         underTest = super.createTest();
-        loader.apply(Direction.FORWARD, new Callable() {
-
-            @Override
-            public void call(Holder holder) throws Exception {
-                holder.feature.testCreated(underTest);
-            }
-
-        });
+        loader.apply(Direction.FORWARD, holder -> holder.feature.testCreated(underTest));
         // TODO replace underTest member with a binding
         // Class<?> testType = underTest.getClass();
         // injector.getInstance(Binder.class).bind(testType)

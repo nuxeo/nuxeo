@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.runtime;
 
 /**
@@ -45,14 +42,6 @@ public class RuntimeServiceEvent {
     public static final int RUNTIME_ABOUT_TO_STOP = 2;
 
     public static final int RUNTIME_STOPPED = 3;
-
-    public static final int RUNTIME_ABOUT_TO_RESUME = 4;
-
-    public static final int RUNTIME_RESUMED = 5;
-
-    public static final int RUNTIME_ABOUT_TO_STANDBY = 6;
-
-    public static final int RUNTIME_IS_STANDBY = 7;
 
     /** The event id. */
     public final int id;

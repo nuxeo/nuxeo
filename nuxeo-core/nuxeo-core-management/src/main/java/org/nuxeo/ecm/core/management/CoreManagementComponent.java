@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
  *     matic
  */
 package org.nuxeo.ecm.core.management;
-
-import java.time.Instant;
 
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
@@ -69,7 +67,8 @@ public class CoreManagementComponent extends DefaultComponent {
     }
 
     public AdministrativeStatusManagerImpl getLocalManager() {
-        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(globalManager.getLocalNuxeoInstanceIdentifier());
+        return (AdministrativeStatusManagerImpl) globalManager.getStatusManager(
+                globalManager.getLocalNuxeoInstanceIdentifier());
     }
 
     @Override
@@ -130,7 +129,7 @@ public class CoreManagementComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         getLocalManager().onNuxeoServerShutdown();
     }
 

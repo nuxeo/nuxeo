@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 
 /**
  * Blocks incoming requests when runtime is in standby mode.
@@ -44,18 +43,19 @@ public class NuxeoStandbyFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         controller = new Controller();
-        Framework.addListener(new RuntimeServiceListener() {
+        new ComponentManager.LifeCycleHandler() {
 
             @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id == RuntimeServiceEvent.RUNTIME_ABOUT_TO_STANDBY) {
-                    controller.onStandby();
-                } else if (event.id == RuntimeServiceEvent.RUNTIME_RESUMED) {
-                    controller.onResumed();
-                }
+            public void beforeStop(ComponentManager mgr, boolean isStandby) {
+                controller.onStandby();
             }
 
-        });
+            @Override
+            public void afterStart(ComponentManager mgr, boolean isResume) {
+                controller.onResumed();
+            }
+
+        }.install();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class NuxeoStandbyFilter implements Filter {
 
         protected final Condition canProceed = lock.newCondition();
 
-        protected volatile boolean isStandby = Framework.getRuntime().isStandby();
+        protected volatile boolean isStandby = !Framework.getRuntime().getComponentManager().isStarted();
 
         protected volatile int inprogress = 0;
 

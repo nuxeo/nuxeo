@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,27 @@
  *
  * Contributors:
  *     Alexandre Russel
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.mail.service;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.Address;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
-import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MessageAction;
@@ -66,20 +63,18 @@ public class TestMailService extends NXRuntimeTestCase {
 
     MailService mailService;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        // Server.start();
-        super.setUp();
         deployBundle("org.nuxeo.ecm.webapp.base");
         // deployBundle("org.nuxeo.ecm.platform.mail");
         // deployBundle("org.nuxeo.ecm.platform.mail.test");
         // mailService = Framework.getService(MailService.class);
         // internetAddress = new InternetAddress("alex@localhost");
+
     }
 
-    @After
+    @Override
     public void tearDown() throws Exception {
-        super.tearDown();
         Server.shutdown();
     }
 
@@ -121,7 +116,7 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals("foo", message.getSubject());
         rootFolder.close(true);
         store.close();
-        Map<String, Object> variablesMap = new HashMap<String, Object>();
+        Map<String, Object> variablesMap = new HashMap<>();
         variablesMap.put("sender", "alex");
         mailService.sendMail("templates/SimpleMail.tpl", A_GREAT_TEMPLATE_MAIL, TEST_FACTORY,
                 new Address[] { internetAddress });
@@ -161,6 +156,8 @@ public class TestMailService extends NXRuntimeTestCase {
     @Test
     public void testServiceRegistration() throws Exception {
         deployBundle("org.nuxeo.ecm.platform.mail");
+        applyInlineDeployments();
+
         MailService mailService = Framework.getLocalService(MailService.class);
         assertNotNull(mailService);
         MessageActionPipe pipe = mailService.getPipe("nxmail");
@@ -172,7 +169,9 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
         // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution merge
-        deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/mailService-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-test-contrib.xml");
+        mailService = Framework.getLocalService(MailService.class);
+
         pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);
         assertEquals(4, pipe.size());
@@ -182,7 +181,9 @@ public class TestMailService extends NXRuntimeTestCase {
         assertEquals(pipe.get(3).getClass().getSimpleName(), "CreateDocumentsAction");
         // assertEquals(pipe.get(4).getClass().getSimpleName(), "EndAction");
         // test contribution override
-        deployContrib("org.nuxeo.ecm.platform.mail.test", "OSGI-INF/mailService-override-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.mail.test:OSGI-INF/mailService-override-test-contrib.xml");
+        mailService = Framework.getLocalService(MailService.class);
+
         pipe = mailService.getPipe("nxmail");
         assertNotNull(pipe);
         assertEquals(2, pipe.size());
@@ -194,11 +195,13 @@ public class TestMailService extends NXRuntimeTestCase {
     static class TestMailAction implements MessageAction {
         private static int counter;
 
+        @Override
         public boolean execute(ExecutionContext context) {
             counter++;
             return true;
         }
 
+        @Override
         public void reset(ExecutionContext context) {
         }
     }

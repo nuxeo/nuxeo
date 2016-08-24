@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema;
 
 import static org.junit.Assert.assertEquals;
@@ -31,7 +30,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -57,10 +55,12 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     private XSDLoader reader;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         typeMgr = Framework.getLocalService(SchemaManager.class);
         reader = new XSDLoader((SchemaManagerImpl) typeMgr);
     }
@@ -109,7 +109,8 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     @Test
     public void testContribs() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
+
         DocumentType docType = typeMgr.getDocumentType("myDoc");
 
         assertNotNull(docType);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,9 @@
  * Contributors:
  *     Maxime Hilaire
  *     Thierry Martins
- *
  */
-
 package org.nuxeo.ecm.core.cache;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +54,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     /**
      * Contains the names of all caches which have not been registered from an extension
      */
-    protected final List<String> autoregisteredCacheNames = new ArrayList<String>();
+    protected final List<String> autoregisteredCacheNames = new ArrayList<>();
 
     @Override
     public Cache getCache(String name) {
@@ -67,7 +64,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     @Override
     public void deactivate(ComponentContext context) {
         if (cacheRegistry.caches.size() > 0) {
-            Map<String, CacheDescriptor> descriptors = new HashMap<String, CacheDescriptor>(cacheRegistry.caches);
+            Map<String, CacheDescriptor> descriptors = new HashMap<>(cacheRegistry.caches);
             for (CacheDescriptor desc : descriptors.values()) {
                 cacheRegistry.contributionRemoved(desc.name, desc);
                 if (!autoregisteredCacheNames.remove(desc.name)) {
@@ -88,13 +85,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         cacheRegistry.start();
     }
 
-
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         cacheRegistry.stop();
     }
 
@@ -143,7 +139,6 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     public void unregisterCache(CacheDescriptor descriptor) {
         cacheRegistry.removeContribution(descriptor);
     }
-
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {

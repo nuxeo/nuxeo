@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 package org.nuxeo.ecm.core.convert.tests;
 
@@ -27,15 +26,12 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -50,12 +46,10 @@ import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
@@ -63,26 +57,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy("org.nuxeo.ecm.core.mimetype")
 public class TestService {
 
-    RuntimeContext rc;
-
     @Inject
     protected ConversionService cs;
 
-    @Before
-    public void init() {
-        rc = new DefaultRuntimeContext(Framework.getRuntime());
-    }
-
-    @After
-    public void undeploy() {
-        rc.destroy();
-        rc = null;
-    }
-
-    protected void deploy(String path) throws Exception {
-        URL location = TestService.class.getResource("/".concat(path));
-        rc.deploy(location);
-    }
+    @Inject
+    protected HotDeployer deployer;
 
     @Test
     public void testServiceRegistration() {
@@ -90,8 +69,8 @@ public class TestService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     public void testServiceContrib() throws Exception {
-        deploy("OSGI-INF/converters-test-contrib1.xml");
         assertNotNull(cs);
 
         Converter cv1 = ConversionServiceImpl.getConverter("dummy1");
@@ -107,8 +86,8 @@ public class TestService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     public void testConverterLookup() throws Exception {
-        deploy("OSGI-INF/converters-test-contrib1.xml");
 
         String converterName = cs.getConverterName("text/plain", "test/me");
         assertEquals("dummy1", converterName);
@@ -116,7 +95,7 @@ public class TestService {
         converterName = cs.getConverterName("text/plain2", "test/me");
         assertNull(converterName);
 
-        deploy("OSGI-INF/converters-test-contrib2.xml");
+        deployer.deploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml");
 
         converterName = cs.getConverterName("test/me", "foo/bar");
         assertEquals("dummy2", converterName);
@@ -161,10 +140,10 @@ public class TestService {
     }
 
     @Test
+    @LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml",
+            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib2.xml",
+            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml" })
     public void testAvailability() throws Exception {
-        deploy("OSGI-INF/converters-test-contrib1.xml");
-        deploy("OSGI-INF/converters-test-contrib2.xml");
-        deploy("OSGI-INF/converters-test-contrib4.xml");
 
         ConverterCheckResult result = null;
 
@@ -239,10 +218,10 @@ public class TestService {
     }
 
     @Test
+    @LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml",
+            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib4.xml",
+            "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib5.xml" })
     public void testChainConverterAvailability() throws Exception {
-        deploy("OSGI-INF/converters-test-contrib3.xml");
-        deploy("OSGI-INF/converters-test-contrib4.xml");
-        deploy("OSGI-INF/converters-test-contrib5.xml");
 
         ConverterCheckResult result = cs.isConverterAvailable("chainAvailable");
         assertNotNull(result);
@@ -256,8 +235,8 @@ public class TestService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-test.xml")
     public void testServiceConfig() throws Exception {
-        deploy("OSGI-INF/convert-service-config-test.xml");
         assertNotNull(cs);
 
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
@@ -265,7 +244,8 @@ public class TestService {
         assertFalse(ConversionServiceImpl.isCacheEnabled());
 
         // override
-        deploy("OSGI-INF/convert-service-config-override.xml");
+        deployer.deploy("org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-override.xml");
+
         assertEquals(34, ConversionServiceImpl.getGCIntervalInMinutes());
         assertEquals(10, ConversionServiceImpl.getMaxCacheSizeInKB());
         assertTrue(ConversionServiceImpl.isCacheEnabled());
@@ -273,9 +253,8 @@ public class TestService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib1.xml")
     public void testSupportedSourceMimeType() throws Exception {
-        deploy("OSGI-INF/converters-test-contrib1.xml");
-
         assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/plain"));
         assertTrue(cs.isSourceMimeTypeSupported("dummy1", "text/xml"));
         assertFalse(cs.isSourceMimeTypeSupported("dummy1", "application/pdf"));

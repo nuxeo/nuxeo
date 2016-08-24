@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,16 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.event.test;
 
-import java.net.URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
@@ -34,28 +34,24 @@ import org.nuxeo.ecm.core.event.script.ScriptingPostCommitEventListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 public class TestEventListenerContrib extends NXRuntimeTestCase {
 
+    protected EventServiceImpl serviceImpl;
+
     @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void setUp() throws Exception {
         deployBundle("org.nuxeo.ecm.core.event");
-        fireFrameworkStarted();
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
+        serviceImpl = (EventServiceImpl) Framework.getService(EventService.class);
     }
 
     @Test
     public void testMerge() throws Exception {
-        EventService service = Framework.getService(EventService.class);
-        EventServiceImpl serviceImpl = (EventServiceImpl) service;
         int N = serviceImpl.getEventListenerList().getInlineListenersDescriptors().size() + 1;
-        URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-listeners.xml");
 
         List<EventListenerDescriptor> inLineDescs = serviceImpl.getEventListenerList().getInlineListenersDescriptors();
         assertEquals(N, inLineDescs.size());
@@ -72,8 +68,7 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         assertEquals(N, serviceImpl.getEventListenerList().getInLineListeners().size());
 
         // test PostCommit
-        url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-PostCommitListeners.xml");
         List<EventListenerDescriptor> apcDescs = serviceImpl.getEventListenerList()
                                                             .getAsyncPostCommitListenersDescriptors();
         assertEquals(1, apcDescs.size());
@@ -81,8 +76,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         desc = serviceImpl.getEventListener("testPostCommit");
         assertEquals(0, desc.getPriority());
 
-        url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners2.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-PostCommitListeners2.xml");
+
         assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
         assertEquals(1, serviceImpl.getEventListenerList().getSyncPostCommitListeners().size());
 
@@ -95,8 +90,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         desc = serviceImpl.getEventListener("testPostCommit");
         assertEquals(10, desc.getPriority());
 
-        url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners3.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-PostCommitListeners3.xml");
+
         assertEquals(1, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
         assertEquals(0, serviceImpl.getEventListenerList().getSyncPostCommitListeners().size());
 
@@ -112,8 +107,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         EventService service = Framework.getService(EventService.class);
         EventServiceImpl serviceImpl = (EventServiceImpl) service;
         assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
-        URL url = EventListenerTest.class.getClassLoader().getResource("test-InvalidListeners.xml");
-        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-InvalidListeners.xml");
+
         assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
         List<String> errors = Framework.getRuntime().getErrors();
         assertNotNull(errors);

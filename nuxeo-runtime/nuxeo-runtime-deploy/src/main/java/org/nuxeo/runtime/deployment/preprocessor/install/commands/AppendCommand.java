@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 
 import java.io.BufferedOutputStream;
@@ -79,6 +76,10 @@ public class AppendCommand implements Command {
 
         if (!dstFile.isFile()) {
             try {
+                File parent = dstFile.getParentFile();
+                if (!parent.isDirectory()) {
+                    parent.mkdirs();
+                }
                 dstFile.createNewFile();
             } catch (IOException e) {
                 throw new IOException(
@@ -109,8 +110,9 @@ public class AppendCommand implements Command {
     private void append(File srcFile, File dstFile, boolean appendNewLine) throws IOException {
         String srcExt = FileUtils.getFileExtension(srcFile.getName());
         String dstExt = FileUtils.getFileExtension(dstFile.getName());
-
-        if (StringUtils.equalsIgnoreCase(srcExt, dstExt) && "json".equalsIgnoreCase(srcExt)) {
+        boolean isDstEmpty = dstFile.length() == 0; // file empty or doesn't exists
+        if (!isDstEmpty && StringUtils.equalsIgnoreCase(srcExt, dstExt) && "json".equalsIgnoreCase(srcExt)) {
+            // merge the json
             ObjectMapper m = new ObjectMapper();
             ObjectNode destNode = m.readValue(dstFile, ObjectNode.class);
             ObjectNode srcNode = m.readValue(srcFile, ObjectNode.class);

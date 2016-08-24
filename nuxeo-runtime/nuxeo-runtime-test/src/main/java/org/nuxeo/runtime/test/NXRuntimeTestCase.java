@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -93,6 +91,12 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
  * <p>
  * The runtime service itself is conveniently available as the <code>runtime</code> instance variable in derived
  * classes.
+ * <p>
+ * <b>Warning:</b> NXRuntimeTestCase subclasses <b>must</b>
+ * <ul>
+ * <li>not declare they own @Before and @After.
+ * <li>override doSetUp and doTearDown (and postSetUp if needed) instead of setUp and tearDown.
+ * <li>never call deployXXX methods outside the doSetUp method.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -127,6 +131,13 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     protected boolean restart = false;
 
+    protected List<String[]> deploymentStack = new ArrayList<>();
+
+    /**
+     * Whether or not the runtime components were started. This is useful to ensure the runtime is started once.
+     */
+    protected boolean frameworkStarted = false;
+
     @Override
     public boolean isRestart() {
         return restart;
@@ -140,16 +151,27 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     protected final TargetResourceLocator targetResourceLocator;
 
+    /**
+     * Set to true when the instance of this class is a JUnit test case. Set to false when the instance of this class is
+     * instantiated by the FeaturesRunner to manage the framework If the class is a JUnit test case then the runtime
+     * components will be started at the end of the setUp method
+     */
+    protected final boolean isTestUnit;
+
+    /**
+     * Used when subclassing to create standalone test cases
+     */
     public NXRuntimeTestCase() {
         targetResourceLocator = new TargetResourceLocator(this.getClass());
+        isTestUnit = true;
     }
 
-    public NXRuntimeTestCase(String name) {
-        this();
-    }
-
+    /**
+     * Used by the features runner to manage the Nuxeo framework
+     */
     public NXRuntimeTestCase(Class<?> clazz) {
         targetResourceLocator = new TargetResourceLocator(clazz);
+        isTestUnit = false;
     }
 
     @Override
@@ -178,11 +200,11 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     @Override
     public void start() throws Exception {
-        setUp();
+        startRuntime();
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void startRuntime() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
         // super.setUp();
         wipeRuntime();
@@ -191,11 +213,53 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             throw new UnsupportedOperationException("no bundles available");
         }
         initOsgiRuntime();
+        setUp(); // let a chance to the subclasses to contribute bundles and/or components
+        if (isTestUnit) { // if this class is running as a test case start the runtime components
+            fireFrameworkStarted();
+        }
+        postSetUp();
     }
 
+    /**
+     * Implementors should override this method to setup tests and not the {@link #startRuntime()} method. This method
+     * should contain all the bundle or component deployments needed by the tests. At the time this method is called the
+     * components are not yet started. If you need to perform component/service lookups use instead the
+     * {@link #postSetUp()} method
+     */
+    protected void setUp() throws Exception {
+    }
 
+    /**
+     * Implementors should override this method to implement any specific test tear down and not the
+     * {@link #stopRuntime()} method
+     *
+     * @throws Exception
+     */
+    protected void tearDown() throws Exception {
+        deploymentStack = new ArrayList<>();
+    }
+
+    /**
+     * Called after framework was started (at the end of setUp). Implementors may use this to use deployed services to
+     * initialize fields etc.
+     */
+    protected void postSetUp() throws Exception {
+    }
+
+    /**
+     * Fire the event {@code FrameworkEvent.STARTED}. This will start all the resolved Nuxeo components
+     *
+     * @see OSGiRuntimeService#frameworkEvent(FrameworkEvent)
+     */
     @Override
     public void fireFrameworkStarted() throws Exception {
+        if (frameworkStarted) {
+            // avoid starting twice the runtime (fix situations where tests are starting themselves the runtime)
+            // If this happens the faulty test should be fixed
+            // TODO NXP-22534 - throw an exception?
+            return;
+        }
+        frameworkStarted = true;
         boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback()
                 && TransactionHelper.startTransaction();
         boolean txFinished = false;
@@ -212,13 +276,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         }
     }
 
-    @Override
-    public void standby(Duration delay) throws Exception {
-        Framework.getRuntime().standby(Instant.now().plus(delay));
-    }
-
     @After
-    public void tearDown() throws Exception {
+    public void stopRuntime() throws Exception {
+        tearDown();
         wipeRuntime();
         if (workingDir != null) {
             if (!restart) {
@@ -234,7 +294,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     @Override
     public void stop() throws Exception {
-        tearDown();
+        stopRuntime();
     }
 
     @Override
@@ -321,6 +381,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         // exception is raised during a previous setUp -> tearDown is not called
         // afterwards).
         runtime = null;
+        frameworkStarted = false;
         if (Framework.getRuntime() != null) {
             Framework.shutdown();
         }
@@ -383,6 +444,18 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             return;
         }
         context.deploy(contrib);
+    }
+
+    /**
+     * Deploy a contribution specified as a "bundleName:path" uri
+     */
+    public void deployContrib(String uri) throws Exception {
+        int i = uri.indexOf(':');
+        if (i == -1) {
+            throw new IllegalArgumentException(
+                    "Invalid deployment URI: " + uri + ". Must be of the form bundleSymbolicName:pathInBundleJar");
+        }
+        deployContrib(uri.substring(0, i), uri.substring(i + 1));
     }
 
     /**
@@ -473,7 +546,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             return null;
         }
 
-        return Arrays.stream(list.split("[, \t\n\r\f]")).map(s -> bundle.getEntry(s)).filter(Objects::nonNull);
+        return Arrays.stream(list.split("[, \t\n\r\f]")).map(bundle::getEntry).filter(Objects::nonNull);
     }
 
     /**
@@ -493,6 +566,15 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             context = runtime.getContext();
         }
         context.undeploy(contrib);
+    }
+
+    public void undeployContrib(String uri) throws Exception {
+        int i = uri.indexOf(':');
+        if (i == -1) {
+            throw new IllegalArgumentException(
+                    "Invalid deployment URI: " + uri + ". Must be of the form bundleSymbolicName:pathInBundleJar");
+        }
+        undeployContrib(uri.substring(0, i), uri.substring(i + 1));
     }
 
     protected static boolean isVersionSuffix(String s) {
@@ -637,6 +719,75 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             files.add(url.toURI().getPath());
         }
         return files;
+    }
+
+    /**
+     * Should be called by subclasses after one or more inline deployments are made inside a test method. Without
+     * calling this the inline deployment(s) will not have any effects.
+     * <p />
+     * <b>Be Warned</b> that if you reference runtime services or components you should lookup them again after calling
+     * this method!
+     * <p />
+     * This method also calls {@link #postSetUp()} for convenience.
+     */
+    protected void applyInlineDeployments() throws Exception {
+        runtime.getComponentManager().refresh(false);
+        runtime.getComponentManager().start(); // make sure components are started
+        postSetUp();
+    }
+
+    /**
+     * Should be called by subclasses to remove any inline deployments made in the current test method.
+     * <p />
+     * <b>Be Warned</b> that if you reference runtime services or components you should lookup them again after calling
+     * this method!
+     * <p />
+     * This method also calls {@link #postSetUp()} for convenience.
+     */
+    protected void removeInlineDeployments() throws Exception {
+        runtime.getComponentManager().reset();
+        runtime.getComponentManager().start();
+        postSetUp();
+    }
+
+    /**
+     * Hot deploy the given components (identified by an URI). All the started components are stopped, the new ones are
+     * registered and then all components are started. You can undeploy these components by calling
+     * {@link #popInlineDeployments()}
+     * <p>
+     * A component URI is of the form: bundleSymbolicName:pathToComponentXmlInBundle
+     */
+    public void pushInlineDeployments(String... deploymentUris) throws Exception {
+        deploymentStack.add(deploymentUris);
+        for (String uri : deploymentUris) {
+            deployContrib(uri);
+        }
+        applyInlineDeployments();
+    }
+
+    /**
+     * Remove the latest deployed components using {@link #pushInlineDeployments(String...)}.
+     */
+    public void popInlineDeployments() throws Exception {
+        if (deploymentStack.isEmpty()) {
+            throw new IllegalStateException("deployment stack is empty");
+        }
+        popInlineDeployments(deploymentStack.size() - 1);
+    }
+
+    public void popInlineDeployments(int index) throws Exception {
+        if (index < 0 || index > deploymentStack.size() - 1) {
+            throw new IllegalStateException("deployment stack index is invalid: " + index);
+        }
+        deploymentStack.remove(index);
+
+        runtime.getComponentManager().reset();
+        for (String[] ar : deploymentStack) {
+            for (int i = 0, len = ar.length; i < len; i++) {
+                deployContrib(ar[i]);
+            }
+        }
+        applyInlineDeployments();
     }
 
 }

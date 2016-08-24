@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,23 +49,23 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
 
     private static final Log log = LogFactory.getLog(UIDGeneratorComponent.class);
 
-    protected final Map<String, UIDGenerator> generators = new HashMap<String, UIDGenerator>();
+    protected final Map<String, UIDGenerator> generators = new HashMap<>();
 
-    protected final Map<String, UIDSequencer> sequencers = new HashMap<String, UIDSequencer>();
+    protected final Map<String, UIDSequencer> sequencers = new HashMap<>();
 
-    protected final LinkedHashMap<String, UIDSequencerProviderDescriptor> sequencerContribs = new LinkedHashMap<String, UIDSequencerProviderDescriptor>();
+    protected final LinkedHashMap<String, UIDSequencerProviderDescriptor> sequencerContribs = new LinkedHashMap<>();
 
     protected String defaultSequencer;
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         for (String name : sequencers.keySet()) {
             sequencers.get(name).init();
         }
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         for (String name : sequencers.keySet()) {
             sequencers.get(name).dispose();
         }
@@ -165,7 +164,9 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
 
             UIDGenerator generator;
             try {
-                generator = (UIDGenerator) extension.getContext().loadClass(generatorDescriptor.getClassName()).newInstance();
+                generator = (UIDGenerator) extension.getContext()
+                                                    .loadClass(generatorDescriptor.getClassName())
+                                                    .newInstance();
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }

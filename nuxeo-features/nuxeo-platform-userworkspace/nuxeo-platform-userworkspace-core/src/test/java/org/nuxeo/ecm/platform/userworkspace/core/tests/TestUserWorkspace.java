@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ import org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceIm
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -59,9 +58,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
         "org.nuxeo.ecm.platform.userworkspace.core", //
 })
 public class TestUserWorkspace {
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected CoreFeature coreFeature;

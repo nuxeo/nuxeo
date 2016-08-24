@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-import org.junit.After;
-import org.junit.Before;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -43,25 +41,16 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
     protected ServerLocatorService locatorService;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-server-locator-service.xml");
         deployContrib(OSGI_BUNDLE_NAME, "OSGI-INF/management-resource-publisher-service.xml");
         deployTestContrib(OSGI_BUNDLE_NAME, "isolated-server.xml");
-
-        fireFrameworkStarted();
-
-        locatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
-        publisherService = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
     }
 
     @Override
-    @After
-    public void tearDown() throws Exception {
-        Framework.getRuntime().stop();
-        super.tearDown();
+    protected void postSetUp() throws Exception {
+        locatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
+        publisherService = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
     }
 
     protected void doBindResources() throws InstanceNotFoundException, ReflectionException, MBeanException {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.jar.Manifest;
 
@@ -38,6 +36,7 @@ import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
@@ -79,16 +78,35 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         bundle = null;
     }
 
+    protected void refreshComponents() {
+        String reloadStrategy = Framework.getProperty("org.nuxeo.runtime.reload_strategy", "restart");
+        log.info("Refresh components. Strategy: " + reloadStrategy);
+        // reload components / contributions
+        ComponentManager mgr = Framework.getRuntime().getComponentManager();
+        if ("unstash".equals(reloadStrategy)) {
+            // compat mode
+            mgr.unstash();
+        } else if ("standby".equals(reloadStrategy)) { // standby / resume
+            mgr.standby();
+            mgr.unstash();
+            mgr.resume();
+        } else { // restart mode
+            mgr.refresh(false);
+        }
+    }
+
     @Override
     public void reload() throws InterruptedException {
         if (log.isDebugEnabled()) {
             log.debug("Starting reload");
         }
+
         try {
             reloadProperties();
         } catch (IOException e) {
             throw new RuntimeServiceException(e);
         }
+
         triggerReloadWithNewTransaction(RELOAD_EVENT_ID);
     }
 
@@ -107,8 +125,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void reloadSeamComponents() {
         log.info("Reload Seam components");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
+        Framework.getLocalService(EventService.class)
+                 .sendEvent(new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
@@ -122,16 +140,16 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushJaasCache() {
         log.info("Flush the JAAS cache");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event("usermanager", "user_changed", this, "Deployer"));
+        Framework.getLocalService(EventService.class)
+                 .sendEvent(new Event("usermanager", "user_changed", this, "Deployer"));
         setFlushedNow();
     }
 
     @Override
     public void flushSeamComponents() {
         log.info("Flush Seam components");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
+        Framework.getLocalService(EventService.class)
+                 .sendEvent(new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
         setFlushedNow();
     }
 
@@ -144,7 +162,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public String deployBundle(File file, boolean reloadResourceClasspath) throws BundleException {
         String name = getOSGIBundleName(file);
         if (name == null) {
-            log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", file.getAbsolutePath()));
+            log.error(
+                    String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", file.getAbsolutePath()));
             return null;
         }
 
@@ -170,6 +189,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         Transaction tx = TransactionHelper.suspendTransaction();
         try {
             newBundle.start();
+            refreshComponents();
         } finally {
             TransactionHelper.resumeTransaction(tx);
         }
@@ -317,15 +337,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 
     protected void triggerReload(String id) throws InterruptedException {
         log.info("about to reload for " + id);
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
-        Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(30)));
+        Framework.getLocalService(EventService.class)
+                 .sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
         try {
             Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-            Framework.getRuntime().resume();
         } finally {
-            Framework.getLocalService(EventService.class).sendEvent(
-                    new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));
+            Framework.getLocalService(EventService.class)
+                     .sendEvent(new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));
             log.info("returning from " + id);
         }
     }

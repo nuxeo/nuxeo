@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
-import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -33,9 +31,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -57,13 +53,15 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
     }
 
     @Override
-    @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-config.xml");
-        fireFrameworkStarted();
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         service = Framework.getLocalService(WorkManager.class);
         assertNotNull(service);
         assertMetrics(0, 0, 0, 0);
@@ -71,7 +69,6 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
     }
 
     @Override
-    @After
     public void tearDown() throws Exception {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.setTransactionRollbackOnly();
@@ -183,7 +180,7 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
 
                         @Override
                         public boolean setTransactionTimeout(int seconds) throws XAException {
-                             return true;
+                            return true;
                         }
                     };
                     Transaction transaction;

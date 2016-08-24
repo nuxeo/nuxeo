@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * Tests the {@link TokenAuthenticationServlet} in the case of an anonymous user.
@@ -47,10 +47,10 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestAnonymousTokenAuthenticationServlet {
 
     @Inject
-    protected RuntimeHarness harness;
+    protected TokenAuthenticationService tokenAuthenticationService;
 
     @Inject
-    protected TokenAuthenticationService tokenAuthenticationService;
+    protected HotDeployer deployer;
 
     @Test
     public void testServletAsAnonymous() throws Exception {
@@ -66,8 +66,8 @@ public class TestAnonymousTokenAuthenticationServlet {
             assertEquals(401, status);
 
             // ------------ Test anonymous user allowed ----------------
-            harness.deployContrib("org.nuxeo.ecm.platform.login.token.test",
-                    "OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
+            deployer.deploy(
+                    "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
 
             status = httpClient.executeMethod(getMethod);
             assertEquals(201, status);
@@ -76,8 +76,6 @@ public class TestAnonymousTokenAuthenticationServlet {
             assertNotNull(tokenAuthenticationService.getUserName(token));
             assertEquals(1, tokenAuthenticationService.getTokenBindings("Guest").size());
 
-            harness.undeployContrib("org.nuxeo.ecm.platform.login.token.test",
-                    "OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
         } finally {
             getMethod.releaseConnection();
         }

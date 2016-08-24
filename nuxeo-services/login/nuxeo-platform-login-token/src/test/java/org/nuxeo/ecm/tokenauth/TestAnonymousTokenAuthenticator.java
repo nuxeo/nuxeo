@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * Tests the {@link TokenAuthenticator} in the case of an anonymous user.
@@ -59,7 +59,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestAnonymousTokenAuthenticator {
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected CoreSession session;
@@ -72,8 +72,8 @@ public class TestAnonymousTokenAuthenticator {
 
         // Mock token authentication callback and acquire token for anonymous user directly from token authentication
         // service
-        TokenAuthenticationCallback cb = new TokenAuthenticationCallback("Guest", "myFavoriteApp",
-                "Ubuntu box 64 bits", "This is my personal Linux box", "rw");
+        TokenAuthenticationCallback cb = new TokenAuthenticationCallback("Guest", "myFavoriteApp", "Ubuntu box 64 bits",
+                "This is my personal Linux box", "rw");
         String token = cb.getRemoteToken(cb.getTokenParams());
         assertNotNull(token);
 
@@ -86,14 +86,12 @@ public class TestAnonymousTokenAuthenticator {
         }
 
         // Check automation call with anonymous user allowed
-        harness.deployContrib("org.nuxeo.ecm.platform.login.token.test",
-                "OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
+        deployer.deploy(
+                "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
 
         Session clientSession = automationClient.getSession(token);
         assertEquals("Guest", clientSession.getLogin().getUsername());
 
-        harness.undeployContrib("org.nuxeo.ecm.platform.login.token.test",
-                "OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
     }
 
     protected void setPermission(DocumentModel doc, ACE ace) {

@@ -87,7 +87,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         LOG_MIN_DURATION_NS = Long.parseLong(
                 Framework.getService(ConfigurationService.class).getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
     }

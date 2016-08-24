@@ -52,69 +52,47 @@ import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.sql", //
-        "org.nuxeo.ecm.directory.ldap", //
-        "org.nuxeo.ecm.directory.ldap.tests", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml", })
+@Features(LDAPDirectoryFeature.class)
 public abstract class LDAPDirectoryTestCase {
 
     private static final Log log = LogFactory.getLog(LDAPDirectoryTestCase.class);
 
     protected MockLdapServer server;
 
-    // change this flag to use an external LDAP directory instead of the
-    // non networked default ApacheDS implementation
-    public static final boolean USE_EXTERNAL_TEST_LDAP_SERVER = false;
-
-    // change this flag in case the external LDAP server considers the
-    // posixGroup class structural
-    public static final boolean POSIXGROUP_IS_STRUCTURAL = true;
-
-    // change this flag if your test server has support for dynamic groups
-    // through the groupOfURLs objectclass, eg for OpenLDAP:
-    // http://www.ldap.org.br/modules/ldap/files/files///dyngroup.schema
-    public static final boolean HAS_DYNGROUP_SCHEMA = false;
-
-    public static final String INTERNAL_SERVER_SETUP_UPPER_ID = "TestDirectoriesWithInternalApacheDS-override-upper-id.xml";
-
-    // These variables are changed in subclasses
-    public String EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP.xml";
-
-    public String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
-
-    public String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
-
-    public String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
-
     @Inject
-    protected RuntimeHarness runtimeHarness;
+    protected LDAPDirectoryFeature feature;
+
+    public boolean isExternalServer() {
+        return feature.isExternal();
+    }
+
+    public boolean isLocalServer() {
+        return !isExternalServer();
+    }
+
+    public boolean isPosixGroupStructural() {
+        return feature.isPosixGroupStructural();
+    }
+
+    public boolean hasDynGroupSchema() {
+        return feature.hasDynGroupSchema();
+    }
 
     public List<String> getLdifFiles() {
         List<String> ldifFiles = new ArrayList<>();
         ldifFiles.add("sample-users.ldif");
         ldifFiles.add("sample-groups.ldif");
-        if (HAS_DYNGROUP_SCHEMA) {
+        if (hasDynGroupSchema()) {
             ldifFiles.add("sample-dynamic-groups.ldif");
         }
         return ldifFiles;
@@ -122,15 +100,9 @@ public abstract class LDAPDirectoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
-        } else {
-            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP);
-            server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
-            getLDAPDirectory("userDirectory").setTestServer(server);
-            getLDAPDirectory("groupDirectory").setTestServer(server);
-        }
-        ;
+        server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
+        getLDAPDirectory("userDirectory").setTestServer(server);
+        getLDAPDirectory("groupDirectory").setTestServer(server);
         try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : getLdifFiles()) {
@@ -141,14 +113,12 @@ public abstract class LDAPDirectoryTestCase {
 
     @After
     public void tearDown() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-
+        if (isExternalServer()) {
             try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
                 DirContext ctx = session.getContext();
                 destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
                 destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
             }
-            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
         } else {
             if (server != null) {
                 try {
@@ -157,7 +127,6 @@ public abstract class LDAPDirectoryTestCase {
                     server = null;
                 }
             }
-            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP);
         }
     }
 
@@ -181,7 +150,7 @@ public abstract class LDAPDirectoryTestCase {
             while (children.hasMore()) {
                 SearchResult child = children.next();
                 String subDn = child.getName();
-                if (!USE_EXTERNAL_TEST_LDAP_SERVER && subDn.endsWith(providerUrl)) {
+                if (!isExternalServer() && subDn.endsWith(providerUrl)) {
                     subDn = subDn.substring(0, subDn.length() - providerUrl.length() - 1);
                 } else {
                     subDn = subDn + ',' + dn;
@@ -214,7 +183,7 @@ public abstract class LDAPDirectoryTestCase {
      * @throws IllegalStateException
      * @since 5.9.3
      */
-    protected X509Certificate createCertificate(String dnNameStr) throws NoSuchAlgorithmException,
+    public static X509Certificate createCertificate(String dnNameStr) throws NoSuchAlgorithmException,
             CertificateException, InvalidKeyException, IllegalStateException, SignatureException {
         X509Certificate cert = null;
 

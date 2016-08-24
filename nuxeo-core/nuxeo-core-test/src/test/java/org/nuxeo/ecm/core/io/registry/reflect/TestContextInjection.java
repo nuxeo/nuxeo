@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +28,25 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.ThreadSafeRenderingContext;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
+@RunWith(FeaturesRunner.class)
+@Features(RandomBug.Feature.class)
 public class TestContextInjection {
 
     private final RenderingContext ctx = RenderingContext.CtxBuilder.get();
@@ -115,25 +125,21 @@ public class TestContextInjection {
         ThreadSafeRenderingContext safeCtx = (ThreadSafeRenderingContext) instance1.ctx;
         assertNotNull(safeCtx.getDelegate());
         assertSame(ctx, safeCtx.getDelegate());
-        Thread subThread = new Thread() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    // in a different thread, it should be a different instance but same context
-                    final SingletonMarshaller instance2 = inspector.getInstance(ctx);
-                    assertNotSame(ctx, instance2.ctx);
-                    assertTrue(instance2.ctx instanceof ThreadSafeRenderingContext);
-                    ThreadSafeRenderingContext safeCtx = (ThreadSafeRenderingContext) instance2.ctx;
-                    assertNotNull(safeCtx.getDelegate());
-                    assertSame(ctx, safeCtx.getDelegate());
-                    notify();
-                }
-            }
-
-        };
-        subThread.start();
-        synchronized (subThread) {
-            subThread.wait();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            // in a different thread, it should be a different instance but same context
+            Future<?> future = executor.submit(() -> {
+                SingletonMarshaller instance2 = inspector.getInstance(ctx);
+                assertNotSame(ctx, instance2.ctx);
+                assertTrue(instance2.ctx instanceof ThreadSafeRenderingContext);
+                ThreadSafeRenderingContext safeCtx2 = (ThreadSafeRenderingContext) instance2.ctx;
+                assertNotNull(safeCtx2.getDelegate());
+                assertSame(ctx, safeCtx2.getDelegate());
+            });
+            executor.shutdown();
+            future.get(10, TimeUnit.SECONDS);
+        } finally {
+            executor.shutdownNow();
         }
     }
 

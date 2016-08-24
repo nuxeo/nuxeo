@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directory.DirectoryServiceImpl">
 
+  <!-- The cache service must be started before me: TODO use a start level dependency? -->
+  <require>org.nuxeo.ecm.core.cache.CacheService</require>
+
   <implementation class="org.nuxeo.ecm.directory.DirectoryServiceImpl" />
 
   <service>

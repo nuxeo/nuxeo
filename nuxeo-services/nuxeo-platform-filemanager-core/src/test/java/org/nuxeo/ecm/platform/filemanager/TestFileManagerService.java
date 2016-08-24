@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.filemanager;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URL;
 import java.text.Normalizer;
 import java.util.List;
 
@@ -59,7 +55,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -78,9 +73,6 @@ public class TestFileManagerService {
 
     @Inject
     protected CoreSession coreSession;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Before
     public void setUp() throws Exception {
@@ -291,12 +283,8 @@ public class TestFileManagerService {
     }
 
     @Test
+    @LocalDeploy(FileManagerUTConstants.FILEMANAGER_BUNDLE + ":nxfilemanager-test-override.xml")
     public void testFileImportersMerge() throws Exception {
-        assertNotNull(harness);
-        URL url = getClass().getClassLoader().getResource("nxfilemanager-test-override.xml");
-        assertNotNull(url);
-        harness.deployTestContrib(FileManagerUTConstants.FILEMANAGER_BUNDLE, url);
-
         FileManagerService fileManagerService = (FileManagerService) service;
 
         FileImporter plugin = fileManagerService.getPluginByName("pluginWithDocType4merge");

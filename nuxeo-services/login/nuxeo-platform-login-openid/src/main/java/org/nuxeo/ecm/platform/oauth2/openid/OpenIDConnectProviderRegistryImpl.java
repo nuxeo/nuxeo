@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nelson Silva
  */
-
 package org.nuxeo.ecm.platform.oauth2.openid;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
 
     public static final String PROVIDER_EP = "providers";
 
-    protected Map<String, OpenIDConnectProvider> providers = new HashMap<String, OpenIDConnectProvider>();
+    protected Map<String, OpenIDConnectProvider> providers = new HashMap<>();
 
     protected OpenIDProviderFragmentRegistry pendingProviders = new OpenIDProviderFragmentRegistry();
 
@@ -80,7 +79,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
 
     @Override
     public Collection<OpenIDConnectProvider> getEnabledProviders() {
-        List<OpenIDConnectProvider> result = new ArrayList<OpenIDConnectProvider>();
+        List<OpenIDConnectProvider> result = new ArrayList<>();
         for (OpenIDConnectProvider provider : getProviders()) {
             if (provider.isEnabled()) {
                 result.add(provider);
@@ -144,8 +143,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
-        super.applicationStarted(context);
+    public void start(ComponentContext context) {
         registerPendingProviders();
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.runtime.management;
 
 import static org.junit.Assert.assertEquals;
@@ -77,8 +74,8 @@ public class TestResourcePublisherService extends ManagementTestCase {
     public void testXMLConfiguration() throws Exception {
         Set<String> shortcutsName = publisherService.getShortcutsName();
         int size = shortcutsName.size();
-        deployTestContrib(OSGI_BUNDLE_NAME, "management-tests-service.xml");
-        deployTestContrib(OSGI_BUNDLE_NAME, "management-tests-contrib.xml");
+        pushInlineDeployments("org.nuxeo.runtime.test.tests:management-tests-service.xml",
+                "org.nuxeo.runtime.test.tests:management-tests-contrib.xml");
 
         publisherService.bindResources();
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");

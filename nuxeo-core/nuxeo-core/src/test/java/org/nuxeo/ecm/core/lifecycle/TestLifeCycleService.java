@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,13 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- * $Id: TestLifeCycleService.java 28609 2008-01-09 16:38:30Z sfermigier $
  */
-
 package org.nuxeo.ecm.core.lifecycle;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,10 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.CoreUTConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -44,12 +44,13 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     private LifeCycleService lifeCycleService;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployContrib(CoreUTConstants.CORE_BUNDLE, "OSGI-INF/LifeCycleService.xml");
         deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE, "LifeCycleManagerTestExtensions.xml");
+    }
 
+    @Override
+    protected void postSetUp() throws Exception {
         lifeCycleService = NXCore.getLifeCycleService();
         assertNotNull(lifeCycleService);
     }
@@ -74,14 +75,14 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         Collection<LifeCycleState> states = lcd.getStates();
         assertEquals(4, states.size());
 
-        List<String> expected = new ArrayList<String>();
+        List<String> expected = new ArrayList<>();
         expected.add("work");
         expected.add("approved");
         expected.add("cancelled");
         expected.add("obsolete");
         Collections.sort(expected);
 
-        List<String> stateNames = new ArrayList<String>();
+        List<String> stateNames = new ArrayList<>();
         for (LifeCycleState state : states) {
             stateNames.add(state.getName());
         }
@@ -93,11 +94,11 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertEquals("work", lcd.getDefaultInitialStateName());
 
         // Test all initial states
-        List<String> expectedInitialStates = new ArrayList<String>();
+        List<String> expectedInitialStates = new ArrayList<>();
         expectedInitialStates.add("work");
         expectedInitialStates.add("approved");
         Collections.sort(expectedInitialStates);
-        List<String> initialStates = new ArrayList<String>(lcd.getInitialStateNames());
+        List<String> initialStates = new ArrayList<>(lcd.getInitialStateNames());
         Collections.sort(initialStates);
         assertEquals(expectedInitialStates, initialStates);
 
@@ -216,7 +217,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Test
     public void testLifeCycleReverse() throws Exception {
 
-        deployContrib(CoreUTConstants.CORE_TESTS_BUNDLE, "LifeCycleManagerReverseTestExtensions.xml");
+        pushInlineDeployments(CoreUTConstants.CORE_TESTS_BUNDLE + ":LifeCycleManagerReverseTestExtensions.xml");
 
         LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("defaultReverse");
 

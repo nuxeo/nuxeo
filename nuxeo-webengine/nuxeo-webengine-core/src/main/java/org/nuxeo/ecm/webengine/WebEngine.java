@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
@@ -33,14 +30,17 @@ import java.util.Properties;
 import javax.servlet.GenericServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Application;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
+import org.nuxeo.ecm.webengine.jaxrs.ApplicationFragment;
+import org.nuxeo.ecm.webengine.jaxrs.ApplicationHost;
+import org.nuxeo.ecm.webengine.jaxrs.ApplicationManager;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -70,20 +70,14 @@ public class WebEngine implements ResourceLocator {
     private static final Log log = LogFactory.getLog(WebEngine.class);
 
     static Map<Object, Object> loadMimeTypes() {
-        Map<Object, Object> mimeTypes = new HashMap<Object, Object>();
         Properties p = new Properties();
         URL url = WebEngine.class.getClassLoader().getResource("OSGI-INF/mime.properties");
-        InputStream in = null;
-        try {
-            in = url.openStream();
+        try (InputStream in = url.openStream()) {
             p.load(in);
-            mimeTypes.putAll(p);
+            return new HashMap<>(p);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load mime types", e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
-        return mimeTypes;
     }
 
     public static WebContext getActiveContext() {
@@ -130,7 +124,7 @@ public class WebEngine implements ResourceLocator {
         this.registry = registry;
         this.root = root;
         webLoader = new WebLoader(this);
-        apps = new HashMap<String, WebEngineModule>();
+        apps = new HashMap<>();
         scripting = new Scripting(webLoader);
         annoMgr = new AnnotationManager();
 
@@ -141,7 +135,7 @@ public class WebEngine implements ResourceLocator {
             skinPathPrefix = System.getProperty("jboss.home.dir") != null ? "/nuxeo/site/skin" : "/skin";
         }
 
-        env = new HashMap<String, Object>();
+        env = new HashMap<>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         // TODO this should be put in the MANIFEST
@@ -167,7 +161,8 @@ public class WebEngine implements ResourceLocator {
         }
     }
 
-    public void initJspRequestSupport(GenericServlet servlet, HttpServletRequest request, HttpServletResponse response) {
+    public void initJspRequestSupport(GenericServlet servlet, HttpServletRequest request,
+            HttpServletResponse response) {
         if (rendering instanceof FreemarkerEngine) {
             FreemarkerEngine fm = (FreemarkerEngine) rendering;
             HttpRequestHashModel requestModel = new HttpRequestHashModel(request, response, fm.getObjectWrapper());
@@ -376,7 +371,7 @@ public class WebEngine implements ResourceLocator {
         log.info("Reloading WebEngine");
         isDirty = false;
         webLoader.flushCache();
-        apps = new HashMap<String, WebEngineModule>();
+        apps = new HashMap<>();
         if (moduleMgr != null) { // avoid synchronizing if not needed
             for (ModuleConfiguration mc : moduleMgr.getModules()) {
                 mc.flushCache();
@@ -392,10 +387,25 @@ public class WebEngine implements ResourceLocator {
     }
 
     public void start() {
+        // reconnect to the application manager and collect available web engine modules.
+        // This must be done after a component manager restart
+        // On the first start (i.e. at runtime booting) this will
+        // never find available web engine modules to connect with
+        // This will found something only after a component manager restart
+        ApplicationHost[] hosts = ApplicationManager.getInstance().getApplications();
+        for (ApplicationHost host : hosts) {
+            for (ApplicationFragment fragment : host.getApplications()) {
+                Application app = fragment.getApplication();
+                if (app instanceof WebEngineModule) {
+                    addApplication((WebEngineModule) app);
+                }
+            }
+        }
     }
 
     public void stop() {
         registry.clear();
+        moduleMgr = null;
     }
 
     protected ModuleConfiguration getModuleFromPath(String rootPath, String path) {

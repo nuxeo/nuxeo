@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,11 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
-/**
- * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- */
+import org.junit.Ignore;
+import org.nuxeo.ecm.directory.ldap.LDAPDirectoryFeature.UseExternalServer;
+
+// Ignore External server tests
+@Ignore
+@UseExternalServer("TestDirectoriesWithExternalOpenLDAPWithBBB.xml")
 public class TestLDAPSessionBBB extends TestLDAPSession {
-
-    @Override
-    public void setUp() throws Exception {
-        EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAPWithBBB.xml";
-        super.setUp();
-    }
-
 }

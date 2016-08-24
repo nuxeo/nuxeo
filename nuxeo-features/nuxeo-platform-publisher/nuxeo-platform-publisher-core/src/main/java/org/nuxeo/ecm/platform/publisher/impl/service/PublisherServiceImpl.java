@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo
  */
-
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
 import java.util.ArrayList;
@@ -62,15 +61,15 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
-    protected Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
+    protected Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<>();
 
-    protected Map<String, PublishedDocumentFactoryDescriptor> factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
+    protected Map<String, PublishedDocumentFactoryDescriptor> factoryDescriptors = new HashMap<>();
 
-    protected Map<String, PublicationTreeConfigDescriptor> treeConfigDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
+    protected Map<String, PublicationTreeConfigDescriptor> treeConfigDescriptors = new HashMap<>();
 
-    protected Map<String, ValidatorsRuleDescriptor> validatorsRuleDescriptors = new HashMap<String, ValidatorsRuleDescriptor>();
+    protected Map<String, ValidatorsRuleDescriptor> validatorsRuleDescriptors = new HashMap<>();
 
-    protected Map<String, PublicationTreeConfigDescriptor> pendingDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
+    protected Map<String, PublicationTreeConfigDescriptor> pendingDescriptors = new HashMap<>();
 
     protected RootSectionFinderFactory rootSectionFinderFactory = null;
 
@@ -89,7 +88,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     protected static final String RELATIVE_ROOT_PATH_KEY = "RelativeRootPath";
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         if (repositoryService == null) {
             // RepositoryService failed to start, no need to go further
@@ -130,11 +129,11 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     @Override
     public void activate(ComponentContext context) {
-        treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
-        factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
-        treeConfigDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
-        validatorsRuleDescriptors = new HashMap<String, ValidatorsRuleDescriptor>();
-        pendingDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
+        treeDescriptors = new HashMap<>();
+        factoryDescriptors = new HashMap<>();
+        treeConfigDescriptors = new HashMap<>();
+        validatorsRuleDescriptors = new HashMap<>();
+        pendingDescriptors = new HashMap<>();
     }
 
     @Override
@@ -189,14 +188,14 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     @Override
     public List<String> getAvailablePublicationTree() {
-        List<String> treeConfigs = new ArrayList<String>();
+        List<String> treeConfigs = new ArrayList<>();
         treeConfigs.addAll(treeConfigDescriptors.keySet());
         return treeConfigs;
     }
 
     @Override
     public Map<String, String> getAvailablePublicationTrees() {
-        Map<String, String> trees = new HashMap<String, String>();
+        Map<String, String> trees = new HashMap<>();
         for (PublicationTreeConfigDescriptor desc : treeConfigDescriptors.values()) {
             String title = desc.getTitle() == null ? desc.getName() : desc.getTitle();
             trees.put(desc.getName(), title);
@@ -405,7 +404,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     @Override
     public Map<String, String> getParametersFor(String treeConfigName) {
         PublicationTreeConfigDescriptor desc = treeConfigDescriptors.get(treeConfigName);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         if (desc != null) {
             parameters.putAll(desc.getParameters());
         }

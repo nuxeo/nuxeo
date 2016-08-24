@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.jaxrs.ApplicationFactory;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.scan.Scanner;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -47,7 +53,11 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.osgi.framework.Bundle;
 
+import com.sun.jersey.core.spi.component.ComponentContext;
+import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
+import com.sun.jersey.spi.inject.Injectable;
+import com.sun.jersey.spi.inject.InjectableProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -90,8 +100,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         initTypes(bundle, attrs.get("package"), engine);
     }
 
-    private void initTypes(Bundle bundle, String packageBase, WebEngine engine) throws ReflectiveOperationException,
-            IOException {
+    private void initTypes(Bundle bundle, String packageBase, WebEngine engine)
+            throws ReflectiveOperationException, IOException {
         cfg.types = getWebTypes();
         if (cfg.types == null) {
             // try the META-INF/web-types file
@@ -143,18 +153,15 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     private void loadMetaTypeFile(WebEngine engine) throws ReflectiveOperationException, IOException {
         URL url = bundle.getEntry(DefaultTypeLoader.WEB_TYPES_FILE);
         if (url != null) {
-            InputStream in = url.openStream();
-            try {
+            try (InputStream in = url.openStream()) {
                 cfg.types = readWebTypes(engine.getWebLoader(), in);
-            } finally {
-                in.close();
             }
         }
     }
 
-    private static Class<?>[] readWebTypes(WebLoader loader, InputStream in) throws ReflectiveOperationException,
-            IOException {
-        HashSet<Class<?>> types = new HashSet<Class<?>>();
+    private static Class<?>[] readWebTypes(WebLoader loader, InputStream in)
+            throws ReflectiveOperationException, IOException {
+        HashSet<Class<?>> types = new HashSet<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(in));
@@ -183,7 +190,7 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     }
 
     private void initRoots(WebEngine engine) {
-        ArrayList<Class<?>> roots = new ArrayList<Class<?>>();
+        ArrayList<Class<?>> roots = new ArrayList<>();
         for (Class<?> cl : cfg.types) {
             if (cl.isAnnotationPresent(Path.class)) {
                 roots.add(cl);
@@ -198,10 +205,11 @@ public class WebEngineModule extends Application implements ApplicationFactory {
             }
         }
         if (roots.isEmpty()) {
-            log.error("No root web objects found in web module " + cfg.name + " from bundle "
-                    + bundle.getSymbolicName());
+            log.error(
+                    "No root web objects found in web module " + cfg.name + " from bundle " + bundle.getSymbolicName());
             // throw new
-            // IllegalStateException("No root web objects found in web module "+cfg.name+" from bundle "+bundle.getSymbolicName());
+            // IllegalStateException("No root web objects found in web module "+cfg.name+" from bundle
+            // "+bundle.getSymbolicName());
         }
         cfg.roots = roots.toArray(new Class<?>[roots.size()]);
     }
@@ -232,12 +240,18 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     @Override
     public Set<Class<?>> getClasses() {
         if (cfg.roots == null) {
-            return new HashSet<Class<?>>();
+            return new HashSet<>();
         }
-        HashSet<Class<?>> set = new HashSet<Class<?>>();
-        for (Class<?> root : cfg.roots) {
-            set.add(root);
-        }
+        Set<Class<?>> set = new HashSet<>();
+        Collections.addAll(set, cfg.roots);
+        return set;
+    }
+
+    @Override
+    public Set<Object> getSingletons() {
+        Set<Object> set = new HashSet<>();
+        set.add(new HttpServletRequestProvider());
+        set.add(new HttpServletResponseProvider());
         return set;
     }
 
@@ -250,9 +264,55 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     }
 
     @Override
-    public Application getApplication(Bundle bundle, Map<String, String> args) throws ReflectiveOperationException,
-            IOException {
+    public Application getApplication(Bundle bundle, Map<String, String> args)
+            throws ReflectiveOperationException, IOException {
         return WebEngineModuleFactory.getApplication(this, bundle, args);
+    }
+
+    public static class HttpServletRequestProvider
+            implements InjectableProvider<Context, Type>, Injectable<HttpServletRequest> {
+        @Override
+        public HttpServletRequest getValue() {
+            RequestContext ctx = RequestContext.getActiveContext();
+            return ctx != null ? ctx.getRequest() : null;
+        }
+
+        @Override
+        public ComponentScope getScope() {
+            return ComponentScope.PerRequest;
+        }
+
+        @Override
+        public Injectable<HttpServletRequest> getInjectable(ComponentContext ic, Context a, Type c) {
+            if (!c.equals(HttpServletRequest.class)) {
+                return null;
+            }
+            return this;
+        }
+
+    }
+
+    public static class HttpServletResponseProvider
+            implements InjectableProvider<Context, Type>, Injectable<HttpServletResponse> {
+        @Override
+        public HttpServletResponse getValue() {
+            RequestContext ctx = RequestContext.getActiveContext();
+            return ctx != null ? ctx.getResponse() : null;
+        }
+
+        @Override
+        public ComponentScope getScope() {
+            return ComponentScope.PerRequest;
+        }
+
+        @Override
+        public Injectable<HttpServletResponse> getInjectable(ComponentContext ic, Context a, Type c) {
+            if (!c.equals(HttpServletResponse.class)) {
+                return null;
+            }
+            return this;
+        }
+
     }
 
 }

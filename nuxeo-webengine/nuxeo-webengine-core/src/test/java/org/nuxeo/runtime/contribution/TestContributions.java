@@ -50,7 +50,7 @@ public class TestContributions {
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
-        // System.out.println(reg);
+        // System.out.println(registry);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class TestContributions {
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
-        // System.out.println(reg);
+        // System.out.println(registry);
     }
 
     @Test
@@ -92,11 +92,11 @@ public class TestContributions {
         mf2.list.add("k1");
         reg.addFragment(mf2.id, mf2);
 
-        // reg.remove("key1");
-        // System.out.println(reg);
+        // registry.remove("key1");
+        // System.out.println(registry);
 
         reg.removeFragment("key1", mf2);
-        // System.out.println(reg);
+        // System.out.println(registry);
     }
 
 }

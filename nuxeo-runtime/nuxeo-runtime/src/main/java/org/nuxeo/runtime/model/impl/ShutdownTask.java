@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,22 @@ package org.nuxeo.runtime.model.impl;
 
 import java.util.Set;
 
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * Deactivate components in the proper order to avoid exceptions at shutdown.
- * 
+ *
+ * @deprecated since 9.2, it is useless to unregister components. Components are stopped and deactivated by the
+ *             {@link ComponentManager#stop()}
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated
 public class ShutdownTask {
 
     final static void shutdown(ComponentManagerImpl mgr) {
-        RegistrationInfoImpl[] ris = mgr.reg.getComponentsArray();
+        RegistrationInfoImpl[] ris = mgr.registry.getComponentsArray();
         for (RegistrationInfoImpl ri : ris) {
             shutdown(mgr, ri);
         }
@@ -48,11 +52,11 @@ public class ShutdownTask {
             return;
         }
         // an active component - get the components depending on it
-        Set<ComponentName> reqs = mgr.reg.requirements.get(name);
+        Set<ComponentName> reqs = mgr.registry.requirements.get(name);
         if (reqs != null && !reqs.isEmpty()) {
             // there are some components depending on me - cannot shutdown
             for (ComponentName req : reqs.toArray(new ComponentName[reqs.size()])) {
-                RegistrationInfoImpl parentRi = mgr.reg.components.get(req);
+                RegistrationInfoImpl parentRi = mgr.registry.components.get(req);
                 if (parentRi != null) {
                     shutdown(mgr, parentRi);
                 }

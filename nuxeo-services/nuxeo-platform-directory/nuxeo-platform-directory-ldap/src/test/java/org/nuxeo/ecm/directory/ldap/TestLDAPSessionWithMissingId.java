@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,48 +36,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests for NXP-2461: Manage LDAP directories with missing entries for identifier field.
  *
  * @author Anahide Tchertchian
  */
+//override the default server setup
+@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-override.xml")
 public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
 
     protected static final String USER_SCHEMANAME = "user";
 
     protected static final String GROUP_SCHEMANAME = "group";
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        // override default defs
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP_OVERRIDE);
-        } else {
-            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_OVERRIDE);
-            getLDAPDirectory("userDirectory").setTestServer(server);
-            getLDAPDirectory("groupDirectory").setTestServer(server);
-        }
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP_OVERRIDE);
-        } else {
-            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_OVERRIDE);
-        }
-        super.tearDown();
-    }
 
     // override tests to get specific use cases
 
@@ -93,7 +69,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertEquals("Administrator", entry.getProperty(USER_SCHEMANAME, "username"));
             assertEquals("Manager", entry.getProperty(USER_SCHEMANAME, "lastName"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 assertEquals(Long.valueOf(1), entry.getProperty(USER_SCHEMANAME, "intField"));
             }
             // assertNull(entry.getProperty(USER_SCHEMANAME, "sn"));
@@ -106,7 +82,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             List<String> val = (List<String>) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> groups = (List<String>) entry.getProperty(USER_SCHEMANAME, "groups");
                 assertEquals(2, groups.size());
@@ -124,12 +100,12 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             // assertNull(entry2.getProperty(USER_SCHEMANAME, "userPassword"));
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(USER_SCHEMANAME, "employeeType"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // default value for missing attribute
                 assertEquals(Long.valueOf(0), entry2.getProperty(USER_SCHEMANAME, "intField"));
 
                 // LDAP references do not work with the internal test server
-                if (HAS_DYNGROUP_SCHEMA) {
+                if (hasDynGroupSchema()) {
                     assertEquals(Arrays.asList("dyngroup1", "dyngroup2", "members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));
                 } else {
@@ -142,7 +118,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertNull(entry3);
 
             // test special character escaping
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // for some reason this do not work with the internal
                 // ApacheDS server (bug?)
                 DocumentModel entry4 = session.getEntry("Admi*");
@@ -167,7 +143,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertEquals("administrators", entry.getId());
             assertEquals("administrators", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertNotNull(members);
@@ -188,7 +164,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertEquals("members", entry.getId());
             assertEquals("members", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertEquals(2, members.size());
@@ -208,12 +184,12 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertEquals("submembers", entry.getId());
             assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 assertEquals(Arrays.asList(), entry.getProperty(GROUP_SCHEMANAME, "members"));
                 assertEquals(Arrays.asList(), entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
 
-                if (HAS_DYNGROUP_SCHEMA) {
+                if (hasDynGroupSchema()) {
                     assertEquals(Arrays.asList("dyngroup1", "members"),
                             entry.getProperty(GROUP_SCHEMANAME, "parentGroups"));
                 } else {

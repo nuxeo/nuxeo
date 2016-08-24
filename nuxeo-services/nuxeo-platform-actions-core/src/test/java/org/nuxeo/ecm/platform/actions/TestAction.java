@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -44,11 +45,14 @@ public class TestAction extends NXRuntimeTestCase {
 
     ActionService as;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        super.setUp();
         deployContrib("org.nuxeo.ecm.actions", "OSGI-INF/actions-framework.xml");
         deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
@@ -186,7 +190,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertFalse(disabledAction.isEnabled());
 
         // deploy override
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
         Action oviewAction = as.getAction("TAB_VIEW");
         assertNotNull(oviewAction);
@@ -243,7 +247,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter defined in action", previewRules[0].types[0]);
 
         // deploy override
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
         Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
         assertNotNull(opreviewAction);
@@ -282,9 +286,11 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter defined in action", previewRules[0].types[0]);
 
         // uninstall first, this time
+        ComponentManager cmgr = Framework.getRuntime().getComponentManager();
+        cmgr.stop();
         undeployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
         // deploy override
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-override-innerfilter-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-innerfilter-contrib.xml");
 
         Action opreviewAction = as.getAction("TAB_WITH_LOCAL_FILTER");
         assertNotNull(opreviewAction);
@@ -320,7 +326,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("filter defined in its extension point", previewRules[0].types[0]);
 
         // deploy override
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
         Action opreviewAction = as.getAction("TAB_WITH_GLOBAL_FILTER");
         assertNotNull(opreviewAction);
@@ -397,7 +403,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("subMapProperty", subMapProperties.get("subMapProperty"));
 
         // deploy override
-        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.actions.tests:test-actions-override-contrib.xml");
 
         action = as.getAction("actionTestProperties");
         properties = action.getProperties();

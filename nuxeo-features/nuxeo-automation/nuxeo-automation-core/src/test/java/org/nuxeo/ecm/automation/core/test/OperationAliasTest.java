@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * Test for parameter key alias.
@@ -59,7 +59,7 @@ public class OperationAliasTest {
     private final static String HELLO_WORLD = "Hello World!";
 
     @Inject
-    RuntimeHarness harness;
+    HotDeployer deployer;
 
     @Inject
     CoreSession session;
@@ -77,7 +77,7 @@ public class OperationAliasTest {
     public void testAliasOnOperationParam() throws InvalidChainException, OperationException, Exception {
         OperationContext ctx = new OperationContext(session);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("paramAlias", HELLO_WORLD);
 
         OperationChain chain = new OperationChain("testChain");
@@ -104,7 +104,7 @@ public class OperationAliasTest {
     @Test
     public void testAliasOnOperation() throws Exception {
         OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("paramName", HELLO_WORLD);
         Object result = service.run(ctx, ParamNameWithAliasOperation.ALIAS_OP, params);
         assertNotNull(result);
@@ -144,21 +144,17 @@ public class OperationAliasTest {
                                     .orElse(null);
         assertNull(operationDoc);
 
-        try {
-            harness.deployContrib("org.nuxeo.ecm.automation.core", "test-export-alias-config.xml");
+        deployer.deploy("org.nuxeo.ecm.automation.core:test-export-alias-config.xml");
 
-            documentation = service.getDocumentation();
+        documentation = service.getDocumentation();
 
-            operationDoc = documentation.stream()
-                                        .filter(od -> od.id.equals(ParamNameWithAliasOperation.ALIAS_OP))
-                                        .findFirst()
-                                        .orElse(null);
-            assertNotNull(operationDoc);
-            assertEquals(ParamNameWithAliasOperation.ALIAS_OP, operationDoc.id);
-            assertNull(operationDoc.aliases);
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.automation.core", "test-export-alias-config.xml");
-        }
+        operationDoc = documentation.stream()
+                                    .filter(od -> od.id.equals(ParamNameWithAliasOperation.ALIAS_OP))
+                                    .findFirst()
+                                    .orElse(null);
+        assertNotNull(operationDoc);
+        assertEquals(ParamNameWithAliasOperation.ALIAS_OP, operationDoc.id);
+        assertNull(operationDoc.aliases);
     }
 
 }

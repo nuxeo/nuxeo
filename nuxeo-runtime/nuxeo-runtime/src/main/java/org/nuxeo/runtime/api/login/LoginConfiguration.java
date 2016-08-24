@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,90 +20,54 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
-import org.apache.commons.logging.LogFactory;
-
 public class LoginConfiguration extends Configuration {
 
     public static final LoginConfiguration INSTANCE = new LoginConfiguration();
+
+    protected Configuration parent = null;
+
+    protected Provider provider = null;
 
     protected final AtomicInteger counter = new AtomicInteger(0);
 
     public interface Provider {
 
-        public AppConfigurationEntry[] getAppConfigurationEntry(String name);
+        AppConfigurationEntry[] getAppConfigurationEntry(String name);
 
     }
 
-    protected final InheritableThreadLocal<Provider> holder = new InheritableThreadLocal<Provider>() {
-        @Override
-        protected Provider initialValue() {
-            return context.provider;
-        };
-    };
-
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
-        AppConfigurationEntry[] appConfigurationEntry = holder.get().getAppConfigurationEntry(name);
-        if (appConfigurationEntry == null) {
-            appConfigurationEntry = context.parent.getAppConfigurationEntry(name);
+        AppConfigurationEntry[] entries = provider != null ? provider.getAppConfigurationEntry(name) : null;
+        if (entries == null) {
+            entries = parent != null ? parent.getAppConfigurationEntry(name) : null;
         }
-        return appConfigurationEntry;
-
+        return entries;
     }
 
     @Override
     public void refresh() {
-        context.parent.refresh();
-    }
-
-    protected class InstallContext {
-        protected final Configuration parent = Configuration.getConfiguration();
-
-        protected final Provider provider;
-
-        protected final Thread thread = Thread.currentThread();
-
-        protected final Throwable stacktrace = new Throwable();
-
-        protected InstallContext(Provider provider) {
-            this.provider = provider;
+        if (parent != null) {
+            parent.refresh();
         }
-
-        @Override
-        public String toString() {
-            return "Login Installation Context [parent=" + parent + ", thread=" + thread + "]";
-        }
-
     }
-
-    protected InstallContext context;
 
     public void install(Provider provider) {
-        holder.set(provider);
         int count = counter.incrementAndGet();
         if (count == 1) {
-            context = new InstallContext(provider);
+            this.provider = provider;
+            this.parent = Configuration.getConfiguration();
             Configuration.setConfiguration(this);
-            LogFactory.getLog(LoginConfiguration.class).trace("installed login configuration", context.stacktrace);
         }
     }
 
     public void uninstall() {
-        holder.remove();
         int count = counter.decrementAndGet();
         if (count == 0) {
-            LogFactory.getLog(LoginConfiguration.class).trace("uninstalled login configuration " + context.thread,
-                    context.stacktrace);
-            Configuration.setConfiguration(context.parent);
-            context = null;
+            Configuration.setConfiguration(parent);
+            this.provider = null;
+            this.parent = null;
         }
-    }
-
-    /**
-     * @since 5.9.5
-     */
-    public void cleanupThisThread() {
-        holder.remove();
     }
 
 }

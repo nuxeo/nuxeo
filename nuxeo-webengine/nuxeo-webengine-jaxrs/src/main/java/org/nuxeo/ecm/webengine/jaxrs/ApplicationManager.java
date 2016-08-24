@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ package org.nuxeo.ecm.webengine.jaxrs;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -34,8 +32,6 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ApplicationManager implements BundleTrackerCustomizer {
-
-    private static final Log log = LogFactory.getLog(ApplicationManager.class);
 
     public final static String HOST_ATTR = "host";
 
@@ -55,7 +51,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
     }
 
     public synchronized void start(BundleContext context) {
-        apps = new HashMap<String, ApplicationHost>();
+        apps = new HashMap<>();
         tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING | Bundle.RESOLVED, this);
         tracker.open();
     }
@@ -75,6 +71,10 @@ public class ApplicationManager implements BundleTrackerCustomizer {
         return host;
     }
 
+    public synchronized ApplicationHost[] getApplications() {
+        return apps.values().toArray(new ApplicationHost[apps.size()]);
+    }
+
     public synchronized ApplicationHost getApplication(String name) {
         return apps.get(name);
     }
@@ -88,8 +88,8 @@ public class ApplicationManager implements BundleTrackerCustomizer {
     public Object addingBundle(Bundle bundle, BundleEvent event) {
         String v = (String) bundle.getHeaders().get("Nuxeo-WebModule");
         if (v != null) {
-            String classRef = null;
-            Map<String, String> vars = new HashMap<String, String>();
+            String classRef;
+            Map<String, String> vars = new HashMap<>();
             String varsStr = null;
             int i = v.indexOf(';');
             if (i > -1) {
@@ -137,7 +137,7 @@ public class ApplicationManager implements BundleTrackerCustomizer {
     }
 
     protected Map<String, String> parseAttrs(String expr) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         String[] ar = StringUtils.split(expr, ';', true);
         for (String a : ar) {
             int i = a.indexOf('=');
