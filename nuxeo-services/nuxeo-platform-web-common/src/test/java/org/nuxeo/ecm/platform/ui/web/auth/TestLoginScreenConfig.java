@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -37,13 +36,13 @@ import java.util.Properties;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.sun.jersey.api.uri.UriComponent;
@@ -55,9 +54,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
     private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
 
         deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
         deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
@@ -150,8 +147,9 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNull(config.getDisableBackgroundSizeCover());
 
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
-        deployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig-merge.xml");
+        pushInlineDeployments(WEB_BUNDLE_TEST + ":OSGI-INF/test-loginscreenconfig-merge.xml");
 
+        authService = getAuthService();
         config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
@@ -207,8 +205,12 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         LoginScreenConfig config = authService.getLoginScreenConfig();
         assertNotNull(config);
 
+        ComponentManager cmgr = Framework.getRuntime().getComponentManager();
+        cmgr.stop();
         undeployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig.xml");
+        cmgr.start();
 
+        authService = getAuthService();
         config = authService.getLoginScreenConfig();
         assertNull(config);
     }

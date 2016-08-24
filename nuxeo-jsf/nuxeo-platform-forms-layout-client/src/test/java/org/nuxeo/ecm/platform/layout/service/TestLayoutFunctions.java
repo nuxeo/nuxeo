@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
@@ -40,12 +39,15 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
 
     private WebLayoutManager service;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-listing-test-contrib.xml");
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
     }
@@ -80,7 +82,7 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertEquals("rights", notSelectedRows.get(2).getName());
 
         // select some rows and re-do tests
-        List<String> selectedRowNames = Arrays.asList(new String[] { "modification_date", "title_link", "description" });
+        List<String> selectedRowNames = Arrays.asList("modification_date", "title_link", "description");
 
         selectedRows = LayoutTagLibrary.getSelectedRows(layout, selectedRowNames, false);
         assertNotNull(selectedRows);

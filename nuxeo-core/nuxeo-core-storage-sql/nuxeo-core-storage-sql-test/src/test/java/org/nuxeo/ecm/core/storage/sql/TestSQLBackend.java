@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,6 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
@@ -105,7 +104,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     protected boolean pathOptimizationsEnabled;
 
     @Override
-    @Before
     public void setUp() throws Exception {
         pathOptimizationsEnabled = true; // changed in a few tests
         super.setUp();
@@ -143,14 +141,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testSchemaWithLongName() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-schema-longname.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-longname.xml");
         Session session = repository.getConnection();
         session.getRootNode();
     }
 
     @Test
     public void testSchemaWithReservedFieldName() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-schema-reservedfieldname.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-schema-reservedfieldname.xml");
         Session session = repository.getConnection();
         session.getRootNode();
     }
@@ -575,7 +573,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testSmallText() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-restriction-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-restriction-contrib.xml");
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "Restriction", false);
@@ -593,7 +591,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testBigText() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-restriction-big-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-restriction-big-contrib.xml");
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "RestrictionBig", false);
@@ -823,7 +821,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     @Test
     public void testBigACLs() throws Exception {
         if (!(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL //
-        || DatabaseHelper.DATABASE instanceof DatabaseOracle)) {
+                || DatabaseHelper.DATABASE instanceof DatabaseOracle)) {
             return;
         }
         testBigACLs("foo100", 100); // len 2500-1
@@ -932,7 +930,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 } finally {
                     session.close();
                 }
-            } catch (ResourceException|XAException | IllegalStateException | RollbackException | SystemException | NamingException e) {
+            } catch (ResourceException | XAException | IllegalStateException | RollbackException | SystemException
+                    | NamingException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -948,9 +947,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
             session.updateReadAcls();
         }
 
-        protected void begin() throws XAException, IllegalStateException, RollbackException, SystemException, NamingException {
+        protected void begin()
+                throws XAException, IllegalStateException, RollbackException, SystemException, NamingException {
             TransactionHelper.startTransaction();
-            SessionImpl xares = (SessionImpl)session;
+            SessionImpl xares = (SessionImpl) session;
             TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xares);
         }
 
@@ -1019,7 +1019,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(foo3.getId(), foo4.getId());
     }
 
-
     @Test
     // unfortunately on H2 there's nothing much we can do about this
     @Ignore
@@ -1036,12 +1035,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         TransactionHelper.startTransaction();
         try {
-            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(((SessionImpl) session1).getXAResource());
+            TransactionHelper.lookupTransactionManager()
+                             .getTransaction()
+                             .enlistResource(((SessionImpl) session1).getXAResource());
             node1.setSimpleProperty("tst:title", "t1");
             Transaction tx1 = TransactionHelper.suspendTransaction();
             try {
                 try {
-                    TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(((SessionImpl) session2).getXAResource());
+                    TransactionHelper.lookupTransactionManager()
+                                     .getTransaction()
+                                     .enlistResource(((SessionImpl) session2).getXAResource());
                     foo2.getSimpleProperty("tst:title");
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
@@ -1580,7 +1583,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         XAResource mockRes = new XAResource() {
 
-
             @Override
             public void start(Xid xid, int flags) throws XAException {
 
@@ -1646,7 +1648,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         TransactionHelper.startTransaction();
         try {
             Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-             tx.enlistResource(mockRes);
+            tx.enlistResource(mockRes);
             tx.enlistResource(xaresource);
             nodea = session.getNodeByPath("/foo", null);
             nodea.setSimpleProperty("tst:title", "new");
@@ -1660,7 +1662,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
             nodea = session.getNodeByPath("/foo", null);
             assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
         }
-
 
         /*
          * rollback after save (underlying XAResource does a rollback too)
@@ -2404,7 +2405,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         String type;
         if (shadow) {
             // deploy another contrib where TestDoc4 also has the proxy schema
-            deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-backend-core-types-contrib-2.xml");
+            pushInlineDeployments(
+                    "org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-backend-core-types-contrib-2.xml");
             type = "TestDoc4";
         } else {
             type = "TestDoc2";
@@ -3976,7 +3978,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testQueryAggregatesErrors() throws Exception {
         Session session = repository.getConnection();
         try {
-            session.queryAndFetch("SELECT tst:title FROM TestDoc WHERE COUNT(tst:title) = 1", "NXQL", QueryFilter.EMPTY);
+            session.queryAndFetch("SELECT tst:title FROM TestDoc WHERE COUNT(tst:title) = 1", "NXQL",
+                    QueryFilter.EMPTY);
             fail("Should fail");
         } catch (QueryParseException e) {
             String msg = e.getMessage();
@@ -4117,7 +4120,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // clear context, the mapper cache should still be used
         ((SessionImpl) session).context.pristine.clear();
-        JDBCConnection jdbc = (JDBCConnection) JDBCMapperConnector.unwrap(((SoftRefCachingMapper) ((SessionImpl) session).getMapper()).mapper);        jdbc.countExecutes = true;
+        JDBCConnection jdbc = (JDBCConnection) JDBCMapperConnector.unwrap(
+                ((SoftRefCachingMapper) ((SessionImpl) session).getMapper()).mapper);
+        jdbc.countExecutes = true;
         jdbc.executeCount = 0;
 
         node = session.getNodeById(bar.getId());
@@ -4185,7 +4190,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testParallelPrepareUserReadAcls() throws Throwable {
-        assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseOracle));  // NXP-18684
+        assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseOracle)); // NXP-18684
 
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -4237,8 +4242,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected static void checkOneDoc(Session session) {
         String query = "SELECT * FROM TestDoc WHERE ecm:isProxy = 0";
-        QueryFilter qf = new QueryFilter(null, new String[] { "members", "bob" },
-                new String[] { "Read", "Everything" }, null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+        QueryFilter qf = new QueryFilter(null, new String[] { "members", "bob" }, new String[] { "Read", "Everything" },
+                null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
         PartialList<Serializable> res = session.query(query, qf, false);
         assertEquals(1, res.list.size());
     }

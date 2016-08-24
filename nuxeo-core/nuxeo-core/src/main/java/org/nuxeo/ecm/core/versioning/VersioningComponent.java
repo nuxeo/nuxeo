@@ -165,18 +165,20 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     protected Deque<DefaultVersioningRuleDescriptor> defaultVersioningRuleList = new ArrayDeque<>();
 
     // public for tests
-    public VersioningService service = STANDARD_VERSIONING_SERVICE;
+    public VersioningService service = null;
 
     protected ComponentContext context;
 
     @Override
     public void activate(ComponentContext context) {
         this.context = context;
+        this.service = STANDARD_VERSIONING_SERVICE;
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         this.context = null;
+        this.service = null;
     }
 
     @Override

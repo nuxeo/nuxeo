@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
 import java.util.Collections;
 
 import org.junit.Test;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.test.runner.TargetExtensions;
 public class PartialDeployTest extends NXRuntimeTestCase {
 
     @Test
-    public void deployWithoutExtensions() throws IOException {
+    public void deployWithoutExtensions() throws Exception {
         String name = "my.comp4";
         String partial = name + "-partial";
         StreamRef compRef = new URLStreamRef(getResource("MyComp4.xml"));
@@ -46,13 +45,15 @@ public class PartialDeployTest extends NXRuntimeTestCase {
         assertNull(getComponent(partial));
 
         deployPartialComponent(getContext(), Collections.emptySet(), compRef);
+        applyInlineDeployments();
+
         assertNull(getComponent(name));
         assertNotNull(getComponent(partial));
         assertNumberOfExtensionsEquals(0, partial);
     }
 
     @Test
-    public void deployWithExtensions() throws IOException {
+    public void deployWithExtensions() throws Exception {
         String name = "my.comp4";
         String partial = name + "-partial";
         StreamRef compRef = new URLStreamRef(getResource("MyComp4.xml"));
@@ -67,6 +68,7 @@ public class PartialDeployTest extends NXRuntimeTestCase {
             }
         };
         deployPartialComponent(getContext(), Collections.singleton(te), compRef);
+        applyInlineDeployments();
 
         assertNull(getComponent(name));
         assertNotNull(getComponent(partial));

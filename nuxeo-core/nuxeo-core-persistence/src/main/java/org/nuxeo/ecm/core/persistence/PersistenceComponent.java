@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
  */
-public class PersistenceComponent extends DefaultComponent implements HibernateConfigurator, PersistenceProviderFactory {
+public class PersistenceComponent extends DefaultComponent
+        implements HibernateConfigurator, PersistenceProviderFactory {
 
     private static final Log log = LogFactory.getLog(PersistenceComponent.class);
 
-    protected final Map<String, HibernateConfiguration> registry = new HashMap<String, HibernateConfiguration>();
+    protected final Map<String, HibernateConfiguration> registry = new HashMap<>();
 
-    {
+    static {
         // do this statically once, as we're patching a static variable
         registerOracle12DialectResolver();
     }
@@ -73,7 +74,7 @@ public class PersistenceComponent extends DefaultComponent implements HibernateC
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         /*
          * Initialize all the persistence units synchronously at startup, otherwise init may end up being called during
          * the first asynchronous event, which means hibernate init may happen in parallel with the main Nuxeo startup
@@ -95,7 +96,8 @@ public class PersistenceComponent extends DefaultComponent implements HibernateC
 
     protected void registerHibernateContribution(HibernateConfiguration contribution, ComponentName contributorName) {
         if (contribution.name == null) {
-            throw new PersistenceError(contributorName + " should set the 'name' attribute of hibernate configurations");
+            throw new PersistenceError(
+                    contributorName + " should set the 'name' attribute of hibernate configurations");
         }
         if (contribution.hibernateProperties != null) {
             doPatchForTests(contribution.hibernateProperties);

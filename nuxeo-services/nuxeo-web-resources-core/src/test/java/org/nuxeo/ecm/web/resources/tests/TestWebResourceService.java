@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -38,14 +37,13 @@ import org.nuxeo.ecm.web.resources.api.ResourceContext;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @since 7.3
@@ -66,7 +64,7 @@ public class TestWebResourceService {
     protected WebResourceManager service;
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Test
     public void testService() {
@@ -107,17 +105,14 @@ public class TestWebResourceService {
         r = service.getResource("my.css");
         assertNull(r);
 
-        String contrib = "webresources-test-override-config.xml";
-        URL url = getClass().getClassLoader().getResource(contrib);
-        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
-            r = service.getResource("my.css");
-            assertNotNull(r);
-            assertEquals("my.css", r.getName());
-            assertEquals(ResourceType.css.name(), r.getType());
-            assertEquals(0, r.getDependencies().size());
-            assertEquals("css/my.css", r.getPath());
-        }
+        deployer.deploy(BUNDLE + ":webresources-test-override-config.xml");
 
+        r = service.getResource("my.css");
+        assertNotNull(r);
+        assertEquals("my.css", r.getName());
+        assertEquals(ResourceType.css.name(), r.getType());
+        assertEquals(0, r.getDependencies().size());
+        assertEquals("css/my.css", r.getPath());
     }
 
     @Test
@@ -131,40 +126,31 @@ public class TestWebResourceService {
         assertEquals("foldable-box.js", r.getResources().get(1));
         assertEquals("foldable-box.css", r.getResources().get(2));
 
-        String contrib = "webresources-test-override-config.xml";
-        URL url = getClass().getClassLoader().getResource(contrib);
-        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
-            r = service.getResourceBundle("myapp");
-            assertNotNull(r);
-            assertEquals("myapp", r.getName());
-            assertEquals(4, r.getResources().size());
-            assertEquals("jquery.js", r.getResources().get(0));
-            assertEquals("foldable-box.js", r.getResources().get(1));
-            assertEquals("foldable-box.css", r.getResources().get(2));
-            assertEquals("my.css", r.getResources().get(3));
-        }
-
+        deployer.deploy(BUNDLE + ":webresources-test-override-config.xml");
+        r = service.getResourceBundle("myapp");
+        assertNotNull(r);
+        assertEquals("myapp", r.getName());
+        assertEquals(4, r.getResources().size());
+        assertEquals("jquery.js", r.getResources().get(0));
+        assertEquals("foldable-box.js", r.getResources().get(1));
+        assertEquals("foldable-box.css", r.getResources().get(2));
+        assertEquals("my.css", r.getResources().get(3));
     }
 
     @Test
     public void testFaultyResourcesBundleDeclaration() throws Exception {
 
-        String contrib = "webresources-test-faulty-declaration.xml";
-        URL url = getClass().getClassLoader().getResource(contrib);
-        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
-            ResourceBundle r = service.getResourceBundle("myFaultyApp");
-            assertNotNull(r);
-            assertTrue(r.getResources().isEmpty());
-            assertEquals("myFaultyApp", r.getName());
-            logCaptureResult.assertHasEvent();
-            List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
-            assertEquals(1, events.size());
-            assertEquals(
-                    "Some resources references were null or blank while setting myFaultyApp and have been supressed. "
-                            + "This probably happened because some <resource> tags were empty in the xml declaration. "
-                            + "The correct form is <resource>resource name</resource>.",
-                    events.get(0).getMessage());
-        }
+        deployer.deploy(BUNDLE + ":webresources-test-faulty-declaration.xml");
+        ResourceBundle r = service.getResourceBundle("myFaultyApp");
+        assertNotNull(r);
+        assertTrue(r.getResources().isEmpty());
+        assertEquals("myFaultyApp", r.getName());
+        logCaptureResult.assertHasEvent();
+        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        assertEquals(1, events.size());
+        assertEquals("Some resources references were null or blank while setting myFaultyApp and have been supressed. "
+                + "This probably happened because some <resource> tags were empty in the xml declaration. "
+                + "The correct form is <resource>resource name</resource>.", events.get(0).getMessage());
     }
 
     @Test
@@ -217,14 +203,12 @@ public class TestWebResourceService {
         assertEquals(1, procs.size());
         assertEquals(p, procs.get(0));
 
-        String contrib = "webresources-test-override-config.xml";
-        URL url = getClass().getClassLoader().getResource(contrib);
-        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
-            p = service.getProcessor("myProc");
-            assertNull(p);
-            procs = service.getProcessors("wroPost");
-            assertEquals(0, procs.size());
-        }
+        deployer.deploy(BUNDLE + ":webresources-test-override-config.xml");
+
+        p = service.getProcessor("myProc");
+        assertNull(p);
+        procs = service.getProcessors("wroPost");
+        assertEquals(0, procs.size());
 
     }
 

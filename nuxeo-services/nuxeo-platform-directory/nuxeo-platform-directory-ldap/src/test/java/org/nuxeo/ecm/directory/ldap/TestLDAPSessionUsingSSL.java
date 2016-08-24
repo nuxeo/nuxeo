@@ -33,15 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 
-/**
- */
 public class TestLDAPSessionUsingSSL extends LDAPDirectoryTestCase {
-
-    @Override
-    public void setUp() throws Exception {
-        EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-SSL.xml";
-        super.setUp();
-    }
 
     @Test
     public void testGetEntries() {

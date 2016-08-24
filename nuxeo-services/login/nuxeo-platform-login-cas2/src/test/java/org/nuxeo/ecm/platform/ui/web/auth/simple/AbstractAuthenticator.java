@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
 
     @Override
     public void setUp() throws Exception {
-        super.setUp();
         initStandardPlugins();
     }
 

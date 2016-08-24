@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
@@ -67,7 +64,7 @@ public class WebEngineComponent extends DefaultComponent { // implements
         super.activate(context);
 
         String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
-        File root = null;
+        File root;
         if (webDir != null) {
             root = new File(webDir);
         } else {
@@ -81,15 +78,22 @@ public class WebEngineComponent extends DefaultComponent { // implements
         log.info("Using web root: " + root);
 
         engine = new WebEngine(new File(root, "root.war"));
-
-        engine.start();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        engine.stop();
         engine = null;
         super.deactivate(context);
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        engine.start();
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        engine.stop();
     }
 
     public WebEngine getEngine() {

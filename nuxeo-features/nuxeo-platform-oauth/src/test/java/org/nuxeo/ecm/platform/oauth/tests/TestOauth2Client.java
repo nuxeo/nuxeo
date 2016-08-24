@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-
 @RunWith(FeaturesRunner.class)
 @Features(OAuthFeature.class)
 public class TestOauth2Client {

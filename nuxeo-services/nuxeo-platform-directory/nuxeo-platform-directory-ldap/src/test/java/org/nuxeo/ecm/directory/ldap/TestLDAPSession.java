@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.directory.ldap;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +41,6 @@ import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -75,7 +71,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("Administrator", entry.getId());
             assertEquals("Manager", entry.getProperty(USER_SCHEMANAME, "lastName"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 assertEquals(Long.valueOf(1), entry.getProperty(USER_SCHEMANAME, "intField"));
                 assertEquals("uid=Administrator,ou=people,dc=example,dc=com", entry.getProperty(USER_SCHEMANAME, "dn"));
             }
@@ -85,7 +81,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             List<String> val = (List<String>) entry.getProperty(USER_SCHEMANAME, "employeeType");
             assertTrue(val.isEmpty());
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> groups = (List<String>) entry.getProperty(USER_SCHEMANAME, "groups");
                 assertEquals(2, groups.size());
@@ -108,12 +104,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             }
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(USER_SCHEMANAME, "employeeType"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // default value for missing attribute
                 assertEquals(Long.valueOf(0), entry2.getProperty(USER_SCHEMANAME, "intField"));
 
                 // LDAP references do not work with the internal test server
-                if (HAS_DYNGROUP_SCHEMA) {
+                if (hasDynGroupSchema()) {
                     assertEquals(Arrays.asList("dyngroup1", "dyngroup2", "dyngroup3", "members", "subgroup"),
                             entry2.getProperty(USER_SCHEMANAME, "groups"));
                 } else {
@@ -133,7 +129,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertNull(entry3);
 
             // test special character escaping
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // for some reason this do not work with the internal
                 // ApacheDS server (bug?)
                 DocumentModel entry4 = session.getEntry("Admi*");
@@ -157,7 +153,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("administrators", entry.getId());
             assertEquals("administrators", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertNotNull(members);
@@ -178,7 +174,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("members", entry.getId());
             assertEquals("members", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertEquals(3, members.size());
@@ -198,12 +194,12 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("submembers", entry.getId());
             assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 assertEquals(Arrays.asList("user2"), entry.getProperty(GROUP_SCHEMANAME, "members"));
                 assertEquals(Arrays.asList(), entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
 
-                if (HAS_DYNGROUP_SCHEMA) {
+                if (hasDynGroupSchema()) {
                     assertEquals(Arrays.asList("dyngroup1", "members"),
                             entry.getProperty(GROUP_SCHEMANAME, "parentGroups"));
                 } else {
@@ -216,7 +212,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry3() {
-        assumeTrue(HAS_DYNGROUP_SCHEMA);
+        assumeTrue(hasDynGroupSchema());
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("dyngroup1");
             assertNotNull(entry);
@@ -297,7 +293,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntryWithLdapTreeRef() {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("groupDirectory").getSession();
                 Session unitSession = getLDAPDirectory("unitDirectory").getSession()) {
             DocumentModel entry = session.getEntry("subgroup");
@@ -316,7 +312,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             List<String> parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
             assertNotNull(parentGroups);
-            if (HAS_DYNGROUP_SCHEMA) {
+            if (hasDynGroupSchema()) {
                 assertEquals(1, parentGroups.size());
                 assertEquals(Arrays.asList("dyngroup1"), parentGroups);
             } else {
@@ -392,7 +388,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testCreateEntry() throws Exception {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
 
             assertNotNull(session);
@@ -445,7 +441,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testCreateEntry2() throws Exception {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             assertNotNull(session);
             Map<String, Object> map = new HashMap<>();
@@ -489,8 +485,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testCreateEntry3() throws Exception {
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
-            assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
             assertNotNull(session);
 
             Map<String, Object> map = new HashMap<>();
@@ -536,7 +532,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testUpdateEntry() throws Exception {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession();
                 Session groupSession = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("user1");
@@ -564,7 +560,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             assertEquals("", entry.getProperty(USER_SCHEMANAME, "lastName"));
             assertEquals(Long.valueOf(123), entry.getProperty(USER_SCHEMANAME, "intField"));
             assertEquals(Arrays.asList("item3", "item4"), entry.getProperty(USER_SCHEMANAME, "employeeType"));
-            if (HAS_DYNGROUP_SCHEMA) {
+            if (hasDynGroupSchema()) {
                 assertEquals(Arrays.asList("administrators", "dyngroup1", "dyngroup2", "dyngroup3", "members"),
                         entry.getProperty(USER_SCHEMANAME, "groups"));
             } else {
@@ -593,7 +589,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testUpdateEntry2() throws Exception {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("members");
             assertNotNull(entry);
@@ -632,8 +628,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testUpdateEntry3() throws Exception {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
-        assumeTrue(HAS_DYNGROUP_SCHEMA);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("dyngroup1");
 
@@ -644,7 +639,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             assertNotNull(entry);
             assertEquals(Arrays.asList("user1", "user3"), entry.getProperty(GROUP_SCHEMANAME, "members"));
-            if (HAS_DYNGROUP_SCHEMA) {
+            if (hasDynGroupSchema()) {
                 assertEquals(Arrays.asList("subgroup", "submembers", "subsubgroup", "subsubsubgroup"),
                         entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
             } else {
@@ -666,7 +661,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             // dynamically resolved references have not been edited
             assertEquals(Arrays.asList("user1", "user3"), entry.getProperty(GROUP_SCHEMANAME, "members"));
-            if (HAS_DYNGROUP_SCHEMA) {
+            if (hasDynGroupSchema()) {
                 assertEquals(Arrays.asList("subgroup", "submembers", "subsubgroup", "subsubsubgroup"),
                         entry.getProperty(GROUP_SCHEMANAME, "subGroups"));
             } else {
@@ -682,8 +677,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testUpdateEntry4() throws Exception {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
-        assumeTrue(HAS_DYNGROUP_SCHEMA);
+        assumeTrue(isExternalServer());
         try (Session userSession = getLDAPDirectory("userDirectory").getSession();
                 Session groupSession = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = groupSession.getEntry("readonlygroup1");
@@ -735,8 +729,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testDeleteEntry() {
-        assumeTrue("The internal server has a suffixed context that prevents it from looking up the entry to delete",
-                USE_EXTERNAL_TEST_LDAP_SERVER);
+        // The internal server has a suffixed context that prevents it from looking up the entry to delete
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             session.deleteEntry("user1");
             DocumentModel entry = session.getEntry("user1");
@@ -770,15 +764,15 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testDeleteEntry2() {
-        assumeTrue("The internal server has a suffixed context that prevents it from looking up the entry to delete",
-                USE_EXTERNAL_TEST_LDAP_SERVER);
+        // The internal server has a suffixed context that prevents it from looking up the entry to delete
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             session.deleteEntry("submembers");
             DocumentModel entry = session.getEntry("submembers");
             assertNull(entry);
 
             DocumentModelList entries = session.getEntries();
-            if (HAS_DYNGROUP_SCHEMA) {
+            if (hasDynGroupSchema()) {
                 // 3 dynamic groups
                 assertEquals(10, entries.size());
             } else {
@@ -803,7 +797,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModelList entries;
 
             // empty filter means everything (like getEntries)
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // empty filters do not work with ApacheDS
                 entries = session.query(filter);
                 assertNotNull(entries);
@@ -849,7 +843,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testQuery2() {
-        assumeTrue("query does not work at all with internal apache", USE_EXTERNAL_TEST_LDAP_SERVER);
+        // query does not work at all with internal apache
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<>();
             Set<String> fulltext = new HashSet<>();
@@ -929,7 +924,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             DocumentModelList entries;
 
             orderBy.put("company", "asc");
-            entries = session.query(filter, Collections.<String> emptySet(), orderBy);
+            entries = session.query(filter, Collections.emptySet(), orderBy);
             assertEquals(4, entries.size());
             // user3: creole
             // Administrator: nuxeo
@@ -944,7 +939,8 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testAuthenticate() {
-        assumeTrue("authenticate does not work at all with internal apache", USE_EXTERNAL_TEST_LDAP_SERVER);
+        // authenticate does not work at all with internal apache
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             assertTrue(session.authenticate("Administrator", "Administrator"));
             assertTrue(session.authenticate("user1", "user1"));
@@ -964,7 +960,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testGetMandatoryAttributes() {
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
             List<String> mandatoryAttributes = session.getMandatoryAttributes();
             assertEquals(Arrays.asList("sn", "cn"), mandatoryAttributes);
@@ -990,7 +986,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         // - in the file TestDirectoriesWithExternalOpenLDAP.xml, uncomment the lines
         // <creationClass>testDatePerson</creationClass>
         // and <fieldMapping name="dateField">mydate</fieldMapping>
-        assumeTrue(USE_EXTERNAL_TEST_LDAP_SERVER);
+        assumeTrue(isExternalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             assertNotNull(session);
             Map<String, Object> map = new HashMap<>();
@@ -1018,27 +1014,25 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @Test
     public void testCreateFromModel() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            try (Session dir = getLDAPDirectory("userDirectory").getSession()) {
-                String schema = "user";
-                DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
-                entry.setProperty(schema, "username", "omar");
-                // XXX: some values are mandatory on real LDAP
-                entry.setProperty(schema, "password", "sesame");
-                entry.setProperty(schema, "employeeType", new String[] { "Slave" });
+        assumeTrue(isExternalServer());
+        try (Session dir = getLDAPDirectory("userDirectory").getSession()) {
+            String schema = "user";
+            DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
+            entry.setProperty(schema, "username", "omar");
+            // XXX: some values are mandatory on real LDAP
+            entry.setProperty(schema, "password", "sesame");
+            entry.setProperty(schema, "employeeType", new String[] { "Slave" });
 
-                assertNull(dir.getEntry("omar"));
-                dir.createEntry(entry);
-                assertNotNull(dir.getEntry("omar"));
+            assertNull(dir.getEntry("omar"));
+            dir.createEntry(entry);
+            assertNotNull(dir.getEntry("omar"));
 
-                // create one with existing same id, must fail
-                entry.setProperty(schema, "username", "Administrator");
-                try {
-                    entry = dir.createEntry(entry);
-                    fail("Should raise an error, entry already exists");
-                } catch (DirectoryException e) {
-                }
-
+            // create one with existing same id, must fail
+            entry.setProperty(schema, "username", "Administrator");
+            try {
+                entry = dir.createEntry(entry);
+                fail("Should raise an error, entry already exists");
+            } catch (DirectoryException e) {
             }
         }
     }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,11 +30,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
-import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author arussel
@@ -46,7 +44,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestFunctions {
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Test
     public void testPrintFileSize() throws Exception {
@@ -54,28 +52,11 @@ public class TestFunctions {
         assertEquals(Functions.DEFAULT_BYTE_PREFIX_FORMAT, bytePrefixFormat);
         assertEquals("123 kB", Functions.printFileSize("123456"));
 
-        String contrib = "OSGI-INF/print-jsfconfiguration-test-contrib.xml";
-        URL url = getClass().getClassLoader().getResource(contrib);
-        RuntimeContext ctx = null;
-        try {
-            ctx = harness.deployTestContrib("org.nuxeo.ecm.platform.ui", url);
-            assertEquals("120 KB", Functions.printFileSize("123456"));
-        } finally {
-            if (ctx != null) {
-                ctx.undeploy(url);
-            }
-        }
+        deployer.deploy("@org.nuxeo.ecm.platform.ui:OSGI-INF/print-jsfconfiguration-test-contrib.xml");
+        assertEquals("120 KB", Functions.printFileSize("123456"));
 
-        contrib = "OSGI-INF/print-jsfconfiguration-test-override-contrib.xml";
-        url = getClass().getClassLoader().getResource(contrib);
-        try {
-            ctx = harness.deployTestContrib("org.nuxeo.ecm.platform.ui", url);
-            assertEquals("120 KiB", Functions.printFileSize("123456"));
-        } finally {
-            if (ctx != null) {
-                ctx.undeploy(url);
-            }
-        }
+        deployer.deploy("@org.nuxeo.ecm.platform.ui:OSGI-INF/print-jsfconfiguration-test-override-contrib.xml");
+        assertEquals("120 KiB", Functions.printFileSize("123456"));
     }
 
     @Test

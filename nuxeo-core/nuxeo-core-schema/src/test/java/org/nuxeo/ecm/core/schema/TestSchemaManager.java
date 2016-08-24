@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.core.schema;
 
 import static org.junit.Assert.assertEquals;
@@ -27,16 +24,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -50,18 +45,13 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     SchemaManagerImpl schemaManager;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
-        schemaManager = (SchemaManagerImpl) Framework.getLocalService(SchemaManager.class);
     }
 
     @Override
-    @After
-    public void tearDown() throws Exception {
-        schemaManager = null;
-        super.tearDown();
+    protected void postSetUp() throws Exception {
+	schemaManager = (SchemaManagerImpl) Framework.getLocalService(SchemaManager.class);
     }
 
     @Test
@@ -230,25 +220,27 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testDynamicChanges() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
+
         DocumentType t = schemaManager.getDocumentType("myDoc3");
-        Set<String> ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
-        assertEquals(new HashSet<String>(Arrays.asList("schema1", "schema2")), ts);
+        Set<String> ts = new HashSet<>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<>(Arrays.asList("schema1", "schema2")), ts);
         assertEquals(Collections.singleton("myfacet"), t.getFacets());
 
         // add a new schema the myDoc2 and remove a facet
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-change-doctype.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-change-doctype.xml");
 
         // myDoc3, a child type, sees the change
         t = schemaManager.getDocumentType("myDoc3");
-        ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
-        assertEquals(new HashSet<String>(Arrays.asList("schema1", "common")), ts);
+        ts = new HashSet<>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<>(Arrays.asList("schema1", "common")), ts);
         assertEquals(0, t.getFacets().size());
     }
 
     @Test
     public void testSupertypeLoop() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-supertype-loop.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-supertype-loop.xml");
+
         DocumentType t = schemaManager.getDocumentType("someDocInLoop");
         DocumentType t2 = schemaManager.getDocumentType("someDocInLoop2");
         assertEquals("someDocInLoop2", t.getSuperType().getName());
@@ -257,7 +249,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testMissingSupertype() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-missing-supertype.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-missing-supertype.xml");
+
         DocumentType t = schemaManager.getDocumentType("someDoc");
         DocumentType t2 = schemaManager.getDocumentType("someDoc2");
         assertNull(t.getSuperType());
@@ -266,55 +259,55 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testFacetMissingSchema() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-facet-missing-schema.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-missing-schema.xml");
+
         CompositeType f = schemaManager.getFacet("someFacet");
         assertEquals(Collections.singletonList("common"), Arrays.asList(f.getSchemaNames()));
     }
 
     @Test
     public void testFacetNoPerDocumentQuery() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-facet-per-document.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-per-document.xml");
+
         assertTrue(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
     }
 
     protected static List<String> schemaNames(List<Schema> schemas) {
-        List<String> list = new ArrayList<String>(schemas.size());
-        for (Schema s : schemas) {
-            list.add(s.getName());
-        }
-        return list;
+        return schemas.stream().map(Schema::getName).collect(Collectors.toList());
     }
 
     @Test
     public void testMergeDocumentType() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
+
         DocumentType t = schemaManager.getDocumentType("myDoc");
         assertEquals(Collections.singletonList("schema2"), Arrays.asList(t.getSchemaNames()));
-        assertEquals(new HashSet<String>(Arrays.asList("viewable", "writable")), t.getFacets());
+        assertEquals(new HashSet<>(Arrays.asList("viewable", "writable")), t.getFacets());
 
         t = schemaManager.getDocumentType("myDoc2");
-        Set<String> ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
-        assertEquals(new HashSet<String>(Arrays.asList("schema1", "schema2")), ts);
+        Set<String> ts = new HashSet<>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<>(Arrays.asList("schema1", "schema2")), ts);
         assertEquals(Collections.singleton("myfacet"), t.getFacets());
 
         assertEquals(Arrays.asList("schema3"), schemaNames(schemaManager.getProxySchemas(null)));
 
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-merge-doctype.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-merge-doctype.xml");
+
         t = schemaManager.getDocumentType("myDoc");
         assertEquals(Collections.singletonList("schema2"), Arrays.asList(t.getSchemaNames()));
-        assertEquals(new HashSet<String>(Arrays.asList("viewable", "writable", "NewFacet")), t.getFacets());
+        assertEquals(new HashSet<>(Arrays.asList("viewable", "writable", "NewFacet")), t.getFacets());
 
         t = schemaManager.getDocumentType("myDoc2");
-        ts = new HashSet<String>(Arrays.asList(t.getSchemaNames()));
-        assertEquals(new HashSet<String>(Arrays.asList("schema1", "schema2", "newschema", "newschema2")), ts);
-        assertEquals(new HashSet<String>(Arrays.asList("myfacet", "NewFacet2")), t.getFacets());
+        ts = new HashSet<>(Arrays.asList(t.getSchemaNames()));
+        assertEquals(new HashSet<>(Arrays.asList("schema1", "schema2", "newschema", "newschema2")), ts);
+        assertEquals(new HashSet<>(Arrays.asList("myfacet", "NewFacet2")), t.getFacets());
 
         assertEquals(Arrays.asList("schema3", "newschema"), schemaNames(schemaManager.getProxySchemas(null)));
     }
 
     @Test
     public void testDeployWithIncludeAndImport() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/testSchemaWithImportInclude.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/testSchemaWithImportInclude.xml");
 
         Schema schema = schemaManager.getSchema("schemaWithIncludeAndImport");
         assertNotNull(schema);
@@ -331,7 +324,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testDeploySchemaWithRebase() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/testSchemaRebase.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/testSchemaRebase.xml");
 
         Schema schema = schemaManager.getSchema("employeeSchema");
         assertNotNull(schema);
@@ -354,7 +347,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testHasSuperType() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
 
         assertTrue(schemaManager.hasSuperType("Document", "Document"));
         assertTrue(schemaManager.hasSuperType("myDoc", "Document"));
@@ -367,7 +360,8 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     @Test
     public void testGetAllowedSubTypes() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml");
+
         Collection<String> subtypes = schemaManager.getAllowedSubTypes("myFolder");
         assertNotNull(subtypes);
         assertEquals(3, subtypes.size());
@@ -390,7 +384,7 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertTrue(subtypes.contains("myFolder"));
 
         // let's append types to myFolder and override mySpecialFoder
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-merge-doctype.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-merge-doctype.xml");
 
         subtypes = schemaManager.getAllowedSubTypes("myFolder");
         assertNotNull(subtypes);
@@ -417,10 +411,10 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     @Test
     public void testExtendsAppendTypes() throws Exception {
         // test appending types which extend another document
-        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-extends-append-doctypes.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-extends-append-doctypes.xml");
         DocumentType t = schemaManager.getDocumentType("MyMergeableFolder");
-        assertEquals(t.getFacets(), new HashSet(Arrays.asList("specdoc", "specdoc2", "specdoc3", "specdoc4")));
-        assertEquals(t.getAllowedSubtypes(), new HashSet(Arrays.asList("myDoc2", "myDoc3", "myDoc4")));
+        assertEquals(t.getFacets(), new HashSet<>(Arrays.asList("specdoc", "specdoc2", "specdoc3", "specdoc4")));
+        assertEquals(t.getAllowedSubtypes(), new HashSet<>(Arrays.asList("myDoc2", "myDoc3", "myDoc4")));
     }
 
 }

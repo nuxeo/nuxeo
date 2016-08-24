@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
  */
-
 package org.nuxeo.ecm.user.center;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.nuxeo.ecm.user.center.AbstractUserGroupCodec.DEFAULT_VIEW_ID;
 import static org.nuxeo.ecm.user.center.UserCodec.DEFAULT_USERS_TAB;
-import static org.nuxeo.ecm.user.center.UserCodec.DEFAULT_VIEW_ID;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class TestUserCodec extends NXRuntimeTestCase {
 
     private DocumentView getDocumentView(String username, String view) {
         DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("username", username);
         return new DocumentViewImpl(docLoc, view, params);
     }
@@ -75,7 +74,8 @@ public class TestUserCodec extends NXRuntimeTestCase {
 
     @Test
     public void shouldGetDocumentView() throws Exception {
-        deployContrib("org.nuxeo.ecm.user.center", "OSGI-INF/user-group-codec-properties.xml");
+        pushInlineDeployments("org.nuxeo.ecm.user.center:OSGI-INF/user-group-codec-properties.xml");
+
         UserCodec codec = new UserCodec();
         String url = "user/bender";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
@@ -117,7 +117,8 @@ public class TestUserCodec extends NXRuntimeTestCase {
         assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
         assertEquals("zoidberg@planet-express.com", docView.getParameter("username"));
 
-        deployContrib("org.nuxeo.ecm.user.center.tests", "OSGI-INF/test-user-group-codec-properties.xml");
+        pushInlineDeployments("org.nuxeo.ecm.user.center.tests:OSGI-INF/test-user-group-codec-properties.xml");
+
         url = "user/bender%20bending";
         docView = codec.getDocumentViewFromUrl(url);
         assertNotNull(docView);

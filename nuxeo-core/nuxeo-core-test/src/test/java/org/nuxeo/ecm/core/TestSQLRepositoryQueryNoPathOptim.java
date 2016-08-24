@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.Calendar;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,18 +37,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.reload.ReloadService;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 /**
  * Test path search without pathOptimizations
@@ -57,17 +52,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.runtime.reload")
 public class TestSQLRepositoryQueryNoPathOptim {
 
     @Inject
-    protected RuntimeHarness runtimeHarness;
-
-    @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected EventService eventService;
 
     @Inject
     protected CoreSession session;
@@ -76,45 +64,16 @@ public class TestSQLRepositoryQueryNoPathOptim {
     protected SQLRepositoryService sqlRepositoryService;
 
     @Inject
-    protected ReloadService reloadService;
+    protected HotDeployer deployer;
 
     @Before
     public void setUp() throws Exception {
         // cannot be done through @LocalDeploy, because the framework variables
         // about repository configuration aren't ready yet
-        runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
-        // assume after deploy so that tearDown can undeploy
         assumeTrue(coreFeature.getStorageConfiguration().isVCS());
-        newRepository(); // fully reread repo
+        deployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
         RepositoryDescriptor desc = sqlRepositoryService.getRepositoryDescriptor(session.getRepositoryName());
         assertFalse("Path optim should be disabled", desc.getPathOptimizationsEnabled());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests",
-                "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
-    }
-
-    protected void newRepository() throws InterruptedException {
-        waitForAsyncCompletion();
-        coreFeature.releaseCoreSession();
-        // reload repo with new config
-        reloadService.reloadRepository();
-        session = coreFeature.createCoreSession();
-    }
-
-    protected void waitForAsyncCompletion() {
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
-    }
-
-    protected void nextTransaction() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
     }
 
     protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
@@ -293,9 +252,9 @@ public class TestSQLRepositoryQueryNoPathOptim {
                 session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(4, dml.size());
 
-        dml = session.query(String.format(
-                "SELECT * FROM document WHERE dc:title='testfile1_Title' AND ecm:ancestorId = '%s'",
-                session.getRootDocument().getId()));
+        dml = session.query(
+                String.format("SELECT * FROM document WHERE dc:title='testfile1_Title' AND ecm:ancestorId = '%s'",
+                        session.getRootDocument().getId()));
         assertEquals(1, dml.size());
 
         dml = session.query(String.format(

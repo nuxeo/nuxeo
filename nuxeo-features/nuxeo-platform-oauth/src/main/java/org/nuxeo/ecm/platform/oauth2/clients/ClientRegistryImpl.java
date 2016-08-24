@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.oauth2.clients;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -45,16 +47,41 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
 
     private static final Log log = LogFactory.getLog(ClientRegistry.class);
 
+    protected List<OAuth2Client> registrations;
+
+    @Override
+    public void activate(ComponentContext context) {
+        super.activate(context);
+        registrations = new ArrayList<>();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        super.deactivate(context);
+        registrations = null;
+    }
+
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         switch (extensionPoint) {
         case "clients":
-            OAuth2Client client = (OAuth2Client) contribution;
-            registerClient(client);
+            registrations.add((OAuth2Client) contribution);
             break;
         default:
             break;
         }
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        for (OAuth2Client client : registrations) {
+            registerClient(client);
+        }
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        // TODO call deleteClient() ?
     }
 
     @Override

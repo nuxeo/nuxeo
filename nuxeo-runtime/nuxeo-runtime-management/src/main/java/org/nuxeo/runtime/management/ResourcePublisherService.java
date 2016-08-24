@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.runtime.management;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -149,7 +148,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
 
     protected class ResourcesRegistry {
 
-        protected final Map<ObjectName, Resource> registry = new HashMap<ObjectName, Resource>();
+        protected final Map<ObjectName, Resource> registry = new HashMap<>();
 
         protected void doRegisterResource(String qualifiedName, Class<?> info, Object instance) {
             Resource resource = new Resource(ObjectNameFactory.getObjectName(qualifiedName), info, instance);
@@ -312,12 +311,12 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
 
     @Override
     public Set<String> getShortcutsName() {
-        return new HashSet<String>(shortcutsRegistry.registry.keySet());
+        return new HashSet<>(shortcutsRegistry.registry.keySet());
     }
 
     @Override
     public Set<ObjectName> getResourcesName() {
-        return new HashSet<ObjectName>(resourcesRegistry.registry.keySet());
+        return new HashSet<>(resourcesRegistry.registry.keySet());
     }
 
     @Override
@@ -345,7 +344,6 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
         for (Resource resource : resourcesRegistry.registry.values()) {
             if (resource.mbean != null) {
                 resourcesRegistry.doUnbind(resource);
-            } else {;
             }
         }
     }
@@ -358,14 +356,14 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
     protected boolean started = false;
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         started = true;
         factoriesRegistry.doRegisterResources();
         doBindResources();
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         started = false;
         doUnbindResources();
     }

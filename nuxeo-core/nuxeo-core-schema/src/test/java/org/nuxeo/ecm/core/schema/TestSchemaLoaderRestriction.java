@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
-
 package org.nuxeo.ecm.core.schema;
 
 import static org.junit.Assert.assertEquals;
@@ -28,7 +27,6 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -58,10 +56,12 @@ public class TestSchemaLoaderRestriction extends NXRuntimeTestCase {
     private Schema schema;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         SchemaManager typeMgr = Framework.getLocalService(SchemaManager.class);
         XSDLoader reader = new XSDLoader((SchemaManagerImpl) typeMgr);
         URL url = getResource("schema/testrestriction.xsd");

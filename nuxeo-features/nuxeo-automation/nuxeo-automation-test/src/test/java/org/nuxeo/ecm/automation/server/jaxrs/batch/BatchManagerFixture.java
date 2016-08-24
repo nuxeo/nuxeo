@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import org.apache.commons.collections.ListUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,7 +54,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
@@ -67,9 +64,6 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core",
         "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server" })
 public class BatchManagerFixture {
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Test
     public void testServiceRegistred() {
@@ -103,9 +97,8 @@ public class BatchManagerFixture {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.automation.test.test:test-batchmanager-client-generated-id-allowed-contrib.xml")
     public void testBatchInitClientGeneratedIdAllowed() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.automation.test.test",
-                "test-batchmanager-client-generated-id-allowed-contrib.xml");
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = ((BatchManagerComponent) bm).initBatchInternal("testBatchId").getKey();
         assertEquals("testBatchId", batchId);
@@ -113,8 +106,6 @@ public class BatchManagerFixture {
         Batch batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
         assertNotNull(batch);
         assertEquals("testBatchId", batch.getKey());
-        harness.undeployContrib("org.nuxeo.ecm.automation.test.test",
-                "test-batchmanager-client-generated-id-allowed-contrib.xml");
     }
 
     @Test
@@ -324,22 +315,19 @@ public class BatchManagerFixture {
         int nbBatches = 100;
         String[] batchIds = new String[nbBatches];
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(nbBatches + 1));
+                new LinkedBlockingQueue<>(nbBatches + 1));
 
         for (int i = 0; i < nbBatches; i++) {
             final int batchIndex = i;
-            tpe.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        String batchId = bm.initBatch();
-                        bm.addStream(batchId, "0",
-                                new ByteArrayInputStream(("SomeContent_" + batchId).getBytes(StandardCharsets.UTF_8)),
-                                "MyBatchFile.txt", "text/plain");
-                        batchIds[batchIndex] = batchId;
-                    } catch (IOException e) {
-                        fail(e.getMessage());
-                    }
+            tpe.submit(() -> {
+                try {
+                    String batchId = bm.initBatch();
+                    bm.addStream(batchId, "0",
+                            new ByteArrayInputStream(("SomeContent_" + batchId).getBytes(StandardCharsets.UTF_8)),
+                            "MyBatchFile.txt", "text/plain");
+                    batchIds[batchIndex] = batchId;
+                } catch (IOException e) {
+                    fail(e.getMessage());
                 }
             });
         }
@@ -386,22 +374,17 @@ public class BatchManagerFixture {
         // Add files concurrently
         int nbFiles = 100;
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(nbFiles + 1));
+                new LinkedBlockingQueue<>(nbFiles + 1));
 
         for (int i = 0; i < nbFiles; i++) {
             final String fileIndex = String.valueOf(i);
-            tpe.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        bm.addStream(
-                                batchId,
-                                fileIndex,
-                                new ByteArrayInputStream(("SomeContent_" + fileIndex).getBytes(StandardCharsets.UTF_8)),
-                                fileIndex + ".txt", "text/plain");
-                    } catch (IOException e) {
-                        fail(e.getMessage());
-                    }
+            tpe.submit(() -> {
+                try {
+                    bm.addStream(batchId, fileIndex,
+                            new ByteArrayInputStream(("SomeContent_" + fileIndex).getBytes(StandardCharsets.UTF_8)),
+                            fileIndex + ".txt", "text/plain");
+                } catch (IOException e) {
+                    fail(e.getMessage());
                 }
             });
         }
@@ -442,23 +425,18 @@ public class BatchManagerFixture {
         // Add chunks concurrently
         int nbChunks = 100;
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(nbChunks + 1));
+                new LinkedBlockingQueue<>(nbChunks + 1));
 
         for (int i = 0; i < nbChunks; i++) {
             final int chunkIndex = i;
-            tpe.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        bm.addStream(
-                                batchId,
-                                "0",
-                                new ByteArrayInputStream(
-                                        ("SomeChunkContent_" + chunkIndex + " ").getBytes(StandardCharsets.UTF_8)),
-                                nbChunks, chunkIndex, "MyChunkedFile.txt", "text/plain", 0);
-                    } catch (IOException e) {
-                        fail(e.getMessage());
-                    }
+            tpe.submit(() -> {
+                try {
+                    bm.addStream(batchId, "0",
+                            new ByteArrayInputStream(
+                                    ("SomeChunkContent_" + chunkIndex + " ").getBytes(StandardCharsets.UTF_8)),
+                            nbChunks, chunkIndex, "MyChunkedFile.txt", "text/plain", 0);
+                } catch (IOException e) {
+                    fail(e.getMessage());
                 }
             });
         }

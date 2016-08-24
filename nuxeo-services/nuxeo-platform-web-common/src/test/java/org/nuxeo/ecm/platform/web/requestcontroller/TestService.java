@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.web.requestcontroller;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -27,9 +30,6 @@ import javax.servlet.FilterConfig;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
@@ -38,6 +38,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -52,14 +53,15 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testServiceContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.web.common.test", "OSGI-INF/web-request-controller-contrib-test.xml");
+        pushInlineDeployments(
+                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
 
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);
 
         RequestControllerService rcmTest = (RequestControllerService) rcm;
 
-        String uri = "";
+        String uri;
         RequestFilterConfig config;
 
         uri = "/SyncNoTx/test";
@@ -117,12 +119,13 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testCorsContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.web.common.test", "OSGI-INF/web-request-controller-contrib-test.xml");
+        pushInlineDeployments(
+                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
 
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);
 
-        String uri = "";
+        String uri;
         FilterConfig fc;
 
         RequestControllerService rcs = (RequestControllerService) rcm;
@@ -142,7 +145,8 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testHeadersContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.web.common.test", "OSGI-INF/web-request-controller-contrib-test.xml");
+        pushInlineDeployments(
+                "org.nuxeo.ecm.platform.web.common.test:OSGI-INF/web-request-controller-contrib-test.xml");
 
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);

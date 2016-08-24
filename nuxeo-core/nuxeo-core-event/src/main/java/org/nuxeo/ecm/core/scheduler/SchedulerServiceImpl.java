@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +69,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     /**
      * @since 7.10
      */
-    private Map<String, JobKey> jobKeys = new HashMap<String, JobKey>();
+    private Map<String, JobKey> jobKeys = new HashMap<>();
 
     @Override
     public void activate(ComponentContext context) {
@@ -110,7 +109,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
         GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals("nuxeo");
         Set<JobKey> jobs = scheduler.getJobKeys(matcher);
         try {
-            scheduler.deleteJobs(new ArrayList<JobKey>(jobs)); // raise a lock error in case of concurrencies
+            scheduler.deleteJobs(new ArrayList<>(jobs)); // raise a lock error in case of concurrencies
             for (Schedule each : registry.getSchedules()) {
                 registerSchedule(each);
             }
@@ -140,7 +139,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         try {
             setupScheduler();
         } catch (IOException | SchedulerException e) {
@@ -149,7 +148,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         try {
             scheduler.standby();
         } catch (SchedulerException cause) {

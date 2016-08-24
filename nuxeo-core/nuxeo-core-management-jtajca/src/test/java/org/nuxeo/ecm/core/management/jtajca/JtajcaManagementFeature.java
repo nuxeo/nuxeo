@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,13 @@ import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
+import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
@@ -60,8 +63,26 @@ public class JtajcaManagementFeature extends SimpleFeature {
     protected <T> void bind(Binder binder, MBeanServer mbs, Class<T> type) {
         final Set<ObjectName> names = mbs.queryNames(nameOf(type), null);
         for (ObjectName name : names) {
-            T instance = type.cast(JMX.newMXBeanProxy(mbs, name, type));
-            binder.bind(type).annotatedWith(Names.named(name.getKeyProperty("name"))).toInstance(instance);
+            binder.bind(type)
+                  .annotatedWith(Names.named(name.getKeyProperty("name")))
+                  .toProvider(new MBeanProvider<>(type, name));
+        }
+    }
+
+    class MBeanProvider<T> implements Provider<T> {
+        protected Class<T> type;
+
+        protected ObjectName name;
+
+        public MBeanProvider(Class<T> type, ObjectName name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        @Override
+        public T get() {
+            MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+            return type.cast(JMX.newMXBeanProxy(mbs, name, type));
         }
     }
 
@@ -93,6 +114,15 @@ public class JtajcaManagementFeature extends SimpleFeature {
         if (core == null) {
             return;
         }
+        // if components are restarted (due to a hot deploy) while in a test method we need to register
+        // a deploy handler to recreate the tx checker..
+        runner.getFeature(RuntimeFeature.class).registerHandler(new ActionHandler() {
+            @Override
+            public void exec(String action, String... args) throws Exception {
+                next.exec(action, args);
+                JtajcaManagementFeature.this.txChecker = new TxChecker(runner);
+            }
+        });
         // bind repository
         String repositoryName = core.getStorageConfiguration().getRepositoryName();
         NuxeoContainer.getConnectionManager(repositoryName);
@@ -118,7 +148,8 @@ public class JtajcaManagementFeature extends SimpleFeature {
                 LogFactory.getLog(JtajcaManagementFeature.class).debug(target + " was successful");
                 return;
             }
-            throw new AssertionError(String.format("still have tx active (%d) %s", count, monitor.getActiveStatistics()));
+            throw new AssertionError(
+                    String.format("still have tx active (%d) %s", count, monitor.getActiveStatistics()));
         }
 
         public TxChecker(FeaturesRunner runner) {

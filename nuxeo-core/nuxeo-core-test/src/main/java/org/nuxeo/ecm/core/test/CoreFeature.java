@@ -54,10 +54,12 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.URLStreamRef;
+import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
@@ -73,6 +75,7 @@ import com.google.inject.Binder;
  */
 @Deploy({ "org.nuxeo.runtime.management", //
         "org.nuxeo.runtime.metrics", //
+        "org.nuxeo.runtime.reload", // required by #CoreDeployer
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.core.query", //
         "org.nuxeo.ecm.core.api", //
@@ -152,6 +155,8 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {
+	runner.getFeature(RuntimeFeature.class).registerHandler(new CoreDeployer());
+
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
         txFeature.addWaiter(new WorksWaiter());
@@ -256,7 +261,7 @@ public class CoreFeature extends SimpleFeature {
         }
     }
 
-    protected void waitForAsyncCompletion() {
+    public void waitForAsyncCompletion() {
         txFeature.nextTransaction();
     }
 
@@ -339,9 +344,9 @@ public class CoreFeature extends SimpleFeature {
 
     protected void initializeSession(FeaturesRunner runner) {
         if (cleaned) {
-            // re-trigger application started
+            // reinitialize repositories content
             RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-            repositoryService.applicationStarted(null);
+            repositoryService.initRepositories();
             cleaned = false;
         }
         CoreScope.INSTANCE.enter();
@@ -398,6 +403,20 @@ public class CoreFeature extends SimpleFeature {
         NuxeoContainer.resetConnectionManager();
         createCoreSession();
         return session;
+    }
+
+    public class CoreDeployer extends HotDeployer.ActionHandler {
+
+		@Override
+		public void exec(String action, String... agrs) throws Exception {
+			waitForAsyncCompletion();
+	        releaseCoreSession();
+			next.exec(action, agrs);
+			Framework.getService(ReloadService.class).reloadRepository();
+	        createCoreSession();
+
+		}
+
     }
 
 }

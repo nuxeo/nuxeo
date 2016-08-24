@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -159,12 +160,16 @@ public class RedisFeature extends SimpleFeature {
         harness.deployBundle("org.nuxeo.ecm.core.redis");
         harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));
 
-        RedisComponent component = (RedisComponent) Framework.getRuntime().getComponent(
-                RedisComponent.class.getPackage().getName());
-        component.registerRedisPoolDescriptor(getDescriptor(mode));
-        component.handleNewExecutor(component.getConfig().newExecutor());
+        registerComponentListener();// this will dynamically configure redis component when activated
+        return true;
+    }
 
-        clear();
+    protected boolean installConfig(RedisComponent component) {
+        Mode mode = getMode();
+        if (Mode.disabled.equals(mode)) {
+            return false;
+        }
+        component.registerRedisPoolDescriptor(getDescriptor(mode));
         return true;
     }
 
@@ -182,6 +187,20 @@ public class RedisFeature extends SimpleFeature {
 
     protected Config config = Defaults.of(Config.class);
 
+
+    protected void registerComponentListener() {
+        Framework.getRuntime().getComponentManager().addListener(new ComponentManager.LifeCycleHandler() {
+            @Override
+            public void afterActivation(ComponentManager mgr) {
+                // overwrite the redis config (before redis component is started)
+                RedisComponent comp = (RedisComponent)Framework.getRuntime().getComponent("org.nuxeo.ecm.core.redis");
+                if (comp != null) {
+                    installConfig(comp);
+                }
+            }
+        });
+    }
+
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         config = runner.getConfig(Config.class);
@@ -191,6 +210,11 @@ public class RedisFeature extends SimpleFeature {
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         setupMe(runner.getFeature(RuntimeFeature.class).getHarness());
+    }
+
+    @Override
+    public void beforeRun(FeaturesRunner runner) throws Exception {
+        clear();
     }
 
 }

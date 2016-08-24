@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,10 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Assert;
-
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -149,7 +148,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         ComponentInstance componentInstance = Framework.getRuntime().getComponentInstance(
                 "org.nuxeo.ecm.automation.server.AutomationServer");
         AutomationServerComponent automationServerComponent = (AutomationServerComponent) componentInstance.getInstance();
-        automationServerComponent.applicationStarted(componentInstance);
+        automationServerComponent.start(componentInstance);
     }
 
     /**
@@ -562,8 +561,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         Map<String, Object> map2 = mapper.readValue(obj2JSON, Map.class);
 
         // Expected result when passing obj1 and obj2 as input to the
-        POJOObject expectedObj12 = new POJOObject("Merged texts: [obj1 text][obj2 text]", Arrays.asList("1", "2", "2",
-                "3"));
+        POJOObject expectedObj12 = new POJOObject("Merged texts: [obj1 text][obj2 text]",
+                Arrays.asList("1", "2", "2", "3"));
 
         // The pojo and the map parameters can be passed as java objects
         // directly in the client call, the generic Jackson-based parser /
@@ -905,7 +904,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         logRequest.setInput(new PathRef("/"));
         logRequest.execute();
 
-        OperationRequest queryRequest = session.newRequest(AuditPageProviderOperation.ID, new HashMap<String, Object>());
+        OperationRequest queryRequest = session.newRequest(AuditPageProviderOperation.ID,
+                new HashMap<String, Object>());
 
         queryRequest.getParameters().put("providerName", "AUDIT_BROWSER");
         Object result = queryRequest.execute();
@@ -1076,12 +1076,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testContextInjection() throws IOException {
         Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         Document folder = (Document) session.newRequest(ContextInjectionOperation.ID)
-                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
-                .setInput(root)
-                // Check for context null property marshalling
-                .setContextProperty("description", null)
-                .setContextProperty("title", "hello")
-                .execute();
+                                            .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                            .setInput(root)
+                                            // Check for context null property marshalling
+                                            .setContextProperty("description", null)
+                                            .setContextProperty("title", "hello")
+                                            .execute();
         assertEquals("hello", folder.getString("dc:title"));
         assertNull(folder.getString("dc:description"));
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +35,11 @@ import javax.inject.Inject;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.osgi.framework.Bundle;
 
-import com.google.common.base.Supplier;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
@@ -55,22 +54,17 @@ public class RuntimeDeployment {
 
     Map<String, Collection<String>> mainContribs = new HashMap<>();
 
-    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, new Supplier<Set<String>>() {
-        @Override
-        public Set<String> get() {
-            return new HashSet<>();
-        }
-    });
+    SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, HashSet::new);
 
     Map<String, Collection<String>> localContribs = new HashMap<>();
 
-    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, new Supplier<Set<String>>() {
-        @Override
-        public Set<String> get() {
-            return new HashSet<>();
-        }
-    });
+    SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, HashSet::new);
 
+    /**
+     * @deprecated since 9.2 we cannot undeploy components while they are started. So we don't need anymore to store the
+     *             contexts
+     */
+    @Deprecated
     protected LinkedList<RuntimeContext> contexts = new LinkedList<>();
 
     protected void index(Class<?> clazz) {
@@ -120,7 +114,6 @@ public class RuntimeDeployment {
 
     /**
      * @since 9.1
-     * @param config
      */
     protected void index(PartialDeploy config) {
         if (config == null) {
@@ -229,25 +222,6 @@ public class RuntimeDeployment {
 
     }
 
-    void undeploy() {
-        AssertionError errors = new AssertionError("deployment errors");
-
-        Iterator<RuntimeContext> it = contexts.descendingIterator();
-        while (it.hasNext()) {
-            RuntimeContext each = it.next();
-            it.remove();
-            try {
-                each.destroy();
-            } catch (RuntimeException error) {
-                errors.addSuppressed(error);
-            }
-        }
-
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
-    }
-
     public static RuntimeDeployment onTest(FeaturesRunner runner) {
         RuntimeDeployment deployment = new RuntimeDeployment();
         deployment.index(runner.getDescription().getTestClass());
@@ -270,13 +244,14 @@ public class RuntimeDeployment {
         public Statement apply(Statement base, FrameworkMethod method, Object target) {
             RuntimeDeployment deployment = new RuntimeDeployment();
             deployment.index(method.getMethod());
-            return deployment.onStatement(runner, runner.getFeature(RuntimeFeature.class).harness, base);
+            return deployment.onStatement(runner, runner.getFeature(RuntimeFeature.class).harness, method, base);
         }
 
     }
 
-    protected Statement onStatement(FeaturesRunner runner, RuntimeHarness harness, Statement base) {
-        return new DeploymentStatement(runner, harness, base);
+    protected Statement onStatement(FeaturesRunner runner, RuntimeHarness harness, FrameworkMethod method,
+            Statement base) {
+        return new DeploymentStatement(runner, harness, method, base);
     }
 
     protected class DeploymentStatement extends Statement {
@@ -285,21 +260,48 @@ public class RuntimeDeployment {
 
         protected final RuntimeHarness harness;
 
+        // useful for debugging
+        protected final FrameworkMethod method;
+
         protected final Statement base;
 
-        public DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, Statement base) {
+        public DeploymentStatement(FeaturesRunner runner, RuntimeHarness harness, FrameworkMethod method,
+                Statement base) {
             this.runner = runner;
             this.harness = harness;
+            this.method = method;
             this.base = base;
+        }
+
+        protected void tryDeploy() {
+            // the registry is updated here and not using before or teardown methods.
+            // this approach ensure the components are not stopped between tearDown and the next test
+            // (so that custom feature that relly on the runtime between the two tests are not affected by stopping
+            // components)
+            ComponentManager mgr = harness.getContext().getRuntime().getComponentManager();
+            // the stash may already contains contribs (from @Setup methods)
+            if (mgr.hasChanged()) { // first reset the registry if it was changed by the last test
+                mgr.reset();
+                // the registry is now stopped
+            }
+            // deploy current test contributions if any
+            deploy(runner, harness);
+            mgr.refresh(true);
+            // now the stash is empty
+            mgr.start(); // ensure components are started
         }
 
         @Override
         public void evaluate() throws Throwable {
-            deploy(runner, harness);
+            // make sure the clear the stash
+            tryDeploy();
             try {
                 base.evaluate();
             } finally {
-                undeploy();
+                // undeploy cannot be done while the components are started
+                // RuntimeFeature will do a reset if needed
+                // see RuntimeFeature.afterTeardown
+                // undeploy();
             }
         }
 

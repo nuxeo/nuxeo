@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.runtime.jetty;
 
 import java.io.File;
@@ -207,11 +204,6 @@ public class JettyComponent extends DefaultComponent {
     @Override
     public void deactivate(ComponentContext context) {
         ctxMgr = null;
-        try {
-            server.stop();
-        } catch (Exception e) { // stupid Jetty API throws Exception
-            throw ExceptionUtils.runtimeException(e);
-        }
         server = null;
     }
 
@@ -306,7 +298,7 @@ public class JettyComponent extends DefaultComponent {
     }
 
     protected ClassLoader getClassLoader(ClassLoader cl) {
-        if (!Boolean.valueOf(System.getProperty("org.nuxeo.jetty.propagateNaming"))) {
+        if (!Boolean.parseBoolean(System.getProperty("org.nuxeo.jetty.propagateNaming"))) {
             return cl;
         }
         if (nuxeoCL == null) {
@@ -321,7 +313,7 @@ public class JettyComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (server == null) {
             return;
         }
@@ -335,6 +327,15 @@ public class JettyComponent extends DefaultComponent {
             throw ExceptionUtils.runtimeException(e);
         } finally {
             t.setContextClassLoader(getClassLoader(oldcl));
+        }
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        try {
+            server.stop();
+        } catch (Exception e) { // stupid Jetty API throws Exception
+            throw ExceptionUtils.runtimeException(e);
         }
     }
 

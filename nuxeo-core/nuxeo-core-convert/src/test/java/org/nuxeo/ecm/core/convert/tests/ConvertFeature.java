@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.convert.tests;
 
-import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -34,10 +33,8 @@ public class ConvertFeature extends SimpleFeature {
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        // do testing configuration
-        // cachesize = -1 (actually 0)
-        // GC interval negative => interpreted as seconds
-        ConversionServiceImpl.setMaxCacheSizeInKB(-1);
-        ConversionServiceImpl.setGCIntervalInMinutes(-1000);
+        // we need to deploy it by hand to overwrite the settings deployed at class level
+        runner.getFeature(RuntimeFeature.class).getHarness().deployContrib("org.nuxeo.ecm.core.convert",
+                "OSGI-INF/convert-service-default-test-config.xml");
     }
 }

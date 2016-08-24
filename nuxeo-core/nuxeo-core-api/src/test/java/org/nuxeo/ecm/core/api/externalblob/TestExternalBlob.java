@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,14 +48,15 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     public static String TEMP_DIRECTORY_NAME = "testExternalBlobDir";
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-externalblob-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-externalblob-adapters-contrib.xml");
+    }
 
+    @Override
+    protected void postSetUp() throws Exception {
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
         // due to xml parsing
@@ -65,8 +64,8 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertNotNull(service);
         ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
-                + Environment.getDefault().getTemp().getPath() + " ");
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME,
+                "\n" + Environment.getDefault().getTemp().getPath() + " ");
         adapter.setProperties(props);
     }
 

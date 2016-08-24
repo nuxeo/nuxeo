@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,18 +32,14 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 5.9.3
@@ -65,8 +61,7 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
 
         checkDocs();
 
-        harness.deployContrib("org.nuxeo.ecm.user.center.profile.test",
-                "OSGI-INF/user-profile-test-ok-no-update-contrib.xml");
+        deployer.deploy("org.nuxeo.ecm.user.center.profile.test:OSGI-INF/user-profile-test-ok-no-update-contrib.xml");
 
         UserProfileImporter importer = new
                 UserProfileImporter();

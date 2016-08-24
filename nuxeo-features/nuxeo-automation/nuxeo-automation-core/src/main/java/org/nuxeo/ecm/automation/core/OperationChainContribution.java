@@ -160,11 +160,11 @@ public class OperationChainContribution {
                 // decode XML entities in every case
                 param.value = StringEscapeUtils.unescapeXml(param.value);
                 if (param.value.startsWith("expr:")) {
-                    param.value = param.value.substring(5);
-                    if (param.value.contains("@{")) {
-                        params.set(param.name, Scripting.newTemplate(param.value));
+                    String value = param.value.substring(5);
+                    if (value.contains("@{")) {
+                        params.set(param.name, Scripting.newTemplate(value));
                     } else {
-                        params.set(param.name, Scripting.newExpression(param.value));
+                        params.set(param.name, Scripting.newExpression(value));
                     }
                 } else {
                     Object val = null;

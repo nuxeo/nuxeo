@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: TestLayoutService.java 28493 2008-01-04 19:51:30Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.layout.service;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
@@ -51,12 +53,6 @@ import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Test layout service API
  *
@@ -66,18 +62,22 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     private WebLayoutManager service;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.platform.forms.layout.core");
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client", "OSGI-INF/layouts-framework.xml");
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         service = Framework.getService(WebLayoutManager.class);
         assertNotNull(service);
     }
 
     @Test
     public void testWidgetType() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         WidgetType wType = service.getWidgetType("test");
         assertEquals("test", wType.getName());
         assertEquals(2, wType.getProperties().size());
@@ -134,7 +134,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutType() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         LayoutTypeDefinition lType = service.getLayoutTypeDefinition("myLayoutType");
         assertNotNull(lType);
         assertEquals("myLayoutType", lType.getName());
@@ -147,7 +148,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(defaultProps);
         assertEquals(1, defaultProps.size());
 
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-listing-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-listing-test-contrib.xml");
 
         LayoutDefinition ldef = service.getLayoutDefinition("search_listing_ajax_with_type");
         assertNotNull(ldef);
@@ -200,7 +201,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testLayout() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         Layout layout = service.getLayout(null, "testLayout", BuiltinModes.VIEW, null);
         assertNotNull(layout);
         assertEquals("testLayout", layout.getName());
@@ -333,7 +335,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutRowSelection() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-listing-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-listing-test-contrib.xml");
+
         Layout layout = service.getLayout(null, "search_listing_ajax", "edit_columns", "", null, false);
         LayoutRow[] rows = layout.getRows();
         assertEquals(4, rows.length);
@@ -354,7 +357,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("subjects", rows[5].getName());
         assertEquals("rights", rows[6].getName());
 
-        List<String> selectedRows = new ArrayList<String>();
+        List<String> selectedRows = new ArrayList<>();
         layout = service.getLayout(null, "search_listing_ajax", "edit_columns", "", selectedRows, false);
         rows = layout.getRows();
         assertEquals(1, rows.length);
@@ -383,7 +386,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetModeProperties() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
 
         Layout editLayout = service.getLayout(null, "testWidgetModeProperties", BuiltinModes.EDIT, "", null, false);
         assertNotNull(editLayout);
@@ -415,7 +418,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testPropertyReference() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-props-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-props-contrib.xml");
+
         assertTrue(service.referencePropertyAsExpression("foo", null, null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar", "jsf", null, null));
@@ -447,7 +451,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertFalse(service.referencePropertyAsExpression("disabled", "bar", "bar", "jsf", "bar", "bar"));
 
         // override to check merge
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-props-contrib-override.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-props-contrib-override.xml");
 
         assertTrue(service.referencePropertyAsExpression("foo", null, null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", null, "jsf", null, null));
@@ -476,7 +480,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testWidget() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         Widget widget = service.getWidget(null, "globalTestWidget", null, BuiltinModes.VIEW, null, "pseudoLayout");
         assertNotNull(widget);
         assertEquals("globalTestWidget", widget.getName());
@@ -488,9 +493,9 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("foo", fieldDefs[0].getSchemaName());
         assertEquals("bar", fieldDefs[0].getFieldName());
 
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("myPropName", "myPropValue");
-        List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
+        List<FieldDefinition> fieldDefinitions = new ArrayList<>();
         fieldDefinitions.add(new FieldDefinitionImpl("foo", "bar"));
         WidgetDefinition widgetDef = new WidgetDefinitionImpl("testDynamicWidget", "test", "my.widget.label",
                 "my.widget.help.label", true, null, fieldDefinitions, properties, null);
@@ -519,7 +524,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetWithTypeCategory() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         Widget widget = service.getWidget(null, "globalTestWidgetWithTypeCategory", "testCategory", BuiltinModes.VIEW,
                 null, "pseudoLayout");
         assertNotNull(widget);
@@ -540,7 +546,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetExceptions() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         Widget widget = service.getWidget(null, "unknownWidget", null, BuiltinModes.VIEW, null, "pseudoLayout");
         assertNull(widget);
         widget = service.getWidget(null, null, BuiltinModes.VIEW, null, "pseudoLayout");
@@ -549,7 +556,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetWithFormInfo() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         Widget widget = service.getWidget(null, "widgetWithControls", null, BuiltinModes.VIEW, null, "pseudoLayout");
         assertNotNull(widget);
         assertEquals("widgetWithControls", widget.getName());
@@ -563,7 +571,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testEmptyLayout() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         LayoutDefinition layout = service.getLayoutDefinition("testEmptyLayout");
         assertTrue(layout.isEmpty());
         layout = service.getLayoutDefinition("testLayout");
@@ -572,7 +581,8 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
     @Test
     public void testLayoutNonJSFWidgetTypeCategory() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests", "layouts-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.forms.layout.client.tests:layouts-test-contrib.xml");
+
         Layout layout = service.getLayout(null, "testLayoutForCategory", BuiltinModes.VIEW, null);
         assertNotNull(layout);
         assertEquals("testLayoutForCategory", layout.getName());

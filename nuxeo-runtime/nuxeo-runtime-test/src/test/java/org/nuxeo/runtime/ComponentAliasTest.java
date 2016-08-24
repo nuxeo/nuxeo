@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,25 +33,27 @@ public class ComponentAliasTest extends NXRuntimeTestCase {
 
     @Test
     public void testContributions() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp4.xml");
+        pushInlineDeployments("org.nuxeo.runtime.test.tests:MyComp3.xml", "org.nuxeo.runtime.test.tests:MyComp4.xml");
+
         check(3);
     }
 
     @Test
     public void testContributionsPending() throws Exception {
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp4.xml");
-        // register the required one last
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
+        pushInlineDeployments("org.nuxeo.runtime.test.tests:MyComp4.xml",
+                // register the required one last
+                "org.nuxeo.runtime.test.tests:MyComp3.xml");
+
         check(3);
     }
 
     @Test
     public void testContributionsPendingOnAliasWithoutRequire() throws Exception {
         // contrib to an alias of the component, not using a require
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp4b.xml");
-        // the component itself
-        deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
+        pushInlineDeployments("org.nuxeo.runtime.test.tests:MyComp4b.xml",
+                // the component itself
+                "org.nuxeo.runtime.test.tests:MyComp3.xml");
+
         check(1);
     }
 

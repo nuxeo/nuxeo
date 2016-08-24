@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,10 +158,16 @@ public class ContributionPersistenceComponent extends DefaultComponent implement
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (storage == null) {
             storage = new FileSystemStorage();
             start();
         }
     }
+
+    @Override
+    public void stop(ComponentContext context) {
+        stop();
+    }
+
 }

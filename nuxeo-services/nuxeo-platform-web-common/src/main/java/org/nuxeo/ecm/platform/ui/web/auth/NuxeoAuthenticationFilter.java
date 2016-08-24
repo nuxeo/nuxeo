@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
  *     Anahide Tchertchian
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
@@ -33,6 +32,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_STATUS_CODE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SECURITY_ERROR;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SESSION_TIMEOUT;
@@ -41,7 +41,6 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -100,8 +99,8 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginConfiguration;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.model.ComponentManager;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -198,7 +197,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             EventProducer evtProducer = Framework.getService(EventProducer.class);
             Principal principal = new SimplePrincipal(userInfo.getUserName());
 
-            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            Map<String, Serializable> props = new HashMap<>();
             props.put("AuthenticationPlugin", userInfo.getAuthPluginName());
             props.put("LoginPlugin", userInfo.getLoginPluginName());
             props.put("category", LOGIN_JMS_CATEGORY);
@@ -410,7 +409,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         } finally {
             ClientLoginModule.clearThreadLocalLogin();
-            LoginConfiguration.INSTANCE.cleanupThisThread();
             contextTimer.stop();
             concurrentCount.dec();
         }
@@ -671,6 +669,15 @@ public class NuxeoAuthenticationFilter implements Filter {
                 if (service == null) {
                     log.error("Unable to get Service " + PluggableAuthenticationService.NAME);
                     throw new ServletException("Can't initialize Nuxeo Pluggable Authentication Service");
+                } else {
+                    new ComponentManager.LifeCycleHandler() {
+                        // nullify service field if components are restarting
+                        @Override
+                        public void beforeStart(ComponentManager mgr, boolean isResume) {
+                            service = null;
+                            uninstall();
+                        }
+                    }.install();
                 }
             }
         }
@@ -806,7 +813,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // add locale if not in the URL params
         String localeStr = httpRequest.getParameter(NXAuthConstants.LANGUAGE_PARAMETER);
         if (requestedPage != null && !"".equals(requestedPage) && localeStr != null) {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             if (!URIUtils.getRequestParameters(requestedPage).containsKey(NXAuthConstants.LANGUAGE_PARAMETER)) {
                 params.put(NXAuthConstants.LANGUAGE_PARAMETER, localeStr);
             }
@@ -839,7 +846,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         logLogout(cachedUserInfo.getUserInfo());
 
         request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         String securityError = request.getParameter(SECURITY_ERROR);
         if (securityError != null) {
             parameters.put(SECURITY_ERROR, securityError);
@@ -904,7 +911,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     // Plugin API
     protected void initUnAuthenticatedURLPrefix() {
         // gather unAuthenticated URLs
-        unAuthenticatedURLPrefix = new ArrayList<String>();
+        unAuthenticatedURLPrefix = new ArrayList<>();
         for (String pluginName : service.getAuthChain()) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             List<String> prefix = plugin.getUnAuthenticatedURLPrefix();
@@ -999,8 +1006,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     private void buildUnauthorizedResponse(HttpServletRequest req, HttpServletResponse resp) {
 
         try {
-            StringBuilder sb = new StringBuilder(VirtualHostHelper.getBaseURL(req)).append(LOGIN_PAGE);
-            String loginUrl = sb.toString();
+            String loginUrl = VirtualHostHelper.getBaseURL(req) + LOGIN_PAGE;
             resp.addHeader("Location", loginUrl);
             resp.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
             resp.getWriter().write("Please log in at: " + loginUrl);
@@ -1033,7 +1039,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                     if (userIdent.getLoginParameters() != null) {
                         // keep existing parameters set by the auth plugin
                         if (parameters == null) {
-                            parameters = new HashMap<String, String>();
+                            parameters = new HashMap<>();
                         }
                         parameters.putAll(userIdent.getLoginParameters());
                     }

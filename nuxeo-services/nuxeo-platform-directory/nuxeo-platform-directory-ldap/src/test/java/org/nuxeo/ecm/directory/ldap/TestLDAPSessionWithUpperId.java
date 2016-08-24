@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-20017Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.directory.ldap;
 
 import static org.junit.Assert.assertEquals;
@@ -26,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -33,54 +31,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
- * Tests for NXP-7000: Manage LDAP directories changing id to upper case
+ * Tests for NXP-7000: Manage LDAP directories changing id to upper case Should not be used for external LDAP servers
  *
  * @author Anahide Tchertchian
  */
+// override the default server setup
+@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-override-upper-id.xml")
 public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
 
     protected static final String USER_SCHEMANAME = "user";
 
     protected static final String GROUP_SCHEMANAME = "group";
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        // override default defs
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            fail("This test is not configured for an external server");
-        } else {
-            runtimeHarness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_UPPER_ID);
-            getLDAPDirectory("userDirectory").setTestServer(server);
-            getLDAPDirectory("groupDirectory").setTestServer(server);
-        }
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-        } else {
-            runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP_UPPER_ID);
-        }
-        super.tearDown();
-    }
-
     // override tests to get specific use cases
 
     @SuppressWarnings("rawtypes")
     @Test
     public void testGetEntry() throws Exception {
+        // external LDAP not supported
+        assumeTrue(isLocalServer());
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
@@ -119,7 +96,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
     @Test
     public void testQuery1() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             DocumentModelList entries;
 
             // adding some filter that try to do unauthorized fullext

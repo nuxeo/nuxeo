@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Stephane Lacoin
+ */
 package org.nuxeo.ecm.core.redis;
 
 import static org.junit.Assert.assertEquals;
@@ -7,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.UnsupportedEncodingException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -29,10 +45,9 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import redis.clients.jedis.Jedis;
 
 @Features({ RedisFeature.class, CoreFeature.class })
 @RunWith(FeaturesRunner.class)
@@ -48,10 +63,9 @@ public class TestRedisWorkShutdown {
 
         private static final long serialVersionUID = 1L;
 
-
         MyWork(String id) {
             super(id);
-            setProgress(new Progress(0,2));
+            setProgress(new Progress(0, 2));
         }
 
         @Override
@@ -61,10 +75,11 @@ public class TestRedisWorkShutdown {
 
         Progress nextProgress() {
             Progress progress = getProgress();
-            progress = new Progress(progress.getCurrent()+1, progress.getTotal());
+            progress = new Progress(progress.getCurrent() + 1, progress.getTotal());
             setProgress(progress);
             return progress;
         }
+
         @Override
         public void work() {
             Progress progress = nextProgress();
@@ -76,12 +91,9 @@ public class TestRedisWorkShutdown {
                     Assert.assertTrue(isSuspending());
                     suspended();
                 } catch (InterruptedException cause) {
-                    Thread.currentThread()
-                            .interrupt();
+                    Thread.currentThread().interrupt();
                     throw new RuntimeException(cause);
                 }
-            } else {
-                ;
             }
         }
 
@@ -95,11 +107,14 @@ public class TestRedisWorkShutdown {
     WorkManager works;
 
     void assertMetrics(long scheduled, long running, long completed, long cancelled) {
-        assertEquals(new WorkQueueMetrics("default", scheduled, running, completed, cancelled), works.getMetrics("default"));
+        assertEquals(new WorkQueueMetrics("default", scheduled, running, completed, cancelled),
+                works.getMetrics("default"));
     }
 
+    // TODO adapt to componentmanager restart
     @Test
     public void worksArePersisted() throws InterruptedException {
+        ComponentManager mgr = Framework.getRuntime().getComponentManager();
         assertMetrics(0, 0, 0, 0);
         try {
             // given two running works
@@ -108,7 +123,7 @@ public class TestRedisWorkShutdown {
             canShutdown.await(10, TimeUnit.SECONDS);
             assertMetrics(0, 2, 0, 0);
             // when I shutdown
-            Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(10)));
+            mgr.standby(10);
         } finally {
             // then works are suspending
             canProceed.countDown();
@@ -120,7 +135,7 @@ public class TestRedisWorkShutdown {
             canProceed = new CountDownLatch(1);
         } finally {
             // when I reboot
-            Framework.getRuntime().resume();
+            mgr.resume();
         }
         Assert.assertTrue(works.awaitCompletion(10, TimeUnit.SECONDS));
         // works are completed
@@ -128,13 +143,11 @@ public class TestRedisWorkShutdown {
     }
 
     class ScheduledRetriever {
-        String namespace = Framework.getService(RedisAdmin.class)
-                .namespace("work");
+        String namespace = Framework.getService(RedisAdmin.class).namespace("work");
 
         byte[] keyBytes(String value) {
             try {
-                return namespace.concat(value)
-                        .getBytes("UTF-8");
+                return namespace.concat(value).getBytes("UTF-8");
             } catch (UnsupportedEncodingException cause) {
                 throw new UnsupportedOperationException("Cannot encode " + value, cause);
             }
@@ -150,21 +163,17 @@ public class TestRedisWorkShutdown {
 
         List<Work> listScheduled() {
             RedisPoolDescriptor config = Framework.getService(RedisAdmin.class).getConfig();
-            return config.newExecutor()
-                    .execute(new RedisCallable<List<Work>>() {
-                        @Override
-                        public List<Work> call(Jedis jedis) {
-                            Set<byte[]> keys = jedis.smembers(queueBytes());
-                            List<Work> list = new ArrayList<Work>(keys.size());
-                            for (byte[] workIdBytes : keys) {
-                                // get data
-                                byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                                Work work = deserializeWork(workBytes);
-                                list.add(work);
-                            }
-                            return list;
-                        }
-                    });
+            return config.newExecutor().execute(jedis -> {
+                Set<byte[]> keys = jedis.smembers(queueBytes());
+                List<Work> list = new ArrayList<>(keys.size());
+                for (byte[] workIdBytes : keys) {
+                    // get data
+                    byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
+                    Work work = deserializeWork(workBytes);
+                    list.add(work);
+                }
+                return list;
+            });
         }
 
         Work deserializeWork(byte[] bytes) {
@@ -174,8 +183,6 @@ public class TestRedisWorkShutdown {
             InputStream bain = new ByteArrayInputStream(bytes);
             try (ObjectInputStream in = new ObjectInputStream(bain)) {
                 return (Work) in.readObject();
-            } catch (RuntimeException cause) {
-                throw cause;
             } catch (IOException | ClassNotFoundException cause) {
                 throw new RuntimeException("Cannot deserialize work", cause);
             }

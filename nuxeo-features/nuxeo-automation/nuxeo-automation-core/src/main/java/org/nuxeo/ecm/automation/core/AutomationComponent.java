@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.automation.core;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,7 +132,7 @@ public class AutomationComponent extends DefaultComponent {
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
-            List<WidgetDefinition> widgetDefinitionList = new ArrayList<WidgetDefinition>();
+            List<WidgetDefinition> widgetDefinitionList = new ArrayList<>();
             if (opc.widgets != null) {
                 for (WidgetDescriptor widgetDescriptor : opc.widgets) {
                     widgetDefinitionList.add(widgetDescriptor.getWidgetDefinition());
@@ -234,7 +233,7 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
@@ -246,7 +245,7 @@ public class AutomationComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         service.flushCompiledChains();
         try {
             unBindManagement();

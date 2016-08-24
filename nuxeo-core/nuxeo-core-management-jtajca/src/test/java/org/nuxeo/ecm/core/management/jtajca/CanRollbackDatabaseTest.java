@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -34,11 +33,12 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
+import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import junit.framework.AssertionFailedError;
@@ -47,13 +47,13 @@ import junit.framework.AssertionFailedError;
 @Features(CoreFeature.class)
 public class CanRollbackDatabaseTest {
 
-    @Inject
-    protected RuntimeHarness harness;
-
     @BeforeClass
     public static void createTable() throws NamingException, SQLException {
-        RuntimeContext context = ((OSGiRuntimeService) Framework.getRuntime()).getContext("org.nuxeo.runtime.datasource");
+        ComponentManager mgr = Framework.getRuntime().getComponentManager();
+        RuntimeContext context = ((OSGiRuntimeService) Framework.getRuntime()).getContext(
+                "org.nuxeo.runtime.datasource");
         context.deploy("ds-contrib.xml");
+        mgr.refresh(false);
         try {
             DataSource ds = DataSourceHelper.getDataSource("jdbc/canrollback");
             try (Connection db = ds.getConnection()) {
@@ -62,30 +62,20 @@ public class CanRollbackDatabaseTest {
                 }
             }
         } finally {
-            context.undeploy("ds-contrib.xml");
+            mgr.reset();
         }
     }
 
-    // don't use LocalDeploy, it fails on SQL Server (deploy is done on a
-    // connection with tx)
     @Test(expected = SQLException.class)
+    @LocalDeploy("org.nuxeo.ecm.core.management.jtajca.test:ds-contrib-with-fatal.xml")
     public void testFatalRollback() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.core.management.jtajca.test", "ds-contrib-with-fatal.xml");
-        try {
-            insertWrongReference();
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.management.jtajca.test", "ds-contrib-with-fatal.xml");
-        }
+        insertWrongReference();
     }
 
     @Test(expected = SQLException.class)
+    @LocalDeploy("org.nuxeo.ecm.core.management.jtajca.test:ds-contrib.xml")
     public void testNoFatalRollback() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.core.management.jtajca.test", "ds-contrib.xml");
-        try {
-            insertWrongReference();
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.management.jtajca.test", "ds-contrib.xml");
-        }
+        insertWrongReference();
     }
 
     private void insertWrongReference() throws NamingException, SQLException, AssertionFailedError {

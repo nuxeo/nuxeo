@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: TestJenaGraphReification.java 25079 2007-09-18 14:49:05Z atchertchian $
  */
-
 package org.nuxeo.ecm.platform.relations.jena;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,10 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -71,21 +71,23 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
     private Statement st2;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployContrib("org.nuxeo.ecm.relations.jena.tests", "jena-test-bundle.xml");
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         RelationManager service = Framework.getService(RelationManager.class);
         Graph graph = service.getGraphByName("myrelations");
         assertNotNull(graph);
         assertEquals(JenaGraph.class, graph.getClass());
         this.graph = (JenaGraph) graph;
-        statements = new ArrayList<Statement>();
+        statements = new ArrayList<>();
         doc1 = new ResourceImpl("http://www.ecm.org/uid/DOC200600013_02.01");
         doc2 = new ResourceImpl("http://www.ecm.org/uid/DOC200600015_01.00");
         namespace = "http://purl.org/dc/terms/";
@@ -141,7 +143,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         graph.add(statements);
         assertSame(5L, graph.size());
 
-        List<Statement> stmts = new ArrayList<Statement>();
+        List<Statement> stmts = new ArrayList<>();
         stmts.add(st1);
         graph.remove(stmts);
         // 1 statement, 1 property
@@ -150,7 +152,7 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
 
     @Test
     public void testGetStatements() {
-        List<Statement> stmts = new ArrayList<Statement>();
+        List<Statement> stmts = new ArrayList<>();
         assertEquals(stmts, graph.getStatements());
 
         graph.add(statements);

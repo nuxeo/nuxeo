@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Thomas Roger
  */
-
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
@@ -45,8 +44,8 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
 
@@ -81,14 +80,15 @@ public class TestPictureRenditions {
     protected AutomationService automationService;
 
     @Inject
-    protected RuntimeHarness runtimeHarness;
+    protected HotDeployer deployer;
 
     @Test
     public void shouldExposeAllPictureViewsAsRenditions() throws IOException {
         DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
         doc = session.createDocument(doc);
 
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
+                doc);
         assertEquals(7, availableRenditionDefinitions.size());
         for (RenditionDefinition definition : availableRenditionDefinitions) {
             assertTrue(EXPECTED_ALL_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
@@ -106,11 +106,11 @@ public class TestPictureRenditions {
         DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
         doc = session.createDocument(doc);
 
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
+                doc);
         assertEquals(7, availableRenditionDefinitions.size());
 
-        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/imaging-picture-renditions-override.xml");
+        deployer.deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-renditions-override.xml");
 
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertEquals(5, availableRenditionDefinitions.size());
@@ -123,15 +123,15 @@ public class TestPictureRenditions {
         availableRenditions = renditionService.getAvailableRenditions(doc, true);
         assertEquals(4, availableRenditions.size());
 
-        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.picture.core",
-                "OSGI-INF/imaging-picture-renditions-override.xml");
     }
 
     @Test
     public void shouldDeclareRenditionDefinitionImageToPDF() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         List<RenditionDefinition> imageToPDFRenditionDefinitions = renditionDefinitions.stream()
-            .filter(rD -> rD.getName().equals("imageToPDF")).collect(Collectors.toList());
+                                                                                       .filter(rD -> rD.getName()
+                                                                                                       .equals("imageToPDF"))
+                                                                                       .collect(Collectors.toList());
         assertEquals(1, imageToPDFRenditionDefinitions.size());
         RenditionDefinition imageToPDFRenditionDefinition = imageToPDFRenditionDefinitions.get(0);
         assertEquals("Image.Blob.ConvertToPDF", imageToPDFRenditionDefinition.getOperationChain());

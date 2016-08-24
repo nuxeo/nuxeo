@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -392,7 +392,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         if (repositoryService == null) {
             // RepositoryService failed to start, no need to go further

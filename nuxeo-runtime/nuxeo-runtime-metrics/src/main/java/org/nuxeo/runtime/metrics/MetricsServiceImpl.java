@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
  *      Delbosc Benoit
  */
 package org.nuxeo.runtime.metrics;
-
-import java.time.Instant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +66,7 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         if (config == null) {
             // Use a default config
             config = new MetricsDescriptor();
@@ -79,7 +77,7 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant deadline) {
+    public void stop(ComponentContext context) {
         try {
             config.disable(registry);
         } finally {

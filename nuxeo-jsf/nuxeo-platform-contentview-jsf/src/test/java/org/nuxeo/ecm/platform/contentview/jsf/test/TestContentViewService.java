@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
@@ -52,14 +51,14 @@ public class TestContentViewService extends NXRuntimeTestCase {
     protected ContentViewService service;
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf", "OSGI-INF/contentview-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-contrib.xml");
+    }
 
+    @Override
+    protected void postSetUp() throws Exception {
         service = Framework.getService(ContentViewService.class);
         assertNotNull(service);
     }
@@ -135,7 +134,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertTrue(contentView.getShowFilterForm());
         assertFalse(contentView.getShowRefreshCommand());
 
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         // check content view has been disabled correctly
         contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
@@ -218,7 +217,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
         assertEquals(18, names.size());
-        List<String> orderedNames = new ArrayList<String>();
+        List<String> orderedNames = new ArrayList<>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
@@ -229,12 +228,12 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_REF", orderedNames.get(5));
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         names = service.getContentViewNames();
         assertNotNull(names);
         assertEquals(17, names.size());
-        orderedNames = new ArrayList<String>();
+        orderedNames = new ArrayList<>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
@@ -249,7 +248,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         Set<ContentViewHeader> headers = service.getContentViewHeaders();
         assertNotNull(headers);
         assertEquals(18, headers.size());
-        List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
+        List<ContentViewHeader> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", sortedHeaders.get(0).getName());
@@ -268,7 +267,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         Set<String> names = service.getContentViewNames("foo");
         assertNotNull(names);
         assertEquals(2, names.size());
-        List<String> orderedNames = new ArrayList<String>();
+        List<String> orderedNames = new ArrayList<>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", orderedNames.get(0));
@@ -291,7 +290,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals(0, names.size());
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         names = service.getContentViewNames("foo");
         assertNotNull(names);
@@ -316,7 +315,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         Set<ContentViewHeader> headers = service.getContentViewHeaders("foo");
         assertNotNull(headers);
         assertEquals(2, headers.size());
-        List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
+        List<ContentViewHeader> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
         assertEquals("CURRENT_DOCUMENT_CHILDREN", sortedHeaders.get(0).getName());
@@ -361,7 +360,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC", pp.getName());
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         pp = cv.getPageProvider(null, null, -1L, -1L);
@@ -377,7 +376,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_DOCUMENT_CHILDREN_PP", pp.getName());
 
         // check after override too
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         cv = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
         pp = cv.getPageProvider(null, null, -1L, -1L);
@@ -387,7 +386,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
     @Test
     public void testSetResultLayoutByName() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
 
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
@@ -438,7 +437,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
 
         // override page provider directly on page provider service
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-pageprovider-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-pageprovider-override-contrib.xml");
+        ppService = Framework.getService(PageProviderService.class);
+
         cv = service.getContentView("NAMED_PAGE_PROVIDER");
         cv.setExecuted(true);
         assertEquals("PP_NAME", cv.getPageProvider().getName());
@@ -448,7 +449,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
 
         // override again the complete content view definition
-        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.contentview.jsf.test:test-contentview-override-contrib.xml");
+        ppService = Framework.getService(PageProviderService.class);
+
         cv = service.getContentView("NAMED_PAGE_PROVIDER");
         cv.setExecuted(true);
         assertEquals("PP_NAME_OVERRIDE", cv.getPageProvider().getName());

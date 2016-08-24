@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,35 +30,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+// override default contrib
+@LocalDeploy("org.nuxeo.ecm.directory.ldap.tests:TestDirectoriesWithInternalApacheDS-POSIX.xml")
 public class TestLDAPPOSIXSession extends TestLDAPSession {
 
     @Override
     public List<String> getLdifFiles() {
-        List<String> ldifFiles = new ArrayList<String>();
+        List<String> ldifFiles = new ArrayList<>();
         ldifFiles.add("sample-users-posix.ldif");
-        if (POSIXGROUP_IS_STRUCTURAL) {
+        if (isPosixGroupStructural()) {
             ldifFiles.add("sample-structural-posixgroups.ldif");
         } else {
             ldifFiles.add("sample-posixgroups.ldif");
         }
-        if (HAS_DYNGROUP_SCHEMA) {
+        if (hasDynGroupSchema()) {
             ldifFiles.add("sample-dynamic-groups.ldif");
         }
         return ldifFiles;
-    }
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-POSIX.xml";
-        INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS-POSIX.xml";
-        super.setUp();
     }
 
     @Override
@@ -71,7 +65,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             assertEquals("administrators", entry.getId());
             assertEquals("administrators", entry.getProperty(TestLDAPSession.GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertNotNull(members);
@@ -84,7 +78,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             assertEquals("members", entry.getId());
             assertEquals("members", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 List<String> members = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "members");
                 assertEquals(3, members.size());
@@ -97,7 +91,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             assertEquals("submembers", entry.getId());
             assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-            if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+            if (isExternalServer()) {
                 // LDAP references do not work with the internal test server
                 assertEquals(Arrays.asList("user2"), entry.getProperty(GROUP_SCHEMANAME, "members"));
             }
@@ -107,10 +101,10 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Override
     @Test
     public void testCreateEntry2() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+        if (isExternalServer()) {
             try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
                 assertNotNull(session);
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("groupname", "group2");
                 map.put("members", Arrays.asList("user1", "user2"));
                 map.put("gidNumber", 9000);
@@ -119,7 +113,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 assertNotNull(dm);
                 assertEquals(Arrays.asList("user1", "user2"), dm.getProperty(GROUP_SCHEMANAME, "members"));
 
-                map = new HashMap<String, Object>();
+                map = new HashMap<>();
                 map.put("groupname", "group1");
                 map.put("members", Arrays.asList("Administrator"));
                 map.put("gidNumber", 9001);
@@ -131,7 +125,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
 
-                map = new HashMap<String, Object>();
+                map = new HashMap<>();
                 map.put("groupname", "emptygroup");
                 map.put("members", new ArrayList<String>());
                 map.put("gidNumber", 9000);
@@ -149,7 +143,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Override
     @Test
     public void testUpdateEntry() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+        if (isExternalServer()) {
             try (Session session = getLDAPDirectory("userDirectory").getSession();
                     Session groupSession = getLDAPDirectory("groupDirectory").getSession()) {
                 DocumentModel entry = session.getEntry("user1");
@@ -177,7 +171,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 assertEquals("", entry.getProperty(USER_SCHEMANAME, "lastName"));
                 assertEquals(Long.valueOf(123), entry.getProperty(USER_SCHEMANAME, "intField"));
                 assertEquals(Arrays.asList("item3", "item4"), entry.getProperty(USER_SCHEMANAME, "employeeType"));
-                if (HAS_DYNGROUP_SCHEMA) {
+                if (hasDynGroupSchema()) {
                     assertEquals(Arrays.asList("administrators", "dyngroup1", "dyngroup2", "members"),
                             entry.getProperty(USER_SCHEMANAME, "groups"));
                 } else {
@@ -208,7 +202,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Override
     @Test
     public void testUpdateEntry2() throws Exception {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+        if (isExternalServer()) {
             try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
                 DocumentModel entry = session.getEntry("members");
                 assertNotNull(entry);
@@ -244,7 +238,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry3() {
-        if (!HAS_DYNGROUP_SCHEMA) {
+        if (!hasDynGroupSchema()) {
             return;
         }
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
@@ -302,7 +296,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Override
     @Test
     public void testGetMandatoryAttributes() {
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
+        if (isExternalServer()) {
             try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
                 assertEquals(Arrays.asList("sn", "cn"), mandatoryAttributes);

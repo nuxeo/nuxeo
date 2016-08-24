@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,20 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.core.schema.types;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaNames;
@@ -44,9 +44,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestTypes extends NXRuntimeTestCase {
 
     @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void setUp() throws Exception {
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
@@ -258,8 +256,7 @@ public class TestTypes extends NXRuntimeTestCase {
 
     @Test
     public void testCompositeType() {
-        CompositeTypeImpl type = new CompositeTypeImpl((CompositeType) null, SchemaNames.BUILTIN, "composite type",
-                null);
+        CompositeTypeImpl type = new CompositeTypeImpl(null, SchemaNames.BUILTIN, "composite type", null);
 
         assertTrue(type.isCompositeType());
         assertEquals("composite type", type.getName());
@@ -293,7 +290,8 @@ public class TestTypes extends NXRuntimeTestCase {
 
     @Test
     public void testFieldFromXpath() throws Exception {
-        deployTestContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/test-advanced-schema.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema:OSGI-INF/test-advanced-schema.xml");
+
         SchemaManager sm = Framework.getService(SchemaManager.class);
         assertNotNull(sm);
         Field field = sm.getField("tp:foo");
@@ -356,7 +354,8 @@ public class TestTypes extends NXRuntimeTestCase {
 
     @Test
     public void testSchemaFromType() throws Exception {
-        deployTestContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/test-advanced-schema.xml");
+        pushInlineDeployments("org.nuxeo.ecm.core.schema:OSGI-INF/test-advanced-schema.xml");
+
         Schema schema = getSchema("foo");
         assertNull(schema);
         schema = getSchema("dc:title");

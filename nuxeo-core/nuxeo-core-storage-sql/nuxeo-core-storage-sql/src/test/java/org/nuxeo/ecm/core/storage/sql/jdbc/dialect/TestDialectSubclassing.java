@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +25,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import org.jmock.Expectations;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -40,12 +38,16 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
 
     protected RepositoryDescriptor repositoryDescriptor;
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    @Override
+	public void setUp() throws Exception {
         metadata = getDatabaseMetaData();
         connection = getConnection();
         repositoryDescriptor = new RepositoryDescriptor();
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
+	repositoryDescriptor = new RepositoryDescriptor();
     }
 
     protected DatabaseMetaData getDatabaseMetaData() throws SQLException {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: TestUserService.java 28010 2007-12-07 19:23:44Z fguillaume $
  */
-
 package org.nuxeo.ecm.platform.usermanager;
 
 import static org.junit.Assert.assertEquals;
@@ -34,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
@@ -47,11 +43,15 @@ public class TestUserService extends NXRuntimeTestCase {
 
     UserManager userManager;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        super.setUp();
         deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/UserService.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-config.xml");
+        userManager = Framework.getService(UserManager.class);
+    }
+
+    @Override
+    protected void postSetUp() throws Exception {
         userManager = Framework.getService(UserManager.class);
     }
 
@@ -87,7 +87,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("parentg", fum.groupParentGroupsField);
 
         // anonymous user
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put("first", "Anonymous");
         props.put("last", "Coward");
         assertEquals("Guest", fum.getAnonymousUserId());
@@ -127,8 +127,7 @@ public class TestUserService extends NXRuntimeTestCase {
 
     @Test
     public void testOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-override-config.xml");
-        userManager = Framework.getService(UserManager.class);
+        pushInlineDeployments("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-override-config.xml");
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertEquals(Arrays.asList("tehroot", "bob", "bobette"), fum.defaultAdministratorIds);
         assertEquals(Arrays.asList("myAdministrators"), fum.administratorsGroups);
@@ -151,7 +150,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertTrue(customAdmin.getGroups().contains("administrators2"));
         assertEquals("secret2", customAdmin.getPassword());
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put("first", "My Custom 2");
         props.put("last", "Administrator 2");
         assertEquals(props, customAdmin.getProperties());
@@ -164,8 +163,7 @@ public class TestUserService extends NXRuntimeTestCase {
     public void testValidatePassword() throws Exception {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertTrue(fum.validatePassword(""));
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-userservice-override-config.xml");
-        userManager = Framework.getService(UserManager.class);
+        pushInlineDeployments("org.nuxeo.ecm.platform.usermanager.tests:test-userservice-override-config.xml");
         fum = (FakeUserManagerImpl) userManager;
         assertFalse(fum.validatePassword(""));
         assertFalse(fum.validatePassword("azerty"));

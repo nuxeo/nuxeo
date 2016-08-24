@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,19 +29,23 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
-import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainerListener;
 import org.nuxeo.runtime.management.ServerLocator;
+import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -85,15 +89,26 @@ public class DefaultMonitorComponent extends DefaultComponent {
     protected Map<String, ConnectionPoolMonitor> poolConnectionMonitors = new HashMap<>();
 
     @Override
-    public void activate(ComponentContext context) {
-        super.activate(context);
+    public void start(ComponentContext context) {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        if (repositoryService == null) {
+            // RepositoryService failed to start, no need to go further
+            return;
+        }
+        uninstall();
         install();
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
+    public int getApplicationStartedOrder() {
+        // should deploy after metrics service
+        Component component = (Component) Framework.getRuntime().getComponent(MetricsService.class.getName());
+        return component.getApplicationStartedOrder() + 1;
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
         uninstall();
-        super.deactivate(context);
     }
 
     protected boolean installed;
@@ -139,6 +154,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     public static class ServerInstance {
         public final MBeanServer server;
+
         public final ObjectName name;
 
         ServerInstance(MBeanServer server, ObjectName name) {

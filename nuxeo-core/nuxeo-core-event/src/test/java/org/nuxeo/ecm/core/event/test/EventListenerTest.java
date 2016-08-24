@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URL;
 import java.rmi.dgc.VMID;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
@@ -38,7 +36,6 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
@@ -50,11 +47,8 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 public class EventListenerTest extends NXRuntimeTestCase {
 
     @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void setUp() throws Exception {
         deployBundle("org.nuxeo.ecm.core.event");
-        fireFrameworkStarted();
     }
 
     @Test
@@ -152,24 +146,26 @@ public class EventListenerTest extends NXRuntimeTestCase {
     @Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreIsolated.class)
     public void testScripts() throws Exception {
-        URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
-        RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
+        EventService service;
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-listeners.xml");
+
+        service = Framework.getService(EventService.class);
         assertEquals(0, SCRIPT_CNT);
-
-        EventService service = Framework.getService(EventService.class);
         service.fireEvent("test", new EventContextImpl(null, null));
         assertEquals(1, SCRIPT_CNT);
 
-        rc.undeploy(url);
-        assertEquals(1, SCRIPT_CNT);
+        removeInlineDeployments();
 
+        service = Framework.getService(EventService.class);
+        assertEquals(1, SCRIPT_CNT);
         service.fireEvent("test", new EventContextImpl(null, null));
         assertEquals(1, SCRIPT_CNT);
 
-        rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
+        pushInlineDeployments("org.nuxeo.ecm.core.event:test-listeners.xml");
+
+        service = Framework.getService(EventService.class);
         service.fireEvent("test1", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);
-
         // test not accepted event
         service.fireEvent("some-event", new EventContextImpl(null, null));
         assertEquals(2, SCRIPT_CNT);

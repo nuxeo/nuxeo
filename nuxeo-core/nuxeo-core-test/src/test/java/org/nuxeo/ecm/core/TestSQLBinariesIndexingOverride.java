@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +34,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -44,11 +42,10 @@ import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -61,21 +58,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestSQLBinariesIndexingOverride {
 
     @Inject
-    protected RuntimeHarness runtimeHarness;
-
-    @Inject
-    protected EventService eventService;
-
-    @Inject
     protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
 
     @Inject
-    protected ReloadService reloadService;
-
-    protected boolean deployed;
+    protected HotDeployer deployer;
 
     @Before
     public void setUp() throws Exception {
@@ -85,31 +74,7 @@ public class TestSQLBinariesIndexingOverride {
 
         // cannot be done through @LocalDeploy, because the framework variables
         // about repository configuration aren't ready yet
-        runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
-        deployed = true;
-        newRepository(); // fully reread repo and its indexing config
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        if (deployed) {
-            runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests",
-                    "OSGI-INF/test-override-indexing-contrib.xml");
-            deployed = false;
-        }
-    }
-
-    protected void newRepository() throws InterruptedException {
-        waitForAsyncCompletion();
-        coreFeature.releaseCoreSession();
-        // reload repo with new config
-        reloadService.reloadRepository();
-        session = coreFeature.createCoreSession();
-    }
-
-    protected void waitForAsyncCompletion() {
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        deployer.deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-override-indexing-contrib.xml");
     }
 
     protected void waitForFulltextIndexing() {

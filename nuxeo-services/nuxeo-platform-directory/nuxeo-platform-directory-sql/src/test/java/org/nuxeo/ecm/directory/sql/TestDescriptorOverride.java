@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(SQLDirectoryFeature.class)
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestDescriptorOverride {
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected DirectoryService directoryService;
@@ -62,26 +62,26 @@ public class TestDescriptorOverride {
         Assert.assertNull(config.negativeCaching);
         assertEquals("test-users.csv", config.getDataFileName());
 
-        harness.deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-override-bundle.xml");
-        try {
-            sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
-            config = sqlDir.getDescriptor();
+        deployer.deploy("org.nuxeo.ecm.directory.sql.tests:test-sql-directories-override-bundle.xml");
+        sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
+        config = sqlDir.getDescriptor();
 
-            // override
-            assertEquals("never", config.getCreateTablePolicy());
-            assertEquals(123, config.getQuerySizeLimit());
-            assertTrue(config.isAutoincrementIdField());
-            assertFalse(config.isComputeMultiTenantId());
-            Assert.assertEquals("override-entry-cache", config.cacheEntryName);
-            Assert.assertEquals("override-entry-cache-wo-ref", config.cacheEntryWithoutReferencesName);
-            Assert.assertEquals(Boolean.TRUE, config.negativeCaching);
+        // override
+        assertEquals("never", config.getCreateTablePolicy());
+        assertEquals(123, config.getQuerySizeLimit());
+        assertTrue(config.isAutoincrementIdField());
+        assertFalse(config.isComputeMultiTenantId());
+        Assert.assertEquals("override-entry-cache", config.cacheEntryName);
+        Assert.assertEquals("override-entry-cache-wo-ref", config.cacheEntryWithoutReferencesName);
+        Assert.assertEquals(Boolean.TRUE, config.negativeCaching);
 
-            // inherit
-            assertEquals("test-users.csv", config.getDataFileName());
-            assertEquals(1, config.getTableReferences().length);
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-override-bundle.xml");
-        }
+        // inherit
+        assertEquals("test-users.csv", config.getDataFileName());
+        assertEquals(1, config.getTableReferences().length);
+
+        // TODO if we don't remove the inline contribs the SQLDirectoryFeature will throw an exception
+        // The feature should instead add a deployer handler to cleanup directories when restarting ...
+        deployer.reset();
     }
 
 }

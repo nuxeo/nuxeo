@@ -431,7 +431,7 @@ public class ModuleImpl implements Module {
         // double s = System.currentTimeMillis();
         TypeRegistry typeReg = null;
         // install types from super modules
-        if (superModule != null) { // TODO add type reg listener on super
+        if (superModule != null) { // TODO add type registry listener on super
                                    // modules to update types when needed?
             typeReg = new TypeRegistry(superModule.getTypeRegistry(), engine, this);
         } else {

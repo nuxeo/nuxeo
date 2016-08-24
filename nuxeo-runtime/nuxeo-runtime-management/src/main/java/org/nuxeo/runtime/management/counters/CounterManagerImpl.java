@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 package org.nuxeo.runtime.management.counters;
 
@@ -36,16 +34,18 @@ public class CounterManagerImpl extends DefaultComponent implements CounterManag
 
     protected CounterHistoryRecorder history = new CounterHistoryRecorder(50);
 
+    @Override
     public void enableCounters() {
         SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.ENABLED, true);
     }
 
+    @Override
     public void disableCounters() {
         SimonManager.getCounter(COUNTER_PREFIX).setState(SimonState.DISABLED, true);
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         // create the root counter
         SimonManager.getCounter(COUNTER_PREFIX);
         // register call back for history management
@@ -87,6 +87,7 @@ public class CounterManagerImpl extends DefaultComponent implements CounterManag
         }
     }
 
+    @Override
     public CounterHistoryStack getCounterHistory(String counterName) {
 
         CounterHistoryStack stack = history.getCounterHistory(counterName);

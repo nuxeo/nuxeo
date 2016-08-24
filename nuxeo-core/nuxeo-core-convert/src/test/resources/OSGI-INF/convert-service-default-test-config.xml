@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.default-config">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+      point="configuration">
+
+    <configuration>
+      <gcInterval>-1000</gcInterval>
+      <diskCacheSize>-1</diskCacheSize>
+    </configuration>
+
+  </extension>
+
+</component>

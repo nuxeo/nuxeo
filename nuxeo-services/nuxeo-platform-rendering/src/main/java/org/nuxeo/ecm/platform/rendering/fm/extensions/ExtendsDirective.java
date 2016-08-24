@@ -61,11 +61,11 @@ public class ExtendsDirective implements TemplateDirectiveModel {
         writer.suppressOutput = false;
 
         // now we should go into the base template and render it
-        // String oldPath = writer.reg.path;
-        // writer.reg.path = src;
+        // String oldPath = writer.registry.path;
+        // writer.registry.path = src;
         Template temp = env.getConfiguration().getTemplate(src);
         env.include(temp);
-        // writer.reg.path = oldPath;
+        // writer.registry.path = oldPath;
     }
 
 }

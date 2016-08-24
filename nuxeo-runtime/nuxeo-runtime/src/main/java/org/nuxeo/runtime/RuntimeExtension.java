@@ -27,7 +27,9 @@ package org.nuxeo.runtime;
  * Runtime Extensions may be used to add new functionality to the runtime service.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 9.2 seems unused
  */
+@Deprecated
 public interface RuntimeExtension {
 
     /**
@@ -43,19 +45,5 @@ public interface RuntimeExtension {
      * The current runtime is available as <code>Runtime.getRuntime()</code>.
      */
     void stop();
-
-    /**
-     * Resumes the runtime extension.
-     *
-     * @since 9.2
-     */
-    void resume();
-
-    /**
-     * Put the extension in standby mode.
-     *
-     * @since 9.2
-     */
-    void standby();
 
 }

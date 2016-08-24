@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.Constants;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -33,9 +34,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    @Override
+    protected void setUp() throws Exception {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
     }
@@ -49,7 +49,9 @@ public class TestBlobHolderAdapterService extends NXRuntimeTestCase {
     @Test
     public void testContrib() throws Exception {
         assertEquals(0, BlobHolderAdapterComponent.getFactoryNames().size());
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE, "test-blob-holder-adapters-contrib.xml");
+
+        pushInlineDeployments(Constants.CORE_TEST_TESTS_BUNDLE + ":test-blob-holder-adapters-contrib.xml");
+
         assertEquals(1, BlobHolderAdapterComponent.getFactoryNames().size());
 
         BlobHolderAdapterService bhas = Framework.getLocalService(BlobHolderAdapterService.class);

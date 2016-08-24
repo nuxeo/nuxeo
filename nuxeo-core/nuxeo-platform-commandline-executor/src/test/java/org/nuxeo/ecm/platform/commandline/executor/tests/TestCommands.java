@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.ecm.platform.commandline.executor.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -31,9 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -51,9 +47,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestCommands extends NXRuntimeTestCase {
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
     }
 
@@ -95,7 +89,8 @@ public class TestCommands extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-env-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml");
+
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertTrue(cmds.contains("echo"));
@@ -113,7 +108,7 @@ public class TestCommands extends NXRuntimeTestCase {
     public void testCmdPipe() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-env-test-contrib.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-env-test-contrib.xml");
 
         ExecResult result = cles.execCommand("pipe", cles.getDefaultCmdParameters());
         assertTrue(result.isSuccessful());

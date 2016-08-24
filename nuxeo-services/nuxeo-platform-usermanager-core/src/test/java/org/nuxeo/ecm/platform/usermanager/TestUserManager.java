@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
@@ -116,19 +117,11 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/userservice-override-config.xml")
     public void testGetAdministratorOverride() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-override-config.xml");
         // user manager is recomputed after deployment => refetch it
         userManager = Framework.getService(UserManager.class);
-        try {
-            doTestGetAdministratorOverride();
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                    "test-usermanagerimpl/userservice-override-config.xml");
-            // user manager is recomputed after undeployment => refetch it
-            userManager = Framework.getService(UserManager.class);
-        }
+        doTestGetAdministratorOverride();
     }
 
     public void doTestGetAdministratorOverride() throws Exception {
@@ -188,19 +181,9 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/userservice-override-config.xml")
     public void testGetVirtualUsersOverride() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-override-config.xml");
-        // user manager is recomputed after deployment => refetch it
-        userManager = Framework.getService(UserManager.class);
-        try {
-            doTestGetVirtualUsersOverride();
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                    "test-usermanagerimpl/userservice-override-config.xml");
-            // user manager is recomputed after undeployment => refetch it
-            userManager = Framework.getService(UserManager.class);
-        }
+        doTestGetVirtualUsersOverride();
     }
 
     public void doTestGetVirtualUsersOverride() throws Exception {
@@ -248,19 +231,9 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/userservice-override-config.xml")
     public void testGetAdministratorGroupsOverride() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl/userservice-override-config.xml");
-        // user manager is recomputed after deployment => refetch it
-        userManager = Framework.getService(UserManager.class);
-        try {
-            doTestGetAdministratorGroupsOverride();
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                    "test-usermanagerimpl/userservice-override-config.xml");
-            // user manager is recomputed after undeployment => refetch it
-            userManager = Framework.getService(UserManager.class);
-        }
+        doTestGetAdministratorGroupsOverride();
     }
 
     public void doTestGetAdministratorGroupsOverride() throws Exception {

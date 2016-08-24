@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.usermapper.service;
 
 import java.io.Serializable;
@@ -61,17 +59,6 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
-        for (UserMapperDescriptor desc : descriptors) {
-            try {
-                mappers.put(desc.name, desc.getInstance());
-            } catch (Exception e) {
-                log.error("Unable to register mapper " + desc.name, e);
-            }
-        }
-    }
-
-    @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             UserMapperDescriptor desc = (UserMapperDescriptor) contribution;
@@ -79,6 +66,17 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
             if (um != null) {
                 um.release();
                 mappers.remove(desc.name);
+            }
+        }
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        for (UserMapperDescriptor desc : descriptors) {
+            try {
+                mappers.put(desc.name, desc.getInstance());
+            } catch (Exception e) {
+                log.error("Unable to register mapper " + desc.name, e);
             }
         }
     }

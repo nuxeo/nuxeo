@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: TestMemoryDirectory.java 30381 2008-02-20 20:12:09Z gracinet $
  */
-
 package org.nuxeo.ecm.directory.memory;
 
 import static org.junit.Assert.assertEquals;
@@ -39,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -64,13 +60,13 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     static final String SCHEMA_NAME = "myschema";
 
     @Override
-    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.directory.core.tests", "test-schema.xml");
+    }
 
+    @Override
+    protected void postSetUp() throws Exception {
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "mydir";
         descr.schemaName = SCHEMA_NAME;
@@ -79,7 +75,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         descr.schemaSet = new HashSet<>(Arrays.asList("i", "pw", "a", "int", "b"));
         memDir = new MemoryDirectory(descr);
         dir = (MemoryDirectorySession) memDir.getSession();
-        Map<String, Object> e1 = new HashMap<String, Object>();
+        Map<String, Object> e1 = new HashMap<>();
         e1.put("i", "1");
         e1.put("pw", "secr");
         e1.put("a", "AAA");
@@ -97,7 +93,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         descr.idField = "i";
         descr.passwordField = "pw";
         MemoryDirectory md = new MemoryDirectory(descr);
-        assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b", "x")), md.schemaSet);
+        assertEquals(new HashSet<>(Arrays.asList("i", "pw", "a", "int", "b", "x")), md.schemaSet);
     }
 
     @Test
@@ -110,7 +106,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertNull(entry.getProperty(SCHEMA_NAME, "x"));
 
         // create one with the same id, must fail
-        Map<String, Object> e2 = new HashMap<String, Object>();
+        Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "1");
         try {
             entry = dir.createEntry(e2);
@@ -159,7 +155,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     @Test
     public void testGetEntries() throws Exception {
-        Map<String, Object> e2 = new HashMap<String, Object>();
+        Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         entry = dir.createEntry(e2);
         DocumentModelList l = dir.getEntries();
@@ -178,7 +174,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         assertEquals("babar", e.getProperty(SCHEMA_NAME, "b"));
 
         String id = "no-such-entry";
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("i", id);
         DocumentModel entry = BaseSession.createEntryModel(null, SCHEMA_NAME, id, map);
         try {
@@ -199,14 +195,14 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     @Test
     public void testQuery() throws Exception {
-        Map<String, Object> e2 = new HashMap<String, Object>();
+        Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
         e2.put("a", "AAA222");
         e2.put("b", "BCD");
         dir.createEntry(e2);
 
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
+        Map<String, Serializable> filter = new HashMap<>();
         DocumentModelList entries;
         DocumentModel e;
 
@@ -266,8 +262,8 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     @Test
     public void testQueryFts() throws Exception {
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        Set<String> fulltext = new HashSet<String>();
+        Map<String, Serializable> filter = new HashMap<>();
+        Set<String> fulltext = new HashSet<>();
 
         // trying to cheat
         filter.put("a", "*");
@@ -307,8 +303,8 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     @Test
     public void testGetProjection() throws Exception {
         List<String> list;
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        Map<String, Object> e2 = new HashMap<String, Object>();
+        Map<String, Serializable> filter = new HashMap<>();
+        Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
         e2.put("a", "AAA222");
@@ -349,7 +345,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     }
 
     protected static List<String> entryIds(List<DocumentModel> entries) {
-        List<String> ids = new ArrayList<String>(entries.size());
+        List<String> ids = new ArrayList<>(entries.size());
         for (DocumentModel entry : entries) {
             ids.add(entry.getId());
         }
@@ -359,7 +355,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
     // actually tests AbstractDirectory.orderEntry
     @Test
     public void testOrderBy() throws Exception {
-        Map<String, Object> e2 = new HashMap<String, Object>();
+        Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
         e2.put("a", "ZZZ");
@@ -368,7 +364,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
         Map<String, Serializable> filter = Collections.emptyMap();
         Set<String> fulltext = Collections.emptySet();
-        Map<String, String> orderBy = new LinkedHashMap<String, String>();
+        Map<String, String> orderBy = new LinkedHashMap<>();
 
         // our data:
         // 1 -> AAA, BCD
@@ -506,7 +502,11 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         descr.passwordField = "pw";
         descr.schemaSet = new HashSet<>(Arrays.asList("i"));
 
+        // required by directory service
+        deployBundle("org.nuxeo.ecm.core.cache");
         deployBundle("org.nuxeo.ecm.directory");
+        applyInlineDeployments();
+
         DirectoryService service = Framework.getService(DirectoryService.class);
         service.registerDirectoryDescriptor(descr);
 
