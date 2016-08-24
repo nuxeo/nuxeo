@@ -25,6 +25,16 @@ useful for Connect, IO and Studio features.
 - nuxeo-target-platforms-jaxrs: REST API for Json exports (see below)
 - nuxeo-target-platforms-sample: sample contributions to the service.
 
+## Versions
+
+The naming of releases follows the convention: `XX.YY.AABB`, where:
+- XX represents the major number of the release.
+- YY represents the minor number of the release.
+- AA represents the underlying Nuxeo version.
+- BB represents the underlying Nuxeo Hot Fix version.
+
+For example, a release which uses Nuxeo `6.0-HF31` will end with `.6031`.
+
 ## Build
 
     $ mvn clean install
