@@ -71,8 +71,8 @@ public class BatchConverterHelper {
             ImageInfo imageInfo = imagingService.getImageInfo(blob);
 
             // calculate thumbnail size
-            float scale = Math.min(AbstractPictureAdapter.SMALL_SIZE / imageInfo.getWidth(),
-                    AbstractPictureAdapter.SMALL_SIZE / imageInfo.getHeight());
+            float scale = Math.min((float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getWidth(),
+                    (float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getHeight());
 
             Blob thumbnail = imagingService.resize(blob, imageInfo.getFormat(),
                     Math.round(imageInfo.getWidth() * scale), Math.round(imageInfo.getHeight() * scale),

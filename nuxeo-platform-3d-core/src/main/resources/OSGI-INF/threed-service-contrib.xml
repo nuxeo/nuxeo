@@ -15,19 +15,19 @@
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="renderViews">
 
-        <renderView name="isometric" azimuth="45" zenith="45" width="100" height="100"
+        <renderView name="isometric" azimuth="45" zenith="45" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
-        <renderView name="top" azimuth="0" zenith="0" width="100" height="100"
+        <renderView name="top" azimuth="0" zenith="0" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
-        <renderView name="left" azimuth="0" zenith="90" width="100" height="100"
+        <renderView name="left" azimuth="0" zenith="90" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
-        <renderView name="right" azimuth="0" zenith="-90" width="100" height="100"
+        <renderView name="right" azimuth="0" zenith="-90" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
-        <renderView name="front" azimuth="90" zenith="90" width="100" height="100"
+        <renderView name="front" azimuth="90" zenith="90" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
-        <renderView name="behind" azimuth="-90" zenith="90" width="100" height="100"
+        <renderView name="behind" azimuth="-90" zenith="90" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
-        <renderView name="bottom" azimuth="0" zenith="180" width="100" height="100"
+        <renderView name="bottom" azimuth="0" zenith="180" width="800" height="600"
                     enabled="true" rendition="true" renditionVisible="true"/>
 
     </extension>
