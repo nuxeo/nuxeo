@@ -78,8 +78,8 @@ $(document).ready(function() {
 <#if (Context.principal.isAnonymous())>
   <div id="logstate">Hi Guest! You are not logged in.</div>
   <div id="login">
-    <form id="login_form" method="post" action="#">
-      <input type="text" name="userid" id="username" value="Username" class="username">
+    <form id="login_form" method="post" action="@@login">
+      <input type="text" name="username" id="username" value="Username" class="username">
       <input type="password" name="password" id="password" value="password" class="password">
       <input type="submit" name="nuxeo_login" value="Log In" id="login" class="button">
     </form>
