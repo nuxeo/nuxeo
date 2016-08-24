@@ -34,9 +34,6 @@ img.datepicker_trigger {
 	background: #DDD;
 	color: #000;
 }
-*html .datepicker_prompt {
-	width: 185px;
-}
 .datepicker_control, .datepicker_links, .datepicker_header, .datepicker {
 	clear: both;
 	float: left;
