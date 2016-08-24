@@ -12,9 +12,8 @@
 
         <ui:repeat var="item" value="#{renderViewActions.getItems(fieldOrValue)}">
             <span class="threeDRenderViewItem">
-                <nxh:outputLink
-                        value="#{item.url}">
-                    <nxh:graphicImage url="#{item.thumbnailUrl}"/>
+                <nxh:outputLink value="#{item.url}">
+                    <nxh:graphicImage url="#{item.thumbnailUrl}" style="max-width:48%;max-height:auto;"/>
                 </nxh:outputLink>
             </span>
         </ui:repeat>
