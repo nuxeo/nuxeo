@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.webengine.test;
 
+import org.nuxeo.runtime.test.runner.web.Attachment;
 import org.nuxeo.runtime.test.runner.web.WebPage;
 import org.openqa.selenium.By;
 
@@ -30,4 +31,8 @@ public class DocumentPage extends WebPage {
         return findElement(By.id("tab_content")).findElement(By.tagName("h2")).getText().trim();
     }
 
+    public Attachment download(String name) {
+        findElement(By.id("tab_content")).findElement(By.linkText(name)).click();
+        return getAttachment();
+    }
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.assertj.core.api.Assertions;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
@@ -42,15 +43,17 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public abstract class WebPage {
 
     /**
-     * Can be used by tests as default timeouts. This way you can change these values to change all the timeout in the
-     * tests. DEFAULT_TIMEOUT is used for regular timeouts (loading an ajax page an ajax dialog etc.) while BIG_TIMEOUT
-     * should be used for pages that are slower (like the home of a GWT application)
+     * Can be used by tests as default timeouts. This way you can change these
+     * values to change all the timeout in the tests. DEFAULT_TIMEOUT is used
+     * for regular timeouts (loading an ajax page an ajax dialog etc.) while
+     * BIG_TIMEOUT should be used for pages that are slower (like the home of a
+     * GWT application)
      */
     public static int DEFAULT_TIMEOUT = 5;
 
     public static int BIG_TIMEOUT = 15;
 
-    private static final Map<Class<?>, WebPage> pages = new HashMap<Class<?>, WebPage>();
+    private static final Map<Class<?>, WebPage> pages = new HashMap<>();
 
     @Inject
     protected Configuration config;
@@ -62,13 +65,15 @@ public abstract class WebPage {
     protected FeaturesRunner runner;
 
     /**
-     * Should be overridden by dynamic page (using ajax) to wait until the page is completely loaded By default nothing
-     * is done (page is assumed to be loaded)
+     * Should be overridden by dynamic page (using ajax) to wait until the page
+     * is completely loaded By default nothing is done (page is assumed to be
+     * loaded)
      *
      * @return the page itself
      */
     public WebPage ensureLoaded() {
-        return this; // do nothing by default
+        return this;
+
     }
 
     public Configuration getConfiguration() {
@@ -161,8 +166,12 @@ public abstract class WebPage {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends WebPage> T getPage(Class<T> type) {
+        return getPage(runner, config, type);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends WebPage> T getPage(FeaturesRunner runner, Configuration config, Class<T> type) {
         T page = (T) pages.get(type);
         if (page == null) {
             synchronized (pages) {
@@ -170,13 +179,24 @@ public abstract class WebPage {
                 if (page != null) {
                     return page;
                 }
-                page = PageFactory.initElements(driver, type);
+                page = PageFactory.initElements(config.driver, type);
                 runner.getInjector().injectMembers(page);
                 pages.put(type, page);
             }
         }
+        config.waitForAjax();
         return (T) page.ensureLoaded(); // this will block until page is loaded
-        // (if implementation needs this)
+                                        // (if implementation needs this)
+    }
+
+    /**
+     * Gives access to an attachment retrieved from this web page.
+     *
+     */
+    public Attachment getAttachment() {
+        Attachment attachment = ((TakesAttachment) driver).getAttachment();
+        Assertions.assertThat(attachment).isNotNull();
+        return attachment;
     }
 
     public static void flushPageCache() {

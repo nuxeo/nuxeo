@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
@@ -26,8 +26,6 @@ import org.junit.runner.manipulation.NoTestsRemainException;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.PageFactory;
-
 import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
@@ -36,42 +34,37 @@ public class WebDriverFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(WebDriverFeature.class);
 
+    protected Browser browser;
+
+    protected HomePage homepage;
+
     protected Configuration config;
 
     protected Class<? extends WebPage> home;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        Class<?> classToTest = runner.getTargetTestClass();
-        Browser browser = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, Browser.class);
+        browser = runner.getConfig(Browser.class);
+        homepage = runner.getConfig(HomePage.class);
         DriverFactory factory;
         // test here if the driver factory is specified by environment
         String fcName = System.getProperty(DriverFactory.class.getName());
         if (fcName != null) {
             factory = (DriverFactory) Class.forName(fcName).newInstance();
         } else {
-            if (browser == null) {
-                factory = BrowserFamily.HTML_UNIT.getDriverFactory();
+            if (browser.factory() != DriverFactory.class) {
+                factory = browser.factory().newInstance();
             } else {
-                Class<? extends DriverFactory> fc = browser.factory();
-                if (fc == DriverFactory.class) {
-                    factory = browser.type().getDriverFactory();
-                } else {
-                    factory = fc.newInstance();
-                }
+                factory = browser.type().getDriverFactory();
             }
         }
         config = new Configuration(factory);
-
+        config.setHomePageClass(homepage.type());
         // get the home page and the url - first check for an url from the
         // environment
         String url = System.getProperty(HomePage.class.getName() + ".url");
-        HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(classToTest, HomePage.class);
-        if (home != null) {
-            config.setHomePageClass(home.type());
-            if (url == null) {
-                url = home.url();
-            }
+        if (url == null) {
+            url = homepage.url();
         }
         config.setHome(url);
         try {
@@ -116,12 +109,7 @@ public class WebDriverFeature extends SimpleFeature {
             binder.bind(config.getHomePageClass()).toProvider(new Provider() {
                 @Override
                 public Object get() {
-                    Object obj = PageFactory.initElements(config.getDriver(), config.getHomePageClass());
-                    runner.getInjector().injectMembers(obj);
-                    if (obj instanceof WebPage) {
-                        ((WebPage) obj).ensureLoaded();
-                    }
-                    return obj;
+                    return WebPage.getPage(runner, config, config.getHomePageClass());
                 }
             }).in(Scopes.SINGLETON);
         }

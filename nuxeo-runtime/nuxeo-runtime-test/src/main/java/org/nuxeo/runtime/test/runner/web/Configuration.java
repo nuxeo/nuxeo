@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -21,7 +21,8 @@ package org.nuxeo.runtime.test.runner.web;
 import org.openqa.selenium.WebDriver;
 
 /**
- * WebDriver test configuration that can be configured either from system properties or for annotations.
+ * WebDriver test configuration that can be configured either from system
+ * properties or for annotations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -45,7 +46,7 @@ public class Configuration {
     /**
      * The home page class
      */
-    protected Class<?> homePageClass;
+    protected Class<? extends WebPage> homePageClass;
 
     public Configuration(DriverFactory factory) {
         this.factory = factory;
@@ -73,18 +74,18 @@ public class Configuration {
     }
 
     public void setHome(String url) {
-        this.home = url;
+        home = url;
     }
 
     public String getHome() {
         return home;
     }
 
-    public void setHomePageClass(Class<?> homePageClass) {
+    public void setHomePageClass(Class<? extends WebPage> homePageClass) {
         this.homePageClass = homePageClass;
     }
 
-    public Class<?> getHomePageClass() {
+    public Class<? extends WebPage> getHomePageClass() {
         return homePageClass;
     }
 
@@ -102,12 +103,17 @@ public class Configuration {
         return driver;
     }
 
+
     public void resetDriver() {
         if (driver != null) {
             driver.quit();
             disposeDriver(driver);
             driver = null;
         }
+    }
+
+    public void waitForAjax() {
+        factory.getBrowserFamily().waitForAjax(driver);
     }
 
 }
