@@ -92,6 +92,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     public static final String DB_DEFAULT = "nuxeo";
 
+    protected static final String NOSCROLL_ID = "noscroll";
+
     protected DatabaseClient markLogicClient;
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
@@ -369,13 +371,16 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 ids.add(state.get(KEY_ID).toString());
             }
         }
-        return new ScrollResultImpl("noscroll", ids);
+        return new ScrollResultImpl(NOSCROLL_ID, ids);
     }
 
     @Override
     public ScrollResult scroll(String scrollId) {
-       // there is only one batch
-       return emptyResult();
+        if (NOSCROLL_ID.equals(scrollId)) {
+            // there is only one batch
+            return emptyResult();
+        }
+        throw new NuxeoException("Unknown or timed out scrollId");
     }
 
     @Override
