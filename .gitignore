@@ -14,3 +14,5 @@ target
 *.iml
 *.ipr
 *.iws
+/nuxeo-platform-3d-web/bower_components/
+/nuxeo-platform-3d-web/node_modules/

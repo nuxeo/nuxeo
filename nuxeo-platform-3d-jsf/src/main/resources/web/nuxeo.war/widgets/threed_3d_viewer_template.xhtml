@@ -1,0 +1,26 @@
+<h:panelGroup layout="block"
+              xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              styleClass="tabsContent">
+
+    <script type="text/javascript"
+            src="#{baseURL}platform-3d/bower_components/webcomponentsjs/webcomponents-lite.min.js">
+    </script>
+
+    <link rel="import" href="#{baseURL}platform-3d/nuxeo-3d-viewer.html"></link>
+
+    <style type="text/css">
+        #viewer {
+            width: 100%;
+            height: 450px;
+        }
+    </style>
+
+    <nuxeo-3d-viewer id="viewer">
+        <ui:repeat var="item" value="#{transmissionFormatActions.getItems(fieldOrValue)}">
+            <source src="#{item.src}" lod='#{item.lod}'/>
+        </ui:repeat>
+    </nuxeo-3d-viewer>
+
+</h:panelGroup>

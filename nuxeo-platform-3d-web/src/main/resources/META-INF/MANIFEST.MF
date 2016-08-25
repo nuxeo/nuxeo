@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Nuxeo-RequiredBy: org.nuxeo.ecm.war
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo 3D Web
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.web;singleton:=true
+Bundle-Category: web,stateless
+Eclipse-LazyStart: true
