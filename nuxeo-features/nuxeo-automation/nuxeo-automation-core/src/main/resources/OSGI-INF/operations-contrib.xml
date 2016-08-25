@@ -75,7 +75,7 @@
       <widgets>
         <widget name="value" type="codearea">
           <labels>
-            <label mode="any">Value</label>
+            <label mode="any">Transition</label>
           </labels>
           <properties mode="any">
             <property name="language">lifecycle</property>
