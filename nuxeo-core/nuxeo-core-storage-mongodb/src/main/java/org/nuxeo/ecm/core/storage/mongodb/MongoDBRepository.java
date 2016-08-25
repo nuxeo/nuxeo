@@ -883,9 +883,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
-        if (keepAliveSeconds != -1 && log.isInfoEnabled()) {
-            log.info("scroll keepAlive is not supported, the default MongoDB cursor timeout is 10min");
-        }
+        checkForTimedoutScroll();
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(this, evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
@@ -900,25 +898,37 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
         DBCursor cursor = coll.find(query, keys);
         String scrollId = UUID.randomUUID().toString();
-        registerCursor(scrollId, cursor, batchSize);
+        registerCursor(scrollId, cursor, batchSize, keepAliveSeconds);
         return scroll(scrollId);
     }
 
-    protected void registerCursor(String scrollId, DBCursor cursor, int batchSize) {
-        cursorResults.put(scrollId, new CursorResult(cursor, batchSize));
+    synchronized protected void checkForTimedoutScroll() {
+        Set<String> scrollIds = new HashSet<String>(cursorResults.keySet());
+        scrollIds.stream().forEach(x -> cursorResults.get(x).timedOut(x));
+    }
+
+    protected void registerCursor(String scrollId, DBCursor cursor, int batchSize, int keepAliveSeconds) {
+        cursorResults.put(scrollId, new CursorResult(cursor, batchSize, keepAliveSeconds));
     }
 
     @Override
     public ScrollResult scroll(String scrollId) {
         CursorResult cursorResult = cursorResults.get(scrollId);
         if (cursorResult == null) {
-            return emptyResult();
+            throw new NuxeoException("Unknown or timed out scrollId");
+        } else if (cursorResult.timedOut(scrollId)) {
+            throw new NuxeoException("Timed out scrollId");
         }
+        cursorResult.touch();
         List<String> ids = new ArrayList<>(cursorResult.batchSize);
         synchronized (cursorResult) {
+            if (cursorResult.cursor == null || !cursorResult.cursor.hasNext()) {
+                unregisterCursor(scrollId);
+                return emptyResult();
+            }
             while (ids.size() < cursorResult.batchSize) {
                 if (cursorResult.cursor == null || !cursorResult.cursor.hasNext()) {
-                    unregisterCursor(scrollId);
+                    cursorResult.close();
                     break;
                 } else {
                     DBObject ob = cursorResult.cursor.next();
@@ -1149,10 +1159,28 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // Note that MongoDB cursor automatically timeout after 10 minutes of inactivity by default.
         protected DBCursor cursor;
         protected final int batchSize;
+        protected long lastCallTimestamp;
+        protected final int keepAliveSeconds;
 
-        public CursorResult(DBCursor cursor, int batchSize) {
+        public CursorResult(DBCursor cursor, int batchSize, int keepAliveSeconds) {
             this.cursor = cursor;
             this.batchSize = batchSize;
+            this.keepAliveSeconds = keepAliveSeconds;
+            lastCallTimestamp = System.currentTimeMillis();
+        }
+
+        void touch() {
+            lastCallTimestamp = System.currentTimeMillis();
+        }
+
+        boolean timedOut(String scrollId) {
+            long now = System.currentTimeMillis();
+            if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
+                log.warn("Scroll " + scrollId + " timed out");
+                unregisterCursor(scrollId);
+                return true;
+            }
+            return false;
         }
 
         public void close() {

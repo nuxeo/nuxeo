@@ -124,6 +124,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     protected boolean clusteringEnabled;
 
+    protected static final String NOSCROLL_ID = "noscroll";
+
     /**
      * Creates a new Mapper.
      *
@@ -933,11 +935,16 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (!dialect.supportsScroll()) {
             return defaultScroll(query);
         }
+        checkForTimedoutScroll();
         return scrollSearch(query, batchSize, keepAliveSeconds);
     }
 
+    synchronized protected void checkForTimedoutScroll() {
+        Set<String> scrollIds = new HashSet<String>(cursorResults.keySet());
+        scrollIds.stream().forEach(x -> cursorResults.get(x).timedOut(x));
+    }
+
     protected ScrollResult scrollSearch(String query, int batchSize, int keepAliveSeconds) {
-        // TODO: handle keepAlive, at least check for timeout cursor at registerCluster to prevent leak or DOS
         QueryMaker queryMaker = findQueryMaker("NXQL");
         QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter, null);
@@ -961,7 +968,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             ResultSet rs = ps.executeQuery();
             String scrollId = UUID.randomUUID().toString();
-            registerCursor(scrollId, ps, rs, batchSize);
+            registerCursor(scrollId, ps, rs, batchSize, keepAliveSeconds);
             return scroll(scrollId);
         } catch (SQLException e) {
             throw new NuxeoException("Error on query", e);
@@ -969,17 +976,35 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     protected class CursorResult {
-        protected PreparedStatement preparedStatement;
-        protected ResultSet resultSet;
-        protected int batchSize;
+        protected final int keepAliveSeconds;
+        protected final PreparedStatement preparedStatement;
+        protected final ResultSet resultSet;
+        protected final int batchSize;
+        protected long lastCallTimestamp;
 
-        CursorResult(PreparedStatement preparedStatement, ResultSet resultSet, int batchSize) {
+        CursorResult(PreparedStatement preparedStatement, ResultSet resultSet, int batchSize, int keepAliveSeconds) {
             this.preparedStatement = preparedStatement;
             this.resultSet = resultSet;
             this.batchSize = batchSize;
+            this.keepAliveSeconds = keepAliveSeconds;
+            lastCallTimestamp = System.currentTimeMillis();
         }
 
-        void close() throws SQLException {
+        boolean timedOut(String scrollId) {
+            long now = System.currentTimeMillis();
+            if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
+                log.warn("Scroll " + scrollId + " timed out");
+                unregisterCursor(scrollId);
+                return true;
+            }
+            return false;
+        }
+
+        void touch() {
+            lastCallTimestamp = System.currentTimeMillis();
+        }
+
+        synchronized void close() throws SQLException {
             if (resultSet != null) {
                 resultSet.close();
             }
@@ -987,11 +1012,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 preparedStatement.close();
             }
         }
-
     }
 
-    protected void registerCursor(String scrollId, PreparedStatement ps, ResultSet rs, int batchSize) {
-        cursorResults.put(scrollId, new CursorResult(ps, rs, batchSize));
+    protected void registerCursor(String scrollId, PreparedStatement ps, ResultSet rs, int batchSize,
+                                  int keepAliveSeconds) {
+        cursorResults.put(scrollId, new CursorResult(ps, rs, batchSize, keepAliveSeconds));
     }
 
     protected void unregisterCursor(String scrollId) {
@@ -1000,11 +1025,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             try {
                 cursor.close();
             } catch (SQLException e) {
-                throw new NuxeoException("Failed to close cursor");
+                log.error("Failed to close cursor for scroll: " + scrollId, e);
+                // do not propagate exception on cleaning
             }
         }
     }
-
 
     protected ScrollResult defaultScroll(String query) {
         // the database has no proper support for cursor just return everything in one batch
@@ -1019,19 +1044,22 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } catch (SQLException e) {
             throw new NuxeoException("Invalid scroll query: " + query, e);
         }
-        return new ScrollResultImpl("noscroll", ids);
+        return new ScrollResultImpl(NOSCROLL_ID, ids);
     }
 
     @Override
     public ScrollResult scroll(String scrollId) {
-        if (!dialect.supportsScroll()) {
+        if (NOSCROLL_ID.equals(scrollId) || !dialect.supportsScroll()) {
             // there is only one batch in this case
             return emptyResult();
         }
         CursorResult cursorResult = cursorResults.get(scrollId);
         if (cursorResult == null) {
-            return emptyResult();
+            throw new NuxeoException("Unknown or timed out scrollId");
+        } else if (cursorResult.timedOut(scrollId)) {
+            throw new NuxeoException("Timed out scrollId");
         }
+        cursorResult.touch();
         List<String> ids = new ArrayList<>(cursorResult.batchSize);
         synchronized (cursorResult) {
             try {
@@ -1043,12 +1071,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     if (cursorResult.resultSet.next()) {
                         ids.add(cursorResult.resultSet.getString(1));
                     } else {
-                        unregisterCursor(scrollId);
+                        cursorResult.close();
                         break;
                     }
                 }
             } catch (SQLException e) {
-                throw new NuxeoException("Error in scroll", e);
+                throw new NuxeoException("Error during scroll", e);
             }
         }
         return new ScrollResultImpl(scrollId, ids);

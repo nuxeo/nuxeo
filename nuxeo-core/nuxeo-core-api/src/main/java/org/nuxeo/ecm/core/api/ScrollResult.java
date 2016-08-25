@@ -33,7 +33,7 @@ public interface ScrollResult {
     String getScrollId();
 
     /**
-     * Returns the list of document ids.
+     * Returns the list of document ids
      */
     List<String> getResultIds();
 

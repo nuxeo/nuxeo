@@ -1067,7 +1067,6 @@ public interface CoreSession extends AutoCloseable {
      */
     IterableQueryResult queryAndFetch(String query, String queryType, boolean distinctDocuments, Object... params);
 
-
     /**
      * Executes the given query and returns the first batch of results, next batch must be requested
      * within the {@code keepAliveSeconds} delay.
@@ -1075,7 +1074,7 @@ public interface CoreSession extends AutoCloseable {
      * @param query The NXQL query to execute
      * @param batchSize The expected result batch size, note that more results can be returned when the backend don't
      *                  implement properly this feature
-     * @param keepAliveSeconds The scroll context lifetime in seconds, use {@code -1} for a default value.
+     * @param keepAliveSeconds The scroll context lifetime in seconds
      * @return A {@link ScrollResult} including the search results and a scroll id, to be passed to the subsequent
      * calls to {@link #scroll(String)}
      *
@@ -1085,6 +1084,8 @@ public interface CoreSession extends AutoCloseable {
 
     /**
      * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
+     *
+     * @throws NuxeoException when the {@code scrollId} is unknown or when the scroll operation has timed out
      *
      * @since 8.4
      */

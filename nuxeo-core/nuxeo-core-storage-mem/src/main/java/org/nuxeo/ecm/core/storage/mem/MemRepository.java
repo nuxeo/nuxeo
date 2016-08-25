@@ -86,6 +86,8 @@ public class MemRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MemRepository.class);
 
+    protected static final String NOSCROLL_ID = "noscroll";
+
     // for debug
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);
 
@@ -371,13 +373,16 @@ public class MemRepository extends DBSRepositoryBase {
                 ids.add(id);
             }
         }
-        return new ScrollResultImpl("noscroll", ids);
+        return new ScrollResultImpl(NOSCROLL_ID, ids);
     }
 
     @Override
     public ScrollResult scroll(String scrollId) {
-        // Id are already in memory, theay are returned as a single batch
-        return ScrollResultImpl.emptyResult();
+        if (NOSCROLL_ID.equals(scrollId)) {
+            // Id are already in memory, they are returned as a single batch
+            return ScrollResultImpl.emptyResult();
+        }
+        throw new NuxeoException("Unknown or timed out scrollId");
     }
 
     /**

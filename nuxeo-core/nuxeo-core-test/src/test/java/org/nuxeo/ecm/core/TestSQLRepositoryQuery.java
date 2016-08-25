@@ -87,6 +87,7 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -154,6 +155,12 @@ public class TestSQLRepositoryQuery {
 
     public boolean supportsTags() {
         return !isDBS();
+    }
+
+    public boolean supportsScroll() {
+        StorageConfiguration conf = coreFeature.getStorageConfiguration();
+        // DBS mem and marklogic are not yet supported
+        return (conf.isDBSMongoDB() || conf.isVCS());
     }
 
     // ---------------------------------------
@@ -3207,19 +3214,6 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
-    public void testScrollApiRequiresAdminRights() throws Exception {
-        ScrollResult ret = session.scroll("SELECT * FROM Document", 3, -1);
-        assertFalse(ret.hasResults());
-
-        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            exception.expect(NuxeoException.class);
-            exception.expectMessage("Only Administrators can scroll");
-            // raise an illegal access
-            ret = bobSession.scroll("SELECT * FROM Document", 3, -1);
-        }
-    }
-
-    @Test
     public void testScrollApi() throws Exception {
         final int nbDocs = 127;
         final int batchSize = 13;
@@ -3229,12 +3223,11 @@ public class TestSQLRepositoryQuery {
             session.createDocument(doc);
         }
         session.save();
-
         DocumentModelList dml;
         dml = session.query("SELECT * FROM Document");
         assertEquals(nbDocs, dml.size());
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, -1);
+        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
         int total = 0;
         while (ret.hasResults()) {
             List<String> ids = ret.getResultIds();
@@ -3242,6 +3235,111 @@ public class TestSQLRepositoryQuery {
             ret = session.scroll(ret.getScrollId());
         }
         assertEquals(nbDocs, total);
+
+        // the scroll id is now closed
+        exception.expect(NuxeoException.class);
+        exception.expectMessage("Unknown or timed out scrollId");
+        ret = session.scroll(ret.getScrollId());
+        assertFalse(ret.hasResults());
+    }
+
+    @Test
+    public void testScrollApiRequiresAdminRights() throws Exception {
+        ScrollResult ret = session.scroll("SELECT * FROM Document", 3, 1);
+        assertFalse(ret.hasResults());
+
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            exception.expect(NuxeoException.class);
+            exception.expectMessage("Only Administrators can scroll");
+            // raise an illegal access
+            ret = bobSession.scroll("SELECT * FROM Document", 3, 1);
+            assertFalse(ret.hasResults());
+        }
+    }
+
+    @Test
+    public void testScrollApiRequiresAdminRightsBis() throws Exception {
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        session.createDocument(doc1);
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        session.createDocument(doc2);
+        session.save();
+
+        ScrollResult ret = session.scroll("SELECT * FROM Document", 1, 10);
+        assertTrue(ret.hasResults());
+        assertEquals(1, ret.getResultIds().size());
+
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            exception.expect(NuxeoException.class);
+            exception.expectMessage("Only Administrators can scroll");
+            // raise an illegal access
+            ret = bobSession.scroll(ret.getScrollId());
+            assertFalse(ret.hasResults());
+        }
+    }
+
+    @Test
+    public void testScrollTimeout() throws Exception {
+        assumeTrue("Backend must support true scrolling", supportsScroll());
+
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        session.createDocument(doc1);
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        session.createDocument(doc2);
+        session.save();
+
+        ScrollResult ret = session.scroll("SELECT * FROM Document", 1, 1);
+        assertTrue(ret.hasResults());
+        assertEquals(1, ret.getResultIds().size());
+        // wait for scroll timeout
+        Thread.sleep(1100);
+
+        exception.expect(NuxeoException.class);
+        exception.expectMessage("Timed out scrollId");
+        ret = session.scroll(ret.getScrollId());
+        assertFalse(ret.hasResults());
+    }
+
+    @Test
+    public void testScrollBadUsageInvalidScrollId() throws Exception {
+        exception.expect(NuxeoException.class);
+        exception.expectMessage("Unknown or timed out scrollId");
+        ScrollResult ret = session.scroll("foo");
+        assertFalse(ret.hasResults());
+    }
+
+    @Test
+    public void testScrollBadUsage() throws Exception {
+        assumeTrue("Backend must support true scrolling", supportsScroll());
+
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        session.createDocument(doc1);
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        session.createDocument(doc2);
+        session.save();
+
+        ScrollResult ret1 = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult ret2 = session.scroll("SELECT * FROM Document", 1, 1);
+        ScrollResult ret3 = session.scroll("SELECT * FROM Document", 1, 1);
+        assertTrue(ret1.hasResults());
+        assertEquals(1, ret1.getResultIds().size());
+
+        Thread.sleep(1100);
+        // normal timeout on ret1
+        try {
+            session.scroll(ret1.getScrollId());
+        } catch (NuxeoException e) {
+            assertEquals("Timed out scrollId", e.getMessage());
+        }
+
+        // This new call will clean leaked scroll
+        ScrollResult ret4 = session.scroll("SELECT * FROM Document", 1, 1);
+        assertTrue(ret4.hasResults());
+
+        // ret2 is now unknown because it has been cleaned
+        exception.expect(NuxeoException.class);
+        exception.expectMessage("Unknown or timed out scrollId");
+        session.scroll(ret2.getScrollId());
     }
 
     @Test
@@ -3261,7 +3359,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document");
         assertEquals(nbDocs, dml.size());
 
-        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, -1);
+        ScrollResult ret = session.scroll("SELECT * FROM Document", batchSize, 10);
         List<String> ids = ret.getResultIds();
         int total = ids.size();
         String scrollId = ret.getScrollId();
