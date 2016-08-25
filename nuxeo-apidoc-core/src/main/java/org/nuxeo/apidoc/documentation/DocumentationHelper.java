@@ -40,10 +40,10 @@ public class DocumentationHelper {
     private static final String P2 = "<p />";
 
     // private static final String CODE_START = "<div class=\"code\"><pre>";
-    private static final String CODE_START = "<code><pre>";
+    private static final String CODE_START = "<pre><code>";
 
     // private static final String CODE_END = "</pre></div>";
-    private static final String CODE_END = "</pre></code>";
+    private static final String CODE_END = "</code></pre>";
 
     private static final String AUTHOR = "@author";
 
@@ -56,7 +56,8 @@ public class DocumentationHelper {
      * HTML.
      * <p>
      * <ul>
-     * <li>standalone newlines are turned into {@code <br/>
+     * <li>standalone newlines are turned into {@code 
+     * <p/>
      * }</li>
      * <li>{@code <code>} blocks are turned into a {@code <div class="code">}
      * with a {@code
@@ -64,7 +65,7 @@ public class DocumentationHelper {
      * 
     
     <pre>
-     * }</li>
+     * <code>}</li>
      * <li>{@code @author} blocks are removed</li>
      * </ul>
      */
