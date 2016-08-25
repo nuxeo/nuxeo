@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.query.core.AggregateRangeDateDescriptor;
 import org.nuxeo.ecm.platform.query.core.AggregateRangeDescriptor;
 import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -423,13 +424,60 @@ public class TestAggregates {
                 + "            \"interval\" : \"month\",\n" //
                 + "            \"order\" : {\n" //
                 + "              \"_count\" : \"desc\"\n" //
-                + "            }\n" //
+                + "            },\n" //
+                + "            \"pre_zone\" : \"" + DateTimeZone.getDefault().getID() + "\"\n" //
                 + "          }\n" //
                 + "        }\n" //
                 + "      }\n" //
                 + "    }\n" //
                 + "  }\n" //
                 + "}", //
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateDateHistogramQueryWithTimeZone() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("date_histogram");
+        aggDef.setId("created");
+        aggDef.setDocumentField("dc:created");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "created_agg"));
+        aggDef.setProperty("interval", "month");
+        aggDef.setProperty("order", "count desc");
+        aggDef.setProperty("minDocCounts", "5");
+        aggDef.setProperty(ElasticSearchConstants.AGG_TIME_ZONE_PROP, "Europe/London");
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
+                AggregateFactory.create(aggDef, null));
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n" //
+                        + "  \"from\" : 0,\n" //
+                        + "  \"size\" : 10,\n" //
+                        + "  \"query\" : {\n" //
+                        + "    \"match_all\" : { }\n" //
+                        + "  },\n" //
+                        + "  \"fields\" : \"_id\",\n" //
+                        + "  \"aggregations\" : {\n" //
+                        + "    \"created_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"match_all\" : { }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"created\" : {\n" //
+                        + "          \"date_histogram\" : {\n" //
+                        + "            \"field\" : \"dc:created\",\n" //
+                        + "            \"interval\" : \"month\",\n" //
+                        + "            \"order\" : {\n" //
+                        + "              \"_count\" : \"desc\"\n" //
+                        + "            },\n" //
+                        + "            \"pre_zone\" : \"Europe/London\"\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  }\n" //
+                        + "}", //
                 request.toString());
     }
 

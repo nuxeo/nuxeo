@@ -48,6 +48,7 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogram;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramBuilder;
 import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -68,7 +69,9 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
     @JsonIgnore
     @Override
     public DateHistogramBuilder getEsAggregate() {
-        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId()).field(getField());
+        DateHistogramBuilder ret = AggregationBuilders.dateHistogram(getId())
+                                                      .field(getField())
+                                                      .timeZone(DateTimeZone.getDefault().getID());
         Map<String, String> props = getProperties();
         if (props.containsKey(AGG_INTERVAL_PROP)) {
             ret.interval(new DateHistogram.Interval(props.get(AGG_INTERVAL_PROP)));
