@@ -76,4 +76,8 @@ public class RenderViewItem {
         return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName, filename);
     }
 
+    public String getTitle() {
+        return title;
+    }
+
 }
