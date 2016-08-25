@@ -11,113 +11,10 @@
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
-      <coreQueryPageProvider>
-        <trackUsage>true</trackUsage>
+      <pageProvider name="default_search">
         <property name="coreSession">#{documentManager}</property>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-        <whereClause docType="DefaultSearch">
-          <fixedPart>
-            ecm:primaryType NOT IN ('Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Favorites')
-            AND ecm:mixinType != 'HiddenInNavigation'
-            AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
-            AND ecm:isCheckedInVersion = 0
-            AND ecm:currentLifeCycleState != 'deleted'
-            AND ecm:parentId IS NOT NULL
-            AND SORTED_COLUMN IS NOT NULL
-          </fixedPart>
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="default_search" name="ecm_fulltext" />
-          </predicate>
-          <predicate parameter="dc:creator" operator="IN">
-            <field schema="default_search" name="dc_creator" />
-          </predicate>
-          <predicate parameter="dc:created" operator="BETWEEN">
-            <field schema="default_search" name="dc_created_min" />
-            <field schema="default_search" name="dc_created_max" />
-          </predicate>
-          <predicate parameter="dc:modified" operator="BETWEEN">
-            <field schema="default_search" name="dc_modified_min" />
-            <field schema="default_search" name="dc_modified_max" />
-          </predicate>
-          <predicate parameter="dc:nature" operator="IN">
-            <field schema="default_search" name="dc_nature" />
-          </predicate>
-          <predicate parameter="dc:subjects" operator="STARTSWITH">
-            <field schema="default_search" name="dc_subjects" />
-          </predicate>
-          <predicate parameter="dc:coverage" operator="STARTSWITH">
-            <field schema="default_search" name="dc_coverage" />
-          </predicate>
-          <predicate parameter="ecm:path" operator="STARTSWITH">
-            <field schema="default_search" name="ecm_path" />
-          </predicate>
-          <predicate parameter="ecm:tag" operator="IN">
-            <field schema="default_search" name="ecm_tags" />
-          </predicate>
-          <predicate parameter="collectionMember:collectionIds"
-            operator="IN">
-            <field schema="default_search" name="ecm_collections" />
-          </predicate>
-        </whereClause>
-        <aggregates>
-          <aggregate id="dc_nature_agg" type="terms" parameter="dc:nature">
-            <field schema="default_search" name="dc_nature_agg" />
-            <properties>
-              <property name="size">10</property>
-            </properties>
-          </aggregate>
-          <aggregate id="dc_subjects_agg" type="terms" parameter="dc:subjects">
-            <field schema="default_search" name="dc_subjects_agg" />
-            <properties>
-              <property name="size">10</property>
-            </properties>
-          </aggregate>
-          <aggregate id="dc_coverage_agg" type="terms" parameter="dc:coverage">
-            <field schema="default_search" name="dc_coverage_agg" />
-            <properties>
-              <property name="size">10</property>
-            </properties>
-          </aggregate>
-          <aggregate id="dc_creator_agg" type="terms" parameter="dc:creator">
-            <field schema="default_search" name="dc_creator_agg" />
-            <properties>
-              <property name="size">10</property>
-            </properties>
-          </aggregate>
-          <aggregate id="common_size_agg" type="range" parameter="common:size">
-            <field schema="default_search" name="common_size_agg" />
-            <ranges>
-              <range key="tiny" to="102400"/>
-              <range key="small" from="102401" to="1048576"/>
-              <range key="medium" from="1048577" to="10485760"/>
-              <range key="big" from="10485761" to="104857600" />
-              <range key="huge" from="104857601" />
-            </ranges>
-          </aggregate>
-          <aggregate id="dc_created_agg" type="date_histogram" parameter="dc:created">
-            <field schema="default_search" name="dc_created_agg" />
-            <properties>
-              <property name="interval">year</property>
-              <property name="format">yyyy</property>
-              <property name="order">key desc</property>
-            </properties>
-          </aggregate>
-          <aggregate id="dc_modified_agg" type="date_range" parameter="dc:modified">
-            <field schema="default_search" name="dc_modified_agg" />
-            <properties>
-              <property name="format">"dd-MM-yyyy"</property>
-            </properties>
-            <dateRanges>
-              <dateRange key="last24h" fromDate="now-24H" toDate="now"/>
-              <dateRange key="lastWeek" fromDate="now-7d" toDate="now-24H"/>
-              <dateRange key="lastMonth" fromDate="now-1M" toDate="now-7d"/>
-              <dateRange key="lastYear" fromDate="now-1y" toDate="now-1M"/>
-              <dateRange key="priorToLastYear" toDate="now-1y"/>
-            </dateRanges>
-          </aggregate>
-        </aggregates>
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>
+      </pageProvider>
 
       <searchLayout name="default_search_layout" />
       <waitForExecution>false</waitForExecution>
@@ -169,25 +66,10 @@
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
-      <coreQueryPageProvider>
-        <trackUsage>true</trackUsage>
-        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <pageProvider name="simple_search">
         <property name="coreSession">#{documentManager}</property>
-        <whereClause docType="DefaultSearch">
-          <fixedPart>
-            ecm:mixinType != 'HiddenInNavigation' AND
-            ecm:isCheckedInVersion = 0
-            AND ecm:currentLifeCycleState != 'deleted'
-            AND ecm:parentId IS NOT NULL
-            AND SORTED_COLUMN IS NOT NULL
-          </fixedPart>
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="default_search" name="ecm_fulltext" />
-          </predicate>
-        </whereClause>
-        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      </pageProvider>
 
       <searchLayout name="simple_search_layout" />
       <waitForExecution>true</waitForExecution>
@@ -234,16 +116,11 @@
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
-      <coreQueryPageProvider>
-        <trackUsage>true</trackUsage>
+      <pageProvider name="nxql_search">
         <property name="coreSession">#{documentManager}</property>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-        <searchDocumentType>DefaultSearch</searchDocumentType>
-        <pattern quoteParameters="false" escapeParameters="false">?</pattern>
         <parameter>#{searchUIActions.nxqlQuery}</parameter>
-        <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>
+      </pageProvider>
 
       <waitForExecution>true</waitForExecution>
 

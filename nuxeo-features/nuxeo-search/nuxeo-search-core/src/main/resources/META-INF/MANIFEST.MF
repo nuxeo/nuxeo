@@ -8,4 +8,6 @@ Nuxeo-Component: OSGI-INF/savedsearch-service.xml,
  OSGI-INF/savedsearch-core-types-contrib.xml,
  OSGI-INF/savedsearch-adapter-contrib.xml,
  OSGI-INF/savedsearch-pageprovider-contrib.xml,
+ OSGI-INF/search-core-types-contrib.xml,
+ OSGI-INF/search-pageprovider-contrib.xml,
  OSGI-INF/marshallers-contrib.xml

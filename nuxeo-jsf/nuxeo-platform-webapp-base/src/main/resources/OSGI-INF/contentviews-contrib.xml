@@ -11,31 +11,11 @@
       <translateTitle>true</translateTitle>
       <showTitle>false</showTitle>
 
-      <coreQueryPageProvider>
+      <pageProvider name="document_content">
         <property name="coreSession">#{documentManager}</property>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-        <whereClause docType="AdvancedSearch">
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="advanced_search" name="fulltext_all" />
-          </predicate>
-          <predicate parameter="dc:title" operator="FULLTEXT">
-            <field schema="advanced_search" name="title" />
-          </predicate>
-          <predicate parameter="dc:modified" operator="BETWEEN">
-            <field schema="advanced_search" name="modified_min" />
-            <field schema="advanced_search" name="modified_max" />
-          </predicate>
-          <fixedPart>
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
-            ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState
-            != 'deleted'
-          </fixedPart>
-        </whereClause>
         <parameter>#{currentDocument.id}</parameter>
-        <sort column="dc:title" ascending="true" />
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>
+      </pageProvider>
 
       <searchLayout name="document_content_filter"
         filterDisplayType="quick" />

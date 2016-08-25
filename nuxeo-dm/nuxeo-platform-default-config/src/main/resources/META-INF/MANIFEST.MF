@@ -6,6 +6,7 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateful
 Nuxeo-Component: OSGI-INF/nxdirectories-contrib.xml,
-  OSGI-INF/jbpmService-contrib.xml
+  OSGI-INF/jbpmService-contrib.xml,
+  OSGI-INF/document-pageprovider-contrib.xml
 Require-Bundle: org.nuxeo.ecm.directory.api,
   org.nuxeo.ecm.platform.jbpm.core
