@@ -47,9 +47,8 @@ cam_look_at = mc_c
 bpy.ops.object.camera_add(view_align=False, enter_editmode=False, location=cam_location)
 camera_ob = bpy.context.object
 camera = camera_ob.data
-# the clip end needs to be distance from the camera position to the minimum point of the mesh cluster
-# added 1% to avoid losing points due to floating point errors
-camera.clip_end = (Vector(mc_min) - Vector(cam_location)).length * 1.01
+# the clip end is double the distance from the camera position to the center of the mesh cluster
+camera.clip_end = radial * 2
 camera.type = 'ORTHO'
 
 # set the camera target and constraints
