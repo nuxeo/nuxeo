@@ -190,8 +190,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         Semaphore semaphore = Framework.getService(FileSystemItemAdapterService.class).getScrollBatchSemaphore();
         try {
             if (log.isTraceEnabled()) {
-                log.trace(String.format("Thread [%s] acquiring scroll batch semaphore", Thread.currentThread()
-                                                                                              .getName()));
+                log.trace(String.format("Thread [%s] acquiring scroll batch semaphore",
+                        Thread.currentThread().getName()));
             }
             semaphore.acquire();
             try {
@@ -244,15 +244,15 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         int maxDescendantsBatchSize = Integer.parseInt(Framework.getService(ConfigurationService.class).getProperty(
                 MAX_DESCENDANTS_BATCH_SIZE_PROPERTY, MAX_DESCENDANTS_BATCH_SIZE_DEFAULT));
         if (batchSize > maxDescendantsBatchSize) {
-            throw new NuxeoException(
-                    String.format(
-                            "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
-                            batchSize, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
+            throw new NuxeoException(String.format(
+                    "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
+                    batchSize, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected ScrollDocumentModelList getScrollBatch(String scrollId, int batchSize, CoreSession session, long keepAlive) {
+    protected ScrollDocumentModelList getScrollBatch(String scrollId, int batchSize, CoreSession session,
+            long keepAlive) {
         Cache scrollingCache = Framework.getService(CacheService.class).getCache(DESCENDANTS_SCROLL_CACHE);
         if (scrollingCache == null) {
             throw new NuxeoException("Cache not found: " + DESCENDANTS_SCROLL_CACHE);
@@ -263,8 +263,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             // Perform initial query to fetch ids of all the descendant documents and put the result list in a
             // cache, aka "search context"
             descendantIds = new ArrayList<>();
-            StringBuilder sb = new StringBuilder(String.format(
-                    "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", docId));
+            StringBuilder sb = new StringBuilder(
+                    String.format("SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", docId));
             sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
             sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
             // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
@@ -436,10 +436,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             FileSystemItem fsItem = getFileSystemItemAdapterService().getFileSystemItem(doc, parentItem, true, false,
                     false);
             if (fsItem == null) {
-                throw new RootlessItemException(
-                        String.format(
-                                "Reached a document %s that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
-                                doc.getPathAsString()));
+                throw new RootlessItemException(String.format(
+                        "Reached a document %s that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
+                        doc.getPathAsString()));
             }
             FolderItem folderItem = (FolderItem) fsItem;
             if (log.isTraceEnabled()) {
@@ -463,18 +462,17 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel folder = getFileManager().createFolder(session, name, docPath);
             if (folder == null) {
-                throw new NuxeoException(
-                        String.format(
-                                "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
-                                name, docPath));
+                throw new NuxeoException(String.format(
+                        "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
+                        name, docPath));
             }
             return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(folder, this);
         } catch (NuxeoException e) {
             e.addInfo(String.format("Error while trying to create folder %s as a child of doc %s", name, docPath));
             throw e;
         } catch (IOException e) {
-            throw new NuxeoException(String.format("Error while trying to create folder %s as a child of doc %s", name,
-                    docPath), e);
+            throw new NuxeoException(
+                    String.format("Error while trying to create folder %s as a child of doc %s", name, docPath), e);
         }
     }
 
@@ -485,18 +483,17 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             // TODO: manage conflict (overwrite should not necessarily be true)
             DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, true, fileName);
             if (file == null) {
-                throw new NuxeoException(
-                        String.format(
-                                "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
-                                fileName, docPath));
+                throw new NuxeoException(String.format(
+                        "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
+                        fileName, docPath));
             }
             return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(file, this);
         } catch (NuxeoException e) {
             e.addInfo(String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath));
             throw e;
         } catch (IOException e) {
-            throw new NuxeoException(String.format("Error while trying to create file %s as a child of doc %s",
-                    fileName, docPath), e);
+            throw new NuxeoException(
+                    String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath), e);
         }
     }
 
@@ -506,8 +503,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         this.folder = true;
         this.canCreateChild = !doc.hasFacet(FacetNames.PUBLISH_SPACE);
         if (canCreateChild) {
-            if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                    PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+            if (Framework.getService(ConfigurationService.class)
+                         .isBooleanPropertyTrue(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
                 // In optimized mode consider that canCreateChild <=> canRename because canRename <=> WriteProperties
                 // and by default WriteProperties <=> Write <=> AddChildren
                 this.canCreateChild = canRename;
