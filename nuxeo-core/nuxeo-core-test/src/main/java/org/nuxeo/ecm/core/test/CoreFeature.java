@@ -86,6 +86,7 @@ import com.google.inject.Provider;
         "org.nuxeo.ecm.core.storage.dbs", //
         "org.nuxeo.ecm.core.storage.mem", //
         "org.nuxeo.ecm.core.storage.mongodb", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
 })
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
