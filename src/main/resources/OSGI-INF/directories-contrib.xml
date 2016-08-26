@@ -31,6 +31,11 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/topic.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">subtopic</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
     </directory>
 
     <directory name="subtopic">
@@ -57,6 +62,11 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/l10nsubjects.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">l10nsubjects</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
     </directory>
 
     <directory name="l10ncoverage">
@@ -70,6 +80,11 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/l10ncoverage.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">l10ncoverage</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
     </directory>
 
   </extension>
