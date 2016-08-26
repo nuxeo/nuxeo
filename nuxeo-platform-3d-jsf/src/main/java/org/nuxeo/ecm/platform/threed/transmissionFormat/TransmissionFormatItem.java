@@ -44,7 +44,9 @@ public class TransmissionFormatItem {
 
     protected String filename;
 
-    protected String lod;
+    protected Long size;
+
+    protected Long lod;
 
     public TransmissionFormatItem(DocumentModel doc, String basePropertyPath, int position) {
         this.doc = doc;
@@ -53,8 +55,10 @@ public class TransmissionFormatItem {
         blobPropertyName = propertyPath + "/content";
         lodPropertyName = propertyPath + "/lod";
         try {
-            filename = ((Blob) doc.getPropertyValue(blobPropertyName)).getFilename();
-            lod = (doc.getPropertyValue(lodPropertyName)).toString();
+            Blob blob = (Blob) doc.getPropertyValue(blobPropertyName);
+            filename = blob.getFilename();
+            size = blob.getLength();
+            lod = (Long) doc.getPropertyValue(lodPropertyName);
         } catch (PropertyException e) {
             log.warn(e);
         }
@@ -65,7 +69,11 @@ public class TransmissionFormatItem {
     }
 
     public String getLod() {
-        return lod;
+        return lod.toString();
+    }
+
+    public String getSize() {
+        return size.toString();
     }
 
 }

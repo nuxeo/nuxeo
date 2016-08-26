@@ -64,6 +64,35 @@
             </property>
         </widgetType>
 
+        <widgetType name="threed_transmission_format">
+            <configuration>
+                <sinceVersion>8.4</sinceVersion>
+                <title>3D transmission format</title>
+                <description>
+                    <p>
+                        This widget displays the transmission format versions
+                        a document having the facet
+                        'ThreeD'.
+                    </p>
+                </description>
+                <handlingLabels>true</handlingLabels>
+                <categories>
+                    <category>summary</category>
+                </categories>
+                <supportedModes>
+                    <mode>view</mode>
+                </supportedModes>
+                <!-- no configurable properties -->
+            </configuration>
+
+            <handler-class>
+                org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+            </handler-class>
+            <property name="template">
+                /widgets/threed_transmisson_formats_template.xhtml
+            </property>
+        </widgetType>
+
     </extension>
 
     <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -95,6 +124,19 @@
             </widgetModes>
         </widget>
 
+        <widget name="summary_threed_transmission_format" type="threed_transmission_format">
+            <labels>
+                <label mode="any">heading.threed_transmission_formats</label>
+            </labels>
+            <translated>true</translated>
+            <controls mode="any">
+                <control name="handleLabels">true</control>
+            </controls>
+            <widgetModes>
+                <mode value="any">#{not empty currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+            </widgetModes>
+        </widget>
+
     </extension>
 
     <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -108,6 +150,13 @@
             <filter-id>hasThreeDFacet</filter-id>
         </action>
 
+        <action id="summary_threed_transmission_format" type="widget" order="60">
+            <category>SUMMARY_PANEL_LEFT</category>
+            <properties>
+                <property name="widgetName">summary_threed_transmission_format</property>
+            </properties>
+            <filter-id>hasThreeDFacet</filter-id>
+        </action>
 
         <action id="summary_threed_render_view" type="widget" order="340">
             <category>SUMMARY_PANEL_RIGHT</category>
