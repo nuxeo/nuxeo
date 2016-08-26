@@ -17,6 +17,7 @@
     <directory name="userDirectory">
 
       <schema>user</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>

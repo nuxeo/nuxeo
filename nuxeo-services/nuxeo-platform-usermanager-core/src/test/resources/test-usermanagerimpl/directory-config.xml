@@ -12,6 +12,7 @@
     <directory name="userDirectory">
 
       <schema>user</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>
@@ -33,6 +34,7 @@
     <directory name="groupDirectory">
 
       <schema>group</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>groups</table>
       <idField>groupname</idField>

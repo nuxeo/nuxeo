@@ -34,4 +34,13 @@ public class DirectoryRootObject extends DefaultObject {
     public Object doGetDirectory(@PathParam("directoryName") String dirName) {
         return newObject("directoryObject", dirName);
     }
+
+    /**
+     * @since 8.4
+     */
+    @GET
+    public List<Directory> getDirectoryNames(@QueryParam("uiDirectory") Boolean uiDirectory) {
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        return directoryService.getDirectories(uiDirectory != null ? uiDirectory : true);
+    }
 }

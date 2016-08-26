@@ -18,6 +18,7 @@
       <code>
         <directory name="userDirectory">
           <schema>vocabulary</schema>
+          <display>false</display>
           <dataSource>java:/nxsqldirectory</dataSource>
           <table>t</table>
           <nativeCase>false</nativeCase>
@@ -51,6 +52,10 @@
         <li>
           schema - the name of the schema to be used for the directory
           entries.
+        </li>
+        <li>
+          display - a boolean value to make the directory visible
+          (i.e. exposed by the rest API). Default value is true.
         </li>
         <li>
           dataSource - the dataSource name, as registered in the

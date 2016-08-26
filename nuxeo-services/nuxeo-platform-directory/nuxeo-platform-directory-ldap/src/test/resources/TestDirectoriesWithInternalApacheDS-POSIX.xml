@@ -41,6 +41,7 @@
     <directory name="userDirectory">
       <server>default</server>
       <schema>user</schema>
+      <display>false</display>
       <idField>username</idField>
       <passwordField>password</passwordField>
 
@@ -78,6 +79,7 @@
 
       <server>default</server>
       <schema>group</schema>
+      <display>false</display>
       <idField>groupname</idField>
 
       <searchBaseDn>ou=groups</searchBaseDn>

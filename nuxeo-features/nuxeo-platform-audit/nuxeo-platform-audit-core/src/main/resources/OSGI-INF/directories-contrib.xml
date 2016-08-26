@@ -6,6 +6,7 @@
 
     <directory name="eventTypes">
       <schema>vocabulary</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -18,6 +19,7 @@
 
     <directory name="eventCategories">
       <schema>vocabulary</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>

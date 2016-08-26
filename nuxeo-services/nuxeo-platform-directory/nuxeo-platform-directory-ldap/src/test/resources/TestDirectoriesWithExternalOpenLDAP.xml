@@ -43,6 +43,7 @@
     <directory name="userDirectory">
       <server>default</server>
       <schema>user</schema>
+      <display>false</display>
       <idField>username</idField>
       <passwordField>userPassword</passwordField>
       <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
@@ -88,6 +89,7 @@
     <directory name="groupDirectory">
       <server>default</server>
       <schema>group</schema>
+      <display>false</display>
       <idField>groupname</idField>
 
       <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>
@@ -140,6 +142,7 @@
     <directory name="unitDirectory">
       <server>default</server>
       <schema>group</schema>
+      <display>false</display>
       <idField>groupname</idField>
 
       <searchBaseDn>ou=groups,dc=example,dc=com</searchBaseDn>

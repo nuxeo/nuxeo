@@ -93,6 +93,7 @@
 
     <directory name="search_operators">
       <schema>vocabulary</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>search_operators</table>
       <cacheTimeout>3600</cacheTimeout>
@@ -105,6 +106,7 @@
 
     <directory name="documentsLists">
       <schema>documentsLists</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>documentsLists</table>
       <idField>id</idField>

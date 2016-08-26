@@ -126,6 +126,7 @@
         <directory name="userDirectory">
           <server>default</server>
           <schema>user</schema>
+          <display>false</display>
           <idField>username</idField>
           <idCase>unchanged</idCase>
           <passwordField>password</passwordField>

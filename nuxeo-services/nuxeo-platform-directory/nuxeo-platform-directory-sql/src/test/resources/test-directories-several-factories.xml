@@ -10,6 +10,7 @@
     point="directories">
     <directory name="userDirectory">
       <schema>user</schema>
+      <display>false</display>
       <idField>username</idField>
     </directory>
   </extension>
@@ -21,6 +22,7 @@
 
     <directory name="myOtherNewDirectory">
       <schema>user</schema>
+      <display>false</display>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>other</table>
       <createTablePolicy>always</createTablePolicy>
