@@ -58,7 +58,7 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
     "org.nuxeo.ecm.platform.commandline.executor" })
 public class ThreeDConvertersTest {
 
-    protected static final String TEST_MODEL = "suzane";
+    protected static final String TEST_MODEL = "suzanne";
 
     private static final String renderId1 = "renderId1";
 

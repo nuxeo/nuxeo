@@ -83,7 +83,7 @@ public class TestThreeDRenditions {
     public static final List<String> THREED_RENDITION_DEFINITION_KINDS = Arrays.asList(
             THREED_RENDER_VIEW_RENDITION_KIND, THREED_TRANSMISSION_RENDITION_KIND);
 
-    protected static final String TEST_MODEL = "suzane";
+    protected static final String TEST_MODEL = "suzanne";
 
     @Inject
     protected CoreSession session;

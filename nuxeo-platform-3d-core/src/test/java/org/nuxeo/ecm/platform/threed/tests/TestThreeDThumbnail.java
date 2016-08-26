@@ -99,7 +99,7 @@ public class TestThreeDThumbnail {
         DocumentModel threed = session.createDocumentModel("/", "threed", "ThreeD");
         threed = session.createDocument(threed);
         session.save();
-        Blob blob = Blobs.createBlob(getFileFromPath("test-data/suzane.obj"), "image/gif", null, "suzane.obj");
+        Blob blob = Blobs.createBlob(getFileFromPath("test-data/suzanne.obj"), "image/gif", null, "suzanne.obj");
         updateThreeDDocument(threed, new ThreeD(blob, null));
         session.saveDocument(threed);
         session.save();
