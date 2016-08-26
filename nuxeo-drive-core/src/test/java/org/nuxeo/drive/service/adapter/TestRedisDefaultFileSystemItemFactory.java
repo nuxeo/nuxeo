@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,19 @@ package org.nuxeo.drive.service.adapter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
-import org.nuxeo.drive.test.NuxeoDriveInMemoryCacheFeature;
+import org.nuxeo.drive.test.NuxeoDriveRedisCacheFeature;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Tests the {@link DefaultFileSystemItemFactory} against the in-memory implementation of the {@link CacheService}.
+ * Tests the {@link DefaultFileSystemItemFactory} against the Redis implementation of the {@link CacheService}.
+ *
+ * @since 8.4
  */
 @RunWith(ContributableFeaturesRunner.class)
-@Features(NuxeoDriveInMemoryCacheFeature.class)
+@Features(NuxeoDriveRedisCacheFeature.class)
 @SuiteClasses(DefaultFileSystemItemFactoryFixture.class)
-public class TestDefaultFileSystemItemFactory {
+public class TestRedisDefaultFileSystemItemFactory {
 
 }

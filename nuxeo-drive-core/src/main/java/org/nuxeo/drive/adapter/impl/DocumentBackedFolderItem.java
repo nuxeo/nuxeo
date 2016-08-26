@@ -304,6 +304,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
         // Extract a batch of descendant ids
         List<String> descendantIdsBatch = getBatch(descendantIds, batchSize);
+        // Update descendant ids in the cache
+        scrollingCache.put(newScrollId, (Serializable) descendantIds);
         // Fetch documents from VCS
         DocumentModelList descendantDocsBatch = fetchFromVCS(descendantIdsBatch, session);
         return new ScrollDocumentModelList(newScrollId, descendantDocsBatch);
