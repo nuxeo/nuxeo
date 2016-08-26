@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.test.aggregates;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
+import org.nuxeo.elasticsearch.aggregate.DateHistogramAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -398,10 +400,13 @@ public class TestAggregates {
         aggDef.setDocumentField("dc:created");
         aggDef.setSearchField(new FieldDescriptor("advanced_search", "created_agg"));
         aggDef.setProperty("interval", "month");
+        aggDef.setProperty("format", "yyy-MM");
+        aggDef.setProperty("timeZone", "UTC");
         aggDef.setProperty("order", "count desc");
         aggDef.setProperty("minDocCounts", "5");
-        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
-                AggregateFactory.create(aggDef, null));
+        DateHistogramAggregate agg = (DateHistogramAggregate) AggregateFactory.create(aggDef, null);
+        agg.setSelection(Arrays.asList("2016-08"));
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(agg);
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
@@ -410,6 +415,24 @@ public class TestAggregates {
                 + "  \"size\" : 10,\n" //
                 + "  \"query\" : {\n" //
                 + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"post_filter\" : {\n" //
+                + "    \"and\" : {\n" //
+                + "      \"filters\" : [ {\n" //
+                + "        \"or\" : {\n" //
+                + "          \"filters\" : [ {\n" //
+                + "            \"range\" : {\n" //
+                + "              \"dc:created\" : {\n" //
+                + "                \"from\" : 1470009600000,\n" // Mon Aug  1 00:00:00 UTC 2016
+                + "                \"to\" : 1472688000000,\n" // Thu Sep  1 00:00:00 UTC 2016
+                + "                \"include_lower\" : true,\n" //
+                + "                \"include_upper\" : false\n" //
+                + "              }\n" //
+                + "            }\n" //
+                + "          } ]\n" //
+                + "        }\n" //
+                + "      } ]\n" //
+                + "    }\n" //
                 + "  },\n" //
                 + "  \"fields\" : \"_id\",\n" //
                 + "  \"aggregations\" : {\n" //
@@ -425,7 +448,8 @@ public class TestAggregates {
                 + "            \"order\" : {\n" //
                 + "              \"_count\" : \"desc\"\n" //
                 + "            },\n" //
-                + "            \"pre_zone\" : \"" + DateTimeZone.getDefault().getID() + "\"\n" //
+                + "            \"pre_zone\" : \"UTC\",\n" //
+                + "            \"format\" : \"yyy-MM\"\n" //
                 + "          }\n" //
                 + "        }\n" //
                 + "      }\n" //
@@ -436,7 +460,7 @@ public class TestAggregates {
     }
 
     @Test
-    public void testAggregateDateHistogramQueryWithTimeZone() throws Exception {
+    public void testAggregateDateHistogramQueryWithoutTimeZone() throws Exception {
         AggregateDefinition aggDef = new AggregateDescriptor();
         aggDef.setType("date_histogram");
         aggDef.setId("created");
@@ -445,7 +469,6 @@ public class TestAggregates {
         aggDef.setProperty("interval", "month");
         aggDef.setProperty("order", "count desc");
         aggDef.setProperty("minDocCounts", "5");
-        aggDef.setProperty(ElasticSearchConstants.AGG_TIME_ZONE_PROP, "Europe/London");
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document").addAggregate(
                 AggregateFactory.create(aggDef, null));
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME);
@@ -471,7 +494,7 @@ public class TestAggregates {
                         + "            \"order\" : {\n" //
                         + "              \"_count\" : \"desc\"\n" //
                         + "            },\n" //
-                        + "            \"pre_zone\" : \"Europe/London\"\n" //
+                        + "            \"pre_zone\" : \"" + DateTimeZone.getDefault().getID() + "\"\n" //
                         + "          }\n" //
                         + "        }\n" //
                         + "      }\n" //
