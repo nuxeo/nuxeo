@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
@@ -62,46 +63,35 @@ public class TestBinaryMetadataService {
     @Inject
     CoreSession session;
 
-    List<String> musicMetadata = new ArrayList<String>() {
+    private static Map<String, Object> inputPSDMetadata;
 
-        private static final long serialVersionUID = 1L;
+    private static List<String> musicMetadata;
 
-        {
-            add("ID3:Title");
-            add("ID3:Lyrics-por");
-            add("ID3:Publisher");
-            add("ID3:Comment");
-        }
-    };
+    private static List<String> PSDMetadata;
 
-    List<String> PSDMetadata = new ArrayList<String>() {
-
-        private static final long serialVersionUID = 1L;
-
-        {
-            add("EXIF:ImageHeight");
-            add("EXIF:Software");
-            add("IPTC:Keywords");
-            add("EXIF:DateTimeOriginal");
-        }
-    };
-
-    private static final Map<String, Object> inputPSDMetadata;
-
-    static {
+    @BeforeClass
+    public static void init() throws ParseException {
         inputPSDMetadata = new HashMap<>();
         inputPSDMetadata.put("EXIF:ImageHeight", "200");
         inputPSDMetadata.put("EXIF:Software", "Nuxeo");
-        inputPSDMetadata.put("IPTC:Keywords", new String[] {"keyword1", "keyword2"});
-        inputPSDMetadata.put("IPTC:Keywords", new String[] {"keyword1", "keyword2"});
-        try {
-            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            inputPSDMetadata.put("EXIF:DateTimeOriginal", calendar);
-        } catch (ParseException e) {
-            fail(e.getMessage());
-        }
+        inputPSDMetadata.put("IPTC:Keywords", new String[] { "keyword1", "keyword2" });
+        inputPSDMetadata.put("IPTC:Keywords", new String[] { "keyword1", "keyword2" });
+        Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        inputPSDMetadata.put("EXIF:DateTimeOriginal", calendar);
+
+        musicMetadata = new ArrayList<>();
+        musicMetadata.add("ID3:Title");
+        musicMetadata.add("ID3:Lyrics-por");
+        musicMetadata.add("ID3:Publisher");
+        musicMetadata.add("ID3:Comment");
+
+        PSDMetadata = new ArrayList<>();
+        PSDMetadata.add("EXIF:ImageHeight");
+        PSDMetadata.add("EXIF:Software");
+        PSDMetadata.add("IPTC:Keywords");
+        PSDMetadata.add("EXIF:DateTimeOriginal");
     }
 
     @Test
@@ -129,7 +119,7 @@ public class TestBinaryMetadataService {
     }
 
     @Test
-    public void itShouldWriteGivenMetadataInBinary() {
+    public void itShouldWriteGivenMetadataInBinary() throws ParseException {
         // Get the document with PSD attached
         DocumentModel psdFile = BinaryMetadataServerInit.getFile(3, session);
         BlobHolder psdBlobHolder = psdFile.getAdapter(BlobHolder.class);
@@ -158,12 +148,8 @@ public class TestBinaryMetadataService {
         assertEquals("keyword1", keywords.get(0));
         assertEquals("keyword2", keywords.get(1));
         // Check date was written to the binary
-        try {
-            Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
-            assertEquals(date, blobProperties.get("EXIF:DateTimeOriginal"));
-        } catch (ParseException e) {
-            fail(e.getMessage());
-        }
+        Date date = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").parse("2018:06:15 00:00:00");
+        assertEquals(date, blobProperties.get("EXIF:DateTimeOriginal"));
     }
 
     @Test
