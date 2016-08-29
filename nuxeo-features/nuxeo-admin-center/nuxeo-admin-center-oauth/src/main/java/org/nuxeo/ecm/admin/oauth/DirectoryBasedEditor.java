@@ -111,12 +111,13 @@ public abstract class DirectoryBasedEditor implements Serializable {
     public DocumentModelList getEntries() throws DirectoryException {
         if (entries == null) {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            try (Session session = ds.open(getDirectoryName())) {
-                Map<String, Serializable> emptyMap = getQueryFilter();
-                Set<String> emptySet = getOrderSet();
-
-                entries = session.query(emptyMap, emptySet, null, true);
-            }
+            Framework.doPrivileged(() -> {
+                try (Session session = ds.open(getDirectoryName())) {
+                    Map<String, Serializable> emptyMap = getQueryFilter();
+                    Set<String> emptySet = getOrderSet();
+                    entries = session.query(emptyMap, emptySet, null, true);
+                }
+            });
         }
         return entries;
     }
