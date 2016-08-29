@@ -20,6 +20,8 @@ package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
 import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunner.withDirectorySession;
 
+import java.util.List;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -30,10 +32,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,6 +51,8 @@ public class DirectoryEntryObject extends DefaultObject {
 
     protected Directory directory;
 
+    protected String entryId;
+
     @Override
     protected void initialize(Object... args) {
         if (args.length < 1) {
@@ -55,7 +61,7 @@ public class DirectoryEntryObject extends DefaultObject {
 
         entry = (DirectoryEntry) args[0];
         directory = getDirectoryFromEntry(entry);
-
+        entryId = (String) args[1];;
     }
 
     @GET
@@ -86,9 +92,25 @@ public class DirectoryEntryObject extends DefaultObject {
         ((DirectoryObject) prev).checkEditGuards();
     }
 
+    /**
+     * @since 8.4
+     */
+    private void checkDeleteGuards() {
+        List<DirectoryDeleteConstraint> deleteConstraints = directory.getDirectoryDeleteConstraints();
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
+            for (DirectoryDeleteConstraint deleteConstraint : deleteConstraints) {
+                if (!deleteConstraint.canDelete(directoryService, entryId)) {
+                    throw new WebSecurityException("This entry is referenced in another vocabulary.");
+                }
+            }
+        }
+    }
+
     @DELETE
     public Response doDeleteEntry() {
         checkEditGuards();
+        checkDeleteGuards();
         withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
             @Override

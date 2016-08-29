@@ -131,7 +131,7 @@ public class DirectoryObject extends DefaultObject {
                 if (entry == null) {
                     throw new WebResourceNotFoundException("Entry not found");
                 }
-                return newObject("directoryEntry", new DirectoryEntry(directory.getName(), entry));
+                return newObject("directoryEntry", new DirectoryEntry(directory.getName(), entry), entryId);
             }
         });
 
