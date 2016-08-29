@@ -25,8 +25,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
-import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint;
 import org.nuxeo.runtime.api.Framework;
@@ -74,10 +74,10 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
         assertEquals("vocabulary", continent.getLayout());
         assertEquals("label", continent.getSortField());
         assertNull(continent.getView());
-        List<DirectoryUIDeleteConstraint> constraints = continent.getDeleteConstraints();
+        List<DirectoryDeleteConstraint> constraints = continent.getDeleteConstraints();
         assertNotNull(constraints);
         assertEquals(1, constraints.size());
-        DirectoryUIDeleteConstraint constraint = constraints.get(0);
+        DirectoryDeleteConstraint constraint = constraints.get(0);
         assertTrue(constraint instanceof HierarchicalDirectoryUIDeleteConstraint);
 
         DirectoryUI country = service.getDirectoryInfo("country");
@@ -109,7 +109,7 @@ public class TestDirectoryUIManagerRegistration extends NXRuntimeTestCase {
         assertEquals("country_vocabulary", country.getLayout());
         assertEquals("parent", country.getSortField());
         assertEquals("foo", country.getView());
-        List<DirectoryUIDeleteConstraint> constraints = country.getDeleteConstraints();
+        List<DirectoryDeleteConstraint> constraints = country.getDeleteConstraints();
         assertNotNull(constraints);
         assertEquals(0, constraints.size());
     }

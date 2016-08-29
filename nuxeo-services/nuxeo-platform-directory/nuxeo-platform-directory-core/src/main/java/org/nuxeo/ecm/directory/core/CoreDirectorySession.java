@@ -248,6 +248,7 @@ public class CoreDirectorySession extends BaseSession {
             if (id == null) {
                 throw new DirectoryException("Can not update entry with a null id ");
             } else {
+                checkDeleteConstraints(id);
                 DocumentModel docModel = getEntry(id);
                 if (docModel != null) {
                     coreSession.removeDocument(docModel.getRef());

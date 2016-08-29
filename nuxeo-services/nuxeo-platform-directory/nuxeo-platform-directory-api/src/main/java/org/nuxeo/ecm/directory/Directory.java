@@ -23,6 +23,8 @@ package org.nuxeo.ecm.directory;
 import java.util.Collection;
 import java.util.List;
 
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
+
 /**
  * The directory interface.
  * <p>
@@ -142,5 +144,15 @@ public interface Directory {
      * @since 5.6
      */
     boolean isMultiTenant() throws DirectoryException;
+
+    /**
+     * @since 8.4
+     */
+    boolean isDisplay();
+
+    /**
+     * @since 8.4
+     */
+    List<DirectoryDeleteConstraint> getDirectoryDeleteConstraints();
 
 }

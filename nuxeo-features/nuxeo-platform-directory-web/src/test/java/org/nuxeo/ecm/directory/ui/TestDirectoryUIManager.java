@@ -34,8 +34,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
-import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -78,11 +78,11 @@ public class TestDirectoryUIManager {
         assertEquals("label", continent.getSortField());
         assertNull(continent.getView());
 
-        List<DirectoryUIDeleteConstraint> constraints = continent.getDeleteConstraints();
+        List<DirectoryDeleteConstraint> constraints = continent.getDeleteConstraints();
         assertNotNull(constraints);
         assertEquals(1, constraints.size());
 
-        DirectoryUIDeleteConstraint constraint = constraints.get(0);
+        DirectoryDeleteConstraint constraint = constraints.get(0);
         assertTrue(constraint instanceof HierarchicalDirectoryUIDeleteConstraint);
 
         DirectoryUI country = service.getDirectoryInfo("country");
@@ -109,10 +109,10 @@ public class TestDirectoryUIManager {
 
             DirectoryUI continent = service.getDirectoryInfo("continent");
             assertNotNull(continent);
-            List<DirectoryUIDeleteConstraint> constraints = continent.getDeleteConstraints();
+            List<DirectoryDeleteConstraint> constraints = continent.getDeleteConstraints();
             assertNotNull(constraints);
             assertEquals(1, constraints.size());
-            DirectoryUIDeleteConstraint constraint = constraints.get(0);
+            DirectoryDeleteConstraint constraint = constraints.get(0);
             assertTrue(constraint instanceof HierarchicalDirectoryUIDeleteConstraint);
 
             // test can delete when there a dep in child dir

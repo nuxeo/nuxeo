@@ -19,7 +19,7 @@
  * $Id:  $
  */
 
-package org.nuxeo.ecm.directory.api.ui;
+package org.nuxeo.ecm.directory;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
  * Directory ui descriptor
@@ -36,17 +36,17 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * @author Anahide Tchertchian
  */
 @XObject("deleteConstraint")
-public class DirectoryUIDeleteConstraintDescriptor implements Serializable {
+public class DirectoryDeleteConstraintDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @XNode("@class")
-    protected Class<? extends DirectoryUIDeleteConstraint> klass;
+    protected Class<? extends DirectoryDeleteConstraint> klass;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> properties = new HashMap<String, String>();
 
-    public Class<? extends DirectoryUIDeleteConstraint> getKlass() {
+    public Class<? extends DirectoryDeleteConstraint> getKlass() {
         return klass;
     }
 
@@ -54,9 +54,9 @@ public class DirectoryUIDeleteConstraintDescriptor implements Serializable {
         return properties;
     }
 
-    public DirectoryUIDeleteConstraint getDeleteConstraint() throws DirectoryException {
+    public DirectoryDeleteConstraint getDeleteConstraint() throws DirectoryException {
         try {
-            DirectoryUIDeleteConstraint instance = klass.newInstance();
+            DirectoryDeleteConstraint instance = klass.newInstance();
             if (properties != null) {
                 instance.setProperties(properties);
             }

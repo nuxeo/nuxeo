@@ -19,12 +19,16 @@
  */
 package org.nuxeo.ecm.directory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
  * Basic directory descriptor, containing the basic fields used by all directories.
@@ -113,6 +117,18 @@ public class BaseDirectoryDescriptor implements Cloneable {
 
     @XNode("substringMatchType")
     public String substringMatchType;
+
+    /**
+     * @since 8.4
+     */
+    @XNode("display")
+    public Boolean display = true;
+
+    /**
+     * @since 8.4
+     */
+    @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryDeleteConstraintDescriptor.class)
+    List<DirectoryDeleteConstraintDescriptor> deleteConstraints;
 
     public boolean isReadOnly() {
         return readOnly == null ? READ_ONLY_DEFAULT : readOnly.booleanValue();
@@ -213,6 +229,12 @@ public class BaseDirectoryDescriptor implements Cloneable {
         if (other.substringMatchType != null) {
             substringMatchType = other.substringMatchType;
         }
+        if (other.display != null) {
+            display = other.display;
+        }
+        if (other.deleteConstraints != null) {
+            deleteConstraints = other.deleteConstraints;
+        }
     }
 
     /**
@@ -220,6 +242,19 @@ public class BaseDirectoryDescriptor implements Cloneable {
      */
     public Directory newDirectory() {
         throw new UnsupportedOperationException("Cannot be instantiated as Directory: " + getClass().getName());
+    }
+
+    /**
+     * @since 8.4
+     */
+    public List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException {
+        List<DirectoryDeleteConstraint> res = new ArrayList<DirectoryDeleteConstraint>();
+        if (deleteConstraints != null) {
+            for (DirectoryDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {
+                res.add(deleteConstraintDescriptor.getDeleteConstraint());
+            }
+        }
+        return res;
     }
 
 }

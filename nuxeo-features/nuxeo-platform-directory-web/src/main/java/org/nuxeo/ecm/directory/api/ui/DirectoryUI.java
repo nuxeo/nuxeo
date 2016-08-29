@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
  * Interface for directory UI info.
@@ -62,9 +63,9 @@ public interface DirectoryUI extends Serializable {
     /**
      * Returns the directory delete constraints
      *
-     * @see DirectoryUIDeleteConstraint
+     * @see DirectoryDeleteConstraint
      * @since 5.2.1
      */
-    List<DirectoryUIDeleteConstraint> getDeleteConstraints() throws DirectoryException;
+    List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException;
 
 }

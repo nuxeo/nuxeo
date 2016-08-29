@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryDeleteConstraintException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -136,14 +137,22 @@ public class SQLDirectoryFeature extends SimpleFeature {
         try {
             DirectoryService directoryService = Framework.getService(DirectoryService.class);
             // clear all directories
-            for (Directory dir : directoryService.getDirectories()) {
-                try (Session session = dir.getSession()) {
-                    List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
-                    for (String id : ids) {
-                        session.deleteEntry(id);
+            boolean isAllClear = true;
+            do {
+                isAllClear = true;
+                for (Directory dir : directoryService.getDirectories()) {
+                    try (Session session = dir.getSession()) {
+                        List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
+                        for (String id : ids) {
+                            try {
+                                session.deleteEntry(id);
+                            } catch(DirectoryDeleteConstraintException e) {
+                                isAllClear = false;
+                            }
+                        }
                     }
                 }
-            }
+            } while(!isAllClear);
             // re-create all directory entries
             for (Entry<String, Map<String, Map<String, Object>>> each : allDirectoryData.entrySet()) {
                 String directoryName = each.getKey();

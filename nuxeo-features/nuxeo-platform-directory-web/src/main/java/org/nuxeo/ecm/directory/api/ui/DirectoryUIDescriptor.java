@@ -28,6 +28,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.DirectoryDeleteConstraintDescriptor;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
  * Directory ui descriptor
@@ -57,8 +59,8 @@ public class DirectoryUIDescriptor implements DirectoryUI {
     @XNode("@readOnly")
     Boolean readOnly;
 
-    @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryUIDeleteConstraintDescriptor.class)
-    List<DirectoryUIDeleteConstraintDescriptor> deleteConstraints;
+    @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryDeleteConstraintDescriptor.class)
+    List<DirectoryDeleteConstraintDescriptor> deleteConstraints;
 
     public String getName() {
         return name;
@@ -84,10 +86,10 @@ public class DirectoryUIDescriptor implements DirectoryUI {
         return readOnly;
     }
 
-    public List<DirectoryUIDeleteConstraint> getDeleteConstraints() throws DirectoryException {
-        List<DirectoryUIDeleteConstraint> res = new ArrayList<DirectoryUIDeleteConstraint>();
+    public List<DirectoryDeleteConstraint> getDeleteConstraints() throws DirectoryException {
+        List<DirectoryDeleteConstraint> res = new ArrayList<DirectoryDeleteConstraint>();
         if (deleteConstraints != null) {
-            for (DirectoryUIDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {
+            for (DirectoryDeleteConstraintDescriptor deleteConstraintDescriptor : deleteConstraints) {
                 res.add(deleteConstraintDescriptor.getDeleteConstraint());
             }
         }

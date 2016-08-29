@@ -16,20 +16,19 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.directory.api.ui;
+package org.nuxeo.ecm.directory.api;
 
 import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.api.DirectoryService;
 
 /**
  * Interface for delete constraint on a directory, dependent to another directory.
  *
  * @author Anahide Tchertchian
  */
-public interface DirectoryUIDeleteConstraint extends Serializable {
+public interface DirectoryDeleteConstraint extends Serializable {
 
     /**
      * Sets properties that may depend on the directory configuration.

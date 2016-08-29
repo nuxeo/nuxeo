@@ -8,5 +8,7 @@
     <register class="org.nuxeo.ecm.directory.io.DirectoryEntryJsonReader" enable="true" />
     <register class="org.nuxeo.ecm.directory.io.DirectoryEntryListJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.directory.io.DirectoryEntryListJsonReader" enable="true" />
+    <register class="org.nuxeo.ecm.directory.io.DirectoryJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.directory.io.DirectoryListJsonWriter" enable="true" />
   </extension>
 </component>

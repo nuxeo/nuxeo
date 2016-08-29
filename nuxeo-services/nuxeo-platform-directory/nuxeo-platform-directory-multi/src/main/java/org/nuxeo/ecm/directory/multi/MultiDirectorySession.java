@@ -535,6 +535,7 @@ public class MultiDirectorySession extends BaseSession {
     @Override
     public void deleteEntry(String id) {
         checkPermission(SecurityConstants.WRITE);
+        checkDeleteConstraints(id);
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {

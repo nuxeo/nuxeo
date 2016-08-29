@@ -168,6 +168,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     @Override
     public void deleteEntry(String id) throws DirectoryException {
+        checkDeleteConstraints(id);
         data.remove(id);
     }
 

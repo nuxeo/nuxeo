@@ -592,6 +592,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public void deleteEntry(String id) {
         checkPermission(SecurityConstants.WRITE);
+        checkDeleteConstraints(id);
 
         acquireConnection();
 

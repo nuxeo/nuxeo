@@ -43,6 +43,9 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
@@ -109,6 +112,23 @@ public abstract class BaseSession implements Session {
         } else {
             NuxeoPrincipal user = ClientLoginModule.getCurrentPrincipal();
             throw new DirectorySecurityException("User " + user + " does not have " + permission + " permission");
+        }
+    }
+
+    /**
+     * Checks that there are no constraints for deleting the given entry id.
+     *
+     * @since 8.4
+     */
+    public void checkDeleteConstraints(String entryId) {
+        List<DirectoryDeleteConstraint> deleteConstraints = directory.getDirectoryDeleteConstraints();
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
+            for (DirectoryDeleteConstraint deleteConstraint : deleteConstraints) {
+                if (!deleteConstraint.canDelete(directoryService, entryId)) {
+                    throw new DirectoryDeleteConstraintException("This entry is referenced in another vocabulary.");
+                }
+            }
         }
     }
 

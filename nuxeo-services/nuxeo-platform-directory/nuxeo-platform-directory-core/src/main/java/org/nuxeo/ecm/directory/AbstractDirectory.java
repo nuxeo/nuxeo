@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -54,8 +55,14 @@ public abstract class AbstractDirectory implements Directory {
 
     protected final Counter sessionMaxCount;
 
+    private Boolean display = true;
+
     protected AbstractDirectory(BaseDirectoryDescriptor descriptor) {
         this.descriptor = descriptor;
+        // is the directory visible in the ui
+        if (Boolean.FALSE.equals(descriptor.display)) {
+            this.display = descriptor.display;
+        }
         if (!descriptor.template && doSanityChecks()) {
             if (StringUtils.isEmpty(descriptor.idField)) {
                 throw new DirectoryException("idField configuration is missing for directory: " + getName());
@@ -220,6 +227,22 @@ public abstract class AbstractDirectory implements Directory {
     public void shutdown() {
         sessionCount.dec(sessionCount.getCount());
         sessionMaxCount.dec(sessionMaxCount.getCount());
+    }
+
+    /**
+     * since @8.4
+     */
+    @Override
+    public boolean isDisplay() {
+        return display;
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Override
+    public List<DirectoryDeleteConstraint> getDirectoryDeleteConstraints() {
+        return descriptor.getDeleteConstraints();
     }
 
 }

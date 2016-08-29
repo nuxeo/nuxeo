@@ -151,4 +151,10 @@ public interface DirectoryService {
      */
     void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
 
+    /**
+     * @param uiDirectory if true, returns ui directory, else non ui directory
+     * @since 8.4
+     */
+    List<Directory> getDirectories(boolean uiDirectory);
+
 }

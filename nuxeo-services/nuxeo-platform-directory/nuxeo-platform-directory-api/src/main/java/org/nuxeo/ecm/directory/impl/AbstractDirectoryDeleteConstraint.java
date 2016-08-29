@@ -16,9 +16,12 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.directory.api.ui;
+package org.nuxeo.ecm.directory.impl;
 
-import org.nuxeo.ecm.directory.impl.AbstractDirectoryDeleteConstraint;
+import java.util.Map;
+
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
 /**
  * Abstract class handling storage of properties.
@@ -26,11 +29,17 @@ import org.nuxeo.ecm.directory.impl.AbstractDirectoryDeleteConstraint;
  * Can be subclassed to make code more robust to API changes.
  *
  * @author Anahide Tchertchian
- *
- * For compat only @since 8.4.
  */
-public abstract class AbstractDirectoryUIDeleteConstraint extends AbstractDirectoryDeleteConstraint {
+public abstract class AbstractDirectoryDeleteConstraint implements DirectoryDeleteConstraint {
 
     private static final long serialVersionUID = 1L;
+
+    protected Map<String, String> properties;
+
+    public void setProperties(Map<String, String> properties) throws DirectoryException {
+        if (properties != null) {
+            this.properties = properties;
+        }
+    }
 
 }

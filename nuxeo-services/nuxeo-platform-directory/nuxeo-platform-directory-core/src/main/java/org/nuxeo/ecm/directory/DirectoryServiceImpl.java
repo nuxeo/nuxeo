@@ -176,6 +176,20 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         return registry.getDirectories();
     }
 
+    /**
+     * @since 8.4
+     */
+    @Override
+    public List<Directory> getDirectories(boolean uiDirectory) {
+        List<Directory> result = new ArrayList<Directory>();
+        for (Directory directory : registry.getDirectories()) {
+            if (directory.isDisplay() == uiDirectory) {
+                result.add(directory);
+            }
+        }
+        return result;
+    }
+
     @Override
     public List<String> getDirectoryNames() {
         return registry.getDirectoryIds();
