@@ -32,16 +32,13 @@ mc_c = [mc_min[0] + (mc_d[0] * 0.5), mc_min[1] + (mc_d[1] * 0.5), mc_min[2] + (m
 
 # position of the camera in cartesian coords from spherical coords
 radial = (Vector(mc_max) - Vector(mc_min)).length
-azimuth = radians(coords[0])
-zenith = radians(coords[1])
+azimuth = radians(coords[0] % 360)
+zenith = radians(coords[1] % 360)
 cam_location = [
     mc_c[0] + radial * cos(azimuth) * sin(zenith),
     mc_c[1] + radial * sin(azimuth) * sin(zenith),
     mc_c[2] + radial * cos(zenith)
 ]
-
-# camera should look at the center point of the cluster
-cam_look_at = mc_c
 
 # set the orthographic camera
 bpy.ops.object.camera_add(view_align=False, enter_editmode=False, location=cam_location)
@@ -51,18 +48,6 @@ camera = camera_ob.data
 camera.clip_end = radial * 2
 camera.type = 'ORTHO'
 
-# set the camera target and constraints
-bpy.ops.object.add(type='EMPTY', location=cam_look_at)
-target = bpy.context.object
-target.name = 'Target'
-cns = camera_ob.constraints.new('TRACK_TO')
-cns.name = 'TrackTarget'
-cns.target = target
-cns.track_axis = 'TRACK_NEGATIVE_Z'
-cns.up_axis = 'UP_Y'
-cns.owner_space = 'WORLD'
-cns.target_space = 'WORLD'
-
 # set render properties
 scene = bpy.data.scenes.values()[0]
 scene.camera = camera_ob
@@ -71,6 +56,15 @@ scene.render.resolution_y = int(height)
 scene.render.resolution_percentage = 100
 scene.world.horizon_color = [1.0, 1.0, 1.0]
 # scene.render.alpha_mode = 'TRANSPARENT'
+
+# set camera rotation to be aligned with the desired camera direction
+cam_direction = Vector(mc_c) - Vector(cam_location)
+rot_quat = cam_direction.to_track_quat('-Z', 'Y')
+camera_ob.rotation_euler = rot_quat.to_euler()
+# treat zenith edge cases in the poles
+if zenith == radians(0) or zenith == radians(180):
+    camera_ob.rotation_euler.z = azimuth + zenith + radians(90)
+bpy.context.scene.update()
 
 bpy.context.scene.render.image_settings.color_mode = 'RGBA'
 print("""World settings:
