@@ -13,14 +13,11 @@
     <style type="text/css">
         #viewer {
             width: 100%;
-            height: 450px;
+            height: 640px;
         }
     </style>
 
-    <nuxeo-3d-viewer id="viewer">
-        <ui:repeat var="item" value="#{transmissionFormatActions.getItems(fieldOrValue)}">
-            <source src="#{item.src}" lod='#{item.lod}'/>
-        </ui:repeat>
+    <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}" id="3d-simple-viewer">
     </nuxeo-3d-viewer>
 
 </h:panelGroup>

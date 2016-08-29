@@ -22,7 +22,15 @@
                         </c:if>
                     </td>
                     <td class="lodColumn">
-                        #{item.lod} %
+                        #{messages['label.widget.threed.polygon_count']}: #{item.lod} %
+                    </td>
+                    <td class="lodColumn">
+                        #{messages['label.widget.threed.max_polygon']}: --
+                    </td>
+                    <td class="actionsColumn">
+                        <h:outputLink value="javascript:NX3D.show3DFormat('#{item.src}')">
+                            <h:graphicImage url="/icons/contextual_menu/preview.png"/>
+                        </h:outputLink>
                     </td>
                     <td class="actionsColumn">
                         <h:outputLink value="#{item.src}">
@@ -33,5 +41,13 @@
             </c:forEach>
             </tbody>
         </table>
+        <h:outputScript target="#{pageJsTarget}">
+            NX3D = {
+                show3DFormat: function (src) {
+                    document.getElementById('3d-simple-viewer').setAttribute('src', src);
+                }
+            }
+        </h:outputScript>
+
     </c:if>
 </div>
