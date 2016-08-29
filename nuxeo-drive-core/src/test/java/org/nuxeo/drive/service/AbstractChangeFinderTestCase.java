@@ -64,7 +64,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
         "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
-public class AbstractChangeFinderTestCase {
+public abstract class AbstractChangeFinderTestCase {
 
     @Inject
     protected CoreSession session;
@@ -107,7 +107,7 @@ public class AbstractChangeFinderTestCase {
 
         // Create test users
         try (Session userDir = directoryService.open("userDirectory")) {
-            Map<String, Object> user1 = new HashMap<String, Object>();
+            Map<String, Object> user1 = new HashMap<>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user1);
@@ -161,7 +161,8 @@ public class AbstractChangeFinderTestCase {
      * and updates {@link #lastEventLogId}.
      */
     protected FileSystemChangeSummary getChangeSummary(Principal principal) throws InterruptedException {
-        Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
+        Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(
+                lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
                 lastSyncActiveRootRefs, lastEventLogId);
         assertNotNull(changeSummary);
@@ -170,8 +171,8 @@ public class AbstractChangeFinderTestCase {
         return changeSummary;
     }
 
-
-    @Inject TransactionalFeature txFeature;
+    @Inject
+    TransactionalFeature txFeature;
 
     protected void commitAndWaitForAsyncCompletion() throws Exception {
         txFeature.nextTransaction();
@@ -192,7 +193,7 @@ public class AbstractChangeFinderTestCase {
     }
 
     protected Set<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(List<FileSystemItemChange> changes) {
-        Set<SimpleFileSystemItemChange> simpleChanges = new HashSet<SimpleFileSystemItemChange>();
+        Set<SimpleFileSystemItemChange> simpleChanges = new HashSet<>();
         for (FileSystemItemChange change : changes) {
             simpleChanges.add(toSimpleFileSystemItemChange(change));
         }
@@ -232,7 +233,8 @@ public class AbstractChangeFinderTestCase {
             this(docId, eventName, repositoryId, null);
         }
 
-        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId, String fileSystemItemId) {
+        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId,
+                String fileSystemItemId) {
             this(docId, eventName, repositoryId, fileSystemItemId, null);
         }
 
@@ -288,10 +290,14 @@ public class AbstractChangeFinderTestCase {
             SimpleFileSystemItemChange other = (SimpleFileSystemItemChange) obj;
             boolean isEqual = docId.equals(other.getDocId()) && eventName.equals(other.getEventName());
             return isEqual
-                    && (repositoryId == null || other.getRepositoryId() == null || repositoryId.equals(other.getRepositoryId()))
-                    && (lifeCycleState == null || other.getLifeCycleState() == null || lifeCycleState.equals(other.getLifeCycleState()))
-                    && (fileSystemItemId == null || other.getFileSystemItemId() == null || fileSystemItemId.equals(other.getFileSystemItemId()))
-                    && (fileSystemItemName == null || other.getFileSystemItemName() == null || fileSystemItemName.equals(other.getFileSystemItemName()));
+                    && (repositoryId == null || other.getRepositoryId() == null
+                            || repositoryId.equals(other.getRepositoryId()))
+                    && (lifeCycleState == null || other.getLifeCycleState() == null
+                            || lifeCycleState.equals(other.getLifeCycleState()))
+                    && (fileSystemItemId == null || other.getFileSystemItemId() == null
+                            || fileSystemItemId.equals(other.getFileSystemItemId()))
+                    && (fileSystemItemName == null || other.getFileSystemItemName() == null
+                            || fileSystemItemName.equals(other.getFileSystemItemName()));
         }
 
         @Override
