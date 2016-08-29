@@ -21,6 +21,20 @@
     </layout>
   </appender>
 
+  <appender name="JTA" class="org.apache.log4j.FileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="target/jta.log" />
+    <param name="Append" value="false" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
+    </layout>
+  </appender>
+
+  <category name="org.nuxeo.ecm.core.management.jtajca" additivity="false">
+     <priority value="TRACE"/>
+     <appender-ref ref="JTA"/>
+  </category>
+
 <!--
   <category name="org.nuxeo" additivity="false">
      <priority value="DEBUG"/>
