@@ -16,7 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.fixtures;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,16 +30,19 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.nuxeo.drive.fixtures.AbstractChangeFinderTestCase.SimpleFileSystemItemChange;
+import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Tests the {@link FileSystemChangeFinder} on a repository with clustering enabled.
  *
  * @since 8.2
  */
-@Deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
+@LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
 public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderClusteringEnabledTestSuite.class);
@@ -78,7 +81,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
             Thread.sleep(3000);
             changes = getChanges();
             assertTrue(changes.size() >= 2);
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(file1.getId(), "documentCreated", "test",
                     "defaultFileSystemItemFactory#test#" + file1.getId(), "file1"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
@@ -107,7 +110,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
         Thread.sleep(3000);
         changes = getChanges();
         assertEquals(2, changes.size());
-        Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+        Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
         expectedChanges.add(new SimpleFileSystemItemChange(file2.getId(), "documentCreated", "test",
                 "defaultFileSystemItemFactory#test#" + file2.getId(), "file2"));
         expectedChanges.add(new SimpleFileSystemItemChange(file1.getId(), "documentModified", "test",

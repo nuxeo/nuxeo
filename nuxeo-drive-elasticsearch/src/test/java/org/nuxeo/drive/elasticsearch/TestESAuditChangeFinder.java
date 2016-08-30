@@ -21,8 +21,8 @@ package org.nuxeo.drive.elasticsearch;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.drive.service.AuditChangeFinderClusteringEnabledTestSuite;
-import org.nuxeo.drive.service.AuditChangeFinderTestSuite;
+import org.nuxeo.drive.fixtures.AuditChangeFinderClusteringEnabledTestSuite;
+import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
 import org.nuxeo.drive.test.ESAuditFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;

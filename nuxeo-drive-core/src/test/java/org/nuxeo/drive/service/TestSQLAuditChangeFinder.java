@@ -20,6 +20,8 @@ package org.nuxeo.drive.service;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.drive.fixtures.AuditChangeFinderClusteringEnabledTestSuite;
+import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.test.SQLAuditFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;

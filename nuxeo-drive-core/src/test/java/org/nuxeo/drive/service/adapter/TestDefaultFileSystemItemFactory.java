@@ -20,6 +20,7 @@ package org.nuxeo.drive.service.adapter;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.drive.fixtures.DefaultFileSystemItemFactoryFixture;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.test.NuxeoDriveInMemoryCacheFeature;
 import org.nuxeo.ecm.core.cache.CacheService;

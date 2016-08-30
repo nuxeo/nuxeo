@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Extended {@link AuditFeature} cleaning up audit log after each test.
- * 
+ *
  * @since 8.2
  */
 public class SQLAuditFeature extends AuditFeature {

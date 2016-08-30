@@ -16,7 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.fixtures;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -34,8 +34,13 @@ import javax.inject.Inject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.FileSystemChangeSummary;
+import org.nuxeo.drive.service.FileSystemItemChange;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
+import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -51,7 +56,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
@@ -60,10 +65,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 7.3
  */
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.core.io",
-        "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+@Features(NuxeoDriveFeature.class)
 public abstract class AbstractChangeFinderTestCase {
 
     @Inject
@@ -142,8 +144,8 @@ public abstract class AbstractChangeFinderTestCase {
     }
 
     /**
-     * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
-     * updates {@link #lastEventLogId}.
+     * Gets the document changes for the given user's synchronization roots
+     * using the {@link AuditChangeFinder} and updates {@link #lastEventLogId}.
      */
     protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {
         return getChangeSummary(principal).getFileSystemChanges();
@@ -157,8 +159,9 @@ public abstract class AbstractChangeFinderTestCase {
     }
 
     /**
-     * Gets the document changes summary for the given user's synchronization roots using the {@link NuxeoDriveManager}
-     * and updates {@link #lastEventLogId}.
+     * Gets the document changes summary for the given user's synchronization
+     * roots using the {@link NuxeoDriveManager} and updates
+     * {@link #lastEventLogId}.
      */
     protected FileSystemChangeSummary getChangeSummary(Principal principal) throws InterruptedException {
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(

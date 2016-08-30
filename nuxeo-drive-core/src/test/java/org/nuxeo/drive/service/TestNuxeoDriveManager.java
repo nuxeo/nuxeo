@@ -39,7 +39,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
+import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -56,11 +60,9 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -70,12 +72,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @author <a href="mailto:ogrise@nuxeo.com">Olivier Grisel</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features(NuxeoDriveFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestNuxeoDriveManager {
 
     private static final Log log = LogFactory.getLog(TestNuxeoDriveManager.class);
@@ -126,14 +124,14 @@ public class TestNuxeoDriveManager {
             if (userDir.getEntry("user1") != null) {
                 userDir.deleteEntry("user1");
             }
-            Map<String, Object> user1 = new HashMap<String, Object>();
+            Map<String, Object> user1 = new HashMap<>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user1);
             if (userDir.getEntry("user2") != null) {
                 userDir.deleteEntry("user2");
             }
-            Map<String, Object> user2 = new HashMap<String, Object>();
+            Map<String, Object> user2 = new HashMap<>();
             user2.put("username", "user2");
             user2.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user2);
@@ -337,7 +335,7 @@ public class TestNuxeoDriveManager {
         // Block permissions inheritance on folder_2_1
         ACP acp = folder_2_1.getACP();
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        List<ACE> aceList = new ArrayList<ACE>();
+        List<ACE> aceList = new ArrayList<>();
         aceList.addAll(Arrays.asList(localACL.getACEs()));
         localACL.clear();
         aceList.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
@@ -371,7 +369,7 @@ public class TestNuxeoDriveManager {
     public void testSyncRootCacheInvalidation() {
         Principal user1Principal = user1Session.getPrincipal();
         // No roots => no sync roots
-        Set<String> expectedSyncRootPaths = new HashSet<String>();
+        Set<String> expectedSyncRootPaths = new HashSet<>();
         checkRoots(user1Principal, 0, expectedSyncRootPaths);
 
         // Register sync roots => registration should invalidate the cache

@@ -19,7 +19,6 @@
 package org.nuxeo.drive.test;
 
 import org.nuxeo.ecm.core.cache.InMemoryCacheFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
@@ -27,8 +26,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 8.4
  */
 @Features(InMemoryCacheFeature.class)
-@Deploy({ "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 public class NuxeoDriveInMemoryCacheFeature extends SimpleFeature {
 
 }

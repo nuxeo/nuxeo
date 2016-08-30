@@ -16,7 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service.adapter;
+package org.nuxeo.drive.fixtures;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -50,6 +49,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
+import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -67,13 +67,12 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -83,16 +82,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca",
-        "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.core.io",
-        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.runtime.reload" })
-@LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
+@Features(NuxeoDriveFeature.class)
+@RandomBug.Repeat(issue = DefaultFileSystemItemFactoryFixture.NXP_20338)
 public class DefaultFileSystemItemFactoryFixture {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
+
+    protected static final String NXP_20338 = "Random transaction timeout";
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
@@ -140,7 +136,8 @@ public class DefaultFileSystemItemFactoryFixture {
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     /**
-     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
+     * For databases that don't have sub-second resolution, sleep a bit to get
+     * to the next second.
      */
     protected void maybeSleepToNextSecond() {
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -196,8 +193,9 @@ public class DefaultFileSystemItemFactoryFixture {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultFileSystemItemFactory");
+        defaultFileSystemItemFactory =
+                (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                        "defaultFileSystemItemFactory");
         assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
@@ -403,7 +401,8 @@ public class DefaultFileSystemItemFactoryFixture {
                     "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
             setPermission(folder, "joe", SecurityConstants.WRITE, true);
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // True here as optimized => no explicit check of AddChildren on folder nor RemoveChildren on parent folder
+            // True here as optimized => no explicit check of AddChildren on
+            // folder nor RemoveChildren on parent folder
             assertTrue(folderItem.getCanDelete());
             assertTrue(folderItem.getCanCreateChild());
 
@@ -443,7 +442,8 @@ public class DefaultFileSystemItemFactoryFixture {
                     "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
             setPermission(folder, "joe", SecurityConstants.WRITE, true);
             folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // False here as not optimized => explicit check of RemoveChildren on parent folder and AddChildren on
+            // False here as not optimized => explicit check of RemoveChildren
+            // on parent folder and AddChildren on
             // folder
             assertFalse(folderItem.getCanDelete());
             assertFalse(folderItem.getCanCreateChild());
@@ -807,7 +807,8 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals("This is the Note child.", childBlob.getString());
 
         // --------------------------------------------------------------------------------------------
-        // FolderItem#getChildren, FolderItem#getCanScrollDescendants and FolderItem#scrollDescendants
+        // FolderItem#getChildren, FolderItem#getCanScrollDescendants and
+        // FolderItem#scrollDescendants
         // --------------------------------------------------------------------------------------------
         // Create another child adaptable as a FileSystemItem => should be
         // retrieved
@@ -869,11 +870,13 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Test
     public void testSection() {
-        // Check that a Section is adaptable as a FileSystemItem by the defaultSyncRootFolderItemFactory
+        // Check that a Section is adaptable as a FileSystemItem by the
+        // defaultSyncRootFolderItemFactory
         DocumentModel section = session.createDocument(session.createDocumentModel("/", "sectionSyncRoot", "Section"));
         nuxeoDriveManager.registerSynchronizationRoot(principal, section, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultSyncRootFolderItemFactory");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory =
+                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                        "defaultSyncRootFolderItemFactory");
         FolderItem sectionItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(section);
         assertNotNull(sectionItem);
         assertFalse(sectionItem.getCanCreateChild());
@@ -919,10 +922,12 @@ public class DefaultFileSystemItemFactoryFixture {
             assertEquals("joe", lockInfo.getOwner());
             assertNotNull(lockInfo.getCreated());
 
-            // Check that the lock info is not fetched for FileSystemItem adaptation when calling getChildren or
+            // Check that the lock info is not fetched for FileSystemItem
+            // adaptation when calling getChildren or
             // scrollDescendants
-            FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                    "defaultSyncRootFolderItemFactory");
+            FileSystemItemFactory defaultSyncRootFolderItemFactory =
+                    ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                            "defaultSyncRootFolderItemFactory");
             FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
                     syncRootFolder);
             List<FileSystemItem> children = syncRootFolderItem.getChildren();
@@ -978,8 +983,9 @@ public class DefaultFileSystemItemFactoryFixture {
     @Test
     public void testFolderItemChildrenPageProviderOverride() throws Exception {
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultSyncRootFolderItemFactory");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory =
+                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                        "defaultSyncRootFolderItemFactory");
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
 

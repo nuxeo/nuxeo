@@ -16,7 +16,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.fixtures;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,6 +36,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.nuxeo.drive.fixtures.AbstractChangeFinderTestCase.SimpleFileSystemItemChange;
+import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.FileSystemChangeSummary;
+import org.nuxeo.drive.service.FileSystemItemChange;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -49,15 +54,12 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
-import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * Tests the {@link FileSystemChangeFinder}.
  *
  * @since 8.2
  */
-@Deploy("org.nuxeo.ecm.platform.web.common")
 public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderTestSuite.class);
@@ -112,7 +114,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(), "documentCreated", "test"));
             expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentCreated", "test"));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
@@ -136,7 +138,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertEquals(2, changes.size());
             // The root unregistration is mapped to a fake deletion from the
             // client's point of view
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "deleted", "test"));
             expectedChanges.add(new SimpleFileSystemItemChange(doc1.getId(), "documentModified", "test"));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
@@ -164,7 +166,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         try {
             changes = getChanges();
             assertEquals(3, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "rootRegistered", "test",
                     "defaultSyncRootFolderItemFactory#test#" + folder2.getId()));
             expectedChanges.add(new SimpleFileSystemItemChange(doc3.getId(), "documentMoved", "test"));
@@ -195,7 +197,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(copiedDoc.getId(), "documentCreatedByCopy", "test",
                     "defaultFileSystemItemFactory#test#" + copiedDoc.getId(), "docToCopy"));
             expectedChanges.add(new SimpleFileSystemItemChange(docToCopy.getId(), "documentCreated", "test",
@@ -262,7 +264,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentModified for docToVersion (2 occurrences)
             // - documentCreated for docToVersion
             assertEquals(4, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentRestored"));
             expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentModified"));
             expectedChanges.add(new SimpleFileSystemItemChange(docToVersion.getId(), "documentCreated"));
@@ -320,7 +322,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(2, changes.size());
 
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "securityUpdated", "test", "test#"
                     + folder2.getId(), "folder2"));
             expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test", "test#"
@@ -342,7 +344,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
         changes = getChanges(user1Session.getPrincipal());
         assertEquals(2, changes.size());
-        Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+        Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
         expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "securityUpdated", "test",
                 "defaultSyncRootFolderItemFactory#test#" + folder2.getId(), "folder2"));
         expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test",
@@ -404,7 +406,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             SimpleFileSystemItemChange simpleChange = new SimpleFileSystemItemChange(doc2.getId(), "documentCreated",
                     "test");
             simpleChange.setLifeCycleState("project");
@@ -617,7 +619,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // There should be 2 changes detected in the audit
             changes = getChanges(user1Principal);
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "rootRegistered", "test",
                     "defaultSyncRootFolderItemFactory#test#" + folder2.getId(), "folder2"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
@@ -643,7 +645,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // There should be 2 changes detected in the audit
             changes = getChanges(user1Principal);
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "deleted", "test", "test#"
                     + folder2.getId(), "folder2"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test", "test#"
@@ -679,7 +681,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentCreated (at init)
             List<FileSystemItemChange> changes = getChanges();
             assertEquals(3, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentModified"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
@@ -729,7 +731,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentCreated for folder1 at init
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(3, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered"));
             expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "documentCreated"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated"));
@@ -794,7 +796,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentCreated for doc1
             changes = getChanges(session.getPrincipal());
             assertEquals(8, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(doc2.getId(), "addedToCollection"));
             expectedChanges.add(new SimpleFileSystemItemChange(locallyEditedCollection.getId(), "documentModified"));
             expectedChanges.add(new SimpleFileSystemItemChange(locallyEditedCollection.getId(), "rootRegistered"));
@@ -923,7 +925,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - deleted for subFolder
             changes = getChanges(session.getPrincipal());
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(), "folder1"));
             expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "deleted", "test", "test#"
@@ -955,7 +957,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentCreated for section
             changes = getChanges(session.getPrincipal());
             assertEquals(2, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(section.getId(), "rootRegistered", "test",
                     "defaultSyncRootFolderItemFactory#test#" + section.getId(), "sectionSyncRoot"));
             expectedChanges.add(new SimpleFileSystemItemChange(section.getId(), "documentCreated", "test",
@@ -983,7 +985,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentCreated for proxy1
             changes = getChanges();
             assertEquals(4, changes.size());
-            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<>();
             expectedChanges.add(new SimpleFileSystemItemChange(proxy2.getId(), "documentProxyPublished", "test",
                     "defaultFileSystemItemFactory#test#" + proxy2.getId(), "doc2"));
             expectedChanges.add(new SimpleFileSystemItemChange(proxy2.getId(), "documentCreated", "test",
