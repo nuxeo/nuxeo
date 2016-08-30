@@ -41,6 +41,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -51,7 +52,7 @@ import org.slf4j.MDC;
  * @author matic
  */
 @RunWith(FeaturesRunner.class)
-@Features({ JtajcaManagementFeature.class, LogCaptureFeature.class })
+@Features({ JtajcaManagementFeature.class, CoreFeature.class, LogCaptureFeature.class })
 public class CanMonitorTransactionsTest {
 
     @Inject
@@ -71,16 +72,6 @@ public class CanMonitorTransactionsTest {
     @After
     public void shudownExecutor() {
         executor.shutdownNow();
-    }
-
-    @Before
-    public void enableMonitoring() {
-        monitor.toggle();
-    }
-
-    @After
-    public void disableMonitoring() {
-        monitor.toggle();
     }
 
     protected void begin() {
@@ -133,7 +124,7 @@ public class CanMonitorTransactionsTest {
     @Test
     public void isTotalRollbacksCorrect() throws InterruptedException, ExecutionException {
         assertThat(monitor.getActiveCount(), is(1L));
-        FutureTask<Boolean> rollback = new FutureTask<Boolean>(new TestTotalRollbacks());
+        FutureTask<Boolean> rollback = new FutureTask<>(new TestTotalRollbacks());
         executor.execute(rollback);
         assertThat(rollback.get(), is(true));
     }
@@ -153,7 +144,7 @@ public class CanMonitorTransactionsTest {
 
     @Test
     public void isTotalCommitsCorrect() throws InterruptedException, ExecutionException {
-        FutureTask<Boolean> commit = new FutureTask<Boolean>(new TestTotalCommits());
+        FutureTask<Boolean> commit = new FutureTask<>(new TestTotalCommits());
         executor.execute(commit);
         assertThat(commit.get(), is(true));
     }
@@ -163,13 +154,14 @@ public class CanMonitorTransactionsTest {
         @Override
         public Boolean call() {
             try {
-                begin();
                 List<TransactionStatistics> stats = monitor.getActiveStatistics();
+                long count = stats.size();
+                begin();
                 stats = monitor.getActiveStatistics();
-                assertThat((long) stats.size(), is(1L));
+                assertThat((long) stats.size(), is(count + 1));
                 commit();
                 stats = monitor.getActiveStatistics();
-                assertThat((long) stats.size(), is(0L));
+                assertThat((long) stats.size(), is(count));
             } catch (Exception cause) {
                 LogFactory.getLog(CanMonitorTransactionsTest.class).error("Caught error while collecting statistics",
                         cause);
@@ -182,7 +174,7 @@ public class CanMonitorTransactionsTest {
 
     @Test
     public void isActiveStatisticsCollected() throws InterruptedException, ExecutionException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestCollectStatistics());
+        FutureTask<Boolean> task = new FutureTask<>(new TestCollectStatistics());
         executor.execute(task);
         assertThat(task.get(), is(true));
     }
@@ -193,7 +185,7 @@ public class CanMonitorTransactionsTest {
     @Test
     @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogRollbackTraceFilter.class)
     public void logContainsRollbackTrace() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestLogRollbackTrace());
+        FutureTask<Boolean> task = new FutureTask<>(new TestLogRollbackTrace());
         executor.execute(task);
         assertThat(task.get(), is(true));
         logCaptureResults.assertHasEvent();
@@ -229,7 +221,7 @@ public class CanMonitorTransactionsTest {
     @Test
     @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogMessageFilter.class)
     public void logContainsTxKey() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {
-        FutureTask<Boolean> task = new FutureTask<Boolean>(new TestLogRollbackTrace());
+        FutureTask<Boolean> task = new FutureTask<>(new TestLogRollbackTrace());
         executor.execute(task);
         assertThat(task.get(), is(true));
         logCaptureResults.assertHasEvent();

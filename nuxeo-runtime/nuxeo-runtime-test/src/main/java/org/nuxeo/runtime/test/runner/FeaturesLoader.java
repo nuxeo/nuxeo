@@ -115,7 +115,7 @@ class FeaturesLoader {
     }
 
     protected <T> List<T> reversed(List<T> list) {
-        List<T> reversed = new ArrayList<T>(list);
+        List<T> reversed = new ArrayList<>(list);
         Collections.reverse(reversed);
         return reversed;
     }
@@ -177,6 +177,9 @@ class FeaturesLoader {
     }
 
     public <T extends RunnerFeature> T getFeature(Class<T> aType) {
+        if (!index.containsKey(aType)) {
+            return null;
+        }
         return aType.cast(index.get(aType).feature);
     }
 

@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @author matic
  */
 @RunWith(FeaturesRunner.class)
-@Features(JtajcaManagementFeature.class)
+@Features({ JtajcaManagementFeature.class, CoreFeature.class })
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPooledCondition.class)
 public class CanMonitorConnectionPoolTest {
 

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.management.jtajca;
 
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -38,9 +39,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 
-@Features({ManagementFeature.class, CoreFeature.class})
+@Features(ManagementFeature.class)
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca" })
 @LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml" })
 public class JtajcaManagementFeature extends SimpleFeature {
@@ -61,10 +63,20 @@ public class JtajcaManagementFeature extends SimpleFeature {
         }
     }
 
+    CoreFeature core;
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+        core = runner.getFeature(CoreFeature.class);
+    }
+
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
+        if (core == null) {
+            return;
+        }
         // bind repository
-        String repositoryName = runner.getFeature(CoreFeature.class).getStorageConfiguration().getRepositoryName();
+        String repositoryName = core.getStorageConfiguration().getRepositoryName();
         NuxeoContainer.getConnectionManager(repositoryName);
 
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
@@ -77,4 +89,40 @@ public class JtajcaManagementFeature extends SimpleFeature {
         }
     }
 
+    class TxChecker {
+        @Inject
+        @Named("default")
+        TransactionMonitor monitor;
+
+        void assertNoTransactions() {
+            final long count = monitor.getActiveCount();
+            if (count == 0) {
+                return;
+            }
+            throw new AssertionError(String.format("still have tx active (%d) %s", count, monitor.getActiveStatistics()));
+        }
+
+        public TxChecker(FeaturesRunner runner) {
+            runner.getInjector().injectMembers(this);
+        }
+    }
+
+    TxChecker txChecker;
+
+    @Override
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+        if (core == null) {
+            return;
+        }
+        txChecker = new TxChecker(runner);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
+        if (txChecker == null) {
+            return;
+        }
+        txChecker.assertNoTransactions();
+        txChecker = null;
+    }
 }

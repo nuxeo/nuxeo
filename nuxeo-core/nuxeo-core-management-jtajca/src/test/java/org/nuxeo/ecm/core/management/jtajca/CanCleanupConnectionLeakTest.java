@@ -51,7 +51,7 @@ import com.google.inject.name.Named;
  * @since 8.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(JtajcaManagementFeature.class)
+@Features({JtajcaManagementFeature.class, CoreFeature.class})
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPooledCondition.class)
 public class CanCleanupConnectionLeakTest {

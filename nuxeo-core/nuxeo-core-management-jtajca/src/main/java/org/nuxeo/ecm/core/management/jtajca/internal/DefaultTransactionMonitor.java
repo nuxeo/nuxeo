@@ -65,6 +65,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
             return;
         }
         bindManagementInterface();
+        toggle();
     }
 
     @Override
@@ -108,7 +109,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
 
     protected TransactionStatistics lastRollbackedStatistics;
 
-    protected final Map<Object, DefaultTransactionStatistics> activeStatistics = new HashMap<Object, DefaultTransactionStatistics>();
+    protected final Map<Object, DefaultTransactionStatistics> activeStatistics = new HashMap<>();
 
     public static String id(Object key) {
         if (key instanceof XidImpl) {
@@ -143,7 +144,9 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
         synchronized (this) {
             activeStatistics.put(key, info);
         }
-        tm.registerInterposedSynchronization(this); // register end status
+        if (TransactionStatistics.Status.ACTIVE == info.status) {
+            tm.registerInterposedSynchronization(this); // register end status
+        }
         if (log.isTraceEnabled()) {
             log.trace(info.toString());
         }
@@ -178,7 +181,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
 
     @Override
     public List<TransactionStatistics> getActiveStatistics() {
-        List<TransactionStatistics> l = new ArrayList<TransactionStatistics>(activeStatistics.values());
+        List<TransactionStatistics> l = new ArrayList<>(activeStatistics.values());
         Collections.sort(l, new Comparator<TransactionStatistics>() {
             @Override
             public int compare(TransactionStatistics o1, TransactionStatistics o2) {
