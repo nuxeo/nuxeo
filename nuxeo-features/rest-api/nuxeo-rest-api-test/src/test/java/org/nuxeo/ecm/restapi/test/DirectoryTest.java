@@ -23,17 +23,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -120,6 +117,9 @@ public class DirectoryTest extends BaseTest {
 
     }
 
+    /**
+     * @since 8.4
+     */
     @Test
     public void itCanQueryDirectoryNames() throws Exception {
         // When I call the Rest endpoint
