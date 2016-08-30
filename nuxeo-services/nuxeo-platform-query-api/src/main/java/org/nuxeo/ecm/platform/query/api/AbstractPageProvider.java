@@ -21,12 +21,7 @@ package org.nuxeo.ecm.platform.query.api;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
@@ -36,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -872,8 +868,9 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 try {
                     res = Long.parseLong(maxPageSize.trim());
                 } catch (NumberFormatException e) {
-                    log.warn(String.format("Invalid max page size defined for property "
-                            + "\"%s\": %s (waiting for a long value)", DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
+                    log.warn(String.format(
+                            "Invalid max page size defined for property " + "\"%s\": %s (waiting for a long value)",
+                            DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
                 }
             }
         }
@@ -1010,7 +1007,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
 
         DocumentModel searchDocumentModel = getSearchDocumentModel();
-        if (searchDocumentModel != null) {
+        if (searchDocumentModel != null && !(searchDocumentModel instanceof SimpleDocumentModel)) {
             RenderingContext rCtx = RenderingContext.CtxBuilder.properties("*").get();
             try {
                 // the SearchDocumentModel is not a Document bound to the repository
