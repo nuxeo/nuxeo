@@ -78,6 +78,20 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="CURRENT_DOCUMENT_CHILDREN_WITH_SIMPLE_DOC_MODEL">
+      <coreQueryPageProvider>
+        <trackUsage>true</trackUsage>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Folder WHERE ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>2</pageSize>
+      </coreQueryPageProvider>
+    </contentView>
+
     <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH">
       <genericPageProvider
         class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
