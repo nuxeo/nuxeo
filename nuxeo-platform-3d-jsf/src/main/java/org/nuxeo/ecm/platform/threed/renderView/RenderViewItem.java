@@ -80,4 +80,12 @@ public class RenderViewItem {
         return title;
     }
 
+    public Integer getAzimuth() {
+        return Integer.valueOf(thumbFilename.split("-")[3]);
+    }
+
+    public Integer getZenith() {
+        return Integer.valueOf(thumbFilename.split("-")[4]);
+    }
+
 }
