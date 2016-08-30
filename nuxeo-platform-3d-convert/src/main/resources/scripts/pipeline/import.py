@@ -32,3 +32,12 @@ elif ext == 'dae':
     print("Importing COLLADA")
     # import a collada model
     bpy.ops.wm.collada_import(filepath=infile)
+
+# triangulate each mesh in the scene
+for ob in bpy.context.scene.objects:
+    if ob.type == 'MESH':
+        bm = bmesh.new()
+        bm.from_mesh(ob.data)
+        bmesh.ops.triangulate(bm, faces=bm.faces)
+        bm.to_mesh(ob.data)
+        bm.free()
