@@ -68,6 +68,13 @@ public interface ElasticSearchService {
     EsScrollResult scroll(EsScrollResult scrollResult);
 
     /**
+     * Clear scroll on ElasticSearch cluster for the given {@link EsScrollResult}.
+     *
+     * @since 8.4
+     */
+    void clearScroll(EsScrollResult scrollResult);
+
+    /**
      * Returns a document list using an NXQL query. Fetch documents from the VCS repository.
      *
      * @since 5.9.3

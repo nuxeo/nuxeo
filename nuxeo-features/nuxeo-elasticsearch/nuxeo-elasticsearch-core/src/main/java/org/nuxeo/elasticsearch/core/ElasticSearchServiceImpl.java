@@ -139,6 +139,20 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
                 scrollResult.getKeepAlive());
     }
 
+    @Override
+    public void clearScroll(EsScrollResult scrollResult) {
+        clearScroll(scrollResult.getScrollId());
+    }
+
+    protected void clearScroll(String scrollId) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Clear scroll : curl -XDELETE 'http://localhost:9200/_search/scroll' -d '{\"scroll_id\" : [\"%s\"]}'",
+                    scrollId));
+        }
+        esa.getClient().prepareClearScroll().addScrollId(scrollId).execute().actionGet();
+    }
+
     protected EsScrollResult getScrollResults(NxQueryBuilder queryBuilder, SearchResponse response, String scrollId,
             long keepAlive) {
         if (queryBuilder.returnsDocuments()) {

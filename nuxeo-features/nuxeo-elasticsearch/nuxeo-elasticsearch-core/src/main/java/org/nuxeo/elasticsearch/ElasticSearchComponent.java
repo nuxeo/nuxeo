@@ -497,6 +497,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         return ess.scroll(scrollResult);
     }
 
+    @Override
+    public void clearScroll(EsScrollResult scrollResult) {
+        ess.clearScroll(scrollResult);
+    }
+
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos) {
