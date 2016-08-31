@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.test.contrib">
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
-    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="memory"
+    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="mmapfs"
       httpEnabled="true" />
   </extension>
 
