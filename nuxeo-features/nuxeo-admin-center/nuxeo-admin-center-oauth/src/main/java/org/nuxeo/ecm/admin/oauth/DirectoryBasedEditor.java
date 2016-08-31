@@ -78,12 +78,14 @@ public abstract class DirectoryBasedEditor implements Serializable {
 
     public void createEntry() throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(getDirectoryName())) {
-            session.createEntry(creationEntry);
-            creationEntry = null;
-            showAddForm = false;
-            entries = null;
-        }
+        Framework.doPrivileged(() -> {
+            try (Session session = ds.open(getDirectoryName())) {
+                session.createEntry(creationEntry);
+                creationEntry = null;
+                showAddForm = false;
+                entries = null;
+            }
+        });
     }
 
     public void resetCreateEntry() {
@@ -124,40 +126,46 @@ public abstract class DirectoryBasedEditor implements Serializable {
 
     public void editEntry(String entryId) throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session session = ds.open(getDirectoryName())) {
-            editableEntry = session.getEntry(entryId);
-        }
+        Framework.doPrivileged(() -> {
+            try (Session session = ds.open(getDirectoryName())) {
+                editableEntry = session.getEntry(entryId);
+            }
+        });
     }
 
     public void saveEntry() throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session directorySession = ds.open(getDirectoryName())) {
-            UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
-                @Override
-                public void run() {
-                    directorySession.updateEntry(editableEntry);
-                }
-            };
-            sessionRunner.runUnrestricted();
-            editableEntry = null;
-            entries = null;
-        }
+        Framework.doPrivileged(() -> {
+            try (Session directorySession = ds.open(getDirectoryName())) {
+                UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
+                    @Override
+                    public void run() {
+                        directorySession.updateEntry(editableEntry);
+                    }
+                };
+                sessionRunner.runUnrestricted();
+                editableEntry = null;
+                entries = null;
+            }
+        });
     }
 
     public void deleteEntry(String entryId) throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        try (Session directorySession = ds.open(getDirectoryName())) {
-            UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
-                @Override
-                public void run() {
-                    directorySession.deleteEntry(entryId);
+        Framework.doPrivileged(() -> {
+            try (Session directorySession = ds.open(getDirectoryName())) {
+                UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
+                    @Override
+                    public void run() {
+                        directorySession.deleteEntry(entryId);
+                    }
+                };
+                sessionRunner.runUnrestricted();
+                if (editableEntry != null && editableEntry.getId().equals(entryId)) {
+                    editableEntry = null;
                 }
-            };
-            sessionRunner.runUnrestricted();
-            if (editableEntry != null && editableEntry.getId().equals(entryId)) {
-                editableEntry = null;
+                entries = null;
             }
-            entries = null;
-        }
+        });
     }
 }

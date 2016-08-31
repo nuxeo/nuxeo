@@ -184,29 +184,33 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     public NuxeoOAuth2Token refresh(DocumentModel entry, NuxeoOAuth2Token token) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
-            entry.setProperty("oauth2Token", "refreshToken", token.getRefreshToken());
-            entry.setProperty("oauth2Token", "creationDate", token.getCreationDate());
-            entry.setProperty("oauth2Token", "expirationTimeMilliseconds", token.getExpirationTimeMilliseconds());
-            session.updateEntry(entry);
-            return getTokenFromDirectoryEntry(entry);
-        }
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
+                entry.setProperty("oauth2Token", "refreshToken", token.getRefreshToken());
+                entry.setProperty("oauth2Token", "creationDate", token.getCreationDate());
+                entry.setProperty("oauth2Token", "expirationTimeMilliseconds", token.getExpirationTimeMilliseconds());
+                session.updateEntry(entry);
+                return getTokenFromDirectoryEntry(entry);
+            }
+        });
     }
 
     public void delete(String token, String clientId) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("serviceName", serviceName);
-            filter.put("clientId", clientId);
-            filter.put("accessToken", token);
+        Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put("serviceName", serviceName);
+                filter.put("clientId", clientId);
+                filter.put("accessToken", token);
 
-            DocumentModelList entries = session.query(filter);
-            for (DocumentModel entry : entries) {
-                session.deleteEntry(entry);
+                DocumentModelList entries = session.query(filter);
+                for (DocumentModel entry : entries) {
+                    session.deleteEntry(entry);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -232,10 +236,12 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     public DocumentModelList query(Map<String, Serializable> filter) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            filter.put("serviceName", serviceName);
-            return session.query(filter);
-        }
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                filter.put("serviceName", serviceName);
+                return session.query(filter);
+            }
+        });
     }
 
     protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) {
@@ -244,11 +250,13 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(NuxeoOAuth2Token aToken) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            DocumentModel entry = session.createEntry(aToken.toMap());
-            session.updateEntry(entry);
-            return getTokenFromDirectoryEntry(entry);
-        }
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                DocumentModel entry = session.createEntry(aToken.toMap());
+                session.updateEntry(entry);
+                return getTokenFromDirectoryEntry(entry);
+            }
+        });
     }
 
     protected DocumentModel find(Map<String, Serializable> filter) {

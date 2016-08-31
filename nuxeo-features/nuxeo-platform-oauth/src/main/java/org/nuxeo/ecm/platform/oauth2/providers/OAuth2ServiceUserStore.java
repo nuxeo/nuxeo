@@ -57,13 +57,15 @@ public class OAuth2ServiceUserStore {
 
     public String store(String nuxeoLogin, Map<String, Object> fields) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            fields.put("nuxeoLogin", nuxeoLogin);
-            fields.put("serviceName", serviceName);
-            DocumentModel entry = session.createEntry(fields);
-            Long id = (Long) entry.getProperty(NuxeoOAuth2Token.SCHEMA, ENTRY_ID);
-            return id.toString();
-        }
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                fields.put("nuxeoLogin", nuxeoLogin);
+                fields.put("serviceName", serviceName);
+                DocumentModel entry = session.createEntry(fields);
+                Long id = (Long) entry.getProperty(NuxeoOAuth2Token.SCHEMA, ENTRY_ID);
+                return id.toString();
+            }
+        });
     }
 
     public String find(Map<String, Serializable> filter) {
@@ -81,8 +83,10 @@ public class OAuth2ServiceUserStore {
 
     protected DocumentModelList query(Map<String, Serializable> filter) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        try (Session session = ds.open(DIRECTORY_NAME)) {
-            return session.query(filter);
-        }
+        return Framework.doPrivileged(() -> {
+            try (Session session = ds.open(DIRECTORY_NAME)) {
+                return session.query(filter);
+            }
+        });
     }
 }
