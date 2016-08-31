@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout" id="#{widget.id}">
 
   <c:if test="#{widget.mode == 'view'}">
-    <iframe width="100%" height="400px" src="restAPI/preview/default/#{field_0}/default/?blobPostProcessing=true"/>
+    <iframe width="100%" height="400px" src="site/api/v1/repo/#{field_1}/id/#{field_0}/@preview"/>
   </c:if>
 
 </f:subview>
