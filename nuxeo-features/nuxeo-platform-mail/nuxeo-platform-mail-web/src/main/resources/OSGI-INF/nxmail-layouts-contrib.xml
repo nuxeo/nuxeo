@@ -369,7 +369,8 @@
           <property name="template">/widgets/email_text_widget_template.xhtml</property>
         </properties>
         <fields>
-          <field>#{document.id}</field>
+          <field>id</field>
+          <field>repositoryName</field>
         </fields>
       </widget>
     </layout>
