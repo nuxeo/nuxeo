@@ -20,8 +20,8 @@ package org.nuxeo.runtime.test.runner.web;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.UnaryOperator;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -31,6 +31,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
@@ -59,25 +60,6 @@ public enum BrowserFamily {
         }
     }
 
-    public void waitForAjax(WebDriver driver) {
-        switch (this) {
-        case HTML_UNIT:
-            return;
-        default:
-            while (true) {
-                Boolean ajaxIsComplete = (Boolean) ((JavascriptExecutor) driver).executeScript("return jQuery.active == 0");
-                if (ajaxIsComplete) {
-                    break;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException cause) {
-                    throw new AssertionError("Interrupted while waiting for ajax completion", cause);
-                }
-            }
-        }
-    }
-
     class FirefoxDriverFactory implements DriverFactory {
         @Override
         public WebDriver createDriver() {
@@ -88,11 +70,9 @@ public enum BrowserFamily {
             profile.setPreference("browser.download.lastDir", dir);
             profile.setPreference("browser.download.dir", dir);
             profile.setPreference("browser.download.useDownloadDir", "true");
-            profile.setPreference("browser.helperApps.neverAsk.saveToDisk",
-                    "text/json");
+            profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "text/json");
             profile.setPreference("browser.download.folderList", 2);
-            profile.setPreference("browser.download manager.useWindow",
-                    "false");
+            profile.setPreference("browser.download manager.useWindow", "false");
             DesiredCapabilities dc = DesiredCapabilities.firefox();
             dc.setCapability(FirefoxDriver.PROFILE, profile);
             return new FirefoxDriver(dc);
@@ -147,68 +127,89 @@ public enum BrowserFamily {
 
     }
 
-    static class HtmlUnitDriverWithAttachmenthandler extends HtmlUnitDriver implements TakesAttachment {
+    class HtmlUnitDriverFactory implements DriverFactory {
 
         Attachment attachment;
 
-        @Override
-        protected WebClient modifyWebClient(WebClient client) {
-            client.setAttachmentHandler(new AttachmentHandler() {
+        final AttachmentHandler attachmentHandler = new AttachmentHandler() {
 
-                @Override
-                public void handleAttachment(Page page) {
-                    attachment = new Attachment() {
-                        @Override
-                        public String getFilename() {
-                            String filename = getSuggestedFilename();
-                            if (filename != null) {
-                                return filename;
-                            }
-                            String path = page.getUrl().getPath();
-                            return path.substring(path.lastIndexOf('/') + 1);
+            @Override
+            public void handleAttachment(Page page) {
+                attachment = new Attachment() {
+                    @Override
+                    public String getFilename() {
+                        String filename = getSuggestedFilename();
+                        if (filename != null) {
+                            return filename;
                         }
+                        String path = page.getUrl().getPath();
+                        return path.substring(path.lastIndexOf('/') + 1);
+                    }
 
-                        @Override
-                        public InputStream getContent() throws IOException {
-                            return page.getWebResponse().getContentAsStream();
+                    @Override
+                    public InputStream getContent() throws IOException {
+                        return page.getWebResponse().getContentAsStream();
+                    }
+
+                    public String getSuggestedFilename() {
+                        final WebResponse response = page.getWebResponse();
+                        final String disp = response.getResponseHeaderValue("Content-Disposition");
+                        int start = disp.indexOf("filename=");
+                        if (start == -1) {
+                            return null;
                         }
-
-                        public String getSuggestedFilename() {
-                            final WebResponse response = page.getWebResponse();
-                            final String disp = response.getResponseHeaderValue("Content-Disposition");
-                            int start = disp.indexOf("filename=");
-                            if (start == -1) {
-                                return null;
-                            }
-                            start += "filename=".length();
-                            int end = disp.indexOf(';', start);
-                            if (end == -1) {
-                                end = disp.length();
-                            }
-                            if (disp.charAt(start) == '"' && disp.charAt(end - 1) == '"') {
-                                start++;
-                                end--;
-                            }
-                            return disp.substring(start, end);
+                        start += "filename=".length();
+                        int end = disp.indexOf(';', start);
+                        if (end == -1) {
+                            end = disp.length();
                         }
-                    };
-                }
-            });
+                        if (disp.charAt(start) == '"' && disp.charAt(end - 1) == '"') {
+                            start++;
+                            end--;
+                        }
+                        return disp.substring(start, end);
+                    }
+                };
+            }
+        };
 
-            return client;
+        UnaryOperator<WebClient> customizer() {
+            return client -> {
+                client.setAttachmentHandler(attachmentHandler);
+                return client;
+            };
         }
 
-        @Override
-        public Attachment getAttachment() throws WebDriverException {
-            return attachment;
+        boolean jsEnabled() {
+            return false;
         }
 
-    }
+        class CustomizableHtmlUnitDriver extends HtmlUnitDriver implements TakesAttachment {
 
-    class HtmlUnitDriverFactory implements DriverFactory {
+            @Override
+            public WebClient getWebClient() {
+                return super.getWebClient();
+            }
+
+            protected CustomizableHtmlUnitDriver() {
+                super(jsEnabled());
+            }
+
+            @Override
+            protected WebClient modifyWebClient(WebClient client) {
+                return customizer().apply(client);
+            }
+
+            @Override
+            public Attachment getAttachment() throws WebDriverException {
+                return attachment;
+            }
+
+        }
+
         @Override
         public WebDriver createDriver() {
-            return new HtmlUnitDriverWithAttachmenthandler();
+            return new CustomizableHtmlUnitDriver();
         }
 
         @Override
@@ -219,23 +220,33 @@ public enum BrowserFamily {
         public BrowserFamily getBrowserFamily() {
             return BrowserFamily.this;
         }
+
+        @Override
+        public void waitForAjax(WebDriver driver) {
+            return;
+        }
+
     }
 
-    class HtmlUnitJsDriverFactory implements DriverFactory {
+    class HtmlUnitJsDriverFactory extends HtmlUnitDriverFactory {
         @Override
-        public WebDriver createDriver() {
-            HtmlUnitDriver driver = new HtmlUnitDriverWithAttachmenthandler();
-            driver.setJavascriptEnabled(true);
-            return driver;
+        boolean jsEnabled() {
+            return true;
         }
 
         @Override
-        public void disposeDriver(WebDriver driver) {
+        UnaryOperator<WebClient> customizer() {
+            UnaryOperator<WebClient> setJavascript = client -> {
+                client.getOptions().setThrowExceptionOnScriptError(false);
+                client.setAjaxController(new NicelyResynchronizingAjaxController());
+                return client;
+            };
+            return client -> setJavascript.apply(super.customizer().apply(client));
         }
 
         @Override
-        public BrowserFamily getBrowserFamily() {
-            return BrowserFamily.this;
+        public void waitForAjax(WebDriver driver) {
+            ((CustomizableHtmlUnitDriver) driver).getWebClient().waitForBackgroundJavaScript(30000);
         }
 
     }

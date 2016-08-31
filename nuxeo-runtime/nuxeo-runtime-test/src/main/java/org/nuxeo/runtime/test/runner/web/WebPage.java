@@ -72,6 +72,7 @@ public abstract class WebPage {
      * @return the page itself
      */
     public WebPage ensureLoaded() {
+        config.getBrowserFamily().getDriverFactory().waitForAjax(driver);
         return this;
 
     }
@@ -184,7 +185,6 @@ public abstract class WebPage {
                 pages.put(type, page);
             }
         }
-        config.waitForAjax();
         return (T) page.ensureLoaded(); // this will block until page is loaded
                                         // (if implementation needs this)
     }

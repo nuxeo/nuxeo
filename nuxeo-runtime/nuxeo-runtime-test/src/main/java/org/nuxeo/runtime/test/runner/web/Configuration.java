@@ -112,8 +112,4 @@ public class Configuration {
         }
     }
 
-    public void waitForAjax() {
-        factory.getBrowserFamily().waitForAjax(driver);
-    }
-
 }
