@@ -1,37 +1,37 @@
 if args.outdir == None:
     sys.exit()
 
-outfile = args.outdir + "/conversion-" + str(base_lod) + ".dae"
+outfile = args.outdir + '/transmissionformat-' + str(lodid) + '-' + str(lod) + '-' + str(max_polygons) + '.dae'
 
 # get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
 
-print("Found %d meshes" % len(meshes))
+print('Found %d meshes' % len(meshes))
 
 # process the input filename
 out_dirpath, out_basename = os.path.split(outfile)
 out_basename, out_ext = os.path.splitext(out_basename)
 out_ext = out_ext.lower()
-print("Exporting %s " % (out_ext))
-if out_ext.startswith("."):
+print('Exporting %s ' % (out_ext))
+if out_ext.startswith('.'):
     out_ext = out_ext[1:]
 
 if out_ext == 'stl':
-    print("Exporting STL")
+    print('Exporting STL')
     # export an stl model
     bpy.ops.export_mesh.stl(filepath=outfile)
 
 elif out_ext == 'obj':
-    print("Exporting obj")
+    print('Exporting obj')
     # export an obj model
     bpy.ops.export_scene.obj(filepath=outfile, axis_forward='-Z', axis_up='Y')
 
 elif out_ext == 'dae':
-    print("EXporting COLLADA")
+    print('EXporting COLLADA')
     # export a collada model
     bpy.ops.wm.collada_export(filepath=outfile)
 elif out_ext == 'gltf':
-    print("Exporting glTF")
+    print('Exporting glTF')
     scene = {
         'actions': bpy.data.actions,
         'camera': bpy.data.cameras,

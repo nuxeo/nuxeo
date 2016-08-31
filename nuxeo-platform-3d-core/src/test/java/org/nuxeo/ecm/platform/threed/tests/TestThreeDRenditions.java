@@ -116,14 +116,14 @@ public class TestThreeDRenditions {
 
         List<Map<String, Serializable>> transmissionList = new ArrayList<>();
         transmissionList.addAll(
-                transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
-
+            transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
         doc.setPropertyValue(TRANSMISSIONS_PROPERTY, (Serializable) transmissionList);
 
         List<Map<String, Serializable>> renderViewList = new ArrayList<>();
-        renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
-
+        renderViewList.addAll(
+            threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
         doc.setPropertyValue(RENDER_VIEWS_PROPERTY, (Serializable) renderViewList);
+
     }
 
     protected List<RenditionDefinition> getThreeDRenditionDefinitions(DocumentModel doc) {
@@ -218,10 +218,10 @@ public class TestThreeDRenditions {
         assertEquals("left", renderviews.get(1).getTitle());
         assertEquals("isometric", renderviews.get(2).getTitle());
         assertEquals("front", renderviews.get(3).getTitle());
-        assertEquals(100, transmissions.get(0).getLod());
+        assertEquals(3, transmissions.get(0).getLod());
         assertEquals(11, transmissions.get(1).getLod());
-        assertEquals(3, transmissions.get(2).getLod());
-        assertEquals(33, transmissions.get(3).getLod());
+        assertEquals(33, transmissions.get(2).getLod());
+        assertEquals(100, transmissions.get(3).getLod());
         threeD.getBlob();
     }
 

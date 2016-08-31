@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
+import org.nuxeo.ecm.platform.threed.service.AutomaticLOD;
 import org.nuxeo.ecm.platform.threed.service.RenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.api.Framework;
@@ -43,13 +44,27 @@ public class BatchConverterHelper {
     }
 
     public static final List<TransmissionThreeD> getTransmissons(Collection<Blob> blobs) {
-
+        ThreeDService threeDService = Framework.getService(ThreeDService.class);
         return blobs.stream().filter(blob -> "dae".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
-            String baseName = FilenameUtils.getBaseName(blob.getFilename());
-            String[] baseArray = baseName.split("-");
-            int lod = Integer.valueOf(baseArray[baseArray.length - 1]);
-            return new TransmissionThreeD(blob, lod, blob.getFilename());
-        }).collect(Collectors.toList());
+            String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
+            if (fileNameArray.length != 4) {
+                return null;
+            }
+            String id = fileNameArray[1];
+
+            if (id.equals("original")) {
+                int lod = Integer.valueOf(fileNameArray[2]);
+                int maxPoly = Integer.valueOf(fileNameArray[3]);
+                return new TransmissionThreeD(blob, lod, maxPoly, id);
+            } else {
+                AutomaticLOD currentALOD = threeDService.getAutomaticLOD(id);
+                if (currentALOD == null) {
+                    return null;
+                }
+                return new TransmissionThreeD(blob, currentALOD.getPercentage(), currentALOD.getMaxPoly(),
+                    currentALOD.getName());
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public static final List<ThreeDRenderView> getRenders(Collection<Blob> blobs) {
@@ -60,9 +75,6 @@ public class BatchConverterHelper {
                 return null;
             }
             String id = fileNameArray[1];
-            String lod = fileNameArray[2];
-            String coords = fileNameArray[3] + "," + fileNameArray[4];
-            String dimensions = fileNameArray[5] + "," + fileNameArray[6];
             RenderView currentRV = threeDService.getRenderView(id);
             if (currentRV == null) {
                 return null;

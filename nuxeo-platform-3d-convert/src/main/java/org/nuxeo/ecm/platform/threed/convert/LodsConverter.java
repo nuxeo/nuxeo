@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLYGONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 
 /**
@@ -52,6 +53,7 @@ public class LodsConverter extends BaseBlenderConverter {
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
+
         String lods = null;
         if (parameters.containsKey(LODS_PARAMETER)) {
             lods = (String) parameters.get(LODS_PARAMETER);
@@ -59,6 +61,14 @@ public class LodsConverter extends BaseBlenderConverter {
             lods = initParameters.get(LODS_PARAMETER);
         }
         cmdStringParams.put(LODS_PARAMETER, lods);
+
+        String maxPolys = null;
+        if (parameters.containsKey(MAX_POLYGONS_PARAMETER)) {
+            maxPolys = (String) parameters.get(MAX_POLYGONS_PARAMETER);
+        } else if (initParameters.containsKey(MAX_POLYGONS_PARAMETER)) {
+            maxPolys = initParameters.get(MAX_POLYGONS_PARAMETER);
+        }
+        cmdStringParams.put(MAX_POLYGONS_PARAMETER, maxPolys);
 
         return cmdStringParams;
     }
@@ -68,7 +78,8 @@ public class LodsConverter extends BaseBlenderConverter {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
         List<String> conversions = getConversions(outDir);
         List<String> lodList = cmdParams.getParameters().get(LODS_PARAMETER).getValues();
-        if (conversions.isEmpty() || conversions.size() != lodList.size()) {
+        List<String> maxPolyList = cmdParams.getParameters().get(MAX_POLYGONS_PARAMETER).getValues();
+        if (conversions.isEmpty() || conversions.size() != lodList.size() || conversions.size() != maxPolyList.size()) {
             throw new ConversionException("Unable get correct number of lod versions");
         }
 

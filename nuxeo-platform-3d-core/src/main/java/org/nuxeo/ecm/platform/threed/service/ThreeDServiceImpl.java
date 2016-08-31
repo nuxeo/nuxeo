@@ -47,6 +47,8 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVE
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.DIMENSIONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLYGONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OPERATORS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
 
@@ -169,13 +171,19 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         operators += new String(new char[lods.size()]).replace("\0", " lod convert");
         params.put(OPERATORS_PARAMETER, operators);
 
-        // titles
-        params.put(RENDER_IDS_PARAMETER,
-                renderViews.stream().map(renderView -> renderView.getId()).collect(Collectors.joining(" ")));
+        // render ids
+        params.put(RENDER_IDS_PARAMETER, renderViews.stream().map(RenderView::getId).collect(Collectors.joining(" ")));
+
+        // lod ids
+        params.put(LOD_IDS_PARAMETER, lods.stream().map(AutomaticLOD::getId).collect(Collectors.joining(" ")));
 
         // lods
         params.put(LODS_PARAMETER,
                 lods.stream().map(AutomaticLOD::getPercentage).map(String::valueOf).collect(Collectors.joining(" ")));
+
+        // maxPolys
+        params.put(MAX_POLYGONS_PARAMETER,
+            lods.stream().map(AutomaticLOD::getMaxPoly).map(String::valueOf).collect(Collectors.joining(" ")));
 
         // spherical coordinates
         params.put(COORDS_PARAMETER, renderViews.stream()
@@ -213,8 +221,8 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     }
 
     @Override
-    public AutomaticLOD getAutomaticLOD(int percentage) {
-        return automaticLODs.registry.get(String.valueOf(percentage));
+    public AutomaticLOD getAutomaticLOD(String automaticLODId) {
+        return automaticLODs.registry.get(automaticLODId);
     }
 
     @Override
@@ -240,6 +248,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         BlobHolder result = cs.convert(COLLADA2GLTF_CONVERTER, new SimpleBlobHolder(colladaThreeD.getBlob()),
                 parameters);
         List<Blob> blobs = result.getBlobs();
-        return new TransmissionThreeD(blobs.get(0), colladaThreeD.getLod(), colladaThreeD.getName());
+        return new TransmissionThreeD(blobs.get(0), colladaThreeD.getLod(), colladaThreeD.getMaxPoly(),
+                colladaThreeD.getName());
     }
 }

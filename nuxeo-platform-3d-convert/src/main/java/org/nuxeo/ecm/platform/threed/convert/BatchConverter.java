@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.DIMENSIONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLYGONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
 
@@ -56,6 +58,7 @@ public class BatchConverter extends BaseBlenderConverter {
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
+
         String lods = null;
         if (parameters.containsKey(LODS_PARAMETER)) {
             lods = (String) parameters.get(LODS_PARAMETER);
@@ -63,6 +66,15 @@ public class BatchConverter extends BaseBlenderConverter {
             lods = initParameters.get(LODS_PARAMETER);
         }
         cmdStringParams.put(LODS_PARAMETER, lods);
+
+        String maxPolys = null;
+        if (parameters.containsKey(MAX_POLYGONS_PARAMETER)) {
+            maxPolys = (String) parameters.get(MAX_POLYGONS_PARAMETER);
+        } else if (initParameters.containsKey(MAX_POLYGONS_PARAMETER)) {
+            maxPolys = initParameters.get(MAX_POLYGONS_PARAMETER);
+        }
+        cmdStringParams.put(MAX_POLYGONS_PARAMETER, maxPolys);
+
         String dimensions = null;
         if (parameters.containsKey(DIMENSIONS_PARAMETER)) {
             dimensions = (String) parameters.get(DIMENSIONS_PARAMETER);
@@ -70,6 +82,7 @@ public class BatchConverter extends BaseBlenderConverter {
             dimensions = initParameters.get(DIMENSIONS_PARAMETER);
         }
         cmdStringParams.put(DIMENSIONS_PARAMETER, dimensions);
+
         return cmdStringParams;
     }
 
@@ -79,7 +92,9 @@ public class BatchConverter extends BaseBlenderConverter {
         List<String> conversions = getConversions(outDir);
         List<String> renders = getRenders(outDir);
         List<String> lodList = cmdParams.getParameters().get(LODS_PARAMETER).getValues();
-        if (conversions.isEmpty() || conversions.size() != lodList.size() + 1) { // + 1 for the original conversion
+        List<String> lodIdList = cmdParams.getParameters().get(LOD_IDS_PARAMETER).getValues();
+        if (conversions.isEmpty() || conversions.size() != lodList.size() + 1
+            || conversions.size() != lodIdList.size() + 1) { // + 1 for the original conversion
             throw new ConversionException("Unable get correct number of versions");
         }
         List<String> coordList = cmdParams.getParameters().get(COORDS_PARAMETER).getValues();

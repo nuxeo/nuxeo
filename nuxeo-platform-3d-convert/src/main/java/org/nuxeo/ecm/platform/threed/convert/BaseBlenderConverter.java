@@ -171,13 +171,28 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             } else if (initParameters.containsKey(RENDER_IDS_PARAMETER)) {
                 renderIds = initParameters.get(RENDER_IDS_PARAMETER);
             }
-            List<String> titleList = Arrays.asList(renderIds.split(" "));
-            params.addNamedParameter(RENDER_IDS_PARAMETER, titleList);
+            List<String> renderIdList = Arrays.asList(renderIds.split(" "));
+            params.addNamedParameter(RENDER_IDS_PARAMETER, renderIdList);
+
+            // Initialize lod id params
+            String lodIds = "";
+            if (parameters.containsKey(LOD_IDS_PARAMETER)) {
+                lodIds = (String) parameters.get(LOD_IDS_PARAMETER);
+            } else if (initParameters.containsKey(LOD_IDS_PARAMETER)) {
+                lodIds = initParameters.get(LOD_IDS_PARAMETER);
+            }
+            List<String> lodIdList = Arrays.asList(lodIds.split(" "));
+            params.addNamedParameter(LOD_IDS_PARAMETER, lodIdList);
 
             // Initialize LOD params
             String lods = initParameters.getOrDefault(LODS_PARAMETER, "");
             List<String> lodList = Arrays.asList(lods.split(" "));
             params.addNamedParameter(LODS_PARAMETER, lodList);
+
+            // Initialize max polygons params
+            String maxPolys = initParameters.getOrDefault(MAX_POLYGONS_PARAMETER, "");
+            List<String> maxPolyList = Arrays.asList(maxPolys.split(" "));
+            params.addNamedParameter(MAX_POLYGONS_PARAMETER, maxPolyList);
 
             // Initialize spherical coordinates params
             String coords = "";
@@ -224,7 +239,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             if (strParams != null) {
                 for (String paramName : strParams.keySet()) {
                     if (RENDER_IDS_PARAMETER.equals(paramName) ||
+                        LOD_IDS_PARAMETER.equals(paramName) ||
                         LODS_PARAMETER.equals(paramName) ||
+                        MAX_POLYGONS_PARAMETER.equals(paramName) ||
                         COORDS_PARAMETER.equals(paramName) ||
                         DIMENSIONS_PARAMETER.equals(paramName)) {
                         params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
@@ -261,7 +278,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     public List<String> getConversions(String outDir) {
         File directory = new File(outDir);
-        String[] files = directory.list((dir, name) -> name.startsWith("conversion") && name.endsWith(".dae"));
+        String[] files = directory.list((dir, name) -> name.startsWith("transmissionformat") && name.endsWith(".dae"));
         if (files == null) {
             return null;
         }

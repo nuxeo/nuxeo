@@ -19,6 +19,7 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="lod" type="xs:integer"/>
+            <xs:element name="maxPoly" type="xs:integer"/>
             <xs:element name="content" type="nxs:content"/>
         </xs:sequence>
     </xs:complexType>

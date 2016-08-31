@@ -141,7 +141,8 @@ public class ThreeDConvertersTest {
         BlobHolder result = applyConverter(COLLADA_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
-        assertEquals("conversion-100.dae", blobs.get(0).getFilename());
+        assertTrue(blobs.get(0).getFilename().contains("transmissionformat"));
+        assertTrue(blobs.get(0).getFilename().contains(".dae"));
     }
 
     @Test
@@ -149,10 +150,12 @@ public class ThreeDConvertersTest {
         BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
         assertEquals(3, blobs.size());
-        List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
-        assertEquals("conversion-11.dae", fileNames.get(0));
-        assertEquals("conversion-3.dae", fileNames.get(1));
-        assertEquals("conversion-33.dae", fileNames.get(2));
+        assertTrue(blobs.get(0).getFilename().contains("transmissionformat-03"));
+        assertTrue(blobs.get(0).getFilename().contains(".dae"));
+        assertTrue(blobs.get(1).getFilename().contains("transmissionformat-11"));
+        assertTrue(blobs.get(1).getFilename().contains(".dae"));
+        assertTrue(blobs.get(2).getFilename().contains("transmissionformat-33"));
+        assertTrue(blobs.get(2).getFilename().contains(".dae"));
     }
 
     @Test
@@ -161,10 +164,14 @@ public class ThreeDConvertersTest {
         List<Blob> blobs = result.getBlobs();
         assertEquals(6, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
-        assertEquals("conversion-100.dae", fileNames.get(0));
-        assertEquals("conversion-11.dae", fileNames.get(1));
-        assertEquals("conversion-3.dae", fileNames.get(2));
-        assertEquals("conversion-33.dae", fileNames.get(3));
+        assertTrue(blobs.get(0).getFilename().contains("transmissionformat-03"));
+        assertTrue(blobs.get(0).getFilename().contains(".dae"));
+        assertTrue(blobs.get(1).getFilename().contains("transmissionformat-11"));
+        assertTrue(blobs.get(1).getFilename().contains(".dae"));
+        assertTrue(blobs.get(2).getFilename().contains("transmissionformat-33"));
+        assertTrue(blobs.get(2).getFilename().contains(".dae"));
+        assertTrue(blobs.get(3).getFilename().contains("transmissionformat-original"));
+        assertTrue(blobs.get(3).getFilename().contains(".dae"));
         assertTrue(fileNames.get(4).contains("render-" + renderId1));
         assertTrue(fileNames.get(5).contains("render-" + renderId2));
     }

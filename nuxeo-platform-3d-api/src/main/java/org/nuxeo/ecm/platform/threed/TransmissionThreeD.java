@@ -37,13 +37,18 @@ public class TransmissionThreeD extends ThreeD {
 
     public static final String LOD = "lod";
 
+    public static final String MAX_POLYGONS = "maxPoly";
+
     protected final int lod;
+
+    protected final int maxPoly;
 
     protected final String name;
 
-    public TransmissionThreeD(Blob blob, int lod, String name) {
+    public TransmissionThreeD(Blob blob, int lod, int maxPoly, String name) {
         super(blob, null);
         this.lod = lod;
+        this.maxPoly = maxPoly;
         this.name = name;
     }
 
@@ -52,6 +57,8 @@ public class TransmissionThreeD extends ThreeD {
         name = (String) map.get(NAME);
         Long lodLong = (Long) map.get(LOD);
         lod = (lodLong != null) ? lodLong.intValue() : 0;
+        Long maxPolyLong = (Long) map.get(MAX_POLYGONS);
+        maxPoly = (maxPolyLong != null) ? maxPolyLong.intValue() : 0;
     }
 
     public String getTitle() {
@@ -62,8 +69,16 @@ public class TransmissionThreeD extends ThreeD {
         return lod;
     }
 
+    public int getMaxPoly() {
+        return maxPoly;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return String.valueOf(name.hashCode());
     }
 
     public Map<String, Serializable> toMap() {
@@ -71,6 +86,7 @@ public class TransmissionThreeD extends ThreeD {
         map.put(NAME, name);
         map.put(CONTENT, (Serializable) blob);
         map.put(LOD, lod);
+        map.put(MAX_POLYGONS, maxPoly);
         return map;
     }
 }

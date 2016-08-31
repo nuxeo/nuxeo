@@ -30,8 +30,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("automaticLOD")
 public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
+    @XNode("@name")
+    protected String name;
+
     @XNode("@percentage")
     protected Integer percentage = 100;
+
+    @XNode("@maxPoly")
+    protected Integer maxPoly = Integer.MAX_VALUE;
 
     @XNode("@enabled")
     protected Boolean enabled;
@@ -43,7 +49,9 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     protected Boolean renditionVisible;
 
     public AutomaticLOD(AutomaticLOD other) {
+        name = other.name;
         percentage = other.percentage;
+        maxPoly = other.maxPoly;
         enabled = other.enabled;
         rendition = other.rendition;
         renditionVisible = other.renditionVisible;
@@ -51,6 +59,14 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     public AutomaticLOD() {
         super();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public boolean isEnabled() {
@@ -67,6 +83,14 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     public void setPercentage(Integer percentage) {
         this.percentage = percentage;
+    }
+
+    public Integer getMaxPoly() {
+        return maxPoly;
+    }
+
+    public void setMaxPoly(Integer maxPoly) {
+        this.maxPoly = maxPoly;
     }
 
     public boolean isRendition() {
@@ -86,7 +110,7 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     }
 
     public String getId() {
-        return String.valueOf(percentage);
+        return String.valueOf(name.hashCode());
     }
 
     @Override

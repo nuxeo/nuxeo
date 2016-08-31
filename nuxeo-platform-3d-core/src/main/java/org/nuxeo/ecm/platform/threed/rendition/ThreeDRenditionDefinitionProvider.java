@@ -93,13 +93,13 @@ public class ThreeDRenditionDefinitionProvider implements RenditionDefinitionPro
         // Transmission Renditions
         renditionDefinitions.addAll(threeD.getTransmissionThreeDs().stream().filter(transmissionThreeD -> {
 
-            AutomaticLOD automaticLOD = threeDService.getAutomaticLOD(transmissionThreeD.getLod());
+            AutomaticLOD automaticLOD = threeDService.getAutomaticLOD(transmissionThreeD.getId());
             return automaticLOD != null && automaticLOD.isEnabled() && automaticLOD.isRendition()
                     && transmissionThreeD.getBlob() != null;
 
         }).map(transmissionThreeD -> {
 
-            AutomaticLOD automaticLOD = threeDService.getAutomaticLOD(transmissionThreeD.getLod());
+            AutomaticLOD automaticLOD = threeDService.getAutomaticLOD(transmissionThreeD.getId());
             MimetypeEntry mimeType = mimetypeRegistry.getMimetypeEntryByMimeType(
                     transmissionThreeD.getBlob().getMimeType());
             return buildRenditionDefinition(transmissionThreeD.getTitle(), transmissionThreeD.getBlob(),

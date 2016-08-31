@@ -24,6 +24,7 @@
                         otherwise
                     </li>
                     <li>lod: percentage of polygons remaining</li>
+                    <li>maxPoly: maximum number of polygons remaining</li>
                 </ul>
             </p>
         </documentation>
