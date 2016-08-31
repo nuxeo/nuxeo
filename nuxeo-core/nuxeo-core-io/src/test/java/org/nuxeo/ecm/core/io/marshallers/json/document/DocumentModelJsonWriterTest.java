@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
@@ -64,7 +66,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     public void testDefault() throws Exception {
         JsonAssert json = jsonAssert(document);
         json.isObject();
-        json.properties(11);
+        json.properties(12);
         json.has("entity-type").isEquals("document");
         json.has("repository").isEquals("test");
         json.has("uid").isEquals(document.getId());
@@ -73,16 +75,26 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         json.has("state").isEquals("undefined");
         json.has("parentRef").isEquals(document.getParentRef().toString());
         json.has("isCheckedOut").isTrue();
+        json.has("isVersion").isFalse();
         json.has("changeToken").isNull();
         json.has("title").isEquals("myDoc");
         json.has("facets").contains("Folderish");
     }
 
     @Test
+    public void testIsVersion() throws Exception {
+        DocumentRef versionDocRef = document.checkIn(VersioningOption.MAJOR, "CheckIn comment");
+        DocumentModel versionDoc = session.getDocument(versionDocRef);
+        JsonAssert json = jsonAssert(versionDoc);
+        json.isObject();
+        json.has("isVersion").isTrue();
+    }
+
+    @Test
     public void testWithVersion() throws Exception {
         JsonAssert json = jsonAssert(document, CtxBuilder.fetchInDoc("versionLabel").get());
         json.isObject();
-        json.properties(12);
+        json.properties(13);
         json.has("versionLabel").isEquals("");
     }
 
@@ -91,7 +103,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         document.setPropertyValue("dc:modified", new Date());
         JsonAssert json = jsonAssert(document);
         json.isObject();
-        json.properties(12);
+        json.properties(13);
         json.has("lastModified").isText();
     }
 
