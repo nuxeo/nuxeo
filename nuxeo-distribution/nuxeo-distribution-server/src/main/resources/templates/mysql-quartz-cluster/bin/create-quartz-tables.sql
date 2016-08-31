@@ -1,10 +1,10 @@
 #
-# In your Quartz properties file, you'll need to set
+# In your Quartz properties file, you will need to set
 # org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 #
 #
 # By: Ron Cordell - roncordell
-#  I didn't see this anywhere, so I thought I'd post it here. This is the script from Quartz to create the tables in a MySQL database, modified to use INNODB instead of MYISAM.
+#  I didnt see this anywhere, so I thought Id post it here. This is the script from Quartz to create the tables in a MySQL database, modified to use INNODB instead of MYISAM.
 
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
@@ -152,6 +152,12 @@ SCHED_NAME VARCHAR(120) NOT NULL,
 LOCK_NAME VARCHAR(40) NOT NULL,
 PRIMARY KEY (SCHED_NAME,LOCK_NAME))
 ENGINE=InnoDB;
+
+INSERT INTO QRTZ_LOCKS VALUES('nuxeo', 'TRIGGER_ACCESS');
+INSERT INTO QRTZ_LOCKS VALUES('nuxeo', 'JOB_ACCESS');
+INSERT INTO QRTZ_LOCKS VALUES('nuxeo', 'CALENDAR_ACCESS');
+INSERT INTO QRTZ_LOCKS VALUES('nuxeo', 'STATE_ACCESS');
+INSERT INTO QRTZ_LOCKS VALUES('nuxeo', 'MISFIRE_ACCESS');
 
 CREATE INDEX IDX_QRTZ_J_REQ_RECOVERY ON QRTZ_JOB_DETAILS(SCHED_NAME,REQUESTS_RECOVERY);
 CREATE INDEX IDX_QRTZ_J_GRP ON QRTZ_JOB_DETAILS(SCHED_NAME,JOB_GROUP);
