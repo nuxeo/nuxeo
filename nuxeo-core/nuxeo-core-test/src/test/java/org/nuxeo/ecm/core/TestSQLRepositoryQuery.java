@@ -3231,6 +3231,7 @@ public class TestSQLRepositoryQuery {
         int total = 0;
         while (ret.hasResults()) {
             List<String> ids = ret.getResultIds();
+            ids.stream().forEach(id -> assertFalse(id.isEmpty()));
             total += ids.size();
             ret = session.scroll(ret.getScrollId());
         }

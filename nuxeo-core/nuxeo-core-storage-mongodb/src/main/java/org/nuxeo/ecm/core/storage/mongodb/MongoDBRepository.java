@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
-import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
@@ -932,13 +931,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     break;
                 } else {
                     DBObject ob = cursorResult.cursor.next();
-                    String id;
-                    if (useCustomId) {
-                        id = (String) ob.get(ECM_UUID);
+                    String id = (String) ob.get(keyToBson(KEY_ID));
+                    if (id != null) {
+                        ids.add(id);
                     } else {
-                        id = (String) ob.get(MONGODB_ID);
+                        log.error("Got a document without id: " + ob);
                     }
-                    ids.add(id);
                 }
             }
         }
