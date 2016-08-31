@@ -40,6 +40,7 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.login.LoginPlugin;
 import org.nuxeo.ecm.platform.login.LoginPluginDescriptor;
 import org.nuxeo.ecm.platform.login.LoginPluginRegistry;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -63,8 +64,6 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
     private static final Log log = LogFactory.getLog(FormAuthenticator.class);
 
     private static final String DUO_FACTOR_PAGE = "duofactors.jsp";
-
-    private static final String POST_URL = "nxstartup.faces";
 
     private static final String SIG_REQUEST = "sig_request";
 
@@ -113,7 +112,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         } else if ((Boolean) session.getAttribute(ONE_FACTOR_CHECK)
                 && (session.getAttribute(TWO_FACTORS_CHECK) == null || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK))) {
             String redirectUrl = baseURL + DUO_FACTOR_PAGE;
-            String postUrl = baseURL + POST_URL;
+            String postUrl = baseURL + LoginScreenHelper.getStartupPagePath();
             Map<String, String> parameters = new HashMap<>();
             try {
                 String userName = httpRequest.getParameter(usernameKey);

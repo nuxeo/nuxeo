@@ -348,7 +348,7 @@ body {
     <tr>
         <td align="center">
             <%@ include file="login_welcome.jsp" %>
-            <form method="post" action="nxstartup.faces">
+            <form method="post" action="startup">
                 <!-- To prevent caching -->
                 <%
                     response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
