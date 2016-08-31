@@ -639,7 +639,8 @@ public class DBSTransactionState {
                     updateProxy(target, (String) proxyId);
                 } catch (ConcurrentUpdateException e) {
                     e.addInfo("On doc " + target.getId());
-                    throw e;
+                    log.error(e, e);
+                    // do not throw, this avoids crashing the session
                 }
             }
         }
