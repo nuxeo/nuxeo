@@ -411,4 +411,10 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("newProperty", properties.get("newProperty"));
     }
 
+    @Test
+    public void testUnknownAction() throws Exception {
+        Action a = as.getAction("FOO", null, true);
+        assertNull(a);
+    }
+
 }

@@ -208,9 +208,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
                         action.setAvailable(false);
                     }
                 }
+                action.setFiltered(true);
             }
-
-            action.setFiltered(true);
             return action;
         } finally {
             long duration = timerContext.stop();
