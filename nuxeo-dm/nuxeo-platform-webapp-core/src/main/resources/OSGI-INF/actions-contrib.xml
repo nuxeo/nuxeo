@@ -305,15 +305,11 @@
       label="command.undeleteDocs" icon="" help="command.undeleteDocs.help"
       confirm="if( !confirmUndeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_TRASH_LIST</category>
-      <filter id="canPurge">
-        <rule grant="true">
-          <condition>#{deleteActions.canPurge}</condition>
-        </rule>
-      </filter>
+      <filter id="canPurge" />
     </action>
 
     <action id="CURRENT_SELECTION_TRASH" link="#{deleteActions.deleteSelection}"
-      label="command.trashDocs" icon="" help="comand.trashDocs.help"
+      label="command.trashDocs" icon="" help="command.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;" order="1000">
       <category>CURRENT_SELECTION_LIST</category>
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
@@ -385,7 +381,7 @@
     </action>
 
     <action id="CURRENT_SELECTION_SECTIONS_TRASH" link="#{deleteActions.deleteSelectionSections}"
-      label="command.trashDocs" icon="" help="comand.trashDocs.help"
+      label="command.trashDocs" icon="" help="command.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;">
       <category>CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter id="canDeleteSection">
