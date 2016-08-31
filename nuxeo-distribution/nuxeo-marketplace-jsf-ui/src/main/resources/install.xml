@@ -1,13 +1,10 @@
 <install>
   <!--
-    The content of this file must be kept in sync with the install-marketplace ant target
+    The content of this file must be kept in sync with the apply-marketplace ant target
     of the assembly.xml in the compat package nuxeo-distribution-tomcat while it exists.
   -->
   <update file="${package.root}/install/bundles" todir="${env.bundles}" />
   <update file="${package.root}/install/lib" todir="${env.lib}" />
-  <!-- delete files providing auth and a landing page for the bare server -->
+  <!-- delete file providing auth for the bare server -->
   <delete file="${env.templates}/server/config/auth-config.xml" />
-  <delete file="${env.templates}/server/nuxeo.war/index.html" />
-  <delete file="${env.templates}/server/nuxeo.war/img/favicon.png" />
-  <delete file="${env.templates}/server/nuxeo.war/img/nuxeo.png" />
 </install>

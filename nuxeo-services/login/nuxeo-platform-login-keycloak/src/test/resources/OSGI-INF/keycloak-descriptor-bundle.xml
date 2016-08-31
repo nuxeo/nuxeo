@@ -11,7 +11,8 @@
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="authenticators">
-    <authenticationPlugin name="KEYCLOAK_AUTH">
+    <authenticationPlugin name="KEYCLOAK_AUTH"
+      class="org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakAuthenticationPlugin">
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <parameters>
         <parameter name="keycloakConfigFile">keycloak1.json</parameter>

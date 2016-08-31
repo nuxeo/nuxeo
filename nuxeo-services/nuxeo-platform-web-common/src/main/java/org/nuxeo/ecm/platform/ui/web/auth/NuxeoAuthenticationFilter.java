@@ -123,8 +123,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
 
-    public static final String DEFAULT_START_PAGE = "nxstartup.faces";
-
     /**
      * LoginContext domain name in use by default in Nuxeo.
      */
@@ -330,7 +328,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         String deputyLogin = (String) httpRequest.getAttribute(SWITCH_USER_KEY);
         String targetPageAfterSwitch = (String) httpRequest.getAttribute(PAGE_AFTER_SWITCH);
         if (targetPageAfterSwitch == null) {
-            targetPageAfterSwitch = DEFAULT_START_PAGE;
+            targetPageAfterSwitch = LoginScreenHelper.getStartupPagePath();
         }
 
         CachableUserIdentificationInfo cachableUserIdent = retrieveIdentityFromCache(httpRequest);
@@ -708,14 +706,14 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         // add a flag to tell that the Session looks like having timed out
-        if (isTimeout && !requestPage.equals(DEFAULT_START_PAGE)) {
+        if (isTimeout && !requestPage.equals(LoginScreenHelper.getStartupPagePath())) {
             session.setAttribute(SESSION_TIMEOUT, Boolean.TRUE);
         } else {
             session.removeAttribute(SESSION_TIMEOUT);
         }
 
         // avoid redirect if not useful
-        if (requestPage.startsWith(DEFAULT_START_PAGE)) {
+        if (requestPage.startsWith(LoginScreenHelper.getStartupPagePath())) {
             return true;
         }
 
@@ -859,7 +857,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (!redirected && !XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
             String baseURL = service.getBaseURL(request);
             try {
-                String url = baseURL + DEFAULT_START_PAGE;
+                String url = baseURL + LoginScreenHelper.getStartupPagePath();
                 url = URIUtils.addParametersToURIQuery(url, parameters);
                 ((HttpServletResponse) response).sendRedirect(url);
                 redirected = true;

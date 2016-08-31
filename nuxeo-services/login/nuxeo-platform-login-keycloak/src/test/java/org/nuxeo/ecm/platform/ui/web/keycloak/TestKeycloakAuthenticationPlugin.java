@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.usermapper" })
+@Deploy({ "org.nuxeo.usermapper", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.login.keycloak.test:OSGI-INF/keycloak-descriptor-bundle.xml" })
 public class TestKeycloakAuthenticationPlugin {
 
@@ -178,7 +178,7 @@ public class TestKeycloakAuthenticationPlugin {
         assertEquals(true, result);
 
         Mockito.verify(responseMock).sendRedirect(
-                "https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=https://example.com:443/foo/nxstartup.faces");
+                "https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=https://example.com:443/foo/home.html");
     }
 
     private KeycloakAuthenticationPlugin initPlugin(KeycloakAuthenticationPlugin keycloakAuthenticationPlugin) {

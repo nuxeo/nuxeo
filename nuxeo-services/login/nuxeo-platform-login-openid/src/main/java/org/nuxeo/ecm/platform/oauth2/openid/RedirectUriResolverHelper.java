@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.oauth2.openid;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
@@ -40,8 +41,8 @@ public class RedirectUriResolverHelper implements RedirectUriResolver {
         // TODO - Use the requestedUrl for providers with support for wildcards
         // String requestedUrl = request.getParameter(NXAuthConstants.REQUESTED_URL);
         if (redirectUri == null) {
-            redirectUri = VirtualHostHelper.getBaseURL(request) + "nxstartup.faces?" + "" + "provider="
-                    + openIDConnectProvider.oauth2Provider.getServiceName() + "&forceAnonymousLogin=true";
+            redirectUri = VirtualHostHelper.getBaseURL(request) + LoginScreenHelper.getStartupPagePath() + "?" + ""
+                    + "provider=" + openIDConnectProvider.oauth2Provider.getServiceName() + "&forceAnonymousLogin=true";
         }
         return redirectUri;
     }

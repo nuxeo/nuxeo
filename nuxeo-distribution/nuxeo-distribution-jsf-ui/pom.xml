@@ -17,14 +17,6 @@
       <artifactId>nuxeo-distribution-server</artifactId>
       <type>pom</type>
     </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

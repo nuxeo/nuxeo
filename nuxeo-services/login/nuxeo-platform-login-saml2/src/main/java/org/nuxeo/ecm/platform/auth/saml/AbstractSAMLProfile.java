@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.auth.saml;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.opensaml.Configuration;
 import org.opensaml.common.SAMLException;
@@ -237,6 +237,6 @@ public abstract class AbstractSAMLProfile {
     }
 
     protected String getStartPageURL(ServletRequest request) {
-        return getBaseURL(request) + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        return getBaseURL(request) + LoginScreenHelper.getStartupPagePath();
     }
 }

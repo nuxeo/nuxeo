@@ -35,6 +35,16 @@
           <description>YYYYY</description>
         </loginProvider>
       </loginProviders>
+
+      <startupPages>
+        <startupPage id="jsf" priority="10">
+          <path>nxstartup.faces</path>
+        </startupPage>
+        <startupPage id="other" priority="5">
+          <path>other.html</path>
+        </startupPage>
+      </startupPages>
+
     </loginScreenConfig>
 
   </extension>

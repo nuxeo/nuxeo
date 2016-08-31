@@ -39,6 +39,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -139,8 +140,8 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
             session = httpRequest.getSession(true);
         }
         if (session != null && !isStartPageValid) {
-            session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY, NuxeoAuthenticationFilter.DEFAULT_START_PAGE
-                    + "?loginRedirection=true");
+            session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY,
+                    LoginScreenHelper.getStartupPagePath() + "?loginRedirection=true");
         }
     }
 

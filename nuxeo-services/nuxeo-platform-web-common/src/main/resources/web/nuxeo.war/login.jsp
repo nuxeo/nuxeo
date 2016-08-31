@@ -6,7 +6,7 @@
 <%@ page import="org.joda.time.DateTime"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants"%>
-<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
@@ -29,7 +29,7 @@ String context = request.getContextPath();
 
 HttpSession httpSession = request.getSession(false);
 if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)!=null) {
-  response.sendRedirect(context + "/" + NuxeoAuthenticationFilter.DEFAULT_START_PAGE);
+  response.sendRedirect(context + "/" + LoginScreenHelper.getStartupPagePath());
 }
 
 // Read Seam locale cookie
@@ -343,7 +343,7 @@ form > * {
   <section>
     <div class="main">
       <%@ include file="login_welcome.jsp" %>
-      <form method="post" action="nxstartup.faces" autocomplete="<%= fieldAutocomplete %>">
+      <form method="post" action="startup" autocomplete="<%= fieldAutocomplete %>">
         <!-- To prevent caching -->
         <%
           response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
@@ -419,7 +419,7 @@ form > * {
     <% if (showNews && !isTesting) { %>
       <iframe id="news" class="news-container" style="visibility:hidden"
         onload="javascript:this.style.visibility='visible';"
-        src="#" data-src="<%=iframeUrl%>"></iframe>
+        data-src="<%=iframeUrl%>"></iframe>
     <% } %>
     </div>
   </section>

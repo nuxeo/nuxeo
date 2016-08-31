@@ -90,6 +90,12 @@
     </filter-mapping>
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/startup</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/nxfile/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
@@ -177,6 +183,17 @@
 
   <extension target="web#SERVLET">
     <servlet>
+      <servlet-name>Nuxeo Startup Page</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.ui.web.auth.StartupPageServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Startup Page</servlet-name>
+      <url-pattern>/startup</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
       <servlet-name>Nuxeo Downloader</servlet-name>
       <servlet-class>
         org.nuxeo.ecm.platform.ui.web.download.DownloadServlet
@@ -246,5 +263,12 @@
       <location>/page_not_found.jsp</location>
     </error-page>
   </extension>
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
 </fragment>
 

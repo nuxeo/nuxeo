@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.auth.saml.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.opensaml.saml2.metadata.EntityDescriptor;
 import org.opensaml.xml.Configuration;
@@ -49,7 +49,7 @@ public class MetadataServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String baseURL = VirtualHostHelper.getBaseURL(request);
-        baseURL += (baseURL.endsWith("/") ? "" : "/") + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+        baseURL += (baseURL.endsWith("/") ? "" : "/") + LoginScreenHelper.getStartupPagePath();
 
         EntityDescriptor descriptor = SAMLConfiguration.getEntityDescriptor(baseURL);
 

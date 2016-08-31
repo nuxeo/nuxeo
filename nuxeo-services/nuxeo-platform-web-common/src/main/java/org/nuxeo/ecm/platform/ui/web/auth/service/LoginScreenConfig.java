@@ -20,16 +20,18 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -43,6 +45,12 @@ import org.nuxeo.runtime.api.Framework;
 public class LoginScreenConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * @since 8.4
+     */
+    @XNodeMap(value = "startupPages/startupPage", key = "@id", type = HashMap.class, componentType = LoginStartupPage.class)
+    protected Map<String, LoginStartupPage> startupPages = new HashMap<>();
 
     @XNodeList(value = "loginProviders/loginProvider", type = ArrayList.class, componentType = LoginProviderLink.class)
     protected List<LoginProviderLink> providers;
@@ -164,6 +172,10 @@ public class LoginScreenConfig implements Serializable {
             }
             providers.add(newProvider);
         }
+    }
+
+    public Map<String, LoginStartupPage> getStartupPages() {
+        return startupPages;
     }
 
     public String getHeaderStyle() {
@@ -369,6 +381,18 @@ public class LoginScreenConfig implements Serializable {
                 }
             }
         }
+
+        if (startupPages == null) {
+            startupPages = newConfig.startupPages;
+        } else if (newConfig.startupPages != null && !newConfig.startupPages.isEmpty()) {
+            for (Map.Entry<String, LoginStartupPage> startupPage : newConfig.startupPages.entrySet()) {
+                if (startupPages.containsKey(startupPage.getKey())) {
+                    startupPages.get(startupPage.getKey()).merge(startupPage.getValue());
+                } else {
+                    startupPages.put(startupPage.getKey(), startupPage.getValue());
+                }
+            }
+        }
     }
 
     /**
@@ -396,6 +420,12 @@ public class LoginScreenConfig implements Serializable {
             clone.providers = new ArrayList<LoginProviderLink>();
             for (LoginProviderLink l : providers) {
                 clone.providers.add(l.clone());
+            }
+        }
+        if (startupPages != null) {
+            clone.startupPages = new HashMap<String, LoginStartupPage>();
+            for (Map.Entry<String, LoginStartupPage> startupPage : startupPages.entrySet()) {
+                clone.startupPages.put(startupPage.getKey(), startupPage.getValue().clone());
             }
         }
         clone.removeNews = removeNews;

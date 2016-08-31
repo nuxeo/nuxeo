@@ -100,7 +100,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
             try {
                 if (cleartrustLoginUrl == null || "".equals(cleartrustLoginUrl)) {
                     // loginUrl = baseURL
-                    // + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+                    // + LoginScreenHelper.getStartupPagePath();
                     loginUrl = baseURL + "login.jsp";
                 }
                 log.debug("Redirecting to loginUrl: " + loginUrl);

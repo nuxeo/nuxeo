@@ -27,7 +27,7 @@ import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.NodesRegistrationManagement;
 import org.keycloak.adapters.tomcat.CatalinaHttpFacade;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 
 /**
  * @since 7.4
@@ -88,6 +88,6 @@ public class KeycloakAuthenticatorProvider {
         int serverPort = request.getServerPort();
         String contextPath = request.getContextPath();
         return scheme + "://" + serverName + ":" + serverPort + contextPath + "/"
-                + NuxeoAuthenticationFilter.DEFAULT_START_PAGE;
+                + LoginScreenHelper.getStartupPagePath();
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.login.startup.page.jsf.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="loginScreen">
+    <loginScreenConfig>
+      <startupPages>
+        <startupPage id="jsf" priority="10">
+          <path>nxstartup.faces</path>
+        </startupPage>
+      </startupPages>
+    </loginScreenConfig>
+  </extension>
+
+</component>

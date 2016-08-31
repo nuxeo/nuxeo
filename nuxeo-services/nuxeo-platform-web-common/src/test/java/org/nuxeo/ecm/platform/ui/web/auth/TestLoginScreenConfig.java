@@ -31,6 +31,7 @@ import static org.nuxeo.common.Environment.DISTRIBUTION_VERSION;
 import static org.nuxeo.common.Environment.PRODUCT_VERSION;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
+import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -91,6 +93,21 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         LoginVideo loginVideo = config.getVideos().get(0);
         assertTrue(isNotBlank(loginVideo.getType()));
         assertTrue(isNotBlank(loginVideo.getSrc()));
+
+        Map<String, LoginStartupPage> startupPages = config.getStartupPages();
+        assertNotNull(startupPages);
+        assertEquals(2, startupPages.size());
+        LoginStartupPage jsf = startupPages.get("jsf");
+        assertNotNull(jsf);
+        assertEquals(10, jsf.getPriority());
+        assertEquals("nxstartup.faces", jsf.getPath());
+        LoginStartupPage other = startupPages.get("other");
+        assertNotNull(other);
+        assertEquals(5, other.getPriority());
+        assertEquals("other.html", other.getPath());
+
+        // Highest priority wins
+        assertEquals("nxstartup.faces", LoginScreenHelper.getStartupPagePath());
     }
 
     @Test
@@ -142,6 +159,25 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         assertTrue(config.getVideoMuted());
         assertFalse(config.getVideoLoop());
+
+        Map<String, LoginStartupPage> startupPages = config.getStartupPages();
+        assertNotNull(startupPages);
+        assertEquals(3, startupPages.size());
+        LoginStartupPage jsf = startupPages.get("jsf");
+        assertNotNull(jsf);
+        assertEquals(10, jsf.getPriority());
+        assertEquals("nxstartup.faces", jsf.getPath());
+        LoginStartupPage other = startupPages.get("other");
+        assertNotNull(other);
+        assertEquals(8, other.getPriority());
+        assertEquals("merged.html", other.getPath());
+        LoginStartupPage web = startupPages.get("web");
+        assertNotNull(web);
+        assertEquals(100, web.getPriority());
+        assertEquals("ui/", web.getPath());
+
+        // Highest priority wins
+        assertEquals("ui/", LoginScreenHelper.getStartupPagePath());
     }
 
     @Test
@@ -183,6 +219,10 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertEquals("new", config.getProvider("google").getLink(null, null));
         assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
 
+        LoginStartupPage defaultStartupPage = LoginScreenHelper.getDefaultStartupPage(config);
+        assertNotNull(defaultStartupPage);
+        assertEquals(10, defaultStartupPage.getPriority());
+        assertEquals("nxstartup.faces", defaultStartupPage.getPath());
     }
 
     @Test

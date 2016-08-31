@@ -19,6 +19,16 @@
         <loginProvider name="facebook" remove="true">
         </loginProvider>
       </loginProviders>
+
+      <startupPages>
+        <startupPage id="other" priority="8">
+          <path>merged.html</path>
+        </startupPage>
+        <startupPage id="web" priority="100">
+          <path>ui/</path>
+        </startupPage>
+      </startupPages>
+
     </loginScreenConfig>
 
   </extension>
