@@ -101,7 +101,9 @@
 
     <directory name="subject">
       <schema>vocabulary</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -114,7 +116,9 @@
 
     <directory name="search_operators">
       <schema>vocabulary</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>search_operators</table>
       <cacheTimeout>3600</cacheTimeout>
@@ -127,7 +131,9 @@
 
     <directory name="documentsLists">
       <schema>documentsLists</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>documentsLists</table>
       <idField>id</idField>
@@ -167,7 +173,9 @@
     <!-- @since 5.6, deprecated since 8.1, see NXP-18728 -->
     <directory name="locale">
       <schema>vocabulary</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>

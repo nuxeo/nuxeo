@@ -5,7 +5,9 @@
     point="directories">
     <directory name="digestauth">
       <schema>digestauth</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <table>digestauth</table>
       <autoincrementIdField>false</autoincrementIdField>
       <dataSource>java:/nxsqldirectory</dataSource>

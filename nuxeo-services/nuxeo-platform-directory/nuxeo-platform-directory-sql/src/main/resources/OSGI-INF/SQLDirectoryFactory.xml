@@ -18,7 +18,9 @@
       <code>
         <directory name="userDirectory">
           <schema>vocabulary</schema>
-          <display>false</display>
+          <types>
+            <type>system</type>
+          </types>
           <dataSource>java:/nxsqldirectory</dataSource>
           <table>t</table>
           <nativeCase>false</nativeCase>
@@ -54,8 +56,7 @@
           entries.
         </li>
         <li>
-          display - a boolean value to make the directory visible
-          (i.e. exposed by the rest API). Default value is true.
+          types - list of type to categorise directories.
         </li>
         <li>
           dataSource - the dataSource name, as registered in the

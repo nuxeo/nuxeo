@@ -121,8 +121,8 @@ public class BaseDirectoryDescriptor implements Cloneable {
     /**
      * @since 8.4
      */
-    @XNode("display")
-    public Boolean display = true;
+    @XNodeList(value = "types/type", type = String[].class, componentType = String.class)
+    public String[] types;
 
     /**
      * @since 8.4
@@ -229,8 +229,8 @@ public class BaseDirectoryDescriptor implements Cloneable {
         if (other.substringMatchType != null) {
             substringMatchType = other.substringMatchType;
         }
-        if (other.display != null) {
-            display = other.display;
+        if (other.types != null) {
+            types = other.types;
         }
         if (other.deleteConstraints != null) {
             deleteConstraints = other.deleteConstraints;

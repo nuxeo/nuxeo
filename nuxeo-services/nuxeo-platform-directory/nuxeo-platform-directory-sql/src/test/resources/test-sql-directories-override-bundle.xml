@@ -14,7 +14,9 @@
 
     <directory name="userDirectory">
 
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <createTablePolicy>never</createTablePolicy>
       <querySizeLimit>123</querySizeLimit>
       <autoincrementIdField>true</autoincrementIdField>

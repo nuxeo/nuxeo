@@ -43,6 +43,9 @@ public class DirectoryJsonWriter extends ExtensibleEntityJsonWriter<Directory> {
     @Override
     protected void writeEntityBody(Directory entity, JsonGenerator jg) throws IOException {
         jg.writeStringField("name", entity.getName());
+        jg.writeStringField("schema", entity.getSchema());
+        jg.writeStringField("idField", entity.getIdField());
+        jg.writeStringField("parent", entity.getParentDirectory());
     }
 
 }

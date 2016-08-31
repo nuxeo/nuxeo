@@ -7,7 +7,9 @@
     <directory name="authTokens">
       <dataSource>java:/nxsqldirectory</dataSource>
       <schema>authtoken</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <table>auth_tokens</table>
       <idField>token</idField>
       <autoincrementIdField>false</autoincrementIdField>

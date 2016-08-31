@@ -9,7 +9,9 @@
 
     <directory name="aceinfo">
       <schema>aceinfo</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>

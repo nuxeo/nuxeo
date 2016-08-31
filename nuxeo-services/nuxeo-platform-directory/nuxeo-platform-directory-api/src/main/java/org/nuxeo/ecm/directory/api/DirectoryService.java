@@ -24,8 +24,8 @@ package org.nuxeo.ecm.directory.api;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 
@@ -33,6 +33,8 @@ import org.nuxeo.ecm.directory.Session;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public interface DirectoryService {
+
+    public final static String SYSTEM_DIRECTORY_TYPE = "system";
 
     /**
      * Gets the directory ids.
@@ -150,11 +152,5 @@ public interface DirectoryService {
      * INTERNAL unregisters a directory descriptor.
      */
     void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
-
-    /**
-     * @param uiDirectory if true, returns ui directory, else non ui directory
-     * @since 8.4
-     */
-    List<Directory> getDirectories(boolean uiDirectory);
 
 }

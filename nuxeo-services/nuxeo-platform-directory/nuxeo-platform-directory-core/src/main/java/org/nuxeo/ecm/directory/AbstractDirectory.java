@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.directory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,13 +56,13 @@ public abstract class AbstractDirectory implements Directory {
 
     protected final Counter sessionMaxCount;
 
-    private Boolean display = true;
+    private List<String> types = new ArrayList<String>();
 
     protected AbstractDirectory(BaseDirectoryDescriptor descriptor) {
         this.descriptor = descriptor;
         // is the directory visible in the ui
-        if (Boolean.FALSE.equals(descriptor.display)) {
-            this.display = descriptor.display;
+        if (descriptor.types != null) {
+            this.types = Arrays.asList(descriptor.types);
         }
         if (!descriptor.template && doSanityChecks()) {
             if (StringUtils.isEmpty(descriptor.idField)) {
@@ -233,8 +234,8 @@ public abstract class AbstractDirectory implements Directory {
      * since @8.4
      */
     @Override
-    public boolean isDisplay() {
-        return display;
+    public List<String> getTypes() {
+        return types;
     }
 
     /**

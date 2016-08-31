@@ -16,7 +16,9 @@
     <directory name="userDirectory">
       <server>default</server>
       <schema>user</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <!-- change the id field mapping -->
       <idField>email</idField>
       <passwordField>password</passwordField>

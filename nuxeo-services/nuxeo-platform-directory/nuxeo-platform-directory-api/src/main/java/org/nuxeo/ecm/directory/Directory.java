@@ -148,7 +148,7 @@ public interface Directory {
     /**
      * @since 8.4
      */
-    boolean isDisplay();
+    List<String> getTypes();
 
     /**
      * @since 8.4

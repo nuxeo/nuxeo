@@ -17,7 +17,9 @@
     <directory name="userDirectory_tenanta">
 
       <schema>user</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>
@@ -39,7 +41,9 @@
     <directory name="userDirectory_tenantb">
 
       <schema>user</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>users_tenanta</table>
       <idField>username</idField>
@@ -60,7 +64,9 @@
     <directory name="groupDirectory_tenanta">
 
       <schema>group</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>groups1</table>
       <idField>groupname</idField>
@@ -82,7 +88,9 @@
     <directory name="groupDirectory_tenantb">
 
       <schema>group</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>groups2</table>
       <idField>groupname</idField>
@@ -110,7 +118,9 @@
 
     <directory name="userDirectory">
       <schema>user</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <idField>username</idField>
       <passwordField>password</passwordField>
 
@@ -125,7 +135,9 @@
     <directory name="groupDirectory">
 
       <schema>group</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <idField>groupname</idField>
       <source name="source1">
         <subDirectory name="groupDirectory_tenanta" />

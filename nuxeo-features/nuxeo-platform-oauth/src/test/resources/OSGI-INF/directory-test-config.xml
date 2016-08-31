@@ -9,7 +9,9 @@
 
     <directory name="oauthConsumers">
       <schema>oauthConsumer</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -29,7 +31,9 @@
 
     <directory name="oauthServiceProviders">
       <schema>oauthServiceProvider</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -50,7 +54,9 @@
 
     <directory name="oauthTokens">
       <schema>oauthToken</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -70,7 +76,9 @@
 
     <directory name="oauth2ServiceProviders">
       <schema>oauth2ServiceProvider</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -91,7 +99,9 @@
 
     <directory name="oauth2Tokens">
       <schema>oauth2Token</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -111,7 +121,9 @@
 
     <directory name="oauth2Clients">
       <schema>oauth2Client</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
