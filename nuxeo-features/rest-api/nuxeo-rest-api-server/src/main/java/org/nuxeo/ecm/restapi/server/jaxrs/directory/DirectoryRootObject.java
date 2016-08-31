@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,12 +45,29 @@ public class DirectoryRootObject extends DefaultObject {
     }
 
     /**
+     * Get non system directory list.
+     *
+     * @param types if not empty, returns only the directories having at least one of the requested type
+     * @return the list of directories that are not system directories
      * @since 8.4
      */
     @GET
-    public List<Directory> getDirectoryNames(@QueryParam("uiDirectory") Boolean uiDirectory) {
+    public List<Directory> getDirectoryNames(@QueryParam("types") List<String> types) {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        return directoryService.getDirectories(uiDirectory != null ? uiDirectory : true);
+        List<Directory> result = new ArrayList<Directory>();
+        for (Directory dir : directoryService.getDirectories()) {
+            if (dir.getTypes().contains(DirectoryService.SYSTEM_DIRECTORY_TYPE)) {
+                continue;
+            } else if (types == null || types.isEmpty()) {
+                result.add(dir);
+            } else {
+                List<String> intersect = types.stream().filter(dir.getTypes()::contains).collect(Collectors.toList());
+                if (!intersect.isEmpty()) {
+                    result.add(dir);
+                }
+            }
+        }
+        return result;
     }
 
 }

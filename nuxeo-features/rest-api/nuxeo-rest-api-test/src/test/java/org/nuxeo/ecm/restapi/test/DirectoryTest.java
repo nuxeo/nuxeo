@@ -125,16 +125,39 @@ public class DirectoryTest extends BaseTest {
         // When I call the Rest endpoint
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory");
 
+        // It should not return system directories
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(2, node.get("entries").size());
         assertEquals("continent", node.get("entries").get(0).get("name").getTextValue());
         assertEquals("country", node.get("entries").get(1).get("name").getTextValue());
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.put("uiDirectory", Arrays.asList(new String[] { "false" }));
-        node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
 
+        // It should not retrieve directory with unknown type
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("types", Arrays.asList(new String[] { "notExistingType" }));
+        node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
         assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
-        assertEquals(3, node.get("entries").size());
+        assertEquals(0, node.get("entries").size());
+
+        // It should not retrieve system directories
+        queryParams = new MultivaluedMapImpl();
+        queryParams.put("types", Arrays.asList(new String[] { DirectoryService.SYSTEM_DIRECTORY_TYPE }));
+        node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(0, node.get("entries").size());
+
+        // It should be able to retrieve a single type
+        queryParams = new MultivaluedMapImpl();
+        queryParams.put("types", Arrays.asList(new String[] { "toto" }));
+        node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(1, node.get("entries").size());
+
+        // It should be able to retrieve many types
+        queryParams = new MultivaluedMapImpl();
+        queryParams.put("types", Arrays.asList(new String[] { "toto", "pouet" }));
+        node = getResponseAsJson(RequestType.GET, "/directory", queryParams);
+        assertEquals(DirectoryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(2, node.get("entries").size());
     }
 
     /**

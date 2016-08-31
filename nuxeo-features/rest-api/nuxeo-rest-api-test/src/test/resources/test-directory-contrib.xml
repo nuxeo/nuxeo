@@ -8,7 +8,10 @@
 
     <directory name="testdir">
       <schema>vocabulary</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+        <type>tata</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -21,6 +24,9 @@
 
     <directory name="country">
       <schema>xvocabulary</schema>
+      <types>
+        <type>toto</type>
+      </types>
       <parentDirectory>continent</parentDirectory>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>country</table>
@@ -32,6 +38,10 @@
 
     <directory name="continent">
       <schema>vocabulary</schema>
+      <types>
+        <type>pouet</type>
+        <type>poum</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>continent</table>
       <idField>id</idField>
