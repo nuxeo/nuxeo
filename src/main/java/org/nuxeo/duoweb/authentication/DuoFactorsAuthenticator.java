@@ -19,6 +19,9 @@
 
 package org.nuxeo.duoweb.authentication;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
@@ -51,8 +54,6 @@ import org.nuxeo.runtime.api.Framework;
 import com.duosecurity.DuoWeb;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 
 /**
  * Authentication filter handles two factors authentication via Duo
