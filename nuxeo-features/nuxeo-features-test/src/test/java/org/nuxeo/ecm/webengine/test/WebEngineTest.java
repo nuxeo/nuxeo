@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -95,6 +96,7 @@ public class WebEngineTest {
     }
 
     @Test
+    @Ignore("NXP-20332")
     public void iCanBrowseTheRepository() {
         Assertions.assertThat(home.hasModule("Admin")).isTrue();
         AdminModulePage admin = home.getModulePage("Admin", AdminModulePage.class);
@@ -103,6 +105,7 @@ public class WebEngineTest {
     }
 
     @Test
+    @Ignore("NXP-20332")
     public void iCanDownloadAttachment() throws IOException {
         AdminModulePage admin = home.getModulePage("Admin", AdminModulePage.class);
         DocumentPage file = admin.getDocumentPage("default-domain/workspaces/test/file");
