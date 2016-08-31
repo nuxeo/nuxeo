@@ -40,7 +40,9 @@
 
     <directory name="tenants">
       <schema>tenant</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
@@ -52,7 +54,9 @@
     <directory name="userDirectory">
 
       <schema>user</schema>
-      <display>false</display>
+      <types>
+        <type>system</type>
+      </types>
       <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>
