@@ -169,6 +169,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsIterableQueryResultImpl;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
@@ -1597,8 +1598,10 @@ public class NuxeoCmisService extends AbstractCmisService
             try {
                 if (repository.useElasticsearch()) {
                     ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
-                    NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql).limit(-1);
-                    it = ess.queryAndAggregate(qb).getRows();
+                    NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql)
+                                                                       .limit(1000)
+                                                                       .onlyElasticsearchResponse();
+                    it = new EsIterableQueryResultImpl(ess, ess.scroll(qb, 1000));
                 } else {
                     // distinct documents
                     it = coreSession.queryAndFetch(nxql, NXQL.NXQL, true, new Object[0]);
