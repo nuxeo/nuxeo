@@ -1140,6 +1140,7 @@
       iconPath="image.gif">
       <mimetypes>
         <mimetype>image/x-canon-cr2</mimetype>
+        <mimetype>image/CR2</mimetype>
       </mimetypes>
       <extensions>
         <extension>cr2</extension>
@@ -1160,6 +1161,7 @@
       iconPath="image.gif">
       <mimetypes>
         <mimetype>image/x-nikon-nef</mimetype>
+        <mimetype>image/NEF</mimetype>
       </mimetypes>
       <extensions>
         <extension>nef</extension>
