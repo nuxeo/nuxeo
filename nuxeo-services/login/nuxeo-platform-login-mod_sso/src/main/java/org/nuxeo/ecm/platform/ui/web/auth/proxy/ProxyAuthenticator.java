@@ -66,14 +66,17 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
 
     private Pattern usernamePartRemovalPattern;
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return false;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
         String userName = httpRequest.getHeader(userIdHeaderName);
@@ -98,8 +101,8 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
                 queryFilters.put(credentialFieldName, userName);
                 DocumentModelList result = userDir.query(queryFilters);
                 if (result.isEmpty()) {
-                    log.error(String.format("could not find any user with %s='%s' in directory %s",
-                            credentialFieldName, userName, directoryName));
+                    log.error(String.format("could not find any user with %s='%s' in directory %s", credentialFieldName,
+                            userName, directoryName));
                     return null;
                 }
                 if (result.size() > 1) {
@@ -145,6 +148,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         if (parameters.containsKey(HEADER_NAME_KEY)) {
             userIdHeaderName = parameters.get(HEADER_NAME_KEY);
@@ -159,6 +163,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return false;
     }

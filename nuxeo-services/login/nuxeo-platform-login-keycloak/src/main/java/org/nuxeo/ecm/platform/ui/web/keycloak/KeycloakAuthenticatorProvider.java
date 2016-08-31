@@ -47,7 +47,8 @@ public class KeycloakAuthenticatorProvider {
 
     public KeycloakRequestAuthenticator provide(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) {
-        DeploymentResult deploymentResult = new DeploymentResult(httpServletRequest, httpServletResponse).invokeOn(deploymentContext);
+        DeploymentResult deploymentResult = new DeploymentResult(httpServletRequest, httpServletResponse).invokeOn(
+                deploymentContext);
 
         if (!deploymentResult.isOk()) {
             return null;
@@ -65,7 +66,8 @@ public class KeycloakAuthenticatorProvider {
     }
 
     public String logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-        DeploymentResult deploymentResult = new DeploymentResult(httpServletRequest, httpServletResponse).invokeOn(deploymentContext);
+        DeploymentResult deploymentResult = new DeploymentResult(httpServletRequest, httpServletResponse).invokeOn(
+                deploymentContext);
 
         if (!deploymentResult.isOk()) {
             return null;

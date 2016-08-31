@@ -53,6 +53,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
     private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

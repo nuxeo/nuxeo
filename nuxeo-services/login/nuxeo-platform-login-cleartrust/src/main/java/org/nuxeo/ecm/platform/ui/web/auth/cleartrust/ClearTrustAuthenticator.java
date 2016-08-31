@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.ui.web.auth.cleartrust;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +55,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
 
     private static final Log log = LogFactory.getLog(ClearTrustAuthenticator.class);
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         // There isn't any URL that should not need authentication
         return null;
@@ -67,6 +67,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
      *
      * @return true if AuthFilter must stop execution (ie: login prompt generated a redirect), false otherwise
      */
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest request, HttpServletResponse response, String baseURL) {
         log.debug("handleLoginPrompt ...");
         log.debug("handleLoginPrompt requestURL = " + request.getRequestURL());
@@ -115,6 +116,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         return false;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest request, HttpServletResponse httpResponse) {
         log.debug("handleRetrieveIdentity ...");
         Cookie[] cookies = getCookies(request);
@@ -130,6 +132,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         return uui;
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest request) {
         // Returning true means that the handleLoginPrompt method will be called
         return true;
@@ -138,6 +141,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
     /**
      * @return true if there is a redirection
      */
+    @Override
     public Boolean handleLogout(HttpServletRequest request, HttpServletResponse response) {
         log.debug("handleLogout ...");
         expireCookie(CLEARTRUST_COOKIE_SESSION, request, response);
@@ -210,6 +214,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         }
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         log.debug("initPlugin v 1.1");
         if (parameters.containsKey(ClearTrustParameters.COOKIE_DOMAIN)) {
