@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class JVMVersion implements Comparable<JVMVersion> {
     public static JVMVersion parsePreJdk9(String version) throws ParseException {
         Matcher matcher = PreJDK9Pattern.matcher(version);
         if (!matcher.matches()) {
-            throw new ParseException("Cannot parse " + version + " as a pre jdk9 jvm version", -1);
+            throw new ParseException("Cannot parse " + version + " as a pre JVM 9 version", -1);
         }
         final int groupCount = matcher.groupCount();
         String major = matcher.group(1);
