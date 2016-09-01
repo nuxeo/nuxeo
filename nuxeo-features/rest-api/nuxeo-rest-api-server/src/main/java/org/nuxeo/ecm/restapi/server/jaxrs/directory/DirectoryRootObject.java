@@ -20,7 +20,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -61,8 +60,7 @@ public class DirectoryRootObject extends DefaultObject {
             } else if (types == null || types.isEmpty()) {
                 result.add(dir);
             } else {
-                List<String> intersect = types.stream().filter(dir.getTypes()::contains).collect(Collectors.toList());
-                if (!intersect.isEmpty()) {
+                if (types.stream().filter(dir.getTypes()::contains).findFirst().isPresent()) {
                     result.add(dir);
                 }
             }
