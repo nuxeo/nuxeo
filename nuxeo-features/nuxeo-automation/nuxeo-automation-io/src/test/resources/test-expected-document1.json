@@ -6,6 +6,7 @@
    "type" : "Note",
    "changeToken" : null,
    "isCheckedOut" : true,
+   "isVersion": false,
    "versionLabel" : "0.0",
    "parentRef" : "the-parent-id",
    "state" : "project",
