@@ -50,7 +50,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        log.debug("Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+        log.debug(
+                "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
     }
 
     @Override
@@ -88,7 +89,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     private void testAddress(String bindAddress, String expectedLoopback) throws ConfigurationException {
         configGenerator.setProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS, bindAddress);
-        log.debug("Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+        log.debug(
+                "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
         configGenerator.init(true);
         assertEquals("Bad loop back URL", expectedLoopback,
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
@@ -115,9 +117,11 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     /**
-     * According to {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}:<br>
-     * <q>
-     * {@link ConfigurationGenerator#PARAM_WIZARD_DONE}, {@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
+     * According to
+     * {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}:
+     * <br>
+     * <q>{@link ConfigurationGenerator#PARAM_WIZARD_DONE},
+     * {@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
      * {@link ConfigurationGenerator#PARAM_FORCE_GENERATION} cannot be unset</q>
      *
      * <pre>
@@ -191,7 +195,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     }
 
     /**
-     * Test on property "sampled" in nuxeo.conf: already present and not commented
+     * Test on property "sampled" in nuxeo.conf: already present and not
+     * commented
      *
      * <pre>
      * test.sampled.prop2 = someValue
@@ -217,8 +222,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testAddRmTemplate() throws ConfigurationException {
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         assertEquals("Error calculating db template", "default",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         configGenerator.addTemplate("newTemplate");
@@ -260,8 +265,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testChangeDatabase() throws Exception {
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql",
                 originalTemplates.replaceFirst("default", "postgresql"), configGenerator.getUserTemplates());
@@ -270,8 +275,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testChangeDatabaseFromCustom() throws Exception {
         configGenerator.changeTemplates("testinclude2");
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME);
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
                 configGenerator.getUserTemplates());
@@ -290,8 +295,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testChangeNoSqlDatabase() throws Exception {
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("mongodb");
         assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
                 configGenerator.getUserTemplates());
@@ -300,8 +305,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     @Test
     public void testChangeNoSqlDatabaseFromCustom() throws Exception {
         configGenerator.changeTemplates("testinclude2");
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("mongodb");
         assertEquals("Failed to set NoSQL database to mongodb", originalTemplates.concat(",mongodb"),
                 configGenerator.getUserTemplates());
@@ -322,8 +327,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testChangeMarkLogicDatabase() throws Exception {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("marklogic");
         assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
@@ -334,8 +339,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         configGenerator.changeTemplates("testinclude2");
-        String originalTemplates = configGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        String originalTemplates = configGenerator.getUserConfig()
+                .getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
         configGenerator.changeDBTemplate("marklogic");
         assertEquals("Failed to set NoSQL database to marklogic", originalTemplates.concat(",marklogic"),
                 configGenerator.getUserTemplates());
@@ -362,11 +367,41 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         testCheckJavaVersion(false);
     }
 
-    protected void testCheckJavaVersion(boolean fail) throws ConfigurationException {
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongJavaVersionFail() {
+        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongPreJdk9VersionFail() {
+        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, false);
+    }
+
+    @Test
+    public void testWrongJavaVersionNoFail() {
+        runJVMCheck(false, new Runnable() {
+            @Override
+            public void run() {
+                ConfigurationGenerator.checkJavaVersion("not-a-version", "1.8.0_40", true, true);
+            }
+        });
+    }
+
+    protected void testCheckJavaVersion(boolean fail) {
+        runJVMCheck(fail, new Runnable() {
+
+            @Override
+            public void run() {
+                checkJavaVersions(!fail);
+            }
+        });
+    }
+
+    protected void runJVMCheck(boolean fail, Runnable runnable) {
         String old = System.getProperty(JVMCHECK_PROP);
         try {
             System.setProperty(JVMCHECK_PROP, fail ? JVMCHECK_FAIL : JVMCHECK_NOFAIL);
-            checkJavaVersions(!fail);
+            runnable.run();
         } finally {
             if (old == null) {
                 System.clearProperty(JVMCHECK_PROP);
@@ -376,12 +411,14 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         }
     }
 
-    protected void checkJavaVersions(boolean compliant) throws ConfigurationException {
+    protected void checkJavaVersions(boolean compliant) {
         // ok
         checkJavaVersion(true, "1.8.0_40", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_45", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_101", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_400", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0_72-internal", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0-internal", "1.8.0");
         checkJavaVersion(true, "1.9.0_1", "1.8.0_40");
         // compliant if jvmcheck=nofail
         checkJavaVersion(compliant, "1.7.0_1", "1.8.0_40");

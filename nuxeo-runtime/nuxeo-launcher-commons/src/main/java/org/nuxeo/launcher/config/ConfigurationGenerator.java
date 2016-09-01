@@ -77,6 +77,7 @@ import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
+import org.nuxeo.launcher.config.JVMVersion.UpTo;
 import org.nuxeo.log4j.Log4JHelper;
 
 import freemarker.core.ParseException;
@@ -1342,26 +1343,27 @@ public class ConfigurationGenerator {
      */
     protected static boolean checkJavaVersion(String version, String requiredVersion, boolean allowNoFailFlag,
             boolean warnIfLooseCompliance) {
-        String[] versionSplit = version.split("_");
-        String[] requiredVersionSplit = requiredVersion.split("_");
-        String major = versionSplit[0];
-        String requiredMajor = requiredVersionSplit[0];
-        int minor = Integer.parseInt(versionSplit[1]);
-        int requiredMinor = Integer.parseInt(requiredVersionSplit[1]);
-        boolean sameMajorAndGreaterMinor = major.equals(requiredMajor) && minor >= requiredMinor;
-        if (sameMajorAndGreaterMinor) {
-            return true;
-        }
-        boolean greaterMajor = major.compareTo(requiredMajor) > 0;
-        if (greaterMajor || (allowNoFailFlag
-                && JVMCHECK_NOFAIL.equalsIgnoreCase(System.getProperty(JVMCHECK_PROP, JVMCHECK_FAIL)))) {
-            // greater major version or system property, considered loosely compliant but may warn
-            if (warnIfLooseCompliance) {
-                log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
+        allowNoFailFlag = allowNoFailFlag
+                && JVMCHECK_NOFAIL.equalsIgnoreCase(System.getProperty(JVMCHECK_PROP, JVMCHECK_FAIL));
+        try {
+            JVMVersion required = JVMVersion.parse(requiredVersion);
+            JVMVersion actual = JVMVersion.parse(version);
+            boolean compliant = actual.compareTo(required) >= 0;
+            if (compliant && actual.compareTo(required, UpTo.MAJOR) == 0) {
+                return true;
             }
+            if (!compliant && !allowNoFailFlag) {
+                return false;
+            }
+            log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
             return true;
+        } catch (java.text.ParseException cause) {
+            if (allowNoFailFlag) {
+                log.warn("Cannot check java version", cause);
+                return true;
+            }
+            throw new IllegalArgumentException("Cannot check java version", cause);
         }
-        return false;
     }
 
     /**
