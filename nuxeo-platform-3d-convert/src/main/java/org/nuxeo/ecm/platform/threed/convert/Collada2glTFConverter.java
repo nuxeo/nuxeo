@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.threed.convert;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -45,10 +44,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.nuxeo.ecm.platform.threed.convert.Constants.DAE2GLTF_OUTPUT_PATH_PREFIX;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.DAE2GLTF_PATH_PREFIX;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.INPUT_FILE_PATH_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.OUTPUT_FILE_PATH_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
  * Conversion from Collada to glTF format
@@ -100,8 +96,9 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
                 }
                 return file.getAbsolutePath();
             }).collect(Collectors.toList());
-            String inputFile = filesToDelete.get(0);
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, new File(inputFile));
+            Path inputFile = new Path(filesToDelete.get(0));
+            params.addNamedParameter(INPUT_DIR_PARAMETER, inputFile.removeLastSegments(1).toString());
+            params.addNamedParameter(INPUT_FILE_PARAMETER, inputFile.lastSegment());
             filesToDelete.add(directory.toString());
 
             String baseDir = getTmpDirectory(parameters);
@@ -111,9 +108,8 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
             if (!dirCreated) {
                 throw new ConversionException("Unable to create tmp dir for transformer output: " + outDir);
             }
-            Path outputFile = new Path(outPath.toString()).append(FilenameUtils.getBaseName(inputFile) + ".gltf");
-
-            params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outputFile.toString());
+            params.addNamedParameter(OUT_DIR_PARAMETER, outPath.toString());
+            params.addNamedParameter(OUTPUT_FILE_PARAMETER, inputFile.removeFileExtension().lastSegment() + ".gltf");
 
             ExecResult result = Framework.getService(CommandLineExecutorService.class).execCommand(commandName, params);
             if (!result.isSuccessful()) {
@@ -134,8 +130,8 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
 
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) throws ConversionException {
-        String outputPath = cmdParameters.getParameter(OUTPUT_FILE_PATH_PARAMETER);
-        File outputFile = new File(outputPath);
+        File outputFile = new File(cmdParameters.getParameter(OUT_DIR_PARAMETER) + File.separator
+                + cmdParameters.getParameter(OUTPUT_FILE_PARAMETER));
         List<Blob> blobs = new ArrayList<>();
         blobs.add(new FileBlob(outputFile));
         Map<String, Serializable> properties = new HashMap<>();

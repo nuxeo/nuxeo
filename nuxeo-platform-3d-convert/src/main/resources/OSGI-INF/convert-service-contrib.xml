@@ -7,7 +7,8 @@
             <destinationMimeType>image/png</destinationMimeType>
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
-                <parameter name="script">scripts/pipeline.py</parameter>
+                <parameter name="scriptsDir">scripts</parameter>
+                <parameter name="scriptFile">pipeline.py</parameter>
                 <parameter name="operators">import info render</parameter>
                 <parameter name="dimensions">800x600</parameter>
                 <parameter name="coords">0,0</parameter>
@@ -18,7 +19,8 @@
             <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
-                <parameter name="script">scripts/pipeline.py</parameter>
+                <parameter name="scriptsDir">scripts</parameter>
+                <parameter name="scriptFile">pipeline.py</parameter>
                 <parameter name="operators">import info lod info convert lod info convert lod info convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
                 <parameter name="percPoly">33 11 3</parameter>
@@ -32,7 +34,8 @@
             <destinationMimeType>model/vnd.collada+xml</destinationMimeType>
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
-                <parameter name="script">scripts/pipeline.py</parameter>
+                <parameter name="scriptsDir">scripts</parameter>
+                <parameter name="scriptFile">pipeline.py</parameter>
                 <parameter name="operators">import convert</parameter>
             </parameters>
         </converter>
@@ -41,10 +44,9 @@
             <destinationMimeType>*</destinationMimeType>
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
-                <parameter name="script">scripts/pipeline.py</parameter>
-                <parameter name="operators">
-                    import info render render lod info convert lod info convert lod info convert
-                </parameter>
+                <parameter name="scriptsDir">scripts</parameter>
+                <parameter name="scriptFile">pipeline.py</parameter>
+                <parameter name="operators">import info render render lod info convert lod info convert lod info convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
                 <parameter name="percPoly">33 11 3</parameter>
                 <parameter name="percTex">33 11 3</parameter>

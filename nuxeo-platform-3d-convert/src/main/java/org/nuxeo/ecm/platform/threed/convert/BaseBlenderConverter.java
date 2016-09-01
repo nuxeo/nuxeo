@@ -134,40 +134,39 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         }
     }
 
-    private String copyScript(Path pathDst, Path source) throws IOException {
+    private Path copyScript(Path pathDst, Path source) throws IOException {
         String sourceFile = source.lastSegment();
         // xxx : find a way to check if the correct version is already there.
         File script = new File(pathDst.append(sourceFile).toString());
         InputStream is = getClass().getResourceAsStream("/" + source.toString());
         FileUtils.copyInputStreamToFile(is, script);
-        return script.getAbsolutePath();
+        return new Path(script.getAbsolutePath());
     }
 
     /**
      * Returns the absolute path to the main script (main and pipeline scripts). Copies the script to the filesystem if
      * needed. Copies needed {@code operators} script to the filesystem if missing.
      */
-    protected String getScriptWith(List<String> operators) throws IOException {
+    protected Path getScriptWith(List<String> operators) throws IOException {
         Path dataPath = new Path(Environment.getDefault().getData().getAbsolutePath());
-        String source = initParameters.get(SCRIPT_PARAMETER);
-        String sourceFile = new Path(source).lastSegment();
+        String sourceDir = initParameters.get(SCRIPTS_DIR_PARAMETER);
+        String sourceFile = initParameters.get(SCRIPT_FILE_PARAMETER);
 
         // create scripts directory
         Path scriptsPath = dataPath.append(SCRIPTS_DIRECTORY);
         createPath(scriptsPath);
 
-        // copy script resource
-        String mainScriptPath = copyScript(scriptsPath, new Path(source));
+        copyScript(scriptsPath, new Path(sourceDir).append(sourceFile));
 
         if (operators.isEmpty()) {
-            return mainScriptPath;
+            return scriptsPath;
         }
 
         // create pipeline scripts directory
         Path pipelinePath = scriptsPath.append(SCRIPTS_PIPELINE_DIRECTORY);
         createPath(pipelinePath);
 
-        Path pipelineSourcePath = new Path(source).removeLastSegments(1).append("pipeline");
+        Path pipelineSourcePath = new Path(sourceDir).append("pipeline");
         // copy operators scripts resources
         operators.forEach(operator -> {
             try {
@@ -177,7 +176,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             }
         });
 
-        return mainScriptPath;
+        return scriptsPath;
     }
 
     private List<String> getParams(Map<String, Serializable> inParams, Map<String, String> initParams, String key) {
@@ -208,7 +207,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             params.addNamedParameter(OPERATORS_PARAMETER, operatorsList);
 
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
-            params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
+            Path mainScriptDir = getScriptWith(operatorsList);
+            params.addNamedParameter(SCRIPTS_DIR_PARAMETER, mainScriptDir.toString());
+            params.addNamedParameter(SCRIPT_FILE_PARAMETER, initParameters.get(SCRIPT_FILE_PARAMETER));
 
             // Initialize render id params
             params.addNamedParameter(RENDER_IDS_PARAMETER, getParams(parameters, initParameters, RENDER_IDS_PARAMETER));
@@ -230,7 +231,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder, inDirectory);
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, new File(inputFiles.get(0)));
+            Path mainFile = new Path(inputFiles.get(0));
+            params.addNamedParameter(INPUT_DIR_PARAMETER, mainFile.removeLastSegments(1).toString() );
+            params.addNamedParameter(INPUT_FILE_PARAMETER, mainFile.lastSegment());
 
             // Extra blob parameters
             Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder, parameters);

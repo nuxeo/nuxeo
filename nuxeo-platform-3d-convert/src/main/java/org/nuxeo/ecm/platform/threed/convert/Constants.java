@@ -25,7 +25,9 @@ package org.nuxeo.ecm.platform.threed.convert;
  */
 public class Constants {
 
-    public static final String INPUT_FILE_PATH_PARAMETER = "inFilePath";
+    public static final String INPUT_DIR_PARAMETER = "inDir";
+
+    public static final String INPUT_FILE_PARAMETER = "inFile";
 
     public static final String BLENDER_PATH_PREFIX = "blender_";
 
@@ -35,7 +37,9 @@ public class Constants {
 
     public static final String OUT_DIR_PARAMETER = "outDir";
 
-    public static final String SCRIPT_PARAMETER = "script";
+    public static final String SCRIPT_FILE_PARAMETER = "scriptFile";
+
+    public static final String SCRIPTS_DIR_PARAMETER = "scriptsDir";
 
     public static final String OPERATORS_PARAMETER = "operators";
 
@@ -55,7 +59,7 @@ public class Constants {
 
     public static final String COORDS_PARAMETER = "coords";
 
-    public static final String OUTPUT_FILE_PATH_PARAMETER = "outFilePath";
+    public static final String OUTPUT_FILE_PARAMETER = "outFile";
 
     public static final String SCRIPTS_DIRECTORY = "scripts";
 
