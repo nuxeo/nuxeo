@@ -18,7 +18,7 @@
     <nxu:set var="thumbnailUrl"
       value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobInfo)}"
       cache="#{!useRepeatRenderTime}">
-      <div class="thumbnailContainer #{folderishStyleClass}" style="background-image:url('#{thumbnailUrl}');" />
+      <div class="thumbnailContainer #{folderishStyleClass}" style="background-image:url(&quot;#{thumbnailUrl}&quot;);" />
     </nxu:set>
     </nxu:set>
     </nxu:set>
@@ -33,7 +33,7 @@
     <nxu:set var="thumbnailUrl"
       value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
       cache="#{!useRepeatRenderTime}">
-      <div class="thumbnailContainer" style="background-image:url('#{thumbnailUrl}');" />
+      <div class="thumbnailContainer" style="background-image:url(&quot;#{thumbnailUrl}&quot;);" />
     </nxu:set>
     </nxu:set>
     </nxp:html>
