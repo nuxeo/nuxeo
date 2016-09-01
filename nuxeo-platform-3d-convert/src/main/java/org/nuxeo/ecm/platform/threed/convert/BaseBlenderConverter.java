@@ -185,12 +185,22 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             params.addNamedParameter(LOD_IDS_PARAMETER, lodIdList);
 
             // Initialize LOD params
-            String lods = initParameters.getOrDefault(LODS_PARAMETER, "");
+            String lods = "";
+            if (parameters.containsKey(LODS_PARAMETER)) {
+                lods = (String) parameters.get(LODS_PARAMETER);
+            } else if (initParameters.containsKey(LODS_PARAMETER)) {
+                lods = initParameters.get(LODS_PARAMETER);
+            }
             List<String> lodList = Arrays.asList(lods.split(" "));
             params.addNamedParameter(LODS_PARAMETER, lodList);
 
             // Initialize max polygons params
-            String maxPolys = initParameters.getOrDefault(MAX_POLYGONS_PARAMETER, "");
+            String maxPolys = "";
+            if (parameters.containsKey(MAX_POLYGONS_PARAMETER)) {
+                maxPolys = (String) parameters.get(MAX_POLYGONS_PARAMETER);
+            } else if (initParameters.containsKey(MAX_POLYGONS_PARAMETER)) {
+                maxPolys = initParameters.get(MAX_POLYGONS_PARAMETER);
+            }
             List<String> maxPolyList = Arrays.asList(maxPolys.split(" "));
             params.addNamedParameter(MAX_POLYGONS_PARAMETER, maxPolyList);
 

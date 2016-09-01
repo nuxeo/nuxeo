@@ -66,12 +66,12 @@ if args.lods is not None and args.lods[0] != '':
 
 for operator in args.operators:
     if operator == 'lod':
-        lodid = args.lodids.pop(0)
         # get the biggest lod value from the lods list
         lodindex = args.lods.index(max(args.lods))
         current_lod = int(args.lods.pop(lodindex))
         calculated_lod = int((current_lod / lod) * 100)
         lod = current_lod
+        lodid = args.lodids.pop(lodindex)
         max_polygons = args.maxpolys.pop(lodindex)
     if operator == 'render':
         coords = args.coords.pop(0)
