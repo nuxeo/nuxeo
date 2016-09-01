@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -80,24 +82,31 @@ public class OAuth2TokenStore implements CredentialStore {
 
     public NuxeoOAuth2Token getToken(String serviceName, String nuxeoLogin)
             throws Exception {
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
+        LoginContext loginContext = Framework.login();
         try {
-            session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("serviceName", serviceName);
-            filter.put("nuxeoLogin", nuxeoLogin);
-            DocumentModelList entries = session.query(filter);
-            if (entries.size() == 0) {
-                return null;
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = null;
+            try {
+                session = ds.open(DIRECTORY_NAME);
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                filter.put("serviceName", serviceName);
+                filter.put("nuxeoLogin", nuxeoLogin);
+                DocumentModelList entries = session.query(filter);
+                if (entries.size() == 0) {
+                    return null;
+                }
+                if (entries.size() > 1) {
+                    log.error("Found several tokens");
+                }
+                return getTokenFromDirectoryEntry(entries.get(0));
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
             }
-            if (entries.size() > 1) {
-                log.error("Found several tokens");
-            }
-            return getTokenFromDirectoryEntry(entries.get(0));
         } finally {
-            if (session != null) {
-                session.close();
+            if (loginContext != null) {
+                loginContext.logout();
             }
         }
     }
@@ -109,17 +118,24 @@ public class OAuth2TokenStore implements CredentialStore {
 
     protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(
             NuxeoOAuth2Token aToken) throws Exception {
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
+        LoginContext loginContext = Framework.login();
         try {
-            session = ds.open(DIRECTORY_NAME);
-            DocumentModel entry = session.createEntry(aToken.toMap());
-            session.updateEntry(entry);
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = null;
+            try {
+                session = ds.open(DIRECTORY_NAME);
+                DocumentModel entry = session.createEntry(aToken.toMap());
+                session.updateEntry(entry);
 
-            return getToken(serviceName, aToken.getNuxeoLogin());
+                return getToken(serviceName, aToken.getNuxeoLogin());
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+            }
         } finally {
-            if (session != null) {
-                session.close();
+            if (loginContext != null) {
+                loginContext.logout();
             }
         }
     }
