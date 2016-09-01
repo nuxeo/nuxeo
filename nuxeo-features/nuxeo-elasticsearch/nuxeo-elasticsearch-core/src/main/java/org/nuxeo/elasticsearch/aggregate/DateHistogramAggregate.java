@@ -59,8 +59,6 @@ import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
  */
 public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
 
-    Long intervalMillis;
-
     public DateHistogramAggregate(AggregateDefinition definition, DocumentModel searchDocument) {
         super(definition, searchDocument);
     }
@@ -121,7 +119,7 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         for (String sel : getSelection()) {
             RangeFilterBuilder rangeFilter = FilterBuilders.rangeFilter(getField());
             DateTime from = convertStringToDate(sel);
-            DateTime to = addInterval(from);
+            DateTime to = DateHelper.plusDuration(from, getInterval());
             rangeFilter.gte(from.getMillis()).lt(to.getMillis());
             ret.add(rangeFilter);
         }
@@ -149,51 +147,10 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
         for (MultiBucketsAggregation.Bucket bucket : buckets) {
             DateHistogram.Bucket dateHistoBucket = (DateHistogram.Bucket) bucket;
             DateTime from = getDateTime(dateHistoBucket.getKeyAsDate());
-            DateTime to = addInterval(from);
+            DateTime to = DateHelper.plusDuration(from, getInterval());
             nxBuckets.add(new BucketRangeDate(bucket.getKey(), from, to, dateHistoBucket.getDocCount()));
         }
         this.buckets = nxBuckets;
-    }
-
-    private DateTime addInterval(DateTime from) {
-        String interval = getInterval();
-        switch (interval.toLowerCase()) {
-            case "second":
-                return from.plusSeconds(1);
-            case "minute":
-                return from.plusMinutes(1);
-            case "hour":
-                return from.plusHours(1);
-            case "day":
-                return from.plusDays(1);
-            case "week":
-                return from.plusDays(1);
-            case "month":
-                return from.plusMonths(1);
-            case "quarter":
-                return from.plusMonths(3);
-            case "year":
-                return from.plusYears(1);
-        }
-        if (interval.endsWith("y")) {
-            return from.plusYears(getNumberFromInterval(interval));
-        } else if (interval.endsWith("M")) {
-            return from.plusMonths(getNumberFromInterval(interval));
-        } else if (interval.endsWith("d")) {
-            return from.plusDays(getNumberFromInterval(interval));
-        } else if (interval.endsWith("h")) {
-            return from.plusHours(getNumberFromInterval(interval));
-        } else if (interval.endsWith("m")) {
-            return from.plusMinutes(getNumberFromInterval(interval));
-        } else if (interval.endsWith("s")) {
-            return from.plusSeconds(getNumberFromInterval(interval));
-        }
-        // default is interval in ms
-        return from.plusMillis(Integer.valueOf(interval));
-    }
-
-    private int getNumberFromInterval(String interval) {
-        return Integer.valueOf(interval.substring(0, interval.length() - 1));
     }
 
     private String getInterval() {
