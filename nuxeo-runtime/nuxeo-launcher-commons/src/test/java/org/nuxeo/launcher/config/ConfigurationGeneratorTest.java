@@ -301,11 +301,41 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         testCheckJavaVersion(false);
     }
 
-    protected void testCheckJavaVersion(boolean fail) throws ConfigurationException {
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongJavaVersionFail() {
+        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongPreJdk9VersionFail() {
+        ConfigurationGenerator.checkJavaVersion("1.not-a-version", "1.8.0_40", false, false);
+    }
+
+    @Test
+    public void testWrongJavaVersionNoFail() {
+        runJVMCheck(false, new Runnable() {
+            @Override
+            public void run() {
+                ConfigurationGenerator.checkJavaVersion("not-a-version", "1.8.0_40", true, true);
+            }
+        });
+    }
+
+    protected void testCheckJavaVersion(final boolean fail) {
+        runJVMCheck(fail, new Runnable() {
+
+            @Override
+            public void run() {
+                checkJavaVersions(!fail);
+            }
+        });
+    }
+
+    protected void runJVMCheck(boolean fail, Runnable runnable) {
         String old = System.getProperty(JVMCHECK_PROP);
         try {
             System.setProperty(JVMCHECK_PROP, fail ? JVMCHECK_FAIL : JVMCHECK_NOFAIL);
-            checkJavaVersions(!fail);
+            runnable.run();
         } finally {
             if (old == null) {
                 System.clearProperty(JVMCHECK_PROP);
@@ -315,12 +345,14 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         }
     }
 
-    protected void checkJavaVersions(boolean compliant) throws ConfigurationException {
+    protected void checkJavaVersions(boolean compliant) {
         // ok
         checkJavaVersion(true, "1.8.0_40", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_45", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_101", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_400", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0_72-internal", "1.8.0_40");
+        checkJavaVersion(true, "1.8.0-internal", "1.8.0");
         checkJavaVersion(true, "1.9.0_1", "1.8.0_40");
         // compliant if jvmcheck=nofail
         checkJavaVersion(compliant, "1.7.0_1", "1.8.0_40");
