@@ -174,6 +174,9 @@ public class LoginScreenConfig implements Serializable {
         }
     }
 
+    /**
+     * @since 8.4
+     */
     public Map<String, LoginStartupPage> getStartupPages() {
         return startupPages;
     }

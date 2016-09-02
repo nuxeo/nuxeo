@@ -124,6 +124,13 @@ public class NuxeoAuthenticationFilter implements Filter {
     // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
 
     /**
+     * @deprecated Since 8.4. Use {@link LoginScreenHelper#getStartupPagePath()} instead.
+     * @see LoginScreenHelper
+     */
+    @Deprecated
+    public static final String DEFAULT_START_PAGE = "nxstartup.faces";
+
+    /**
      * LoginContext domain name in use by default in Nuxeo.
      */
     public static final String LOGIN_DOMAIN = "nuxeo-ecm-web";

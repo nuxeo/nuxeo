@@ -43,6 +43,9 @@ public class LoginScreenHelper {
 
     protected static final Log log = LogFactory.getLog(LoginScreenHelper.class);
 
+    /**
+     * @since 8.4
+     */
     public static final String DEFAULT_STARTUP_PAGE_PATH = "home.html";
 
     public static LoginScreenConfig getConfig() {
@@ -110,6 +113,8 @@ public class LoginScreenHelper {
     /**
      * Returns the {@link LoginStartupPage} contribution with the highest priority or {@code null} if none is
      * contributed.
+     *
+     * @since 8.4
      */
     protected static LoginStartupPage getDefaultStartupPage(LoginScreenConfig config) {
         if (config.getStartupPages().isEmpty()) {
