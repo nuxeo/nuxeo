@@ -139,6 +139,16 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         return mainScriptPath;
     }
 
+    private List<String> getParams(Map<String, Serializable> inParams, Map<String, String> initParams, String key) {
+        String values = "";
+        if (inParams.containsKey(key)) {
+            values = (String) inParams.get(key);
+        } else if (initParams.containsKey(key)) {
+            values = initParams.get(key);
+        }
+        return Arrays.asList(values.split(" "));
+    }
+
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
@@ -153,76 +163,35 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             CmdParameters params = new CmdParameters();
 
             // Deal with operators and script files (blender and pipeline)
-            String operators = null;
-            if (parameters.containsKey(OPERATORS_PARAMETER)) {
-                operators = (String) parameters.get(OPERATORS_PARAMETER);
-            } else if (initParameters.containsKey(OPERATORS_PARAMETER)) {
-                operators = initParameters.get(OPERATORS_PARAMETER);
-            }
-            List<String> operatorsList = Arrays.asList(operators.split(" "));
+            List<String> operatorsList = getParams(parameters, initParameters, OPERATORS_PARAMETER);
             params.addNamedParameter(OPERATORS_PARAMETER, operatorsList);
+
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
 
             // Initialize render id params
-            String renderIds = "";
-            if (parameters.containsKey(RENDER_IDS_PARAMETER)) {
-                renderIds = (String) parameters.get(RENDER_IDS_PARAMETER);
-            } else if (initParameters.containsKey(RENDER_IDS_PARAMETER)) {
-                renderIds = initParameters.get(RENDER_IDS_PARAMETER);
-            }
-            List<String> renderIdList = Arrays.asList(renderIds.split(" "));
-            params.addNamedParameter(RENDER_IDS_PARAMETER, renderIdList);
+            params.addNamedParameter(RENDER_IDS_PARAMETER,
+                getParams(parameters, initParameters, RENDER_IDS_PARAMETER));
 
             // Initialize lod id params
-            String lodIds = "";
-            if (parameters.containsKey(LOD_IDS_PARAMETER)) {
-                lodIds = (String) parameters.get(LOD_IDS_PARAMETER);
-            } else if (initParameters.containsKey(LOD_IDS_PARAMETER)) {
-                lodIds = initParameters.get(LOD_IDS_PARAMETER);
-            }
-            List<String> lodIdList = Arrays.asList(lodIds.split(" "));
-            params.addNamedParameter(LOD_IDS_PARAMETER, lodIdList);
+            params.addNamedParameter(LOD_IDS_PARAMETER,
+                getParams(parameters, initParameters, LOD_IDS_PARAMETER));
 
             // Initialize LOD params
-            String lods = "";
-            if (parameters.containsKey(LODS_PARAMETER)) {
-                lods = (String) parameters.get(LODS_PARAMETER);
-            } else if (initParameters.containsKey(LODS_PARAMETER)) {
-                lods = initParameters.get(LODS_PARAMETER);
-            }
-            List<String> lodList = Arrays.asList(lods.split(" "));
-            params.addNamedParameter(LODS_PARAMETER, lodList);
+            params.addNamedParameter(LODS_PARAMETER,
+                getParams(parameters, initParameters, LODS_PARAMETER));
 
             // Initialize max polygons params
-            String maxPolys = "";
-            if (parameters.containsKey(MAX_POLYGONS_PARAMETER)) {
-                maxPolys = (String) parameters.get(MAX_POLYGONS_PARAMETER);
-            } else if (initParameters.containsKey(MAX_POLYGONS_PARAMETER)) {
-                maxPolys = initParameters.get(MAX_POLYGONS_PARAMETER);
-            }
-            List<String> maxPolyList = Arrays.asList(maxPolys.split(" "));
-            params.addNamedParameter(MAX_POLYGONS_PARAMETER, maxPolyList);
+            params.addNamedParameter(MAX_POLYGONS_PARAMETER,
+                getParams(parameters, initParameters, MAX_POLYGONS_PARAMETER));
 
             // Initialize spherical coordinates params
-            String coords = "";
-            if (parameters.containsKey(COORDS_PARAMETER)) {
-                coords = (String) parameters.get(COORDS_PARAMETER);
-            } else if (initParameters.containsKey(COORDS_PARAMETER)) {
-                coords = initParameters.get(COORDS_PARAMETER);
-            }
-            List<String> coordList = Arrays.asList(coords.split(" "));
-            params.addNamedParameter(COORDS_PARAMETER, coordList);
+            params.addNamedParameter(COORDS_PARAMETER,
+                getParams(parameters, initParameters, COORDS_PARAMETER));
 
             // Initialize dimension params
-            String dimensions = "";
-            if (parameters.containsKey(DIMENSIONS_PARAMETER)) {
-                dimensions = (String) parameters.get(DIMENSIONS_PARAMETER);
-            } else if (initParameters.containsKey(DIMENSIONS_PARAMETER)) {
-                dimensions = initParameters.get(DIMENSIONS_PARAMETER);
-            }
-            List<String> dimensionList = Arrays.asList(dimensions.split(" "));
-            params.addNamedParameter(DIMENSIONS_PARAMETER, dimensionList);
+            params.addNamedParameter(DIMENSIONS_PARAMETER,
+                getParams(parameters, initParameters, DIMENSIONS_PARAMETER));
 
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder);
