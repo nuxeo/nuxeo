@@ -26,12 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
@@ -180,16 +175,18 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                         if (resultsCount == 0) {
                             // fetch first page directly
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Current page %s is not the first one but "
-                                        + "shows no result and there are " + "no results => rewind to first page",
+                                log.debug(String.format(
+                                        "Current page %s is not the first one but " + "shows no result and there are "
+                                                + "no results => rewind to first page",
                                         Long.valueOf(getCurrentPageIndex())));
                             }
                             firstPage();
                         } else {
                             // fetch last page
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Current page %s is not the first one but "
-                                        + "shows no result and there are " + "%s results => fetch last page",
+                                log.debug(String.format(
+                                        "Current page %s is not the first one but " + "shows no result and there are "
+                                                + "%s results => fetch last page",
                                         Long.valueOf(getCurrentPageIndex()), Long.valueOf(resultsCount)));
                             }
                             lastPage();
@@ -218,7 +215,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         }
 
         // send event for statistics !
-        fireSearchEvent(getCoreSession().getPrincipal(), query, currentPageDocuments, System.currentTimeMillis()-t0);
+        fireSearchEvent(getCoreSession().getPrincipal(), query, currentPageDocuments, System.currentTimeMillis() - t0);
 
         return currentPageDocuments;
     }

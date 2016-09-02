@@ -19,12 +19,7 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -281,11 +276,10 @@ public abstract class BasePageProviderDescriptor {
             }
         }
         clone.searchDocumentType = searchDocumentType;
-        clone.trackUsage=trackUsage;
+        clone.trackUsage = trackUsage;
         return clone;
     }
 
     protected abstract BasePageProviderDescriptor newInstance();
-
 
 }
