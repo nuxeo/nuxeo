@@ -36,6 +36,7 @@ import org.nuxeo.functionaltests.pages.CollectionsPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
@@ -205,8 +206,10 @@ public class ITCollectionsTest extends AbstractTest {
         CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage()
                                                                                    .goToCollections()
                                                                                    .goToCollection(COLLECTION_NAME_1);
-
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
+        // check home tab context is ok
+        HomePage hp = asPage(HomePage.class);
+        assertTrue(hp.isMainTabSelected(hp.homePageLink));
 
         collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage()
                                                                  .goToCollections()
