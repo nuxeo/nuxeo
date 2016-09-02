@@ -19,7 +19,15 @@
 package org.nuxeo.ecm.platform.contentview.jsf;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -140,6 +148,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         contentView.setWaitForExecutionSentence(desc.getWaitForExecutionSentence());
         if (desc.getWaitForExecution() != null) {
             contentView.setWaitForExecution(desc.getWaitForExecution().booleanValue());
+        }
+        if (coreDesc != null && coreDesc.getQuickFilters() != null) {
+            contentView.setQuickFilters(coreDesc.getQuickFilters());
         }
         return contentView;
     }

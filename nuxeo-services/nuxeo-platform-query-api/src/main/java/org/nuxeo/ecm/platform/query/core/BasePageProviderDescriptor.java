@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 /**
@@ -48,6 +49,7 @@ public abstract class BasePageProviderDescriptor {
     protected String[] queryParameters;
 
     @XNode("pageSize")
+
     protected long pageSize = 0;
 
     @XNode("pageSizeBinding")
@@ -87,6 +89,12 @@ public abstract class BasePageProviderDescriptor {
      */
     @XNode("searchDocumentType")
     protected String searchDocumentType;
+
+    /**
+     * @since 8.4
+     */
+    @XNodeList(value = "quickFilters/quickFilter", componentType = QuickFilterDescriptor.class, type = ArrayList.class)
+    protected List<QuickFilterDescriptor> quickFilters;
 
     @XNode("pattern")
     public void setPattern(String pattern) {
@@ -138,6 +146,13 @@ public abstract class BasePageProviderDescriptor {
     public WhereClauseDefinition getWhereClause() {
         return whereClause;
     }
+
+    /**
+     * @since 8.4
+     */
+    public List<QuickFilterDefinition> getQuickFilters() {
+        return (List<QuickFilterDefinition>) (List<?>) quickFilters;
+    };
 
     public boolean isSortable() {
         return sortable;
@@ -268,6 +283,12 @@ public abstract class BasePageProviderDescriptor {
         clone.escapePatternParameters = getEscapePatternParameters();
         if (whereClause != null) {
             clone.whereClause = whereClause.clone();
+        }
+        if (quickFilters != null) {
+            clone.quickFilters = new ArrayList<QuickFilterDescriptor>();
+            for (QuickFilterDescriptor quickFilter : quickFilters) {
+                clone.quickFilters.add(quickFilter.clone());
+            }
         }
         if (aggregates != null) {
             clone.aggregates = new ArrayList<AggregateDescriptor>();

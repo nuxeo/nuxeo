@@ -180,6 +180,22 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="QUERY_WITH_QUICK_FILTER">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ?
+        </pattern>
+        <quickFilters>
+          <quickFilter name="testQuickFilter">
+            <sort column="dc:title" ascending="true" />
+          </quickFilter>
+        </quickFilters>
+        <parameter>#{currentDocument.id}</parameter>
+        <pageSize>2</pageSize>
+      </coreQueryPageProvider>
+    </contentView>
+
     <contentView name="OVERRIDE_PAGE_PROVIDER_WITH_GENERIC">
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>

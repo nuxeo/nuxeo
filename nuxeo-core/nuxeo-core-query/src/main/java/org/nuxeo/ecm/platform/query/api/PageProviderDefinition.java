@@ -104,4 +104,9 @@ public interface PageProviderDefinition extends Serializable {
      */
     public boolean isUsageTrackingEnabled();
 
+    /**
+     * @since 8.4
+     */
+    List<QuickFilterDefinition> getQuickFilters();
+
 }

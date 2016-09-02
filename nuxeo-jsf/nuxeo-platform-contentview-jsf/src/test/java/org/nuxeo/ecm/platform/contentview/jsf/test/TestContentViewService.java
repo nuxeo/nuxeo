@@ -217,7 +217,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewNames() throws Exception {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(16, names.size());
+        assertEquals(17, names.size());
         List<String> orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -233,7 +233,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(15, names.size());
+        assertEquals(16, names.size());
         orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -248,7 +248,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewHeaders() throws Exception {
         Set<ContentViewHeader> headers = service.getContentViewHeaders();
         assertNotNull(headers);
-        assertEquals(16, headers.size());
+        assertEquals(17, headers.size());
         List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);

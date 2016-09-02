@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
+import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -221,10 +222,23 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     }
 
     protected void buildQuery(CoreSession coreSession) {
-        SortInfo[] sortArray = null;
-        if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[] {});
+        List<SortInfo> sort = null;
+        List<QuickFilterDefinition> quickFilters = getQuickFilters();
+
+        if (quickFilters != null && !quickFilters.isEmpty()) {
+            sort = new ArrayList<>();
+            for (QuickFilterDefinition filterDef : quickFilters) {
+                for (SortInfo info : filterDef.getSortInfos())
+                    sort.add(info);
+            }
+        } else if (sortInfos != null) {
+            sort = sortInfos;
         }
+
+        SortInfo[] sortArray = null;
+        if (sort != null)
+            sortArray = sort.toArray(new SortInfo[] {});
+
         String newQuery;
         PageProviderDefinition def = getDefinition();
         if (def.getWhereClause() == null) {

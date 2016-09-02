@@ -414,4 +414,19 @@ public interface PageProvider<T> extends Serializable {
      */
     boolean hasAggregateSupport();
 
+    /**
+     * @since 8.4
+     */
+    List<QuickFilterDefinition> getQuickFilters();
+
+    /**
+     * @since 8.4
+     */
+    void setQuickFilters(List<QuickFilterDefinition> quickFilters);
+
+    /**
+     * @since 8.4
+     */
+    void addQuickFilter(QuickFilterDefinition quickFilter);
+
 }

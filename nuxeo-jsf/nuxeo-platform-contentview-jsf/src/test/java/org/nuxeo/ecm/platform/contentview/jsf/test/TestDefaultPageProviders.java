@@ -759,6 +759,33 @@ public class TestDefaultPageProviders {
 
     @Test
     @SuppressWarnings("unchecked")
+    public void testCoreQueryWithQuickFilter() throws Exception {
+        ContentView contentView = service.getContentView("QUERY_WITH_QUICK_FILTER");
+        assertNotNull(contentView);
+
+        // leave default values on doc for now: will filter on all docs with
+        // given parent
+        String parentIdParam = session.getRootDocument().getId();
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
+
+        checkCoreQueryWithQuickFilter(parentIdParam, pp);
+    }
+
+    protected void checkCoreQueryWithQuickFilter(String parentIdParam, PageProvider<DocumentModel> pp)
+            throws Exception {
+        // init results
+        pp.getCurrentPage();
+
+        // check query
+        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                        + " ORDER BY dc:title", parentIdParam),
+                ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
+    }
+
+
+    @Test
+    @SuppressWarnings("unchecked")
     public void testCoreQueryUnrestricted() throws Exception {
         ContentView contentView = service.getContentView("QUERY_RESTRICTED");
         assertNotNull(contentView);

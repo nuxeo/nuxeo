@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderChangedListener;
+import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -134,6 +135,11 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     protected String waitForExecutionSentence;
 
     protected boolean executed = false;
+
+    /**
+     * @since 8.4
+     */
+    protected List<QuickFilterDefinition> quickFilters;
 
     public ContentViewImpl(String name, String title, boolean translateTitle, String iconPath, String selectionList,
             String pagination, List<String> actionCategories, ContentViewLayout searchLayout,
@@ -382,6 +388,10 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
             if (currentPage != null) {
                 pageProvider.setCurrentPage(currentPage.longValue());
             }
+        }
+
+        if (this.quickFilters != null) {
+            pageProvider.setQuickFilters(this.quickFilters);
         }
 
         // Register listener to be notified when the page has changed on the
@@ -857,4 +867,17 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         this.executed = executed;
     }
 
+    /**
+     * @since 8.4
+     */
+    public void setQuickFilters(List<QuickFilterDefinition> quickFilters) {
+        this.quickFilters = quickFilters;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public List<QuickFilterDefinition> getQuickFilters() {
+        return this.quickFilters;
+    }
 }

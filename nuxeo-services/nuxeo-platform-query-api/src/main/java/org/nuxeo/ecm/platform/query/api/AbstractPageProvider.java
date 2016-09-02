@@ -111,6 +111,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected DocumentModel searchDocumentModel;
 
+    /**
+     * @since 8.4
+     */
+    protected List<QuickFilterDefinition> quickFilters;
+
     protected String errorMessage;
 
     protected Throwable error;
@@ -324,6 +329,24 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             }
         }
         return false;
+    }
+
+    @Override
+    public void setQuickFilters(List<QuickFilterDefinition> quickFilters) {
+        this.quickFilters = quickFilters;
+    }
+
+    @Override
+    public List<QuickFilterDefinition> getQuickFilters() {
+        return this.quickFilters;
+    }
+
+    @Override
+    public void addQuickFilter(QuickFilterDefinition quickFilter) {
+        if (quickFilters == null) {
+            quickFilters = new ArrayList<>();
+        }
+        quickFilters.add(quickFilter);
     }
 
     @Override
