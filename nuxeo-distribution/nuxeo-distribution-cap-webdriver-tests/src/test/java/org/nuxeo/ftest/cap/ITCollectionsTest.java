@@ -197,8 +197,10 @@ public class ITCollectionsTest extends AbstractTest {
         CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage()
                                                                                    .goToCollections()
                                                                                    .goToCollection(COLLECTION_NAME_1);
-
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
+        // check home tab context is ok
+        HomePage hp = asPage(HomePage.class);
+        assertTrue(hp.isMainTabSelected(hp.homePageLink));
 
         collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage()
                                                                  .goToCollections()
