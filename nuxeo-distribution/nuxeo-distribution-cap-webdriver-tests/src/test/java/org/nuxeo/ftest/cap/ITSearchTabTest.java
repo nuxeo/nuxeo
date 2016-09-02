@@ -222,8 +222,14 @@ public class ITSearchTabTest extends AbstractTest {
         sp.goToHomePage().goToSavedSearches();
         assertEquals(1, driver.findElements(By.linkText(ssTitle)).size());
 
+        // navigate to it
+        Locator.findElementWaitUntilEnabledAndClick(By.linkText(ssTitle));
+        // check home tab context is ok
+        HomePage hp = asPage(HomePage.class);
+        assertTrue(hp.isMainTabSelected(hp.homePageLink));
+
         // delete saved searches
-        documentBasePage.goToHomePage().goToSavedSearches();
+        hp.goToHomePage().goToSavedSearches();
         arm = new AjaxRequestManager(driver);
         arm.begin();
         Locator.findElementWaitUntilEnabledAndClick(By.id(SELECT_ALL_SAVED_SEARCHES_BUTTON_ID));
