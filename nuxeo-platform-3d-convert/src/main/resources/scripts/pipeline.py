@@ -57,7 +57,6 @@ if args.operators is None:
 
 base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
 lod = current_lod = calculated_lod = 100
-lodid = 'original'
 max_polygons = 9999
 
 # turn all elements of the lods list into integers

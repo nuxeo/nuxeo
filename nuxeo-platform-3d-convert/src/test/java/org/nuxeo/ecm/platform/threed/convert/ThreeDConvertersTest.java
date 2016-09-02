@@ -162,7 +162,7 @@ public class ThreeDConvertersTest {
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(6, blobs.size());
+        assertEquals(5, blobs.size());
         List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
         assertTrue(blobs.get(0).getFilename().contains("transmissionformat-03"));
         assertTrue(blobs.get(0).getFilename().contains(".dae"));
@@ -170,9 +170,7 @@ public class ThreeDConvertersTest {
         assertTrue(blobs.get(1).getFilename().contains(".dae"));
         assertTrue(blobs.get(2).getFilename().contains("transmissionformat-33"));
         assertTrue(blobs.get(2).getFilename().contains(".dae"));
-        assertTrue(blobs.get(3).getFilename().contains("transmissionformat-original"));
-        assertTrue(blobs.get(3).getFilename().contains(".dae"));
-        assertTrue(fileNames.get(4).contains("render-" + renderId1));
-        assertTrue(fileNames.get(5).contains("render-" + renderId2));
+        assertTrue(fileNames.get(3).contains("render-" + renderId1));
+        assertTrue(fileNames.get(4).contains("render-" + renderId2));
     }
 }

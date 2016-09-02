@@ -153,10 +153,10 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
                                                                     .filter(RenderView::isEnabled)
                                                                     .collect(Collectors.toList());
 
-        List<AutomaticLOD> lods = (List<AutomaticLOD>) automaticLODs.registry.values()
-                                                                             .stream()
-                                                                             .filter(AutomaticLOD::isEnabled)
-                                                                             .collect(Collectors.toList());
+        List<AutomaticLOD> lods = automaticLODs.registry.values()
+                                                        .stream()
+                                                        .filter(AutomaticLOD::isEnabled)
+                                                        .collect(Collectors.toList());
 
         // setup all work to be done in batch process (renders, lods)
         Map<String, Serializable> params = new HashMap<>();
@@ -165,8 +165,6 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         String operators = "import";
         // add renders
         operators += new String(new char[renderViews.size()]).replace("\0", " render");
-        // add conversion
-        operators += " convert";
         // add lods
         operators += new String(new char[lods.size()]).replace("\0", " lod convert");
         params.put(OPERATORS_PARAMETER, operators);

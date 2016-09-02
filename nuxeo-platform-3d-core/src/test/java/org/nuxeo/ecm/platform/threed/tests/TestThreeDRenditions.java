@@ -212,17 +212,14 @@ public class TestThreeDRenditions {
         Collection<Blob> results = threeDService.batchConvert(threeD);
         List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
         List<TransmissionThreeD> transmissions = BatchConverterHelper.getTransmissons(results);
-        assertEquals(4, renderviews.size());
-        assertEquals(4, transmissions.size());
-        assertEquals("top", renderviews.get(0).getTitle());
-        assertEquals("left", renderviews.get(1).getTitle());
-        assertEquals("isometric", renderviews.get(2).getTitle());
-        assertEquals("front", renderviews.get(3).getTitle());
-        assertEquals(3, transmissions.get(0).getLod());
-        assertEquals(11, transmissions.get(1).getLod());
-        assertEquals(33, transmissions.get(2).getLod());
-        assertEquals(100, transmissions.get(3).getLod());
-        threeD.getBlob();
+        for (ThreeDRenderView rV : renderviews) {
+            assertEquals(1, threeDService.getAutomaticRenderViews().stream()
+                .filter(aRV -> aRV.getName().equals(rV.getTitle())).count());
+        }
+        for (TransmissionThreeD tTD : transmissions) {
+            assertEquals(1, threeDService.getAutomaticLODs().stream()
+                .filter(aLOD -> aLOD.getName().equals(tTD.getName())).count());
+        }
     }
 
 }
