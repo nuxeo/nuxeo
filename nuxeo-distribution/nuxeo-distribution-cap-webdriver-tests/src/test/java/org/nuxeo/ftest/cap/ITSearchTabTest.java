@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +41,9 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 6.0
@@ -105,18 +105,16 @@ public class ITSearchTabTest extends AbstractTest {
                 permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
             }
             // Create test File
-            FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false,
-                    null, null, null);
+            FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
+                    null, null);
             EditTabSubPage editTabSubPage = filePage.getEditTab();
 
-            Select2WidgetElement subjectsWidget = new Select2WidgetElement(
-                    driver,
+            Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                     true);
             subjectsWidget.selectValues(SUBJECTS);
 
-            Select2WidgetElement coverageWidget = new Select2WidgetElement(
-                    driver,
+            Select2WidgetElement coverageWidget = new Select2WidgetElement(driver,
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")),
                     false);
             coverageWidget.selectValue(COVERAGE);
