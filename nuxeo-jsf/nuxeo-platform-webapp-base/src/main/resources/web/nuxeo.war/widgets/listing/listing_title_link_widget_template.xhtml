@@ -16,8 +16,9 @@
   <div class="popupTarget" docRef="#{field_1}">
 
     <nxd:restDocumentLink document="#{field_0}"
-      tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}"
-      tabs="#{widgetProperty_tabs}"
+      tab="#{widgetProperty_tab}"
+      subTab="#{widgetProperty_subTab}"
+      tabs="#{nxu:test(tabWidgetTabs == null, widgetProperty_tabs, tabWidgetTabs)}"
       target="#{widgetProperty_target}"
       view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
       pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
@@ -36,7 +37,7 @@
         newConversation="true" target="_blank"
         tab="#{widgetProperty_tab}"
         subTab="#{widgetProperty_subTab}"
-        tabs="#{widgetProperty_tabs}"
+        tabs="#{nxu:test(tabWidgetTabs == null, widgetProperty_tabs, tabWidgetTabs)}"
         view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
         pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
         <nxu:graphicImage value="/icons/external.gif"
@@ -70,5 +71,7 @@
     </c:if>
   </nxp:html>
 </c:if>
-</nxu:set></nxu:set>
+
+</nxu:set>
+</nxu:set>
 </c:if>
