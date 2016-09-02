@@ -205,14 +205,14 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals(1, driver.findElements(By.xpath(saveAsPath)).size());
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
-        driver.findElement(By.xpath(saveAsPath)).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath(saveAsPath));
         arm.end();
 
         WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_saveSearch_after_view_box"));
         String ssTitle = "Test Saved Search " + new Date().getTime();
         fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(ssTitle);
         arm.begin();
-        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(fancybox, By.xpath(".//input[@value='Save']"));
         arm.end();
 
         SearchPage sp = asPage(SearchPage.class);
@@ -272,18 +272,19 @@ public class ITSearchTabTest extends AbstractTest {
                    .click();
         arm.begin();
         fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(fancybox, By.xpath(".//input[@value='Save']"));
         arm.end();
 
         // save this search
         arm.begin();
-        driver.findElement(By.xpath("//input[contains(@id, 'nxw_saveSearch_link')]")).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath("//input[contains(@id, 'nxw_saveSearch_link')]"));
         arm.end();
 
         fancybox = Locator.findElementWithTimeout(By.id("nxw_saveSearch_after_view_box"));
         String ssTitle = "Test Saved Search " + new Date().getTime();
         fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(ssTitle);
         arm.begin();
-        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(fancybox, By.xpath(".//input[@value='Save']"));
         arm.end();
 
         // get default search
