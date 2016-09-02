@@ -1,7 +1,12 @@
 if args.outdir == None:
     sys.exit()
 
-outfile = args.outdir + '/transmissionformat-' + str(lodid) + '-' + str(lod) + '-' + str(max_polygons) + '.dae'
+try:
+    lodid
+except NameError:
+    outfile = args.outdir + '/transmissionformat-' + str(lod) + '-' + str(max_polygons) + '.dae'
+else:
+    outfile = args.outdir + '/transmissionformat-' + str(lodid) + '-' + str(lod) + '-' + str(max_polygons) + '.dae'
 
 # get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
