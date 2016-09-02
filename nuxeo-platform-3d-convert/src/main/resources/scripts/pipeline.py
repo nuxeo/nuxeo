@@ -59,19 +59,30 @@ base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
 lod = current_lod = calculated_lod = 100
 max_polygons = 9999
 
+def params_filled(params):
+    return params is not None and len(params) > 0 and params[0] != ''
+
 # turn all elements of the lods list into integers
-if args.lods is not None and args.lods[0] != '':
+if params_filled(args.lods):
     args.lods = [int(lod) for lod in args.lods]
 
 for operator in args.operators:
     if operator == 'lod':
-        # get the biggest lod value from the lods list
-        lodindex = args.lods.index(max(args.lods))
-        current_lod = int(args.lods.pop(lodindex))
-        calculated_lod = int((current_lod / lod) * 100)
-        lod = current_lod
+        if params_filled(args.lods):
+            lodindex = args.lods.index(max(args.lods))
+        elif params_filled(args.maxpolys):
+            lodindex = args.maxpolys.index(max(args.maxpolys))
+        if params_filled(args.lods):
+            current_lod = int(args.lods.pop(lodindex))
+            calculated_lod = int((current_lod / lod) * 100)
+            lod = current_lod
+        else:
+            calculated_lod = None
+        if params_filled(args.maxpolys):
+            max_polygons = args.maxpolys.pop(lodindex)
+        else:
+            max_polygons = None
         lodid = args.lodids.pop(lodindex)
-        max_polygons = args.maxpolys.pop(lodindex)
     if operator == 'render':
         coords = args.coords.pop(0)
         dim = args.dimensions.pop(0)
