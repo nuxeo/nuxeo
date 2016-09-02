@@ -18,12 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -56,6 +50,13 @@ import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 6.0
@@ -258,9 +259,10 @@ public class ITSearchTabTest extends AbstractTest {
         arm.end();
         WebElement fancybox = Locator.findElementWithTimeout(By.id("fancybox-content"));
         WebElement listShuttle = fancybox.findElement(By.className("listShuttleTable"));
-        listShuttle.findElement(By.xpath(".//td[@class=\"listShuttleSelectElements\"]//option[@value=\"contributors\"]"))
-                   .click();
-        listShuttle.findElement(By.xpath(".//td[@class=\"listShuttleSelectionActions\"]/a[contains(@id, 'nxw_template_addToSelection')]"))
+        listShuttle.findElement(
+                By.xpath(".//td[@class=\"listShuttleSelectElements\"]//option[@value=\"contributors\"]")).click();
+        listShuttle.findElement(By
+                                  .xpath(".//td[@class=\"listShuttleSelectionActions\"]/a[contains(@id, 'nxw_template_addToSelection')]"))
                    .click();
         arm.begin();
         fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
