@@ -271,7 +271,6 @@ public class ITSearchTabTest extends AbstractTest {
                                   .xpath(".//td[@class=\"listShuttleSelectionActions\"]/a[contains(@id, 'nxw_template_addToSelection')]"))
                    .click();
         arm.begin();
-        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
         Locator.findElementWaitUntilEnabledAndClick(fancybox, By.xpath(".//input[@value='Save']"));
         arm.end();
 
