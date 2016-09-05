@@ -56,7 +56,8 @@ import org.nuxeo.runtime.api.Framework;
  * To get a valid marshaller instance :
  * <ul>
  * <li>Create an inspector for your marshaller class using constructor {@link #MarshallerInspector(Class)}. This will
- * checks your marshaller has annotation {@link Setup} and inspect every attributes having {@link Inject} annotation.</li>
+ * checks your marshaller has annotation {@link Setup} and inspect every attributes having {@link Inject}
+ * annotation.</li>
  * <li>You can check it's a valid marshaller by calling @ #isValid()}</li>
  * <li>You can check it's a {@link Writer} by calling {@link #isWriter()}</li>
  * <li>You can check it's a {@link Reader} by calling {@link #isReader()}</li>
@@ -171,8 +172,7 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
         loadInjections(clazz);
         // warn if several context found
         if (contextFields.size() > 1) {
-            log.warn("The marshaller "
-                    + clazz.getName()
+            log.warn("The marshaller " + clazz.getName()
                     + " has more than one context injected property. You probably should use a context from a parent class.");
         }
         if (instantiation == Instantiations.SINGLETON) {
