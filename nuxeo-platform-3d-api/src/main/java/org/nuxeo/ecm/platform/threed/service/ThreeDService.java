@@ -68,6 +68,11 @@ public interface ThreeDService {
     /**
      * Returns the available registered automatic LODs on a 3D content.
      */
+    Collection<AutomaticLOD> getAvailableLODs();
+
+    /**
+     * Returns the automatic registered automatic LODs on a 3D content.
+     */
     Collection<AutomaticLOD> getAutomaticLODs();
 
     /**

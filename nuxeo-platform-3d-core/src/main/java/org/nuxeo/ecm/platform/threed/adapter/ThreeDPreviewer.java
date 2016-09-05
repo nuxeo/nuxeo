@@ -45,7 +45,7 @@ public class ThreeDPreviewer extends AbstractPreviewer implements MimeTypePrevie
         ThreeDDocument threeDDocument = dm.getAdapter(ThreeDDocument.class);
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
         return buildPreview(threeDDocument.getTransmissionThreeD(
-                Iterables.get(threeDService.getAutomaticLODs(), 0).getPercentage()), dm);
+                Iterables.get(threeDService.getAvailableLODs(), 0).getPercentage()), dm);
 
     }
 

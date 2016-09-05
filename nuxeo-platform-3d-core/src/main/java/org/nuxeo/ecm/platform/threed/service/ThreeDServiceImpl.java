@@ -145,18 +145,8 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         }
 
         // gather 3D contribution default contributions
-        List<RenderView> renderViews = automaticRenderViews.registry.values()
-                                                                    .stream()
-                                                                    .filter(AutomaticRenderView::isEnabled)
-                                                                    .map(AutomaticRenderView::getId)
-                                                                    .map(this::getRenderView)
-                                                                    .filter(RenderView::isEnabled)
-                                                                    .collect(Collectors.toList());
-
-        List<AutomaticLOD> lods = automaticLODs.registry.values()
-                                                        .stream()
-                                                        .filter(AutomaticLOD::isEnabled)
-                                                        .collect(Collectors.toList());
+        List<RenderView> renderViews = (List<RenderView>) getAutomaticRenderViews();
+        List<AutomaticLOD> lods = (List<AutomaticLOD>) getAutomaticLODs();
 
         // setup all work to be done in batch process (renders, lods)
         Map<String, Serializable> params = new HashMap<>();
@@ -210,12 +200,22 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
                                             .filter(AutomaticRenderView::isEnabled)
                                             .map(AutomaticRenderView::getId)
                                             .map(this::getRenderView)
+                                            .filter(RenderView::isEnabled)
                                             .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<AutomaticLOD> getAutomaticLODs() {
+    public Collection<AutomaticLOD> getAvailableLODs() {
         return automaticLODs.registry.values();
+    }
+
+    @Override
+    public Collection<AutomaticLOD> getAutomaticLODs() {
+        return automaticLODs.registry.values()
+                                     .stream()
+                                     .filter(AutomaticLOD::isEnabled)
+                                     .sorted((o1, o2) -> o1.getOrder() - o2.getOrder())
+                                     .collect(Collectors.toList());
     }
 
     @Override

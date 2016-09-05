@@ -217,7 +217,7 @@ public class TestThreeDRenditions {
                 .filter(aRV -> aRV.getName().equals(rV.getTitle())).count());
         }
         for (TransmissionThreeD tTD : transmissions) {
-            assertEquals(1, threeDService.getAutomaticLODs().stream()
+            assertEquals(1, threeDService.getAvailableLODs().stream()
                 .filter(aLOD -> aLOD.getName().equals(tTD.getName())).count());
         }
     }

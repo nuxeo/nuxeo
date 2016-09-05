@@ -7,10 +7,14 @@
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticLOD">
 
-        <automaticLOD name="100" percentage="100" maxPoly="9999" enabled="true" rendition="true" renditionVisible="true"/>
-        <automaticLOD name="33" percentage="33" maxPoly="9999" enabled="true" rendition="true" renditionVisible="true"/>
-        <automaticLOD name="11" percentage="11" maxPoly="9999" enabled="true" rendition="true" renditionVisible="true"/>
-        <automaticLOD name="03" percentage="3" maxPoly="9999" enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="0" name="100" percentage="100" maxPoly="9999"
+                      enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="1" name="33" percentage="33" maxPoly="9999"
+                      enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="2" name="11" percentage="11" maxPoly="9999"
+                      enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="3" name="03" percentage="3" maxPoly="9999"
+                      enabled="true" rendition="true" renditionVisible="true"/>
 
     </extension>
 
