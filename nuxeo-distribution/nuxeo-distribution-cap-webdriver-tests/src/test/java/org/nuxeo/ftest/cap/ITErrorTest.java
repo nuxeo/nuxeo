@@ -21,6 +21,7 @@ package org.nuxeo.ftest.cap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,8 +33,10 @@ import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +66,9 @@ public class ITErrorTest extends AbstractTest {
             options.setJavaScriptEnabled(false);
             options.setThrowExceptionOnFailingStatusCode(false);
             client.getPage(NUXEO_URL + "/logout");
-            client.getPage(NUXEO_URL + "/nxstartup.faces?user_name=Administrator&user_password=Administrator");
+            client.getPage(new WebRequest(
+                    new URL(NUXEO_URL + "/nxstartup.faces?user_name=Administrator&user_password=Administrator"),
+                    HttpMethod.POST));
             HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/nosuchdomain@view_documents");
             assertEquals(HttpServletResponse.SC_NOT_FOUND, page.getWebResponse().getStatusCode()); // 404
             assertEquals("An error occurred.", page.getTitleText());
@@ -78,9 +83,10 @@ public class ITErrorTest extends AbstractTest {
             WebClientOptions options = client.getOptions();
             options.setJavaScriptEnabled(false);
             options.setThrowExceptionOnFailingStatusCode(false);
-        getAllPage(client, NUXEO_URL + "/logout");
-        getAllPage(client,
-                NUXEO_URL + "/nxstartup.faces?user_name=" + TEST_USERNAME + "&user_password=" + TEST_PASSWORD);
+            getAllPage(client, new WebRequest(new URL(NUXEO_URL + "/logout")));
+            getAllPage(client, new WebRequest(new URL(
+                    NUXEO_URL + "/nxstartup.faces?user_name=" + TEST_USERNAME + "&user_password=" + TEST_PASSWORD),
+                    HttpMethod.POST));
         HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/default-domain@view_documents");
         assertEquals(page.getWebResponse().getContentAsString(), HttpServletResponse.SC_FORBIDDEN,
                 page.getWebResponse().getStatusCode()); // 403
@@ -92,8 +98,8 @@ public class ITErrorTest extends AbstractTest {
     }
 
     /** Fully reads the stream of a page. */
-    protected void getAllPage(WebClient client, String url) throws IOException {
-        HtmlPage page = client.getPage(url);
+    protected void getAllPage(WebClient client, WebRequest request) throws IOException {
+        HtmlPage page = client.getPage(request);
         try (InputStream in = page.getWebResponse().getContentAsStream(); //
                 OutputStream out = new NullOutputStream()) {
             IOUtils.copy(in, out);

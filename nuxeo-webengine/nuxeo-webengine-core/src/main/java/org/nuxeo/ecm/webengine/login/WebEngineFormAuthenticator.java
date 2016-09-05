@@ -74,6 +74,12 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
 
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
+        // Only accept POST requests
+        String method = httpRequest.getMethod();
+        if (!"POST".equals(method)) {
+            log.debug("Requets method is " + method + ", only accep ting POST");
+            return null;
+        }
         if (!isLoginRequest(httpRequest)) {
             return null;
         }

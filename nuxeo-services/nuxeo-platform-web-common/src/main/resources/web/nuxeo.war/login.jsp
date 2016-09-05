@@ -415,13 +415,13 @@ form > * {
         <%}%>
       </form>
     </div>
-  	<div class="news">
     <% if (showNews && !isTesting) { %>
+    <div class="news">
       <iframe id="news" class="news-container" style="visibility:hidden"
         onload="javascript:this.style.visibility='visible';"
         data-src="<%=iframeUrl%>"></iframe>
-    <% } %>
     </div>
+    <% } %>
   </section>
   <footer>
     <fmt:message bundle="${messages}" key="label.login.copyright">
@@ -435,11 +435,15 @@ form > * {
 
 <script type="text/javascript">
   document.getElementById('username').focus();
+  <% if (showNews && !isTesting) { %>
   // Don't load iframe on mobile devices
   if (window.matchMedia("(min-device-width: 800px)").matches) {
-  	newsIframe = document.getElementById('news');
-  	newsIframe.src = newsIframe.getAttribute('data-src');
+    newsIframe = document.getElementById('news');
+    if (newsIframe) {
+      newsIframe.src = newsIframe.getAttribute('data-src');
+    }
   }
+  <% } %>
 </script>
 
 <!--   Current User = <%=request.getRemoteUser()%> -->

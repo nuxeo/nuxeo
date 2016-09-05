@@ -118,6 +118,12 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
+        // Only accept POST requests
+        String method = httpRequest.getMethod();
+        if (!"POST".equals(method)) {
+            log.debug("Requets method is " + method + ", only accepting POST");
+            return null;
+        }
         log.debug("Looking for user/password in the request");
         String userName = httpRequest.getParameter(usernameKey);
         String password = httpRequest.getParameter(passwordKey);
