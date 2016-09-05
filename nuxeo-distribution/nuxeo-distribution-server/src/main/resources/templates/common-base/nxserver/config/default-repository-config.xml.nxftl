@@ -13,7 +13,9 @@
     point="repository">
     <repository name="default" label="label.default.repository">
       <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
-        blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" />
+        blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" 
+        idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" 
+        activeTimeoutMinutes="${nuxeo.vcs["active-timeout-minutes"]}" />
       <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
 <#if "${repository.clustering.invalidation}" == "redis">
       <clusterInvalidatorClass>org.nuxeo.ecm.core.redis.contribs.RedisClusterInvalidator</clusterInvalidatorClass>

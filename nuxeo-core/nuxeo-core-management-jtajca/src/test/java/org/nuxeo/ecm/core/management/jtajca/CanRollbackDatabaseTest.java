@@ -55,7 +55,7 @@ public class CanRollbackDatabaseTest {
         RuntimeContext context = ((OSGiRuntimeService) Framework.getRuntime()).getContext("org.nuxeo.runtime.datasource");
         context.deploy("ds-contrib.xml");
         try {
-            DataSource ds = DataSourceHelper.getDataSource("jdbc/repository_test");
+            DataSource ds = DataSourceHelper.getDataSource("jdbc/ontest");
             try (Connection db = ds.getConnection()) {
                 try (Statement st = db.createStatement()) {
                     st.execute("CREATE TABLE footest(a INTEGER PRIMARY KEY)");
@@ -89,7 +89,7 @@ public class CanRollbackDatabaseTest {
     }
 
     private void insertWrongReference() throws NamingException, SQLException, AssertionFailedError {
-        DataSource ds = DataSourceHelper.getDataSource("jdbc/repository_test");
+        DataSource ds = DataSourceHelper.getDataSource("jdbc/ontest");
         try (Connection db = ds.getConnection()) {
             try (Statement st = db.createStatement()) {
                 st.execute("INSERT INTO footest (a) VALUES (0)");

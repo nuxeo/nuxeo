@@ -53,7 +53,7 @@ public class IndexerDoesNotLeakTest {
     ConnectionPoolMonitor repoMonitor;
 
     @Inject
-    @Named("jdbc/repository_test")
+    @Named("jdbc/nuxeojunittests")
     ConnectionPoolMonitor dbMonitor;
 
     @Test

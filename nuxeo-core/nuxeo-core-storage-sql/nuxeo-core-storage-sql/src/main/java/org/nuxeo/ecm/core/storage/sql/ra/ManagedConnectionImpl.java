@@ -140,8 +140,11 @@ public class ManagedConnectionImpl implements ManagedConnection, ManagedConnecti
     @Override
     public void destroy() throws ResourceException {
         log.debug("destroy: " + this);
-        cleanup();
-        session.close();
+        try {
+            session.close();
+        } finally {
+            cleanup();
+        }
     }
 
     /**
