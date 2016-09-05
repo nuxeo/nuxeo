@@ -710,4 +710,11 @@ public class NXQLQueryBuilder {
         }
     }
 
+    /**
+     * @since 8.4
+     */
+    public static String appendClause(String query, String clause) {
+        return query + " AND " + clause;
+    }
+
 }

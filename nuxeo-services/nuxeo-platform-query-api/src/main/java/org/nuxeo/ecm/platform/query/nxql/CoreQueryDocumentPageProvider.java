@@ -224,12 +224,16 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     protected void buildQuery(CoreSession coreSession) {
         List<SortInfo> sort = null;
         List<QuickFilterDefinition> quickFilters = getQuickFilters();
+        String quickFiltersClause = "";
 
         if (quickFilters != null && !quickFilters.isEmpty()) {
             sort = new ArrayList<>();
+            QuickFilterDefinition firstFilter = quickFilters.remove(0);
+            quickFiltersClause = firstFilter.getClause();
+            sort.addAll(firstFilter.getSortInfos());
             for (QuickFilterDefinition filterDef : quickFilters) {
-                for (SortInfo info : filterDef.getSortInfos())
-                    sort.add(info);
+                quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, filterDef.getClause());
+                sort.addAll(filterDef.getSortInfos());
             }
         } else if (sortInfos != null) {
             sort = sortInfos;
@@ -242,7 +246,11 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         String newQuery;
         PageProviderDefinition def = getDefinition();
         if (def.getWhereClause() == null) {
-            newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(), def.getQuotePatternParameters(),
+
+            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
+                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+
+            newQuery = NXQLQueryBuilder.getQuery(pattern, getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
         } else {
             DocumentModel searchDocumentModel = getSearchDocumentModel();

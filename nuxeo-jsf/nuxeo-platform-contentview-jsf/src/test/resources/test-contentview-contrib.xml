@@ -188,11 +188,30 @@
         </pattern>
         <quickFilters>
           <quickFilter name="testQuickFilter">
+            <clause>dc:source = 'http://test.com'</clause>
             <sort column="dc:title" ascending="true" />
           </quickFilter>
         </quickFilters>
         <parameter>#{currentDocument.id}</parameter>
         <pageSize>2</pageSize>
+      </coreQueryPageProvider>
+    </contentView>
+
+    <contentView name="QUERY_WITH_QUICK_FILTER_OVERRIDE_SORT">
+      <coreQueryPageProvider>
+          <property name="coreSession">#{documentManager}</property>
+          <pattern>
+              SELECT * FROM Document WHERE ecm:parentId = ?
+          </pattern>
+          <sort column="dc:source" ascending="true" />
+          <quickFilters>
+              <quickFilter name="testQuickFilterOverride">
+                <clause>dc:source = 'http://test.com'</clause>
+                <sort column="dc:title" ascending="true" />
+              </quickFilter>
+          </quickFilters>
+          <parameter>#{currentDocument.id}</parameter>
+          <pageSize>2</pageSize>
       </coreQueryPageProvider>
     </contentView>
 
