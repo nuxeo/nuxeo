@@ -203,7 +203,6 @@ public class ContentViewActions implements Serializable {
      * <p>
      * The content view is put in a cache map so that it's not rebuilt at each call. It is rebuilt when its cache key
      * changes (if defined).
-     *
      */
     public ContentView getContentView(String name, DocumentModel searchDocumentModel) {
         ContentView cView = cache.get(name);
@@ -226,8 +225,7 @@ public class ContentViewActions implements Serializable {
         return getContentViewWithProvider(name, null, null, null, null);
     }
 
-    public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel)
-            {
+    public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel) {
         return getContentViewWithProvider(name, searchDocumentModel, null, null, null);
     }
 
@@ -247,8 +245,8 @@ public class ContentViewActions implements Serializable {
      */
     public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Object... params) {
-        return getContentViewWithProvider(name, searchDocumentModel, sortInfos, Long.valueOf(-1), pageSize,
-                currentPage, params);
+        return getContentViewWithProvider(name, searchDocumentModel, sortInfos, Long.valueOf(-1), pageSize, currentPage,
+                params);
     }
 
     /**
@@ -258,8 +256,7 @@ public class ContentViewActions implements Serializable {
      * This method is not public to avoid EL method resolution issues.
      */
     protected ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel,
-            List<SortInfo> sortInfos, Long defaultPageSize, Long pageSize, Long currentPage, Object... params)
-            {
+            List<SortInfo> sortInfos, Long defaultPageSize, Long pageSize, Long currentPage, Object... params) {
         ContentView cView = getContentView(name, searchDocumentModel);
         if (cView != null) {
             if (cView.getUseGlobalPageSize()) {
@@ -388,8 +385,7 @@ public class ContentViewActions implements Serializable {
             Object showPageSizeSelector, Object showRefreshCommand, Object showCSVExport, Object showPDFExport,
             Object showSyndicationLinks, Object showSlideshow, Object showEditColumns, Object showEditRows,
             Object showSpreadsheet) {
-        return webActions.getActionsList(
-                category,
+        return webActions.getActionsList(category,
                 createContentViewActionContext(currentDocument, contentView, showPageSizeSelector, showRefreshCommand,
                         showCSVExport, showPDFExport, showSyndicationLinks, showSlideshow, showEditColumns,
                         showEditRows, showSpreadsheet));
