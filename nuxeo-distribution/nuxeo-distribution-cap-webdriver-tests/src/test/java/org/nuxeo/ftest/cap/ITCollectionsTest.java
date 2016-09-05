@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
@@ -37,6 +34,7 @@ import org.nuxeo.functionaltests.pages.CollectionsPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
@@ -46,6 +44,10 @@ import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Collection feature.
@@ -88,8 +90,10 @@ public class ITCollectionsTest extends AbstractTest {
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (usersTab.isUserFound(TEST_USERNAME)) {
             usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-            documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                    "Workspaces");
+            documentBasePage = usersTab.exitAdminCenter()
+                                       .getHeaderLinks()
+                                       .getNavigationSubPage()
+                                       .goToDocument("Workspaces");
         }
         ContentTabSubPage contentTabSubPage = documentBasePage.switchToPersonalWorkspace().getContentTab();
         contentTabSubPage = contentTabSubPage.removeAllDocuments();
@@ -149,8 +153,9 @@ public class ITCollectionsTest extends AbstractTest {
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
 
         // Multiple add to collection
-        ContentTabSubPage workspaceContentTab = fileDocumentBasePage.getNavigationSubPage().goToDocument(
-                WORKSPACE_TITLE).getContentTab();
+        ContentTabSubPage workspaceContentTab = fileDocumentBasePage.getNavigationSubPage()
+                                                                    .goToDocument(WORKSPACE_TITLE)
+                                                                    .getContentTab();
 
         workspaceContentTab.selectDocumentByIndex(0, 1);
 
@@ -189,20 +194,23 @@ public class ITCollectionsTest extends AbstractTest {
 
         contentTabSubPage.switchToDocumentBase();
 
-        CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage().goToCollections().goToCollection(
-                COLLECTION_NAME_1);
-
+        CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage()
+                                                                                   .goToCollections()
+                                                                                   .goToCollection(COLLECTION_NAME_1);
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
+        // check home tab context is ok
+        HomePage hp = asPage(HomePage.class);
+        assertTrue(hp.isMainTabSelected(hp.homePageLink));
 
-        collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage().goToCollections().goToCollection(
-                COLLECTION_NAME_2);
+        collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage()
+                                                                 .goToCollections()
+                                                                 .goToCollection(COLLECTION_NAME_2);
 
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // Check copy/paste collection
         // navigate back to user workspace root
-        contentTabSubPage = collectionContentTabSubPage.switchToDocumentBase().getContentTab();
-        contentTabSubPage = contentTabSubPage.switchToPersonalWorkspace().getContentTab();
+        contentTabSubPage = collectionContentTabSubPage.switchToPersonalWorkspace().getContentTab();
 
         contentTabSubPage = contentTabSubPage.goToDocument(
                 isEnglish ? MY_COLLECTIONS_EN_LABEL : MY_COLLECTIONS_FR_LABEL).getContentTab();
@@ -256,8 +264,10 @@ public class ITCollectionsTest extends AbstractTest {
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        documentBasePage = usersTab.exitAdminCenter()
+                                   .getHeaderLinks()
+                                   .getNavigationSubPage()
+                                   .goToDocument("Workspaces");
 
         // Create 2 collections in "My Collections" container
         documentBasePage = documentBasePage.switchToPersonalWorkspace();
