@@ -5,6 +5,4 @@
   -->
   <update file="${package.root}/install/bundles" todir="${env.bundles}" />
   <update file="${package.root}/install/lib" todir="${env.lib}" />
-  <!-- delete file providing auth for the bare server -->
-  <delete file="${env.templates}/server/config/auth-config.xml" />
 </install>

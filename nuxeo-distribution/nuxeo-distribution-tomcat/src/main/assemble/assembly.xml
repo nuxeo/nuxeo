@@ -325,8 +325,6 @@ org.nuxeo.distribution.package=zip</echo>
     <copy todir="${cap.tomcat}/nxserver/bundles">
       <fileset dir="${marketplace}/install/bundles" />
     </copy>
-    <!-- Completely remove the directory as the fixup-cap removes the template from nuxeo.template.includes -->
-    <delete dir="${cap.tomcat}/templates/server" />
   </target>
 
   <target name="fixup-cap">
@@ -362,12 +360,6 @@ org.nuxeo.distribution.package=zip</echo>
       <replacefilter>
         <replacetoken>org.nuxeo.distribution.name=server</replacetoken>
         <replacevalue>org.nuxeo.distribution.name=cap</replacevalue>
-      </replacefilter>
-    </replace>
-    <replace file="${cap.tomcat}/templates/common/nuxeo.defaults">
-      <replacefilter>
-        <replacetoken>nuxeo.template.includes=common-base,server</replacetoken>
-        <replacevalue>nuxeo.template.includes=common-base</replacevalue>
       </replacefilter>
     </replace>
   </target>
