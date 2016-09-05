@@ -19,19 +19,12 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
-import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.*;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -73,7 +66,8 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            Object... parameters) {
+            List<QuickFilterDefinition> quickFilters, Object... parameters) {
+
         if (desc == null) {
             return null;
         }
@@ -106,6 +100,13 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         } else {
             pageProvider.setSortInfos(sortInfos);
         }
+
+        if (quickFilters == null) {
+            pageProvider.setQuickFilters(desc.getQuickFilters());
+        } else {
+            pageProvider.setQuickFilters(quickFilters);
+        }
+
         if (pageSize == null || pageSize.longValue() < 0) {
             pageProvider.setPageSize(desc.getPageSize());
         } else {
@@ -116,6 +117,15 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         }
 
         return pageProvider;
+    }
+
+    @Override
+    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
+            Object... parameters) {
+
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null,
+                parameters);
     }
 
     protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc) {
@@ -144,8 +154,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         return ret;
     }
 
-    protected PageProvider<?> newPageProviderInstance(String name, Class<? extends PageProvider<?>> klass)
-            {
+    protected PageProvider<?> newPageProviderInstance(String name, Class<? extends PageProvider<?>> klass) {
         PageProvider<?> ret;
         if (klass == null) {
             throw new NuxeoException(String.format(
@@ -165,15 +174,13 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Deprecated
     @Override
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters)
-            {
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {
         return getPageProvider(name, desc, null, sortInfos, pageSize, currentPage, properties, parameters);
     }
 
     @Override
     public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters)
-            {
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {
         PageProviderDefinition desc = providerReg.getPageProvider(name);
         if (desc == null) {
             throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));

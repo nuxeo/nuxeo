@@ -253,6 +253,18 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             newQuery = NXQLQueryBuilder.getQuery(pattern, getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
         } else {
+
+            // Add the quick filters clauses to the fixed part
+            if (!quickFiltersClause.isEmpty()) {
+                String fixedPart = def.getWhereClause().getFixedPart();
+                if (fixedPart != null) {
+                    def.getWhereClause().setFixedPart(NXQLQueryBuilder.appendClause(fixedPart,quickFiltersClause));
+                }
+                else {
+                    def.getWhereClause().setFixedPart(quickFiltersClause);
+                }
+            }
+
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
                 throw new NuxeoException(String.format(

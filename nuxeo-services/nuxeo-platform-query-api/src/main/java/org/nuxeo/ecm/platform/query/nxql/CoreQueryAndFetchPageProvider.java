@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
+import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
 
 /**
  * Page provider performing a queryAndFetch on a core session.
@@ -202,20 +203,53 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
     }
 
     protected void buildQuery() {
-        SortInfo[] sortArray = null;
-        if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[] {});
+        List<SortInfo> sort = null;
+        List<QuickFilterDefinition> quickFilters = getQuickFilters();
+        String quickFiltersClause = "";
+
+        if (quickFilters != null && !quickFilters.isEmpty()) {
+            sort = new ArrayList<>();
+            QuickFilterDefinition firstFilter = quickFilters.remove(0);
+            quickFiltersClause = firstFilter.getClause();
+            sort.addAll(firstFilter.getSortInfos());
+            for (QuickFilterDefinition filterDef : quickFilters) {
+                quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, filterDef.getClause());
+                sort.addAll(filterDef.getSortInfos());
+            }
+        } else if (sortInfos != null) {
+            sort = sortInfos;
         }
+
+        SortInfo[] sortArray = null;
+        if (sort != null)
+            sortArray = sort.toArray(new SortInfo[] {});
+
         String newQuery;
         PageProviderDefinition def = getDefinition();
         if (def.getWhereClause() == null) {
-            newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(), def.getQuotePatternParameters(),
+
+            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
+                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+
+            newQuery = NXQLQueryBuilder.getQuery(pattern, getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
         } else {
+
+            // Add the quick filters clauses to the fixed part
+            if (!quickFiltersClause.isEmpty()) {
+                String fixedPart = def.getWhereClause().getFixedPart();
+                if (fixedPart != null) {
+                    def.getWhereClause().setFixedPart(NXQLQueryBuilder.appendClause(fixedPart,quickFiltersClause));
+                }
+                else {
+                    def.getWhereClause().setFixedPart(quickFiltersClause);
+                }
+            }
+
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format("Cannot build query of provider '%s': "
-                        + "no search document model is set", getName()));
+                throw new NuxeoException(String.format(
+                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
             newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(), sortArray);
         }

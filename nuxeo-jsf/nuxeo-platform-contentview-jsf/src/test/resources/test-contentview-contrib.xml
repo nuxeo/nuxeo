@@ -198,15 +198,21 @@
     </contentView>
 
     <contentView name="QUERY_WITH_QUICK_FILTER_OVERRIDE_SORT">
+      <searchDocument>#{searchDocument}</searchDocument>
       <coreQueryPageProvider>
           <property name="coreSession">#{documentManager}</property>
-          <pattern>
-              SELECT * FROM Document WHERE ecm:parentId = ?
-          </pattern>
+          <whereClause>
+              <predicate parameter="dc:title" operator="FULLTEXT">
+                  <field schema="dublincore" name="title" />
+              </predicate>
+              <predicate type="subClause">
+                  <field schema="dublincore" name="description" />
+              </predicate>
+          </whereClause>
           <sort column="dc:source" ascending="true" />
           <quickFilters>
               <quickFilter name="testQuickFilterOverride">
-                <clause>dc:source = 'http://test.com'</clause>
+                <clause>ecm:parentId = ? AND dc:source = 'http://test.com'</clause>
                 <sort column="dc:title" ascending="true" />
               </quickFilter>
           </quickFilters>
