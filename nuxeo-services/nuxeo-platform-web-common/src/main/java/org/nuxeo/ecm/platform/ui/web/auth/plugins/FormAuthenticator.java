@@ -65,6 +65,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         return loginPage;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         try {
             log.debug("Forward to Login Screen");
@@ -116,6 +117,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         return Boolean.TRUE;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
         // Only accept POST requests
@@ -137,10 +139,12 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         return new UserIdentificationInfo(userName, password);
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return Boolean.TRUE;
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         if (parameters.get("LoginPage") != null) {
             loginPage = parameters.get("LoginPage");
@@ -153,6 +157,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         // Login Page is unauthenticated !
         List<String> prefix = new ArrayList<String>();

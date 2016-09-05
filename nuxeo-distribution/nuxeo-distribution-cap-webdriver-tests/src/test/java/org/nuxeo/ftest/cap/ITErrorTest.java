@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,8 +40,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests HTTP errors.
@@ -87,13 +87,13 @@ public class ITErrorTest extends AbstractTest {
             getAllPage(client, new WebRequest(new URL(
                     NUXEO_URL + "/nxstartup.faces?user_name=" + TEST_USERNAME + "&user_password=" + TEST_PASSWORD),
                     HttpMethod.POST));
-        HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/default-domain@view_documents");
-        assertEquals(page.getWebResponse().getContentAsString(), HttpServletResponse.SC_FORBIDDEN,
-                page.getWebResponse().getStatusCode()); // 403
-        assertEquals("Security Error", page.getTitleText());
+            HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/default-domain@view_documents");
+            assertEquals(page.getWebResponse().getContentAsString(), HttpServletResponse.SC_FORBIDDEN,
+                    page.getWebResponse().getStatusCode()); // 403
+            assertEquals("Security Error", page.getTitleText());
             assertEquals("You don't have the necessary permission to do the requested action.",
                     page.getElementsByTagName("h1").get(0).getTextContent());
-        client.getPage(NUXEO_URL + "/logout");
+            client.getPage(NUXEO_URL + "/logout");
         }
     }
 

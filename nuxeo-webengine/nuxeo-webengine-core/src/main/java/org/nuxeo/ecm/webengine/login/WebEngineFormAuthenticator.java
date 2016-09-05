@@ -45,6 +45,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
 
     public static final String LOGIN_KEY = "/@@login";
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest request, HttpServletResponse response, String baseURL) {
         return false; // TODO doesn't have a login page ?
     }
@@ -72,6 +73,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         return false;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
         // Only accept POST requests
@@ -88,10 +90,12 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         return new UserIdentificationInfo(userName, password);
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return true;
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         if (parameters.get("UsernameKey") != null) {
             usernameKey = parameters.get("UsernameKey");
@@ -101,10 +105,12 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         }
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return Collections.emptyList();
     }
 
+    @Override
     public boolean onError(HttpServletRequest request, HttpServletResponse response) {
         try {
             String path = getLoginPathInfo(request);
@@ -125,6 +131,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         return true;
     }
 
+    @Override
     public boolean onSuccess(HttpServletRequest request, HttpServletResponse response) {
         try {
             String path = getLoginPathInfo(request);
