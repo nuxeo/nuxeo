@@ -34,6 +34,8 @@ public class NuxeoConnectionManagerConfiguration {
 
     public static final int DEFAULT_IDLE_TIMEOUT_MINUTES = 0; // no timeout
 
+    public static final int DEFAULT_ACTIVE_TIMEOUT_MINUTES = 0; // no timeout
+
     @XNode("@name")
     private String name = "NuxeoConnectionManager";
 
@@ -70,6 +72,9 @@ public class NuxeoConnectionManagerConfiguration {
     @XNode("@idleTimeoutMinutes")
     private Integer idleTimeoutMinutes;
 
+    @XNode("@activeTimeoutMinutes")
+    private Integer activeTimeoutMinutes;
+
     Validation testOnBorrow;
 
     Validation testOnReturn;
@@ -89,6 +94,7 @@ public class NuxeoConnectionManagerConfiguration {
         minPoolSize = other.minPoolSize;
         blockingTimeoutMillis = other.blockingTimeoutMillis;
         idleTimeoutMinutes = other.idleTimeoutMinutes;
+        activeTimeoutMinutes = other.activeTimeoutMinutes;
         testOnBorrow = other.testOnBorrow;
         testOnReturn = other.testOnReturn;
     }
@@ -126,6 +132,9 @@ public class NuxeoConnectionManagerConfiguration {
         }
         if (other.idleTimeoutMinutes != null) {
             idleTimeoutMinutes = other.idleTimeoutMinutes;
+        }
+        if (other.activeTimeoutMinutes != null) {
+            activeTimeoutMinutes = other.activeTimeoutMinutes;
         }
         if (other.testOnBorrow != null) {
             testOnBorrow = other.testOnBorrow;
@@ -193,6 +202,10 @@ public class NuxeoConnectionManagerConfiguration {
         return defaultInt(idleTimeoutMinutes, DEFAULT_IDLE_TIMEOUT_MINUTES);
     }
 
+    public int getActiveTimeoutMinutes() {
+        return defaultInt(activeTimeoutMinutes, DEFAULT_ACTIVE_TIMEOUT_MINUTES);
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -237,6 +250,10 @@ public class NuxeoConnectionManagerConfiguration {
         this.idleTimeoutMinutes = Integer.valueOf(idleTimeoutMinutes);
     }
 
+    public void setActiveTimeoutMinutes(int activeTimeoutMinutes) {
+        this.activeTimeoutMinutes = Integer.valueOf(activeTimeoutMinutes);
+    }
+
     @XNode("@validationQuery")
     public void setValidationQuery(String sql) {
         if (sql.isEmpty()) {
@@ -278,4 +295,6 @@ public class NuxeoConnectionManagerConfiguration {
                 "maxWait deprecated dbcp pool attribute usage, should use blockingTimeoutMillis geronimo pool attribute instead");
 
     }
+
+
 }

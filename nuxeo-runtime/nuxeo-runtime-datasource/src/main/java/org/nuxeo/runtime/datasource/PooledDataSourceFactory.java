@@ -95,11 +95,11 @@ public class PooledDataSourceFactory implements ObjectFactory {
                 if (!noSharing) {
                     return getConnection();
                 }
-                wrapper.enterNoSharing();
+                wrapper.getManager().enterNoSharing();
                 try {
                     return getConnection();
                 } finally {
-                    wrapper.exitNoSharing();
+                    wrapper.getManager().exitNoSharing();
                 }
             }
 

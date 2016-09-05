@@ -28,11 +28,6 @@ org.nuxeo.ecm.product.version=LTS 2015
 #nuxeo.db.name=
 #nuxeo.db.user=
 #nuxeo.db.password=
-nuxeo.db.min-pool-size=5
-nuxeo.db.max-pool-size=100
-nuxeo.db.blocking-timeout-millis=10000
-# Database transaction timeout in seconds
-nuxeo.db.transactiontimeout=300
 
 # Redis
 nuxeo.redis.enabled=false
