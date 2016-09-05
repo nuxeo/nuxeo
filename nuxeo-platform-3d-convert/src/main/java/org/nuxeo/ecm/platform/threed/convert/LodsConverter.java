@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLYGONS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 
@@ -77,9 +78,8 @@ public class LodsConverter extends BaseBlenderConverter {
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
         List<String> conversions = getConversions(outDir);
-        List<String> lodList = cmdParams.getParameters().get(LODS_PARAMETER).getValues();
-        List<String> maxPolyList = cmdParams.getParameters().get(MAX_POLYGONS_PARAMETER).getValues();
-        if (conversions.isEmpty() || conversions.size() != lodList.size() || conversions.size() != maxPolyList.size()) {
+        List<String> lodIdList = cmdParams.getParameters().get(LOD_IDS_PARAMETER).getValues();
+        if (conversions.isEmpty() || conversions.size() != lodIdList.size()) {
             throw new ConversionException("Unable get correct number of lod versions");
         }
 

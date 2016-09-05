@@ -4,7 +4,7 @@ if args.outdir == None:
 try:
     lodid
 except NameError:
-    outfile = args.outdir + '/transmissionformat-' + str(lod) + '-' + str(max_polygons) + '.dae'
+    outfile = args.outdir + '/transmissionformat.dae'
 else:
     outfile = args.outdir + '/transmissionformat-' + str(lodid) + '-' + str(lod) + '-' + str(max_polygons) + '.dae'
 

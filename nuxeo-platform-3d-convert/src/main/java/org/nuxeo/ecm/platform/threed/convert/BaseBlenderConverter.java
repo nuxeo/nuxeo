@@ -223,7 +223,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
                         MAX_POLYGONS_PARAMETER.equals(paramName) ||
                         COORDS_PARAMETER.equals(paramName) ||
                         DIMENSIONS_PARAMETER.equals(paramName)) {
-                        params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
+                        if (strParams.get(paramName) != null) {
+                            params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
+                        }
                     } else {
                         params.addNamedParameter(paramName, strParams.get(paramName));
                     }

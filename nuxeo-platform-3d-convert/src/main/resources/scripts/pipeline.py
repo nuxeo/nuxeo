@@ -57,7 +57,6 @@ if args.operators is None:
 
 base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
 lod = current_lod = calculated_lod = 100
-max_polygons = 9999
 
 def params_filled(params):
     return params is not None and len(params) > 0 and params[0] != ''

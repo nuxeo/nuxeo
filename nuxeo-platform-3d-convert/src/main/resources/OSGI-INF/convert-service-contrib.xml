@@ -22,7 +22,6 @@
                 <parameter name="operators">import lod convert lod convert lod convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
                 <parameter name="lods">33 11 3</parameter>
-                <parameter name="maxPolys">9999 9999 9999</parameter>
             </parameters>
         </converter>
         <converter name="colladaConversion" class="org.nuxeo.ecm.platform.threed.convert.ColladaConverter">
@@ -43,7 +42,6 @@
                 <parameter name="operators">import render render lod convert lod convert lod convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
                 <parameter name="lods">33 11 3</parameter>
-                <parameter name="maxPolys">9999 9999 9999</parameter>
                 <parameter name="dimensions">800,600 800,600</parameter>
                 <parameter name="coords">0,0 90,0</parameter>
             </parameters>
