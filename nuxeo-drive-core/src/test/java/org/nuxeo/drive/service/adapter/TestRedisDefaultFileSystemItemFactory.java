@@ -18,6 +18,7 @@
  */
 package org.nuxeo.drive.service.adapter;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
@@ -34,6 +35,7 @@ import org.nuxeo.runtime.test.runner.Features;
 @RunWith(ContributableFeaturesRunner.class)
 @Features(NuxeoDriveRedisCacheFeature.class)
 @SuiteClasses(DefaultFileSystemItemFactoryFixture.class)
+@Ignore(value = "NXP-20338: Nested Transactions are not supported")
 public class TestRedisDefaultFileSystemItemFactory {
 
 }
