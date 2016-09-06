@@ -756,6 +756,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static String getSavedRequestedURL(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         String requestedPage = null;
+        HttpSession session = httpRequest.getSession(false);
         if (httpRequest.getParameter(REQUESTED_URL) != null) {
             String requestedUrl = httpRequest.getParameter(REQUESTED_URL);
             if (requestedUrl != null && !"".equals(requestedUrl)) {
@@ -767,13 +768,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         } else {
             // retrieve from session
-            HttpSession session = httpRequest.getSession(false);
             if (session != null) {
                 requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
-                if (requestedPage != null) {
-                    // clean up session
-                    session.removeAttribute(START_PAGE_SAVE_KEY);
-                }
             }
 
             // retrieve from SSO cookies
@@ -789,6 +785,11 @@ public class NuxeoAuthenticationFilter implements Filter {
                     }
                 }
             }
+        }
+
+        // clean up session
+        if (session != null) {
+            session.removeAttribute(START_PAGE_SAVE_KEY);
         }
 
         // add locale if not in the URL params
