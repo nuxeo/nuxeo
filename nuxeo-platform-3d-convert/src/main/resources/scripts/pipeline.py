@@ -7,7 +7,7 @@ from mathutils import Vector
 import argparse
 
 
-def sphericalCoords(s):
+def spherical_coords(s):
     try:
         if s == '':
             return 0, 0
@@ -27,6 +27,9 @@ def dimensions(d):
         raise argparse.ArgumenTypeError('Dimensions must be width,height')
 
 
+def params_filled(params):
+    return params is not None and len(params) > 0 and params[0] != ''
+
 parser = argparse.ArgumentParser(description='Blender pipeline.')
 parser.add_argument('-i', '--input', dest='input',
                     help='path for the input file')
@@ -45,7 +48,7 @@ parser.add_argument('-ri', '--renderids', dest='renderids', nargs='*',
 parser.add_argument('-d', '--dimensions', help='list of dimensions for render',
                     dest='dimensions', type=dimensions, nargs='*')
 parser.add_argument('-c', '--coords', help='list of spherical coordinates for render',
-                    dest='coords', type=sphericalCoords, nargs='*')
+                    dest='coords', type=spherical_coords, nargs='*')
 
 args_to_parse = sys.argv[sys.argv.index('--') + 1:]
 print(args_to_parse)
@@ -56,32 +59,26 @@ if args.operators is None:
     sys.exit()
 
 base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
-lod = current_lod = calculated_lod = 100
+lod = 100
+current_lod = 1.0
 
-def params_filled(params):
-    return params is not None and len(params) > 0 and params[0] != ''
-
-# turn all elements of the lods list into integers
-if params_filled(args.lods):
-    args.lods = [int(lod) for lod in args.lods]
+if params_filled(args.lodids):
+    lod_args = {'i': args.lodids, 'l': [], 'mp': []}
+    for i in range(0, len(args.lodids)):
+        if not params_filled(args.lods) or args.lods[i] == 'None':
+            lod_args['l'].append(None)
+        else:
+            lod_args['l'].append(int(args.lods[i]))
+        if not params_filled(args.maxpolys) or args.maxpolys[i] == 'None':
+            lod_args['mp'].append(None)
+        else:
+            lod_args['mp'].append(int(args.maxpolys[i]))
 
 for operator in args.operators:
     if operator == 'lod':
-        if params_filled(args.lods):
-            lodindex = args.lods.index(max(args.lods))
-        elif params_filled(args.maxpolys):
-            lodindex = args.maxpolys.index(max(args.maxpolys))
-        if params_filled(args.lods):
-            current_lod = int(args.lods.pop(lodindex))
-            calculated_lod = int((current_lod / lod) * 100)
-            lod = current_lod
-        else:
-            calculated_lod = None
-        if params_filled(args.maxpolys):
-            max_polygons = args.maxpolys.pop(lodindex)
-        else:
-            max_polygons = None
-        lodid = args.lodids.pop(lodindex)
+        lodid = lod_args['i'].pop(0)
+        lod = lod_args['l'].pop(0)
+        max_polygons = lod_args['mp'].pop(0)
     if operator == 'render':
         coords = args.coords.pop(0)
         dim = args.dimensions.pop(0)
