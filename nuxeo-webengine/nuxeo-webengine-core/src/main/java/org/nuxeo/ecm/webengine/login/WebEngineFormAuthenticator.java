@@ -79,7 +79,7 @@ public class WebEngineFormAuthenticator implements NuxeoAuthenticationPlugin, Lo
         // Only accept POST requests
         String method = httpRequest.getMethod();
         if (!"POST".equals(method)) {
-            log.debug("Requets method is " + method + ", only accep ting POST");
+            log.debug("Request method is " + method + ", only accepting POST");
             return null;
         }
         if (!isLoginRequest(httpRequest)) {

@@ -123,7 +123,7 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
         // Only accept POST requests
         String method = httpRequest.getMethod();
         if (!"POST".equals(method)) {
-            log.debug("Requets method is " + method + ", only accepting POST");
+            log.debug("Request method is " + method + ", only accepting POST");
             return null;
         }
         log.debug("Looking for user/password in the request");
