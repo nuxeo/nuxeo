@@ -456,6 +456,19 @@
         }
       ]]></script>
     </scriptedOperation>
+  
+    <scriptedOperation id="Scripting.LogScript">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <category>javascript</category>
+      <description></description>
+      <script><![CDATA[
+        function run(input, params) {
+          Log(input, {'level': 'INFO','message': 'Success!'});
+          return input;
+         }
+      ]]></script>
+    </scriptedOperation>
 
   </extension>
 
@@ -498,6 +511,15 @@
       </operation>
       <operation id="Scripting.MVELResolver">
         <param type="string" name="mvel">expr:Foo @{myvar}</param>
+      </operation>
+    </chain>
+  
+    <chain id="Scripting.ChainWithScripting">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Scripting.LogScript"/>
+      <operation id="Log">
+        <param type="string" name="level">info</param>
+        <param type="string" name="message">Success!</param>
       </operation>
     </chain>
 
