@@ -141,7 +141,6 @@
     <tomcat.version>7.0.64</tomcat.version>
     <lucene.version>5.5.0</lucene.version>
     <elasticsearch.version>2.3.5-nx1</elasticsearch.version>
-    <jna.version>4.1.0</jna.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.7.0-NX1</gwt.version>
@@ -1967,12 +1966,6 @@
         <groupId>org.elasticsearch</groupId>
         <artifactId>elasticsearch</artifactId>
         <version>${elasticsearch.version}</version>
-      </dependency>
-      <!-- Used in elasticsearch embed cluster -->
-      <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna</artifactId>
-        <version>${jna.version}</version>
       </dependency>
 
       <!-- apache -->
