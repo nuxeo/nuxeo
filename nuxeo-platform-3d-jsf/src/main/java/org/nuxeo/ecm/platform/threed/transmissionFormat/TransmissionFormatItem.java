@@ -42,11 +42,15 @@ public class TransmissionFormatItem {
 
     protected final String lodPropertyName;
 
+    protected final String maxPolyPropertyName;
+
     protected String filename;
 
-    protected Long size;
-
     protected Long lod;
+
+    protected Long maxPoly;
+
+    protected Long size;
 
     public TransmissionFormatItem(DocumentModel doc, String basePropertyPath, int position) {
         this.doc = doc;
@@ -54,11 +58,13 @@ public class TransmissionFormatItem {
         String propertyPath = basePropertyPath + "/" + position;
         blobPropertyName = propertyPath + "/content";
         lodPropertyName = propertyPath + "/lod";
+        maxPolyPropertyName = propertyPath + "/maxPoly";
         try {
             Blob blob = (Blob) doc.getPropertyValue(blobPropertyName);
             filename = blob.getFilename();
-            size = blob.getLength();
             lod = (Long) doc.getPropertyValue(lodPropertyName);
+            maxPoly = (Long) doc.getPropertyValue(maxPolyPropertyName);
+            size = blob.getLength();
         } catch (PropertyException e) {
             log.warn(e);
         }
@@ -69,7 +75,11 @@ public class TransmissionFormatItem {
     }
 
     public String getLod() {
-        return lod.toString();
+        return (lod == null) ? "-" : lod.toString();
+    }
+
+    public String getMaxPoly() {
+        return (maxPoly == null) ? "-" : maxPoly.toString();
     }
 
     public String getSize() {

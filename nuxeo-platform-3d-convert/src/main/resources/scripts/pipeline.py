@@ -65,11 +65,11 @@ current_lod = 1.0
 if params_filled(args.lodids):
     lod_args = {'i': args.lodids, 'l': [], 'mp': []}
     for i in range(0, len(args.lodids)):
-        if not params_filled(args.lods) or args.lods[i] == 'None':
+        if not params_filled(args.lods) or args.lods[i] == 'None' or args.lods[i] == 'null':
             lod_args['l'].append(None)
         else:
             lod_args['l'].append(int(args.lods[i]))
-        if not params_filled(args.maxpolys) or args.maxpolys[i] == 'None':
+        if not params_filled(args.maxpolys) or args.maxpolys[i] == 'None' or args.maxpolys[i] == 'null':
             lod_args['mp'].append(None)
         else:
             lod_args['mp'].append(int(args.maxpolys[i]))

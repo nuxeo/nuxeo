@@ -37,10 +37,10 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     protected String name;
 
     @XNode("@percentage")
-    protected Integer percentage = 100;
+    protected Integer percentage;
 
     @XNode("@maxPoly")
-    protected Integer maxPoly = Integer.MAX_VALUE;
+    protected Integer maxPoly;
 
     @XNode("@enabled")
     protected Boolean enabled;
