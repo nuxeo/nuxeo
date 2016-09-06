@@ -9,4 +9,11 @@
         </listener>
     </extension>
 
+    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+        <listener name="threeDBatchCleanerListener" async="false" postCommit="true"
+                  class="org.nuxeo.ecm.platform.threed.listener.ThreeDBatchCleanerListener" priority="20">
+            <event>documentModified</event>
+        </listener>
+    </extension>
+
 </component>

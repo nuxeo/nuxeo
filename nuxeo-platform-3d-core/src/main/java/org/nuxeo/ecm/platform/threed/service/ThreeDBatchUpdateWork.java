@@ -98,7 +98,8 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         ThreeD originalThreeD = null;
         try {
             openSystemSession();
-            originalThreeD = getThreeDToConvert();
+            DocumentModel doc = session.getDocument(new IdRef(docId));
+            originalThreeD = getThreeDToConvert(doc);
             commitOrRollbackTransaction();
         } finally {
             cleanUp(true, null);
@@ -146,8 +147,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         setStatus("Done");
     }
 
-    protected ThreeD getThreeDToConvert() {
-        DocumentModel doc = session.getDocument(new IdRef(docId));
+    protected ThreeD getThreeDToConvert(DocumentModel doc) {
         ThreeDDocument threedDocument = doc.getAdapter(ThreeDDocument.class);
         ThreeD threed = threedDocument.getThreeD();
         if (threed == null) {

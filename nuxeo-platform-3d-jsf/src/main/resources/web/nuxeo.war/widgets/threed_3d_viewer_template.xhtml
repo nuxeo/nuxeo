@@ -1,7 +1,8 @@
 <h:panelGroup layout="block"
               xmlns="http://www.w3.org/1999/xhtml"
               xmlns:h="http://java.sun.com/jsf/html"
-              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:c="http://java.sun.com/jstl/core"
+              xmlns:nxu="http://nuxeo.org/nxweb/util"
               styleClass="tabsContent">
 
     <script type="text/javascript"
@@ -16,8 +17,13 @@
             height: 640px;
         }
     </style>
-
-    <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}" id="3d-simple-viewer">
-    </nuxeo-3d-viewer>
-
+    <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}">
+        <c:if test="#{!isConverting}">
+            <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}" id="3d-simple-viewer">
+            </nuxeo-3d-viewer>
+        </c:if>
+        <c:if test="#{isConverting}">
+            <p>#{messages['label.widget.threed.converting']}</p>
+        </c:if>
+    </nxu:set>
 </h:panelGroup>

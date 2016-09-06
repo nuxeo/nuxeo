@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.threed.service;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDBatchProgress;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 
 import java.util.Collection;
@@ -46,6 +47,11 @@ public interface ThreeDService {
      * @return a {@code List<Blob>} object of the converted assets.
      */
     Collection<Blob> batchConvert(ThreeD originalThreed);
+
+    /**
+     * Clears data model for render views and transmission formats.
+     */
+    void cleanBatchData(DocumentModel doc);
 
     /**
      * Batch convert the Collada {@code colladaThreeD} to glTF
@@ -90,4 +96,13 @@ public interface ThreeDService {
      */
     RenderView getRenderView(Integer azimuth, Integer Zenith);
 
+
+    /**
+     * Get the batch processing progress
+     *
+     * @param repositoryName
+     * @param docId of the document being processed
+     * @return a {@link ThreeDBatchProgress} with status (queued, running, unknown) and a message of the running state
+     */
+    ThreeDBatchProgress getBatchProgress(String repositoryName, String docId);
 }

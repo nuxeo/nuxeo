@@ -25,8 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDBatchProgress;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -42,6 +44,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.nuxeo.ecm.core.work.api.Work.State.*;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVERTER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
@@ -128,7 +133,16 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     }
 
     @Override
+    public void cleanBatchData(DocumentModel doc) {
+        List<Map<String, Serializable>> emptyList = new ArrayList<>();
+        doc.setPropertyValue(TRANSMISSIONS_PROPERTY, (Serializable) emptyList);
+        doc.setPropertyValue(RENDER_VIEWS_PROPERTY, (Serializable) emptyList);
+        doc.getCoreSession().saveDocument(doc);
+    }
+
+    @Override
     public void launchBatchConversion(DocumentModel doc) {
+        cleanBatchData(doc);
         ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
@@ -248,5 +262,20 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         List<Blob> blobs = result.getBlobs();
         return new TransmissionThreeD(blobs.get(0), colladaThreeD.getLod(), colladaThreeD.getMaxPoly(),
                 colladaThreeD.getName());
+    }
+
+    @Override
+    public ThreeDBatchProgress getBatchProgress(String repositoryName, String docId) {
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        Work work = new ThreeDBatchUpdateWork(repositoryName, docId);
+        Work workRunning = workManager.find(work.getId(), RUNNING);
+        if (workRunning != null) {
+            return new ThreeDBatchProgress(ThreeDBatchProgress.STATUS_CONVERSION_RUNNING, workRunning.getStatus());
+        }
+        Work workScheduled = workManager.find(work.getId(), SCHEDULED);
+        if (workScheduled != null) {
+            return new ThreeDBatchProgress(ThreeDBatchProgress.STATUS_CONVERSION_QUEUED, workRunning.getStatus());
+        }
+        return new ThreeDBatchProgress(ThreeDBatchProgress.STATUS_CONVERSION_UNKNOWN, "");
     }
 }

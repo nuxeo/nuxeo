@@ -23,6 +23,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.platform.threed.service.ThreeDService;
+import org.nuxeo.runtime.api.Framework;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +52,11 @@ public class RenderViewActions {
             items.add(new RenderViewItem(doc, RENDER_VIEWS_PROPERTY, i));
         }
         return items;
+    }
+
+    public boolean isConvertingRenders(DocumentModel doc) {
+        ThreeDService service = Framework.getLocalService(ThreeDService.class);
+        return !service.getBatchProgress(doc.getRepositoryName(), doc.getId()).isUnknown();
     }
 
 }
