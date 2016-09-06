@@ -54,7 +54,7 @@ public class BatchConverterHelper {
 
             if (id.equals("original")) {
                 int lod = Integer.valueOf(fileNameArray[2]);
-                int maxPoly = Integer.valueOf(fileNameArray[3]);
+                long maxPoly = Long.valueOf(fileNameArray[3]);
                 return new TransmissionThreeD(blob, lod, maxPoly, id);
             } else {
                 AutomaticLOD currentALOD = threeDService.getAutomaticLOD(id);

@@ -40,7 +40,7 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     protected Integer percentage;
 
     @XNode("@maxPoly")
-    protected Integer maxPoly;
+    protected Long maxPoly;
 
     @XNode("@enabled")
     protected Boolean enabled;
@@ -97,11 +97,11 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
         this.percentage = percentage;
     }
 
-    public Integer getMaxPoly() {
+    public Long getMaxPoly() {
         return maxPoly;
     }
 
-    public void setMaxPoly(Integer maxPoly) {
+    public void setMaxPoly(Long maxPoly) {
         this.maxPoly = maxPoly;
     }
 

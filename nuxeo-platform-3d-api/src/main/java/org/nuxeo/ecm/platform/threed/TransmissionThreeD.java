@@ -41,11 +41,11 @@ public class TransmissionThreeD extends ThreeD {
 
     protected final Integer lod;
 
-    protected final Integer maxPoly;
+    protected final Long maxPoly;
 
     protected final String name;
 
-    public TransmissionThreeD(Blob blob, Integer lod, Integer maxPoly, String name) {
+    public TransmissionThreeD(Blob blob, Integer lod, Long maxPoly, String name) {
         super(blob, null);
         this.lod = lod;
         this.maxPoly = maxPoly;
@@ -58,7 +58,7 @@ public class TransmissionThreeD extends ThreeD {
         Long lodLong = (Long) map.get(LOD);
         lod = (lodLong != null) ? lodLong.intValue() : 0;
         Long maxPolyLong = (Long) map.get(MAX_POLYGONS);
-        maxPoly = (maxPolyLong != null) ? maxPolyLong.intValue() : 0;
+        maxPoly = (maxPolyLong != null) ? maxPolyLong : 0;
     }
 
     public String getTitle() {
@@ -69,7 +69,7 @@ public class TransmissionThreeD extends ThreeD {
         return lod;
     }
 
-    public Integer getMaxPoly() {
+    public Long getMaxPoly() {
         return maxPoly;
     }
 
