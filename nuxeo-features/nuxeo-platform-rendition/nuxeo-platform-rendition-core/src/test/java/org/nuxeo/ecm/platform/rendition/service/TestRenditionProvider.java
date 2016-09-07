@@ -75,7 +75,7 @@ public class TestRenditionProvider {
         assertNotNull(renderable);
 
         List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
-        assertEquals(5, defs.size());
+        assertEquals(4, defs.size());
 
         Collections.sort(defs, RENDITION_DEFINITION_CMP);
         RenditionDefinition def = defs.get(0);
@@ -83,7 +83,7 @@ public class TestRenditionProvider {
         assertEquals("dummy/pdf", def.getContentType());
 
         List<Rendition> renditions = renditionService.getAvailableRenditions(file);
-        assertEquals(5, renditions.size());
+        assertEquals(4, renditions.size());
 
         Rendition ren = renditionService.getRendition(file, "dummyRendition");
         assertNotNull(ren);
@@ -99,7 +99,7 @@ public class TestRenditionProvider {
         assertNotNull(renderable);
 
         List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
-        assertEquals(5, defs.size());
+        assertEquals(4, defs.size());
 
         Collections.sort(defs, RENDITION_DEFINITION_CMP);
         RenditionDefinition def = defs.get(1);
@@ -124,7 +124,7 @@ public class TestRenditionProvider {
         assertNotNull(renderable);
 
         List<RenditionDefinition> defs = renderable.getAvailableRenditionDefinitions();
-        assertEquals(5, defs.size());
+        assertEquals(4, defs.size());
 
         Collections.sort(defs, RENDITION_DEFINITION_CMP);
         RenditionDefinition def = defs.get(1);
