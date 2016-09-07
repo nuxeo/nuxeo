@@ -62,7 +62,7 @@ public class TransmissionThreeD extends ThreeD {
     }
 
     public String getTitle() {
-        return String.valueOf(lod);
+        return name;
     }
 
     public Integer getLod() {

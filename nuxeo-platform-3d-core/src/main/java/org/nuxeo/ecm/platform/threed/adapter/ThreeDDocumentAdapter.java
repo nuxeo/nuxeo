@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDRenderView.TITLE;
-import static org.nuxeo.ecm.platform.threed.TransmissionThreeD.LOD;
+import static org.nuxeo.ecm.platform.threed.TransmissionThreeD.NAME;
 
 /**
  * Default implementation of {@link ThreeDDocument}.
@@ -67,10 +67,10 @@ public class ThreeDDocumentAdapter implements ThreeDDocument {
 
     @SuppressWarnings("unchecked")
     @Override
-    public TransmissionThreeD getTransmissionThreeD(int lod) {
+    public TransmissionThreeD getTransmissionThreeD(String name) {
         List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(TRANSMISSIONS_PROPERTY);
         return list.stream()
-                   .filter(item -> ((Long) item.get(LOD)) != null && lod == ((Long) item.get(LOD)).intValue())
+                   .filter(item -> ((String) item.get(NAME)) != null && name.equals(item.get(NAME)))
                    .map(TransmissionThreeD::new)
                    .findFirst()
                    .orElse(null);

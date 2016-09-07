@@ -44,8 +44,8 @@ public class ThreeDPreviewer extends AbstractPreviewer implements MimeTypePrevie
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         ThreeDDocument threeDDocument = dm.getAdapter(ThreeDDocument.class);
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        return buildPreview(threeDDocument.getTransmissionThreeD(
-                Iterables.get(threeDService.getAvailableLODs(), 0).getPercentage()), dm);
+        return buildPreview(
+                threeDDocument.getTransmissionThreeD(Iterables.get(threeDService.getAutomaticLODs(), 0).getName()), dm);
 
     }
 

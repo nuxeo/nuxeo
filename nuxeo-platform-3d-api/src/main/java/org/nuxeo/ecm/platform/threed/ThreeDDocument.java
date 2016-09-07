@@ -39,10 +39,10 @@ public interface ThreeDDocument {
     Collection<TransmissionThreeD> getTransmissionThreeDs();
 
     /**
-     * Returns a given {@link TransmissionThreeD} based on its {@code lod}, {@code null} if this transmission 3d does
+     * Returns a given {@link TransmissionThreeD} based on its {@code name}, {@code null} if this transmission 3d does
      * not exist.
      */
-    TransmissionThreeD getTransmissionThreeD(int lod);
+    TransmissionThreeD getTransmissionThreeD(String name);
 
     /**
      * Returns all the {@link ThreeDRenderView}s for this {@code ThreeDDocument}.
