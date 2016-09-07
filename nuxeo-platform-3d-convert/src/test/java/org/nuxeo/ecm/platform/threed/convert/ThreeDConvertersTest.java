@@ -45,6 +45,13 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_3DSTUDIO;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_COLLADA;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_EXTENSIBLE_3D_GRAPHICS;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_FILMBOX;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STANFORD;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STEREOLITHOGRAPHY;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_WAVEFRONT;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
@@ -74,13 +81,13 @@ public class ThreeDConvertersTest {
         List<Blob> blobs = new ArrayList<>();
         Blob blob;
         try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".obj")) {
-            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".obj"), is);
+            assertNotNull(String.format("Failed to load resource: %s.obj", TEST_MODEL), is);
             blob = Blobs.createBlob(is);
             blob.setFilename(TEST_MODEL + ".obj");
             blobs.add(blob);
         }
         try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".mtl")) {
-            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".mtl"), is);
+            assertNotNull(String.format("Failed to load resource: %s.mtl", TEST_MODEL), is);
             blob = Blobs.createBlob(is);
             blob.setFilename(TEST_MODEL + ".mtl");
             blobs.add(blob);
@@ -88,12 +95,13 @@ public class ThreeDConvertersTest {
         return new SimpleBlobHolder(blobs);
     }
 
-    protected static BlobHolder getTestColladaBlob() throws IOException {
+    protected static BlobHolder getTestBlob(String extension) throws IOException {
         List<Blob> blobs = new ArrayList<>();
-        try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + TEST_MODEL + ".dae")) {
-            assertNotNull(String.format("Failed to load resource: " + TEST_MODEL + ".dae"), is);
+        String fileName = String.format("%s.%s", TEST_MODEL, extension);
+        try (InputStream is = ThreeDConvertersTest.class.getResourceAsStream("/test-data/" + fileName)) {
+            assertNotNull(String.format("Failed to load resource: %s", fileName), is);
             Blob blob = Blobs.createBlob(is);
-            blob.setFilename(TEST_MODEL + ".dae");
+            blob.setFilename(fileName);
             blobs.add(blob);
         }
         return new SimpleBlobHolder(blobs);
@@ -106,6 +114,14 @@ public class ThreeDConvertersTest {
         BlobHolder result = cs.convert(converter, blobs, params);
         assertNotNull(result);
         return result;
+    }
+
+    protected void testColladaConverterWithBlobs(BlobHolder inputBlobs) throws Exception {
+        List<Blob> resultBlobs = applyConverter(COLLADA_CONVERTER, inputBlobs).getBlobs();
+        assertEquals(1, resultBlobs.size());
+        assertTrue(resultBlobs.get(0).getLength() > 0);
+        assertTrue(resultBlobs.get(0).getFilename().contains("transmissionformat"));
+        assertTrue(resultBlobs.get(0).getFilename().contains(".dae"));
     }
 
     @Test
@@ -130,19 +146,47 @@ public class ThreeDConvertersTest {
 
     @Test
     public void testCollada2glTFConverter() throws Exception {
-        BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, getTestColladaBlob());
+        BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, getTestBlob(EXTENSION_COLLADA));
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());
         assertEquals(TEST_MODEL + ".gltf", blobs.get(0).getFilename());
     }
 
     @Test
-    public void testColladaConverter() throws Exception {
-        BlobHolder result = applyConverter(COLLADA_CONVERTER, getTestThreeDBlobs());
-        List<Blob> blobs = result.getBlobs();
-        assertEquals(1, blobs.size());
-        assertTrue(blobs.get(0).getFilename().contains("transmissionformat"));
-        assertTrue(blobs.get(0).getFilename().contains(".dae"));
+    public void testColladaConverter3ds() throws Exception {
+        testColladaConverterWithBlobs(getTestBlob(EXTENSION_3DSTUDIO));
+    }
+
+    @Test
+    public void testColladaConverterFbx() throws Exception {
+        testColladaConverterWithBlobs(getTestBlob(EXTENSION_FILMBOX));
+    }
+
+    @Test
+    public void testColladaConverterPly() throws Exception {
+        testColladaConverterWithBlobs(getTestBlob(EXTENSION_STANFORD));
+    }
+
+    @Test
+    public void testColladaConverterX3d() throws Exception {
+        testColladaConverterWithBlobs(getTestBlob(EXTENSION_EXTENSIBLE_3D_GRAPHICS));
+    }
+
+    @Test
+    public void testColladaConverterStl() throws Exception {
+        testColladaConverterWithBlobs(getTestBlob(EXTENSION_STEREOLITHOGRAPHY));
+    }
+
+    @Test
+    public void testColladaConverterObj() throws Exception {
+        testColladaConverterWithBlobs(getTestBlob(EXTENSION_WAVEFRONT));
+    }
+
+    @Test
+    public void testColladaConverterObjMtl() throws Exception {
+        BlobHolder blobHolder = getTestBlob(EXTENSION_WAVEFRONT);
+        blobHolder.getBlobs().add(getTestBlob("mtl").getBlob());
+        testColladaConverterWithBlobs(blobHolder);
     }
 
     @Test
