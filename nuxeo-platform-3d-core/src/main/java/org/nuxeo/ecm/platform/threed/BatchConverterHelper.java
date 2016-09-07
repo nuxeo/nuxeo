@@ -45,25 +45,26 @@ public class BatchConverterHelper {
 
     public static final List<TransmissionThreeD> getTransmissons(Collection<Blob> blobs) {
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        return blobs.stream().filter(blob -> "dae".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
-            String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
-            if (fileNameArray.length != 4) {
-                return null;
-            }
-            String id = fileNameArray[1];
+        // gett all dae blobs
+        List<Blob> daeBlobs = blobs.stream()
+                                   .filter(blob -> "dae".equals(FilenameUtils.getExtension(blob.getFilename())))
+                                   .collect(Collectors.toList());
 
-            if (id.equals("original")) {
-                int lod = Integer.valueOf(fileNameArray[2]);
-                long maxPoly = Long.valueOf(fileNameArray[3]);
-                return new TransmissionThreeD(blob, lod, maxPoly, id);
-            } else {
-                AutomaticLOD currentALOD = threeDService.getAutomaticLOD(id);
-                if (currentALOD == null) {
-                    return null;
-                }
-                return new TransmissionThreeD(blob, currentALOD.getPercentage(), currentALOD.getMaxPoly(),
-                    currentALOD.getName());
+        // start with automatic LODs so we get the transmission 3Ds correctly ordered
+        return threeDService.getAutomaticLODs().stream().map(automaticLOD -> {
+            // get blob for a automatic LOD
+            Blob dae = daeBlobs.stream().filter(blob -> {
+                String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
+                String id = fileNameArray[1];
+                return automaticLOD.getId().equals(id);
+            }).findFirst().orElse(null);
+            
+            if (dae != null) {
+                // create transmission 3D from blob and automatic lod
+                return new TransmissionThreeD(dae, automaticLOD.getPercentage(), automaticLOD.getMaxPoly(),
+                        automaticLOD.getName());
             }
+            return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
