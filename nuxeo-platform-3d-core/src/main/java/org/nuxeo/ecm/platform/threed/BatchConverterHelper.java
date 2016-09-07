@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.threed.service.RenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.api.Framework;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +59,7 @@ public class BatchConverterHelper {
                 String id = fileNameArray[1];
                 return automaticLOD.getId().equals(id);
             }).findFirst().orElse(null);
-            
+
             if (dae != null) {
                 // create transmission 3D from blob and automatic lod
                 return new TransmissionThreeD(dae, automaticLOD.getPercentage(), automaticLOD.getMaxPoly(),
@@ -70,28 +71,37 @@ public class BatchConverterHelper {
 
     public static final List<ThreeDRenderView> getRenders(Collection<Blob> blobs) {
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        return blobs.stream().filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))).map(blob -> {
-            String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
-            if (fileNameArray.length != 7) {
-                return null;
-            }
-            String id = fileNameArray[1];
-            RenderView currentRV = threeDService.getRenderView(id);
-            if (currentRV == null) {
+
+        List<Blob> pngBlobs = blobs.stream()
+                                   .filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))
+                                           && FilenameUtils.getBaseName(blob.getFilename()).split("-").length == 7)
+                                   .collect(Collectors.toList());
+
+        Collection<RenderView> orderedRV = new ArrayList<>(threeDService.getAutomaticRenderViews());
+        Collection<RenderView> remainingRV = new ArrayList<>(threeDService.getAvailableRenderViews());
+        remainingRV.removeAll(orderedRV);
+        orderedRV.addAll(remainingRV);
+
+        return orderedRV.stream().map(renderView -> {
+            Blob png = pngBlobs.stream().filter(blob -> {
+                String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
+                return renderView.getId().equals(fileNameArray[1]);
+            }).findFirst().orElse(null);
+
+            if (png == null) {
                 return null;
             }
             ImagingService imagingService = Framework.getService(ImagingService.class);
-            ImageInfo imageInfo = imagingService.getImageInfo(blob);
+            ImageInfo imageInfo = imagingService.getImageInfo(png);
 
             // calculate thumbnail size
             float scale = Math.min((float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getWidth(),
                     (float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getHeight());
 
-            Blob thumbnail = imagingService.resize(blob, imageInfo.getFormat(),
-                    Math.round(imageInfo.getWidth() * scale), Math.round(imageInfo.getHeight() * scale),
-                    imageInfo.getDepth());
-            return new ThreeDRenderView(currentRV.getName(), blob, thumbnail, currentRV.getAzimuth(),
-                    currentRV.getZenith());
+            Blob thumbnail = imagingService.resize(png, imageInfo.getFormat(), Math.round(imageInfo.getWidth() * scale),
+                    Math.round(imageInfo.getHeight() * scale), imageInfo.getDepth());
+            return new ThreeDRenderView(renderView.getName(), png, thumbnail, renderView.getAzimuth(),
+                    renderView.getZenith());
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }
