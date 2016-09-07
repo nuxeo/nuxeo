@@ -2,6 +2,16 @@
 
 Support for previewing 3D content with ray-tracing renders and WebGL 3D viewer.
 
+Supported 3D file formats:
+
+* Collada (.dae)
+* 3D Studio (.3ds)
+* FBX (.fbx)
+* Stanford (.ply)
+* Wavefront (.obj)
+* X3D Extensible 3D (.x3d)
+* Stl (.stl)
+
 # Building
 
     mvn clean install
