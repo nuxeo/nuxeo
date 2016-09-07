@@ -71,10 +71,10 @@ public class GetTaskNamesOperation {
     protected String xpath;
 
     /**
-     * Limit the number of results displayed to the user to avoid performance
-     * problems
+     * @since 8.4
      */
-    public static int LIMIT_RESULTS = 15;
+    @Param(name = "limit", required = false)
+    protected int limit = -1;
 
     @OperationMethod
     public DocumentModelList run() {
@@ -130,7 +130,7 @@ public class GetTaskNamesOperation {
                     i++;
                     break;
                 }
-                if (i > LIMIT_RESULTS) {
+                if (limit > 0 && i > limit) {
                     break;
                 }
             }
