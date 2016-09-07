@@ -15,23 +15,20 @@ print("Importing %s " % (ext))
 if ext.startswith("."):
     ext = ext[1:]
 
-if ext == 'stl':
-    # import an stl model
-    bpy.ops.import_mesh.stl(filepath=infile)
-
-elif ext == 'obj':
-    # import an obj model
-    bpy.ops.import_scene.obj(
-        filepath=infile,
-        use_smooth_groups=False,
-        use_image_search=False,
-        axis_forward="Y",
-        axis_up="Z")
-
-elif ext == 'dae':
-    print("Importing COLLADA")
-    # import a collada model
+if ext == 'dae':
     bpy.ops.wm.collada_import(filepath=infile)
+elif ext == '3ds':
+    bpy.ops.import_scene.autodesk_3ds(filepath=infile)
+elif ext == 'fbx':
+    bpy.ops.import_scene.fbx(filepath=infile)
+elif ext == 'ply':
+    bpy.ops.import_mesh.ply(filepath=infile)
+elif ext == 'obj':
+    bpy.ops.import_scene.obj(filepath=infile)
+elif ext == 'x3d':
+    bpy.ops.import_scene.x3d(filepath=infile)
+elif ext == 'stl':
+    bpy.ops.import_mesh.stl(filepath=infile)
 
 # triangulate each mesh in the scene
 for ob in bpy.context.scene.objects:

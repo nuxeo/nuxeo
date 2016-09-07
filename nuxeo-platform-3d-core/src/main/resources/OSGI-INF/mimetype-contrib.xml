@@ -21,12 +21,22 @@
       </extensions>
     </mimetype>
 
-    <mimetype normalized="application/octet-stream" binary="false" iconPath="image.gif">
+    <mimetype normalized="application/octet-stream" binary="true" iconPath="image.gif">
       <mimetypes>
         <mimetype>application/octet-stream</mimetype>
       </mimetypes>
       <extensions>
         <extension>fbx</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="text/x-c" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>text/x-c</mimetype>
+        <mimetype>application/octet-stream</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>ply</extension>
       </extensions>
     </mimetype>
 
@@ -36,6 +46,15 @@
       </mimetypes>
       <extensions>
         <extension>obj</extension>
+      </extensions>
+    </mimetype>
+
+    <mimetype normalized="model/x3d+xml" binary="false" iconPath="image.gif">
+      <mimetypes>
+        <mimetype>model/x3d+xml</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>x3d</extension>
       </extensions>
     </mimetype>
 

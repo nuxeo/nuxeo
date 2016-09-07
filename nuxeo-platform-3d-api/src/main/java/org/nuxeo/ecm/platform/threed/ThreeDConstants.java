@@ -35,7 +35,11 @@ public class ThreeDConstants {
 
     public static final String EXTENSION_FILMBOX = "fbx";
 
+    public static final String EXTENSION_STANFORD = "ply";
+
     public static final String EXTENSION_WAVEFRONT = "obj";
+
+    public static final String EXTENSION_EXTENSIBLE_3D_GRAPHICS = "x3d";
 
     public static final String EXTENSION_STEREOLITHOGRAPHY = "stl";
 

@@ -8,8 +8,12 @@
       <filter>application/x-3ds</filter>
       <!-- .fbx -->
       <filter>application/octet-stream</filter>
+      <!-- .ply -->
+      <filter>text/x-c</filter>
       <!-- .obj -->
       <filter>text/wavefront-obj</filter>
+      <!-- .x3d -->
+      <filter>model/x3d+xml</filter>
       <!-- .stl -->
       <filter>application/sla</filter>
       <!-- .gltf -->
