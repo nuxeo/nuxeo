@@ -112,7 +112,7 @@ public interface RenditionService {
     /**
      * Query and delete stored renditions where the related version or live document does not exist anymore.
      *
-     * @since 8.3
+     * @since 8.4
      */
     void deleteStoredRenditions(String repositoryName);
 }

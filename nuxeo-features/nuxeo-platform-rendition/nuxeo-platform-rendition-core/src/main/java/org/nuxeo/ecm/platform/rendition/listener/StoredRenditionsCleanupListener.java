@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 8.3
+ * @since 8.4
  */
 public class StoredRenditionsCleanupListener implements PostCommitFilteringEventListener {
 
