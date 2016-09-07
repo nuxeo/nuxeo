@@ -32,9 +32,10 @@ elif out_ext == 'obj':
     bpy.ops.export_scene.obj(filepath=outfile, axis_forward='-Z', axis_up='Y')
 
 elif out_ext == 'dae':
-    print('EXporting COLLADA')
+    print('Exporting COLLADA')
     # export a collada model
-    bpy.ops.wm.collada_export(filepath=outfile)
+    bpy.ops.wm.collada_export(filepath=outfile, include_uv_textures=True, include_material_textures=True)
+
 elif out_ext == 'gltf':
     print('Exporting glTF')
     scene = {
@@ -52,7 +53,6 @@ elif out_ext == 'gltf':
     settings = blendergltf.default_settings.copy()
     # settings['materials_export_shader'] = BoolProperty(name='Export Shaders', default=False)
     # settings['images_embed_data'] = BoolProperty(name='Embed Image Data', default=False)
-
     gltf = blendergltf.export_gltf(scene, settings)
     with open(outfile, 'w') as fout:
         json.dump(gltf, fout, indent=4, sort_keys=True, check_circular=False)
