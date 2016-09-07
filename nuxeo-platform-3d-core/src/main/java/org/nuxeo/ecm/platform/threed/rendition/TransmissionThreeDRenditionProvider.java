@@ -37,8 +37,7 @@ public class TransmissionThreeDRenditionProvider implements RenditionProvider {
     @Override
     public boolean isAvailable(DocumentModel documentModel, RenditionDefinition renditionDefinition) {
         ThreeDDocument threeDDocument = documentModel.getAdapter(ThreeDDocument.class);
-        return threeDDocument != null
-                && threeDDocument.getTransmissionThreeD(Integer.parseInt(renditionDefinition.getName())) != null;
+        return threeDDocument != null && threeDDocument.getTransmissionThreeD(renditionDefinition.getName()) != null;
     }
 
     @Override
@@ -47,8 +46,7 @@ public class TransmissionThreeDRenditionProvider implements RenditionProvider {
         if (threeDDocument == null) {
             return Collections.emptyList();
         }
-        TransmissionThreeD transmissionThreeD = threeDDocument.getTransmissionThreeD(
-                Integer.parseInt(renditionDefinition.getName()));
+        TransmissionThreeD transmissionThreeD = threeDDocument.getTransmissionThreeD(renditionDefinition.getName());
         return (transmissionThreeD.getBlob() != null) ? Collections.singletonList(transmissionThreeD.getBlob())
                 : Collections.emptyList();
     }

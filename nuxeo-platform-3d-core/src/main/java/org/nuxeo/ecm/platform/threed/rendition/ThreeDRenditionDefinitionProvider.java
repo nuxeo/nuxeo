@@ -47,11 +47,15 @@ public class ThreeDRenditionDefinitionProvider implements RenditionDefinitionPro
 
     public static final String THREED_TRANSMISSION_RENDITION_KIND = "nuxeo:threedTransmission:conversion";
 
-    protected RenditionDefinition buildRenditionDefinition(String title, Blob blob, String kind,
+    public static final String THREED_RENDER_VIEW_RENDITION_TYPE = "Render";
+
+    public static final String THREED_TRANSMISSION_RENDITION_TYPE = "LoD";
+
+    protected RenditionDefinition buildRenditionDefinition(String title, String name, Blob blob, String kind,
             RenditionProvider provider, boolean visible, String iconPath) {
         RenditionDefinition renditionDefinition = new RenditionDefinition();
         renditionDefinition.setEnabled(true);
-        renditionDefinition.setName(title);
+        renditionDefinition.setName(name);
         renditionDefinition.setKind(kind);
         renditionDefinition.setProvider(provider);
         renditionDefinition.setVisible(visible);
@@ -85,9 +89,9 @@ public class ThreeDRenditionDefinitionProvider implements RenditionDefinitionPro
                     threeDRenderView.getZenith());
             MimetypeEntry mimeType = mimetypeRegistry.getMimetypeEntryByMimeType(
                     threeDRenderView.getContent().getMimeType());
-            return buildRenditionDefinition(threeDRenderView.getTitle(), threeDRenderView.getContent(),
-                    THREED_RENDER_VIEW_RENDITION_KIND, new RenderViewRenditionProvider(),
-                    renderView.isRenditionVisible(), mimeType.getIconPath());
+            return buildRenditionDefinition(THREED_RENDER_VIEW_RENDITION_TYPE + threeDRenderView.getTitle(),
+                    threeDRenderView.getTitle(), threeDRenderView.getContent(), THREED_RENDER_VIEW_RENDITION_KIND,
+                    new RenderViewRenditionProvider(), renderView.isRenditionVisible(), mimeType.getIconPath());
         }).collect(Collectors.toList()));
 
         // Transmission Renditions
@@ -102,9 +106,10 @@ public class ThreeDRenditionDefinitionProvider implements RenditionDefinitionPro
             AutomaticLOD automaticLOD = threeDService.getAutomaticLOD(transmissionThreeD.getId());
             MimetypeEntry mimeType = mimetypeRegistry.getMimetypeEntryByMimeType(
                     transmissionThreeD.getBlob().getMimeType());
-            return buildRenditionDefinition(transmissionThreeD.getTitle(), transmissionThreeD.getBlob(),
-                    THREED_TRANSMISSION_RENDITION_KIND, new TransmissionThreeDRenditionProvider(),
-                    automaticLOD.isRenditionVisible(), mimeType.getIconPath());
+            return buildRenditionDefinition(THREED_TRANSMISSION_RENDITION_TYPE + transmissionThreeD.getTitle(),
+                    transmissionThreeD.getTitle(), transmissionThreeD.getBlob(), THREED_TRANSMISSION_RENDITION_KIND,
+                    new TransmissionThreeDRenditionProvider(), automaticLOD.isRenditionVisible(),
+                    mimeType.getIconPath());
 
         }).collect(Collectors.toList()));
         return renditionDefinitions;
