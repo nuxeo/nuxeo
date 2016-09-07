@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     @XNode("@order")
-    protected  Integer order;
+    protected Integer order;
 
     @XNode("@name")
     protected String name;
@@ -131,6 +131,18 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     }
 
     public void merge(AutomaticLOD src) {
+        if (src.order != null) {
+            order = src.order;
+        }
+        if (src.name != null) {
+            name = src.name;
+        }
+        if (src.percentage != null) {
+            percentage = src.percentage;
+        }
+        if (src.maxPoly != null) {
+            maxPoly = src.maxPoly;
+        }
         if (src.enabled != null) {
             enabled = src.enabled;
         }

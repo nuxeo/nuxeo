@@ -35,10 +35,10 @@
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticRenderViews">
 
-        <automaticRenderView name="isometric" enable="true"/>
-        <automaticRenderView name="top" enable="true"/>
-        <automaticRenderView name="front" enable="true"/>
-        <automaticRenderView name="left" enable="true"/>
+        <automaticRenderView order="0" name="isometric" enable="true"/>
+        <automaticRenderView order="1" name="top" enable="true"/>
+        <automaticRenderView order="2" name="front" enable="true"/>
+        <automaticRenderView order="3" name="left" enable="true"/>
 
     </extension>
 

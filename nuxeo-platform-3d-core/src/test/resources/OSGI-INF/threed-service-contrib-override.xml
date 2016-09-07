@@ -19,6 +19,6 @@
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
                point="automaticRenderViews">
-        <automaticRenderView name="top" enabled="false"/>
+        <automaticRenderView order="0" name="top" enabled="false"/>
     </extension>
 </component>

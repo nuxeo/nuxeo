@@ -30,6 +30,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("automaticRenderView")
 public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
 
+    @XNode("@order")
+    protected Integer order;
+
     @XNode("@name")
     protected String name;
 
@@ -37,12 +40,21 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
     protected Boolean enabled;
 
     public AutomaticRenderView(AutomaticRenderView other) {
+        order = other.order;
         name = other.name;
         enabled = other.enabled;
     }
 
     public AutomaticRenderView() {
         super();
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 
     public String getName() {
@@ -71,6 +83,12 @@ public class AutomaticRenderView implements Comparable<AutomaticRenderView> {
     }
 
     public void merge(AutomaticRenderView src) {
+        if (src.order != null) {
+            order = src.order;
+        }
+        if (src.name != null) {
+            name = src.name;
+        }
         if (src.enabled != null) {
             enabled = src.enabled;
         }
