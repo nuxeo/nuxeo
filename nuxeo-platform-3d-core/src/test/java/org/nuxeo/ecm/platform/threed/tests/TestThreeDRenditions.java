@@ -75,7 +75,7 @@ import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionP
 public class TestThreeDRenditions {
 
     public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("left", "front",
-            "isometric", "top", "11", "3", "33", "100");
+            "isometric", "top", "11", "03", "33", "100");
 
     public static final List<String> EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES = Arrays.asList("front", "left", "11",
             "33", "100");
