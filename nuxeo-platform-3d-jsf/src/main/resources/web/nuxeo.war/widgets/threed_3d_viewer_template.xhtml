@@ -17,13 +17,19 @@
             height: 640px;
         }
     </style>
-    <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}">
-        <c:if test="#{!isConverting}">
-            <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}" id="3d-simple-viewer">
-            </nuxeo-3d-viewer>
-        </c:if>
-        <c:if test="#{isConverting}">
-            <p>#{messages['label.widget.threed.converting']}</p>
-        </c:if>
-    </nxu:set>
+    <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}"/>
+    <nxu:set var="hasTransmissionFormats" value="#{!transmissionFormatActions.getItems(fieldOrValue).isEmpty()}"/>
+    <c:choose>
+        <c:when test="#{isConverting}">
+            <p>#{messages['label.widget.threed.3d_viewer.converting']}</p>
+        </c:when>
+        <c:when test="#{!hasTransmissionFormats}">
+            <p>#{messages['label.widget.threed.3d_viewer.no_transmission_formats']}</p>
+        </c:when>
+        <c:otherwise>
+            <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}"
+                             id="3d-simple-viewer"/>
+        </c:otherwise>
+    </c:choose>
+
 </h:panelGroup>

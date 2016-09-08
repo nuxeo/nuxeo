@@ -1,6 +1,7 @@
 <div xmlns:ui="http://java.sun.com/jsf/facelets"
      xmlns:h="http://java.sun.com/jsf/html"
      xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
      class="content_block">
 
     <c:if test="#{fieldOrValue.hasFacet('ThreeD')}">
@@ -11,43 +12,55 @@
             </ui:include>
         </c:if>
 
-        <table width="100%" cellspacing="0">
-            <tbody>
-            <c:forEach var="item" items="#{transmissionFormatActions.getItems(fieldOrValue)}"
-                       varStatus="status">
-                <tr class="transmissionFormatRow">
-                    <td class="labelColumn">
-                        <c:if test="#{status.index == 0}">
-                            #{messages['label.widget.threed.level_of_detail']}
-                        </c:if>
-                    </td>
-                    <td class="lodColumn">
-                        #{messages['label.widget.threed.polygon_count']}: #{item.lod} %
-                    </td>
-                    <td class="lodColumn">
-                        #{messages['label.widget.threed.max_polygon']}: #{item.maxPoly}
-                    </td>
-                    <td class="actionsColumn">
-                        <h:outputLink value="javascript:NX3D.show3DFormat('#{item.src}')">
-                            <h:graphicImage url="/icons/contextual_menu/preview.png"/>
-                        </h:outputLink>
-                    </td>
-                    <td class="actionsColumn">
-                        <h:outputLink value="#{item.src}">
-                            <h:graphicImage url="/icons/download.png"/>
-                        </h:outputLink>
-                    </td>
-                </tr>
-            </c:forEach>
-            </tbody>
-        </table>
-        <h:outputScript target="#{pageJsTarget}">
-            NX3D = {
-                show3DFormat: function (src) {
-                    document.getElementById('3d-simple-viewer').setAttribute('src', src);
-                }
-            }
-        </h:outputScript>
+        <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}"/>
+        <nxu:set var="hasTransmissionFormats" value="#{!transmissionFormatActions.getItems(fieldOrValue).isEmpty()}"/>
+        <c:choose>
+            <c:when test="#{isConverting}">
+                <p>#{messages['label.widget.threed.transmission_formats.converting']}</p>
+            </c:when>
+            <c:when test="#{!hasTransmissionFormats}">
+                <p>#{messages['label.widget.threed.transmission_formats.none']}</p>
+            </c:when>
+            <c:otherwise>
+                <table width="100%" cellspacing="0">
+                    <tbody>
+                    <c:forEach var="item" items="#{transmissionFormatActions.getItems(fieldOrValue)}"
+                               varStatus="status">
+                        <tr class="transmissionFormatRow">
+                            <td class="labelColumn">
+                                <c:if test="#{status.index == 0}">
+                                    #{messages['label.widget.threed.level_of_detail']}
+                                </c:if>
+                            </td>
+                            <td class="lodColumn">
+                                #{messages['label.widget.threed.polygon_count']}: #{item.lod} %
+                            </td>
+                            <td class="lodColumn">
+                                #{messages['label.widget.threed.max_polygon']}: #{item.maxPoly}
+                            </td>
+                            <td class="actionsColumn">
+                                <h:outputLink value="javascript:NX3D.show3DFormat('#{item.src}')">
+                                    <h:graphicImage url="/icons/contextual_menu/preview.png"/>
+                                </h:outputLink>
+                            </td>
+                            <td class="actionsColumn">
+                                <h:outputLink value="#{item.src}">
+                                    <h:graphicImage url="/icons/download.png"/>
+                                </h:outputLink>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+                <h:outputScript target="#{pageJsTarget}">
+                    NX3D = {
+                        show3DFormat: function (src) {
+                            document.getElementById('3d-simple-viewer').setAttribute('src', src);
+                        }
+                    }
+                </h:outputScript>
+            </c:otherwise>
+        </c:choose>
 
     </c:if>
 </div>
