@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -145,6 +146,10 @@ public class LocalSession extends AbstractSession implements Synchronization {
 
     @Override
     public void afterCompletion(int status) {
+        if (status == Status.STATUS_ROLLEDBACK) {
+            // insure the connection is closed on roll-back also
+            closeInThisThread();
+        }
     }
 
     protected void closeInThisThread() {
