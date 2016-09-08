@@ -51,7 +51,7 @@ def download(directory, archive_name, url):
     filename = os.path.join(dir, archive_name)
     if not os.path.exists(filename):
         log = logging.getLogger(module)
-        cmd = "curl -o %s '%s'" % (filename, url)
+        cmd = "curl -L -o %s '%s'" % (filename, url)
         log.warn(cmd)
         os.system(cmd)
     return filename
