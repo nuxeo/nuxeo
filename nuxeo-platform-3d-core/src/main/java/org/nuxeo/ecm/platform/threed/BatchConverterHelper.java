@@ -20,18 +20,15 @@ package org.nuxeo.ecm.platform.threed;
 
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
-import org.nuxeo.ecm.platform.threed.service.AutomaticLOD;
 import org.nuxeo.ecm.platform.threed.service.RenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,38 +41,84 @@ public class BatchConverterHelper {
     private BatchConverterHelper() {
     }
 
-    public static final List<TransmissionThreeD> getTransmissons(Collection<Blob> blobs) {
+    protected static final Blob convertTexture(Blob resource, Integer percentage, String maxSize) {
+        ImagingService imagingService = Framework.getService(ImagingService.class);
+        ImageInfo imageInfo = imagingService.getImageInfo(resource);
+        if (imageInfo == null) {
+            return resource;
+        }
+        float percScale = 1.0f;
+        if (percentage != null) {
+            percScale = (float) ((float) percentage / 100.0);
+        }
+        float maxScale = 1.0f;
+        if (maxSize != null) {
+
+            String[] size = maxSize.split("x");
+
+            int width = Integer.parseInt(size[0]);
+            int height = Integer.parseInt(size[1]);
+
+            // calculate max size scale
+            maxScale = Math.min((float) width / imageInfo.getWidth(), (float) height / imageInfo.getHeight());
+        }
+        if (percScale >= 1.0 && maxScale >= 1.0) {
+            return resource;
+        }
+
+        float scale = Math.min(maxScale, percScale);
+
+        Blob lodResource = imagingService.resize(resource, imageInfo.getFormat(),
+                Math.round(imageInfo.getWidth() * scale), Math.round(imageInfo.getHeight() * scale),
+                imageInfo.getDepth());
+        lodResource.setFilename(resource.getFilename());
+        return lodResource;
+    }
+
+    public static final List<TransmissionThreeD> getTransmissons(BlobHolder batch) {
         ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        // gett all dae blobs
-        List<Blob> daeBlobs = blobs.stream()
-                                   .filter(blob -> "dae".equals(FilenameUtils.getExtension(blob.getFilename())))
-                                   .collect(Collectors.toList());
+
+        List<Blob> blobs = batch.getBlobs();
+        Map<String, Integer> lodIdIndexes = (Map<String, Integer>) batch.getProperty("lodIdIndexes");
+        List<Blob> resources = ((List<Integer>) batch.getProperty("resourceIndexes")).stream().map(blobs::get).collect(
+                Collectors.toList());
 
         // start with automatic LODs so we get the transmission 3Ds correctly ordered
         return threeDService.getAutomaticLODs().stream().map(automaticLOD -> {
-            // get blob for a automatic LOD
-            Blob dae = daeBlobs.stream().filter(blob -> {
-                String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
-                String id = fileNameArray[1];
-                return automaticLOD.getId().equals(id);
-            }).findFirst().orElse(null);
+            Integer index = lodIdIndexes.get(automaticLOD.getId());
 
-            if (dae != null) {
-                // create transmission 3D from blob and automatic lod
-                return new TransmissionThreeD(dae, automaticLOD.getPercentage(), automaticLOD.getMaxPoly(),
-                        automaticLOD.getName());
+            if (index != null) {
+                Blob dae = blobs.get(index);
+                // resize texture accordingly with LOD text params
+                List<Blob> lodResources = resources.stream()
+                                                   .map(resource -> convertTexture(resource, automaticLOD.getPercTex(),
+                                                           automaticLOD.getMaxTex()))
+                                                   .collect(Collectors.toList());
+
+                // create transmission 3D from blob and automatic LOD
+                return new TransmissionThreeD(dae, lodResources, automaticLOD.getPercPoly(), automaticLOD.getMaxPoly(),
+                        automaticLOD.getPercTex(), automaticLOD.getMaxTex(), automaticLOD.getName());
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    public static final List<ThreeDRenderView> getRenders(Collection<Blob> blobs) {
-        ThreeDService threeDService = Framework.getService(ThreeDService.class);
+    protected static final Blob createThumbnail(Blob render) {
+        ImagingService imagingService = Framework.getService(ImagingService.class);
+        ImageInfo imageInfo = imagingService.getImageInfo(render);
 
-        List<Blob> pngBlobs = blobs.stream()
-                                   .filter(blob -> "png".equals(FilenameUtils.getExtension(blob.getFilename()))
-                                           && FilenameUtils.getBaseName(blob.getFilename()).split("-").length == 7)
-                                   .collect(Collectors.toList());
+        // calculate thumbnail size
+        float scale = Math.min((float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getWidth(),
+                (float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getHeight());
+
+        return imagingService.resize(render, imageInfo.getFormat(), Math.round(imageInfo.getWidth() * scale),
+                Math.round(imageInfo.getHeight() * scale), imageInfo.getDepth());
+    }
+
+    public static final List<ThreeDRenderView> getRenders(BlobHolder batch) {
+        List<Blob> allBlobs = batch.getBlobs();
+        List<Blob> blobs = allBlobs.subList((int) batch.getProperty("renderStartIndex"), allBlobs.size());
+        ThreeDService threeDService = Framework.getService(ThreeDService.class);
 
         Collection<RenderView> orderedRV = new ArrayList<>(threeDService.getAutomaticRenderViews());
         Collection<RenderView> remainingRV = new ArrayList<>(threeDService.getAvailableRenderViews());
@@ -83,7 +126,7 @@ public class BatchConverterHelper {
         orderedRV.addAll(remainingRV);
 
         return orderedRV.stream().map(renderView -> {
-            Blob png = pngBlobs.stream().filter(blob -> {
+            Blob png = blobs.stream().filter(blob -> {
                 String[] fileNameArray = FilenameUtils.getBaseName(blob.getFilename()).split("-");
                 return renderView.getId().equals(fileNameArray[1]);
             }).findFirst().orElse(null);
@@ -91,16 +134,8 @@ public class BatchConverterHelper {
             if (png == null) {
                 return null;
             }
-            ImagingService imagingService = Framework.getService(ImagingService.class);
-            ImageInfo imageInfo = imagingService.getImageInfo(png);
 
-            // calculate thumbnail size
-            float scale = Math.min((float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getWidth(),
-                    (float) AbstractPictureAdapter.SMALL_SIZE / imageInfo.getHeight());
-
-            Blob thumbnail = imagingService.resize(png, imageInfo.getFormat(), Math.round(imageInfo.getWidth() * scale),
-                    Math.round(imageInfo.getHeight() * scale), imageInfo.getDepth());
-            return new ThreeDRenderView(renderView.getName(), png, thumbnail, renderView.getAzimuth(),
+            return new ThreeDRenderView(renderView.getName(), png, createThumbnail(png), renderView.getAzimuth(),
                     renderView.getZenith());
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }

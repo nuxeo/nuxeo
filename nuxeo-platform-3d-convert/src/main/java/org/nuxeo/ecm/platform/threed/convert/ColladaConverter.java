@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
 
 /**
@@ -57,22 +58,33 @@ public class ColladaConverter extends BaseBlenderConverter {
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
-        List<String> conversions = getConversions(outDir);
-        if (conversions.isEmpty() || conversions.size() != 1) {
-            throw new ConversionException("Unable to get Collada conversion result file.");
-        }
-        File collada = new File(outDir + File.separatorChar + conversions.get(0));
-        if (!"dae".equals(FileUtils.getFileExtension(conversions.get(0)))) {
-            throw new ConversionException("Wrong result file type (not Collada).");
-        }
-
-        Blob blob = new FileBlob(collada);
-        blob.setFilename(collada.getName());
+        Map<String, Integer> lodBlobIndexes = new HashMap<>();
+        List<Integer> resourceIndexes = new ArrayList<>();
         List<Blob> blobs = new ArrayList<>();
-        blobs.add(blob);
+
+        String lodDir = outDir + File.separatorChar + "convert";
+        List<String> conversions = getConversionLOD(lodDir);
+        conversions.forEach(filename -> {
+            File file = new File(lodDir + File.separatorChar + filename);
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
+            if (FilenameUtils.getExtension(filename).toLowerCase().equals("dae")) {
+                String[] filenameArray = filename.split("-");
+                if (filenameArray.length != 4) {
+                    throw new ConversionException(filenameArray + " incompatible with conversion file name schema.");
+                }
+                lodBlobIndexes.put(filenameArray[1], blobs.size());
+            } else {
+                resourceIndexes.add(blobs.size());
+            }
+            blobs.add(blob);
+        });
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
+        properties.put("resourceIndexes", (Serializable) resourceIndexes);
+        properties.put("lodIdIndexes", (Serializable) lodBlobIndexes);
+
         return new SimpleBlobHolderWithProperties(blobs, properties);
     }
 }

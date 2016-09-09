@@ -36,11 +36,17 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     @XNode("@name")
     protected String name;
 
-    @XNode("@percentage")
-    protected Integer percentage;
+    @XNode("@percPoly")
+    protected Integer percPoly;
 
     @XNode("@maxPoly")
     protected Long maxPoly;
+
+    @XNode("@percTex")
+    protected Integer percTex;
+
+    @XNode("@maxTex")
+    protected String maxTex;
 
     @XNode("@enabled")
     protected Boolean enabled;
@@ -54,8 +60,10 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
     public AutomaticLOD(AutomaticLOD other) {
         order = other.order;
         name = other.name;
-        percentage = other.percentage;
+        percPoly = other.percPoly;
         maxPoly = other.maxPoly;
+        percTex = other.percTex;
+        maxTex = other.maxTex;
         enabled = other.enabled;
         rendition = other.rendition;
         renditionVisible = other.renditionVisible;
@@ -89,12 +97,12 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
         this.enabled = enabled;
     }
 
-    public Integer getPercentage() {
-        return percentage;
+    public Integer getPercPoly() {
+        return percPoly;
     }
 
-    public void setPercentage(Integer percentage) {
-        this.percentage = percentage;
+    public void setPercPoly(Integer percPoly) {
+        this.percPoly = percPoly;
     }
 
     public Long getMaxPoly() {
@@ -103,6 +111,22 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     public void setMaxPoly(Long maxPoly) {
         this.maxPoly = maxPoly;
+    }
+
+    public Integer getPercTex() {
+        return percTex;
+    }
+
+    public void setPercTex(Integer percTex) {
+        this.percTex = percTex;
+    }
+
+    public String getMaxTex() {
+        return maxTex;
+    }
+
+    public void setMaxTex(String maxTex) {
+        this.maxTex = maxTex;
     }
 
     public boolean isRendition() {
@@ -127,7 +151,7 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
 
     @Override
     public int compareTo(AutomaticLOD o) {
-        return o.percentage.compareTo(percentage);
+        return o.percPoly.compareTo(percPoly);
     }
 
     public void merge(AutomaticLOD src) {
@@ -137,11 +161,17 @@ public class AutomaticLOD implements Comparable<AutomaticLOD> {
         if (src.name != null) {
             name = src.name;
         }
-        if (src.percentage != null) {
-            percentage = src.percentage;
+        if (src.percPoly != null) {
+            percPoly = src.percPoly;
         }
         if (src.maxPoly != null) {
             maxPoly = src.maxPoly;
+        }
+        if (src.maxTex != null) {
+            maxTex = src.maxTex;
+        }
+        if (src.percTex != null) {
+            percTex = src.percTex;
         }
         if (src.enabled != null) {
             enabled = src.enabled;

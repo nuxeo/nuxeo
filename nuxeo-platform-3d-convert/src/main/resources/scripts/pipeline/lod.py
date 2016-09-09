@@ -5,22 +5,22 @@ for ob in bpy.context.scene.objects:
 
 
 def ratio_from_lods():
-    return (lod / current_lod) / 100
+    return (perc_poly / current_lod) / 100
 
 
 def ratio_from_max_polys():
-    return int(max_polygons) / original_polygon_count
+    return int(max_poly) / original_polygon_count
 
 
 def current_from_lods():
-    return lod / 100
+    return perc_poly / 100
 
 
 def current_from_max_polys():
     return current_lod * lod_ratio
 
 
-if lod is not None and max_polygons is not None:
+if perc_poly is not None and max_poly is not None:
     # both params are available
     lod_ratio_from_lods = ratio_from_lods()
     lod_ratio_from_max_polys = ratio_from_max_polys()
@@ -29,15 +29,15 @@ if lod is not None and max_polygons is not None:
         lod_ratio = lod_ratio_from_lods
         current_lod = current_from_lods()
     else:
-        # max_polygons param is stricter
+        # max_poly param is stricter
         lod_ratio = lod_ratio_from_max_polys
         current_lod = current_from_max_polys()
-elif max_polygons is not None:
-    # only the max_polygons param is available
+elif max_poly is not None:
+    # only the max_poly param is available
     lod_ratio = ratio_from_max_polys()
     current_lod = current_from_max_polys()
 else:
-    # only the lod param is available
+    # only the perc_poly param is available
     lod_ratio = ratio_from_lods()
     current_lod = current_from_lods()
 

@@ -21,7 +21,7 @@ def dimensions(d):
     try:
         if d == '':
             return 0, 0
-        width, height = map(int, d.split(','))
+        width, height = map(int, d.split('x'))
         return width, height
     except:
         raise argparse.ArgumenTypeError('Dimensions must be width,height')
@@ -39,9 +39,9 @@ parser.add_argument('-op', '--operators', dest='operators', nargs='*', choices=[
                     help='a list of operators to run in the pipeline (options: import,lod,render,convert)')
 parser.add_argument('-li', '--lodids', dest='lodids', nargs='*',
                     help='a list of ids to use on lod')
-parser.add_argument('-l', '--lods', dest='lods', nargs='*',
-                    help='a list of level of detail values to use on the lod operator (options: 0-100)')
-parser.add_argument('-mp', '--maxpolys', dest='maxpolys', nargs='*',
+parser.add_argument('-pp', '--percpoly', dest='percpoly', nargs='*',
+                    help='a list of polygon percentage values to use on the lod operator (options: 0-100)')
+parser.add_argument('-mp', '--maxpoly', dest='maxpoly', nargs='*',
                     help='a list of max polygon values to use on the lod operator')
 parser.add_argument('-ri', '--renderids', dest='renderids', nargs='*',
                     help='a list of ids to use on render')
@@ -59,26 +59,28 @@ if args.operators is None:
     sys.exit()
 
 base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
-lod = 100
+perc_poly = 100
+max_poly = None
 current_lod = 1.0
+lodid = 'default'
 
 if params_filled(args.lodids):
-    lod_args = {'i': args.lodids, 'l': [], 'mp': []}
+    lod_args = {'i': args.lodids, 'pp': [], 'mp': []}
     for i in range(0, len(args.lodids)):
-        if not params_filled(args.lods) or args.lods[i] == 'None' or args.lods[i] == 'null':
-            lod_args['l'].append(None)
+        if not params_filled(args.percpoly) or args.percpoly[i] == 'None' or args.percpoly[i] == 'null':
+            lod_args['pp'].append(None)
         else:
-            lod_args['l'].append(int(args.lods[i]))
-        if not params_filled(args.maxpolys) or args.maxpolys[i] == 'None' or args.maxpolys[i] == 'null':
+            lod_args['pp'].append(int(args.percpoly[i]))
+        if not params_filled(args.maxpoly) or args.maxpoly[i] == 'None' or args.maxpoly[i] == 'null':
             lod_args['mp'].append(None)
         else:
-            lod_args['mp'].append(int(args.maxpolys[i]))
+            lod_args['mp'].append(int(args.maxpoly[i]))
 
 for operator in args.operators:
     if operator == 'lod':
         lodid = lod_args['i'].pop(0)
-        lod = lod_args['l'].pop(0)
-        max_polygons = lod_args['mp'].pop(0)
+        perc_poly = lod_args['pp'].pop(0)
+        max_poly = lod_args['mp'].pop(0)
     if operator == 'render':
         coords = args.coords.pop(0)
         dim = args.dimensions.pop(0)

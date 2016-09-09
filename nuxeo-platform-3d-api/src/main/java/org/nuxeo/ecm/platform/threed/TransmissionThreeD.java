@@ -22,10 +22,11 @@ import org.nuxeo.ecm.core.api.Blob;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Object wrapping a transmission format with {@link ThreeD} and {@code lod}
+ * Object wrapping a transmission format with {@link ThreeD} and LoD details
  *
  * @since 8.4
  */
@@ -35,42 +36,64 @@ public class TransmissionThreeD extends ThreeD {
 
     public static final String CONTENT = "content";
 
-    public static final String LOD = "lod";
+    public static final String PERC_POLY = "percPoly";
 
-    public static final String MAX_POLYGONS = "maxPoly";
+    public static final String MAX_POLY = "maxPoly";
 
-    protected final Integer lod;
+    public static final String PERC_TEX = "percTex";
+
+    public static final String MAX_TEX = "maxTex";
+
+    protected final Integer percPoly;
 
     protected final Long maxPoly;
 
+    protected final Integer percTex;
+
+    protected final String maxTex;
+
     protected final String name;
 
-    public TransmissionThreeD(Blob blob, Integer lod, Long maxPoly, String name) {
-        super(blob, null);
-        this.lod = lod;
+    public TransmissionThreeD(Blob blob, List<Blob> resources, Integer percPoly, Long maxPoly, Integer percTex,
+            String maxTex, String name) {
+        super(blob, resources);
+        this.percPoly = percPoly;
         this.maxPoly = maxPoly;
+        this.percTex = percTex;
+        this.maxTex = maxTex;
         this.name = name;
     }
 
     public TransmissionThreeD(Map<String, Object> map) {
         super((Blob) map.get(CONTENT), null);
         name = (String) map.get(NAME);
-        Long lodLong = (Long) map.get(LOD);
-        lod = (lodLong != null) ? lodLong.intValue() : 0;
-        Long maxPolyLong = (Long) map.get(MAX_POLYGONS);
-        maxPoly = (maxPolyLong != null) ? maxPolyLong : 0;
+        Long percPolyLong = (Long) map.get(PERC_POLY);
+        percPoly = (percPolyLong != null) ? percPolyLong.intValue() : null;
+        Long maxPolyLong = (Long) map.get(MAX_POLY);
+        maxPoly = (maxPolyLong != null) ? maxPolyLong : null;
+        Long percTexLong = (Long) map.get(PERC_POLY);
+        percTex = (percTexLong != null) ? percTexLong.intValue() : null;
+        maxTex = (String) map.get(MAX_TEX);
     }
 
     public String getTitle() {
         return name;
     }
 
-    public Integer getLod() {
-        return lod;
+    public Integer getPercPoly() {
+        return percPoly;
     }
 
     public Long getMaxPoly() {
         return maxPoly;
+    }
+
+    public Integer getPercTex() {
+        return percTex;
+    }
+
+    public String getMaxTex() {
+        return maxTex;
     }
 
     public String getName() {
@@ -85,8 +108,10 @@ public class TransmissionThreeD extends ThreeD {
         Map<String, Serializable> map = new HashMap<>();
         map.put(NAME, name);
         map.put(CONTENT, (Serializable) blob);
-        map.put(LOD, lod);
-        map.put(MAX_POLYGONS, maxPoly);
+        map.put(PERC_POLY, percPoly);
+        map.put(MAX_POLY, maxPoly);
+        map.put(PERC_TEX, percTex);
+        map.put(MAX_TEX, maxTex);
         return map;
     }
 }

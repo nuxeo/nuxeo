@@ -10,7 +10,7 @@
             <commandLine>blender</commandLine>
             <testParameterString>-v</testParameterString>
             <parameterString>-b -P #{script} -- -i #{inFilePath} -o #{outDir} -op #{operators} -ri #{renderIds}
-                -li #{lodIds} -l #{lods} -mp #{maxPolys} -d #{dimensions} -c #{coords}
+                -li #{lodIds} -pp #{percPoly} -mp #{maxPoly} -d #{dimensions} -c #{coords}
             </parameterString>
             <installationDirective>You need to install blender (https://www.blender.org/download/)
             </installationDirective>

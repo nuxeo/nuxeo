@@ -7,11 +7,16 @@
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="automaticLOD">
 
-        <automaticLOD order="0" name="100" percentage="100" enabled="true" rendition="true" renditionVisible="true"/>
-        <automaticLOD order="1" name="33" percentage="33" enabled="true" rendition="true" renditionVisible="true"/>
-        <automaticLOD order="2" name="11" percentage="11" enabled="true" rendition="true" renditionVisible="true"/>
-        <automaticLOD order="3" name="03" percentage="3" enabled="true" rendition="true" renditionVisible="true"/>
-
+        <automaticLOD order="0" name="FullWithinReason" percPoly="100" maxPoly="1000000" percTex="100"
+                      maxTex="5000x5000" enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="1" name="HalfTextures" percPoly="100" maxPoly="1000000" percTex="50" maxTex="5000x5000"
+                      enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="2" name="10PercTextures" percPoly="100" maxPoly="1000000" percTex="10" maxTex="5000x5000"
+                      enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="3" name="50x50Texture" percPoly="100" maxPoly="1000000" percTex="100" maxTex="50x50"
+                      enabled="true" rendition="true" renditionVisible="true"/>
+        <automaticLOD order="4" name="HalfPolygon" percPoly="50" maxPoly="1000000" enabled="true" rendition="true"
+                      renditionVisible="true"/>
     </extension>
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService" point="renderViews">

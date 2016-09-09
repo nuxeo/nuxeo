@@ -7,9 +7,9 @@
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"
                point="automaticLOD">
-        <automaticLOD order="2" name="11" percentage="11" enabled="true" rendition="true" renditionVisible="false"/>
-        <automaticLOD order="3" name="03" percentage="3" enabled="true" rendition="false"/>
-        <automaticLOD order="1" name="53" percentage="53" enabled="true" rendition="false"/>
+        <automaticLOD order="2" name="11" percPoly="11" enabled="true" rendition="true" renditionVisible="false"/>
+        <automaticLOD order="3" name="03" percPoly="3" enabled="true" rendition="false"/>
+        <automaticLOD order="1" name="53" percPoly="53" enabled="true" rendition="false"/>
     </extension>
 
     <extension target="org.nuxeo.ecm.platform.threed.service.ThreeDService"

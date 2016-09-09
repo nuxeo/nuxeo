@@ -4,9 +4,9 @@ if args.outdir == None:
 try:
     lodid
 except NameError:
-    outfile = args.outdir + '/transmissionformat.dae'
+    outfile = args.outdir + '/convert/transmissionformat.dae'
 else:
-    outfile = args.outdir + '/transmissionformat-' + str(lodid) + '-' + str(lod) + '-' + str(max_polygons) + '.dae'
+    outfile = args.outdir + '/convert/transmissionformat-' + str(lodid) + '-' + str(perc_poly) + '-' + str(max_poly) + '.dae'
 
 # get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']

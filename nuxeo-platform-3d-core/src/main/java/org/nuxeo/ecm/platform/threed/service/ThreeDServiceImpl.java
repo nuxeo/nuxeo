@@ -47,15 +47,7 @@ import java.util.stream.Collectors;
 import static org.nuxeo.ecm.core.work.api.Work.State.*;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVERTER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.COORDS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.DIMENSIONS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLYGONS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.OPERATORS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
  * Default implementation of {@link ThreeDService}
@@ -149,7 +141,7 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     }
 
     @Override
-    public Collection<Blob> batchConvert(ThreeD originalThreed) {
+    public BlobHolder batchConvert(ThreeD originalThreed) {
         ConversionService cs = Framework.getService(ConversionService.class);
         // get all the 3d content blobs
         List<Blob> in = new ArrayList<>();
@@ -179,27 +171,24 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         // lod ids
         params.put(LOD_IDS_PARAMETER, lods.stream().map(AutomaticLOD::getId).collect(Collectors.joining(" ")));
 
-        // lods
-        params.put(LODS_PARAMETER,
-                lods.stream().map(AutomaticLOD::getPercentage).map(String::valueOf).collect(Collectors.joining(" ")));
+        // percPoly
+        params.put(PERC_POLY_PARAMETER,
+                lods.stream().map(AutomaticLOD::getPercPoly).map(String::valueOf).collect(Collectors.joining(" ")));
 
-        // maxPolys
-        params.put(MAX_POLYGONS_PARAMETER,
-            lods.stream().map(AutomaticLOD::getMaxPoly).map(String::valueOf).collect(Collectors.joining(" ")));
+        // maxPoly
+        params.put(MAX_POLY_PARAMETER,
+                lods.stream().map(AutomaticLOD::getMaxPoly).map(String::valueOf).collect(Collectors.joining(" ")));
 
-        // spherical coordinates
-        params.put(COORDS_PARAMETER, renderViews.stream()
-            .map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith())
-            .collect(Collectors.joining(" ")));
+        params.put(COORDS_PARAMETER,
+                renderViews.stream().map(renderView -> renderView.getAzimuth() + "," + renderView.getZenith()).collect(
+                        Collectors.joining(" ")));
 
         // dimensions
-        params.put(DIMENSIONS_PARAMETER, renderViews.stream()
-            .map(renderView -> renderView.getWidth() + "," + renderView.getHeight())
-            .collect(Collectors.joining(" ")));
+        params.put(DIMENSIONS_PARAMETER,
+                renderViews.stream().map(renderView -> renderView.getWidth() + "x" + renderView.getHeight()).collect(
+                        Collectors.joining(" ")));
 
-        BlobHolder result = cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
-
-        return result.getBlobs();
+        return cs.convert(BATCH_CONVERTER, new SimpleBlobHolder(in), params);
     }
 
     @Override
@@ -257,11 +246,14 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
     public TransmissionThreeD convertColladaToglTF(TransmissionThreeD colladaThreeD) {
         ConversionService cs = Framework.getService(ConversionService.class);
         Map<String, Serializable> parameters = new HashMap<>();
-
-        BlobHolder result = cs.convert(COLLADA2GLTF_CONVERTER, new SimpleBlobHolder(colladaThreeD.getBlob()),
-                parameters);
-        List<Blob> blobs = result.getBlobs();
-        return new TransmissionThreeD(blobs.get(0), colladaThreeD.getLod(), colladaThreeD.getMaxPoly(),
+        List<Blob> blobs = new ArrayList<>();
+        blobs.add(colladaThreeD.getBlob());
+        if (colladaThreeD.getResources() != null) {
+            blobs.addAll(colladaThreeD.getResources());
+        }
+        BlobHolder result = cs.convert(COLLADA2GLTF_CONVERTER, new SimpleBlobHolder(blobs), parameters);
+        return new TransmissionThreeD(result.getBlobs().get(0), null, colladaThreeD.getPercPoly(),
+                colladaThreeD.getMaxPoly(), colladaThreeD.getPercTex(), colladaThreeD.getMaxTex(),
                 colladaThreeD.getName());
     }
 

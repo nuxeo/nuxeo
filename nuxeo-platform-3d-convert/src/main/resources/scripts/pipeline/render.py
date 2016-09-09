@@ -1,6 +1,6 @@
 width = dim[0]
 height = dim[1]
-outfile = args.outdir + '/render-' + str(id) + '-' + str(lod) + '-' + str(coords[0]) + '-' + str(coords[1]) +\
+outfile = args.outdir + '/render/render-' + str(id) + '-' + str(lodid) + '-' + str(coords[0]) + '-' + str(coords[1]) +\
           '-' + str(width) + '-' + str(height) + '.png'
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
 

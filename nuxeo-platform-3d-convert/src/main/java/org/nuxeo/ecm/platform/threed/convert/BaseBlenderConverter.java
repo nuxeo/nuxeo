@@ -170,28 +170,22 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             params.addNamedParameter(SCRIPT_PARAMETER, getScriptWith(operatorsList));
 
             // Initialize render id params
-            params.addNamedParameter(RENDER_IDS_PARAMETER,
-                getParams(parameters, initParameters, RENDER_IDS_PARAMETER));
+            params.addNamedParameter(RENDER_IDS_PARAMETER, getParams(parameters, initParameters, RENDER_IDS_PARAMETER));
 
-            // Initialize lod id params
-            params.addNamedParameter(LOD_IDS_PARAMETER,
-                getParams(parameters, initParameters, LOD_IDS_PARAMETER));
+            // Initialize LOD id params
+            params.addNamedParameter(LOD_IDS_PARAMETER, getParams(parameters, initParameters, LOD_IDS_PARAMETER));
 
-            // Initialize LOD params
-            params.addNamedParameter(LODS_PARAMETER,
-                getParams(parameters, initParameters, LODS_PARAMETER));
+            // Initialize percentage polygon params
+            params.addNamedParameter(PERC_POLY_PARAMETER, getParams(parameters, initParameters, PERC_POLY_PARAMETER));
 
-            // Initialize max polygons params
-            params.addNamedParameter(MAX_POLYGONS_PARAMETER,
-                getParams(parameters, initParameters, MAX_POLYGONS_PARAMETER));
+            // Initialize max polygon params
+            params.addNamedParameter(MAX_POLY_PARAMETER, getParams(parameters, initParameters, MAX_POLY_PARAMETER));
 
             // Initialize spherical coordinates params
-            params.addNamedParameter(COORDS_PARAMETER,
-                getParams(parameters, initParameters, COORDS_PARAMETER));
+            params.addNamedParameter(COORDS_PARAMETER, getParams(parameters, initParameters, COORDS_PARAMETER));
 
             // Initialize dimension params
-            params.addNamedParameter(DIMENSIONS_PARAMETER,
-                getParams(parameters, initParameters, DIMENSIONS_PARAMETER));
+            params.addNamedParameter(DIMENSIONS_PARAMETER, getParams(parameters, initParameters, DIMENSIONS_PARAMETER));
 
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder);
@@ -217,12 +211,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             if (strParams != null) {
                 for (String paramName : strParams.keySet()) {
-                    if (RENDER_IDS_PARAMETER.equals(paramName) ||
-                        LOD_IDS_PARAMETER.equals(paramName) ||
-                        LODS_PARAMETER.equals(paramName) ||
-                        MAX_POLYGONS_PARAMETER.equals(paramName) ||
-                        COORDS_PARAMETER.equals(paramName) ||
-                        DIMENSIONS_PARAMETER.equals(paramName)) {
+                    if (RENDER_IDS_PARAMETER.equals(paramName) || LOD_IDS_PARAMETER.equals(paramName)
+                            || PERC_POLY_PARAMETER.equals(paramName) || MAX_POLY_PARAMETER.equals(paramName)
+                            || COORDS_PARAMETER.equals(paramName) || DIMENSIONS_PARAMETER.equals(paramName)) {
                         if (strParams.get(paramName) != null) {
                             params.addNamedParameter(paramName, Arrays.asList(strParams.get(paramName).split(" ")));
                         }
@@ -257,9 +248,9 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     }
 
-    public List<String> getConversions(String outDir) {
+    public List<String> getConversionLOD(String outDir) {
         File directory = new File(outDir);
-        String[] files = directory.list((dir, name) -> name.startsWith("transmissionformat") && name.endsWith(".dae"));
+        String[] files = directory.list((dir, name) -> true);
         if (files == null) {
             return null;
         }

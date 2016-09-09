@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -45,7 +46,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -87,7 +87,7 @@ public class TestThreeDThumbnail {
     }
 
     protected void updateThreeDDocument(DocumentModel doc, ThreeD threeD) throws IOException {
-        Collection<Blob> results = threeDService.batchConvert(threeD);
+        BlobHolder results = threeDService.batchConvert(threeD);
         List<Map<String, Serializable>> renderViewList = new ArrayList<>();
         List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(results);
         renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));

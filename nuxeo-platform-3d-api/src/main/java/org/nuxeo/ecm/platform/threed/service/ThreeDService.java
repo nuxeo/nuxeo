@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.platform.threed.service;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.ThreeDBatchProgress;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
@@ -44,9 +44,9 @@ public interface ThreeDService {
      * Batch convert the {@code originalThreed} to all needed blobs (lod transmission formats and thumbnail render)
      *
      * @param originalThreed the 3d to convert
-     * @return a {@code List<Blob>} object of the converted assets.
+     * @return a {@code BlobHolder} object of the converted assets.
      */
-    Collection<Blob> batchConvert(ThreeD originalThreed);
+    BlobHolder batchConvert(ThreeD originalThreed);
 
     /**
      * Clears data model for render views and transmission formats.
@@ -95,7 +95,6 @@ public interface ThreeDService {
      * Returns the available registered render views by azimuth and zenith (the combination is always unique).
      */
     RenderView getRenderView(Integer azimuth, Integer Zenith);
-
 
     /**
      * Get the batch processing progress

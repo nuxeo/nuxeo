@@ -9,7 +9,7 @@
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
                 <parameter name="operators">import render</parameter>
-                <parameter name="dimensions">800,600</parameter>
+                <parameter name="dimensions">800x600</parameter>
                 <parameter name="coords">0,0</parameter>
             </parameters>
         </converter>
@@ -21,7 +21,10 @@
                 <parameter name="script">scripts/pipeline.py</parameter>
                 <parameter name="operators">import lod convert lod convert lod convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
-                <parameter name="lods">33 11 3</parameter>
+                <parameter name="percPoly">33 11 3</parameter>
+                <parameter name="percTex">33 11 3</parameter>
+                <parameter name="maxPoly">1000000 null null</parameter>
+                <parameter name="maxTex">4000x4000 null null</parameter>
             </parameters>
         </converter>
         <converter name="colladaConversion" class="org.nuxeo.ecm.platform.threed.convert.ColladaConverter">
@@ -41,8 +44,11 @@
                 <parameter name="script">scripts/pipeline.py</parameter>
                 <parameter name="operators">import render render lod convert lod convert lod convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
-                <parameter name="lods">33 11 3</parameter>
-                <parameter name="dimensions">800,600 800,600</parameter>
+                <parameter name="percPoly">33 11 3</parameter>
+                <parameter name="percTex">33 11 3</parameter>
+                <parameter name="maxPoly">1000000 null null</parameter>
+                <parameter name="maxTex">4000x4000 null null</parameter>
+                <parameter name="dimensions">800x600 800x600</parameter>
                 <parameter name="coords">0,0 90,0</parameter>
             </parameters>
         </converter>

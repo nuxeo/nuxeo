@@ -18,8 +18,10 @@
     <xs:complexType name="transmissionFormatItem">
         <xs:sequence>
             <xs:element name="name" type="xs:string"/>
-            <xs:element name="lod" type="xs:integer"/>
+            <xs:element name="percPoly" type="xs:integer"/>
             <xs:element name="maxPoly" type="xs:integer"/>
+            <xs:element name="percTex" type="xs:integer"/>
+            <xs:element name="maxTex" type="xs:string"/>
             <xs:element name="content" type="nxs:content"/>
         </xs:sequence>
     </xs:complexType>

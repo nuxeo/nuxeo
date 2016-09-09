@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -27,15 +28,15 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.nuxeo.ecm.platform.threed.convert.Constants.LODS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_IDS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_POLYGONS_PARAMETER;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.OUT_DIR_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.MAX_TEX_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.PERC_TEX_PARAMETER;
 
 /**
  * Level of details converter for 3D document type
@@ -55,21 +56,37 @@ public class LodsConverter extends BaseBlenderConverter {
             throws ConversionException {
         Map<String, String> cmdStringParams = new HashMap<>();
 
-        String lods = null;
-        if (parameters.containsKey(LODS_PARAMETER)) {
-            lods = (String) parameters.get(LODS_PARAMETER);
-        } else if (initParameters.containsKey(LODS_PARAMETER)) {
-            lods = initParameters.get(LODS_PARAMETER);
+        String percPoly = null;
+        if (parameters.containsKey(PERC_POLY_PARAMETER)) {
+            percPoly = (String) parameters.get(PERC_POLY_PARAMETER);
+        } else if (initParameters.containsKey(PERC_POLY_PARAMETER)) {
+            percPoly = initParameters.get(PERC_POLY_PARAMETER);
         }
-        cmdStringParams.put(LODS_PARAMETER, lods);
+        cmdStringParams.put(PERC_POLY_PARAMETER, percPoly);
 
-        String maxPolys = null;
-        if (parameters.containsKey(MAX_POLYGONS_PARAMETER)) {
-            maxPolys = (String) parameters.get(MAX_POLYGONS_PARAMETER);
-        } else if (initParameters.containsKey(MAX_POLYGONS_PARAMETER)) {
-            maxPolys = initParameters.get(MAX_POLYGONS_PARAMETER);
+        String maxPoly = null;
+        if (parameters.containsKey(MAX_POLY_PARAMETER)) {
+            maxPoly = (String) parameters.get(MAX_POLY_PARAMETER);
+        } else if (initParameters.containsKey(MAX_POLY_PARAMETER)) {
+            maxPoly = initParameters.get(MAX_POLY_PARAMETER);
         }
-        cmdStringParams.put(MAX_POLYGONS_PARAMETER, maxPolys);
+        cmdStringParams.put(MAX_POLY_PARAMETER, maxPoly);
+
+        String percTex = null;
+        if (parameters.containsKey(PERC_TEX_PARAMETER)) {
+            percTex = (String) parameters.get(PERC_TEX_PARAMETER);
+        } else if (initParameters.containsKey(PERC_TEX_PARAMETER)) {
+            percTex = initParameters.get(PERC_TEX_PARAMETER);
+        }
+        cmdStringParams.put(PERC_TEX_PARAMETER, percTex);
+
+        String maxTex = null;
+        if (parameters.containsKey(MAX_TEX_PARAMETER)) {
+            maxTex = (String) parameters.get(MAX_TEX_PARAMETER);
+        } else if (initParameters.containsKey(MAX_TEX_PARAMETER)) {
+            maxTex = initParameters.get(MAX_TEX_PARAMETER);
+        }
+        cmdStringParams.put(MAX_TEX_PARAMETER, maxTex);
 
         return cmdStringParams;
     }
@@ -77,21 +94,34 @@ public class LodsConverter extends BaseBlenderConverter {
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
-        List<String> conversions = getConversions(outDir);
         List<String> lodIdList = cmdParams.getParameters().get(LOD_IDS_PARAMETER).getValues();
-        if (conversions.isEmpty() || conversions.size() != lodIdList.size()) {
-            throw new ConversionException("Unable get correct number of lod versions");
-        }
+        Map<String, Integer> lodBlobIndexes = new HashMap<>();
+        List<Integer> resourceIndexes = new ArrayList<>();
+        List<Blob> blobs = new ArrayList<>();
 
-        List<Blob> blobs = conversions.stream().map(conversion -> {
-            File file = new File(outDir + File.separatorChar + conversion);
+        String lodDir = outDir + File.separatorChar + "convert";
+        List<String> conversions = getConversionLOD(lodDir);
+        conversions.forEach(filename -> {
+            File file = new File(lodDir + File.separatorChar + filename);
             Blob blob = new FileBlob(file);
             blob.setFilename(file.getName());
-            return blob;
-        }).collect(Collectors.toList());
+            if (FilenameUtils.getExtension(filename).toLowerCase().equals("dae")) {
+                String[] filenameArray = filename.split("-");
+                if (filenameArray.length != 4) {
+                    throw new ConversionException(filenameArray + " incompatible with conversion file name schema.");
+                }
+                lodBlobIndexes.put(filenameArray[1], blobs.size());
+            } else {
+                resourceIndexes.add(blobs.size());
+            }
+            blobs.add(blob);
+        });
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
+        properties.put("resourceIndexes", (Serializable) resourceIndexes);
+        properties.put("lodIdIndexes", (Serializable) lodBlobIndexes);
+
         return new SimpleBlobHolderWithProperties(blobs, properties);
     }
 }

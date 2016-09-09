@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.rendition.Rendition;
@@ -47,7 +48,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -106,7 +106,7 @@ public class TestThreeDRenditions {
     }
 
     protected void updateThreeDDocument(DocumentModel doc, ThreeD threeD) {
-        Collection<Blob> results = threeDService.batchConvert(threeD);
+        BlobHolder results = threeDService.batchConvert(threeD);
 
         List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(results);
         List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissons(results);
@@ -116,24 +116,28 @@ public class TestThreeDRenditions {
 
         List<Map<String, Serializable>> transmissionList = new ArrayList<>();
         transmissionList.addAll(
-            transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
+                transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
         doc.setPropertyValue(TRANSMISSIONS_PROPERTY, (Serializable) transmissionList);
 
         List<Map<String, Serializable>> renderViewList = new ArrayList<>();
-        renderViewList.addAll(
-            threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
+        renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
         doc.setPropertyValue(RENDER_VIEWS_PROPERTY, (Serializable) renderViewList);
 
     }
 
     protected List<RenditionDefinition> getThreeDRenditionDefinitions(DocumentModel doc) {
-        return renditionService.getAvailableRenditionDefinitions(doc).stream().filter(renditionDefinition ->
-            THREED_RENDITION_DEFINITION_KINDS.contains(renditionDefinition.getKind())).collect(Collectors.toList());
+        return renditionService.getAvailableRenditionDefinitions(doc)
+                               .stream()
+                               .filter(renditionDefinition -> THREED_RENDITION_DEFINITION_KINDS.contains(
+                                       renditionDefinition.getKind()))
+                               .collect(Collectors.toList());
     }
 
     protected List<Rendition> getThreeDAvailableRenditions(DocumentModel doc, boolean onlyVisible) {
-        return renditionService.getAvailableRenditions(doc, onlyVisible).stream().filter(rendition ->
-            THREED_RENDITION_DEFINITION_KINDS.contains(rendition.getKind())).collect(Collectors.toList());
+        return renditionService.getAvailableRenditions(doc, onlyVisible)
+                               .stream()
+                               .filter(rendition -> THREED_RENDITION_DEFINITION_KINDS.contains(rendition.getKind()))
+                               .collect(Collectors.toList());
     }
 
     protected static ThreeD getTestThreeD() throws IOException {
@@ -209,16 +213,20 @@ public class TestThreeDRenditions {
     @Test
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();
-        Collection<Blob> results = threeDService.batchConvert(threeD);
+        BlobHolder results = threeDService.batchConvert(threeD);
         List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
         List<TransmissionThreeD> transmissions = BatchConverterHelper.getTransmissons(results);
         for (ThreeDRenderView rV : renderviews) {
-            assertEquals(1, threeDService.getAutomaticRenderViews().stream()
-                .filter(aRV -> aRV.getName().equals(rV.getTitle())).count());
+            assertEquals(1, threeDService.getAutomaticRenderViews()
+                                         .stream()
+                                         .filter(aRV -> aRV.getName().equals(rV.getTitle()))
+                                         .count());
         }
         for (TransmissionThreeD tTD : transmissions) {
-            assertEquals(1, threeDService.getAvailableLODs().stream()
-                .filter(aLOD -> aLOD.getName().equals(tTD.getName())).count());
+            assertEquals(1, threeDService.getAvailableLODs()
+                                         .stream()
+                                         .filter(aLOD -> aLOD.getName().equals(tTD.getName()))
+                                         .count());
         }
     }
 

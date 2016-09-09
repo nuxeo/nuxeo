@@ -43,9 +43,13 @@ public class Constants {
 
     public static final String LOD_IDS_PARAMETER = "lodIds";
 
-    public static final String LODS_PARAMETER = "lods";
+    public static final String PERC_POLY_PARAMETER = "percPoly";
 
-    public static final String MAX_POLYGONS_PARAMETER = "maxPolys";
+    public static final String MAX_POLY_PARAMETER = "maxPoly";
+
+    public static final String PERC_TEX_PARAMETER = "percTex";
+
+    public static final String MAX_TEX_PARAMETER = "maxTex";
 
     public static final String DIMENSIONS_PARAMETER = "dimensions";
 

@@ -20,16 +20,14 @@ package org.nuxeo.ecm.platform.threed.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 
 import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
 import org.nuxeo.ecm.platform.threed.ThreeD;
@@ -38,19 +36,13 @@ import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
 import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.STATIC_3D_PCTURE_TITLE;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THUMBNAIL_PICTURE_TITLE;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
 
@@ -113,11 +105,11 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         // Perform batch conversion
         ThreeDService service = Framework.getLocalService(ThreeDService.class);
         setStatus("Batch conversion");
-        Collection<Blob> blobs = service.batchConvert(originalThreeD);
+        BlobHolder batch = service.batchConvert(originalThreeD);
 
         // Saving thumbnail to the document
         setStatus("Saving thumbnail");
-        List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(blobs);
+        List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(batch);
         long numRenderViews = service.getAutomaticRenderViews().stream().filter(RenderView::isEnabled).count();
         if (!threeDRenderViews.isEmpty() && threeDRenderViews.size() == numRenderViews) {
             try {
@@ -132,7 +124,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         }
 
         setStatus("Converting Collada to glTF");
-        List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissons(blobs);
+        List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissons(batch);
         List<TransmissionThreeD> transmissionThreeDs = colladaThreeDs.stream()
                                                                      .map(service::convertColladaToglTF)
                                                                      .collect(Collectors.toList());
