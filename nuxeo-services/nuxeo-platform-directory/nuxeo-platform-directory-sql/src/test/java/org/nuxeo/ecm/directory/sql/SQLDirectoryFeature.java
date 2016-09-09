@@ -103,6 +103,13 @@ public class SQLDirectoryFeature extends SimpleFeature {
         // record all directories in their entirety
         allDirectoryData.clear();
         for (Directory dir : directoryService.getDirectories()) {
+            // skip non SQL directories
+            if (!(dir instanceof SQLDirectory))
+                continue;
+            // skip read-only SQL directories
+            SQLDirectoryDescriptor config = ((SQLDirectory) dir).getConfig();
+            if ( config != null && Boolean.TRUE.equals(config.getReadOnly()))
+                continue;
             Map<String, Map<String, Object>> data = new HashMap<>();
             Session session = dir.getSession();
 			try {
@@ -131,6 +138,13 @@ public class SQLDirectoryFeature extends SimpleFeature {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         // clear all directories
         for (Directory dir : directoryService.getDirectories()) {
+            // skip non SQL directories
+            if (!(dir instanceof SQLDirectory))
+                continue;
+            // skip read-only SQL directories
+            SQLDirectoryDescriptor config = ((SQLDirectory) dir).getConfig();
+            if ( config != null && Boolean.TRUE.equals(config.getReadOnly()))
+                continue;
             Session session = dir.getSession();
             try {
             	Map<String,Serializable> filter = Collections.emptyMap();
