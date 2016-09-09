@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.mutable.MutableObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -77,24 +78,32 @@ public class OAuth2TokenStore implements CredentialStore {
     }
 
     public void delete(String token, String clientId) throws ClientException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("serviceName", serviceName);
-            filter.put("clientId", clientId);
-            filter.put("accessToken", token);
+        final String fToken = token;
+        final String fClientId = clientId;
+        Framework.doPrivileged(new Runnable() {
+            @Override
+            public void run() {
 
-            DocumentModelList entries = session.query(filter);
-            for (DocumentModel entry : entries) {
-                session.deleteEntry(entry);
+                DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+                Session session = null;
+                try {
+                    session = ds.open(DIRECTORY_NAME);
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    filter.put("serviceName", serviceName);
+                    filter.put("clientId", fClientId);
+                    filter.put("accessToken", fToken);
+
+                    DocumentModelList entries = session.query(filter);
+                    for (DocumentModel entry : entries) {
+                        session.deleteEntry(entry);
+                    }
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
             }
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        });
     }
 
     @Override
@@ -119,47 +128,63 @@ public class OAuth2TokenStore implements CredentialStore {
     }
 
     public NuxeoOAuth2Token getToken(String token) throws ClientException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("serviceName", serviceName);
-            filter.put("accessToken", token);
-            DocumentModelList entries = session.query(filter);
-            if (entries.size() == 0) {
-                return null;
+        final MutableObject mo = new MutableObject();
+        final String fToken = token;
+        Framework.doPrivileged(new Runnable() {
+            @Override
+            public void run() {
+                DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+                Session session = null;
+                try {
+                    session = ds.open(DIRECTORY_NAME);
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    filter.put("serviceName", serviceName);
+                    filter.put("accessToken", fToken);
+                    DocumentModelList entries = session.query(filter);
+                    if (entries.size() == 0) {
+                        mo.setValue(null);
+                    }
+                    if (entries.size() > 1) {
+                        log.error("Found several tokens");
+                    }
+                    mo.setValue(getTokenFromDirectoryEntry(entries.get(0)));
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
             }
-            if (entries.size() > 1) {
-                log.error("Found several tokens");
-            }
-            return getTokenFromDirectoryEntry(entries.get(0));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        });
+        return (NuxeoOAuth2Token) mo.getValue();
     }
 
-    protected NuxeoOAuth2Token getToken(Map<String, Serializable> filter)
+    protected NuxeoOAuth2Token getToken(Map<String, Serializable> aFilter)
             throws ClientException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            DocumentModelList entries = session.query(filter);
-            if (entries.size() == 0) {
-                return null;
+        final MutableObject mo = new MutableObject();
+        final Map<String, Serializable> filter = aFilter;
+        Framework.doPrivileged(new Runnable() {
+            @Override
+            public void run() {
+                DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+                Session session = null;
+                try {
+                    session = ds.open(DIRECTORY_NAME);
+                    DocumentModelList entries = session.query(filter);
+                    if (entries.size() == 0) {
+                        mo.setValue(null);
+                    }
+                    if (entries.size() > 1) {
+                        log.error("Found several tokens");
+                    }
+                    mo.setValue(getTokenFromDirectoryEntry(entries.get(0)));
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
             }
-            if (entries.size() > 1) {
-                log.error("Found several tokens");
-            }
-            return getTokenFromDirectoryEntry(entries.get(0));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
+        });
+        return (NuxeoOAuth2Token) mo.getValue();
     }
 
     public NuxeoOAuth2Token getToken(String serviceName, String nuxeoLogin)
@@ -178,17 +203,25 @@ public class OAuth2TokenStore implements CredentialStore {
 
     protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(
             NuxeoOAuth2Token aToken) throws ClientException {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            DocumentModel entry = session.createEntry(aToken.toMap());
-            return getTokenFromDirectoryEntry(entry);
-        } finally {
-            if (session != null) {
-                session.close();
+        final MutableObject mo = new MutableObject();
+        final NuxeoOAuth2Token token = aToken;
+        Framework.doPrivileged(new Runnable() {
+            @Override
+            public void run() {
+                DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+                Session session = null;
+                try {
+                    session = ds.open(DIRECTORY_NAME);
+                    DocumentModel entry = session.createEntry(token.toMap());
+                    mo.setValue(getTokenFromDirectoryEntry(entry));
+                } finally {
+                    if (session != null) {
+                        session.close();
+                    }
+                }
             }
-        }
+        });
+        return (NuxeoOAuth2Token) mo.getValue();
     }
 
 }
