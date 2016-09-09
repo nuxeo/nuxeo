@@ -26,6 +26,7 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.FolderType;
 import org.apache.chemistry.opencmis.client.api.Item;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
@@ -59,6 +60,16 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     public NuxeoFolder(NuxeoSession session, NuxeoObjectData data, ObjectType type,
             List<SecondaryType> secondaryTypes) {
         super(session, data, type, secondaryTypes);
+    }
+
+    @Override
+    public FolderType getFolderType() {
+        ObjectType objectType = getType();
+        if (objectType instanceof FolderType) {
+            return (FolderType) objectType;
+        } else {
+            throw new ClassCastException("Object type is not a folder type.");
+        }
     }
 
     @Override

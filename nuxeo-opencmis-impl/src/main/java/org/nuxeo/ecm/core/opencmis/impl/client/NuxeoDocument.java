@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.DocumentType;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
@@ -52,6 +53,16 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     public NuxeoDocument(NuxeoSession session, NuxeoObjectData data, ObjectType type,
             List<SecondaryType> secondaryTypes) {
         super(session, data, type, secondaryTypes);
+    }
+
+    @Override
+    public DocumentType getDocumentType() {
+        ObjectType objectType = getType();
+        if (objectType instanceof DocumentType) {
+            return (DocumentType) objectType;
+        } else {
+            throw new ClassCastException("Object type is not a document type.");
+        }
     }
 
     @Override
@@ -223,6 +234,11 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     @Override
     public Boolean isImmutable() {
         return getPropertyValue(PropertyIds.IS_IMMUTABLE);
+    }
+
+    @Override
+    public boolean isVersionable() {
+        return data.doc.isVersionable();
     }
 
     @Override

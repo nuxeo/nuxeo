@@ -207,14 +207,39 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public CmisObject updateProperties(Map<String, ?> properties) {
-        ObjectId objectId = updateProperties(properties, true);
-        return session.getObject(objectId);
+        return updateProperties(properties, null, null);
     }
 
     @Override
     public ObjectId updateProperties(Map<String, ?> properties, boolean refresh) {
-        for (Entry<String, ?> en : properties.entrySet()) {
-            ((NuxeoPropertyDataBase<?>) data.getProperty(en.getKey())).setValue(en.getValue());
+        return updateProperties(properties, null, null, refresh);
+    }
+
+    @Override
+    public CmisObject updateProperties(Map<String, ?> properties, List<String> addSecondaryTypeIds,
+            List<String> removeSecondaryTypeIds) {
+        ObjectId objectId = updateProperties(properties, addSecondaryTypeIds, removeSecondaryTypeIds, true);
+        return session.getObject(objectId);
+    }
+
+    @Override
+    public ObjectId updateProperties(Map<String, ?> properties, List<String> addSecondaryTypeIds,
+            List<String> removeSecondaryTypeIds, boolean refresh) {
+        // refresh is ignored
+        if (addSecondaryTypeIds != null) {
+            for (String facet : addSecondaryTypeIds) {
+                data.doc.addFacet(facet);
+            }
+        }
+        if (removeSecondaryTypeIds != null) {
+            for (String facet : removeSecondaryTypeIds) {
+                data.doc.removeFacet(facet);
+            }
+        }
+        if (properties != null) {
+            for (Entry<String, ?> en : properties.entrySet()) {
+                ((NuxeoPropertyDataBase<?>) data.getProperty(en.getKey())).setValue(en.getValue());
+            }
         }
         CoreSession coreSession = session.getCoreSession();
         data.doc = coreSession.saveDocument(data.doc);
@@ -369,12 +394,6 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public boolean hasAllowableAction(Action action) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Set<String> getPermissonsForPrincipal(String principalId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

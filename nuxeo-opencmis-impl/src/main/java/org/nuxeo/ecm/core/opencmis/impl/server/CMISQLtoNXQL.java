@@ -50,14 +50,13 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalDefinitionImpl;
 import org.apache.chemistry.opencmis.server.support.query.AbstractPredicateWalker;
-import org.apache.chemistry.opencmis.server.support.query.CmisQueryWalker;
 import org.apache.chemistry.opencmis.server.support.query.CmisSelector;
 import org.apache.chemistry.opencmis.server.support.query.ColumnReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference;
 import org.apache.chemistry.opencmis.server.support.query.FunctionReference.CmisQlFunction;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject;
 import org.apache.chemistry.opencmis.server.support.query.QueryObject.SortSpec;
-import org.apache.chemistry.opencmis.server.support.query.QueryUtil;
+import org.apache.chemistry.opencmis.server.support.query.QueryUtilStrict;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -125,6 +124,8 @@ public class CMISQLtoNXQL {
 
     // ----- filled during walks of the clauses -----
 
+    protected QueryUtilStrict queryUtil;
+
     protected QueryObject query;
 
     protected TypeDefinition fromType;
@@ -153,21 +154,12 @@ public class CMISQLtoNXQL {
         TypeManagerImpl typeManager = service.getTypeManager();
         coreSession = service.coreSession;
 
-        query = new QueryObject(typeManager);
-        CmisQueryWalker walker = null;
         try {
-            walker = QueryUtil.getWalker(cmisql);
-            walker.setDoFullTextParse(false);
-            walker.query(query, new AnalyzingWalker());
+            queryUtil = new QueryUtilStrict(cmisql, typeManager, new AnalyzingWalker(), false);
+            queryUtil.processStatement();
+            query = queryUtil.getQueryObject();
         } catch (RecognitionException e) {
-            String msg;
-            if (walker == null) {
-                msg = e.getMessage();
-            } else {
-                msg = "Line " + e.line + ":" + e.charPositionInLine + " "
-                        + walker.getErrorMessage(e, walker.getTokenNames());
-            }
-            throw new QueryParseException(msg, e);
+            throw new QueryParseException(queryUtil.getErrorMessage(e), e);
         }
         if (query.getTypes().size() != 1 && query.getJoinedSecondaryTypes() == null) {
             throw new QueryParseException("JOINs not supported in query: " + cmisql);
@@ -267,7 +259,7 @@ public class CMISQLtoNXQL {
 
         // WHERE clause
 
-        Tree whereNode = walker.getWherePredicateTree();
+        Tree whereNode = queryUtil.getWalker().getWherePredicateTree();
         if (whereNode != null) {
             GeneratingWalker generator = new GeneratingWalker();
             generator.walkPredicate(whereNode);
