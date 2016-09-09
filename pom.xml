@@ -3115,13 +3115,6 @@
         </exclusions>
       </dependency>
 
-      <!-- DEPRECATED - kept until resteasy adapter is removed -->
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-jaxrs</artifactId>
-        <version>1.0.2.GA-nx</version>
-      </dependency>
-
       <dependency>
         <!-- note that this contains all of javax.ws.rs:jsr311-api -->
         <groupId>com.sun.jersey</groupId>
