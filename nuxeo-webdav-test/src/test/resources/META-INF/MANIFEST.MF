@@ -6,4 +6,3 @@ Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.webengine
-Nuxeo-Component: OSGI-INF/resource-container.xml
