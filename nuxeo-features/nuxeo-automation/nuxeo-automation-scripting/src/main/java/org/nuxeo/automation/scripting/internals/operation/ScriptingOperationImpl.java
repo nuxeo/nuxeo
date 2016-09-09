@@ -108,12 +108,12 @@ public class ScriptingOperationImpl {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) entry;
                 for (Object item : l) {
-                    if (ctx.get(entryId) instanceof DocumentScriptingWrapper) {
+                    if (item instanceof DocumentScriptingWrapper) {
                         docs.add(((DocumentScriptingWrapper) item).getDoc());
                     }
                 }
                 if (docs.size() == l.size() && docs.size() > 0) {
-                    ctx.put(entryId, ((DocumentScriptingWrapper) entry).getDoc());
+                    ctx.put(entryId, docs);
                 }
             }
         }
