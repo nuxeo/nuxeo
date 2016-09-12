@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.threed.service;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import static java.lang.Math.abs;
+
 /**
  * Object representing a registered render view conversion on the {@link ThreeDService}. An {@code RenderView}
  * references the spherical coordinates and if it should be a Rendition.
@@ -158,7 +160,7 @@ public class RenderView implements Comparable<RenderView> {
     }
 
     public String getId() {
-        return String.valueOf(name.hashCode());
+        return String.valueOf(abs(name.hashCode()));
     }
 
     @Override

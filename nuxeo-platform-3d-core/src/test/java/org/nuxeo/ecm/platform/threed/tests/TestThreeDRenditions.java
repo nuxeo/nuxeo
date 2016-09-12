@@ -74,11 +74,11 @@ import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionP
         "org.nuxeo.ecm.platform.threed.convert" })
 public class TestThreeDRenditions {
 
-    public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("left", "front",
-            "isometric", "top", "11", "03", "33", "100");
+    public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("isometric", "top",
+        "left", "front", "FullWithinReason", "HalfTextures", "10PercTextures", "50x50Texture", "HalfPolygon");
 
-    public static final List<String> EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES = Arrays.asList("front", "left", "11",
-            "33", "100");
+    public static final List<String> EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES = Arrays.asList("front", "left",
+        "FullWithinReason", "HalfTextures", "10PercTextures", "11", "50x50Texture", "HalfPolygon");
 
     public static final List<String> THREED_RENDITION_DEFINITION_KINDS = Arrays.asList(
             THREED_RENDER_VIEW_RENDITION_KIND, THREED_TRANSMISSION_RENDITION_KIND);
@@ -170,16 +170,16 @@ public class TestThreeDRenditions {
         updateThreeDDocument(doc, threeD);
 
         List<RenditionDefinition> renditionDefinitions = getThreeDRenditionDefinitions(doc);
-        assertEquals(8, renditionDefinitions.size());
+        assertEquals(9, renditionDefinitions.size());
         for (RenditionDefinition definition : renditionDefinitions) {
             assertTrue(EXPECTED_ALL_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
         }
 
         List<Rendition> availableRenditions = getThreeDAvailableRenditions(doc, false);
-        assertEquals(8, availableRenditions.size());
+        assertEquals(9, availableRenditions.size());
         // they are all visible
         availableRenditions = getThreeDAvailableRenditions(doc, true);
-        assertEquals(8, availableRenditions.size());
+        assertEquals(9, availableRenditions.size());
     }
 
     @Test
@@ -195,16 +195,16 @@ public class TestThreeDRenditions {
         updateThreeDDocument(doc, threeD);
 
         List<RenditionDefinition> renditionDefinitions = getThreeDRenditionDefinitions(doc);
-        assertEquals(5, renditionDefinitions.size());
+        assertEquals(8, renditionDefinitions.size());
         for (RenditionDefinition definition : renditionDefinitions) {
             assertTrue(EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
         }
 
         List<Rendition> availableRenditions = getThreeDAvailableRenditions(doc, false);
-        assertEquals(5, availableRenditions.size());
+        assertEquals(8, availableRenditions.size());
         // they are all but one visible
         availableRenditions = getThreeDAvailableRenditions(doc, true);
-        assertEquals(4, availableRenditions.size());
+        assertEquals(7, availableRenditions.size());
 
         runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",
                 "OSGI-INF/threed-service-contrib-override.xml");

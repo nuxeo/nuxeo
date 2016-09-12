@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.abs;
+
 /**
  * Object wrapping a transmission format with {@link ThreeD} and LoD details
  *
@@ -101,7 +103,7 @@ public class TransmissionThreeD extends ThreeD {
     }
 
     public String getId() {
-        return String.valueOf(name.hashCode());
+        return String.valueOf(abs(name.hashCode()));
     }
 
     public Map<String, Serializable> toMap() {
