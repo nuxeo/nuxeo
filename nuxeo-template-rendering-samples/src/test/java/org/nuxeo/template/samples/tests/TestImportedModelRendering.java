@@ -168,5 +168,5 @@ public class TestImportedModelRendering {
     assertTrue(text.contains("Subjects technology/it human sciences/information"));
     assertTrue(text.contains("Format Html"));
   }
-  
+
 }

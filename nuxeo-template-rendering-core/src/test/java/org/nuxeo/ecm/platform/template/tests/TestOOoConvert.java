@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 
 import org.junit.Test;

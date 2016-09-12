@@ -35,8 +35,7 @@ import org.nuxeo.template.processors.xdocreport.XDocReportProcessor;
 public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void setUp() throws Exception {
         deployBundle("org.nuxeo.template.manager.api");
         deployBundle("org.nuxeo.template.manager");
     }
@@ -128,7 +127,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
     @Test
     public void testDocXBrokenParamExtraction() throws Exception {
 
-        deployContrib("org.nuxeo.template.manager.xdocreport.test", "context-extension-contrib.xml");
+        pushInlineDeployments("org.nuxeo.template.manager.xdocreport.test:context-extension-contrib.xml");
 
         XDocReportProcessor processor = new XDocReportProcessor();
         File file = FileUtils.getResourceFileFromContext("data/brokenVariables.docx");

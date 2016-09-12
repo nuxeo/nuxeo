@@ -21,14 +21,13 @@
 
 package org.nuxeo.ecm.platform.template.tests;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -38,11 +37,9 @@ import org.nuxeo.ecm.platform.convert.ooomanager.OOoManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public abstract class BaseConverterTest extends Assert {
+public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(BaseConverterTest.class);
-
-    final NXRuntimeTestCase tc = new NXRuntimeTestCase();
 
     OOoManagerService oooManagerService;
 
@@ -62,32 +59,25 @@ public abstract class BaseConverterTest extends Assert {
         return getBlobFromPath(path, null);
     }
 
-    @Before
-    public void setUp() throws Exception {
-        tc.setUp();
-        tc.deployBundle("org.nuxeo.ecm.core.api");
-        tc.deployBundle("org.nuxeo.ecm.core.convert.api");
-        tc.deployBundle("org.nuxeo.ecm.core.mimetype");
-        tc.deployBundle("org.nuxeo.ecm.core.convert");
-        tc.deployBundle("org.nuxeo.ecm.platform.convert");
-        tc.deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        tc.deployContrib("org.nuxeo.template.manager", "OSGI-INF/convert-service-contrib.xml");
+    @Override
+    protected void setUp() throws Exception {
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.mimetype");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.platform.convert");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
+        deployContrib("org.nuxeo.template.manager", "OSGI-INF/convert-service-contrib.xml");
+    }
 
+    @Override
+    protected void postSetUp() throws Exception {
         oooManagerService = Framework.getService(OOoManagerService.class);
         try {
             oooManagerService.startOOoManager();
         } catch (Exception e) {
             log.warn("Can't run OpenOffice, JOD converter will not be available.");
         }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        oooManagerService = Framework.getService(OOoManagerService.class);
-        if (oooManagerService.isOOoManagerStarted()) {
-            oooManagerService.stopOOoManager();
-        }
-        tc.tearDown();
     }
 
 }
