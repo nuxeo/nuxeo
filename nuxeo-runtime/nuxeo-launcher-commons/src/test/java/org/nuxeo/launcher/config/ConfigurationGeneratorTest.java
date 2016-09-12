@@ -321,7 +321,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         });
     }
 
-    protected void testCheckJavaVersion(boolean fail) {
+    protected void testCheckJavaVersion(final boolean fail) {
         runJVMCheck(fail, new Runnable() {
 
             @Override
