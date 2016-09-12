@@ -30,6 +30,18 @@ def dimensions(d):
 def params_filled(params):
     return params is not None and len(params) > 0 and params[0] != ''
 
+
+def mesh_is_manifold(mesh):
+    bpy.context.scene.objects.active = mesh
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='DESELECT')
+    bpy.ops.mesh.select_non_manifold()
+    bm = bmesh.from_edit_mesh(mesh.data)
+    selected = [v for v in bm.verts if v.select]
+    bpy.ops.mesh.select_all(action='DESELECT')
+    bpy.ops.object.mode_set(mode='OBJECT')
+    return len(selected) == 0
+
 parser = argparse.ArgumentParser(description='Blender pipeline.')
 parser.add_argument('-i', '--input', dest='input',
                     help='path for the input file')
