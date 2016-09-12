@@ -26,8 +26,6 @@ import java.util.Set;
 
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.ecm.core.management.statuses.NuxeoInstanceIdentifierHelper;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -63,29 +61,12 @@ public class ReportComponent extends DefaultComponent {
         @Override
         public void handleEvent(Event event) {
             if (ReloadService.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
-                applicationStarted(context);
+                start(context);
             } else if (ReloadService.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
-                applicationStopped(context);
+                stop(context);
             }
         }
 
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
-                    return;
-                }
-                Framework.removeListener(this);
-                Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
-            }
-        });
-        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC,
-                reloadListener = new ReloadListener(context));
     }
 
     final ReportConfiguration configuration = new ReportConfiguration();
@@ -147,26 +128,18 @@ public class ReportComponent extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         instance = this;
-        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report",
-                ReportServer.class, management);
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
-                    return;
-                }
-                Framework.removeListener(this);
-                applicationStopped(context);
-            }
-
-        });
+        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC,
+                reloadListener = new ReloadListener(context));
+        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", ReportServer.class, management);
     }
 
-    protected void applicationStopped(ComponentContext context) {
+    @Override
+    public void stop(ComponentContext context) {
+        Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
         Framework.getService(ResourcePublisher.class).unregisterResource("connect-report", "connect-report");
+        reloadListener = null;
     }
 
     @Override
