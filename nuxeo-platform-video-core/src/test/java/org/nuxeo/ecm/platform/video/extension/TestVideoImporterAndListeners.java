@@ -40,7 +40,6 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -64,7 +63,6 @@ import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -73,7 +71,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", //
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
         "org.nuxeo.ecm.automation.core", //
@@ -93,9 +91,6 @@ public class TestVideoImporterAndListeners {
     protected static final String VIDEO_TYPE = "Video";
 
     public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
-
-    @Inject
-    protected RuntimeHarness runtimeHarness;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -334,11 +329,10 @@ public class TestVideoImporterAndListeners {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
     public void testConfiguration() throws Exception {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
-
-        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.video.core", "video-configuration-override.xml");
 
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
@@ -353,8 +347,6 @@ public class TestVideoImporterAndListeners {
         List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
         assertEquals(2, storyboard.size());
-
-        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.video.core", "video-configuration-override.xml");
     }
 
 }
