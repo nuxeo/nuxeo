@@ -44,7 +44,7 @@ public class CanMonitorConnectionPoolTest {
     protected ConnectionPoolMonitor repo;
 
     @Inject
-    @Named("jdbc/repository_test")
+    @Named("jdbc/nuxeojunittests")
     protected ConnectionPoolMonitor db;
 
     @Inject

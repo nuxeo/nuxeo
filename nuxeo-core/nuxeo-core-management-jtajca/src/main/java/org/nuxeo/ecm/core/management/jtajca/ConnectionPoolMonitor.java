@@ -30,4 +30,44 @@ public interface ConnectionPoolMonitor extends PoolingAttributes, Monitor {
 
     public static String NAME = Defaults.instance.name(ConnectionPoolMonitor.class, "%s");
 
+    /**
+     * Returns the pool name
+     *
+     * @since 8.4
+     */
+    String getName();
+
+    /**
+     *
+     * Returns the active timeout before the connection being killed.
+     *
+     * @since 8.4
+     */
+    int getActiveTimeoutMinutes();
+
+    /**
+     * Returns the current killed connection count
+     * @since 8.4
+     */
+    long getKilledActiveConnectionCount();
+
+    /**
+     * Kills active timed out connections in the pool. Returns the killed count.
+     *
+     *
+     * @since 8.4
+     */
+    int killActiveTimedoutConnections();
+
+    /**
+     * Destroys the current connection manager and replace it by a new one
+     *
+     *
+     * @since 8.4
+     */
+    void reset();
+
+
+
+
 }

@@ -23,7 +23,6 @@ import java.util.Map;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import javax.management.JMException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -34,7 +33,6 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -44,6 +42,7 @@ import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainerListener;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -64,20 +63,20 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     private class ConnectionManagerUpdater implements NuxeoContainerListener {
         @Override
-        public void handleNewConnectionManager(String name, AbstractConnectionManager cm) {
+        public void handleNewConnectionManager(String name, NuxeoConnectionManager cm) {
             ConnectionPoolMonitor monitor = new DefaultConnectionPoolMonitor(name, cm);
             monitor.install();
             poolConnectionMonitors.put(name, monitor);
         }
 
         @Override
-        public void handleConnectionManagerReset(String name, AbstractConnectionManager cm) {
+        public void handleConnectionManagerReset(String name, NuxeoConnectionManager cm) {
             DefaultConnectionPoolMonitor monitor = (DefaultConnectionPoolMonitor) poolConnectionMonitors.get(name);
             monitor.handleNewConnectionManager(cm);
         }
 
         @Override
-        public void handleConnectionManagerDispose(String name, AbstractConnectionManager mgr) {
+        public void handleConnectionManagerDispose(String name, NuxeoConnectionManager mgr) {
             ConnectionPoolMonitor monitor = poolConnectionMonitors.remove(name);
             monitor.uninstall();
         }

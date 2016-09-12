@@ -15,13 +15,11 @@
  */
 package org.nuxeo.runtime.jtajca;
 
-import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
-
 public interface NuxeoContainerListener {
 
-    void handleNewConnectionManager(String name, AbstractConnectionManager mgr);
+    void handleNewConnectionManager(String name, NuxeoConnectionManager mgr);
 
-    void handleConnectionManagerReset(String name, AbstractConnectionManager mgr);
+    void handleConnectionManagerReset(String name, NuxeoConnectionManager mgr);
 
-    void handleConnectionManagerDispose(String name, AbstractConnectionManager mgr);
+    void handleConnectionManagerDispose(String name, NuxeoConnectionManager mgr);
 }
