@@ -57,7 +57,7 @@ public class TransmissionFormatItem {
         this.position = position;
         String propertyPath = basePropertyPath + "/" + position;
         blobPropertyName = propertyPath + "/content";
-        lodPropertyName = propertyPath + "/lod";
+        lodPropertyName = propertyPath + "/percPoly";
         maxPolyPropertyName = propertyPath + "/maxPoly";
         try {
             Blob blob = (Blob) doc.getPropertyValue(blobPropertyName);
