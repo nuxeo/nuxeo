@@ -12,6 +12,8 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.security.auth.login.LoginContext;
+
 public abstract class DirectoryBasedEditor implements Serializable {
 
     protected DocumentModelList entries;
@@ -47,16 +49,23 @@ public abstract class DirectoryBasedEditor implements Serializable {
     }
 
     public void createEntry() throws Exception {
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
+        LoginContext loginContext = Framework.login();
         try {
-            session.createEntry(creationEntry);
-            session.commit();
-            creationEntry = null;
-            showAddForm = false;
-            entries = null;
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = ds.open(getDirectoryName());
+            try {
+                session.createEntry(creationEntry);
+                session.commit();
+                creationEntry = null;
+                showAddForm = false;
+                entries = null;
+            } finally {
+                session.close();
+            }
         } finally {
-            session.close();
+            if (loginContext != null) {
+                loginContext.logout();
+            }
         }
     }
 
@@ -83,55 +92,83 @@ public abstract class DirectoryBasedEditor implements Serializable {
     }
 
     public DocumentModelList getEntries() throws Exception {
-        if (entries == null) {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = ds.open(getDirectoryName());
-            try {
-                Map<String, Serializable> emptyMap = getQueryFilter();
-                Set<String> emptySet = getOrderSet();
+        LoginContext loginContext = Framework.login();
+        try {
+            if (entries == null) {
+                DirectoryService ds = Framework.getService(DirectoryService.class);
+                Session session = ds.open(getDirectoryName());
+                try {
+                    Map<String, Serializable> emptyMap = getQueryFilter();
+                    Set<String> emptySet = getOrderSet();
 
-                entries = session.query(emptyMap, emptySet, null, true);
-            } finally {
-                session.close();
+                    entries = session.query(emptyMap, emptySet, null, true);
+                } finally {
+                    session.close();
+                }
+            }
+            return entries;
+        } finally {
+            if (loginContext != null) {
+                loginContext.logout();
             }
         }
-        return entries;
     }
 
     public void editEntry(String entryId) throws Exception {
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
+        LoginContext loginContext = Framework.login();
         try {
-            editableEntry = session.getEntry(entryId);
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = ds.open(getDirectoryName());
+            try {
+                editableEntry = session.getEntry(entryId);
+            } finally {
+                session.close();
+            }
         } finally {
-            session.close();
+            if (loginContext != null) {
+                loginContext.logout();
+            }
         }
     }
 
     public void saveEntry() throws Exception {
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
+        LoginContext loginContext = Framework.login();
         try {
-            session.updateEntry(editableEntry);
-            session.commit();
-            editableEntry = null;
-            entries = null;
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = ds.open(getDirectoryName());
+            try {
+                session.updateEntry(editableEntry);
+                session.commit();
+                editableEntry = null;
+                entries = null;
+            } finally {
+                session.close();
+            }
         } finally {
-            session.close();
+            if (loginContext != null) {
+                loginContext.logout();
+            }
         }
     }
 
     public void deleteEntry(String entryId) throws Exception {
-        DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
+        LoginContext loginContext = Framework.login();
         try {
-            session.deleteEntry(entryId);
-            if (editableEntry != null && editableEntry.getId().equals(entryId)) {
-                editableEntry = null;
+            DirectoryService ds = Framework.getService(DirectoryService.class);
+            Session session = ds.open(getDirectoryName());
+            try {
+                session.deleteEntry(entryId);
+                if (editableEntry != null && editableEntry.getId().equals(entryId)) {
+                    editableEntry = null;
+                }
+                entries = null;
+            } finally {
+                session.close();
             }
-            entries = null;
         } finally {
-            session.close();
+            if (loginContext != null) {
+                loginContext.logout();
+            }
         }
     }
 
