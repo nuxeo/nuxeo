@@ -94,6 +94,9 @@ public class SQLDirectoryFeature extends SimpleFeature {
         // record all directories in their entirety
         allDirectoryData = new HashMap<>();
         for (Directory dir : directoryService.getDirectories()) {
+            if (!isWritableSQLDirectory(dir)) {
+                continue;
+            }
             Map<String, Map<String, Object>> data = new HashMap<>();
             try (Session session = dir.getSession()) {
                 List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
@@ -135,6 +138,9 @@ public class SQLDirectoryFeature extends SimpleFeature {
         for (Entry<String, Map<String, Map<String, Object>>> each : allDirectoryData.entrySet()) {
             String directoryName = each.getKey();
             Directory directory = directoryService.getDirectory(directoryName);
+            if (!isWritableSQLDirectory(directory)) {
+                continue;
+            }
             Collection<Map<String, Object>> data = each.getValue().values();
             try (Session session = directory.getSession()) {
                 for (Map<String, Object> map : data) {
@@ -152,4 +158,16 @@ public class SQLDirectoryFeature extends SimpleFeature {
         }
         allDirectoryData = null;
     }
+
+    public boolean isWritableSQLDirectory(Directory dir) {
+        if (!(dir instanceof SQLDirectory)) {
+            return false;
+        }
+        SQLDirectoryDescriptor descriptor = ((SQLDirectory) dir).getConfig();
+        if (descriptor != null && Boolean.TRUE.equals(descriptor.getReadOnly())) {
+            return false;
+        }
+        return true;
+    }
+
 }
