@@ -1,3 +1,4 @@
+prev_lod = current_lod
 original_polygon_count = 0
 for ob in bpy.context.scene.objects:
     if ob.type == 'MESH':
@@ -25,7 +26,7 @@ if perc_poly is not None and max_poly is not None:
     lod_ratio_from_lods = ratio_from_lods()
     lod_ratio_from_max_polys = ratio_from_max_polys()
     if lod_ratio_from_lods < lod_ratio_from_max_polys:
-        # lod param is stricter
+        # perc_poly param is stricter
         lod_ratio = lod_ratio_from_lods
         current_lod = current_from_lods()
     else:
@@ -41,10 +42,23 @@ else:
     lod_ratio = ratio_from_lods()
     current_lod = current_from_lods()
 
+next_lod = prev_lod * lod_ratio
+print('[LOD] [%.2f to %.2f]' % (prev_lod, next_lod))
 for ob in bpy.context.scene.objects:
     if ob.type == 'MESH':
-        ob.select = ob.type == 'MESH'
+        verts_non_manif = mesh_info[ob.name]['vertices_non_manifold']
+        verts_total = mesh_info[ob.name]['vertices_total']
+        perc_non_manif = verts_non_manif / verts_total
+        ob.select = True
         mod = ob.modifiers.new(name='decimate', type='DECIMATE')
-        mod.ratio = lod_ratio
+        if next_lod >= perc_non_manif:
+            # can reduce safely according to the heuristic
+            mod.ratio = lod_ratio
+            print('[LOD] applying %.2f ratio to %s mesh' % (next_lod, ob.name))
+        else:
+            # has to reduce to the value of the percentage of non manifold vertices
+            mod.ratio = perc_non_manif / prev_lod
+            print('[LOD] cannot apply %.2f ratio to %s mesh because the percentage of non manifold vertices is %.2f '
+                  '(using %.2f instead)' % (next_lod, ob.name, perc_non_manif, perc_non_manif))
         bpy.context.scene.objects.active = ob
         bpy.ops.object.modifier_apply(apply_as='DATA', modifier='decimate')
