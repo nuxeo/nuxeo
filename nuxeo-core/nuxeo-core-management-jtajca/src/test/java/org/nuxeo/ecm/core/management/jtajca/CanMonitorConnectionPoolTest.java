@@ -29,6 +29,8 @@ import javax.inject.Named;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.IgnoreNonPooledCondition;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -37,6 +39,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(JtajcaManagementFeature.class)
+@ConditionalIgnoreRule.Ignore(condition = IgnoreNonPooledCondition.class)
 public class CanMonitorConnectionPoolTest {
 
     @Inject

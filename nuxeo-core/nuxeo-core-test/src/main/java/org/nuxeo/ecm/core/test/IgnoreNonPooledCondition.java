@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.test;
+
+import javax.inject.Inject;
 
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
-import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 
 public class IgnoreNonPooledCondition implements ConditionalIgnoreRule.Condition {
 
+    @Inject
+    private CoreFeature core;
+
     @Override
     public boolean shouldIgnore() {
-        return !(DatabaseHelper.DATABASE instanceof DatabaseH2 || DatabaseHelper.DATABASE instanceof DatabasePostgreSQL);
+        return !core.getStorageConfiguration().isVCS();
     }
 
 }
