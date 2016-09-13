@@ -84,7 +84,7 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
 
         // list renditions
         List<RenditionData> renditions = objService.getRenditions(repositoryId, ob.getId(), "*", null, null, null);
-        assertEquals(5, renditions.size());
+        assertEquals(4, renditions.size());
         Collections.sort(renditions, RENDITION_CMP);
 
         RenditionData ren;
@@ -147,7 +147,7 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
 
         // wildcard mimetype
         renditions = objService.getRenditions(repositoryId, ob.getId(), "application/*", null, null, null);
-        assertEquals(3, renditions.size());
+        assertEquals(2, renditions.size());
         assertEquals("nuxeo:rendition:pdf", renditions.get(0).getStreamId());
 
         // several kind / mimetypes
@@ -155,12 +155,12 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
         assertEquals(0, renditions.size());
 
         renditions = objService.getRenditions(repositoryId, ob.getId(), "application/*,foo/bar,foo", null, null, null);
-        assertEquals(3, renditions.size());
+        assertEquals(2, renditions.size());
         assertEquals("nuxeo:rendition:pdf", renditions.get(0).getStreamId());
 
         renditions = objService.getRenditions(repositoryId, ob.getId(), "application/*,cmis:thumbnail", null, null,
                 null);
-        assertEquals(4, renditions.size());
+        assertEquals(3, renditions.size());
     }
 
 }

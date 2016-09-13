@@ -669,7 +669,7 @@ public class CmisSuiteSession {
         oc.setRenditionFilterString("*");
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();
-        assertEquals(5, renditions.size());
+        assertEquals(4, renditions.size());
         Collections.sort(renditions, RENDITION_CMP);
         check(renditions.get(0), checkStream);
 
@@ -679,7 +679,7 @@ public class CmisSuiteSession {
         ItemIterable<QueryResult> results = session.query(q, true, oc);
         assertEquals(1, results.getTotalNumItems());
         renditions = results.iterator().next().getRenditions();
-        assertEquals(5, renditions.size());
+        assertEquals(4, renditions.size());
         Collections.sort(renditions, RENDITION_CMP);
         check(renditions.get(0), false);
         // no rendition stream, Chemistry deficiency (QueryResultImpl
