@@ -39,7 +39,7 @@ import org.apache.chemistry.opencmis.commons.spi.ObjectService;
 import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
-import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
+import org.apache.chemistry.opencmis.server.shared.TempStoreOutputStreamFactory;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -164,7 +164,7 @@ public abstract class TestCmisBindingBase {
 
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
-        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance( //
+        TempStoreOutputStreamFactory streamFactory = TempStoreOutputStreamFactory.newInstance( //
                 Environment.getDefault().getTemp(), THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;

@@ -26,7 +26,7 @@ import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
-import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
+import org.apache.chemistry.opencmis.server.shared.TempStoreOutputStreamFactory;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
@@ -82,7 +82,7 @@ public class CmisFeatureSessionLocal extends CmisFeatureSession {
     public Session setUpCmisSession(String repositoryName) {
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
-        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance( //
+        TempStoreOutputStreamFactory streamFactory = TempStoreOutputStreamFactory.newInstance( //
                 Environment.getDefault().getTemp(), THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;
