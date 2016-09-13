@@ -101,17 +101,17 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
-
+  // When status is 200 it already exists, 201 otherwhise
   def createDocumentIfNotExists = (parent: String, name: String, docType: String) => {
-    exitBlockOnFail {
-      exec(
-        http("Check if document exists")
-          .head(Constants.API_PATH + parent + "/" + name)
-          .headers(Headers.base)
-          .header("Content-Type", "application/json")
-          .basicAuth("${user}", "${password}")
-          .check(status.in(404)))
-        .exec(
+    exec(
+      http("Check if document exists")
+        .head(Constants.API_PATH + parent + "/" + name)
+        .headers(Headers.base)
+        .header("Content-Type", "application/json")
+        .basicAuth("${user}", "${password}")
+        .check(status.in(200, 404).saveAs("status")))
+      .doIf(session => session("status").as[Integer].equals(404)) {
+        exec(
           http("Create " + docType)
             .post(Constants.API_PATH + parent)
             .headers(Headers.base)
@@ -123,21 +123,21 @@ object NuxeoRest {
                 """", "dc:description": "Gatling bench """ +
                 docType +
                 """"}}"""))
-            .check(status.in(201)))
-    }
+            .check(status.in(201).saveAs("status")))
+      }
   }
 
+  // When status is 200 it already exists, 201 otherwhise
   def createDocumentIfNotExistsAsAdmin = (parent: String, name: String, docType: String) => {
-      exec(
-        http("Check if document exists")
-          .get(Constants.API_PATH + parent + "/" + name)
-          .headers(Headers.base)
-          .header("Content-Type", "application/json")
-          .basicAuth("${adminId}", "${adminPassword}")
-          .check(status.in(200, 404))
-          .check(regex(".*").saveAs("lastbody")))
-        .doIf(session => session("lastbody").as[String].contains("404")) {
-          exec(
+    exec(
+      http("Check if document exists")
+        .head(Constants.API_PATH + parent + "/" + name)
+        .headers(Headers.base)
+        .header("Content-Type", "application/json")
+        .basicAuth("${adminId}", "${adminPassword}")
+        .check(status.in(200, 404).saveAs("status")))
+      .doIf(session => session("status").as[Integer].equals(404)) {
+        exec(
           http("Create " + docType + " as admin")
             .post(Constants.API_PATH + parent)
             .headers(Headers.base)
@@ -147,8 +147,8 @@ object NuxeoRest {
               """{ "entity-type": "document", "name":"""" + name + """", "type": """" + docType +
                 """","properties": {"dc:title":"""" + name +
                 """", "dc:description": "Gatling bench folder"}}""".stripMargin))
-            .check(status.in(201)))
-    }
+            .check(status.in(201).saveAs("status")))
+      }
   }
 
   def createFileDocument = (parent: String, name: String) => {
@@ -225,16 +225,16 @@ object NuxeoRest {
       .check(status.in(204))
   }
 
+  // When status is 200 it already exists, 201 otherwhise
   def createUserIfNotExists = (groupName: String) => {
-      exec(
-        http("Check if user exists")
-          .get("/api/v1/user/${user}")
-          .headers(Headers.base)
-          .header("Content-Type", "application/json")
-          .basicAuth("${adminId}", "${adminPassword}")
-          .check(status.in(200, 404))
-          .check(regex(".*").saveAs("lastbody")))
-      .doIf(session => session("lastbody").as[String].contains("404")) {
+    exec(
+      http("Check if user exists")
+        .head("/api/v1/user/${user}")
+        .headers(Headers.base)
+        .header("Content-Type", "application/json")
+        .basicAuth("${adminId}", "${adminPassword}")
+        .check(status.in(200, 404).saveAs("status")))
+      .doIf(session => session("status").as[Integer].equals(404)) {
         exec(
           http("Create user")
             .post("/api/v1/user")
@@ -245,7 +245,7 @@ object NuxeoRest {
               """{"entity-type":"user","id":"${user}","properties":{"firstName":null,"lastName":null,"password":"${password}","groups":["""" +
                 groupName +
                 """"],"company":null,"email":"devnull@nuxeo.com","username":"${user}"},"extendedGroups":[{"name":"members","label":"Members group","url":"group/members"}],"isAdministrator":false,"isAnonymous":false}"""))
-            .check(status.in(201)))
+            .check(status.in(201).saveAs("status")))
       }
   }
 
@@ -258,25 +258,25 @@ object NuxeoRest {
       .check(status.in(204))
   }
 
+  // When status is 200 it already exists, 201 otherwhise
   def createGroupIfNotExists = (groupName: String) => {
-      exec(
-           http("Check if group exists")
-          .get("/api/v1/group/" + groupName)
-          .headers(Headers.base)
+    exec(
+      http("Check if group exists")
+        .head("/api/v1/group/" + groupName)
+        .headers(Headers.base)
+        .header("Content-Type", "application/json")
+        .basicAuth("${adminId}", "${adminPassword}")
+        .check(status.in(200, 404).saveAs("status")))
+      .doIf(session => session("status").as[Integer].equals("404")) {
+        exec(http("Create group")
+          .post("/api/v1/group")
+          .headers(Headers.default)
           .header("Content-Type", "application/json")
           .basicAuth("${adminId}", "${adminPassword}")
-          .check(status.in(200, 404))
-          .check(regex(".*").saveAs("lastbody")))
-        .doIf(session => session("lastbody").as[String].contains("404")) {
-          exec(http("Create group")
-            .post("/api/v1/group")
-            .headers(Headers.default)
-            .header("Content-Type", "application/json")
-            .basicAuth("${adminId}", "${adminPassword}")
-            .body(StringBody(
-              """{"entity-type":"group","groupname":"""" + groupName + """", "groupLabel": "Gatling group"}"""))
-            .check(status.in(201)))
-        }
+          .body(StringBody(
+            """{"entity-type":"group","groupname":"""" + groupName + """", "groupLabel": "Gatling group"}"""))
+          .check(status.in(201).saveAs("status")))
+      }
   }
 
   def deleteGroup = (groupName: String) => {
@@ -301,12 +301,12 @@ object NuxeoRest {
   }
 
   def waitForAsyncJobs = () => {
-     http("Wait For Async")
-            .post(Constants.AUTOMATION_PATH + "/Elasticsearch.WaitForIndexing")
-            .basicAuth("${adminId}", "${adminPassword}")
-            .headers(Headers.base)
-            .header("content-type", "application/json+nxrequest")
-            .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true"},"context":{}}"""))
+    http("Wait For Async")
+      .post(Constants.AUTOMATION_PATH + "/Elasticsearch.WaitForIndexing")
+      .basicAuth("${adminId}", "${adminPassword}")
+      .headers(Headers.base)
+      .header("content-type", "application/json+nxrequest")
+      .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true"},"context":{}}"""))
   }
 
   def reindexAll = () => {
