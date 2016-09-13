@@ -127,10 +127,11 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertRenditionDefinitions(renditionDefinitions, PDF_RENDITION_DEFINITION,
-                "renditionDefinitionWithUnknownOperationChain");
+                "renditionDefinitionWithUnknownOperationChain", "zipExport", "zipTreeExport", "zipTreeExportLazily");
 
         RenditionDefinition rd = renditionDefinitions.stream()
-                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName()))
+                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
+                                                             renditionDefinition.getName()))
                                                      .findFirst()
                                                      .get();
         assertNotNull(rd);
@@ -140,7 +141,8 @@ public class TestRenditionService {
         assertTrue(rd.isEnabled());
 
         rd = renditionDefinitions.stream()
-                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(renditionDefinition.getName()))
+                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(
+                                         renditionDefinition.getName()))
                                  .findFirst()
                                  .get();
         assertNotNull(rd);
@@ -390,9 +392,10 @@ public class TestRenditionService {
             assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
             long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
             long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
-            assertTrue(String.format(
-                    "Admin rendition entry count %s should be greater than user rendition entry count %s",
-                    adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
+            assertTrue(
+                    String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
+                            adminZipEntryCount, totoZipEntryCount),
+                    adminZipEntryCount > totoZipEntryCount);
         }
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -477,7 +480,8 @@ public class TestRenditionService {
 
         for (int i = 1; i <= 2; i++) {
             String childFolderName = "childFolder" + i;
-            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName, "Folder");
+            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName,
+                    "Folder");
             childFolder = session.createDocument(childFolder);
             if (i == 1) {
                 acp = new ACPImpl();
@@ -537,8 +541,9 @@ public class TestRenditionService {
                 adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
         Calendar adminModificationDate = rendition.getModificationDate();
         Calendar totoModificationDate = totoRendition.getModificationDate();
-        assertTrue(String.format("Admin rendition modif date %s should be after user rendition modif date %s",
-                adminModificationDate.toInstant(), totoModificationDate.toInstant()),
+        assertTrue(
+                String.format("Admin rendition modif date %s should be after user rendition modif date %s",
+                        adminModificationDate.toInstant(), totoModificationDate.toInstant()),
                 adminModificationDate.after(totoModificationDate));
     }
 
@@ -656,7 +661,8 @@ public class TestRenditionService {
         Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
-        List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(FILES_FILES_PROPERTY);
+        List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(
+                FILES_FILES_PROPERTY);
         assertTrue(renditionFiles.isEmpty());
     }
 
@@ -856,7 +862,7 @@ public class TestRenditionService {
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForNote");
+        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForNote", "zipExport");
 
         rendition = renditionService.getRendition(doc, "renditionOnlyForNote", false);
         assertNotNull(rendition);
@@ -873,20 +879,21 @@ public class TestRenditionService {
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFile");
+        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFile", "zipExport");
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         // renditionOnlyForFile filtered out, unauthorized
-        assertRenditionDefinitions(availableRenditionDefinitions);
+        assertRenditionDefinitions(availableRenditionDefinitions, "zipExport");
 
         // ----- Folder
 
         doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFolder");
+        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFolder", "zipTreeExport",
+                "zipTreeExportLazily");
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
@@ -897,23 +904,25 @@ public class TestRenditionService {
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
+                doc);
+        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2", "zipExport");
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
+        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2", "zipExport");
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions);
+        assertRenditionDefinitions(availableRenditionDefinitions, "zipExport");
 
         doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
+        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2", "zipTreeExport",
+                "zipTreeExportLazily");
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
     }
@@ -925,11 +934,7 @@ public class TestRenditionService {
                 "lazyAutomation", //
                 "lazyDelayedErrorAutomationRendition", //
                 "renditionDefinitionWithCustomOperationChain", //
-                "xmlExport", //
-                "zipExport", //
-                "zipTreeExport", //
-                "zipTreeExportLazily" //
-        ));
+                "xmlExport"));
         if (otherExpected != null) {
             expected.addAll(Arrays.asList(otherExpected));
             Collections.sort(expected);

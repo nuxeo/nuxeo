@@ -12,7 +12,8 @@ Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/actions-properties.xml,
-  OSGI-INF/actions-framework.xml
+  OSGI-INF/actions-framework.xml,
+  OSGI-INF/filters-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  javax.ejb,

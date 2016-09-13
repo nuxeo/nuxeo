@@ -909,18 +909,6 @@
       </rule>
     </filter>
 
-    <filter id="not_folder">
-      <rule grant="false">
-        <facet>Folderish</facet>
-      </rule>
-    </filter>
-
-    <filter id="folder">
-      <rule grant="true">
-        <facet>Folderish</facet>
-      </rule>
-    </filter>
-
     <filter id="currentWorkListIsNotEmpty">
       <rule grant="false">
         <condition>#{clipboardActions.workListEmpty}</condition>
