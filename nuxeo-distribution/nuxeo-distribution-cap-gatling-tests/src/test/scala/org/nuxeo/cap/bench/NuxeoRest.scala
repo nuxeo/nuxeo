@@ -128,15 +128,16 @@ object NuxeoRest {
   }
 
   def createDocumentIfNotExistsAsAdmin = (parent: String, name: String, docType: String) => {
-    exitBlockOnFail {
       exec(
         http("Check if document exists")
-          .head(Constants.API_PATH + parent + "/" + name)
+          .get(Constants.API_PATH + parent + "/" + name)
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${adminId}", "${adminPassword}")
-          .check(status.in(404)))
-        .exec(
+          .check(status.in(200, 404))
+          .check(regex(".*").saveAs("lastbody")))
+        .doIf(session => session("lastbody").as[String].contains("404")) {
+          exec(
           http("Create " + docType + " as admin")
             .post(Constants.API_PATH + parent)
             .headers(Headers.base)
@@ -225,15 +226,16 @@ object NuxeoRest {
   }
 
   def createUserIfNotExists = (groupName: String) => {
-    exitBlockOnFail {
       exec(
         http("Check if user exists")
-          .head("/api/v1/user/${user}")
+          .get("/api/v1/user/${user}")
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${adminId}", "${adminPassword}")
-          .check(status.in(404)))
-        .exec(
+          .check(status.in(200, 404))
+          .check(regex(".*").saveAs("lastbody")))
+      .doIf(session => session("lastbody").as[String].contains("404")) {
+        exec(
           http("Create user")
             .post("/api/v1/user")
             .headers(Headers.default)
@@ -244,7 +246,7 @@ object NuxeoRest {
                 groupName +
                 """"],"company":null,"email":"devnull@nuxeo.com","username":"${user}"},"extendedGroups":[{"name":"members","label":"Members group","url":"group/members"}],"isAdministrator":false,"isAnonymous":false}"""))
             .check(status.in(201)))
-    }
+      }
   }
 
   def deleteUser = () => {
@@ -257,16 +259,16 @@ object NuxeoRest {
   }
 
   def createGroupIfNotExists = (groupName: String) => {
-    exitBlockOnFail {
       exec(
-        http("Check if group exists")
-          .head("/api/v1/group/" + groupName)
+           http("Check if group exists")
+          .get("/api/v1/group/" + groupName)
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${adminId}", "${adminPassword}")
-          .check(status.in(404)))
-        .exec(
-          http("Create group")
+          .check(status.in(200, 404))
+          .check(regex(".*").saveAs("lastbody")))
+        .doIf(session => session("lastbody").as[String].contains("404")) {
+          exec(http("Create group")
             .post("/api/v1/group")
             .headers(Headers.default)
             .header("Content-Type", "application/json")
@@ -274,7 +276,7 @@ object NuxeoRest {
             .body(StringBody(
               """{"entity-type":"group","groupname":"""" + groupName + """", "groupLabel": "Gatling group"}"""))
             .check(status.in(201)))
-    }
+        }
   }
 
   def deleteGroup = (groupName: String) => {
