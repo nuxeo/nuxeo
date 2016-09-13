@@ -1,0 +1,5 @@
+<install>
+  <copy file="${package.root}/test.properties" todir="${env.config}"/>
+  <copy file="${package.root}/append.properties" tofile="${env.config}/goldstandard.properties" append="true"/>
+  <append file="${package.root}/append2.properties" tofile="${env.config}/goldstandard.properties"/>
+</install>

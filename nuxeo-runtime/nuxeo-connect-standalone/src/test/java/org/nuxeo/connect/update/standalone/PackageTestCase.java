@@ -18,8 +18,24 @@
  */
 package org.nuxeo.connect.update.standalone;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -41,6 +57,8 @@ public abstract class PackageTestCase {
 
     protected static final Log log = LogFactory.getLog(PackageTestCase.class);
 
+    public static final String TEST_PACKAGES_PREFIX = "packages/";
+
     protected PackageUpdateService service;
 
     /**
@@ -57,6 +75,51 @@ public abstract class PackageTestCase {
     public void tearDown() throws Exception {
         if (service instanceof StandaloneUpdateService) {
             tearDownStandaloneUpdateService();
+        }
+    }
+
+    protected File getTestPackageZip(String name) throws IOException, URISyntaxException {
+        File zip = Framework.createTempFile("nuxeo-" + name + "-", ".zip");
+        Framework.trackFile(zip, zip);
+        URI uri = getResource(TEST_PACKAGES_PREFIX + name).toURI();
+        if (uri.getScheme().equals("jar")) {
+            String part = uri.getSchemeSpecificPart(); // file:/foo/bar.jar!/a/b
+            String basePath = part.substring(part.lastIndexOf("!") + 1);
+            try (FileSystem fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+                createZip(zip, fs.getPath(basePath));
+            }
+        } else { // file: scheme
+            createZip(zip, new File(uri).toPath());
+        }
+        return zip;
+    }
+
+    protected URL getResource(String name) {
+        return getClass().getClassLoader().getResource(name);
+    }
+
+    /** Zips a directory into the given ZIP file. */
+    protected void createZip(File zip, Path basePath) throws IOException {
+        try (ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zip)))) {
+            Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+                    if (attrs.isDirectory()) {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    String rel = basePath.relativize(path).toString();
+                    if (rel.startsWith(".")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    zout.putNextEntry(new ZipEntry(rel));
+                    try (InputStream in = Files.newInputStream(path)) {
+                        org.apache.commons.io.IOUtils.copy(in, zout);
+                    }
+                    zout.closeEntry();
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            zout.flush();
         }
     }
 

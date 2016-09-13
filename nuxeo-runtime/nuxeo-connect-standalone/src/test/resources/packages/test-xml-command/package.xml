@@ -1,0 +1,21 @@
+<package type="addon" name="nuxeo-automation" version="5.3.2">
+  <title>Nuxeo Automation</title>
+  <description>A service that enables building complex business logic on top of Nuxeo services using scriptable operation chains</description>
+  <vendor>Nuxeo</vendor>
+  <classifier>Open Source</classifier>
+  <hotreload-support>false</hotreload-support>
+  <supported>false</supported>
+  <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance>
+  <production-state>testing</production-state>
+  <nuxeo-validation>none</nuxeo-validation>
+  <installer class="org.nuxeo.connect.update.task.standalone.InstallTask" restart="true"/>
+  <uninstaller class="org.nuxeo.connect.update.task.standalone.UninstallTask" restart="true"/>
+  <platforms>
+    <platform>dm-5.3.2</platform>
+    <platform>dam-5.3.2</platform>
+  </platforms>
+  <dependencies>
+    <package>nuxeo-core:5.3.1:5.3.2</package>
+    <package>nuxeo-runtime:5.3.1</package>
+  </dependencies>
+</package>

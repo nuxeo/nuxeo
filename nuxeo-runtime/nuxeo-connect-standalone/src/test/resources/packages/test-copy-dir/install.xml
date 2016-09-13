@@ -1,0 +1,4 @@
+<install>
+  <copy dir="${package.root}/bundles" todir="${env.bundles}" overwriteIfNewerVersion="true" upgradeOnly="true"/>
+  <copy dir="${package.root}/templates" todir="${env.templates}" overwrite="true"/>
+</install>

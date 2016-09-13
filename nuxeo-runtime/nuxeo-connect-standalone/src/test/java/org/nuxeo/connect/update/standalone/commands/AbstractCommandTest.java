@@ -59,13 +59,19 @@ public abstract class AbstractCommandTest extends PackageTestCase {
 
     /**
      * Override this method to add to the package any resources required y the command execution.
+     * <p>
+     * Override if createPackage is not overridden.
      */
-    protected abstract void updatePackage(PackageBuilder builder) throws Exception;
+    protected void updatePackage(PackageBuilder builder) throws Exception {
+    }
 
     /**
      * Override this method to write the command XML definition to test.
+     * <p>
+     * Override if createPackage is not overridden.
      */
-    protected abstract void writeCommand(XmlWriter writer);
+    protected void writeCommand(XmlWriter writer) {
+    }
 
     /**
      * Override this method to check the install outcome. If the <code>error</code> argument is not null then a rollback

@@ -27,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import javax.inject.Inject;
@@ -71,30 +73,8 @@ public class TestConfig extends AbstractCommandTest {
     }
 
     @Override
-    protected void updatePackage(PackageBuilder builder) throws Exception {
-        // nothing to do
-    }
-
-    @Override
-    protected void writeCommand(XmlWriter writer) {
-        writer.start("config");
-        writer.attr("addtemplate", "newtemplate");
-        writer.end();
-        writer.start("config");
-        writer.attr("rmtemplate", "oldtemplate");
-        writer.end();
-        writer.start("config");
-        writer.attr("addtemplate", "newtemplate1,newtemplate2");
-        writer.end();
-        writer.start("config");
-        writer.attr("rmtemplate", "oldtemplate1,oldtemplate2");
-        writer.end();
-        writer.start("config");
-        writer.attr("set", "test.property=some.value");
-        writer.end();
-        writer.start("config");
-        writer.attr("set", "alreadyset.property=new.value");
-        writer.end();
+    protected File createPackage() throws IOException, URISyntaxException {
+        return getTestPackageZip("test-config");
     }
 
     @Override

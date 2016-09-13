@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,17 +41,8 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 public class TestPCopy extends AbstractCommandTest {
 
     @Override
-    protected void updatePackage(PackageBuilder builder) throws Exception {
-        String content = "test=my ${v}";
-        builder.addEntry("test.properties", new ByteArrayInputStream(content.getBytes()));
-    }
-
-    @Override
-    protected void writeCommand(XmlWriter writer) {
-        writer.start("pcopy");
-        writer.attr("file", "${package.root}/test.properties");
-        writer.attr("tofile", "${env.config}");
-        writer.end();
+    protected File createPackage() throws IOException, URISyntaxException {
+        return getTestPackageZip("test-pcopy");
     }
 
     @Override

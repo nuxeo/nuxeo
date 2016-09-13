@@ -1,0 +1,3 @@
+<install>
+  <copy file="source" tofile="dest" overwrite="true"/>
+</install>

@@ -27,6 +27,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.junit.Before;
 
@@ -72,34 +74,8 @@ public class TestCopyDir extends AbstractCommandTest {
     }
 
     @Override
-    protected void updatePackage(PackageBuilder builder) throws Exception {
-        File jarFile = Framework.createTempFile("test-commands-", ".jar");
-        Framework.trackFile(jarFile, builder);
-        FileUtils.writeFile(jarFile, "anything");
-        builder.addEntry("bundles/" + newFilename, new FileInputStream(jarFile));
-        FileUtils.writeFile(jarFile, "new SNAPSHOT content");
-        builder.addEntry("bundles/" + snapshotFilename, new FileInputStream(jarFile));
-        builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(jarFile));
-        File xmlFile = Framework.createTempFile("test-config", ".xml");
-        Framework.trackFile(xmlFile, builder);
-        FileUtils.writeFile(xmlFile, "anything");
-        builder.addEntry("templates/collaboration/config/" + testConfigFilename, new FileInputStream(xmlFile));
-    }
-
-    @Override
-    protected void writeCommand(XmlWriter writer) {
-        writer.start("copy");
-        writer.attr("dir", "${package.root}/bundles");
-        writer.attr("todir", "${env.bundles}");
-        writer.attr("overwriteIfNewerVersion", "true");
-        writer.attr("upgradeOnly", "true");
-        writer.end();
-
-        writer.start("copy");
-        writer.attr("dir", "${package.root}/templates");
-        writer.attr("todir", "${env.templates}");
-        writer.attr("overwrite", "true");
-        writer.end();
+    protected File createPackage() throws IOException, URISyntaxException {
+        return getTestPackageZip("test-copy-dir");
     }
 
     @Override

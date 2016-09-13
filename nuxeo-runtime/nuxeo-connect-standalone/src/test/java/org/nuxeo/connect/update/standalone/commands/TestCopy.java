@@ -25,10 +25,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.junit.Before;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -36,7 +37,6 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,36 +54,8 @@ public class TestCopy extends AbstractCommandTest {
     }
 
     @Override
-    protected void updatePackage(PackageBuilder builder) throws Exception {
-        File props = Framework.createTempFile("test-commands-", ".properties");
-        Framework.trackFile(props, builder);
-        FileUtils.writeFile(props, "test=my value");
-        builder.addEntry("test.properties", new FileInputStream(props));
-        props = Framework.createTempFile("test-commands-", ".properties");
-        Framework.trackFile(props, builder);
-        FileUtils.writeFile(props, "param2=value2");
-        builder.addEntry("append.properties", new FileInputStream(props));
-        props = Framework.createTempFile("test-commands-", ".properties");
-        Framework.trackFile(props, builder);
-        FileUtils.writeFile(props, "param3=value3");
-        builder.addEntry("append2.properties", new FileInputStream(props));
-    }
-
-    @Override
-    protected void writeCommand(XmlWriter writer) {
-        writer.start("copy");
-        writer.attr("file", "${package.root}/test.properties");
-        writer.attr("todir", "${env.config}");
-        writer.end();
-        writer.start("copy");
-        writer.attr("file", "${package.root}/append.properties");
-        writer.attr("tofile", "${env.config}/goldstandard.properties");
-        writer.attr("append", "true");
-        writer.end();
-        writer.start("append");
-        writer.attr("file", "${package.root}/append2.properties");
-        writer.attr("tofile", "${env.config}/goldstandard.properties");
-        writer.end();
+    protected File createPackage() throws IOException, URISyntaxException {
+        return getTestPackageZip("test-copy");
     }
 
     @Override

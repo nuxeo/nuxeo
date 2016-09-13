@@ -1,0 +1,8 @@
+<install>
+  <config addtemplate="newtemplate"/>
+  <config rmtemplate="oldtemplate"/>
+  <config addtemplate="newtemplate1,newtemplate2"/>
+  <config rmtemplate="oldtemplate1,oldtemplate2"/>
+  <config set="test.property=some.value"/>
+  <config set="alreadyset.property=new.value"/>
+</install>

@@ -25,46 +25,17 @@ import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.nuxeo.connect.update.LocalPackage;
-import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.task.standalone.CommandsTask;
-import org.nuxeo.connect.update.task.standalone.InstallTask;
-import org.nuxeo.connect.update.task.standalone.UninstallTask;
-import org.nuxeo.connect.update.util.PackageBuilder;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestXmlCommands extends PackageTestCase {
 
-    protected File createPackage() throws Exception {
-        PackageBuilder builder = new PackageBuilder();
-        builder.name("nuxeo-automation").version("5.3.2").type(PackageType.ADDON);
-        builder.platform("dm-5.3.2");
-        builder.platform("dam-5.3.2");
-        builder.dependency("nuxeo-core:5.3.1:5.3.2");
-        builder.dependency("nuxeo-runtime:5.3.1");
-        builder.title("Nuxeo Automation");
-        builder.description("A service that enables building complex business logic on top of Nuxeo services using scriptable operation chains");
-        builder.classifier("Open Source");
-        builder.vendor("Nuxeo");
-        builder.installer(InstallTask.class.getName(), true);
-        builder.uninstaller(UninstallTask.class.getName(), true);
-        builder.addLicense("My test license. All rights reserved.");
-        File file = Framework.createTempFile("nxinstall-file-", ".tmp");
-        Framework.trackFile(file, this);
-        File tofile = Framework.createTempFile("nxinstall-tofile-", ".tmp");
-        Framework.trackFile(tofile, this);
-        builder.addInstallScript("<install>\n  <copy file=\"" + file.getAbsolutePath() + "\" tofile=\""
-                + tofile.getAbsolutePath() + "\" overwrite=\"true\"/>\n</install>\n");
-        return builder.build();
-    }
-
     @Test
     public void testReadCommands() throws Exception {
-        File zip = createPackage();
+        File zip = getTestPackageZip("test-xml-command");
         // register the package
         service.addPackage(zip);
         List<LocalPackage> pkgs = service.getPackages();
@@ -79,10 +50,7 @@ public class TestXmlCommands extends PackageTestCase {
         assertTrue(task.isRestartRequired());
 
         task.validate();
-        task.run(null);
         assertEquals(1, task.getCommands().size());
-        assertEquals(1, task.getCommandLog().size());
-        assertTrue("uninstall file was not generated", pkg.getUninstallFile().isFile());
     }
 
 }
