@@ -43,6 +43,6 @@ class Sim25WarmUsersJsf extends Simulation {
     .connection("keep-alive")
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = ScnWarmupUsersJsf.get(userCount)
-  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
+  setUp(scn.inject(atOnceUsers(1)))
     .protocols(httpProtocol).exponentialPauses
 }
