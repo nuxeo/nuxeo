@@ -27,7 +27,7 @@ import java.util.List;
  * @author Funsho David
  * @since 8.4
  */
-public interface QuickFilterDefinition {
+public interface QuickFilter {
 
     String getName();
 
@@ -39,6 +39,6 @@ public interface QuickFilterDefinition {
 
     void setClause(String clause);
 
-    QuickFilterDefinition clone();
+    QuickFilter clone();
 
 }

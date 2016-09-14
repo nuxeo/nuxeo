@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 
 /**
  * Descriptor for the quick filter used by page providers
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
  * @since 8.4
  */
 @XObject(value = "quickFilters")
-public class QuickFilterDescriptor implements QuickFilterDefinition {
+public class QuickFilterDescriptor implements QuickFilter {
 
     @XNode("@name")
     protected String name;

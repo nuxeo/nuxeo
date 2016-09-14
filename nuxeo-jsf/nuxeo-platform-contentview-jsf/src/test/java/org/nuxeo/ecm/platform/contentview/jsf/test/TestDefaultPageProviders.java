@@ -768,6 +768,8 @@ public class TestDefaultPageProviders {
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
 
+        pp.addQuickFilter(contentView.getQuickFilters().get(1));
+
         checkCoreQueryWithQuickFilter(parentIdParam, pp);
     }
 
@@ -782,6 +784,8 @@ public class TestDefaultPageProviders {
         String parentIdParam = session.getRootDocument().getId();
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam);
 
+        pp.addQuickFilter(contentView.getQuickFilters().get(0));
+
         checkCoreQueryWithQuickFilter(parentIdParam, pp);
     }
 
@@ -792,7 +796,7 @@ public class TestDefaultPageProviders {
 
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
-        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s' AND dc:source = 'http://test.com'"
+        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s' AND dc:source = 'http://foo.baz'"
                         + " ORDER BY dc:title", parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
     }

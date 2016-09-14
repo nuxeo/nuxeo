@@ -21,7 +21,12 @@ package org.nuxeo.ecm.platform.query.api;
 import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
@@ -114,7 +119,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * @since 8.4
      */
-    protected List<QuickFilterDefinition> quickFilters;
+    protected List<QuickFilter> quickFilters;
 
     protected String errorMessage;
 
@@ -332,17 +337,17 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public void setQuickFilters(List<QuickFilterDefinition> quickFilters) {
+    public void setQuickFilters(List<QuickFilter> quickFilters) {
         this.quickFilters = quickFilters;
     }
 
     @Override
-    public List<QuickFilterDefinition> getQuickFilters() {
-        return this.quickFilters;
+    public List<QuickFilter> getQuickFilters() {
+        return quickFilters;
     }
 
     @Override
-    public void addQuickFilter(QuickFilterDefinition quickFilter) {
+    public void addQuickFilter(QuickFilter quickFilter) {
         if (quickFilters == null) {
             quickFilters = new ArrayList<>();
         }

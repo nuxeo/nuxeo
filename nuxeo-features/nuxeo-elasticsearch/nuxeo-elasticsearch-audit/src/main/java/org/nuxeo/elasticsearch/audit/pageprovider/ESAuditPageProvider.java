@@ -40,6 +40,9 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
+import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
@@ -92,8 +95,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         searchBuilder.setSize((int) getMinMaxPageSize());
 
         for (SortInfo sortInfo : getSortInfos()) {
-            searchBuilder.addSort(sortInfo.getSortColumn(), sortInfo.getSortAscending() ? SortOrder.ASC
-                    : SortOrder.DESC);
+            searchBuilder.addSort(sortInfo.getSortColumn(),
+                    sortInfo.getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
         }
 
         SearchResponse searchResponse = searchBuilder.execute().actionGet();
@@ -162,8 +165,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     }
 
     protected ESAuditBackend getESBackend() {
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
+                                                                     .getComponent(NXAuditEventsService.NAME);
         AuditBackend backend = audit.getBackend();
         if (backend instanceof ESAuditBackend) {
             return (ESAuditBackend) backend;
@@ -175,19 +178,47 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
     protected void buildAuditQuery(boolean includeSort) {
         PageProviderDefinition def = getDefinition();
         Object[] params = getParameters();
+        List<QuickFilter> quickFilters = getQuickFilters();
+        String quickFiltersClause = "";
 
-        if (def.getWhereClause() == null) {
+        if (quickFilters != null && !quickFilters.isEmpty()) {
+            for (QuickFilter quickFilter : quickFilters) {
+                String clause = quickFilter.getClause();
+                if (!quickFiltersClause.isEmpty() && clause != null) {
+                    quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
+                } else {
+                    quickFiltersClause = clause != null ? clause : "";
+                }
+            }
+        }
+
+        WhereClauseDefinition whereClause = def.getWhereClause();
+        if (whereClause == null) {
             // Simple Pattern
 
             if (!allowSimplePattern()) {
                 throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
             }
-            String baseQuery = getESBackend().expandQueryVariables(def.getPattern(), params);
+            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
+                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+
+            String baseQuery = getESBackend().expandQueryVariables(pattern, params);
             searchBuilder = getESBackend().buildQuery(baseQuery, null);
         } else {
+
+            // Add the quick filters clauses to the fixed part
+            if (!quickFiltersClause.isEmpty()) {
+                String fixedPart = whereClause.getFixedPart();
+                if (fixedPart != null) {
+                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
+                } else {
+                    whereClause.setFixedPart(quickFiltersClause);
+                }
+            }
+
             // Where clause based on DocumentModel
             String baseQuery = getESBackend().expandQueryVariables(getFixedPart(), params);
-            searchBuilder = getESBackend().buildSearchQuery(baseQuery, def.getWhereClause().getPredicates(),
+            searchBuilder = getESBackend().buildSearchQuery(baseQuery, whereClause.getPredicates(),
                     getSearchDocumentModel());
         }
     }

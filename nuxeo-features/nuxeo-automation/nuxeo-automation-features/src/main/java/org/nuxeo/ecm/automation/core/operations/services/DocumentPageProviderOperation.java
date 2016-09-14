@@ -55,6 +55,7 @@ import org.nuxeo.ecm.platform.el.ELService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -169,6 +170,12 @@ public class DocumentPageProviderOperation {
             ASC, DESC })
     protected String sortOrder;
 
+    /**
+     * @since 8.4
+     */
+    @Param(name = "quickFilters", required = false, description = "Quick filter " + "properties (separated by comma)")
+    protected String quickFilters;
+
     @SuppressWarnings("unchecked")
     @OperationMethod
     public PaginableDocumentModelListImpl run() throws OperationException {
@@ -254,9 +261,25 @@ public class DocumentPageProviderOperation {
                     searchDocumentModel, sortInfos, targetPageSize, targetPage, props, parameters);
             res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         } else {
+            PageProviderDefinition pageProviderDefinition = ppService.getPageProviderDefinition(providerName);
+            // Quick filters management
+            List<QuickFilter> quickFilterList = new ArrayList<>();
+            if (quickFilters != null && !quickFilters.isEmpty()) {
+                String[] filters = quickFilters.split(",");
+                List<QuickFilter> ppQuickFilters = pageProviderDefinition.getQuickFilters();
+                for (String filter : filters) {
+                    for (QuickFilter quickFilter : ppQuickFilters) {
+                        if (quickFilter.getName().equals(filter)) {
+                            quickFilterList.add(quickFilter);
+                            break;
+                        }
+                    }
+                }
+            }
+
             parameters = resolveParameters(parameters);
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName,
-                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, parameters);
+                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, quickFilterList, parameters);
             res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         }
         if (res.hasError()) {

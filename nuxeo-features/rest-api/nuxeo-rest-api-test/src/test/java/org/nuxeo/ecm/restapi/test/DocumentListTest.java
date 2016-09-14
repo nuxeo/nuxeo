@@ -277,6 +277,20 @@ public class DocumentListTest extends BaseTest {
     }
 
     /**
+     * @since 8.4
+     */
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersWithQuickFilter() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("quickFilters", "testQuickFilter");
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/namedParamProviderWithQuickFilter",
+                queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, getLogEntries(node).size());
+    }
+
+    /**
      * @since 7.1
      */
     @Test

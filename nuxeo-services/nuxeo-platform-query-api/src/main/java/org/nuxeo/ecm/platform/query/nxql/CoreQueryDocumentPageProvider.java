@@ -30,7 +30,8 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
-import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
+import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -223,29 +224,33 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
 
     protected void buildQuery(CoreSession coreSession) {
         List<SortInfo> sort = null;
-        List<QuickFilterDefinition> quickFilters = getQuickFilters();
+        List<QuickFilter> quickFilters = getQuickFilters();
         String quickFiltersClause = "";
 
         if (quickFilters != null && !quickFilters.isEmpty()) {
             sort = new ArrayList<>();
-            QuickFilterDefinition firstFilter = quickFilters.remove(0);
-            quickFiltersClause = firstFilter.getClause();
-            sort.addAll(firstFilter.getSortInfos());
-            for (QuickFilterDefinition filterDef : quickFilters) {
-                quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, filterDef.getClause());
-                sort.addAll(filterDef.getSortInfos());
+            for (QuickFilter quickFilter : quickFilters) {
+                String clause = quickFilter.getClause();
+                if (!quickFiltersClause.isEmpty() && clause != null) {
+                    quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
+                } else {
+                    quickFiltersClause = clause != null ? clause : "";
+                }
+                sort.addAll(quickFilter.getSortInfos());
             }
         } else if (sortInfos != null) {
             sort = sortInfos;
         }
 
         SortInfo[] sortArray = null;
-        if (sort != null)
+        if (sort != null) {
             sortArray = sort.toArray(new SortInfo[] {});
+        }
 
         String newQuery;
         PageProviderDefinition def = getDefinition();
-        if (def.getWhereClause() == null) {
+        WhereClauseDefinition whereClause = def.getWhereClause();
+        if (whereClause == null) {
 
             String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
                     : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
@@ -256,12 +261,11 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
 
             // Add the quick filters clauses to the fixed part
             if (!quickFiltersClause.isEmpty()) {
-                String fixedPart = def.getWhereClause().getFixedPart();
+                String fixedPart = whereClause.getFixedPart();
                 if (fixedPart != null) {
-                    def.getWhereClause().setFixedPart(NXQLQueryBuilder.appendClause(fixedPart,quickFiltersClause));
-                }
-                else {
-                    def.getWhereClause().setFixedPart(quickFiltersClause);
+                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
+                } else {
+                    whereClause.setFixedPart(quickFiltersClause);
                 }
             }
 
@@ -270,7 +274,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                 throw new NuxeoException(String.format(
                         "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
-            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(), sortArray);
+            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, getParameters(), sortArray);
         }
 
         if (query != null && newQuery != null && !newQuery.equals(query)) {

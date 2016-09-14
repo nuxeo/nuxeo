@@ -417,16 +417,16 @@ public interface PageProvider<T> extends Serializable {
     /**
      * @since 8.4
      */
-    List<QuickFilterDefinition> getQuickFilters();
+    List<QuickFilter> getQuickFilters();
 
     /**
      * @since 8.4
      */
-    void setQuickFilters(List<QuickFilterDefinition> quickFilters);
+    void setQuickFilters(List<QuickFilter> quickFilters);
 
     /**
      * @since 8.4
      */
-    void addQuickFilter(QuickFilterDefinition quickFilter);
+    void addQuickFilter(QuickFilter quickFilter);
 
 }

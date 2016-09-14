@@ -26,7 +26,7 @@ import javax.faces.context.FacesContext;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 
 /**
  * A content view is a notion to handle lists of objects rendering, as well as query filters to build the list.
@@ -385,10 +385,10 @@ public interface ContentView extends Serializable {
     /**
      * @since 8.4
      */
-    void setQuickFilters(List<QuickFilterDefinition> quickFilters);
+    void setQuickFilters(List<QuickFilter> quickFilters);
 
     /**
      * @since 8.4
      */
-    List<QuickFilterDefinition> getQuickFilters();
+    List<QuickFilter> getQuickFilters();
 }

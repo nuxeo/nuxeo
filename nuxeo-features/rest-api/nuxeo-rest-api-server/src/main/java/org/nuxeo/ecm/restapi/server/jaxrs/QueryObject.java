@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -85,6 +86,11 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
 
+    /**
+     * @since 8.4
+     */
+    public static final String QUICK_FILTERS = "quickFilters";
+
     private static final Log log = LogFactory.getLog(QueryObject.class);
 
     protected EnumMap<QueryParams, String> queryParametersMap;
@@ -105,6 +111,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         queryParametersMap.put(QueryParams.SORT_ORDER, SORT_ORDER);
         queryParametersMap.put(QueryParams.QUERY, QUERY);
         queryParametersMap.put(QueryParams.ORDERED_PARAMS, ORDERED_PARAMS);
+        queryParametersMap.put(QueryParams.QUICK_FILTERS, QUICK_FILTERS);
         // Lang Path Enum Map
         langPathMap = new EnumMap<>(LangParams.class);
         langPathMap.put(LangParams.NXQL, NXQL);
@@ -126,6 +133,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         String sortBy = queryParams.getFirst(SORT_BY);
         String sortOrder = queryParams.getFirst(SORT_ORDER);
         List<String> orderedParams = queryParams.get(ORDERED_PARAMS);
+        String quickFilters = queryParams.getFirst(QUICK_FILTERS);
 
         // If no query or provider name has been found
         // Execute big select
@@ -140,7 +148,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         for (String namedParameterKey : queryParams.keySet()) {
             if (!queryParametersMap.containsValue(namedParameterKey)) {
                 String value = queryParams.getFirst(namedParameterKey);
-                    if (value != null) {
+                if (value != null) {
                     if (value.equals(CURRENT_USERID_PATTERN)) {
                         value = ctx.getCoreSession().getPrincipal().getName();
                     } else if (value.equals(CURRENT_REPO_PATTERN)) {
@@ -201,21 +209,40 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
 
         PaginableDocumentModelListImpl res;
         if (query != null) {
-            PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(SearchAdapter.pageProviderName);
+            PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
+                    SearchAdapter.pageProviderName);
             ppdefinition.setPattern(query);
             if (maxResults != null && !maxResults.isEmpty() && !maxResults.equals("-1")) {
                 // set the maxResults to avoid slowing down queries
                 ppdefinition.getProperties().put("maxResults", maxResults);
             }
-            if(StringUtils.isBlank(providerName)){
+            if (StringUtils.isBlank(providerName)) {
                 providerName = SearchAdapter.pageProviderName;
             }
-            res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    providerName, ppdefinition, searchDocumentModel, sortInfoList, targetPageSize, targetPage,
-                    props, parameters), null);
+
+            res = new PaginableDocumentModelListImpl(
+                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(providerName, ppdefinition,
+                            searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters),
+                    null);
         } else {
-            res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    providerName, searchDocumentModel, sortInfoList, targetPageSize, targetPage, props, parameters),
+            PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
+            // Quick filters management
+            List<QuickFilter> quickFilterList = new ArrayList<>();
+            if (quickFilters != null && !quickFilters.isEmpty()) {
+                String[] filters = quickFilters.split(",");
+                List<QuickFilter> ppQuickFilters = pageProviderDefinition.getQuickFilters();
+                for (String filter : filters) {
+                    for (QuickFilter quickFilter : ppQuickFilters) {
+                        if (quickFilter.getName().equals(filter)) {
+                            quickFilterList.add(quickFilter);
+                            break;
+                        }
+                    }
+                }
+            }
+            res = new PaginableDocumentModelListImpl(
+                    (PageProvider<DocumentModel>) pageProviderService.getPageProvider(providerName, searchDocumentModel,
+                            sortInfoList, targetPageSize, targetPage, props, quickFilterList, parameters),
                     null);
         }
         if (res.hasError()) {
@@ -292,7 +319,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     public enum QueryParams {
-        PAGE_SIZE, CURRENT_PAGE_INDEX, MAX_RESULTS, SORT_BY, SORT_ORDER, ORDERED_PARAMS, QUERY
+        PAGE_SIZE, CURRENT_PAGE_INDEX, MAX_RESULTS, SORT_BY, SORT_ORDER, ORDERED_PARAMS, QUERY, QUICK_FILTERS
     }
 
     public enum LangParams {

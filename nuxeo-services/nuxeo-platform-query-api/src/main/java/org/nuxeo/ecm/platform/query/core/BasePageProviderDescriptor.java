@@ -19,15 +19,21 @@
  */
 package org.nuxeo.ecm.platform.query.core;
 
-import java.util.*;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
-import org.nuxeo.ecm.platform.query.api.QuickFilterDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for page provider descriptors.
@@ -49,7 +55,6 @@ public abstract class BasePageProviderDescriptor {
     protected String[] queryParameters;
 
     @XNode("pageSize")
-
     protected long pageSize = 0;
 
     @XNode("pageSizeBinding")
@@ -150,8 +155,8 @@ public abstract class BasePageProviderDescriptor {
     /**
      * @since 8.4
      */
-    public List<QuickFilterDefinition> getQuickFilters() {
-        return (List<QuickFilterDefinition>) (List<?>) quickFilters;
+    public List<QuickFilter> getQuickFilters() {
+        return (List<QuickFilter>) (List<?>) quickFilters;
     };
 
     public boolean isSortable() {

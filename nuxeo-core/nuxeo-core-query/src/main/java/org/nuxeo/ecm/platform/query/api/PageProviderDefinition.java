@@ -107,6 +107,6 @@ public interface PageProviderDefinition extends Serializable {
     /**
      * @since 8.4
      */
-    List<QuickFilterDefinition> getQuickFilters();
+    List<QuickFilter> getQuickFilters();
 
 }

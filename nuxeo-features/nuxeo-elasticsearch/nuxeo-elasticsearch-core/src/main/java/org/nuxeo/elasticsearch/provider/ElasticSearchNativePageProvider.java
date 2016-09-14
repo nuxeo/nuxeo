@@ -39,6 +39,9 @@ import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
+import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -91,9 +94,11 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         // Execute the ES query
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
-            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).esQuery(query).offset(
-                    (int) getCurrentPageOffset()).limit((int) getMinMaxPageSize()).addSort(sortArray).addAggregates(
-                    buildAggregates());
+            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).esQuery(query)
+                                                                         .offset((int) getCurrentPageOffset())
+                                                                         .limit((int) getMinMaxPageSize())
+                                                                         .addSort(sortArray)
+                                                                         .addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -134,16 +139,46 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
     protected QueryBuilder makeQueryBuilder() {
         QueryBuilder ret;
         PageProviderDefinition def = getDefinition();
-        if (def.getWhereClause() == null) {
-            ret = PageProviderQueryBuilder.makeQuery(def.getPattern(), getParameters(),
-                    def.getQuotePatternParameters(), def.getEscapePatternParameters(), isNativeQuery());
+        List<QuickFilter> quickFilters = getQuickFilters();
+        String quickFiltersClause = "";
+
+        if (quickFilters != null && !quickFilters.isEmpty()) {
+            for (QuickFilter quickFilter : quickFilters) {
+                String clause = quickFilter.getClause();
+                if (!quickFiltersClause.isEmpty() && clause != null) {
+                    quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
+                } else {
+                    quickFiltersClause = clause != null ? clause : "";
+                }
+            }
+        }
+
+        WhereClauseDefinition whereClause = def.getWhereClause();
+        if (whereClause == null) {
+
+            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
+                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+
+            ret = PageProviderQueryBuilder.makeQuery(pattern, getParameters(), def.getQuotePatternParameters(),
+                    def.getEscapePatternParameters(), isNativeQuery());
         } else {
+
+            // Add the quick filters clauses to the fixed part
+            if (!quickFiltersClause.isEmpty()) {
+                String fixedPart = whereClause.getFixedPart();
+                if (fixedPart != null) {
+                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
+                } else {
+                    whereClause.setFixedPart(quickFiltersClause);
+                }
+            }
+
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format("Cannot build query of provider '%s': "
-                        + "no search document model is set", getName()));
+                throw new NuxeoException(String.format(
+                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
-            ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
+            ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, whereClause, getParameters(),
                     isNativeQuery());
         }
         return ret;

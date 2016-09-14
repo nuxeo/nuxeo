@@ -2,8 +2,7 @@
 
 <component name="org.nuxeo.ecm.platform.ui.web.ContentViewService.testContrib">
 
-  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
-    point="contentViews">
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService" point="contentViews">
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN">
       <title>current document children</title>
@@ -188,7 +187,11 @@
         </pattern>
         <quickFilters>
           <quickFilter name="testQuickFilter">
-            <clause>dc:source = 'http://test.com'</clause>
+            <clause>dc:source = 'http://foo.bar'</clause>
+            <sort column="dc:title" ascending="true" />
+          </quickFilter>
+          <quickFilter name="testQuickFilter2">
+            <clause>dc:source = 'http://foo.baz'</clause>
             <sort column="dc:title" ascending="true" />
           </quickFilter>
         </quickFilters>
@@ -200,24 +203,19 @@
     <contentView name="QUERY_WITH_QUICK_FILTER_OVERRIDE_SORT">
       <searchDocument>#{searchDocument}</searchDocument>
       <coreQueryPageProvider>
-          <property name="coreSession">#{documentManager}</property>
-          <whereClause>
-              <predicate parameter="dc:title" operator="FULLTEXT">
-                  <field schema="dublincore" name="title" />
-              </predicate>
-              <predicate type="subClause">
-                  <field schema="dublincore" name="description" />
-              </predicate>
-          </whereClause>
-          <sort column="dc:source" ascending="true" />
-          <quickFilters>
-              <quickFilter name="testQuickFilterOverride">
-                <clause>ecm:parentId = ? AND dc:source = 'http://test.com'</clause>
-                <sort column="dc:title" ascending="true" />
-              </quickFilter>
-          </quickFilters>
-          <parameter>#{currentDocument.id}</parameter>
-          <pageSize>2</pageSize>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:parentId = ?
+        </pattern>
+        <sort column="dc:source" ascending="true" />
+        <quickFilters>
+          <quickFilter name="testQuickFilterOverride">
+            <clause>dc:source = 'http://foo.baz'</clause>
+            <sort column="dc:title" ascending="true" />
+          </quickFilter>
+        </quickFilters>
+        <parameter>#{currentDocument.id}</parameter>
+        <pageSize>2</pageSize>
       </coreQueryPageProvider>
     </contentView>
 
