@@ -15,6 +15,7 @@ package org.nuxeo.runtime.jtajca;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.jtajca.NuxeoValidationSupport.Validation;
 
 /**
  * Descriptor of the pool configuration, used by NuxeoContainer when creating a pool directly instead of the previous
@@ -32,6 +33,8 @@ public class NuxeoConnectionManagerConfiguration {
     public static final int DEFAULT_BLOCKING_TIMEOUT_MILLIS = 100;
 
     public static final int DEFAULT_IDLE_TIMEOUT_MINUTES = 0; // no timeout
+
+    public static final int DEFAULT_ACTIVE_TIMEOUT_MINUTES = 0; // no timeout
 
     @XNode("@name")
     private String name = "NuxeoConnectionManager";
@@ -69,6 +72,13 @@ public class NuxeoConnectionManagerConfiguration {
     @XNode("@idleTimeoutMinutes")
     private Integer idleTimeoutMinutes;
 
+    @XNode("@activeTimeoutMinutes")
+    private Integer activeTimeoutMinutes;
+
+    Validation testOnBorrow;
+
+    Validation testOnReturn;
+
     public NuxeoConnectionManagerConfiguration() {
     }
 
@@ -84,6 +94,9 @@ public class NuxeoConnectionManagerConfiguration {
         minPoolSize = other.minPoolSize;
         blockingTimeoutMillis = other.blockingTimeoutMillis;
         idleTimeoutMinutes = other.idleTimeoutMinutes;
+        activeTimeoutMinutes = other.activeTimeoutMinutes;
+        testOnBorrow = other.testOnBorrow;
+        testOnReturn = other.testOnReturn;
     }
 
     public void merge(NuxeoConnectionManagerConfiguration other) {
@@ -119,6 +132,15 @@ public class NuxeoConnectionManagerConfiguration {
         }
         if (other.idleTimeoutMinutes != null) {
             idleTimeoutMinutes = other.idleTimeoutMinutes;
+        }
+        if (other.activeTimeoutMinutes != null) {
+            activeTimeoutMinutes = other.activeTimeoutMinutes;
+        }
+        if (other.testOnBorrow != null) {
+            testOnBorrow = other.testOnBorrow;
+        }
+        if (other.testOnReturn != null) {
+            testOnReturn = other.testOnReturn;
         }
     }
 
@@ -180,6 +202,10 @@ public class NuxeoConnectionManagerConfiguration {
         return defaultInt(idleTimeoutMinutes, DEFAULT_IDLE_TIMEOUT_MINUTES);
     }
 
+    public int getActiveTimeoutMinutes() {
+        return defaultInt(activeTimeoutMinutes, DEFAULT_ACTIVE_TIMEOUT_MINUTES);
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -224,6 +250,30 @@ public class NuxeoConnectionManagerConfiguration {
         this.idleTimeoutMinutes = Integer.valueOf(idleTimeoutMinutes);
     }
 
+    public void setActiveTimeoutMinutes(int activeTimeoutMinutes) {
+        this.activeTimeoutMinutes = Integer.valueOf(activeTimeoutMinutes);
+    }
+
+    @XNode("@validationQuery")
+    public void setValidationQuery(String sql) {
+        if (sql.isEmpty()) {
+            testOnBorrow = null;
+        } else {
+            testOnBorrow = new NuxeoValidationSupport.QuerySQLConnection(sql);
+        }
+    }
+
+
+    @XNode("@testOnBorrow")
+    public void setTestOnBorrow(Class<? extends Validation> typeof) throws ReflectiveOperationException {
+        testOnBorrow = typeof.newInstance();
+    }
+
+    @XNode("@testOnReturn")
+    public void setTestOnReturn(Class<? extends Validation> typeof) throws ReflectiveOperationException {
+        testOnReturn = typeof.newInstance();
+    }
+
     @XNode("@maxActive")
     public void setMaxActive(int num) {
         maxPoolSize = num;
@@ -245,4 +295,6 @@ public class NuxeoConnectionManagerConfiguration {
                 "maxWait deprecated dbcp pool attribute usage, should use blockingTimeoutMillis geronimo pool attribute instead");
 
     }
+
+
 }

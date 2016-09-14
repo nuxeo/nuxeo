@@ -11,14 +11,6 @@
  */
 package org.nuxeo.runtime.datasource;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.JDBCUtils;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,6 +30,14 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.JDBCUtils;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This helper provides a way to get a JDBC connection, through {@link #getConnection(String)}, that will return a
@@ -63,12 +63,12 @@ public class ConnectionHelper {
      * <p>
      * Things are removed from this map by a transaction synchronizer when the transaction finishes.
      */
-    private static ConcurrentMap<Transaction, SharedConnection> sharedConnections = new ConcurrentHashMap<Transaction, SharedConnection>();
+    private static ConcurrentMap<Transaction, SharedConnection> sharedConnections = new ConcurrentHashMap<>();
 
     /**
      * SharedConnectionSynchronization registered for the transaction, when sharing.
      */
-    private static ConcurrentMap<Transaction, SharedConnectionSynchronization> sharedSynchronizations = new ConcurrentHashMap<Transaction, SharedConnectionSynchronization>();
+    private static ConcurrentMap<Transaction, SharedConnectionSynchronization> sharedSynchronizations = new ConcurrentHashMap<>();
 
     /**
      * Property holding a datasource name to use to replace all database accesses.
@@ -462,7 +462,7 @@ public class ConnectionHelper {
 
         public SharedConnection(Connection connection) {
             this.connection = connection;
-            handles = new ArrayList<ConnectionHandle>(3);
+            handles = new ArrayList<>(3);
         }
 
         private void logInvoke(String message) {
@@ -625,8 +625,8 @@ public class ConnectionHelper {
 
         public SharedConnectionSynchronization(Transaction transaction) {
             this.transaction = transaction;
-            syncsFirst = new ArrayList<Synchronization>(5);
-            syncsLast = new ArrayList<Synchronization>(5);
+            syncsFirst = new ArrayList<>(5);
+            syncsLast = new ArrayList<>(5);
         }
 
         /**

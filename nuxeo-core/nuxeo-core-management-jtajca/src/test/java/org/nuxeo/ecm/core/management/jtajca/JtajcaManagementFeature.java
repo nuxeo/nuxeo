@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.storage.sql.IgnoreNonPooledCondition;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.management.ManagementFeature;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -23,10 +24,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca" })
-@LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml",
-        "org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml" })
+@Features({ManagementFeature.class, CoreFeature.class})
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca" })
+@LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml", "org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml" })
 @ConditionalIgnoreRule.Ignore(condition = IgnoreNonPooledCondition.class)
 public class JtajcaManagementFeature extends SimpleFeature {
 

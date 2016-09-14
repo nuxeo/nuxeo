@@ -58,6 +58,12 @@ public class MetricsServiceImpl extends DefaultComponent implements MetricsServi
             config.disable(registry);
         } finally {
             instanceUp.dec();
+            // cleanup registry
+            for (String name:registry.getNames()) {
+                registry.remove(name);
+            }
+            // should remove the reference also
+            SharedMetricRegistries.remove(MetricsService.class.getName());;
         }
         log.debug("Deactivate component.");
     }

@@ -3,11 +3,10 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
   debug="false">
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-   <param name="Threshold" value="WARN"/>
+    <param name="Threshold" value="WARN" />
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern"
-        value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 
@@ -18,6 +17,17 @@
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %t %m%X%n" />
     </layout>
   </appender>
+
+  <category
+    name="org.apache.geronimo.connector.outbound.AbstractSinglePoolConnectionInterceptor">
+    <priority value="TRACE" />
+    <appender-ref ref="TRACE" />
+  </category>
+
+  <category name="org.nuxeo.ecm.core.management.jtajca">
+    <priority value="TRACE" />
+    <appender-ref ref="TRACE" />
+  </category>
 
   <root>
     <priority value="TRACE" />
