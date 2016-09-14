@@ -267,7 +267,7 @@ object NuxeoRest {
         .header("Content-Type", "application/json")
         .basicAuth("${adminId}", "${adminPassword}")
         .check(status.in(200, 404).saveAs("status")))
-      .doIf(session => session("status").as[Integer].equals("404")) {
+      .doIf(session => session("status").as[Integer].equals(404)) {
         exec(http("Create group")
           .post("/api/v1/group")
           .headers(Headers.default)
