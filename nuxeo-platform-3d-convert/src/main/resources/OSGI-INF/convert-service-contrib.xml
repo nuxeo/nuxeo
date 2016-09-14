@@ -8,7 +8,7 @@
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
-                <parameter name="operators">import render</parameter>
+                <parameter name="operators">import info render</parameter>
                 <parameter name="dimensions">800x600</parameter>
                 <parameter name="coords">0,0</parameter>
             </parameters>
@@ -19,7 +19,7 @@
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
-                <parameter name="operators">import lod convert lod convert lod convert</parameter>
+                <parameter name="operators">import info lod info convert lod info convert lod info convert</parameter>
                 <parameter name="lodIds">33 11 03</parameter>
                 <parameter name="percPoly">33 11 3</parameter>
                 <parameter name="percTex">33 11 3</parameter>
@@ -42,7 +42,9 @@
             <parameters>
                 <parameter name="CommandLineName">blender_pipeline</parameter>
                 <parameter name="script">scripts/pipeline.py</parameter>
-                <parameter name="operators">import render render lod convert lod convert lod convert</parameter>
+                <parameter name="operators">
+                    import info render render lod info convert lod info convert lod info convert
+                </parameter>
                 <parameter name="lodIds">33 11 03</parameter>
                 <parameter name="percPoly">33 11 3</parameter>
                 <parameter name="percTex">33 11 3</parameter>

@@ -158,11 +158,11 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         Map<String, Serializable> params = new HashMap<>();
 
         // operators
-        String operators = "import";
+        String operators = "import info";
         // add renders
         operators += new String(new char[renderViews.size()]).replace("\0", " render");
         // add lods
-        operators += new String(new char[lods.size()]).replace("\0", " lod convert");
+        operators += new String(new char[lods.size()]).replace("\0", " lod info convert");
         params.put(OPERATORS_PARAMETER, operators);
 
         // render ids

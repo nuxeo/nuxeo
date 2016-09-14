@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,28 +194,24 @@ public class ThreeDConvertersTest {
     public void testLODConverter() throws Exception {
         BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(3, blobs.size());
-        assertTrue(blobs.get(0).getFilename().contains("transmissionformat-03"));
-        assertTrue(blobs.get(0).getFilename().contains(".dae"));
-        assertTrue(blobs.get(1).getFilename().contains("transmissionformat-11"));
-        assertTrue(blobs.get(1).getFilename().contains(".dae"));
-        assertTrue(blobs.get(2).getFilename().contains("transmissionformat-33"));
-        assertTrue(blobs.get(2).getFilename().contains(".dae"));
+        assertEquals(7, blobs.size());
+        for (Blob blob : blobs) {
+            String name = blob.getFilename();
+            assertTrue((name.contains("transmissionformat") && name.contains(".dae")) || name.contains(".info"));
+            assertTrue(name.contains("03") || name.contains("11") || name.contains("33") || name.contains("default"));
+        }
     }
 
     @Test
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(5, blobs.size());
-        List<String> fileNames = blobs.stream().map(Blob::getFilename).collect(Collectors.toList());
-        assertTrue(blobs.get(0).getFilename().contains("transmissionformat-03"));
-        assertTrue(blobs.get(0).getFilename().contains(".dae"));
-        assertTrue(blobs.get(1).getFilename().contains("transmissionformat-11"));
-        assertTrue(blobs.get(1).getFilename().contains(".dae"));
-        assertTrue(blobs.get(2).getFilename().contains("transmissionformat-33"));
-        assertTrue(blobs.get(2).getFilename().contains(".dae"));
-        assertTrue(fileNames.get(3).contains("render-" + renderId1));
-        assertTrue(fileNames.get(4).contains("render-" + renderId2));
+        assertEquals(9, blobs.size());
+        for (Blob blob : blobs) {
+            String name = blob.getFilename();
+            assertTrue(name.contains(".info") || name.contains(".dae") || name.contains(".png"));
+            assertTrue((name.contains("default") || name.contains("03") || name.contains("11") || name.contains("33"))
+                || (name.contains(renderId1) || name.contains(renderId2)));
+        }
     }
 }
