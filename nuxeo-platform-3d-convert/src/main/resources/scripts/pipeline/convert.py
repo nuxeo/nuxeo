@@ -2,11 +2,11 @@ if args.outdir == None:
     sys.exit()
 
 try:
-    lodid
+    lod_id
 except NameError:
     outfile = args.outdir + '/convert/transmissionformat.dae'
 else:
-    outfile = args.outdir + '/convert/transmissionformat-' + str(lodid) + '-' + str(perc_poly) + '-' + str(max_poly) + '.dae'
+    outfile = args.outdir + '/convert/transmissionformat-' + str(lod_id) + '-' + str(perc_poly) + '-' + str(max_poly) + '.dae'
 
 # get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']

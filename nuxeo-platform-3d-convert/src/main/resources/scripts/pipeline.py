@@ -30,25 +30,14 @@ def dimensions(d):
 def params_filled(params):
     return params is not None and len(params) > 0 and params[0] != ''
 
-
-def mesh_is_manifold(mesh):
-    bpy.context.scene.objects.active = mesh
-    bpy.ops.object.mode_set(mode='EDIT')
-    bpy.ops.mesh.select_all(action='DESELECT')
-    bpy.ops.mesh.select_non_manifold()
-    bm = bmesh.from_edit_mesh(mesh.data)
-    selected = [v for v in bm.verts if v.select]
-    bpy.ops.mesh.select_all(action='DESELECT')
-    bpy.ops.object.mode_set(mode='OBJECT')
-    return len(selected) == 0
-
 parser = argparse.ArgumentParser(description='Blender pipeline.')
+parser.add_argument('-op', '--operators', dest='operators', nargs='*',
+                    choices=['import', 'info', 'lod', 'render', 'convert'],
+                    help='a list of operators to run in the pipeline (options: import,lod,render,convert)')
 parser.add_argument('-i', '--input', dest='input',
                     help='path for the input file')
 parser.add_argument('-o', '--outdir', dest='outdir',
                     help='path for output dir')
-parser.add_argument('-op', '--operators', dest='operators', nargs='*', choices=['import', 'lod', 'render', 'convert'],
-                    help='a list of operators to run in the pipeline (options: import,lod,render,convert)')
 parser.add_argument('-li', '--lodids', dest='lodids', nargs='*',
                     help='a list of ids to use on lod')
 parser.add_argument('-pp', '--percpoly', dest='percpoly', nargs='*',
@@ -74,7 +63,7 @@ base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
 perc_poly = 100
 max_poly = None
 current_lod = 1.0
-lodid = 'default'
+lod_id = 'default'
 
 if params_filled(args.lodids):
     lod_args = {'i': args.lodids, 'pp': [], 'mp': []}
@@ -90,7 +79,7 @@ if params_filled(args.lodids):
 
 for operator in args.operators:
     if operator == 'lod':
-        lodid = lod_args['i'].pop(0)
+        lod_id = lod_args['i'].pop(0)
         perc_poly = lod_args['pp'].pop(0)
         max_poly = lod_args['mp'].pop(0)
     if operator == 'render':

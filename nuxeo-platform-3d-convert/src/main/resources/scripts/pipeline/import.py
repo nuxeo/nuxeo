@@ -59,18 +59,3 @@ elif ext == 'x3d':
     bpy.ops.import_scene.x3d(filepath=infile)
 elif ext == 'stl':
     bpy.ops.import_mesh.stl(filepath=infile)
-
-mesh_info = {}
-for obj in bpy.context.scene.objects:
-    if obj.type == 'MESH':
-        bpy.context.scene.objects.active = obj
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.mesh.select_non_manifold()
-        bm = bmesh.from_edit_mesh(obj.data)
-        selected = [v for v in bm.verts if v.select]
-        mesh_info[obj.name] = {
-            'vertices_non_manifold': len(selected),
-            'vertices_total': len(bm.verts)}
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.object.mode_set(mode='OBJECT')
