@@ -16,7 +16,14 @@ for obj in bpy.context.scene.objects:
             'non_manifold_polygons': len(selected_polygons),
             'total_vertices': len(bm.verts),
             'total_edges': len(bm.edges),
-            'total_polygons': len(bm.faces)}
+            'total_polygons': len(bm.faces),
+            'position_x': obj.location.x,
+            'position_y': obj.location.y,
+            'position_z': obj.location.z,
+            'dimension_x': obj.dimensions.x,
+            'dimension_y': obj.dimensions.y,
+            'dimension_z': obj.dimensions.z
+        }
         bpy.ops.mesh.select_all(action='DESELECT')
         bpy.ops.object.mode_set(mode='OBJECT')
 
