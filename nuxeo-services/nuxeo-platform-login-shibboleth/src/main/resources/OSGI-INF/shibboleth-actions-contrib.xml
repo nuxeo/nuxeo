@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.platform.login.shibboleth.actions">
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
-    <action id="ShibbGroups" link="shibboleth/view_groups.xhtml"
+    <action id="ShibbGroups" link="/shibboleth/view_groups.xhtml"
       label="label.shibboleth.groupManager.groups" order="30">
       <category>UsersGroupsManager_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
@@ -10,7 +10,7 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="ShibbGroupsHome" link="shibboleth/view_groups.xhtml"
+    <action id="ShibbGroupsHome" link="/shibboleth/view_groups.xhtml"
       label="label.shibboleth.groupManager.groups" order="20">
       <category>UsersGroupsHome_sub_tab</category>
       <filter-id>not_readonly</filter-id>
