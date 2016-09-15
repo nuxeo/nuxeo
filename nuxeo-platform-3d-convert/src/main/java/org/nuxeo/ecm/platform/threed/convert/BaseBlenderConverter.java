@@ -94,11 +94,10 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     private String copyScript(Path pathDst, Path source) throws IOException {
         String sourceFile = source.lastSegment();
+        // xxx : find a way to check if the correct version is already there
         File script = new File(pathDst.append(sourceFile).toString());
-        if (!script.exists()) {
-            InputStream is = getClass().getResourceAsStream("/" + source.toString());
-            FileUtils.copyInputStreamToFile(is, script);
-        }
+        InputStream is = getClass().getResourceAsStream("/" + source.toString());
+        FileUtils.copyInputStreamToFile(is, script);
         return script.getAbsolutePath();
     }
 

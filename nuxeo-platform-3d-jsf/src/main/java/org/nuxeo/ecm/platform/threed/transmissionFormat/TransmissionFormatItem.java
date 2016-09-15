@@ -23,7 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.platform.threed.ThreeDInfo;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Small DTO to precompute transmission formats URLs for JSF
@@ -40,30 +44,33 @@ public class TransmissionFormatItem {
 
     protected final String blobPropertyName;
 
-    protected final String lodPropertyName;
+    protected final String percPolyPropertyName;
 
     protected final String maxPolyPropertyName;
 
     protected String filename;
 
-    protected Long lod;
+    protected Long percPoly;
 
     protected Long maxPoly;
 
     protected Long size;
+
+    protected ThreeDInfo info;
 
     public TransmissionFormatItem(DocumentModel doc, String basePropertyPath, int position) {
         this.doc = doc;
         this.position = position;
         String propertyPath = basePropertyPath + "/" + position;
         blobPropertyName = propertyPath + "/content";
-        lodPropertyName = propertyPath + "/percPoly";
+        percPolyPropertyName = propertyPath + "/percPoly";
         maxPolyPropertyName = propertyPath + "/maxPoly";
         try {
             Blob blob = (Blob) doc.getPropertyValue(blobPropertyName);
             filename = blob.getFilename();
-            lod = (Long) doc.getPropertyValue(lodPropertyName);
+            percPoly = (Long) doc.getPropertyValue(percPolyPropertyName);
             maxPoly = (Long) doc.getPropertyValue(maxPolyPropertyName);
+            info = new ThreeDInfo((Map<String, Serializable>) doc.getPropertyValue(propertyPath + "/info"));
             size = blob.getLength();
         } catch (PropertyException e) {
             log.warn(e);
@@ -74,8 +81,8 @@ public class TransmissionFormatItem {
         return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName, filename);
     }
 
-    public String getLod() {
-        return (lod == null) ? "-" : lod.toString();
+    public String getPercPoly() {
+        return (percPoly == null) ? "-" : percPoly.toString();
     }
 
     public String getMaxPoly() {
@@ -84,6 +91,10 @@ public class TransmissionFormatItem {
 
     public String getSize() {
         return size.toString();
+    }
+
+    public ThreeDInfo getInfo() {
+        return info;
     }
 
 }

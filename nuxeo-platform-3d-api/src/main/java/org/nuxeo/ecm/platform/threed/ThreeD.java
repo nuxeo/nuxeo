@@ -33,13 +33,20 @@ public class ThreeD {
 
     protected final List<Blob> resources;
 
-    public ThreeD(Blob blob, List<Blob> resources) {
+    protected final ThreeDInfo info;
+
+    public ThreeD(Blob blob, List<Blob> resources, ThreeDInfo info) {
         this.blob = blob;
         this.resources = resources;
+        this.info = info;
     }
 
     public Blob getBlob() {
         return blob;
+    }
+
+    public ThreeDInfo getInfo() {
+        return info;
     }
 
     public List<Blob> getResources() {

@@ -194,7 +194,7 @@ public class ThreeDConvertersTest {
     public void testLODConverter() throws Exception {
         BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(7, blobs.size());
+        assertEquals(3, blobs.size());
         for (Blob blob : blobs) {
             String name = blob.getFilename();
             assertTrue((name.contains("transmissionformat") && name.contains(".dae")) || name.contains(".info"));
@@ -206,12 +206,12 @@ public class ThreeDConvertersTest {
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(9, blobs.size());
+        assertEquals(5, blobs.size());
         for (Blob blob : blobs) {
             String name = blob.getFilename();
             assertTrue(name.contains(".info") || name.contains(".dae") || name.contains(".png"));
             assertTrue((name.contains("default") || name.contains("03") || name.contains("11") || name.contains("33"))
-                || (name.contains(renderId1) || name.contains(renderId2)));
+                    || (name.contains(renderId1) || name.contains(renderId2)));
         }
     }
 }

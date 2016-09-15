@@ -32,10 +32,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
-import org.nuxeo.ecm.platform.threed.ThreeD;
-import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
-import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.ecm.platform.threed.*;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -74,11 +71,11 @@ import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionP
         "org.nuxeo.ecm.platform.threed.convert" })
 public class TestThreeDRenditions {
 
-    public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("isometric", "top",
-        "left", "front", "FullWithinReason", "HalfTextures", "10PercTextures", "50x50Texture", "HalfPolygon");
+    public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("isometric", "top", "left",
+            "front", "FullWithinReason", "HalfTextures", "10PercTextures", "50x50Texture", "HalfPolygon");
 
     public static final List<String> EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES = Arrays.asList("front", "left",
-        "FullWithinReason", "HalfTextures", "10PercTextures", "11", "50x50Texture", "HalfPolygon");
+            "FullWithinReason", "HalfTextures", "10PercTextures", "11", "50x50Texture", "HalfPolygon");
 
     public static final List<String> THREED_RENDITION_DEFINITION_KINDS = Arrays.asList(
             THREED_RENDER_VIEW_RENDITION_KIND, THREED_TRANSMISSION_RENDITION_KIND);
@@ -156,7 +153,8 @@ public class TestThreeDRenditions {
             blob.setFilename(TEST_MODEL + ".mtl");
             resources.add(blob);
         }
-        return new ThreeD(main, resources);
+        ThreeDInfo info = null;
+        return new ThreeD(main, resources, info);
     }
 
     @Test

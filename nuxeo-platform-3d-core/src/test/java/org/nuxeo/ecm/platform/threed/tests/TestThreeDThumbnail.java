@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
 import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDInfo;
 import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -100,7 +101,8 @@ public class TestThreeDThumbnail {
         threed = session.createDocument(threed);
         session.save();
         Blob blob = Blobs.createBlob(getFileFromPath("test-data/suzanne.obj"), "image/gif", null, "suzanne.obj");
-        updateThreeDDocument(threed, new ThreeD(blob, null));
+        ThreeDInfo info = null;
+        updateThreeDDocument(threed, new ThreeD(blob, null, info));
         session.saveDocument(threed);
         session.save();
 

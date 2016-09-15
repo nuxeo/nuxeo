@@ -96,8 +96,9 @@ public class BatchConverterHelper {
                                                    .collect(Collectors.toList());
 
                 // create transmission 3D from blob and automatic LOD
-                return new TransmissionThreeD(dae, lodResources, automaticLOD.getPercPoly(), automaticLOD.getMaxPoly(),
-                        automaticLOD.getPercTex(), automaticLOD.getMaxTex(), automaticLOD.getName());
+                return new TransmissionThreeD(dae, lodResources, null, automaticLOD.getPercPoly(),
+                        automaticLOD.getMaxPoly(), automaticLOD.getPercTex(), automaticLOD.getMaxTex(),
+                        automaticLOD.getName());
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());

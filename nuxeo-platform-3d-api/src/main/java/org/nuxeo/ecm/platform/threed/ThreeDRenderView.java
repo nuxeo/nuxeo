@@ -59,7 +59,7 @@ public class ThreeDRenderView {
         this.zenith = zenith;
     }
 
-    public ThreeDRenderView(Map<String, Object> map) {
+    public ThreeDRenderView(Map<String, Serializable> map) {
         title = (String) map.get(TITLE);
         content = (Blob) map.get(CONTENT);
         thumbnail = (Blob) map.get(THUMBNAIL);

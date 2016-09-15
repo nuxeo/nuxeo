@@ -46,6 +46,8 @@ public class TransmissionThreeD extends ThreeD {
 
     public static final String MAX_TEX = "maxTex";
 
+    public static final String INFO = "info";
+
     protected final Integer percPoly;
 
     protected final Long maxPoly;
@@ -56,9 +58,9 @@ public class TransmissionThreeD extends ThreeD {
 
     protected final String name;
 
-    public TransmissionThreeD(Blob blob, List<Blob> resources, Integer percPoly, Long maxPoly, Integer percTex,
-            String maxTex, String name) {
-        super(blob, resources);
+    public TransmissionThreeD(Blob blob, List<Blob> resources, ThreeDInfo info, Integer percPoly, Long maxPoly,
+            Integer percTex, String maxTex, String name) {
+        super(blob, resources, info);
         this.percPoly = percPoly;
         this.maxPoly = maxPoly;
         this.percTex = percTex;
@@ -66,8 +68,9 @@ public class TransmissionThreeD extends ThreeD {
         this.name = name;
     }
 
-    public TransmissionThreeD(Map<String, Object> map) {
-        super((Blob) map.get(CONTENT), null);
+    public TransmissionThreeD(Map<String, Serializable> map) {
+        super((Blob) map.get(CONTENT), null,
+                (map.get(INFO) != null) ? new ThreeDInfo((Map<String, Serializable>) map.get(INFO)) : null);
         name = (String) map.get(NAME);
         Long percPolyLong = (Long) map.get(PERC_POLY);
         percPoly = (percPolyLong != null) ? percPolyLong.intValue() : null;
@@ -114,6 +117,7 @@ public class TransmissionThreeD extends ThreeD {
         map.put(MAX_POLY, maxPoly);
         map.put(PERC_TEX, percTex);
         map.put(MAX_TEX, maxTex);
+        map.put(INFO, (info != null) ? (Serializable) info.toMap() : null);
         return map;
     }
 }

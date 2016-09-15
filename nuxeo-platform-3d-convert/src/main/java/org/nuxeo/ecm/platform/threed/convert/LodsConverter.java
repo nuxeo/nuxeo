@@ -117,16 +117,6 @@ public class LodsConverter extends BaseBlenderConverter {
             blobs.add(blob);
         });
 
-        String infoDir = outDir + File.separatorChar + "info";
-        List<String> infos = getInfos(infoDir);
-        infos.forEach(filename -> {
-            File file = new File(infoDir + File.separatorChar + filename);
-            Blob blob = new FileBlob(file);
-            blob.setFilename(file.getName());
-            resourceIndexes.add(blobs.size());
-            blobs.add(blob);
-        });
-
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
         properties.put("resourceIndexes", (Serializable) resourceIndexes);

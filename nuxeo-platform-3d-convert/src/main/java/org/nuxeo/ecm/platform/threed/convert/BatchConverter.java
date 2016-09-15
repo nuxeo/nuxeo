@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
-
 /**
  * Batch conversion for 3D document types Generate thumbnail render, Collada version and LOD versions
  *
@@ -114,16 +113,6 @@ public class BatchConverter extends BaseBlenderConverter {
         if (renders.isEmpty() || renders.size() != renderIdList.size()) {
             throw new ConversionException("Unable get result render");
         }
-
-        String infoDir = outDir + File.separatorChar + "info";
-        List<String> infos = getInfos(infoDir);
-        infos.forEach(filename -> {
-            File file = new File(infoDir + File.separatorChar + filename);
-            Blob blob = new FileBlob(file);
-            blob.setFilename(file.getName());
-            resourceIndexes.add(blobs.size());
-            blobs.add(blob);
-        });
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);

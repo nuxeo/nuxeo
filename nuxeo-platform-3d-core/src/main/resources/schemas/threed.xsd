@@ -7,6 +7,7 @@
 
     <xs:element name="transmissionFormats" type="nxs:transmissionFormatItems"/>
     <xs:element name="renderViews" type="nxs:renderViewsItems"/>
+    <xs:element name="info" type="nxs:info"/>
 
     <xs:complexType name="transmissionFormatItems">
         <xs:sequence>
@@ -23,6 +24,7 @@
             <xs:element name="percTex" type="xs:integer"/>
             <xs:element name="maxTex" type="xs:string"/>
             <xs:element name="content" type="nxs:content"/>
+            <xs:element name="info" type="nxs:info"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -39,6 +41,25 @@
             <xs:element name="title" type="xs:string"/>
             <xs:element name="azimuth" type="xs:integer"/>
             <xs:element name="zenith" type="xs:integer"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="info">
+        <xs:sequence>
+            <xs:element name="non_manifold_vertices" type="xs:long"/>
+            <xs:element name="non_manifold_edges" type="xs:long"/>
+            <xs:element name="non_manifold_polygons" type="xs:long"/>
+            <xs:element name="vertices" type="xs:long"/>
+            <xs:element name="edges" type="xs:long"/>
+            <xs:element name="polygons" type="xs:long"/>
+            <xs:element name="position_x" type="xs:float"/>
+            <xs:element name="position_y" type="xs:float"/>
+            <xs:element name="position_z" type="xs:float"/>
+            <xs:element name="dimension_x" type="xs:float"/>
+            <xs:element name="dimension_y" type="xs:float"/>
+            <xs:element name="dimension_z" type="xs:float"/>
+            <xs:element name="textures_size" type="xs:float"/>
+            <xs:element name="textures_max_dimension" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 

@@ -21,11 +21,9 @@ package org.nuxeo.ecm.platform.threed.adapter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.platform.threed.ThreeD;
-import org.nuxeo.ecm.platform.threed.ThreeDDocument;
-import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
-import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.ecm.platform.threed.*;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -55,20 +53,24 @@ public class ThreeDDocumentAdapter implements ThreeDDocument {
         BlobHolder bh = docModel.getAdapter(BlobHolder.class);
         List<Blob> resources = ((List<Map<String, Object>>) docModel.getPropertyValue(
                 "files:files")).stream().map(file -> (Blob) file.get("file")).collect(Collectors.toList());
-        return new ThreeD(bh.getBlob(), resources);
+        Map<String, Serializable> infoMap = (Map<String, Serializable>) docModel.getPropertyValue("threed:info");
+        ThreeDInfo info = (infoMap != null) ? new ThreeDInfo(infoMap) : null;
+        return new ThreeD(bh.getBlob(), resources, info);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Collection<TransmissionThreeD> getTransmissionThreeDs() {
-        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(TRANSMISSIONS_PROPERTY);
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                TRANSMISSIONS_PROPERTY);
         return list.stream().map(TransmissionThreeD::new).collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public TransmissionThreeD getTransmissionThreeD(String name) {
-        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(TRANSMISSIONS_PROPERTY);
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                TRANSMISSIONS_PROPERTY);
         return list.stream()
                    .filter(item -> ((String) item.get(NAME)) != null && name.equals(item.get(NAME)))
                    .map(TransmissionThreeD::new)
@@ -79,14 +81,16 @@ public class ThreeDDocumentAdapter implements ThreeDDocument {
     @SuppressWarnings("unchecked")
     @Override
     public Collection<ThreeDRenderView> getRenderViews() {
-        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(RENDER_VIEWS_PROPERTY);
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                RENDER_VIEWS_PROPERTY);
         return list.stream().map(ThreeDRenderView::new).collect(Collectors.toList());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ThreeDRenderView getRenderView(String title) {
-        List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(RENDER_VIEWS_PROPERTY);
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) docModel.getPropertyValue(
+                RENDER_VIEWS_PROPERTY);
         return list.stream()
                    .filter(item -> title.equals(item.get(TITLE)))
                    .map(ThreeDRenderView::new)
