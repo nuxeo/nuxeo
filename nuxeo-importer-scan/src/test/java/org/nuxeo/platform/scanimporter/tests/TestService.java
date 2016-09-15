@@ -18,10 +18,11 @@
  */
 package org.nuxeo.platform.scanimporter.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import org.junit.Test;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.ecm.platform.scanimporter.service.ScanFileMappingDescriptor;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent;
@@ -32,9 +33,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestService extends NXRuntimeTestCase {
 
     @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    protected void setUp() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.scanimporter", "OSGI-INF/importerservice-framework.xml");
     }
 
@@ -51,8 +50,9 @@ public class TestService extends NXRuntimeTestCase {
         ScanFileMappingDescriptor desc = ((ScannedFileMapperComponent) sfms).getMappingDesc();
 
         assertNull(desc);
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib0.xml");
+        pushInlineDeployments("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-contrib0.xml");
 
+        sfms = Framework.getLocalService(ScannedFileMapperService.class);
         desc = ((ScannedFileMapperComponent) sfms).getMappingDesc();
         assertNotNull(desc);
 
@@ -73,11 +73,9 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testServiceConfig() throws Exception {
+        pushInlineDeployments("org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/importerservice-test-config0.xml");
 
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
-
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-config0.xml");
-
         ImporterConfig config = sfms.getImporterConfig();
 
         assertNotNull(config);
