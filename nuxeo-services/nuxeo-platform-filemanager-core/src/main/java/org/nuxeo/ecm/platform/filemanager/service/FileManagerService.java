@@ -59,7 +59,6 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescri
 import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
 import org.nuxeo.ecm.platform.filemanager.service.extension.VersioningDescriptor;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
-import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
@@ -142,13 +141,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private Blob checkMimeType(Blob blob, String fullname) {
-        final String mimeType = blob.getMimeType();
-        if (mimeType != null && !mimeType.isEmpty() && !mimeType.equals("application/octet-stream")
-                && !mimeType.equals("application/octetstream")) {
-            return blob;
-        }
         String filename = FileManagerUtils.fetchFileName(fullname);
-        blob = getMimeService().updateMimetype(blob, filename);
+        blob = getMimeService().updateMimetype(blob, filename, true);
         return blob;
     }
 
