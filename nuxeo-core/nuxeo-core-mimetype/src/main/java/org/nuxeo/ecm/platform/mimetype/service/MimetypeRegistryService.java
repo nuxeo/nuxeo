@@ -90,6 +90,10 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         extensionRegistry = new HashMap<>();
     }
 
+    protected boolean isMimetypeEntry(String mimetypeName) {
+        return mimetypeByNormalisedRegistry.containsKey(mimetypeName);
+    }
+
     @Override
     public void activate(ComponentContext context) {
         bundle = context.getRuntimeContext();
@@ -397,8 +401,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
             // failed to detect mimetype on extension:
             // fallback to the blob defined mimetype
             String mimeTypeName = blob.getMimeType();
-            MimetypeEntry mimetypeEntry = getMimetypeEntryByName(mimeTypeName);
-            if (mimetypeEntry != null) {
+            if (isMimetypeEntry(mimeTypeName)) {
                 return mimeTypeName;
             } else {
                 // failed to detect mimetype on blob:
