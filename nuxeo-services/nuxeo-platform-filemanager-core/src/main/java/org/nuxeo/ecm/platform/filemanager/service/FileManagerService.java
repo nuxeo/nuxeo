@@ -152,8 +152,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return blob;
     }
 
-    public DocumentModel createFolder(CoreSession documentManager, String fullname, String path)
-            throws IOException {
+    public DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException {
 
         if (folderImporters.isEmpty()) {
             return defaultCreateFolder(documentManager, fullname, path);
@@ -164,8 +163,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
     }
 
-    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path)
-            {
+    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path) {
         return defaultCreateFolder(documentManager, fullname, path, DEFAULT_FOLDER_TYPE_NAME, true);
     }
 
@@ -211,8 +209,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return docModel;
     }
 
-    public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path,
-            boolean overwrite, String fullName) throws IOException {
+    public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
+            String fullName) throws IOException {
 
         // check mime type to be able to select the best importer plugin
         input = checkMimeType(input, fullName);
@@ -221,8 +219,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         Collections.sort(importers);
         String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(input.getMimeType()).getNormalized();
         for (FileImporter importer : importers) {
-            if (importer.isEnabled() && (importer.matches(normalizedMimeType) || importer.matches(input.getMimeType()))) {
-                DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName, getTypeService());
+            if (importer.isEnabled()
+                    && (importer.matches(normalizedMimeType) || importer.matches(input.getMimeType()))) {
+                DocumentModel doc = importer.create(documentManager, input, path, overwrite, fullName,
+                        getTypeService());
                 if (doc != null) {
                     return doc;
                 }
@@ -231,8 +231,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return null;
     }
 
-    public DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName)
-            {
+    public DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName) {
         String filename = FileManagerUtils.fetchFileName(fullName);
         DocumentModel doc = FileManagerUtils.getExistingDocByFileName(documentManager, path, filename);
         if (doc != null) {
@@ -374,11 +373,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             fileImporters.put(name, plugin);
             log.info("Registered file importer " + name);
         } else {
-            log.info("Unable to register file importer " + name + ", className is null or plugin is not yet registered");
+            log.info(
+                    "Unable to register file importer " + name + ", className is null or plugin is not yet registered");
         }
     }
 
-    private FileImporter mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin, FileImporterDescriptor desc) {
+    private FileImporter mergeFileImporters(FileImporter oldPlugin, FileImporter newPlugin,
+            FileImporterDescriptor desc) {
         List<String> filters = desc.getFilters();
         if (filters != null && !filters.isEmpty()) {
             List<String> oldFilters = oldPlugin.getFilters();
@@ -449,8 +450,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         log.info("unregistered folder importer: " + name);
     }
 
-    private void registerCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor, Extension extension) {
+    private void registerCreationContainerListProvider(CreationContainerListProviderDescriptor ccListProviderDescriptor,
+            Extension extension) {
 
         String name = ccListProviderDescriptor.getName();
         String[] docTypes = ccListProviderDescriptor.getDocTypes();
