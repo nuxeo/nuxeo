@@ -30,7 +30,7 @@ for obj in bpy.context.scene.objects:
 if lod_id == 'default':
     info_default = info
 
-info_directory = args.outdir + '/convert/'
+info_directory = args.outdir + '/info/'
 info_file = str(lod_id) + '.info'
 
 if not os.path.exists(info_directory):

@@ -251,19 +251,19 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
     public List<String> getConversionLOD(String outDir) {
         File directory = new File(outDir);
         String[] files = directory.list((dir, name) -> true);
-        if (files == null) {
-            return null;
-        }
-        return Arrays.asList(files);
+        return (files == null) ? null : Arrays.asList(files);
     }
 
     public List<String> getRenders(String outDir) {
         File directory = new File(outDir);
         String[] files = directory.list((dir, name) -> name.startsWith("render") && name.endsWith(".png"));
-        if (files == null) {
-            return null;
-        }
-        return Arrays.asList(files);
+        return (files == null) ? null : Arrays.asList(files);
+    }
+
+    public List<String> getInfos(String outDir) {
+        File directory = new File(outDir);
+        String[] files = directory.list((dir, name) -> name.endsWith(".info"));
+        return (files == null) ? null : Arrays.asList(files);
     }
 
 }
