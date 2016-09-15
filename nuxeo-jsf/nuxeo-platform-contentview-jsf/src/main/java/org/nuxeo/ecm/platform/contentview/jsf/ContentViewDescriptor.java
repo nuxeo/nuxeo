@@ -367,7 +367,7 @@ public class ContentViewDescriptor {
             this.emptySentence = emptySentence;
         }
 
-        String waitForExecutionSentence = newDesc.getEmptySentence();
+        String waitForExecutionSentence = newDesc.getWaitForExecutionSentence();
         if (waitForExecutionSentence != null) {
             this.waitForExecutionSentence = waitForExecutionSentence;
         }
