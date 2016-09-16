@@ -46,9 +46,9 @@ public class RootResource {
 
     @GET
     public Object doGet(@QueryParam("filterDisabled") boolean filterDisabled,
-            @QueryParam("filterRestricted") boolean filterRestricted,
-            @QueryParam("filterDeprecated") boolean filterDeprecated,
-            @QueryParam("filterDefault") Boolean filterDefault, @QueryParam("filterType") String filterType)
+                        @QueryParam("filterRestricted") boolean filterRestricted,
+                        @QueryParam("filterDeprecated") boolean filterDeprecated,
+                        @QueryParam("filterDefault") Boolean filterDefault, @QueryParam("filterType") String filterType)
             throws Exception {
         return getPlatforms(filterDisabled, filterRestricted, filterDeprecated, filterDefault, filterType);
     }

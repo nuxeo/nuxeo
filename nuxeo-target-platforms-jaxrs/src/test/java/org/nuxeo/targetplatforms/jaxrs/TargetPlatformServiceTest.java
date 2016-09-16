@@ -18,6 +18,11 @@
 
 package org.nuxeo.targetplatforms.jaxrs;
 
+import static com.sun.jersey.api.client.Client.create;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 
 import javax.ws.rs.core.Response.Status;
@@ -43,11 +48,6 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -59,6 +59,8 @@ public class TargetPlatformServiceTest {
 
     private static final int TIMEOUT = 2000;
 
+    private static final String URL = "http://localhost:18090/target-platforms";
+
     @Ignore("NXP-17108")
     @Test
     public void ping() throws IOException {
@@ -69,13 +71,13 @@ public class TargetPlatformServiceTest {
         assertTrue(result.contains("nuxeo-dm-5.8"));
     }
 
-    protected WebResource getServiceFor(String user, String password) {
+    private WebResource getServiceFor(String user, String password) {
         ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
+        Client client = create(config);
         client.setConnectTimeout(TIMEOUT);
         client.setReadTimeout(TIMEOUT);
         client.addFilter(new HTTPBasicAuthFilter(user, password));
-        return client.resource("http://localhost:18090/target-platforms");
+        return client.resource(URL);
     }
 
 }
