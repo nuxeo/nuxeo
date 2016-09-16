@@ -939,9 +939,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return scrollSearch(query, batchSize, keepAliveSeconds);
     }
 
-    synchronized protected void checkForTimedoutScroll() {
-        Set<String> scrollIds = new HashSet<String>(cursorResults.keySet());
-        scrollIds.stream().forEach(x -> cursorResults.get(x).timedOut(x));
+    protected void checkForTimedoutScroll() {
+        cursorResults.forEach((id, cursor) -> cursor.timedOut(id));
     }
 
     protected ScrollResult scrollSearch(String query, int batchSize, int keepAliveSeconds) {
@@ -993,8 +992,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         boolean timedOut(String scrollId) {
             long now = System.currentTimeMillis();
             if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
-                log.warn("Scroll " + scrollId + " timed out");
-                unregisterCursor(scrollId);
+                if (unregisterCursor(scrollId)) {
+                    log.warn("Scroll " + scrollId + " timed out");
+                }
                 return true;
             }
             return false;
@@ -1019,16 +1019,18 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         cursorResults.put(scrollId, new CursorResult(ps, rs, batchSize, keepAliveSeconds));
     }
 
-    protected void unregisterCursor(String scrollId) {
+    protected boolean unregisterCursor(String scrollId) {
         CursorResult cursor = cursorResults.remove(scrollId);
         if (cursor != null) {
             try {
                 cursor.close();
+                return true;
             } catch (SQLException e) {
                 log.error("Failed to close cursor for scroll: " + scrollId, e);
                 // do not propagate exception on cleaning
             }
         }
+        return false;
     }
 
     protected ScrollResult defaultScroll(String query) {
