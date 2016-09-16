@@ -43,14 +43,14 @@ public class ExportAndTransformTest extends BaseExport {
             String listing = sb.toString();
 
             // check file exported
-            assertTrue(listing.contains("ws1/folder/file/document.xml"));
+            assertTrue(listing.contains("ws1" + File.separator + "folder" + File.separator + "file" + File.separator + "document.xml"));
 
             // check version exported
-            assertTrue(listing.contains("ws1/folder/file/__versions__/1.0/document.xml"));
+            assertTrue(listing.contains("ws1" + File.separator + "folder" + File.separator + "file" + File.separator + "__versions__" + File.separator + "1.0" + File.separator + "document.xml"));
 
             // check invoice exported
-            assertTrue(listing.contains("ws1/invoice/document.xml"));
-            String xml = FileUtils.readFileToString(new File(out, "ws1/invoice/document.xml"));
+            assertTrue(listing.contains("ws1" + File.separator + "invoice" + File.separator + "document.xml"));
+            String xml = FileUtils.readFileToString(new File(out, "ws1" + File.separator + "invoice" + File.separator + "document.xml"));
 
             assertTrue(xml.contains("<type>File</type>"));
             assertTrue(xml.contains("<facet>Invoice</facet>"));

@@ -65,7 +65,7 @@ public class TestRollback extends SharedFilesTest {
 
         @Override
         protected void updatePackage() throws Exception {
-            addFile("bundles/" + getFileName(), getFileName());
+            addFile("bundles" + File.separator + getFileName(), getFileName());
         }
     }
 
@@ -128,7 +128,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        Entry entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        Entry entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertTrue("Should have a base version", entry.hasBaseVersion());
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
@@ -143,7 +143,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         ensureFiles(hotfix1.getFileName());
@@ -152,7 +152,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix2.getFileName());
@@ -160,7 +160,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         ensureFiles(hotfix1.getFileName());
@@ -197,7 +197,7 @@ public class TestRollback extends SharedFilesTest {
         addon.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        Entry entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        Entry entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertFalse("Should have no base version", entry.hasBaseVersion());
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
@@ -207,7 +207,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix2.getFileName());
@@ -215,7 +215,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         ensureFiles(addon.getFileName());
@@ -252,7 +252,7 @@ public class TestRollback extends SharedFilesTest {
         addon.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        Entry entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        Entry entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertFalse("Should have no base version", entry.hasBaseVersion());
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
@@ -262,7 +262,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix2.getFileName());
@@ -270,7 +270,7 @@ public class TestRollback extends SharedFilesTest {
         addon.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         assertNull("Remaining version should be upgradeOnly", entry.getLastVersion(false));
@@ -303,7 +303,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        Entry entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        Entry entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertFalse("Should have no base version", entry.hasBaseVersion());
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
@@ -313,7 +313,7 @@ public class TestRollback extends SharedFilesTest {
         addon.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix2.getFileName());
@@ -321,7 +321,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         ensureFiles(addon.getFileName());
@@ -358,7 +358,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        Entry entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        Entry entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertFalse("Should have no base version", entry.hasBaseVersion());
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
@@ -368,7 +368,7 @@ public class TestRollback extends SharedFilesTest {
         addon.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix2.getFileName());
@@ -376,7 +376,7 @@ public class TestRollback extends SharedFilesTest {
         addon.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         assertNull("Remaining version should be upgradeOnly", entry.getLastVersion(false));
@@ -407,7 +407,7 @@ public class TestRollback extends SharedFilesTest {
         addon.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        Entry entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        Entry entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertFalse("Should have no base version", entry.hasBaseVersion());
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
@@ -417,7 +417,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix1.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix1.getFileName());
@@ -426,7 +426,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.install();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 3, entry.getVersions().size());
         ensureFiles(hotfix2.getFileName());
@@ -434,7 +434,7 @@ public class TestRollback extends SharedFilesTest {
         hotfix2.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 2, entry.getVersions().size());
         ensureFiles(hotfix1.getFileName());
@@ -442,7 +442,7 @@ public class TestRollback extends SharedFilesTest {
         addon.uninstall();
         mgr.load();
         assertEquals("Registry size", 1, mgr.getRegistry().size());
-        entry = mgr.getRegistry().get("bundles/" + JARNAME);
+        entry = mgr.getRegistry().get("bundles" + File.separator + JARNAME);
         assertNotNull("Entry in registry", entry);
         assertEquals("Nb versions in registry", 1, entry.getVersions().size());
         assertNull("Remaining version should be upgradeOnly", entry.getLastVersion(false));
