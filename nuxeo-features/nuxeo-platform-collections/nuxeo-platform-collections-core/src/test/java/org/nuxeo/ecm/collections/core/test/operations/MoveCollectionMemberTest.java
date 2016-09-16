@@ -204,15 +204,16 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
     }
 
     @Test
-    public void testSwapInTheMiddleMember() throws OperationException {
+    public void testMoveDowntInTheMiddleMember() throws OperationException {
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         collectionAdapter.getCollectedDocumentIds();
 
         initialCheck(collectionAdapter);
 
         chain = new OperationChain("test-chain");
-        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(NB_FILES / 2)).set("member2",
-                listDocs.get((NB_FILES / 2) + 1));
+        int index = NB_FILES / 2;
+        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
+                listDocs.get(index + 1));
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(collection);
@@ -226,20 +227,56 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
 
         assertEquals(NB_FILES, collectionAdapter.getCollectedDocumentIds().size());
 
-        assertEquals(listDocs.get(NB_FILES / 2).getId(),
-                collectionAdapter.getCollectedDocumentIds().get((NB_FILES / 2) + 1));
-        assertEquals(listDocs.get((NB_FILES / 2) + 1).getId(),
-                collectionAdapter.getCollectedDocumentIds().get(NB_FILES / 2));
+        assertEquals(listDocs.get(index).getId(), collectionAdapter.getCollectedDocumentIds().get(index + 1));
+        assertEquals(listDocs.get(index + 1).getId(), collectionAdapter.getCollectedDocumentIds().get(index));
 
         // Check by query
         List<DocumentModel> members = getCollectionMembersByQuery();
 
         assertEquals(NB_FILES, members.size());
 
-        assertEquals(listDocs.get(NB_FILES / 2).getId(),
-                members.get((NB_FILES / 2) + 1).getId());
-        assertEquals(listDocs.get((NB_FILES / 2) + 1).getId(),
-                members.get(NB_FILES / 2).getId());
+        assertEquals(listDocs.get(index).getId(), members.get(index + 1).getId());
+        assertEquals(listDocs.get(index + 1).getId(), members.get(index).getId());
+
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void testMoveUpInTheMiddleMember() throws OperationException {
+        Collection collectionAdapter = collection.getAdapter(Collection.class);
+        collectionAdapter.getCollectedDocumentIds();
+
+        initialCheck(collectionAdapter);
+
+        chain = new OperationChain("test-chain");
+        int index = (NB_FILES / 2) + 1;
+        chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
+                listDocs.get(index - 1));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(collection);
+
+        boolean result = (boolean) service.run(ctx, chain);
+
+        assertTrue(result);
+
+        collection = session.getDocument(collection.getRef());
+        collectionAdapter = collection.getAdapter(Collection.class);
+
+        assertEquals(NB_FILES, collectionAdapter.getCollectedDocumentIds().size());
+
+        assertEquals(listDocs.get(index).getId(), collectionAdapter.getCollectedDocumentIds().get(index - 1));
+        assertEquals(listDocs.get(index - 1).getId(), collectionAdapter.getCollectedDocumentIds().get(index));
+
+        // Check by query
+        List<DocumentModel> members = getCollectionMembersByQuery();
+
+        assertEquals(NB_FILES, members.size());
+
+        assertEquals(listDocs.get(index).getId(), members.get(index - 1).getId());
+        assertEquals(listDocs.get(index - 1).getId(), members.get(index).getId());
 
     }
 
