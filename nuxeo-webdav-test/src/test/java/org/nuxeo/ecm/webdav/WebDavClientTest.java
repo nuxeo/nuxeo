@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.w3c.dom.Element;
 
@@ -211,7 +212,8 @@ public class WebDavClientTest extends AbstractServerTest {
     @Test
     public void testCreateBinaryFile() throws Exception {
         String name = "newfile.bin";
-        String mimeType = "application/binary";
+        // The bin extension is not in the MimetypeRegistry, so the default mimetype is used
+        String mimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
         byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
         String expectedType = "File";
         doTestPutFile(name, bytes, mimeType, expectedType);
@@ -239,7 +241,7 @@ public class WebDavClientTest extends AbstractServerTest {
     // NXP-12735: disabled because failing under windows + pgsql
     public void testOverwriteExistingFile() throws Exception {
         String name = "test.txt"; // this file already exists
-        String mimeType = "application/binary";
+        String mimeType = "text/plain";
         PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
         assertTrue(session.exists(pathRef));
         byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
