@@ -64,6 +64,7 @@ perc_poly = 100
 max_poly = None
 current_lod = 1.0
 lod_id = 'default'
+lod_success = True
 
 if params_filled(args.lodids):
     lod_args = {'i': args.lodids, 'pp': [], 'mp': []}

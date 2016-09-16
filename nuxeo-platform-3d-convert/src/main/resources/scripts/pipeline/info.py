@@ -22,7 +22,8 @@ for obj in bpy.context.scene.objects:
             'position_z': obj.location.z,
             'dimension_x': obj.dimensions.x,
             'dimension_y': obj.dimensions.y,
-            'dimension_z': obj.dimensions.z
+            'dimension_z': obj.dimensions.z,
+            'lod_succes': lod_success
         }
         bpy.ops.mesh.select_all(action='DESELECT')
         bpy.ops.object.mode_set(mode='OBJECT')

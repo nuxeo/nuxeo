@@ -51,7 +51,8 @@ for ob in bpy.context.scene.objects:
         perc_non_manif = verts_non_manif / verts_total
         ob.select = True
         mod = ob.modifiers.new(name='decimate', type='DECIMATE')
-        if next_lod >= perc_non_manif:
+        lod_success = next_lod >= perc_non_manif
+        if lod_success:
             # can reduce safely according to the heuristic
             mod.ratio = lod_ratio
             print('[LOD] applying %.2f ratio to %s mesh' % (next_lod, ob.name))
