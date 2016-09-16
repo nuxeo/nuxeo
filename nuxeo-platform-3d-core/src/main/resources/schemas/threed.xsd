@@ -60,6 +60,8 @@
             <xs:element name="dimension_z" type="xs:float"/>
             <xs:element name="textures_size" type="xs:float"/>
             <xs:element name="textures_max_dimension" type="xs:string"/>
+            <xs:element name="geometry_lod_success" type="xs:boolean"/>
+            <xs:element name="texture_lod_success" type="xs:boolean"/>
         </xs:sequence>
     </xs:complexType>
 
