@@ -98,9 +98,15 @@ public class Collection {
             if (member1Id.equals(member2IdIndex)) {
                return false;
             }
-            documentIds.remove(member1IdIndex);
-            int newMember2IdIndex = documentIds.indexOf(member2Id);
-            documentIds.add(newMember2IdIndex + 1, member1Id);
+            if (member2IdIndex > member1IdIndex) {
+                documentIds.remove(member1IdIndex);
+                int newMember2IdIndex = documentIds.indexOf(member2Id);
+                documentIds.add(newMember2IdIndex + 1, member1Id);
+            } else {
+                documentIds.remove(member2IdIndex);
+                int newMember1IdIndex = documentIds.indexOf(member1Id);
+                documentIds.add(newMember1IdIndex + 1, member2Id);
+            }
             setDocumentIds(documentIds);
             return true;
         }
