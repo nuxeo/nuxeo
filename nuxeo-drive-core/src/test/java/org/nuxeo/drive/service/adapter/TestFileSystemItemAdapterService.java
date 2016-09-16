@@ -27,16 +27,12 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
@@ -66,11 +62,10 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -94,7 +89,7 @@ public class TestFileSystemItemAdapterService {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     protected String syncRootItemId;
 
@@ -108,8 +103,7 @@ public class TestFileSystemItemAdapterService {
 
     protected DocumentModel syncRootFolder;
 
-    @Before
-    public void registerRootAndCreateSomeDocs() throws Exception {
+    protected void registerRootAndCreateSomeDocs() throws Exception {
 
         syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
         syncRootFolder = session.createDocument(syncRootFolder);
@@ -155,6 +149,7 @@ public class TestFileSystemItemAdapterService {
 
     @Test
     public void testService() throws Exception {
+        registerRootAndCreateSomeDocs();
 
         // ------------------------------------------------------
         // Check file system item factory descriptors
@@ -436,16 +431,11 @@ public class TestFileSystemItemAdapterService {
 
         TransactionHelper.commitOrRollbackTransaction();
         try {
-            Framework.getRuntime().standby(Instant.now().plus(Duration.ofSeconds(30)));
-            try {
-                harness.deployContrib("org.nuxeo.drive.core.test",
-                        "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-            } finally {
-                Framework.getRuntime().resume();
-            }
+            deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
         } finally {
             TransactionHelper.startTransaction();
         }
+
         registerRootAndCreateSomeDocs();
 
         // Re-adapt the sync root to take the override into account
@@ -649,12 +639,4 @@ public class TestFileSystemItemAdapterService {
         assertTrue(activeFactories.contains("nullMergeTestFactory"));
     }
 
-    void reload() throws InterruptedException {
-        Properties lastProps = Framework.getProperties();
-        try {
-            Framework.getLocalService(ReloadService.class).reload();
-        } finally {
-            Framework.getProperties().putAll(lastProps);
-        }
-    }
 }

@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CO
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -647,7 +646,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      * Sorts the contributed factories according to their order.
      */
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void start(ComponentContext context) {
         syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
         collectionSyncRootMemberCache = Framework.getService(CacheService.class)
                                                  .getCache(DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
@@ -655,7 +654,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public void applicationStopped(ComponentContext context, Instant instant) {
+    public void stop(ComponentContext context) {
         syncRootCache = null;
         collectionSyncRootMemberCache = null;
         changeFinder = null;

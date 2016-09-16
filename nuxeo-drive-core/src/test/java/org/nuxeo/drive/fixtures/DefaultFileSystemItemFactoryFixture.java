@@ -29,7 +29,6 @@ import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -75,8 +74,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -98,7 +97,7 @@ public class DefaultFileSystemItemFactoryFixture {
     private static final int VERSIONING_DELAY = 1000; // ms
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -972,25 +971,11 @@ public class DefaultFileSystemItemFactoryFixture {
 
         TransactionHelper.commitOrRollbackTransaction(); // should save documents before runtime reset
         try {
-            Framework.getRuntime().standby(Instant.now());
-            try {
-                harness.deployContrib("org.nuxeo.drive.core.test",
-                        "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-            } finally {
-                Framework.getRuntime().resume();
-            }
+            deployer.deploy("org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
         } finally {
             TransactionHelper.startTransaction();
         }
-
         assertEquals(2, syncRootFolderItem.getChildren().size());
-        Framework.getRuntime().standby(Instant.now());
-        try {
-            harness.undeployContrib("org.nuxeo.drive.core.test",
-                    "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-        } finally {
-            Framework.getRuntime().resume();
-        }
     }
 
     @Test

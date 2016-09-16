@@ -62,10 +62,14 @@ public class NuxeoDriveSetActiveFactories {
             return false;
         }
         URL url = NuxeoDriveSetActiveFactories.class.getResource(contrib);
-        if (enable) {
-            Framework.getRuntime().getContext().deploy(url);
-        } else {
-            Framework.getRuntime().getContext().undeploy(url);
+        try {
+            if (enable) {
+                Framework.getRuntime().getContext().deploy(url);
+            } else {
+                Framework.getRuntime().getContext().undeploy(url);
+            }
+        } finally {
+            Framework.getRuntime().getComponentManager().unstash();
         }
         FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class);
         fileSystemItemAdapterService.setActiveFactories();

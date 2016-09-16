@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl"
   version="1.0">
-
+  <require>org.nuxeo.ecm.core.cache.CacheService</require>
   <implementation class="org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl" />
 
   <service>
