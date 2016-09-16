@@ -302,6 +302,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             }
             return;
         }
+        // Refresh index before bulk delete
+        esa.getClient().admin().indices().prepareRefresh(indexName).get();
+
+        // Run the scroll query
         QueryBuilder query = QueryBuilders.constantScoreQuery(QueryBuilders.termQuery(CHILDREN_FIELD, docPath));
         TimeValue keepAlive = TimeValue.timeValueMinutes(1);
         SearchRequestBuilder request = esa.getClient()
