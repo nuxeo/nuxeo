@@ -901,9 +901,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return scroll(scrollId);
     }
 
-    synchronized protected void checkForTimedoutScroll() {
-        Set<String> scrollIds = new HashSet<String>(cursorResults.keySet());
-        scrollIds.stream().forEach(x -> cursorResults.get(x).timedOut(x));
+    protected void checkForTimedoutScroll() {
+        cursorResults.forEach((id, cursor) -> cursor.timedOut(id));
     }
 
     protected void registerCursor(String scrollId, DBCursor cursor, int batchSize, int keepAliveSeconds) {
@@ -943,11 +942,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return new ScrollResultImpl(scrollId, ids);
     }
 
-    protected void unregisterCursor(String scrollId) {
+    protected boolean unregisterCursor(String scrollId) {
         CursorResult cursor = cursorResults.remove(scrollId);
         if (cursor != null) {
             cursor.close();
+            return true;
         }
+        return false;
     }
 
     protected void addPrincipals(DBObject query, Set<String> principals) {
@@ -1174,8 +1175,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         boolean timedOut(String scrollId) {
             long now = System.currentTimeMillis();
             if (now - lastCallTimestamp > (keepAliveSeconds * 1000)) {
-                log.warn("Scroll " + scrollId + " timed out");
-                unregisterCursor(scrollId);
+                if (unregisterCursor(scrollId)) {
+                    log.warn("Scroll " + scrollId + " timed out");
+                }
                 return true;
             }
             return false;

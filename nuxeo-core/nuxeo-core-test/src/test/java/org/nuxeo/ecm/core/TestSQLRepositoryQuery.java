@@ -3260,6 +3260,8 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testScrollApiRequiresAdminRightsBis() throws Exception {
+        assumeTrue("Backend must support true scrolling", supportsScroll());
+
         DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
         session.createDocument(doc1);
         DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
@@ -3332,7 +3334,6 @@ public class TestSQLRepositoryQuery {
         } catch (NuxeoException e) {
             assertEquals("Timed out scrollId", e.getMessage());
         }
-
         // This new call will clean leaked scroll
         ScrollResult ret4 = session.scroll("SELECT * FROM Document", 1, 1);
         assertTrue(ret4.hasResults());
@@ -3393,6 +3394,56 @@ public class TestSQLRepositoryQuery {
             total += count;
         }
         assertEquals(nbDocs, total);
+    }
+
+    @Test
+    public void testScrollCleaningConcurrency() throws Exception {
+        final int NB_TRHEADS = 15;
+        final int NB_SCROLLS = 100;
+
+        assumeTrue("Backend must support true scrolling", supportsScroll());
+
+        DocumentModel doc = new DocumentModelImpl("/", "doc1", "File");
+        session.createDocument(doc);
+        doc = new DocumentModelImpl("/", "doc2", "File");
+        session.createDocument(doc);
+        session.save();
+        ScrollResult ret;
+        for (int i = 0; i < NB_SCROLLS; i++) {
+            session.scroll("SELECT * FROM Document", 1, 1).getScrollId();
+        }
+        // wait for timeout
+        Thread.sleep(1100);
+
+        List<CompletableFuture<Integer>> futures = new ArrayList<>(NB_TRHEADS);
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NB_TRHEADS);
+        final CountDownLatch latch = new CountDownLatch(NB_TRHEADS);
+        for (int n=0; n < NB_TRHEADS; n++) {
+
+            CompletableFuture completableFuture = CompletableFuture.supplyAsync(() -> {
+                TransactionHelper.startTransaction();
+                try {
+                    // make sure all threads ask to scroll at the same time
+                    latch.countDown();
+                    try {
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        ExceptionUtils.checkInterrupt(e);
+                    }
+                    session.scroll("SELECT * FROM Document", 1, 1).getResultIds().size();
+                    return 1;
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }, executor);
+            futures.add(completableFuture);
+        }
+        int total = 0;
+        for (int n=0; n < NB_TRHEADS; n++) {
+            int count = futures.get(n).get();
+            total += count;
+        }
+        assertEquals(NB_TRHEADS, total);
     }
 
 }
