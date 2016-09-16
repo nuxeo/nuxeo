@@ -284,17 +284,52 @@ public class TestFileManagerService {
     }
 
     @Test
-    public void testCreateBlobWithNormalizedMimeType() throws Exception {
+    public void testCreateBlobWithNormalizedMimetype() throws Exception {
+        File file = getTestFile("test-data/hello.xls");
+        Blob blob = Blobs.createBlob(file);
+        blob.setMimeType("text/plain");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+                "test-data/hello.xls");
+        assertNotNull(doc);
+        assertEquals("application/vnd.ms-excel", blob.getMimeType());
+        assertEquals("File", doc.getType());
+    }
+
+    @Test
+    public void testCreateBlobWithAmbiguousMimetype() throws Exception {
+        File file = getTestFile("test-data/hello.xml");
+        Blob blob = Blobs.createBlob(file);
+        blob.setMimeType("text/plain");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+                "test-data/hello.xml");
+        assertNotNull(doc);
+        assertEquals("text/plain", blob.getMimeType());
+        assertEquals("Note", doc.getType());
+    }
+
+    @Test
+    public void testCreateBlobWithBlobMimetypeFallback() throws Exception {
         File file = getTestFile("test-data/hello.doc");
         Blob blob = Blobs.createBlob(file);
-        // should fore Note creation using 'pluginToUseNormalizedMimeType'
-        // plugin
-        blob.setMimeType("application/csv");
-
+        blob.setFilename("hello.plouf");
+        blob.setMimeType("text/plain");
         DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
-                "test-data/hello.csv");
+                "test-data/hello.plouf");
         assertNotNull(doc);
+        assertEquals("text/plain", blob.getMimeType());
         assertEquals("Note", doc.getType());
+    }
+
+    @Test
+    public void testCreateBlobWithCalculatedBlobMimetype() throws Exception {
+        File file = getTestFile("test-data/hello.doc");
+        Blob blob = Blobs.createBlob(file);
+        blob.setFilename("hello.plouf");
+        blob.setMimeType("pif/paf");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob, workspace.getPathAsString(), true,
+                "test-data/hello.plouf");
+        assertNotNull(doc);
+        assertEquals("File", doc.getType());
     }
 
     @Test

@@ -113,7 +113,8 @@ public class TestMimetypeRegistryService {
         MimetypeEntry mimetype = getMimetypeSample();
         mimetypeRegistryService.registerMimetype(mimetype);
 
-        assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()), mimetype.getExtensions());
+        assertEquals(mimetypeRegistry.getExtensionsFromMimetypeName(mimetype.getNormalized()),
+                mimetype.getExtensions());
 
         mimetypeRegistryService.unregisterMimetype(mimetype.getNormalized());
     }
@@ -209,8 +210,36 @@ public class TestMimetypeRegistryService {
         assertEquals("application/msword", mimetype);
 
         // test ambiguous file extension with empty file
-        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml",
-                Blobs.createBlob(""), "default/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault("sample-wordml.xml", Blobs.createBlob(""),
+                "default/mimetype");
+        assertEquals("default/mimetype", mimetype);
+    }
+
+    @Test
+    public void testGetMimetypeFromFilenameWithBlobMimetypeFallback() throws Exception {
+
+        MimetypeEntry mimetypeEntry = getMimetypeSample();
+        mimetypeRegistryService.registerMimetype(mimetypeEntry);
+
+        // bad filename + word mimetype : fallback to excel mimetype
+        Blob blob = Blobs.createBlob("");
+        blob.setMimeType("application/msword");
+        String mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("bad_file_name", blob,
+                "default/mimetype");
+        assertEquals("application/msword", mimetype);
+
+        // bad filename + bad mimetype : fallback to sniffing blob
+        blob = getWordBlob();
+        blob.setMimeType("bad/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("bad_file_name", blob,
+                "default/mimetype");
+        assertEquals("application/msword", mimetype);
+
+        // bad filename + bad mimetype : fallback to default mimetype
+        blob = Blobs.createBlob("");
+        blob.setMimeType("bad/mimetype");
+        mimetype = mimetypeRegistry.getMimetypeFromFilenameWithBlobMimetypeFallback("bad_file_name", blob,
+                "default/mimetype");
         assertEquals("default/mimetype", mimetype);
     }
 

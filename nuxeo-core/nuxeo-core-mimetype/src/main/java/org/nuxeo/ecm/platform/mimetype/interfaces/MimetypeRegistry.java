@@ -58,8 +58,11 @@ public interface MimetypeRegistry {
     String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException;
 
     /**
-     * Returns the mime type from a given blob or provided default if not possible.
+     * Finds the mimetype of a Blob content and returns provided default if not possible.
      *
+     * @param blob content to be analyzed
+     * @param defaultMimetype defaultMimeType to be used if no found
+     * @return the string mimetype
      * @throws MimetypeDetectionException
      */
     String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype) throws MimetypeDetectionException;
@@ -120,6 +123,32 @@ public interface MimetypeRegistry {
      */
     String getMimetypeFromFilenameAndBlobWithDefault(String filename, Blob blob, String defaultMimetype)
             throws MimetypeDetectionException;
+
+    /**
+     * Finds the mimetype of some content according to its filename or binary mime type or binary content.
+     *
+     * @param filename extension to analyze
+     * @param blob content to be analyzed if filename is ambiguous
+     * @param defaultMimetype defaultMimeType to be used if no found
+     * @return the string mimetype
+     * @throws MimetypeDetectionException
+     * @since 8.4
+     */
+    String getMimetypeFromFilenameWithBlobMimetypeFallback(String filename, Blob blob, String defaultMimetype)
+            throws MimetypeDetectionException;
+
+    /**
+     * Update the mimetype field of a Blob based on the provided filename with fallback to binary. If the embedded
+     * filename is null, the provided filename is embedded into the blob as well.
+     *
+     * @param blob content to be analyzed if filename is ambiguous
+     * @param filename with extension to analyze
+     * @param withBlobMimetypeFallback to consider blob mimetype as fallback or not
+     * @return updated blob (persisted if necessary)
+     * @throws MimetypeDetectionException
+     * @since 8.4
+     */
+    Blob updateMimetype(Blob blob, String filename, Boolean withBlobMimetypeFallback) throws MimetypeDetectionException;
 
     /**
      * Update the mimetype field of a Blob based on the provided filename with fallback to binary sniffing. If the
