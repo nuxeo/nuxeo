@@ -55,36 +55,4 @@ public class ColladaConverter extends BaseBlenderConverter {
         return null;
     }
 
-    @Override
-    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
-        String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
-        Map<String, Integer> lodBlobIndexes = new HashMap<>();
-        List<Integer> resourceIndexes = new ArrayList<>();
-        List<Blob> blobs = new ArrayList<>();
-
-        String lodDir = outDir + File.separatorChar + "convert";
-        List<String> conversions = getConversionLOD(lodDir);
-        conversions.forEach(filename -> {
-            File file = new File(lodDir + File.separatorChar + filename);
-            Blob blob = new FileBlob(file);
-            blob.setFilename(file.getName());
-            if (FilenameUtils.getExtension(filename).toLowerCase().equals("dae")) {
-                String[] filenameArray = filename.split("-");
-                if (filenameArray.length != 4) {
-                    throw new ConversionException(filenameArray + " incompatible with conversion file name schema.");
-                }
-                lodBlobIndexes.put(filenameArray[1], blobs.size());
-            } else {
-                resourceIndexes.add(blobs.size());
-            }
-            blobs.add(blob);
-        });
-
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put("cmdOutput", (Serializable) cmdOutput);
-        properties.put("resourceIndexes", (Serializable) resourceIndexes);
-        properties.put("lodIdIndexes", (Serializable) lodBlobIndexes);
-
-        return new SimpleBlobHolderWithProperties(blobs, properties);
-    }
 }

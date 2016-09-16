@@ -63,21 +63,4 @@ public class RenderConverter extends BaseBlenderConverter implements ExternalCon
         return cmdStringParams;
     }
 
-    @Override
-    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
-        String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
-        List<String> renders = getRenders(outDir + File.separatorChar + "render");
-        if (renders.isEmpty() || renders.size() != 1) {
-            throw new ConversionException("Unable get result render");
-        }
-        File render = new File(outDir + File.separatorChar + renders.get(0));
-        Blob blob = new FileBlob(render);
-        blob.setFilename(render.getName());
-        List<Blob> blobs = new ArrayList<>();
-        blobs.add(blob);
-
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put("cmdOutput", (Serializable) cmdOutput);
-        return new SimpleBlobHolderWithProperties(blobs, properties);
-    }
 }

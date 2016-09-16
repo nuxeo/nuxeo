@@ -26,6 +26,8 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.*;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
@@ -37,11 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
@@ -94,7 +92,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     private String copyScript(Path pathDst, Path source) throws IOException {
         String sourceFile = source.lastSegment();
-        // xxx : find a way to check if the correct version is already there
+        // xxx : find a way to check if the correct version is already there.
         File script = new File(pathDst.append(sourceFile).toString());
         InputStream is = getClass().getResourceAsStream("/" + source.toString());
         FileUtils.copyInputStreamToFile(is, script);
@@ -250,19 +248,74 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
     public List<String> getConversionLOD(String outDir) {
         File directory = new File(outDir);
         String[] files = directory.list((dir, name) -> true);
-        return (files == null) ? null : Arrays.asList(files);
+        return (files == null) ? Collections.emptyList() : Arrays.asList(files);
     }
 
     public List<String> getRenders(String outDir) {
         File directory = new File(outDir);
         String[] files = directory.list((dir, name) -> name.startsWith("render") && name.endsWith(".png"));
-        return (files == null) ? null : Arrays.asList(files);
+        return (files == null) ? Collections.emptyList() : Arrays.asList(files);
     }
 
     public List<String> getInfos(String outDir) {
         File directory = new File(outDir);
         String[] files = directory.list((dir, name) -> name.endsWith(".info"));
-        return (files == null) ? null : Arrays.asList(files);
+        return (files == null) ? Collections.emptyList() : Arrays.asList(files);
     }
 
+    @Override
+    protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
+        String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
+        Map<String, Integer> lodBlobIndexes = new HashMap<>();
+        List<Integer> resourceIndexes = new ArrayList<>();
+        List<Integer> infoIndexes = new ArrayList<>();
+        List<Blob> blobs = new ArrayList<>();
+
+        String lodDir = outDir + File.separatorChar + "convert";
+        List<String> conversions = getConversionLOD(lodDir);
+        conversions.forEach(filename -> {
+            File file = new File(lodDir + File.separatorChar + filename);
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
+            if (FilenameUtils.getExtension(filename).toLowerCase().equals("dae")) {
+                String[] filenameArray = filename.split("-");
+                if (filenameArray.length != 4) {
+                    throw new ConversionException(filenameArray + " incompatible with conversion file name schema.");
+                }
+                lodBlobIndexes.put(filenameArray[1], blobs.size());
+            } else {
+                resourceIndexes.add(blobs.size());
+            }
+            blobs.add(blob);
+        });
+
+        String infoDir = outDir + File.separatorChar + "info";
+        List<String> infos = getInfos(infoDir);
+        infos.forEach(filename -> {
+            File file = new File(infoDir + File.separatorChar + filename);
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
+            infoIndexes.add(blobs.size());
+            blobs.add(blob);
+        });
+
+        String renderDir = outDir + File.separatorChar + "render";
+        List<String> renders = getRenders(renderDir);
+
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put("cmdOutput", (Serializable) cmdOutput);
+        properties.put("resourceIndexes", (Serializable) resourceIndexes);
+        properties.put("infoIndexes", (Serializable) infoIndexes);
+        properties.put("lodIdIndexes", (Serializable) lodBlobIndexes);
+        properties.put("renderStartIndex", blobs.size());
+
+        blobs.addAll(renders.stream().map(result -> {
+            File file = new File(renderDir + File.separatorChar + result);
+            Blob blob = new FileBlob(file);
+            blob.setFilename(file.getName());
+            return blob;
+        }).collect(Collectors.toList()));
+
+        return new SimpleBlobHolderWithProperties(blobs, properties);
+    }
 }

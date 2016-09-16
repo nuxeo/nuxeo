@@ -141,8 +141,8 @@ public class ThreeDConvertersTest {
     public void testRenderConverter() throws Exception {
         BlobHolder result = applyConverter(RENDER_3D_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(1, blobs.size());
-        assertTrue(blobs.get(0).getFilename().contains("render-" + renderId1));
+        assertEquals(2, blobs.size());
+        assertTrue(blobs.get((int) result.getProperty("renderStartIndex")).getFilename().contains("render-" + renderId1));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class ThreeDConvertersTest {
     public void testLODConverter() throws Exception {
         BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(3, blobs.size());
+        assertEquals(7, blobs.size());
         for (Blob blob : blobs) {
             String name = blob.getFilename();
             assertTrue((name.contains("transmissionformat") && name.contains(".dae")) || name.contains(".info"));
@@ -206,7 +206,7 @@ public class ThreeDConvertersTest {
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
-        assertEquals(5, blobs.size());
+        assertEquals(9, blobs.size());
         for (Blob blob : blobs) {
             String name = blob.getFilename();
             assertTrue(name.contains(".info") || name.contains(".dae") || name.contains(".png"));
