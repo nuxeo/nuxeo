@@ -59,6 +59,10 @@ public class ThreeDInfo {
 
     public static final String TEXTURES_MAX_DIMENSION = "textures_max_dimension";
 
+    public static final String GEOMETRY_LOD_SUCCESS = "geometry_lod_success";
+
+    public static final String TEXTURE_LOD_SUCCESS = "texture_lod_success";
+
     public final Long nonManifoldVertices;
 
     public final Long nonManifoldEdges;
@@ -87,6 +91,10 @@ public class ThreeDInfo {
 
     public final String texturesMaxDimension;
 
+    public final Boolean geometryLodSuccess;
+
+    public final Boolean textureLodSuccess;
+
     public ThreeDInfo(Map<String, Serializable> map) {
         nonManifoldVertices = (Long) map.get(NON_MANIFOLD_VERTICES);
         nonManifoldEdges = (Long) map.get(NON_MANIFOLD_EDGES);
@@ -102,6 +110,8 @@ public class ThreeDInfo {
         dimensionZ = (Float) map.get(DIMENSION_Z);
         texturesSize = (Float) map.get(TEXTURES_SIZE);
         texturesMaxDimension = (String) map.get(TEXTURES_MAX_DIMENSION);
+        geometryLodSuccess = (Boolean) map.get(GEOMETRY_LOD_SUCCESS);
+        textureLodSuccess = (Boolean) map.get(TEXTURE_LOD_SUCCESS);
     }
 
     public Map<String, Serializable> toMap() {
@@ -120,7 +130,72 @@ public class ThreeDInfo {
         map.put(DIMENSION_Z, dimensionZ);
         map.put(TEXTURES_SIZE, texturesSize);
         map.put(TEXTURES_MAX_DIMENSION, texturesMaxDimension);
+        map.put(GEOMETRY_LOD_SUCCESS, geometryLodSuccess);
+        map.put(TEXTURE_LOD_SUCCESS, textureLodSuccess);
         return map;
     }
 
+    public Long getNonManifoldVertices() {
+        return nonManifoldVertices;
+    }
+
+    public Long getNonManifoldEdges() {
+        return nonManifoldEdges;
+    }
+
+    public Long getNonManifoldPolygons() {
+        return nonManifoldPolygons;
+    }
+
+    public Long getVertices() {
+        return vertices;
+    }
+
+    public Long getEdges() {
+        return edges;
+    }
+
+    public Long getPolygons() {
+        return polygons;
+    }
+
+    public Float getPositionX() {
+        return positionX;
+    }
+
+    public Float getPositionY() {
+        return positionY;
+    }
+
+    public Float getPositionZ() {
+        return positionZ;
+    }
+
+    public Float getDimensionX() {
+        return dimensionX;
+    }
+
+    public Float getDimensionY() {
+        return dimensionY;
+    }
+
+    public Float getDimensionZ() {
+        return dimensionZ;
+    }
+
+    public Float getTexturesSize() {
+        return texturesSize;
+    }
+
+    public String getTexturesMaxDimension() {
+        return texturesMaxDimension;
+    }
+
+    public Boolean getGeometryLodSuccess() {
+        return geometryLodSuccess;
+    }
+
+    public Boolean getTextureLodSuccess() {
+        return textureLodSuccess;
+    }
 }
