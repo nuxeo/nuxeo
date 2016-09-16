@@ -4683,14 +4683,8 @@
 
       <dependency>
         <groupId>com.marklogic</groupId>
-        <artifactId>java-client-api</artifactId>
-        <version>3.0.5</version>
-        <exclusions>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-          </exclusion>
-        </exclusions>
+        <artifactId>marklogic-xcc</artifactId>
+        <version>8.0.5</version>
       </dependency>
 
       <dependency>
