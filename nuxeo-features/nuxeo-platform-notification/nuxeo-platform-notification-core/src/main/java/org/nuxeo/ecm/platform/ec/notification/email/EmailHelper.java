@@ -71,7 +71,7 @@ import freemarker.template.TemplateException;
  * mail.put(&quot;from&quot;, &quot;dion@almaer.com&quot;);
  * mail.put(&quot;to&quot;, &quot;dion@almaer.com&quot;);
  * mail.put(&quot;subject&quot;, &quot;a subject&quot;);
- * mail.put(&quot;body&quot;, &quot;the body&quot;);
+ * mail.put(&quot;template&quot;, &quot;a template name&quot;);
  * &lt;p&gt;
  * EmailHelper.sendmail(mail);
  * </pre>
