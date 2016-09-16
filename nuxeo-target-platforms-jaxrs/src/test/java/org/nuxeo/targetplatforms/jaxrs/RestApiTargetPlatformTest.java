@@ -20,7 +20,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 
 @RunWith(FeaturesRunner.class)
