@@ -48,7 +48,7 @@ import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 
 public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
 
@@ -56,7 +56,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
     private static final String PREFIX = "googledrive";
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected BlobManager blobManager;
@@ -81,15 +81,9 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         assertTrue(blobProvider.supportsUserUpdate());
 
         // check that we can prevent user updates of blobs by configuration
-        harness.deployContrib("org.nuxeo.ecm.liveconnect.google.drive.core.test",
-            "OSGI-INF/test-googledrive-config2.xml");
-        try {
-            blobProvider = blobManager.getBlobProvider(PREFIX);
-            assertFalse(blobProvider.supportsUserUpdate());
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.liveconnect.google.drive.core.test",
-                "OSGI-INF/test-googledrive-config2.xml");
-        }
+        deployer.deploy("org.nuxeo.ecm.liveconnect.google.drive.core.test:OSGI-INF/test-googledrive-config2.xml");
+        blobProvider = blobManager.getBlobProvider(PREFIX);
+        assertFalse(blobProvider.supportsUserUpdate());
     }
 
     @Test
