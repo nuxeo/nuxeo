@@ -1074,6 +1074,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         ids.add(cursorResult.resultSet.getString(1));
                     } else {
                         cursorResult.close();
+                        if (ids.isEmpty()) {
+                            unregisterCursor(scrollId);
+                        }
                         break;
                     }
                 }

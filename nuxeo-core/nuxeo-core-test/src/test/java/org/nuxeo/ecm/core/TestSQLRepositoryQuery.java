@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -95,11 +96,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
@@ -116,6 +118,9 @@ public class TestSQLRepositoryQuery {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    LogCaptureFeature.Result logCaptureResult;
 
     protected boolean proxies;
 
@@ -3242,6 +3247,22 @@ public class TestSQLRepositoryQuery {
         exception.expectMessage("Unknown or timed out scrollId");
         ret = session.scroll(ret.getScrollId());
         assertFalse(ret.hasResults());
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testScrollApiEmtpy() throws Exception {
+        // do a scroll that return nothing
+        ScrollResult ret = session.scroll("SELECT * FROM File", 10, 1);
+        assertFalse(ret.hasResults());
+        // wait for the scroll timeout
+        Thread.sleep(1100);
+        // A new scroll call will warn about timed out scroll
+        ret = session.scroll("SELECT * FROM File", 10, 1);
+        assertFalse(ret.hasResults());
+        // we expect to have no warn because empty scroll should not maintain any cursor
+        List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+        assertTrue(events.isEmpty());
     }
 
     @Test
