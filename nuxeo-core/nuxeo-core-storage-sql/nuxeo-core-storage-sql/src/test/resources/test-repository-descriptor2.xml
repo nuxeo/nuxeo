@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <repository name="foo">
+  <pool minPoolSize="111" maxPoolSize="222" />
   <clustering enabled="false" />
   <sqlInitFile>file3</sqlInitFile>
   <schema>
