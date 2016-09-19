@@ -34,13 +34,13 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
 import org.nuxeo.ecm.platform.threed.ThreeD;
-import org.nuxeo.ecm.platform.threed.ThreeDInfo;
 import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -73,6 +73,9 @@ public class TestThreeDThumbnail {
     protected CoreSession session;
 
     @Inject
+    protected RuntimeHarness runtimeHarness;
+
+    @Inject
     protected ThreeDService threeDService;
 
     @Inject
@@ -101,8 +104,9 @@ public class TestThreeDThumbnail {
         threed = session.createDocument(threed);
         session.save();
         Blob blob = Blobs.createBlob(getFileFromPath("test-data/suzanne.obj"), "image/gif", null, "suzanne.obj");
-        ThreeDInfo info = null;
-        updateThreeDDocument(threed, new ThreeD(blob, null, info));
+        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
+            "OSGI-INF/threed-service-contrib-override.xml");
+        updateThreeDDocument(threed, new ThreeD(blob, null, null));
         session.saveDocument(threed);
         session.save();
 
@@ -110,5 +114,7 @@ public class TestThreeDThumbnail {
         ThumbnailAdapter pictureThumbnail = threed.getAdapter(ThumbnailAdapter.class);
         Blob pictureUsualThumbnail = (Blob) threed.getPropertyValue(RENDER_VIEWS_PROPERTY + "/0/thumbnail");
         assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
+        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",
+            "OSGI-INF/threed-service-contrib-override.xml");
     }
 }

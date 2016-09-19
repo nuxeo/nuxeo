@@ -71,11 +71,8 @@ import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionP
         "org.nuxeo.ecm.platform.threed.convert" })
 public class TestThreeDRenditions {
 
-    public static final List<String> EXPECTED_ALL_RENDITION_DEFINITION_NAMES = Arrays.asList("isometric", "top", "left",
-            "front", "FullWithinReason", "HalfTextures", "10PercTextures", "50x50Texture", "HalfPolygon");
-
-    public static final List<String> EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES = Arrays.asList("front", "left",
-            "FullWithinReason", "HalfTextures", "10PercTextures", "11", "50x50Texture", "HalfPolygon");
+    public static final List<String> OVERRIDDEN_RENDITION_DEFINITION_NAMES = Arrays.asList("mini_top", "mini_left",
+            "mini_front", "geo_100_tex_100", "geo_100_tex_050", "geo_050_tex_050", "geo_025_tex_025", "not_visible");
 
     public static final List<String> THREED_RENDITION_DEFINITION_KINDS = Arrays.asList(
             THREED_RENDER_VIEW_RENDITION_KIND, THREED_TRANSMISSION_RENDITION_KIND);
@@ -153,31 +150,7 @@ public class TestThreeDRenditions {
             blob.setFilename(TEST_MODEL + ".mtl");
             resources.add(blob);
         }
-        ThreeDInfo info = null;
-        return new ThreeD(main, resources, info);
-    }
-
-    @Test
-    public void shouldExposeAllAutomaticThreeDAsRenditions() throws IOException {
-        ThreeD threeD = getTestThreeD();
-        DocumentModel doc = session.createDocumentModel("/", "threed", "ThreeD");
-        doc = session.createDocument(doc);
-
-        assertEquals(0, getThreeDRenditionDefinitions(doc).size());
-
-        updateThreeDDocument(doc, threeD);
-
-        List<RenditionDefinition> renditionDefinitions = getThreeDRenditionDefinitions(doc);
-        assertEquals(9, renditionDefinitions.size());
-        for (RenditionDefinition definition : renditionDefinitions) {
-            assertTrue(EXPECTED_ALL_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
-        }
-
-        List<Rendition> availableRenditions = getThreeDAvailableRenditions(doc, false);
-        assertEquals(9, availableRenditions.size());
-        // they are all visible
-        availableRenditions = getThreeDAvailableRenditions(doc, true);
-        assertEquals(9, availableRenditions.size());
+        return new ThreeD(main, resources, null);
     }
 
     @Test
@@ -195,12 +168,12 @@ public class TestThreeDRenditions {
         List<RenditionDefinition> renditionDefinitions = getThreeDRenditionDefinitions(doc);
         assertEquals(8, renditionDefinitions.size());
         for (RenditionDefinition definition : renditionDefinitions) {
-            assertTrue(EXPECTED_FILTERED_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
+            assertTrue(OVERRIDDEN_RENDITION_DEFINITION_NAMES.contains(definition.getName()));
         }
 
         List<Rendition> availableRenditions = getThreeDAvailableRenditions(doc, false);
         assertEquals(8, availableRenditions.size());
-        // they are all but one visible
+        // they are all visible but one
         availableRenditions = getThreeDAvailableRenditions(doc, true);
         assertEquals(7, availableRenditions.size());
 
@@ -211,6 +184,8 @@ public class TestThreeDRenditions {
     @Test
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();
+        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
+            "OSGI-INF/threed-service-contrib-override.xml");
         BlobHolder results = threeDService.batchConvert(threeD);
         List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
         List<TransmissionThreeD> transmissions = BatchConverterHelper.getTransmissons(results);
@@ -226,6 +201,8 @@ public class TestThreeDRenditions {
                                          .filter(aLOD -> aLOD.getName().equals(tTD.getName()))
                                          .count());
         }
+        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",
+                "OSGI-INF/threed-service-contrib-override.xml");
     }
 
 }
