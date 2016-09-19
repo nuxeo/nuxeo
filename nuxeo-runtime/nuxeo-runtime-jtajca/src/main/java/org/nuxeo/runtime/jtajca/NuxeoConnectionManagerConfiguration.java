@@ -92,6 +92,7 @@ public class NuxeoConnectionManagerConfiguration {
     /** Copy constructor. */
     public NuxeoConnectionManagerConfiguration(NuxeoConnectionManagerConfiguration other) {
         name = other.name;
+        xaMode = other.xaMode;
         useTransactionCaching = other.useTransactionCaching;
         useThreadCaching = other.useThreadCaching;
         matchOne = other.matchOne;
@@ -110,7 +111,7 @@ public class NuxeoConnectionManagerConfiguration {
         if (other.name != null) {
             name = other.name;
         }
-        if (other.xaMode) {
+        if (other.xaMode != null) {
             xaMode = other.xaMode;
         }
         if (other.useTransactionCaching != null) {

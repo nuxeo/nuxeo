@@ -36,6 +36,7 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 public class TestRepositoryDescriptor {
 
@@ -151,6 +152,14 @@ public class TestRepositoryDescriptor {
         assertEquals(Arrays.asList("file1", "file2", "file3"), desc.sqlInitFiles);
         assertTrue(desc.getPathOptimizationsEnabled());
         assertEquals(2, desc.getPathOptimizationsVersion());
+
+        // pool
+
+        NuxeoConnectionManagerConfiguration pool = desc.pool;
+        assertEquals(111, pool.getMinPoolSize());
+        assertEquals(222, pool.getMaxPoolSize());
+        assertEquals(3, pool.getBlockingTimeoutMillis());
+        assertEquals(4, pool.getIdleTimeoutMinutes());
 
         // schema fields
 
