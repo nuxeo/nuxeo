@@ -196,6 +196,7 @@ public abstract class CommandsTask extends AbstractTask {
                         }
                     }
                     cmd.initialize(element);
+                    cmd.setPackageUpdateService(service);
                     commands.add(cmd);
                 }
                 node = node.getNextSibling();

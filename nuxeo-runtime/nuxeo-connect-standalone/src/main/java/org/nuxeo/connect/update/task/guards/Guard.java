@@ -25,6 +25,7 @@ import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.parser.ParseException;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.connect.update.PackageUpdateService;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -49,6 +50,7 @@ public class Guard {
     public boolean evaluate(final Map<String, Object> map) {
         map.put("Version", new VersionHelper());
         map.put("Platform", new PlatformHelper());
+        map.put("Packages", new PackagesHelper((PackageUpdateService) map.get("packageUpdateService")));
         JexlContext ctx = new JexlContext() {
             @Override
             @SuppressWarnings("rawtypes")

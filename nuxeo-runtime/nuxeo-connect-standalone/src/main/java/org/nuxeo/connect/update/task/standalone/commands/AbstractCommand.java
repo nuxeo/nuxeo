@@ -24,6 +24,7 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
@@ -64,6 +65,11 @@ public abstract class AbstractCommand implements Command {
     public AbstractCommand(AbstractCommand command) {
         this.id = command.id;
         guardVars = command.guardVars;
+    }
+
+    @Override
+    public void setPackageUpdateService(PackageUpdateService packageUpdateService) {
+        guardVars.put("packageUpdateService", packageUpdateService);
     }
 
     @Override
@@ -138,6 +144,10 @@ public abstract class AbstractCommand implements Command {
         v = element.getAttribute("ignore");
         if (v.length() > 0) {
             ignore = v;
+        }
+        v = element.getAttribute("if");
+        if (v.length() > 0) {
+            ignore = String.format("!(%s)", v);
         }
         readFrom(element);
     }

@@ -1,0 +1,6 @@
+<install>
+  <update file="${package.root}/bundles-abc" todir="${env.bundles}"
+      if="Packages.contains('abc')" />
+  <update file="${package.root}/bundles-def" todir="${env.bundles}"
+      if="Packages.contains('def')" />
+</install>
