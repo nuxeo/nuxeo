@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,11 @@ package org.nuxeo.ecm.core.opencmis.impl;
 
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Binder;
+import com.google.inject.Provider;
 
 /**
  * Base feature that starts a CMIS client session.
@@ -38,9 +41,29 @@ public abstract class CmisFeatureSession extends CmisFeatureConfiguration {
 
     protected boolean isBrowser;
 
+    public Session session;
+
+    public class SessionProvider implements Provider<Session> {
+        @Override
+        public Session get() {
+            return session;
+        }
+    }
+
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(CmisFeatureSession.class).toInstance(this);
+        binder.bind(Session.class).toProvider(new SessionProvider());
+        runner.getFeature(RuntimeFeature.class).registerHandler(new ActionHandler() {
+            @Override
+            public void exec(String action, String... args) throws Exception {
+                afterTeardown(runner);
+                Thread.sleep(1000); // otherwise sometimes fails to set up again
+                next.exec(action, args);
+                beforeSetup(runner);
+            }
+
+        });
     }
 
     public abstract Session setUpCmisSession(String repositoryName);

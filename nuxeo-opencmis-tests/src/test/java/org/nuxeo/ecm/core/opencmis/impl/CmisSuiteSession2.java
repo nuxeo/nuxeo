@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,10 +93,10 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * Suite of CMIS tests with minimal setup, checking HTTP headers.
@@ -104,6 +104,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/download-listener-contrib.xml")
 public class CmisSuiteSession2 {
 
     protected static final String USERNAME = "Administrator";
@@ -111,9 +112,6 @@ public class CmisSuiteSession2 {
     protected static final String PASSWORD = "test";
 
     protected static final String BASIC_AUTH = "Basic " + Base64.encodeBytes((USERNAME + ":" + PASSWORD).getBytes());
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -462,7 +460,6 @@ public class CmisSuiteSession2 {
             request.setHeader("Authorization", BASIC_AUTH);
             boolean isHeadRequest = request instanceof HttpHead;
             request.setHeader("Want-Digest", isHeadRequest ? "contentMD5" : "md5");
-            harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/download-listener-contrib.xml");
             DownloadListener.clearMessages();
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 assertEquals(HttpServletResponse.SC_OK, response.getStatusLine().getStatusCode());
@@ -489,8 +486,6 @@ public class CmisSuiteSession2 {
                     assertEquals(Arrays.asList("download:comment=testfile.txt,downloadReason=cmis"), downloadMessages);
                 }
             }
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/download-listener-contrib.xml");
         }
     }
 

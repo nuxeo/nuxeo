@@ -163,8 +163,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -188,7 +190,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public static final String COMPLEX_TITLE = "Is this my/your caf\u00e9?";
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected CoreSession coreSession;
@@ -196,8 +198,22 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Inject
     protected WorkManager workManager;
 
+    @Inject
+    protected RuntimeFeature runtimeFeature;
+
+    protected HotDeployer.ActionHandler deployHandler = new ActionHandler() {
+        @Override
+        public void exec(String action, String... args) throws Exception {
+            tearDownBinding();
+            next.exec(action, args);
+            setUpBinding(coreSession);
+        }
+    };
+
     @Before
     public void setUp() throws Exception {
+        // register a custom deploy action if not already registered
+        runtimeFeature.registerHandler(deployHandler);
         // wait indexing of /default-domain as we need to delete it in setUpData
         waitForIndexing();
         setUpBinding(coreSession);
@@ -209,13 +225,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void tearDown() throws Exception {
         tearDownBinding();
         waitForIndexing();
+        runtimeFeature.unregisterHandler(deployHandler);
     }
 
     public void reSetUp(String username) {
         tearDownBinding();
         setUpBinding(coreSession, username);
     }
-
     // -----
 
     protected String createDocument(String name, String folderId, String typeId) {
@@ -3027,12 +3043,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ContentStream cs = new ContentStreamImpl("test.txt", BigInteger.valueOf(bytes.length), "text/plain", in);
 
         Holder<String> idHolder = new Holder<>(id);
-        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/comment-listener-contrib.xml");
+        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/comment-listener-contrib.xml");
         try {
             CommentListener.clearComments();
             verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
         } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/comment-listener-contrib.xml");
+            deployer.reset();
         }
         List<String> comments = CommentListener.getComments();
         assertEquals(Arrays.asList("documentModified:comment=comment,checkInComment=null",
@@ -3543,7 +3559,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         if (!supportsNXQLQueryTransformers()) {
             // deploy a security policy with a non-trivial query transformer
             // that has no CMISQL equivalent
-            harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/security-policy-contrib.xml");
+            deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib.xml");
             // check that queries now fail
             try {
                 query("SELECT cmis:objectId FROM File");
@@ -3552,8 +3568,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 String msg = e.getMessage();
                 assertTrue(msg, msg.contains("Security policy"));
             } finally {
-                harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                        "OSGI-INF/security-policy-contrib.xml");
+                deployer.reset();
             }
 
             // without it it works again
@@ -3565,15 +3580,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
             // deploy a security policy with a transformer
             String contrib = supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
                     : "OSGI-INF/security-policy-contrib2.xml";
-            harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
-            try {
-                res = query("SELECT cmis:objectId FROM File");
-                assertEquals(2, res.getNumItems().intValue());
-                res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
-                assertEquals(2, res.getNumItems().intValue());
-            } finally {
-                harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", contrib);
-            }
+            deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:"+contrib);
+            res = query("SELECT cmis:objectId FROM File");
+            assertEquals(2, res.getNumItems().intValue());
+            res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
+            assertEquals(2, res.getNumItems().intValue());
         }
     }
 
@@ -3731,17 +3742,13 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testRecoverableException() throws Exception {
         // listener that will cause a RecoverableClientException to be thrown
         // when a doc whose name starts with "throw" is created
-        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/recoverable-exc-listener-contrib.xml");
+        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml");
         try {
             createDocument("throw_foo", rootFolderId, "File");
             fail("should throw RecoverableClientException");
         } catch (CmisRuntimeException e) {
             Throwable cause = e.getCause();
             assertTrue(String.valueOf(cause), cause instanceof RecoverableClientException);
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                    "OSGI-INF/recoverable-exc-listener-contrib.xml");
         }
     }
 

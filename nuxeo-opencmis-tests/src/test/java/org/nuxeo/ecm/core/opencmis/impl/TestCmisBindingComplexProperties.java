@@ -69,7 +69,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
-@Deploy({ "org.nuxeo.ecm.webengine.core", //
+@Deploy({ "org.nuxeo.ecm.webengine.jaxrs", // required by webengine.core (to avoid NPEs at startup)
+        "org.nuxeo.ecm.webengine.core", //
         "org.nuxeo.ecm.automation.core" //
 })
 @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
@@ -164,7 +165,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
             String jsonStr = values.get(i);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(jsonStr);
-            Map<String, Object> propMap = (Map<String, Object>) propList.get(i);
+            Map<String, Object> propMap = propList.get(i);
             assertComplexPropertyNodeEquals(propMap, jsonNode, DateTimeFormat.W3C);
         }
 

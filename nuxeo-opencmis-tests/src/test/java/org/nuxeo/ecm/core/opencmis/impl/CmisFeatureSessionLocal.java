@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,19 +27,16 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.apache.chemistry.opencmis.server.shared.TempStoreOutputStreamFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.CoreScope;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 
 /**
  * Feature that starts an CMIS local session.
@@ -50,20 +47,10 @@ public class CmisFeatureSessionLocal extends CmisFeatureSession {
 
     private static final int MAX_SIZE = -1;
 
-    public Session session;
-
-    public class SessionProvider implements Provider<Session> {
-        @Override
-        public Session get() {
-            return session;
-        }
-    }
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         super.configure(runner, binder);
-        Provider<Session> sessionProvider = new SessionProvider();
-        binder.bind(Session.class).toProvider(sessionProvider).in(CoreScope.INSTANCE);
         setLocal();
     }
 

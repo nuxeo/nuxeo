@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,8 +122,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -133,7 +133,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
-@Deploy({ "org.nuxeo.ecm.webengine.core" })
+//required for JsonFactoryManager service used indirectly in #testComplexProperties by NuxeoPropertyData.convertComplexPropertyToCMIS
+@Deploy({"org.nuxeo.ecm.webengine.core"})
 @LocalDeploy({ //
         "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml", //
         "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml", //
@@ -159,7 +160,7 @@ public class CmisSuiteSession {
     public static final String NOT_NULL = "CONSTRAINT_NOT_NULL";
 
     @Inject
-    protected RuntimeHarness harness;
+    protected HotDeployer deployer;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -278,7 +279,7 @@ public class CmisSuiteSession {
         List<Ace> addAces = null;
         List<Ace> removeAces = null;
         OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "Note");
         properties.put(PropertyIds.NAME, "mynote");
         properties.put("note", "bla bla");
@@ -312,7 +313,7 @@ public class CmisSuiteSession {
         List<Policy> policies = null;
         List<Ace> addAces = null;
         List<Ace> removeAces = null;
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "myfile");
         Document doc = root.createDocument(properties, cs, versioningState, policies, addAces, removeAces, context);
@@ -334,7 +335,7 @@ public class CmisSuiteSession {
         List<Policy> policies = null;
         List<Ace> addAces = null;
         List<Ace> removeAces = null;
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
         properties.put(PropertyIds.NAME, "myfile");
         Document doc = root.createDocument(properties, null, versioningState, policies, addAces, removeAces, context);
@@ -374,7 +375,7 @@ public class CmisSuiteSession {
         String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
 
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "Relation");
         properties.put(PropertyIds.NAME, "rel");
         properties.put(PropertyIds.SOURCE_ID, id1);
@@ -406,7 +407,7 @@ public class CmisSuiteSession {
         String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
 
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "HiddenRelation");
         properties.put(PropertyIds.NAME, "rel");
         properties.put(PropertyIds.SOURCE_ID, id1);
@@ -431,7 +432,7 @@ public class CmisSuiteSession {
         Document doc;
 
         doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("dc:title", "new title");
         map.put("dc:subjects", Arrays.asList("a", "b", "c"));
         doc.updateProperties(map);
@@ -944,7 +945,7 @@ public class CmisSuiteSession {
         ((Document) ob).checkIn(true, null, null, "comment");
         ((Document) ob).checkOut();
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         map.put("dc:title", "new title");
         map.put("dc:subjects", Arrays.asList("a", "b", "c"));
         ob.updateProperties(map);
@@ -961,7 +962,7 @@ public class CmisSuiteSession {
         // test deleteObject
         ob = session.getObjectByPath("/testfolder1/testfile2");
 
-        map = new HashMap<String, Object>();
+        map = new HashMap<>();
         map.put("dc:title", "new title");
         map.put("dc:subjects", Arrays.asList("a", "b", "c"));
         ob.updateProperties(map);
@@ -986,7 +987,7 @@ public class CmisSuiteSession {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
 
         // check in with data
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put("dc:title", "newtitle");
         byte[] bytes = "foo-bar".getBytes("UTF-8");
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
@@ -1027,12 +1028,9 @@ public class CmisSuiteSession {
             return;
         }
 
-        cmisFeatureSession.tearDownCmisSession();
-        Thread.sleep(1000); // otherwise sometimes fails to set up again
         // deploy the LastModifiedServiceWrapper
-        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/test-servicefactorymanager-contrib.xml");
-        session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
+        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-servicefactorymanager-contrib.xml");
+        //session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
         Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
         Calendar lastModifiedCalendar = doc.getPropertyValue("dc:modified");
@@ -1046,7 +1044,7 @@ public class CmisSuiteSession {
         String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
         DefaultHttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(uri);
-        HttpResponse response = null;
+        HttpResponse response;
         request.setHeader("Authorization", "Basic " + encoding);
         try {
             response = client.execute(request);
@@ -1077,14 +1075,14 @@ public class CmisSuiteSession {
     }
 
     protected static Set<String> set(String... strings) {
-        return new HashSet<String>(Arrays.asList(strings));
+        return new HashSet<>(Arrays.asList(strings));
     }
 
     /** Get ACL, using * suffix on username to denote non-direct. */
     protected static Map<String, Set<String>> getActualAcl(Acl acl) {
         Map<String, Set<String>> actual = new HashMap<>();
         for (Ace ace : acl.getAces()) {
-            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"), new HashSet<String>(ace.getPermissions()));
+            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"), new HashSet<>(ace.getPermissions()));
         }
         return actual;
     }
@@ -1243,13 +1241,9 @@ public class CmisSuiteSession {
 
     @Test
     public void testRecoverableException() throws Exception {
-        cmisFeatureSession.tearDownCmisSession();
-        Thread.sleep(1000); // otherwise sometimes fails to set up again
         // listener that will cause a RecoverableClientException to be thrown
         // when a doc whose name starts with "throw" is created
-        harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/recoverable-exc-listener-contrib.xml");
-        session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
+        deployer.deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/recoverable-exc-listener-contrib.xml");
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
@@ -1299,7 +1293,7 @@ public class CmisSuiteSession {
         properties.put(PropertyIds.OBJECT_TYPE_ID, "ComplexFile");
         properties.put(PropertyIds.NAME, "complexfile");
         Document doc;
-        List<String> docIds = new ArrayList<String>();
+        List<String> docIds = new ArrayList<>();
 
         // date as long timestamp
         inputMap.put("dateProp", dateAsLong);
@@ -1320,7 +1314,7 @@ public class CmisSuiteSession {
         expectedMap.put("dateProp", isBrowser ? dateAsLong : dateAsString);
         expectedMap.put("boolProp", null);
         expectedMap.put("enumProp", null);
-        expectedMap.put("arrayProp", new ArrayList<String>(0));
+        expectedMap.put("arrayProp", new ArrayList<>(0));
         expectedMap.put("intProp", null);
         expectedMap.put("floatProp", null);
 
@@ -1352,7 +1346,7 @@ public class CmisSuiteSession {
     private Session createBrowserCmisSession(String repositoryName, URI serverURI) {
 
         SessionFactory sf = SessionFactoryImpl.newInstance();
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         params.put(SessionParameter.AUTHENTICATION_PROVIDER_CLASS, CmisBindingFactory.STANDARD_AUTHENTICATION_PROVIDER);
 

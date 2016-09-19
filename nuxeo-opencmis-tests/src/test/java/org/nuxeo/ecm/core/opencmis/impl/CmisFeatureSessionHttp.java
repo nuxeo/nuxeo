@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.inject.Binder;
-
 /**
  * Feature that starts an embedded server configured for CMIS.
  * <p>
@@ -97,19 +95,11 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
     public URI serverURI;
 
-    public Session session;
-
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
         String repositoryName = runner.getFeature(CoreFeature.class).getRepositoryName();
         setUpServer();
         setUpCmisSession(repositoryName);
-    }
-
-    @Override
-    public void configure(FeaturesRunner runner, Binder binder) {
-        super.configure(runner, binder);
-        binder.bind(Session.class).toInstance(session);
     }
 
     @Override
