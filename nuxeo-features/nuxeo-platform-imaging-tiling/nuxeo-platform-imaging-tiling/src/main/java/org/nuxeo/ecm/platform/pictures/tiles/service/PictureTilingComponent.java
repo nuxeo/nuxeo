@@ -134,8 +134,8 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
             dir.mkdir();
         }
         path = dir.getAbsolutePath();
-        if (!path.endsWith("/")) {
-            path += "/";
+        if (!path.endsWith(File.separator)) {
+            path += File.separator;
         }
         return path;
     }
@@ -148,7 +148,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     protected String getWorkingDirPathForRessource(ImageResource resource) {
         String pathForBlob = getWorkingDirPath();
         String digest = resource.getHash();
-        pathForBlob = pathForBlob + digest + "/";
+        pathForBlob = pathForBlob + digest + File.separator;
         log.debug("WorkingDirPath for resource=" + pathForBlob);
         File wdir = new File(pathForBlob);
         if (!wdir.exists()) {
