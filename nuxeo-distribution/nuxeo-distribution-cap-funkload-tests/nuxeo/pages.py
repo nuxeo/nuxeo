@@ -46,6 +46,7 @@ from urllib import quote_plus, quote
 from webunit.utility import Upload
 from utils import extractToken, extractJsfState, extractIframes, extractJsessionId
 from funkload.utils import Data
+import urlparse
 
 
 def getTabParams(tab, subtab=None, category=''):
@@ -97,13 +98,16 @@ class BasePage:
 
     def login(self, user, password):
         fl = self.fl
+        redirect = ''
+        if ("requestedUrl" in fl.getLastUrl()):
+            redirect = quote(urlparse.parse_qs(fl.getLastUrl())['requestedUrl'][0])
         fl.setHeader('Accept-Language', 'en')
         fl.post(fl.server_url + "/nxstartup.faces", params=[
             ['language', 'en_US'],
             ['user_name', user],
             ['user_password', password],
             ['form_submitted_marker', ''],
-            ['requestedUrl', ''],
+            ['requestedUrl', redirect],
             ['Submit', 'Connexion']],
             description="Login " + user)
         fl.assert_('loginFailed=true' not in fl.getLastUrl(),
@@ -227,10 +231,9 @@ class BasePage:
             fl.assert_('createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation' in fl.getBody(),
                    'Wrong user creation page')
 
-	
         fl.post(fl.server_url + "/view_admin.faces", params=[
-		['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation','true'],
-		['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
+                ['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation','true'],
+                ['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation:1'],
                     ['AJAX:EVENTS_COUNT', '1'],
                     ['createUserView:createUser', 'createUserView:createUser'],
                     ['createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation', 'true'],
@@ -245,7 +248,7 @@ class BasePage:
                     ['javax.faces.partial.ajax', 'true']],
                 description="Set immediate user creation")
 
-	# The assert is removed because the body contains now the Ajax
+        # The assert is removed because the body contains now the Ajax
         # response and not the body of the page so the assert will
         # always fail:
         #fl.assert_('createUser:button_save_and_create' in
