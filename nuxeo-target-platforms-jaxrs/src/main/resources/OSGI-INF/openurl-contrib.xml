@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
              point="openUrl">
     <openUrl name="Connect_TargetPlatform">
-      <grantPattern>${org.nuxeo.ecm.contextPath}/api/v1/target-platforms/public</grantPattern>
+      <grantPattern>.*/restAPI/target-platforms$</grantPattern>
     </openUrl>
   </extension>
 </component>

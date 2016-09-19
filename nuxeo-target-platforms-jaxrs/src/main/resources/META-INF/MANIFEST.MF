@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo Target Platforms JAXRS
 Bundle-SymbolicName: org.nuxeo.targetplatforms.jaxrs;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Vendor: Nuxeo
-Fragment-Host: org.nuxeo.ecm.platform.restapi.server
+Require-Bundle: org.nuxeo.ecm.platform.ui
 Nuxeo-WebModule: org.nuxeo.targetplatforms.jaxrs.Application
-Nuxeo-Component: OSGI-INF/openurl-contrib.xml
+Nuxeo-Component: OSGI-INF/openurl-contrib.xml,
+ OSGI-INF/servlet-contrib.xml

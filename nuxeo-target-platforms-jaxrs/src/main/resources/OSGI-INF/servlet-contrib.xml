@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.targetplatforms.restAPI.contrib">
+  <extension target="org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService"
+             point="restlets">
+
+    <documentation>
+      GET /nuxeo/restAPI/target-platforms
+    </documentation>
+
+    <restletPlugin
+        name="target-platforms"
+        class="org.nuxeo.ecm.restapi.server.jaxrs.targetplatforms.TargetPlatformsRestlet"
+        enabled="true"
+        useSeam="false">
+      <urlPatterns>
+        <urlPattern>/target-platforms</urlPattern>
+      </urlPatterns>
+    </restletPlugin>
+  </extension>
+</component>
