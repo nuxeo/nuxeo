@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -92,6 +93,40 @@ import com.google.inject.Provider;
 @LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 public class CoreFeature extends SimpleFeature {
 
+    public class WorksWaiter implements Waiter {
+        @Override
+        public boolean await(long deadline) throws InterruptedException {
+            final WorkManager mgr = Framework.getService(WorkManager.class);
+            if (mgr.awaitCompletion(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
+                return true;
+            }
+            logInfos(mgr);
+            return false;
+        }
+
+        protected void logInfos(final WorkManager mgr) {
+            String message = "Timed out while waiting for works";
+            StringBuffer bf = new StringBuffer();
+            bf.append(message + " ");
+            Iterator<String> ids = mgr.getWorkQueueIds().iterator();
+            while (ids.hasNext()) {
+                bf.append(System.lineSeparator());
+                String queueid = ids.next();
+                bf.append(mgr.getMetrics(queueid).toString());
+                bf.append(",works=");
+                Iterator<String> works = mgr.listWorkIds(queueid, null).iterator();
+                while (works.hasNext()) {
+                    bf.append(works.next());
+                    if (works.hasNext()) {
+                        bf.append(",");
+                    }
+                }
+            }
+            LogFactory.getLog(CoreFeature.class).error(bf.toString(), new Throwable("stack trace"));
+        }
+
+    }
+
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
     protected StorageConfiguration storageConfiguration;
@@ -115,15 +150,7 @@ public class CoreFeature extends SimpleFeature {
     public void initialize(FeaturesRunner runner) {
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
-        txFeature.addWaiter(new Waiter() {
-
-            @Override
-            public boolean await(long deadline) throws InterruptedException {
-                return Framework.getService(WorkManager.class)
-                        .awaitCompletion(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-            }
-
-        });
+        txFeature.addWaiter(new WorksWaiter());
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
         if (repositoryConfig == null) {
