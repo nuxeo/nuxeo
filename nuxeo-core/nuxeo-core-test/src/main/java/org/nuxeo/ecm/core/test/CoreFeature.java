@@ -96,33 +96,33 @@ public class CoreFeature extends SimpleFeature {
     public class WorksWaiter implements Waiter {
         @Override
         public boolean await(long deadline) throws InterruptedException {
-            final WorkManager mgr = Framework.getService(WorkManager.class);
-            if (mgr.awaitCompletion(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
+            WorkManager workManager = Framework.getService(WorkManager.class);
+            if (workManager.awaitCompletion(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
                 return true;
             }
-            logInfos(mgr);
+            logInfos(workManager);
             return false;
         }
 
-        protected void logInfos(final WorkManager mgr) {
-            String message = "Timed out while waiting for works";
-            StringBuffer bf = new StringBuffer();
-            bf.append(message + " ");
-            Iterator<String> ids = mgr.getWorkQueueIds().iterator();
-            while (ids.hasNext()) {
-                bf.append(System.lineSeparator());
-                String queueid = ids.next();
-                bf.append(mgr.getMetrics(queueid).toString());
-                bf.append(",works=");
-                Iterator<String> works = mgr.listWorkIds(queueid, null).iterator();
+        protected void logInfos(WorkManager workManager) {
+            StringBuilder sb = new StringBuilder()
+                    .append("Timed out while waiting for works")
+                    .append(" ");
+            Iterator<String> queueids = workManager.getWorkQueueIds().iterator();
+            while (queueids.hasNext()) {
+                sb.append(System.lineSeparator());
+                String queueid = queueids.next();
+                sb.append(workManager.getMetrics(queueid));
+                sb.append(",works=");
+                Iterator<String> works = workManager.listWorkIds(queueid, null).iterator();
                 while (works.hasNext()) {
-                    bf.append(works.next());
+                    sb.append(works.next());
                     if (works.hasNext()) {
-                        bf.append(",");
+                        sb.append(",");
                     }
                 }
             }
-            LogFactory.getLog(CoreFeature.class).error(bf.toString(), new Throwable("stack trace"));
+            log.error(sb.toString(), new Throwable("stack trace"));
         }
 
     }
