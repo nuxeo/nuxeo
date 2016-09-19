@@ -23,6 +23,7 @@
       <artifact:file key="org.nuxeo.utils:nuxeo-target-platforms-io" />
       <artifact:file key="org.nuxeo.utils:nuxeo-target-platforms-jaxrs" />
       <artifact:file key="org.nuxeo.utils:nuxeo-target-platforms-jsf" />
+      <artifact:file key="org.nuxeo.utils:nuxeo-target-platforms-compat" />
     </copy>
 
     <zip destfile="${maven.project.build.directory}/${maven.project.artifactId}-${maven.project.version}.zip"
