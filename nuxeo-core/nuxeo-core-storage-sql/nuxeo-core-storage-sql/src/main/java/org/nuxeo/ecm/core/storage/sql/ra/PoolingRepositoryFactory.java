@@ -41,7 +41,12 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
         ManagedConnectionFactoryImpl managedConnectionFactory = new ManagedConnectionFactoryImpl();
         managedConnectionFactory.setName(descriptor.name);
         try {
-            ConnectionManager connectionManager = lookupConnectionManager(descriptor.pool);
+            NuxeoConnectionManagerConfiguration pool = descriptor.pool;
+            if (pool == null) {
+                pool = new NuxeoConnectionManagerConfiguration();
+                pool.setName("repository/" + repositoryName);
+            }
+            ConnectionManager connectionManager = lookupConnectionManager(pool);
             return managedConnectionFactory.createConnectionFactory(connectionManager);
         } catch (NamingException | ResourceException e) {
             throw new RuntimeException(e);

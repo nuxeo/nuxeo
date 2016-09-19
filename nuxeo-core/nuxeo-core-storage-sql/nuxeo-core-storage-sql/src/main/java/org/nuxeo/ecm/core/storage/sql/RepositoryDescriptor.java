@@ -32,7 +32,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 /**
  * Low-level VCS Repository Descriptor.
  */
-@XObject(value = "repository")
+@XObject(value = "repository", order = { "@name" })
 public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
@@ -140,7 +140,6 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public void setName(String name) {
         this.name = name;
-        pool.setName("repository/" + name);
     }
 
     @XNode("@label")
@@ -158,7 +157,7 @@ public class RepositoryDescriptor {
     @XNode("repository")
     public RepositoryDescriptor repositoryDescriptor;
 
-    public NuxeoConnectionManagerConfiguration pool = new NuxeoConnectionManagerConfiguration();
+    public NuxeoConnectionManagerConfiguration pool;
 
     @XNode("pool")
     public void setPool(NuxeoConnectionManagerConfiguration pool) {
@@ -434,7 +433,11 @@ public class RepositoryDescriptor {
             isDefault = other.isDefault;
         }
         if (other.pool != null) {
-            pool = new NuxeoConnectionManagerConfiguration(other.pool);
+            if (pool == null) {
+                pool = new NuxeoConnectionManagerConfiguration(other.pool);
+            } else {
+                pool.merge(other.pool);
+            }
         }
         if (other.backendClass != null) {
             backendClass = other.backendClass;
