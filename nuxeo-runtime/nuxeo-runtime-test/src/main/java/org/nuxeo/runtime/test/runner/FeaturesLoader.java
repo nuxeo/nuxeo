@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.runners.model.TestClass;
-
 import com.google.inject.Binder;
 import com.google.inject.Module;
 
@@ -127,8 +126,12 @@ class FeaturesLoader {
                 callable.call(each);
             } catch (AssumptionViolatedException cause) {
                 throw cause;
-            } catch (Exception cause) {
+            } catch (Throwable cause) {
                 errors.addSuppressed(cause);
+                if (cause instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError("Interrupted on invoke features", errors);
+                }
             }
         }
         if (errors.getSuppressed().length > 0) {
