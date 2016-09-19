@@ -44,32 +44,35 @@ public class TransmissionFormatItem {
 
     protected final String blobPropertyName;
 
-    protected final String percPolyPropertyName;
-
-    protected final String maxPolyPropertyName;
-
     protected String filename;
 
     protected Long percPoly;
 
     protected Long maxPoly;
 
+    protected Long percTex;
+
+    protected Long maxTex;
+
     protected Long size;
 
     protected ThreeDInfo info;
+
+    protected String name;
 
     public TransmissionFormatItem(DocumentModel doc, String basePropertyPath, int position) {
         this.doc = doc;
         this.position = position;
         String propertyPath = basePropertyPath + "/" + position;
         blobPropertyName = propertyPath + "/content";
-        percPolyPropertyName = propertyPath + "/percPoly";
-        maxPolyPropertyName = propertyPath + "/maxPoly";
         try {
             Blob blob = (Blob) doc.getPropertyValue(blobPropertyName);
             filename = blob.getFilename();
-            percPoly = (Long) doc.getPropertyValue(percPolyPropertyName);
-            maxPoly = (Long) doc.getPropertyValue(maxPolyPropertyName);
+            percPoly = (Long) doc.getPropertyValue(propertyPath + "/percPoly");
+            maxPoly = (Long) doc.getPropertyValue(propertyPath + "/maxPoly");
+            percTex = (Long) doc.getPropertyValue(propertyPath + "/percPoly");
+            maxTex = (Long) doc.getPropertyValue(propertyPath + "/maxPoly");
+            name = (String) doc.getPropertyValue(propertyPath + "/name");
             info = new ThreeDInfo((Map<String, Serializable>) doc.getPropertyValue(propertyPath + "/info"));
             size = blob.getLength();
         } catch (PropertyException e) {
@@ -82,11 +85,19 @@ public class TransmissionFormatItem {
     }
 
     public String getPercPoly() {
-        return (percPoly == null) ? "-" : percPoly.toString();
+        return (percPoly == null) ? null : percPoly.toString();
     }
 
     public String getMaxPoly() {
-        return (maxPoly == null) ? "-" : maxPoly.toString();
+        return (maxPoly == null) ? null : maxPoly.toString();
+    }
+
+    public String getPercTex() {
+        return (percTex == null) ? null : percTex.toString();
+    }
+
+    public String getMaxTex() {
+        return (maxTex == null) ? null : maxTex.toString();
     }
 
     public String getSize() {
@@ -95,6 +106,28 @@ public class TransmissionFormatItem {
 
     public ThreeDInfo getInfo() {
         return info;
+    }
+
+    public String getPolygons() {
+        Long polygons = info.getPolygons();
+        return (polygons == null) ? "-" : polygons.toString();
+    }
+
+    public String getTextureSize() {
+        Float texturesSize = info.getTexturesSize();
+        return (texturesSize == null) ? "-" : texturesSize.toString();
+    }
+
+    public Boolean getGeometryLodSuccess() {
+        return info.getGeometryLodSuccess();
+    }
+
+    public Boolean getTextureLodSuccess() {
+        return info.getTextureLodSuccess();
+    }
+
+    public String getName() {
+        return name;
     }
 
 }

@@ -12,9 +12,9 @@
     <link rel="import" href="#{baseURL}platform-3d/nuxeo-3d-viewer.html"></link>
 
     <style type="text/css">
-        #viewer {
+        #threed-simple-viewer {
             width: 100%;
-            height: 640px;
+            height: 40vh;
         }
     </style>
     <nxu:set var="isConverting" value="#{transmissionFormatActions.isConvertingFormats(fieldOrValue)}"/>
@@ -28,7 +28,7 @@
         </c:when>
         <c:otherwise>
             <nuxeo-3d-viewer src="#{transmissionFormatActions.getItems(fieldOrValue)[0].src}"
-                             id="3d-simple-viewer"/>
+                             id="threed-simple-viewer"/>
         </c:otherwise>
     </c:choose>
 

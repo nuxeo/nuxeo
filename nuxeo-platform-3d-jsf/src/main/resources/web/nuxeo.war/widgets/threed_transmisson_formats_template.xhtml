@@ -5,7 +5,12 @@
      class="content_block">
 
     <c:if test="#{fieldOrValue.hasFacet('ThreeD')}">
-
+        <style type="text/css">
+            #tf-icon {
+                height: 16px;
+                color: #eee;
+            }
+        </style>
         <c:if test="#{!empty widget.label and widget.handlingLabels}">
             <ui:include src="/widgets/incl/widget_label_template.xhtml">
                 <ui:param name="labelStyleClass" value="summaryTitle"/>
@@ -27,16 +32,47 @@
                     <c:forEach var="item" items="#{transmissionFormatActions.getItems(fieldOrValue)}"
                                varStatus="status">
                         <tr class="transmissionFormatRow">
-                            <td class="labelColumn">
-                                <c:if test="#{status.index == 0}">
-                                    #{messages['label.widget.threed.level_of_detail']}
+                            <td class="lodColumn">
+                                <strong>#{item.name}</strong>
+                            </td>
+                            <td class="lodColumn">
+                                <h:graphicImage class="tf-icon" url="/icons/ic_details_black_24px.svg"/>
+                                <c:if test="#{!empty item.percPoly}">
+                                    #{item.percPoly} %
                                 </c:if>
+                                <c:if test="#{!empty item.maxPoly and !empty item.percPoly}">
+                                    |
+                                </c:if>
+                                <c:if test="#{!empty item.maxPoly}">
+                                    &lt; #{item.maxPoly}
+                                </c:if>
+                                <c:if test="#{!item.textureLodSuccess}">
+                                    <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                                </c:if>
+                                <c:if test="#{item.textureLodSuccess}">
+                                <c:if test="#{item.textureLodSuccess}">
+                                    <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                                </c:if>
+                                #{item.polygons}
                             </td>
                             <td class="lodColumn">
-                                #{messages['label.widget.threed.polygon_count']}: #{item.percLod} %
-                            </td>
-                            <td class="lodColumn">
-                                #{messages['label.widget.threed.max_polygon']}: #{item.maxPoly}
+                                <h:graphicImage class="tf-icon" url="/icons/ic_image_black_24px.svg"/>
+                                <c:if test="#{!empty item.percTex}">
+                                    #{item.percTex} %
+                                </c:if>
+                                <c:if test="#{!empty item.maxTex and !empty item.percTex}">
+                                    |
+                                </c:if>
+                                <c:if test="#{!empty item.maxTex}">
+                                    &lt; #{item.maxTex}
+                                </c:if>
+                                <c:if test="#{!item.textureLodSuccess}">
+                                    <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                                </c:if>
+                                <c:if test="#{item.textureLodSuccess}">
+                                    <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                                </c:if>
+                                #{item.textureSize}
                             </td>
                             <td class="actionsColumn">
                                 <h:outputLink value="javascript:NX3D.show3DFormat('#{item.src}')">

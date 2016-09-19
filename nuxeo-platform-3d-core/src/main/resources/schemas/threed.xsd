@@ -7,7 +7,7 @@
 
     <xs:element name="transmissionFormats" type="nxs:transmissionFormatItems"/>
     <xs:element name="renderViews" type="nxs:renderViewsItems"/>
-    <xs:element name="info" type="nxs:info"/>
+    <xs:element name="info" type="nxs:infoThreeD"/>
 
     <xs:complexType name="transmissionFormatItems">
         <xs:sequence>
@@ -24,7 +24,7 @@
             <xs:element name="percTex" type="xs:integer"/>
             <xs:element name="maxTex" type="xs:string"/>
             <xs:element name="content" type="nxs:content"/>
-            <xs:element name="info" type="nxs:info"/>
+            <xs:element name="info" type="nxs:infoThreeD"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -44,7 +44,7 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="info">
+    <xs:complexType name="infoThreeD">
         <xs:sequence>
             <xs:element name="non_manifold_vertices" type="xs:long"/>
             <xs:element name="non_manifold_edges" type="xs:long"/>
