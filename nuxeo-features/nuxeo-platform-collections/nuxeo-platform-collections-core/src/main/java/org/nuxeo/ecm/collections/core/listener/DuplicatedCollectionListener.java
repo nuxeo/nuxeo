@@ -25,7 +25,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
@@ -82,14 +84,54 @@ public class DuplicatedCollectionListener implements EventListener {
 
             collectionManager.processCopiedCollection(doc);
 
-        } else if (collectionManager.isCollected(doc)) {
-            doc.getAdapter(CollectionMember.class).setCollectionIds(null);
-            if (doc.isVersion()) {
-                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
-            }
-            ctx.getCoreSession().saveDocument(doc);
-            doc.removeFacet(CollectionConstants.COLLECTABLE_FACET);
         }
+
+        if (collectionManager.isCollected(doc)) {
+            processCopiedMember(doc, ctx.getCoreSession());
+        }
+
+        if (doc.isFolder()) {
+            // We just copied a folder, maybe among the descendants there are collections that have been copied too
+            // proceed to the deep collection copy
+            int offset = 0;
+            DocumentModelList deepCopiedCollections;
+            do {
+                deepCopiedCollections = ctx.getCoreSession().query(
+                        "SELECT * FROM Collection WHERE ecm:path STARTSWITH '" + doc.getPathAsString() + "'", null,
+                        CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
+                offset += deepCopiedCollections.size();
+                for (DocumentModel deepCopiedCollection : deepCopiedCollections) {
+                    collectionManager.processCopiedCollection(deepCopiedCollection);
+                }
+            } while (deepCopiedCollections.size() >= CollectionAsynchrnonousQuery.MAX_RESULT);
+
+            // Maybe among the descendants there are collection members that have been copied too
+            // Let's make sure they don't belong to their original document's collections
+            offset = 0;
+            DocumentModelList deepCopiedMembers;
+            do {
+                deepCopiedMembers = ctx.getCoreSession()
+                                       .query("SELECT * FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:path STARTSWITH '"
+                                               + doc.getPathAsString() + "'", null,
+                                               CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
+                offset += deepCopiedMembers.size();
+                for (DocumentModel deepCopiedMember : deepCopiedMembers) {
+                    processCopiedMember(deepCopiedMember, ctx.getCoreSession());
+                }
+            } while (deepCopiedMembers.size() >= CollectionAsynchrnonousQuery.MAX_RESULT);
+        }
+    }
+
+    /**
+     * @since 8.4
+     */
+    private void processCopiedMember(DocumentModel doc, CoreSession session) {
+        doc.getAdapter(CollectionMember.class).setCollectionIds(null);
+        if (doc.isVersion()) {
+            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
+        session.saveDocument(doc);
+        doc.removeFacet(CollectionConstants.COLLECTABLE_FACET);
     }
 
 }
