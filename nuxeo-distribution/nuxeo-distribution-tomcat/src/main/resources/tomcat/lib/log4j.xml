@@ -314,6 +314,10 @@
     <priority value="INFO" />
   </category>
 
+  <category name="org.elasticsearch.bootstrap">
+    <priority value="ERROR" />
+  </category>
+
   <!-- Uncomment to debug SQL statements -->
   <!--
   <category name="org.nuxeo.ecm.core.storage.sql.jdbc">
