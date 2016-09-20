@@ -7,4 +7,4 @@ Bundle-Vendor: Nuxeo
 Require-Bundle: org.nuxeo.ecm.platform.ui
 Nuxeo-WebModule: org.nuxeo.targetplatforms.jaxrs.Application
 Nuxeo-Component: OSGI-INF/openurl-contrib.xml,
- OSGI-INF/servlet-contrib.xml
+ OSGI-INF/restlet-contrib.xml
