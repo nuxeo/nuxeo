@@ -138,7 +138,9 @@ public class Helper {
         String digest;
         try {
             thumbnailBlob = Blobs.createBlob(Helper.class.getResource("/text.png").openStream(), "image/png");
-            digest = DigestUtils.md5Hex(thumbnailBlob.getStream());
+            try (InputStream stream = thumbnailBlob.getStream()) {
+            	digest = DigestUtils.md5Hex(stream);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
