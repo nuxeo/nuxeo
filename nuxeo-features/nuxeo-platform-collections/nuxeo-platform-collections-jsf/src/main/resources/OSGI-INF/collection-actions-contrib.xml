@@ -86,6 +86,10 @@
       <filter-id>can_zip_export</filter-id>
     </action>
 
+    <action id="TAB_VIEW">
+      <filter-id>denyForCollection</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -145,6 +149,12 @@
     <filter id="can_zip_export" append="true" >
       <rule grant="false">
         <type>Collections</type>
+        <type>Collection</type>
+      </rule>
+    </filter>
+
+    <filter id="denyForCollection">
+      <rule grant="false">
         <type>Collection</type>
       </rule>
     </filter>
