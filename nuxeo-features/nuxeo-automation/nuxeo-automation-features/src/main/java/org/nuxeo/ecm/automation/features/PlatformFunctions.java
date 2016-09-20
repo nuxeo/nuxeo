@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Ricardo Dias
+ *     Estelle Giuly
  */
 package org.nuxeo.ecm.automation.features;
 
@@ -26,12 +27,13 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -51,6 +53,8 @@ public class PlatformFunctions extends CoreFunctions {
 
     private volatile DirectoryService dirService;
 
+    private static final Log log = LogFactory.getLog(PlatformFunctions.class);
+
     private volatile UserManager userMgr;
 
     public UserManager getUserManager() {
@@ -69,6 +73,10 @@ public class PlatformFunctions extends CoreFunctions {
 
     public String getVocabularyLabel(String voc, String key) {
         try (Session session = getDirService().open(voc)) {
+            if (!session.hasEntry(key)) {
+                log.debug("Unable to find the key '" + key + "' in the vocabulary '" + voc + "'.");
+                return key;
+            }
             DocumentModel doc = session.getEntry(key);
             // TODO: which is the best method to get "label" property when not
             // knowing vocabulary schema?
