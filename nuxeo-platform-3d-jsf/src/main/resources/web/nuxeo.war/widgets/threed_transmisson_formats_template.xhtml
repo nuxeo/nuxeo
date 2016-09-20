@@ -90,7 +90,7 @@
                 <h:outputScript target="#{pageJsTarget}">
                     NX3D = {
                         show3DFormat: function (src) {
-                            document.getElementById('3d-simple-viewer').setAttribute('src', src);
+                            document.querySelector('nuxeo-3d-viewer').setAttribute('src', src);
                         }
                     }
                 </h:outputScript>

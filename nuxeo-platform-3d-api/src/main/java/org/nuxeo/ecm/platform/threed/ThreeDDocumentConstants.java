@@ -31,4 +31,6 @@ public class ThreeDDocumentConstants {
 
     public static final String RENDER_VIEWS_PROPERTY = THREED_SCHEMA_NAME + ":renderViews";
 
+    public static final String MAIN_INFO_PROPERTY = THREED_SCHEMA_NAME + ":info";
+
 }

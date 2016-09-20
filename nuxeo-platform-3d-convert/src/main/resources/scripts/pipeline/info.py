@@ -44,16 +44,16 @@ for obj in bpy.context.scene.objects:
             'non_manifold_vertices': len(selected_vertices),
             'non_manifold_edges': len(selected_edges),
             'non_manifold_polygons': len(selected_polygons),
-            'total_vertices': len(bm.verts),
-            'total_edges': len(bm.edges),
-            'total_polygons': len(bm.faces),
+            'vertices': len(bm.verts),
+            'edges': len(bm.edges),
+            'polygons': len(bm.faces),
             'position_x': mesh_info['cen'].x,
             'position_y': mesh_info['cen'].y,
             'position_z': mesh_info['cen'].z,
             'dimension_x': mesh_info['dim'].x,
             'dimension_y': mesh_info['dim'].y,
             'dimension_z': mesh_info['dim'].z,
-            'lod_success': lod_success
+            'geometry_lod_success': lod_success
         }
         non_manifold_vertices += len(selected_vertices)
         non_manifold_edges += len(selected_edges)
@@ -75,16 +75,16 @@ info['global'] = {
     'non_manifold_vertices': non_manifold_vertices,
     'non_manifold_edges': non_manifold_edges,
     'non_manifold_polygons': non_manifold_polygons,
-    'total_vertices': total_vertices,
-    'total_edges': total_edges,
-    'total_polygons': total_polygons,
+    'vertices': total_vertices,
+    'edges': total_edges,
+    'polygons': total_polygons,
     'position_x': bb_min[0] + ((bb_max[0] - bb_min[0]) * 0.5),
     'position_y': bb_min[1] + ((bb_max[1] - bb_min[1]) * 0.5),
     'position_z': bb_min[2] + ((bb_max[2] - bb_min[2]) * 0.5),
     'dimension_x': bb_max[0] - bb_min[0],
     'dimension_y': bb_max[1] - bb_min[1],
     'dimension_z': bb_max[2] - bb_min[2],
-    'lod_success': global_lod_success
+    'geometry_lod_success': global_lod_success
 }
 
 if lod_id == 'default':

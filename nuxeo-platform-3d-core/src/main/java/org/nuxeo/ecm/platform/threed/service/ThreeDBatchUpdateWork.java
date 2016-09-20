@@ -29,11 +29,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
-import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
-import org.nuxeo.ecm.platform.threed.ThreeD;
-import org.nuxeo.ecm.platform.threed.ThreeDDocument;
-import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
-import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.ecm.platform.threed.*;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.Serializable;
@@ -43,6 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.MAIN_INFO_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
 
@@ -123,8 +120,24 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
             }
         }
 
+        setStatus("Saving 3D information on main content");
+        List<BlobHolder> resources = BatchConverterHelper.getResources(batch);
+        ThreeDInfo mainInfo = BatchConverterHelper.getMainInfo(batch, resources);
+        if (mainInfo != null) {
+            try {
+                startTransaction();
+                openSystemSession();
+                DocumentModel doc = session.getDocument(new IdRef(docId));
+                saveMainInfo(doc, mainInfo);
+                commitOrRollbackTransaction();
+            } finally {
+                cleanUp(true, null);
+            }
+        }
+
         setStatus("Converting Collada to glTF");
-        List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissons(batch);
+
+        List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissions(batch, resources);
         List<TransmissionThreeD> transmissionThreeDs = colladaThreeDs.stream()
                                                                      .map(service::convertColladaToglTF)
                                                                      .collect(Collectors.toList());
@@ -148,26 +161,31 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         return threed;
     }
 
-    protected void saveNewProperties(DocumentModel doc, List<Map<String, Serializable>> properties, String schema) {
-        doc.setPropertyValue(schema, (Serializable) properties);
+    protected void saveNewProperties(DocumentModel doc, Serializable properties, String schema) {
+        doc.setPropertyValue(schema, properties);
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
         session.saveDocument(doc);
     }
 
+    protected void saveMainInfo(DocumentModel doc, ThreeDInfo info) {
+        saveNewProperties(doc, (Serializable) info.toMap(), MAIN_INFO_PROPERTY);
+
+    }
+
     protected void saveNewTransmissionThreeDs(DocumentModel doc, List<TransmissionThreeD> transmissionThreeDs) {
         List<Map<String, Serializable>> transmissionList = new ArrayList<>();
         transmissionList.addAll(
                 transmissionThreeDs.stream().map(TransmissionThreeD::toMap).collect(Collectors.toList()));
-        saveNewProperties(doc, transmissionList, TRANSMISSIONS_PROPERTY);
+        saveNewProperties(doc, (Serializable) transmissionList, TRANSMISSIONS_PROPERTY);
     }
 
     protected void saveNewRenderViews(DocumentModel doc, List<ThreeDRenderView> threeDRenderViews) {
         List<Map<String, Serializable>> renderViewList = new ArrayList<>();
         renderViewList.addAll(threeDRenderViews.stream().map(ThreeDRenderView::toMap).collect(Collectors.toList()));
 
-        saveNewProperties(doc, renderViewList, RENDER_VIEWS_PROPERTY);
+        saveNewProperties(doc, (Serializable) renderViewList, RENDER_VIEWS_PROPERTY);
     }
 
     /**

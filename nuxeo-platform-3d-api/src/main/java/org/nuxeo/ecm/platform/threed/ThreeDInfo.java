@@ -51,9 +51,9 @@ public class ThreeDInfo {
 
     public static final String DIMENSION_X = "dimension_x";
 
-    public static final String DIMENSION_Y = "dimension_x";
+    public static final String DIMENSION_Y = "dimension_y";
 
-    public static final String DIMENSION_Z = "dimension_x";
+    public static final String DIMENSION_Z = "dimension_z";
 
     public static final String TEXTURES_SIZE = "textures_size";
 
@@ -75,19 +75,19 @@ public class ThreeDInfo {
 
     public final Long polygons;
 
-    public final Float positionX;
+    public final Double positionX;
 
-    public final Float positionY;
+    public final Double positionY;
 
-    public final Float positionZ;
+    public final Double positionZ;
 
-    public final Float dimensionX;
+    public final Double dimensionX;
 
-    public final Float dimensionY;
+    public final Double dimensionY;
 
-    public final Float dimensionZ;
+    public final Double dimensionZ;
 
-    public final Float texturesSize;
+    public final Long texturesSize;
 
     public final String texturesMaxDimension;
 
@@ -102,13 +102,13 @@ public class ThreeDInfo {
         vertices = (Long) map.get(VERTICES);
         edges = (Long) map.get(EDGES);
         polygons = (Long) map.get(POLYGONS);
-        positionX = (Float) map.get(POSITION_X);
-        positionY = (Float) map.get(POSITION_Y);
-        positionZ = (Float) map.get(POSITION_Z);
-        dimensionX = (Float) map.get(DIMENSION_X);
-        dimensionY = (Float) map.get(DIMENSION_Y);
-        dimensionZ = (Float) map.get(DIMENSION_Z);
-        texturesSize = (Float) map.get(TEXTURES_SIZE);
+        positionX = (Double) map.get(POSITION_X);
+        positionY = (Double) map.get(POSITION_Y);
+        positionZ = (Double) map.get(POSITION_Z);
+        dimensionX = (Double) map.get(DIMENSION_X);
+        dimensionY = (Double) map.get(DIMENSION_Y);
+        dimensionZ = (Double) map.get(DIMENSION_Z);
+        texturesSize = (Long) map.get(TEXTURES_SIZE);
         texturesMaxDimension = (String) map.get(TEXTURES_MAX_DIMENSION);
         geometryLodSuccess = (Boolean) map.get(GEOMETRY_LOD_SUCCESS);
         textureLodSuccess = (Boolean) map.get(TEXTURE_LOD_SUCCESS);
@@ -124,7 +124,7 @@ public class ThreeDInfo {
         map.put(POLYGONS, polygons);
         map.put(POSITION_X, positionX);
         map.put(POSITION_Y, positionY);
-        map.put(POSITION_Z, POSITION_Z);
+        map.put(POSITION_Z, positionZ);
         map.put(DIMENSION_X, dimensionX);
         map.put(DIMENSION_Y, dimensionY);
         map.put(DIMENSION_Z, dimensionZ);
@@ -159,31 +159,31 @@ public class ThreeDInfo {
         return polygons;
     }
 
-    public Float getPositionX() {
+    public Double getPositionX() {
         return positionX;
     }
 
-    public Float getPositionY() {
+    public Double getPositionY() {
         return positionY;
     }
 
-    public Float getPositionZ() {
+    public Double getPositionZ() {
         return positionZ;
     }
 
-    public Float getDimensionX() {
+    public Double getDimensionX() {
         return dimensionX;
     }
 
-    public Float getDimensionY() {
+    public Double getDimensionY() {
         return dimensionY;
     }
 
-    public Float getDimensionZ() {
+    public Double getDimensionZ() {
         return dimensionZ;
     }
 
-    public Float getTexturesSize() {
+    public Long getTexturesSize() {
         return texturesSize;
     }
 

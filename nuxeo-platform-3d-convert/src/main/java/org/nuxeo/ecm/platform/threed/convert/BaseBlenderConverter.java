@@ -268,7 +268,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         String outDir = cmdParams.getParameter(OUT_DIR_PARAMETER);
         Map<String, Integer> lodBlobIndexes = new HashMap<>();
         List<Integer> resourceIndexes = new ArrayList<>();
-        List<Integer> infoIndexes = new ArrayList<>();
+        Map<String, Integer> infoIndexes = new HashMap<>();
         List<Blob> blobs = new ArrayList<>();
 
         String lodDir = outDir + File.separatorChar + "convert";
@@ -295,8 +295,11 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             File file = new File(infoDir + File.separatorChar + filename);
             Blob blob = new FileBlob(file);
             blob.setFilename(file.getName());
-            infoIndexes.add(blobs.size());
-            blobs.add(blob);
+            if (FilenameUtils.getExtension(filename).toLowerCase().equals("info")) {
+                String lodId = FilenameUtils.getBaseName(filename);
+                infoIndexes.put(lodId, blobs.size());
+                blobs.add(blob);
+            }
         });
 
         String renderDir = outDir + File.separatorChar + "render";

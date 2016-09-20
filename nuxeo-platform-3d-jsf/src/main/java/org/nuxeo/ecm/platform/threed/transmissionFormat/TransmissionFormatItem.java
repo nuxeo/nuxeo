@@ -114,7 +114,7 @@ public class TransmissionFormatItem {
     }
 
     public String getTextureSize() {
-        Float texturesSize = info.getTexturesSize();
+        Long texturesSize = info.getTexturesSize();
         return (texturesSize == null) ? "-" : texturesSize.toString();
     }
 

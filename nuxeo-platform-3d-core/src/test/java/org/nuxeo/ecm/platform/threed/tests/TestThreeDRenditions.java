@@ -103,7 +103,8 @@ public class TestThreeDRenditions {
         BlobHolder results = threeDService.batchConvert(threeD);
 
         List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(results);
-        List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissons(results);
+        List<BlobHolder> resources = BatchConverterHelper.getResources(results);
+        List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissions(results, resources);
         List<TransmissionThreeD> transmissionThreeDs = colladaThreeDs.stream()
                                                                      .map(threeDService::convertColladaToglTF)
                                                                      .collect(Collectors.toList());
@@ -185,10 +186,11 @@ public class TestThreeDRenditions {
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();
         runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
-            "OSGI-INF/threed-service-contrib-override.xml");
+                "OSGI-INF/threed-service-contrib-override.xml");
         BlobHolder results = threeDService.batchConvert(threeD);
         List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
-        List<TransmissionThreeD> transmissions = BatchConverterHelper.getTransmissons(results);
+        List<BlobHolder> resources = BatchConverterHelper.getResources(results);
+        List<TransmissionThreeD> transmissions = BatchConverterHelper.getTransmissions(results, resources);
         for (ThreeDRenderView rV : renderviews) {
             assertEquals(1, threeDService.getAutomaticRenderViews()
                                          .stream()

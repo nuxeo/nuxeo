@@ -47,7 +47,7 @@ print('[LOD] [%.2f to %.2f]' % (prev_lod, next_lod))
 for ob in bpy.context.scene.objects:
     if ob.type == 'MESH':
         verts_non_manif = info_default['parts'][ob.name]['non_manifold_vertices']
-        verts_total = info_default['parts'][ob.name]['total_vertices']
+        verts_total = info_default['parts'][ob.name]['vertices']
         perc_non_manif = verts_non_manif / verts_total
         ob.select = True
         mod = ob.modifiers.new(name='decimate', type='DECIMATE')

@@ -252,9 +252,9 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
             blobs.addAll(colladaThreeD.getResources());
         }
         BlobHolder result = cs.convert(COLLADA2GLTF_CONVERTER, new SimpleBlobHolder(blobs), parameters);
-        return new TransmissionThreeD(result.getBlobs().get(0), null, null, colladaThreeD.getPercPoly(),
-                colladaThreeD.getMaxPoly(), colladaThreeD.getPercTex(), colladaThreeD.getMaxTex(),
-                colladaThreeD.getName());
+        return new TransmissionThreeD(result.getBlobs().get(0), null, colladaThreeD.getInfo(),
+                colladaThreeD.getPercPoly(), colladaThreeD.getMaxPoly(), colladaThreeD.getPercTex(),
+                colladaThreeD.getMaxTex(), colladaThreeD.getName());
     }
 
     @Override

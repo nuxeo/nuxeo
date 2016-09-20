@@ -52,13 +52,13 @@
             <xs:element name="vertices" type="xs:long"/>
             <xs:element name="edges" type="xs:long"/>
             <xs:element name="polygons" type="xs:long"/>
-            <xs:element name="position_x" type="xs:float"/>
-            <xs:element name="position_y" type="xs:float"/>
-            <xs:element name="position_z" type="xs:float"/>
-            <xs:element name="dimension_x" type="xs:float"/>
-            <xs:element name="dimension_y" type="xs:float"/>
-            <xs:element name="dimension_z" type="xs:float"/>
-            <xs:element name="textures_size" type="xs:float"/>
+            <xs:element name="position_x" type="xs:double"/>
+            <xs:element name="position_y" type="xs:double"/>
+            <xs:element name="position_z" type="xs:double"/>
+            <xs:element name="dimension_x" type="xs:double"/>
+            <xs:element name="dimension_y" type="xs:double"/>
+            <xs:element name="dimension_z" type="xs:double"/>
+            <xs:element name="textures_size" type="xs:long"/>
             <xs:element name="textures_max_dimension" type="xs:string"/>
             <xs:element name="geometry_lod_success" type="xs:boolean"/>
             <xs:element name="texture_lod_success" type="xs:boolean"/>
