@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Julien Carsique
  *     Mathieu Guillaume
+ *     Yannis JULIENNE
  *
  */
 
@@ -1201,6 +1202,18 @@ public class ConnectBroker {
      */
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove, boolean keepExisting, boolean ignoreMissing) {
+        // default is install mode
+        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, keepExisting, ignoreMissing, false);
+    }
+
+    /**
+     * @param keepExisting If false, the request will remove existing packages that are not part of the resolution
+     * @param ignoreMissing Do not error out on missing packages, just handle the rest
+     * @param upgradeMode If true, all packages will be upgraded to their last compliant version
+     * @since TODO
+     */
+    public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
+            List<String> pkgsToRemove, boolean keepExisting, boolean ignoreMissing, boolean upgradeMode) {
         try {
             boolean cmdOk = true;
             // Add local files
@@ -1226,30 +1239,11 @@ public class ConnectBroker {
                         namesOrIdsToInstall.add(pkgToInstall);
                     }
                 }
-                // Check whether we have new installs or upgrades
-                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
-                for (String pkgToInstall : namesOrIdsToInstall) {
-                    DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
-                    if (pkg != null) {
-                        // This is a known ID
-                        if (isInstalledPackage(pkg.getName())) {
-                            // The package is installed
-                            solverUpgrade.add(pkgToInstall);
-                        } else {
-                            // The package isn't installed yet
-                            solverInstall.add(pkgToInstall);
-                        }
-                    } else {
-                        // This is a name (or a non-existing ID)
-                        String id = getInstalledPackageIdFromName(pkgToInstall);
-                        if (id != null) {
-                            // The package is installed
-                            solverUpgrade.add(pkgToInstall);
-                        } else {
-                            // The package isn't installed yet
-                            solverInstall.add(pkgToInstall);
-                        }
-                    }
+
+                if (upgradeMode) {
+                    solverUpgrade.addAll(namesOrIdsToInstall);
+                } else {
+                    solverInstall.addAll(namesOrIdsToInstall);
                 }
             }
             if (pkgsToUninstall != null) {
@@ -1454,14 +1448,14 @@ public class ConnectBroker {
     }
 
     protected boolean pkgUpgradeByType(PackageType type) {
-        List<DownloadablePackage> upgrades = NuxeoConnectClient.getPackageManager().listUpdatePackages(type,
-                targetPlatform);
-        List<String> upgradeIds = new ArrayList<>();
+        List<DownloadablePackage> upgrades = NuxeoConnectClient.getPackageManager().listInstalledPackages();
+        List<String> upgradeNames = new ArrayList<>();
         for (DownloadablePackage upgrade : upgrades) {
-            upgradeIds.add(upgrade.getId());
+            if (upgrade.getType() == type) {
+                upgradeNames.add(upgrade.getName());
+            }
         }
-        return pkgRequest(null, upgradeIds, null, null, true, false);
-
+        return pkgRequest(null, upgradeNames, null, null, true, false, true);
     }
 
     public boolean pkgHotfix() {
