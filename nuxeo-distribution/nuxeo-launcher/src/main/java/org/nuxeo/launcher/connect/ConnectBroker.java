@@ -475,8 +475,8 @@ public class ConnectBroker {
     protected void performTask(Task task) throws PackageException {
         ValidationStatus validationStatus = task.validate();
         if (validationStatus.hasErrors()) {
-            throw new PackageException("Failed to validate package " + task.getPackage().getId() + " -> "
-                    + validationStatus.getErrors());
+            throw new PackageException(
+                    "Failed to validate package " + task.getPackage().getId() + " -> " + validationStatus.getErrors());
         }
         if (validationStatus.hasWarnings()) {
             log.warn("Got warnings on package validation " + task.getPackage().getId() + " -> "
@@ -488,8 +488,9 @@ public class ConnectBroker {
     public boolean pkgReset() {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_RESET);
         if ("ask".equalsIgnoreCase(accept)) {
-            accept = readConsole("The reset will erase the Nuxeo Packages history.\n"
-                    + "Do you want to continue (yes/no)? [yes] ", "yes");
+            accept = readConsole(
+                    "The reset will erase the Nuxeo Packages history.\n" + "Do you want to continue (yes/no)? [yes] ",
+                    "yes");
         }
         if (!Boolean.parseBoolean(accept)) {
             cmdInfo.exitCode = 1;
@@ -768,7 +769,8 @@ public class ConnectBroker {
                         return null;
                     } else {
                         throw new PackageException("Could not find a remote or local (relative to "
-                                + "current directory or to NUXEO_HOME) " + "package with name or ID " + packageFileName);
+                                + "current directory or to NUXEO_HOME) " + "package with name or ID "
+                                + packageFileName);
                     }
                 } else if (!downloadPackages(Arrays.asList(new String[] { pkgId }))) {
                     throw new PackageException("Could not download package " + pkgId);
@@ -1225,8 +1227,7 @@ public class ConnectBroker {
                     }
                 }
                 // Check whether we have new installs or upgrades
-                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager()
-                                                                                     .getAllPackagesByID();
+                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
                 for (String pkgToInstall : namesOrIdsToInstall) {
                     DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
                     if (pkg != null) {
@@ -1281,9 +1282,10 @@ public class ConnectBroker {
                 if (nonCompliantPkg.size() > 0) {
                     requestPlatform = null;
                     if ("ask".equalsIgnoreCase(relax)) {
-                        relax = readConsole("Package %s not available on platform version %s.\n"
-                                + "Do you want to relax the constraint (yes/no)? [no] ", "no",
-                                StringUtils.join(nonCompliantPkg, ", "), targetPlatform);
+                        relax = readConsole(
+                                "Package %s not available on platform version %s.\n"
+                                        + "Do you want to relax the constraint (yes/no)? [no] ",
+                                "no", StringUtils.join(nonCompliantPkg, ", "), targetPlatform);
                     }
 
                     if (Boolean.parseBoolean(relax)) {
