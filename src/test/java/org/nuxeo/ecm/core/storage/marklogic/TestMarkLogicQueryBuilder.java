@@ -80,7 +80,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-ecm-path.xml", query.getHandle().toString());
     }
 
@@ -108,7 +108,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/starts-with-operator-on-ecm-path.xml", query.getHandle()
                                                                                                  .toString());
     }
@@ -124,7 +124,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/starts-with-operator-on-path.xml", query.getHandle().toString());
     }
 
@@ -138,7 +138,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-boolean.xml", query.getHandle().toString());
     }
 
@@ -152,7 +152,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -167,7 +167,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -182,7 +182,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/noteq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -197,7 +197,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/noteq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -211,7 +211,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/lt-operator.xml", query.getHandle().toString());
     }
 
@@ -228,7 +228,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/between-operator.xml", query.getHandle().toString());
     }
 
@@ -241,7 +241,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/like-operator.xml", query.getHandle().toString());
     }
 
@@ -254,7 +254,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/ilike-operator.xml", query.getHandle().toString());
     }
 
@@ -270,7 +270,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/in-operator.xml", query.getHandle().toString());
     }
 
@@ -286,7 +286,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/not-in-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -300,7 +300,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/is-null-operator.xml", query.getHandle().toString());
     }
 
@@ -315,7 +315,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/not-operator.xml", query.getHandle().toString());
     }
 
@@ -333,7 +333,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/not-operator-on-composition.xml", query.getHandle().toString());
     }
 
@@ -348,7 +348,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/wildcard-reference.xml", query.getHandle().toString());
     }
 
@@ -364,7 +364,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/correlated-wildcard-reference.xml", query.getHandle().toString());
     }
 
@@ -379,7 +379,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/correlated-wildcard-reference-on-array.xml", query.getHandle()
                                                                                                        .toString());
     }
@@ -400,7 +400,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/acp-reference.xml", query.getHandle().toString());
     }
 
@@ -415,7 +415,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 new String[] { "Everyone", "bob" }, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/query-with-principals.xml", query.getHandle().toString());
     }
 
@@ -441,7 +441,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildQuery();
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator, null, false).buildCTSQuery();
         assertXMLFileAgainstString("query-expression/core-feature.xml", query.getHandle().toString());
     }
 

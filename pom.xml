@@ -59,7 +59,7 @@
 
     <dependency>
       <groupId>com.marklogic</groupId>
-      <artifactId>java-client-api</artifactId>
+      <artifactId>marklogic-xcc</artifactId>
     </dependency>
 
     <!-- temporary, for BinaryManager -->

@@ -71,13 +71,6 @@ import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 import org.nuxeo.runtime.api.Framework;
 
-import com.marklogic.client.io.StringHandle;
-import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.RawQueryDefinition;
-import com.marklogic.client.query.RawStructuredQueryDefinition;
-import com.marklogic.client.query.StructuredQueryBuilder;
-import com.marklogic.client.query.StructuredQueryDefinition;
-
 /**
  * Query builder for a MarkLogic query from an {@link Expression}.
  *
@@ -101,10 +94,6 @@ class MarkLogicQueryBuilder {
     /** Splits foo/*1/bar into foo/*1, bar with the last bar part optional */
     protected final static Pattern WILDCARD_SPLIT = Pattern.compile("(.*/\\*\\d+)(?:/(.*))?");
 
-    private final QueryManager queryManager;
-
-    private final StructuredQueryBuilder sqb;
-
     private final Expression expression;
 
     private final SelectClause selectClause;
@@ -121,11 +110,9 @@ class MarkLogicQueryBuilder {
 
     private Boolean projectionHasWildcard;
 
-    public MarkLogicQueryBuilder(QueryManager queryManager, DBSExpressionEvaluator evaluator,
+    public MarkLogicQueryBuilder(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments) {
         this.schemaManager = Framework.getLocalService(SchemaManager.class);
-        this.queryManager = queryManager;
-        this.sqb = queryManager.newStructuredQueryBuilder();
         this.expression = evaluator.getExpression();
         this.selectClause = evaluator.getSelectClause();
         this.orderByClause = orderByClause;
@@ -158,7 +145,7 @@ class MarkLogicQueryBuilder {
         return projectionHasWildcard;
     }
 
-    public RawQueryDefinition buildQuery() {
+    public String buildCTSQuery() {
         Expression expression = this.expression;
         if (principals != null) {
             // Add principals to expression

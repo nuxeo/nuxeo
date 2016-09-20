@@ -36,7 +36,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -47,16 +46,13 @@ import javax.resource.spi.ConnectionManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -64,19 +60,6 @@ import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 
-import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.DatabaseClientFactory;
-import com.marklogic.client.DatabaseClientFactory.Authentication;
-import com.marklogic.client.FailedRequestException;
-import com.marklogic.client.ResourceNotFoundException;
-import com.marklogic.client.admin.ServerConfigurationManager;
-import com.marklogic.client.admin.ServerConfigurationManager.UpdatePolicy;
-import com.marklogic.client.document.DocumentDescriptor;
-import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
-import com.marklogic.client.document.DocumentPage;
-import com.marklogic.client.document.DocumentRecord;
-import com.marklogic.client.document.XMLDocumentManager;
-import com.marklogic.client.query.RawQueryDefinition;
 import com.marklogic.xcc.AdhocQuery;
 import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentFactory;
@@ -102,13 +85,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     protected static final String NOSCROLL_ID = "noscroll";
 
-    protected DatabaseClient markLogicClient;
-
     protected ContentSource xccContentSource;
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
-        markLogicClient = newMarkLogicClient(descriptor);
         xccContentSource = newMarkLogicContentSource(descriptor);
         initRepository();
     }
@@ -116,28 +96,6 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public List<IdType> getAllowedIdTypes() {
         return Collections.singletonList(IdType.varchar);
-    }
-
-    @Override
-    public void shutdown() {
-        super.shutdown();
-        markLogicClient.release();
-    }
-
-    // used also by unit tests
-    public static DatabaseClient newMarkLogicClient(MarkLogicRepositoryDescriptor descriptor) {
-        String host = descriptor.host;
-        Integer port = descriptor.port;
-        if (StringUtils.isBlank(host) || port == null) {
-            throw new NuxeoException("Missing <host> or <port> in MarkLogic repository descriptor");
-        }
-        String dbname = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
-        String user = descriptor.user;
-        String password = descriptor.password;
-        if (StringUtils.isNotBlank(user) && StringUtils.isNotBlank(password)) {
-            return DatabaseClientFactory.newClient(host, port, dbname, user, password, Authentication.DIGEST);
-        }
-        return DatabaseClientFactory.newClient(host, port, dbname);
     }
 
     // used also by unit tests
@@ -150,17 +108,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         String dbname = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
         String user = descriptor.user;
         String password = descriptor.password;
-        return ContentSourceFactory.newContentSource(host, port + 10, user, password, dbname);
+        return ContentSourceFactory.newContentSource(host, port, user, password, dbname);
     }
 
     protected void initRepository() {
-        // Activate Optimistic Locking
-        // https://docs.marklogic.com/guide/java/transactions#id_81051
-        ServerConfigurationManager configMgr = markLogicClient.newServerConfigManager();
-        configMgr.readConfiguration();
-        configMgr.setUpdatePolicy(UpdatePolicy.VERSION_OPTIONAL);
-        // write the server configuration to the database
-        configMgr.writeConfiguration();
         if (readState(getRootId()) == null) {
             initRoot();
         }
@@ -348,9 +299,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(), evaluator,
-                orderByClause, distinctDocuments);
-        RawQueryDefinition query = builder.buildQuery();
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, orderByClause, distinctDocuments);
+        String ctsQuery = builder.buildCTSQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
         boolean manualProjection = builder.doManualProjection();
@@ -359,15 +309,22 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             // so we need the full state from the database
             evaluator.parse();
         }
+        if (limit == 0) {
+            limit = 50;
+        }
+        String query = ctsQuery + "[" + (offset * limit + 1) + " to " + ((offset + 1) * limit) + "]";
         if (log.isTraceEnabled()) {
             logQuery(query, limit, offset);
         }
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        docManager.setPageLength(limit == 0 ? 50 : limit);
-        try (DocumentPage page = docManager.search(query, offset)) {
-            List<Map<String, Serializable>> projections = new ArrayList<>((int) page.size());
-            for (DocumentRecord record : page) {
-                State state = record.getContent(new StateHandle()).get();
+        // Run query
+        try (Session session = xccContentSource.newSession()) {
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+
+            List<Map<String, Serializable>> projections = new ArrayList<>(limit);
+            for (String rsItem : rs.asStrings()) {
+                State state = MarkLogicStateDeserializer.deserialize(rsItem);
                 if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
@@ -380,7 +337,11 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 if (limit == 0) {
                     totalSize = projections.size();
                 } else {
-                    totalSize = page.getTotalSize();
+                    // TODO update that, cts query is not enough to get count
+                    AdhocQuery countRequest = session.newAdhocQuery(ctsQuery);
+                    // ResultSequence will be closed by Session close
+                    ResultSequence countRs = session.submitRequest(countRequest);
+                    totalSize = Long.parseLong(countRs.asStrings()[0]);
                 }
             } else if (countUpTo == 0) {
                 // no count
@@ -390,7 +351,11 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 if (limit == 0) {
                     totalSize = projections.size();
                 } else {
-                    totalSize = page.getTotalSize();
+                    // TODO update that - does count up to make sense ?
+                    AdhocQuery countRequest = session.newAdhocQuery(ctsQuery);
+                    // ResultSequence will be closed by Session close
+                    ResultSequence countRs = session.submitRequest(countRequest);
+                    totalSize = Long.parseLong(countRs.asStrings()[0]);
                 }
                 if (totalSize > countUpTo) {
                     totalSize = -2; // truncated
@@ -401,31 +366,29 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 log.trace("MarkLogic:    -> " + projections.size());
             }
             return new PartialList<>(projections, totalSize);
-        } catch (FailedRequestException fre) {
-            throw new QueryParseException("Request was rejected by server", fre);
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
         }
     }
 
     @Override
     public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
         // Not yet implemented, return all result in one shot for now
-        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(), evaluator,
-                null, false);
-        RawQueryDefinition query = builder.buildQuery();
-        final int pageSize = 200;
-        List<String> ids = new ArrayList<>(pageSize);
-        if (log.isTraceEnabled()) {
-            logQuery(query, 0, 0);
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, null, false);
+        String query = builder.buildCTSQuery();
+        // Run query
+        try (Session session = xccContentSource.newSession()) {
+            AdhocQuery request = session.newAdhocQuery(query);
+            // ResultSequence will be closed by Session close
+            ResultSequence rs = session.submitRequest(request);
+            return Arrays.stream(rs.asStrings())
+                         .map(MarkLogicStateDeserializer::deserialize)
+                         .map(state -> state.get(KEY_ID).toString())
+                         .collect(Collectors.collectingAndThen(Collectors.toList(),
+                                 ids -> new ScrollResultImpl(NOSCROLL_ID, ids)));
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
         }
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        docManager.setPageLength(pageSize);
-        try (DocumentPage page = docManager.search(query, 0)) {
-            for (DocumentRecord record : page) {
-                State state = record.getContent(new StateHandle()).get();
-                ids.add(state.get(KEY_ID).toString());
-            }
-        }
-        return new ScrollResultImpl(NOSCROLL_ID, ids);
     }
 
     @Override
@@ -457,89 +420,53 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        // Here we use Optimistic Locking to set the lock
-        // https://docs.marklogic.com/guide/java/transactions#id_81051
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        DocumentDescriptor descriptor = docManager.newDescriptor(ID_FORMATTER.apply(id));
-        // TODO test performance : retrieve document with read or search document with extract
-        // TODO retrieve only some field
-        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
-        try {
-            if (log.isTraceEnabled()) {
-                log.trace("MarkLogic: READ " + id);
-            }
-            State state = docManager.read(descriptor, new StateHandle()).get();
-            Optional<Lock> oldLock = extractLock(state);
-            if (oldLock.isPresent()) {
-                // Lock owner already set
-                return oldLock.get();
-            }
-            // Set the lock
-            PatchHandle patch = new MarkLogicLockUpdateBuilder(docManager::newPatchBuilder).set(lock);
-            if (log.isTraceEnabled()) {
-                log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
-            }
-            docManager.patch(descriptor, patch);
-            // doc is now locked
-            return null;
-        } catch (ResourceNotFoundException e) {
-            // Document not found
-            throw new DocumentNotFoundException(id, e);
-        } catch (FailedRequestException e) {
-            // There was a race condition - another lock was set
-            return extractLock(readState(id)).orElseThrow(() -> new ConcurrentUpdateException("Lock " + id));
+        State state = new State();
+        state.put(KEY_LOCK_OWNER, lock.getOwner());
+        state.put(KEY_LOCK_CREATED, lock.getCreated());
+        String lockString = MarkLogicStateSerializer.serialize(state);
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: SETLOCK " + id + ": " + lockString);
         }
+        try (Session session = xccContentSource.newSession()) {
+            ModuleInvoke request = session.newModuleInvoke("/ext/set-lock.xqy");
+            request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
+            request.setNewStringVariable("lock-string", lockString);
+            // ResultSequence will be closed by Session close
+            ResultSequence result = session.submitRequest(request);
+            State resultState = MarkLogicStateDeserializer.deserialize(result.asString());
+            return extractLock(resultState);
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
+        }
+        // TODO check how the concurrent exception is raised
     }
 
     @Override
     public Lock removeLock(String id, String owner) {
-        // Here we use Optimistic Locking to set the lock
-        // https://docs.marklogic.com/guide/java/transactions#id_81051
-        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        DocumentDescriptor descriptor = docManager.newDescriptor(ID_FORMATTER.apply(id));
-        // TODO test performance : retrieve document with read or search document with extract
-        // TODO retrieve only some field
-        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
-        try {
-            if (log.isTraceEnabled()) {
-                log.trace("MarkLogic: READ " + id);
-            }
-            // Retrieve state of document
-            State state = docManager.read(descriptor, new StateHandle()).get();
-            Optional<Lock> oldLockOpt = extractLock(state);
-            if (oldLockOpt.isPresent()) {
-                // A Lock exist on document
-                Lock oldLock = oldLockOpt.get();
-                if (LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
-                    // Delete the lock
-                    PatchHandle patch = new MarkLogicLockUpdateBuilder(docManager::newPatchBuilder).delete();
-                    if (log.isTraceEnabled()) {
-                        log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
-                    }
-                    docManager.patch(descriptor, patch);
-                    // Return previous lock
-                    return oldLock;
-                } else {
-                    // existing mismatched lock, flag failure
-                    return new Lock(oldLock.getOwner(), oldLock.getCreated(), true);
-                }
-            } else {
-                // document was not locked
-                return null;
-            }
-        } catch (ResourceNotFoundException e) {
-            // Document not found
-            throw new DocumentNotFoundException(id, e);
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: REMOVELOCK " + id + ": " + owner);
+        }
+        try (Session session = xccContentSource.newSession()) {
+            ModuleInvoke request = session.newModuleInvoke("/ext/remove-lock.xqy");
+            request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
+            request.setNewStringVariable("owner", owner);
+            // ResultSequence will be closed by Session close
+            ResultSequence result = session.submitRequest(request);
+            State resultState = MarkLogicStateDeserializer.deserialize(result.asString());
+            return extractLock(resultState);
+        } catch (RequestException e) {
+            throw new NuxeoException("An exception happened during xcc call", e);
         }
     }
 
-    private Optional<Lock> extractLock(State state) {
-        String owner = (String) state.get(KEY_LOCK_OWNER);
-        if (owner == null) {
-            return Optional.empty();
+    private Lock extractLock(State state) {
+        if (state.isEmpty()) {
+            return null;
         }
-        Calendar oldCreated = (Calendar) state.get(KEY_LOCK_CREATED);
-        return Optional.of(new Lock(owner, oldCreated));
+        String owner = (String) state.get(KEY_LOCK_OWNER);
+        Calendar created = (Calendar) state.get(KEY_LOCK_CREATED);
+        Boolean failed = (Boolean) state.get("failed");
+        return new Lock(owner, created, Boolean.TRUE.equals(failed));
     }
 
     @Override
@@ -559,8 +486,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         log.trace("MarkLogic: QUERY " + query);
     }
 
-    private void logQuery(RawQueryDefinition query, int limit, int offset) {
-        log.trace("MarkLogic: QUERY " + query.getHandle() + " OFFSET " + offset + " LIMIT " + limit);
+    private void logQuery(String query, int limit, int offset) {
+        log.trace("MarkLogic: QUERY " + query + " OFFSET " + offset + " LIMIT " + limit);
     }
 
     private boolean exist(String ctsQuery) {
