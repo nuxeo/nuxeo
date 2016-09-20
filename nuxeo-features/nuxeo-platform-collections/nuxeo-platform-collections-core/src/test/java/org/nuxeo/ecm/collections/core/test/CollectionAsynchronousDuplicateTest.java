@@ -20,9 +20,11 @@ package org.nuxeo.ecm.collections.core.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,6 +35,83 @@ import org.nuxeo.ecm.core.api.PathRef;
  * @since 5.9.3
  */
 public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
+
+    private static final String TEST_COLLECTION_IN_FOLDER = "testCollectionInFolder";
+
+    private static final String TEST_FOLDER = "testFolder";
+
+    /**
+     * Test the copy of a folder containing a Collection with many members that are descendants of the given folder.
+     *
+     * @throws InterruptedException
+     * @since 8.4
+     */
+    @Test
+    public void testCopyFolderContainingACollectionWithManyMembers() throws InterruptedException {
+        testCopyFolderContainingACollection(MAX_CARDINALITY);
+    }
+
+    /**
+     * Test the copy of a folder containing a Collection with a single members that are descendants of the given folder.
+     *
+     * @throws InterruptedException
+     * @since 8.4
+     */
+    @Test
+    public void testCopyFolderContainingACollectionWithOneMember() throws InterruptedException {
+        testCopyFolderContainingACollection(1);
+    }
+
+    /**
+     * @since 8.4
+     */
+    protected void testCopyFolderContainingACollection(int nbMembers) throws InterruptedException {
+
+        List<DocumentModel> files = new ArrayList<DocumentModel>();
+
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        DocumentModel folder = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FOLDER, "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel memberFolder = session.createDocumentModel(folder.getPathAsString(), "MemberFolder", "Folder");
+        memberFolder = session.createDocument(memberFolder);
+        for (int i = 1; i <= nbMembers; i++) {
+            DocumentModel testFile = session.createDocumentModel(memberFolder.getPath().toString(), TEST_FILE_NAME + i,
+                    "File");
+            testFile = session.createDocument(testFile);
+            files.add(testFile);
+        }
+
+        DocumentModel collectionInFolder = session.createDocumentModel(folder.getPathAsString(),
+                TEST_COLLECTION_IN_FOLDER, CollectionConstants.COLLECTION_TYPE);
+        collectionInFolder = session.createDocument(collectionInFolder);
+        session.save();
+
+        collectionManager.addToCollection(collectionInFolder, files, session);
+
+        DocumentModel copiedFolder = session.copy(folder.getRef(), testWorkspace.getRef(), TEST_FOLDER + "_BIS");
+
+        awaitCollectionWorks();
+
+        final String copiedCollectionPath = copiedFolder.getPathAsString() + "/" + TEST_COLLECTION_IN_FOLDER;
+        PathRef copiedCollectionPathRef = new PathRef(copiedCollectionPath);
+
+        DocumentModel copiedCollection = session.getDocument(copiedCollectionPathRef);
+
+        final String copiedCollectionId = copiedCollection.getId();
+
+        Collection copiedCollectionAdapter = copiedCollection.getAdapter(Collection.class);
+
+        for (DocumentModel file : files) {
+
+            assertTrue(copiedCollectionAdapter.getCollectedDocumentIds().contains(file.getId()));
+
+            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef())
+                                                              .getAdapter(CollectionMember.class);
+
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(copiedCollectionId));
+        }
+    }
 
     @Test
     public void testCopyCollectionWithManyItems() throws InterruptedException {
@@ -91,8 +170,8 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
 
             assertTrue(collectionAdapterBis.getCollectedDocumentIds().contains(file.getId()));
 
-            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef()).getAdapter(
-                    CollectionMember.class);
+            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef())
+                                                              .getAdapter(CollectionMember.class);
 
             assertTrue(collectionMemberAdapter.getCollectionIds().contains(newCollectionIdBis));
         }
