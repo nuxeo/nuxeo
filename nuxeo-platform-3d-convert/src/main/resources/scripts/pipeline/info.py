@@ -1,4 +1,33 @@
-info = {}
+info = {'parts': {}}
+
+non_manifold_vertices = 0
+non_manifold_edges = 0
+non_manifold_polygons = 0
+total_vertices = 0
+total_edges = 0
+total_polygons = 0
+bb_min = [None, None, None]
+bb_max = [None, None, None]
+global_lod_success = True
+
+
+# find a way to achieve the same results using bmesh (faster)
+def get_mesh_info(m):
+    min = [None, None, None]
+    max = [None, None, None]
+    for v in m.data.vertices:
+        v_world = m.matrix_world * v.co
+        min[0] = v_world.x if (min[0] is None or v_world.x < min[0]) else min[0]
+        min[1] = v_world.y if (min[1] is None or v_world.y < min[1]) else min[1]
+        min[2] = v_world.z if (min[2] is None or v_world.z < min[2]) else min[2]
+        max[0] = v_world.x if (max[0] is None or v_world.x > max[0]) else max[0]
+        max[1] = v_world.y if (max[1] is None or v_world.y > max[1]) else max[1]
+        max[2] = v_world.z if (max[2] is None or v_world.z > max[2]) else max[2]
+    dim = Vector([max[0] - min[0], max[1] - min[1], max[2] - min[2]])
+    cen = Vector([min[0] + dim.x * 0.5, min[1] + dim.y * 0.5, min[2] + dim.z * 0.5])
+    min = Vector([min[0], min[1], min[2]])
+    max = Vector([max[0], max[1], max[2]])
+    return {'dim': dim, 'cen': cen, 'min': min, 'max': max}
 
 for obj in bpy.context.scene.objects:
     if obj.type == 'MESH':
@@ -10,23 +39,53 @@ for obj in bpy.context.scene.objects:
         selected_vertices = [v for v in bm.verts if v.select]
         selected_edges = [e for e in bm.edges if e.select]
         selected_polygons = [p for p in bm.faces if p.select]
-        info[obj.name] = {
+        mesh_info = get_mesh_info(obj)
+        info['parts'][obj.name] = {
             'non_manifold_vertices': len(selected_vertices),
             'non_manifold_edges': len(selected_edges),
             'non_manifold_polygons': len(selected_polygons),
             'total_vertices': len(bm.verts),
             'total_edges': len(bm.edges),
             'total_polygons': len(bm.faces),
-            'position_x': obj.location.x,
-            'position_y': obj.location.y,
-            'position_z': obj.location.z,
-            'dimension_x': obj.dimensions.x,
-            'dimension_y': obj.dimensions.y,
-            'dimension_z': obj.dimensions.z,
+            'position_x': mesh_info['cen'].x,
+            'position_y': mesh_info['cen'].y,
+            'position_z': mesh_info['cen'].z,
+            'dimension_x': mesh_info['dim'].x,
+            'dimension_y': mesh_info['dim'].y,
+            'dimension_z': mesh_info['dim'].z,
             'lod_success': lod_success
         }
+        non_manifold_vertices += len(selected_vertices)
+        non_manifold_edges += len(selected_edges)
+        non_manifold_polygons += len(selected_polygons)
+        total_vertices += len(bm.verts)
+        total_edges += len(bm.edges)
+        total_polygons += len(bm.faces)
+        bb_min[0] = mesh_info['min'].x if (bb_min[0] is None or mesh_info['min'].x < bb_min[0]) else bb_min[0]
+        bb_min[1] = mesh_info['min'].y if (bb_min[1] is None or mesh_info['min'].y < bb_min[1]) else bb_min[1]
+        bb_min[2] = mesh_info['min'].z if (bb_min[2] is None or mesh_info['min'].z < bb_min[2]) else bb_min[2]
+        bb_max[0] = mesh_info['max'].x if (bb_max[0] is None or mesh_info['max'].x > bb_max[0]) else bb_max[0]
+        bb_max[1] = mesh_info['max'].y if (bb_max[1] is None or mesh_info['max'].y > bb_max[1]) else bb_max[1]
+        bb_max[2] = mesh_info['max'].z if (bb_max[2] is None or mesh_info['max'].z > bb_max[2]) else bb_max[2]
+        global_lod_success = global_lod_success and lod_success
         bpy.ops.mesh.select_all(action='DESELECT')
         bpy.ops.object.mode_set(mode='OBJECT')
+
+info['global'] = {
+    'non_manifold_vertices': non_manifold_vertices,
+    'non_manifold_edges': non_manifold_edges,
+    'non_manifold_polygons': non_manifold_polygons,
+    'total_vertices': total_vertices,
+    'total_edges': total_edges,
+    'total_polygons': total_polygons,
+    'position_x': bb_min[0] + ((bb_max[0] - bb_min[0]) * 0.5),
+    'position_y': bb_min[1] + ((bb_max[1] - bb_min[1]) * 0.5),
+    'position_z': bb_min[2] + ((bb_max[2] - bb_min[2]) * 0.5),
+    'dimension_x': bb_max[0] - bb_min[0],
+    'dimension_y': bb_max[1] - bb_min[1],
+    'dimension_z': bb_max[2] - bb_min[2],
+    'lod_success': global_lod_success
+}
 
 if lod_id == 'default':
     info_default = info
