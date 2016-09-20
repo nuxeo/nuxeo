@@ -8,23 +8,41 @@
  *
  * Contributors:
  *     Benjamin JALON <bjalon@nuxeo.com>
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.features.PlatformFunctions;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib" })
+@LocalDeploy("org.nuxeo.ecm.automation.features:test-vocabularies-contrib.xml")
 public class PlatformFunctionTest {
 
     List<String> listOfString = Arrays.asList(new String[] { "value list 1", "value list 2" });
@@ -47,10 +65,12 @@ public class PlatformFunctionTest {
 
     private PlatformFunctions pf;
 
+    @Inject
+    protected DirectoryService directoryService;
+
     @Before
     public void setup() {
         pf = new PlatformFunctions();
-
     }
 
     @Test
@@ -91,5 +111,19 @@ public class PlatformFunctionTest {
         assertEquals(new Integer(10), result.get(2));
         assertEquals(new Integer(11), result.get(3));
         assertEquals(new Integer(1), result.get(4));
+    }
+
+    @Test
+    public void testGetVocabularyLabel() throws OperationException {
+        String vocabularyName = "continent";
+        Session vocabularySession = directoryService.open(vocabularyName);
+        String entryId = "europe";
+        String entryLabel = "label.directories.continent." + entryId;
+        String notEntryId = "dream_land";
+
+        assertTrue(vocabularySession.hasEntry(entryId));
+        assertFalse(vocabularySession.hasEntry(notEntryId));
+        assertEquals(entryLabel, pf.getVocabularyLabel(vocabularyName, entryId));
+        assertEquals(notEntryId, pf.getVocabularyLabel(vocabularyName, notEntryId));
     }
 }
