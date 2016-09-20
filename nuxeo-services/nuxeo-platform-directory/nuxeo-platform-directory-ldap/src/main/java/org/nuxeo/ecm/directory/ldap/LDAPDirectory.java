@@ -282,14 +282,13 @@ public class LDAPDirectory extends AbstractDirectory {
 
     public SearchControls getSearchControls(boolean fetchAllAttributes) {
         if (fetchAllAttributes) {
-            // return the precomputed scts instance
-            return searchControls;
-        } else {
             // build a new ftcs instance with no attribute filtering
             SearchControls scts = new SearchControls();
             scts.setSearchScope(config.getSearchScope());
-            scts.setReturningAttributes(new String[] { config.rdnAttribute, config.fieldMapping.get(config.idField) });
             return scts;
+        } else {
+            // return the precomputed scts instance
+            return searchControls;
         }
     }
 

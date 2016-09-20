@@ -437,6 +437,9 @@ public class LDAPReference extends AbstractReference {
         SearchResult targetLdapEntry = null;
         String targetDn = null;
 
+        // fetch all attributes when dynamic groups are used
+        boolean fetchAllAttributes = isDynamic();
+
         // step #1: resolve static references
         String staticAttributeId = getStaticAttributeId();
         if (staticAttributeId != null) {
@@ -446,7 +449,7 @@ public class LDAPReference extends AbstractReference {
 
             if (staticAttributeIdIsDn) {
                 try (LDAPSession targetSession = (LDAPSession) targetDir.getSession()) {
-                    targetLdapEntry = targetSession.getLdapEntry(targetId, false);
+                    targetLdapEntry = targetSession.getLdapEntry(targetId, fetchAllAttributes);
                     if (targetLdapEntry == null) {
                         String msg = String.format("Failed to perform inverse lookup on LDAPReference"
                                 + " resolving field '%s' of '%s' to entries of '%s'"
@@ -522,7 +525,7 @@ public class LDAPReference extends AbstractReference {
                     // only fetch the entry if not already fetched by the
                     // static
                     // attributes references resolution
-                    targetLdapEntry = targetSession.getLdapEntry(targetId, false);
+                    targetLdapEntry = targetSession.getLdapEntry(targetId, fetchAllAttributes);
                 }
                 if (targetLdapEntry == null) {
                     String msg = String.format("Failed to perform inverse lookup on LDAPReference"
@@ -537,7 +540,7 @@ public class LDAPReference extends AbstractReference {
 
                 // step #2.2: find the list of entries that hold candidate
                 // dynamic links in the source directory
-                SearchControls sctls = sourceDirectory.getSearchControls();
+                SearchControls sctls = sourceDirectory.getSearchControls(true);
                 sctls.setReturningAttributes(new String[] {
                         sourceSession.idAttribute, dynamicAttributeId });
                 String filterExpr = String.format("%s=*", dynamicAttributeId);
