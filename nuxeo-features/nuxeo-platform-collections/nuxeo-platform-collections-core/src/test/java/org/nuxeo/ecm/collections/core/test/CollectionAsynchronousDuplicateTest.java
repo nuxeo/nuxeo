@@ -66,7 +66,6 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
     protected void testCopyFolderContainingACollection(int nbMembers) throws InterruptedException {
 
         List<DocumentModel> files = new ArrayList<DocumentModel>();
-
         testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         DocumentModel folder = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FOLDER, "Folder");
@@ -84,29 +83,20 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
                 TEST_COLLECTION_IN_FOLDER, CollectionConstants.COLLECTION_TYPE);
         collectionInFolder = session.createDocument(collectionInFolder);
         session.save();
-
         collectionManager.addToCollection(collectionInFolder, files, session);
 
         DocumentModel copiedFolder = session.copy(folder.getRef(), testWorkspace.getRef(), TEST_FOLDER + "_BIS");
-
         awaitCollectionWorks();
 
-        final String copiedCollectionPath = copiedFolder.getPathAsString() + "/" + TEST_COLLECTION_IN_FOLDER;
+        String copiedCollectionPath = copiedFolder.getPathAsString() + "/" + TEST_COLLECTION_IN_FOLDER;
         PathRef copiedCollectionPathRef = new PathRef(copiedCollectionPath);
-
         DocumentModel copiedCollection = session.getDocument(copiedCollectionPathRef);
-
         final String copiedCollectionId = copiedCollection.getId();
-
         Collection copiedCollectionAdapter = copiedCollection.getAdapter(Collection.class);
-
         for (DocumentModel file : files) {
-
             assertTrue(copiedCollectionAdapter.getCollectedDocumentIds().contains(file.getId()));
-
             CollectionMember collectionMemberAdapter = session.getDocument(file.getRef())
                                                               .getAdapter(CollectionMember.class);
-
             assertTrue(collectionMemberAdapter.getCollectionIds().contains(copiedCollectionId));
         }
     }
