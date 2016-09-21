@@ -2790,6 +2790,18 @@
         <version>2.2.3</version>
       </dependency>
       <dependency>
+        <groupId>com.novemberain</groupId>
+        <artifactId>quartz-mongodb</artifactId>
+        <version>2.0.0</version>
+        <exclusions>
+          <!-- exclude unneeded Clojure -->
+          <exclusion>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-parent</artifactId>
         <version>${org.slf4j.version}</version>

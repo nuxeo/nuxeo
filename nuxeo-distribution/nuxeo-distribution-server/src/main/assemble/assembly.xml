@@ -52,8 +52,11 @@
     <copy todir="${nxr}/templates/mssql/lib">
       <artifact:file artifactId="sqljdbc" />
     </copy>
-    <copy todir="${nxr}/templates/mongodb/lib">
+    <copy todir="${nxr}/templates/mongodb/nxserver/lib">
       <artifact:file artifactId="mongo-java-driver" />
+    </copy>
+    <copy todir="${nxr}/templates/mongodb-quartz-cluster/nxserver/lib">
+      <artifact:file artifactId="quartz-mongodb" />
     </copy>
     <copy todir="${nxr}/templates/mysql/lib">
       <artifact:file artifactId="mysql-connector-java" />

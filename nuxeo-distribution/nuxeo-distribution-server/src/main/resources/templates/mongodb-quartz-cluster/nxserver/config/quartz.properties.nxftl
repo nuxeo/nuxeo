@@ -1,0 +1,30 @@
+# This is a standard Quartz configuration file
+# See http://quartz-scheduler.org/documentation/quartz-1.x/configuration/
+# This file is read by name (config/quartz.properties) by SchedulerRegistryService
+
+org.quartz.scheduler.instanceName = Quartz
+org.quartz.scheduler.threadName = Quartz_Scheduler
+org.quartz.scheduler.instanceId = AUTO
+org.quartz.scheduler.makeSchedulerThreadDaemon = true
+org.quartz.scheduler.skipUpdateCheck = true
+org.quartz.scheduler.xaTransacted = true
+
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 1
+org.quartz.threadPool.threadPriority = 4
+org.quartz.threadPool.makeThreadsDaemons = true
+
+# MongoDB-specific configuration, see https://github.com/michaelklishin/quartz-mongodb
+
+org.quartz.jobStore.class = com.novemberain.quartz.mongodb.MongoDBJobStore
+org.quartz.jobStore.isClustered = true
+<#if "${nuxeo.mongodb.server}"?starts_with("mongodb://") >
+org.quartz.jobStore.mongoUri=${nuxeo.mongodb.server}
+<#else>
+org.quartz.jobStore.mongoUri=mongodb://${nuxeo.mongodb.server}
+</#if>
+org.quartz.jobStore.dbName=${nuxeo.mongodb.dbname}
+org.quartz.jobStore.collectionPrefix=quartz
+org.quartz.jobStore.jobDataAsBase64=false
+
+org.quartz.scheduler.mongoOptionWriteConcernTimeoutMillis=5000

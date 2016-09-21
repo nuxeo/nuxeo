@@ -168,6 +168,7 @@ install nuxeo-dam</echo>
         <include name="mongo-java-driver-*" />
         <include name="mysql-connector-java-*" />
         <include name="postgresql-*" />
+        <include name="quartz-mongodb-*" />
         <include name="sqljdbc-*" />
       </fileset>
     </delete>

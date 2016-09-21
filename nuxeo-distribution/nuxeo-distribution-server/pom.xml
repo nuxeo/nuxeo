@@ -611,6 +611,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Needed by mongodb-quartz-cluster template -->
+    <dependency>
+      <groupId>com.novemberain</groupId>
+      <artifactId>quartz-mongodb</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
