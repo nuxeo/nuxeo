@@ -54,8 +54,6 @@ scene.camera = camera_ob
 scene.render.resolution_x = int(width)
 scene.render.resolution_y = int(height)
 scene.render.resolution_percentage = 100
-scene.world.horizon_color = [1.0, 1.0, 1.0]
-# scene.render.alpha_mode = 'TRANSPARENT'
 
 # set camera rotation to be aligned with the desired camera direction
 cam_direction = Vector(mc_c) - Vector(cam_location)
@@ -66,19 +64,20 @@ if zenith == radians(0) or zenith == radians(180):
     camera_ob.rotation_euler.z = azimuth + zenith + radians(90)
 bpy.context.scene.update()
 
-bpy.context.scene.render.image_settings.color_mode = 'RGBA'
-print("""World settings:
-- Ambient color: %s
-- Horizon color: %s
-- Zenith color: %s
-- Exposure: %d""" % (
-    scene.world.ambient_color,
-    scene.world.horizon_color,
-    scene.world.zenith_color,
-    scene.world.exposure))
-
 # set lighting
 bpy.ops.object.lamp_add(type='SUN')
+
+# set render nodes
+scene.use_nodes = True
+tree = scene.node_tree
+if len(tree.nodes) == 2:
+    node_render_layers = tree.nodes['Render Layers']
+    node_composite = tree.nodes['Composite']
+    node_alpha_over = tree.nodes.new(type='CompositorNodeAlphaOver')
+    # background color and transparency
+    node_alpha_over.inputs[1].default_value = (1.0, 1.0, 1.0, 1.0)
+    tree.links.new(node_render_layers.outputs[0], node_alpha_over.inputs[2])
+    tree.links.new(node_alpha_over.outputs[0], node_composite.inputs[0])
 
 # mesh cluster bounding box points, that should be in the camera's field of view
 mc_bb_points = [
@@ -91,9 +90,6 @@ mc_bb_points = [
     [mc_max[0], mc_max[1], mc_min[2]],
     mc_max
 ]
-
-# for point in mc_bb_points:
-#     bpy.ops.mesh.primitive_uv_sphere_add(size=(max(mc_d) * 0.02), location=point)
 
 # from an orthographic scale of 1, project the bounding box points to 2d
 # the axis with the biggest range defines the new scale value, so that all points fit in the view
@@ -116,13 +112,26 @@ for point in mc_bb_points:
 camera.ortho_scale = max([max_x - min_x, max_y - min_y])
 bpy.context.scene.update()
 
+scene.cycles.film_transparent = True
+for obj in scene.objects:
+    if obj.type == 'MESH':
+        scene.objects.active = obj
+        obj.select = True
+        textures_used = 0
+        for mat_slot in obj.material_slots:
+            textures_used += len([tex for tex in mat_slot.material.texture_slots if tex is not None])
+            print(str(textures_used) + ' ' + str(obj.name))
+        if textures_used > 1:
+            bpy.ops.xps_tools.convert_to_cycles_selected()
+        else:
+            bpy.ops.ml.refresh_active()
+        obj.select = False
+
 # render and write file
 scene.render.filepath = outfile
 bpy.ops.render.render(write_still=True)
 
 # clean up afterwards (delete the created camera and target)
-# bpy.ops.object.select_pattern(pattern='Sphere*')
-# bpy.ops.object.delete()
-for obj in scene.objects:
+for obj in bpy.context.scene.objects:
     obj.select = obj.type == 'CAMERA' or obj.type == 'EMPTY'
 bpy.ops.object.delete()
