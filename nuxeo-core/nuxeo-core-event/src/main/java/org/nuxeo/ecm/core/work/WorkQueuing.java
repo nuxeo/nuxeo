@@ -183,13 +183,6 @@ public interface WorkQueuing {
     long count(String queueId, State state);
 
     /**
-     * Notifies this queuing that all work should be suspending.
-     *
-     * @return the number of scheduled instances removed from queue
-     */
-    int setSuspending(String queueId);
-
-    /**
      * Returns current metrics of queue identified by the {@code queueId}
      *
      * @since 8.3
