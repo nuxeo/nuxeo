@@ -118,6 +118,14 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
                 String field = (String) CoerceLuaToJava.coerce(luaKey.get(4), String.class);
                 return valueOfOrFalse(connection.lrem(key.getBytes(), value.longValue(), field.getBytes()));
             }
+            case "scard": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+                return valueOfOrFalse(connection.scard(key));
+            }
+            case "rpop": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+                return valueOfOrFalse(connection.rpop(key));
+            }
             }
             throw new UnsupportedOperationException(opcode);
         }
@@ -142,9 +150,13 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
 
             case "sadd":
                 return valueOfOrFalse(connection.sadd(key, value));
-
+            case "scard":
+                return valueOfOrFalse(connection.scard(key));
             case "lpush":
                 return valueOfOrFalse(connection.lpush(key, value));
+            case "rpop": {
+                return valueOfOrFalse(connection.rpop(key));
+            }
             }
             throw new UnsupportedOperationException(opcode);
         }

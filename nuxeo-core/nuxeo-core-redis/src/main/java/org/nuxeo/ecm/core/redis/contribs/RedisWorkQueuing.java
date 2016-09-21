@@ -183,7 +183,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     @Override
     public NuxeoBlockingQueue init(WorkQueueDescriptor config) {
-        evalSha(metricsWorkQueueSha, keys(config.id), Collections.emptyList());
+        evalSha(initWorkQueueSha, keys(config.id), Collections.emptyList());
         RedisBlockingQueue queue = new RedisBlockingQueue(config.id, this);
         allQueued.put(config.id, queue);
         return queue;
