@@ -33,15 +33,13 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.SUPPORTED_EXTENSIONS;
 import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
 
 /**
@@ -50,6 +48,8 @@ import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
  * @since 8.4
  */
 public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
+
+    public static final String MIMETYPE_ZIP = "application/zip";
 
     protected Path tempDirectory(Map<String, Serializable> parameters) throws ConversionException {
         Path directory = new Path(getTmpDirectory(parameters)).append(BLENDER_PATH_PREFIX + UUID.randomUUID());
@@ -60,13 +60,57 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         return directory;
     }
 
-    protected List<String> blobsToTempDir(BlobHolder blobHolder) throws IOException {
-        Path directory = tempDirectory(null);
+    protected boolean isThreeDFile(File file) {
+        return SUPPORTED_EXTENSIONS.contains(FilenameUtils.getExtension(file.getName()));
+    }
+
+    private List<String> unpackZipFile(final File file, final File directory) throws IOException {
+        /* Extract ZIP contents */
+        List<String> expandedFiles = new ArrayList<>();
+        ZipEntry zipEntry;
+        ZipInputStream zipInputStream = null;
+        try {
+            zipInputStream = new ZipInputStream(new FileInputStream(file));
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                final File destFile = new File(directory, zipEntry.getName());
+                if (!zipEntry.isDirectory()) {
+                    try (FileOutputStream destOutputStream = new FileOutputStream(destFile)) {
+                        IOUtils.copy(zipInputStream, destOutputStream);
+                    }
+                    zipInputStream.closeEntry();
+                    if (isThreeDFile(destFile)) {
+                        expandedFiles.add(0, destFile.getAbsolutePath());
+                    } else {
+                        expandedFiles.add(destFile.getAbsolutePath());
+                    }
+                } else {
+                    destFile.mkdirs();
+                }
+            }
+        } finally {
+            if (zipInputStream != null) {
+                zipInputStream.close();
+            }
+
+        }
+        return expandedFiles;
+    }
+
+    protected List<String> blobsToTempDir(BlobHolder blobHolder, Path directory) throws IOException {
         List<Blob> blobs = blobHolder.getBlobs();
+        List<String> filesCreated = new ArrayList<>();
+        if (blobs.isEmpty()) {
+            return filesCreated;
+        }
+
+        if (MIMETYPE_ZIP.equals(blobs.get(0).getMimeType())) {
+            filesCreated.addAll(unpackZipFile(blobs.get(0).getFile(), new File(directory.toString())));
+            blobs = blobs.subList(1, blobs.size());
+        }
 
         // Add the main and assets as params
         // The params are not used by the command but the blobs are extracted to files and managed!
-        List<String> filesCreated = blobs.stream().map(blob -> {
+        filesCreated.addAll(blobs.stream().map(blob -> {
             File file = new File(directory.append(blob.getFilename()).toString());
             try {
                 blob.transferTo(file);
@@ -74,7 +118,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
                 throw new UncheckedIOException(e);
             }
             return file.getAbsolutePath();
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList()));
 
         filesCreated.add(directory.toString());
         return filesCreated;
@@ -154,8 +198,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             throw new ConversionException("Unable to determine target CommandLine name");
         }
 
-        List<String> filesToDelete = new ArrayList<>();
         List<Closeable> toClose = new ArrayList<>();
+        Path inDirectory = tempDirectory(null);
         try {
             CmdParameters params = new CmdParameters();
 
@@ -185,9 +229,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             params.addNamedParameter(DIMENSIONS_PARAMETER, getParams(parameters, initParameters, DIMENSIONS_PARAMETER));
 
             // Deal with input blobs (main and assets)
-            List<String> inputFiles = blobsToTempDir(blobHolder);
+            List<String> inputFiles = blobsToTempDir(blobHolder, inDirectory);
             params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, new File(inputFiles.get(0)));
-            filesToDelete = inputFiles;
 
             // Extra blob parameters
             Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder, parameters);
@@ -235,9 +278,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         } catch (IOException | CommandException e) {
             throw new ConversionException("Error while converting via CommandLineService", e);
         } finally {
-            for (String fileToDelete : filesToDelete) {
-                FileUtils.deleteQuietly(new File(fileToDelete));
-            }
+            FileUtils.deleteQuietly(new File(inDirectory.toString()));
             for (Closeable closeable : toClose) {
                 IOUtils.closeQuietly(closeable);
             }

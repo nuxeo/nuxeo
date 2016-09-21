@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.platform.threed;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ThreeDConstants {
 
     public static final String THREED_TYPE = "ThreeD";
@@ -50,6 +53,19 @@ public class ThreeDConstants {
     public static final String THUMBNAIL_PICTURE_TITLE = "Thumbnail";
 
     public static final String STATIC_3D_PCTURE_TITLE = "Static3D";
+
+    public static final List SUPPORTED_EXTENSIONS = new ArrayList<String>() {
+        {
+            add(EXTENSION_COLLADA);
+            add(EXTENSION_3DSTUDIO);
+            add(EXTENSION_FILMBOX);
+            add(EXTENSION_STANFORD);
+            add(EXTENSION_WAVEFRONT);
+            add(EXTENSION_EXTENSIBLE_3D_GRAPHICS);
+            add(EXTENSION_STEREOLITHOGRAPHY);
+            add(EXTENSION_GLTF);
+        }
+    };
 
     // Constant utility class
     private ThreeDConstants() {
