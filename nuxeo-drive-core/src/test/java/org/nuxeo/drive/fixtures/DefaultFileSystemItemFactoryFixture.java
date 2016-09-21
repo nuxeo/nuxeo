@@ -72,7 +72,6 @@ import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -83,12 +82,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@RandomBug.Repeat(issue = DefaultFileSystemItemFactoryFixture.NXP_20338)
 public class DefaultFileSystemItemFactoryFixture {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
-
-    protected static final String NXP_20338 = "Random transaction timeout";
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
