@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -590,10 +591,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         @Override
         protected void beforeExecute(Thread t, Runnable r) {
             Work work = WorkHolder.getWork(r);
-            if (started == false || shutdownInProgress == true) {
+            if (isShutdown()) {
                 work.setWorkInstanceState(State.SCHEDULED);
                 queuing.workSchedule(queueId, work);
-                return;
+                throw new RejectedExecutionException(queueId + " was shutdown, rescheduled " + work);
             }
             work.setWorkInstanceState(State.RUNNING);
             queuing.workRunning(queueId, work);
@@ -606,6 +607,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Work work = WorkHolder.getWork(r);
             try {
                 if (work.isSuspending()) {
+                    return;
+                }
+                if (isShutdown() && t != null) {
+                    work.setWorkInstanceState(State.SCHEDULED);
+                    queuing.workSchedule(queueId, work);
                     return;
                 }
                 work.setWorkInstanceState(State.UNKNOWN);
@@ -633,16 +639,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          */
         public void shutdownAndSuspend() {
             // don't consume the queue anymore
-            ((NuxeoBlockingQueue) getQueue()).setActive(false);
-            // shutdown the executor
-            shutdown();
+            queuing.setActive(queueId, false);
             // suspend and reschedule all running work
-            synchronized (running) {
-                for (Work work : running) {
-                    work.setWorkInstanceSuspending();
-                    work.setWorkInstanceState(State.SCHEDULED);
-                    queuing.workReschedule(queueId, work);
-                }
+            for (Work work : running) {
+                log.trace("rescheduling " + work);
+                work.setWorkInstanceSuspending();
+                work.setWorkInstanceState(State.SCHEDULED);
+                queuing.workReschedule(queueId, work);
             }
             shutdownNow();
         }

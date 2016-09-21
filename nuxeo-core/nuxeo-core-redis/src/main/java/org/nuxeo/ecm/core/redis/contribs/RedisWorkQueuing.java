@@ -145,6 +145,8 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected byte[] schedulingWorkSha;
 
+    protected byte[] popWorkSha;
+
     protected byte[] runningWorkSha;
 
     protected byte[] cancelledScheduledWorkSha;
@@ -167,6 +169,8 @@ public class RedisWorkQueuing implements WorkQueuing {
             metricsWorkQueueSha = admin.load("org.nuxeo.ecm.core.redis", "metrics-work-queue")
                     .getBytes();
             schedulingWorkSha = admin.load("org.nuxeo.ecm.core.redis", "scheduling-work")
+                    .getBytes();
+            popWorkSha = admin.load("org.nuxeo.ecm.core.redis", "pop-work")
                     .getBytes();
             runningWorkSha = admin.load("org.nuxeo.ecm.core.redis", "running-work")
                     .getBytes();
@@ -764,14 +768,11 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Work call(Jedis jedis) {
-                // pop from queue
-                byte[] workIdBytes = jedis.rpop(queuedKey(queueId));
-                if (workIdBytes == null) {
+                String id = (String)jedis.evalsha(popWorkSha, keys(queueId), Collections.emptyList());
+                if (id == null) {
                     return null;
                 }
-                // get data
-                byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                return deserializeWork(workBytes);
+                return deserializeWork(jedis.hget(dataKey(),bytes(id)));
             }
 
         });
