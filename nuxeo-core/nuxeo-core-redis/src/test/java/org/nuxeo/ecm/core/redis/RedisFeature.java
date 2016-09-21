@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedGuessConnectionError;
 import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedPool;
 import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedSynchronizedExecutor;
-import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedTraceExecutor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -162,7 +161,6 @@ public class RedisFeature extends SimpleFeature {
                 RedisComponent.class.getPackage().getName());
         if (Mode.embedded.equals(mode)) {
             RedisExecutor executor = new RedisPoolExecutor(new RedisEmbeddedPool());
-            executor = new RedisEmbeddedTraceExecutor(executor);
             executor = new RedisEmbeddedSynchronizedExecutor(executor);
             executor = new RedisFailoverExecutor(10, executor);
             component.handleNewExecutor(executor);
