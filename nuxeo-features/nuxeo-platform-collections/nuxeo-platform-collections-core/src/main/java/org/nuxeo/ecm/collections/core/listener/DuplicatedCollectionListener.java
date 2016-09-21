@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -94,9 +95,10 @@ public class DuplicatedCollectionListener implements EventListener {
             int offset = 0;
             DocumentModelList deepCopiedCollections;
             do {
-                deepCopiedCollections = ctx.getCoreSession().query(
-                        "SELECT * FROM Collection WHERE ecm:path STARTSWITH '" + doc.getPathAsString() + "'", null,
-                        CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
+                deepCopiedCollections = ctx.getCoreSession()
+                                           .query("SELECT * FROM Collection WHERE ecm:path STARTSWITH "
+                                                   + NXQL.escapeString(doc.getPathAsString()), null,
+                                                   CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
                 offset += deepCopiedCollections.size();
                 for (DocumentModel deepCopiedCollection : deepCopiedCollections) {
                     collectionManager.processCopiedCollection(deepCopiedCollection);
@@ -109,8 +111,8 @@ public class DuplicatedCollectionListener implements EventListener {
             DocumentModelList deepCopiedMembers;
             do {
                 deepCopiedMembers = ctx.getCoreSession()
-                                       .query("SELECT * FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:path STARTSWITH '"
-                                               + doc.getPathAsString() + "'", null,
+                                       .query("SELECT * FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:path STARTSWITH "
+                                               + NXQL.escapeString(doc.getPathAsString()), null,
                                                CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
                 offset += deepCopiedMembers.size();
                 for (DocumentModel deepCopiedMember : deepCopiedMembers) {
