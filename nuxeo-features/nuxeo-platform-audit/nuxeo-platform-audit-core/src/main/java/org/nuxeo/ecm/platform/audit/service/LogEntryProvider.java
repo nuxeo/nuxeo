@@ -106,6 +106,19 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
+    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        if (log.isDebugEnabled()) {
+            log.debug("getLogEntriesFor() UUID=" + uuid + " and repositoryId=" + repositoryId);
+        }
+        Query query = em.createNamedQuery("LogEntry.findByDocumentAndRepository");
+        query.setParameter("docUUID", uuid);
+        query.setParameter("repositoryId", repositoryId);
+        return doPublish(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public List<LogEntry> getLogEntriesFor(String uuid) {
         if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() UUID=" + uuid);
@@ -116,7 +129,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
+    @Override
     public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
         if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() UUID=" + uuid);

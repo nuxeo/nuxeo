@@ -33,13 +33,34 @@ import java.util.Map;
 public interface AuditReader {
 
     /**
+     * Returns the logs given a doc uuid and a repository id.
+     *
+     * @param uuid the document uuid
+     * @param repositoryId the repository id
+     * @return a list of log entries
+     * @since 8.4
+     */
+    List<LogEntry> getLogEntriesFor(String uuid, String repositoryId);
+
+    /**
      * Returns the logs given a doc uuid.
      *
      * @param uuid the document uuid
      * @return a list of log entries
+     * @deprecated since 8.4, use {@link (org.nuxeo.ecm.platform.audit.api.AuditReader.getLogEntriesFor(String,
+     *             String))} instead.
      */
+    @Deprecated
     List<LogEntry> getLogEntriesFor(String uuid);
 
+    /**
+     * Returns the logs given a doc uuid, a map of filters and a default sort.
+     *
+     * @param uuid the document uuid
+     * @param filterMap the map of filters to apply
+     * @param doDefaultSort the default sort to set
+     * @return a list of log entries
+     */
     List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort);
 
     /**

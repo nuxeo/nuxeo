@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.audit.api.comment.UIAuditComment;
 @NamedQueries({
         @NamedQuery(name = "LogEntry.removeByEventIdAndPath", query = "delete LogEntry log where log.eventId = :eventId and log.docPath like :pathPattern"),
         @NamedQuery(name = "LogEntry.findByDocument", query = "from LogEntry log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
+        @NamedQuery(name = "LogEntry.findByDocumentAndRepository", query = "from LogEntry log where log.docUUID=:docUUID and log.repositoryId=:repositoryId ORDER BY log.eventDate DESC"),
         @NamedQuery(name = "LogEntry.findAll", query = "from LogEntry log order by log.eventDate DESC"),
         @NamedQuery(name = "LogEntry.findByEventIdAndPath", query = "from LogEntry log where log.eventId=:eventId and log.docPath LIKE :pathPattern"),
         @NamedQuery(name = "LogEntry.findByHavingExtendedInfo", query = "from LogEntry log where log.extendedInfos['one'] is not null order by log.eventDate DESC"),

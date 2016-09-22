@@ -96,7 +96,7 @@ public class TestAuditWithElasticSearch {
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);
-        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
+        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
 
         Assert.assertNotNull(trail);
         Assert.assertEquals(2, trail.size());

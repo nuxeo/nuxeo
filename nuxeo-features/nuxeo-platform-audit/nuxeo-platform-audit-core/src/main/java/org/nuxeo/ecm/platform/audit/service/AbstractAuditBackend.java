@@ -395,6 +395,29 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return component.bulker.await(time, unit);
     }
 
+    /**
+     * Returns the logs given a doc uuid and a repository id.
+     *
+     * @param uuid the document uuid
+     * @param repositoryId the repository id
+     * @return a list of log entries
+     * @since 8.4
+     */
+    @Override
+    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        return getLogEntriesFor(uuid, repositoryId);
+    }
+
+    /**
+     * Returns the logs given a doc uuid.
+     *
+     * @param uuid the document uuid
+     * @return a list of log entries
+     * @deprecated since 8.4, use
+     *             {@link (org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend.getLogEntriesFor(String, String))}
+     *             instead.
+     */
+    @Deprecated
     @Override
     public List<LogEntry> getLogEntriesFor(String uuid) {
         return getLogEntriesFor(uuid, Collections.<String, FilterMapEntry> emptyMap(), false);

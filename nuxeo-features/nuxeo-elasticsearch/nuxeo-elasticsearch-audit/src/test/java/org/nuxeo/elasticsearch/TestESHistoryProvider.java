@@ -204,7 +204,7 @@ public class TestESHistoryProvider {
         Framework.getLocalService(AuditLogger.class).addLogEntries(entries);
 
         LogEntryGen.flushAndSync();
-        List<LogEntry> logs = reader.getLogEntriesFor(doc.getId());
+        List<LogEntry> logs = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
         if (verbose) {
             dump(logs);
         }

@@ -124,6 +124,20 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
     }
 
     @Override
+    public List<LogEntry> getLogEntriesFor(final String uuid, final String repositoryId) {
+        return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+            @Override
+            public List<LogEntry> runWith(EntityManager em) {
+                return getLogEntriesFor(em, uuid, repositoryId);
+            }
+        });
+    }
+
+    protected List<LogEntry> getLogEntriesFor(EntityManager em, String uuid, String repositoryId) {
+        return LogEntryProvider.createProvider(em).getLogEntriesFor(uuid, repositoryId);
+    }
+
+    @Override
     public List<LogEntry> getLogEntriesFor(final String uuid) {
         return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
             @Override
