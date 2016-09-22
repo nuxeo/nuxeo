@@ -13,3 +13,8 @@
 {"id":"C-1.0.2-SNAPSHOT","name":"C", "version":"1.0.2-SNAPSHOT","targetPlatforms":["server-8.4"],"title":"Package C","description":"description of C", "type":"addon", "state":2}
 {"id":"D-1.0.3-SNAPSHOT","name":"D", "version":"1.0.3-SNAPSHOT","targetPlatforms":["server-8.3"],"title":"Package D","description":"description of D", "type":"addon", "state":2}
 {"id":"D-1.0.4-SNAPSHOT","name":"D", "version":"1.0.4-SNAPSHOT","targetPlatforms":["server-8.4"],"title":"Package D","description":"description of D", "type":"addon", "state":2}
+{"id":"hfA-1.0.0","name":"hfA", "version":"1.0.0","targetPlatforms":["server-8.3"],"dependencies":[],"title":"Hot fix NXP","description":"Hot Fix for NXP", "type":"hotfix", "state":5}
+{"id":"hfB-1.0.0","name":"hfB", "version":"1.0.0","targetPlatforms":["server-8.3"],"dependencies":["hfA:1.0.0:1.0.0"],"title":"Hot fix NXP","description":"Hot Fix for NXP", "type":"hotfix", "state":2}
+{"id":"hfC-1.0.0-SNAPSHOT","name":"hfC", "version":"1.0.0-SNAPSHOT","targetPlatforms":["server-8.3"],"dependencies":["hfB:1.0.0:1.0.0"],"title":"Hot fix NXP","description":"Hot Fix for NXP", "type":"hotfix", "state":2}
+{"id":"hfAA-1.0.0","name":"hfAA", "version":"1.0.0","targetPlatforms":["server-8.4"],"dependencies":[],"title":"Hot fix NXP","description":"Hot Fix for NXP", "type":"hotfix", "state":2}
+{"id":"hfBB-1.0.0","name":"hfBB", "version":"1.0.0","targetPlatforms":["server-8.4"],"dependencies":["hfAA:1.0.0:1.0.0"],"title":"Hot fix NXP","description":"Hot Fix for NXP", "type":"hotfix", "state":2}

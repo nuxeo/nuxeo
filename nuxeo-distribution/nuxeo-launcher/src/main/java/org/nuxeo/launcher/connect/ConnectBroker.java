@@ -1448,7 +1448,7 @@ public class ConnectBroker {
     }
 
     protected boolean pkgUpgradeByType(PackageType type) {
-        List<DownloadablePackage> upgrades = NuxeoConnectClient.getPackageManager().listInstalledPackages();
+        List<DownloadablePackage> upgrades = getPackageManager().listInstalledPackages();
         List<String> upgradeNames = new ArrayList<>();
         for (DownloadablePackage upgrade : upgrades) {
             if (upgrade.getType() == type) {
@@ -1459,7 +1459,14 @@ public class ConnectBroker {
     }
 
     public boolean pkgHotfix() {
-        return pkgUpgradeByType(PackageType.HOT_FIX);
+        List<DownloadablePackage> hotFixes = getPackageManager().listPackages(PackageType.HOT_FIX, targetPlatform);
+        List<String> hotFixNames = new ArrayList<>();
+        hotFixes.forEach(pkg -> {
+            if(!pkg.getVersion().isSnapshot() || allowSNAPSHOT){
+                hotFixNames.add(pkg.getName());
+            }
+        });
+        return pkgRequest(null, hotFixNames, null, null, true, false);
     }
 
     public boolean pkgUpgrade() {

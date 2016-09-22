@@ -224,11 +224,51 @@ public class TestConnectBroker extends AbstractPackageManagerTestCase {
                 PackageState.DOWNLOADED);
     }
 
+    public void testHotfixPackageRequest() throws Exception {
+        Environment.getDefault().setProperty(Environment.DISTRIBUTION_NAME, "server");
+        Environment.getDefault().setProperty(Environment.DISTRIBUTION_VERSION, "8.3");
+        ConnectBroker connectBrocker = new ConnectBroker(Environment.getDefault());
+        connectBrocker.setAllowSNAPSHOT(false);
+
+        // Before: [hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBrocker,
+                Arrays.asList("hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"),
+                PackageState.STARTED);
+        checkPackagesState(connectBrocker,
+                Arrays.asList("hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2",
+                        "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT",
+                        "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        assertTrue(connectBrocker.pkgHotfix());
+
+        // After: [hfA-1.0.0, hfB-1.0.0, hfC-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBrocker, Arrays.asList("hfA-1.0.0", "hfB-1.0.0", "A-1.0.0",
+                "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBrocker,
+                Arrays.asList("hfC-1.0.0-SNAPSHOT", "A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT",
+                        "B-1.0.1", "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT",
+                        "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        connectBrocker.setAllowSNAPSHOT(true);
+        assertTrue(connectBrocker.pkgHotfix());
+
+        // After: [hfA-1.0.0, hfB-1.0.0, hfC-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT]
+        checkPackagesState(connectBrocker, Arrays.asList("hfA-1.0.0", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.0.0",
+                "B-1.0.1-SNAPSHOT", "C-1.0.0", "D-1.0.2-SNAPSHOT"), PackageState.STARTED);
+        checkPackagesState(connectBrocker,
+                Arrays.asList("A-1.2.0", "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT",
+                        "B-1.0.1", "B-1.0.2", "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT",
+                        "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+    }
+
     private void checkPackagesState(ConnectBroker connectBrocker, List<String> packageIdList,
             PackageState expectedState) {
         Map<String, PackageState> states = connectBrocker.getUpdateService().getPersistence().getStates();
         for (String pkgId : packageIdList) {
-            assertEquals(expectedState, states.get(pkgId));
+            assertEquals("Wrong state for " + pkgId, expectedState, states.get(pkgId));
         }
     }
 
