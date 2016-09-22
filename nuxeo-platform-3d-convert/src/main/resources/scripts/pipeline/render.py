@@ -65,7 +65,44 @@ if zenith == radians(0) or zenith == radians(180):
 bpy.context.scene.update()
 
 # set lighting
-bpy.ops.object.lamp_add(type='SUN')
+objects = bpy.data.objects
+lamps = bpy.data.lamps
+
+sun_top = objects.new(name='sun_top', object_data=lamps.new(name='sun_top', type='SUN'))
+scene.objects.link(sun_top)
+sun_top.rotation_euler = (0.0, 0.0, 0.0)
+lamps['sun_top'].use_nodes = True
+lamps['sun_top'].node_tree.nodes['Emission'].inputs[1].default_value = 3.0
+
+sun_front = objects.new(name='sun_front', object_data=lamps.new(name='sun_front', type='SUN'))
+scene.objects.link(sun_front)
+sun_front.rotation_euler = (radians(90), 0.0, 0.0)
+lamps['sun_front'].use_nodes = True
+lamps['sun_front'].node_tree.nodes['Emission'].inputs[1].default_value = 1.0
+
+sun_bottom = objects.new(name='sun_bottom', object_data=lamps.new(name='sun_bottom', type='SUN'))
+scene.objects.link(sun_bottom)
+sun_bottom.rotation_euler = (radians(180), 0.0, 0.0)
+lamps['sun_bottom'].use_nodes = True
+lamps['sun_bottom'].node_tree.nodes['Emission'].inputs[1].default_value = 1.0
+
+sun_back = objects.new(name='sun_back', object_data=lamps.new(name='sun_back', type='SUN'))
+scene.objects.link(sun_back)
+sun_back.rotation_euler = (radians(270), 0.0, 0.0)
+lamps['sun_back'].use_nodes = True
+lamps['sun_back'].node_tree.nodes['Emission'].inputs[1].default_value = 1.0
+
+sun_left = objects.new(name='sun_left', object_data=lamps.new(name='sun_left', type='SUN'))
+scene.objects.link(sun_left)
+sun_left.rotation_euler = (radians(90), 0.0, radians(90))
+lamps['sun_left'].use_nodes = True
+lamps['sun_left'].node_tree.nodes['Emission'].inputs[1].default_value = 1.0
+
+sun_right = objects.new(name='sun_right', object_data=lamps.new(name='sun_right', type='SUN'))
+scene.objects.link(sun_right)
+sun_right.rotation_euler = (radians(90), 0.0, radians(270))
+lamps['sun_right'].use_nodes = True
+lamps['sun_right'].node_tree.nodes['Emission'].inputs[1].default_value = 1.0
 
 # set render nodes
 scene.use_nodes = True
@@ -120,7 +157,6 @@ for obj in scene.objects:
         textures_used = 0
         for mat_slot in obj.material_slots:
             textures_used += len([tex for tex in mat_slot.material.texture_slots if tex is not None])
-            print(str(textures_used) + ' ' + str(obj.name))
         if textures_used > 1:
             bpy.ops.xps_tools.convert_to_cycles_selected()
         else:
@@ -132,6 +168,6 @@ scene.render.filepath = outfile
 bpy.ops.render.render(write_still=True)
 
 # clean up afterwards (delete the created camera and target)
-for obj in bpy.context.scene.objects:
-    obj.select = obj.type == 'CAMERA' or obj.type == 'EMPTY'
+for obj in scene.objects:
+    obj.select = obj.type == 'CAMERA' or obj.type == 'LAMP' or obj.type == 'EMPTY'
 bpy.ops.object.delete()
