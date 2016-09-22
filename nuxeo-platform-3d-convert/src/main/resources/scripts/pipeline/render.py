@@ -156,6 +156,9 @@ for obj in scene.objects:
         obj.select = True
         textures_used = 0
         for mat_slot in obj.material_slots:
+            mat_slot.material.use_transparency = True
+            mat_slot.material.use_face_texture = True
+            mat_slot.material.use_face_texture_alpha = True
             textures_used += len([tex for tex in mat_slot.material.texture_slots if tex is not None])
         if textures_used > 1:
             bpy.ops.xps_tools.convert_to_cycles_selected()
