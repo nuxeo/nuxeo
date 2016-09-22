@@ -37,6 +37,16 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
     }
 
     @Test
+    public void testStateWithNullValue() throws Exception {
+        String xml = readFile("serializer/state-with-null-value-deserialization.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = new State();
+        expectedState.put("ecm:parentId", "ID");
+        assertEquals(expectedState, state);
+    }
+
+    @Test
     public void testStateWithEmptyValue() throws Exception {
         String xml = readFile("serializer/state-with-empty-value.xml");
         State state = MarkLogicStateDeserializer.deserialize(xml);
@@ -161,6 +171,18 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
         assertNotNull(state);
         State expectedState = createStateForStateWithEmptyStateInList();
         expectedState.remove("tp:complexList");
+        assertEquals(expectedState, state);
+    }
+
+    /*
+     * Test deserialization of state issued from TestSQLRepositorySecurity#testACLEscaping
+     */
+    @Test
+    public void testStateFromTestACLEscaping() throws Exception {
+        String xml = readFile("serializer/state-from-test-acl-escaping.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = createStateForStateFromTestACLEscaping();
         assertEquals(expectedState, state);
     }
 

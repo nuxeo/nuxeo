@@ -59,7 +59,9 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
+import org.nuxeo.ecm.core.storage.marklogic.MarkLogicQueryBuilder.MarkLogicQuery;
 
+import com.google.common.base.Strings;
 import com.marklogic.xcc.AdhocQuery;
 import com.marklogic.xcc.Content;
 import com.marklogic.xcc.ContentFactory;
@@ -86,6 +88,9 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     protected static final String NOSCROLL_ID = "noscroll";
 
     protected ContentSource xccContentSource;
+
+    /** Last value used from the in-memory sequence. Used by unit tests. */
+    protected long sequenceLastValue;
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
@@ -124,7 +129,17 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public String generateNewId() {
+        if (DEBUG_UUIDS) {
+            Long id = getNextSequenceId();
+            return "UUID_" + id;
+        }
         return UUID.randomUUID().toString();
+    }
+
+    // Used by unit tests
+    protected synchronized Long getNextSequenceId() {
+        sequenceLastValue++;
+        return Long.valueOf(sequenceLastValue);
     }
 
     @Override
@@ -300,7 +315,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, orderByClause, distinctDocuments);
-        String ctsQuery = builder.buildCTSQuery();
+        MarkLogicQuery query = builder.buildQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
         boolean manualProjection = builder.doManualProjection();
@@ -309,16 +324,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             // so we need the full state from the database
             evaluator.parse();
         }
-        if (limit == 0) {
-            limit = 50;
-        }
-        String query = ctsQuery + "[" + (offset * limit + 1) + " to " + ((offset + 1) * limit) + "]";
+        String searchQuery = query.getSearchQuery(limit, offset);
         if (log.isTraceEnabled()) {
-            logQuery(query, limit, offset);
+            logQuery(searchQuery);
         }
         // Run query
         try (Session session = xccContentSource.newSession()) {
-            AdhocQuery request = session.newAdhocQuery(query);
+            AdhocQuery request = session.newAdhocQuery(searchQuery);
             // ResultSequence will be closed by Session close
             ResultSequence rs = session.submitRequest(request);
 
@@ -337,8 +349,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 if (limit == 0) {
                     totalSize = projections.size();
                 } else {
-                    // TODO update that, cts query is not enough to get count
-                    AdhocQuery countRequest = session.newAdhocQuery(ctsQuery);
+                    AdhocQuery countRequest = session.newAdhocQuery(query.getCountQuery());
                     // ResultSequence will be closed by Session close
                     ResultSequence countRs = session.submitRequest(countRequest);
                     totalSize = Long.parseLong(countRs.asStrings()[0]);
@@ -351,8 +362,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 if (limit == 0) {
                     totalSize = projections.size();
                 } else {
-                    // TODO update that - does count up to make sense ?
-                    AdhocQuery countRequest = session.newAdhocQuery(ctsQuery);
+                    AdhocQuery countRequest = session.newAdhocQuery(query.getCountQuery(countUpTo + 1));
                     // ResultSequence will be closed by Session close
                     ResultSequence countRs = session.submitRequest(countRequest);
                     totalSize = Long.parseLong(countRs.asStrings()[0]);
@@ -375,7 +385,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
         // Not yet implemented, return all result in one shot for now
         MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, null, false);
-        String query = builder.buildCTSQuery();
+        String query = builder.buildQuery().getSearchQuery();
         // Run query
         try (Session session = xccContentSource.newSession()) {
             AdhocQuery request = session.newAdhocQuery(query);
@@ -436,6 +446,9 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             State resultState = MarkLogicStateDeserializer.deserialize(result.asString());
             return extractLock(resultState);
         } catch (RequestException e) {
+            if ("Document not found".equals(e.getMessage())) {
+                throw new DocumentNotFoundException(id, e);
+            }
             throw new NuxeoException("An exception happened during xcc call", e);
         }
         // TODO check how the concurrent exception is raised
@@ -449,12 +462,15 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         try (Session session = xccContentSource.newSession()) {
             ModuleInvoke request = session.newModuleInvoke("/ext/remove-lock.xqy");
             request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
-            request.setNewStringVariable("owner", owner);
+            request.setNewStringVariable("owner", Strings.nullToEmpty(owner));
             // ResultSequence will be closed by Session close
             ResultSequence result = session.submitRequest(request);
             State resultState = MarkLogicStateDeserializer.deserialize(result.asString());
             return extractLock(resultState);
         } catch (RequestException e) {
+            if ("Document not found".equals(e.getMessage())) {
+                throw new DocumentNotFoundException(id, e);
+            }
             throw new NuxeoException("An exception happened during xcc call", e);
         }
     }
@@ -484,10 +500,6 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     private void logQuery(String query) {
         log.trace("MarkLogic: QUERY " + query);
-    }
-
-    private void logQuery(String query, int limit, int offset) {
-        log.trace("MarkLogic: QUERY " + query + " OFFSET " + offset + " LIMIT " + limit);
     }
 
     private boolean exist(String ctsQuery) {

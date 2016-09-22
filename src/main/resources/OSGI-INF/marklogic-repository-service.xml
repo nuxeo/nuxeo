@@ -22,15 +22,6 @@
         <repository name="default" label="MarkLogic Repository" isDefault="true">
           <host>localhost</host>
           <port>8003</port>
-          <fulltext disabled="false" />
-        </repository>
-      </code>
-
-      Or with authentication:
-      <code>
-        <repository name="default" label="MarkLogic Repository" isDefault="true">
-          <host>localhost</host>
-          <port>8003</port>
           <user>user</user>
           <password>password</password>
           <fulltext disabled="false" />

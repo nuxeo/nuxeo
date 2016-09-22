@@ -110,8 +110,8 @@ class MarkLogicQueryBuilder {
 
     private Boolean projectionHasWildcard;
 
-    public MarkLogicQueryBuilder(DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, boolean distinctDocuments) {
+    public MarkLogicQueryBuilder(DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
+            boolean distinctDocuments) {
         this.schemaManager = Framework.getLocalService(SchemaManager.class);
         this.expression = evaluator.getExpression();
         this.selectClause = evaluator.getSelectClause();
@@ -145,25 +145,19 @@ class MarkLogicQueryBuilder {
         return projectionHasWildcard;
     }
 
-    public String buildCTSQuery() {
+    public MarkLogicQuery buildQuery() {
         Expression expression = this.expression;
         if (principals != null) {
             // Add principals to expression
-            LiteralList principalLiterals = principals.stream()
-                                                      .map(StringLiteral::new)
-                                                      .collect(Collectors.toCollection(LiteralList::new));
+            LiteralList principalLiterals = principals.stream().map(StringLiteral::new).collect(
+                    Collectors.toCollection(LiteralList::new));
             Expression principalsExpression = new Expression(new Reference(ExpressionEvaluator.NXQL_ECM_READ_ACL),
                     Operator.IN, principalLiterals);
             // Build final AND expression
             expression = new Expression(expression, Operator.AND, principalsExpression);
         }
-        RawStructuredQueryDefinition query = sqb.build(walkExpression(expression).build(sqb));
-        String options = buildOptions();
-        String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" //
-                + query.toString() //
-                + options //
-                + "</search>";
-        return queryManager.newRawCombinedQueryDefinition(new StringHandle(comboQuery));
+        // TODO compute options
+        return new MarkLogicQuery(walkExpression(expression).build());
     }
 
     private String buildOptions() {
@@ -291,7 +285,8 @@ class MarkLogicQueryBuilder {
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new QueryParseException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
+            throw new QueryParseException(
+                    "Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -365,32 +360,35 @@ class MarkLogicQueryBuilder {
         // - a platform issue
         if (convertedLiteral == null) {
             return walkNull(lvalue, equals);
+        } else if (convertedLiteral instanceof DateLiteral && ((DateLiteral) convertedLiteral).onlyDate) {
+            String date = convertedLiteral.asString() + "T__:__:__.___";
+            return getQueryBuilder(leftInfo, name -> new LikeQueryBuilder(name, new StringLiteral(date), true, false));
         }
         return getQueryBuilder(leftInfo, name -> new EqualQueryBuilder(name, convertedLiteral, equals));
     }
 
     private QueryBuilder walkLt(Operand lvalue, Operand rvalue) {
         FieldInfo leftInfo = walkReference(lvalue);
-        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.LT,
-                (Literal) rvalue));
+        return getQueryBuilder(leftInfo,
+                name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.LT, (Literal) rvalue));
     }
 
     private QueryBuilder walkGt(Operand lvalue, Operand rvalue) {
         FieldInfo leftInfo = walkReference(lvalue);
-        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.GT,
-                (Literal) rvalue));
+        return getQueryBuilder(leftInfo,
+                name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.GT, (Literal) rvalue));
     }
 
     private QueryBuilder walkLtEq(Operand lvalue, Operand rvalue) {
         FieldInfo leftInfo = walkReference(lvalue);
-        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.LE,
-                (Literal) rvalue));
+        return getQueryBuilder(leftInfo,
+                name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.LE, (Literal) rvalue));
     }
 
     private QueryBuilder walkGtEq(Operand lvalue, Operand rvalue) {
         FieldInfo leftInfo = walkReference(lvalue);
-        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.GE,
-                (Literal) rvalue));
+        return getQueryBuilder(leftInfo,
+                name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.GE, (Literal) rvalue));
     }
 
     private QueryBuilder walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
@@ -470,8 +468,8 @@ class MarkLogicQueryBuilder {
         if (!(rvalue instanceof StringLiteral)) {
             throw new QueryParseException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
         }
-        return getQueryBuilder(leftInfo, name -> new LikeQueryBuilder(name, (StringLiteral) rvalue, positive,
-                caseInsensitive));
+        return getQueryBuilder(leftInfo,
+                name -> new LikeQueryBuilder(name, (StringLiteral) rvalue, positive, caseInsensitive));
     }
 
     private QueryBuilder walkIn(Operand lvalue, Operand rvalue, boolean positive) {
@@ -515,7 +513,8 @@ class MarkLogicQueryBuilder {
         FieldInfo fieldInfo = walkReference(reference.name);
         if (DATE_CAST.equals(reference.cast)) {
             Type type = fieldInfo.type;
-            if (!(type instanceof DateType || (type instanceof ListType && ((ListType) type).getFieldType() instanceof DateType))) {
+            if (!(type instanceof DateType
+                    || (type instanceof ListType && ((ListType) type).getFieldType() instanceof DateType))) {
                 throw new QueryParseException("Cannot cast to " + reference.cast + ": " + reference.name);
             }
         }
@@ -742,11 +741,11 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+        protected String build(String name) {
             if (!correlatedPath.matches("^.*\\*\\d$")) {
                 throw new QueryParseException("A correlated query builder might finish by a wildcard, path=" + path);
             }
-            return sqb.containerQuery(sqb.element(serializeName(name)), child.build(sqb));
+            return String.format("cts:element-query(fn:QName(\"\", \"%s\"), %s)", serializeName(name), child.build());
         }
 
         @Override
@@ -777,20 +776,20 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
-            StructuredQueryDefinition query = super.build(sqb);
+        public String build() {
+            String query = super.build();
             if (equal) {
                 return query;
             }
-            return sqb.not(query);
+            return "cts:not-query(" + query + ")";
         }
 
         @Override
-        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
-            // Handle the wildcard case here because semantic is different for <>
+        protected String build(String name) {
             String serializedName = serializeName(name);
             String serializedValue = MarkLogicStateSerializer.serializeValue(getLiteralValue(literal));
-            return sqb.value(sqb.element(serializedName), serializedValue);
+            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), \"%s\")", serializedName,
+                    serializedValue);
         }
 
         @Override
@@ -810,8 +809,11 @@ class MarkLogicQueryBuilder {
 
         private static final String WILDCARDED = "wildcarded";
 
-        private static final String[] BASIC_OPTIONS = new String[] { PUNCTUATION_SENSITIVE, WILDCARDED,
-                WHITESPACE_SENSITIVE };
+        private static final String BASIC_OPTIONS = String.format("(\"%s\",\"%s\",\"%s\")", PUNCTUATION_SENSITIVE,
+                WILDCARDED, WHITESPACE_SENSITIVE);
+
+        private static final String INSENSITIVE_OPTIONS = String.format("(\"%s\",\"%s\",\"%s\",\"%s\")",
+                PUNCTUATION_SENSITIVE, WILDCARDED, WHITESPACE_SENSITIVE, CASE_INSENSITIVE);
 
         private final StringLiteral literal;
 
@@ -827,24 +829,24 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
-            StructuredQueryDefinition query = super.build(sqb);
+        public String build() {
+            String query = super.build();
             if (positive) {
                 return query;
             }
-            return sqb.not(query);
+            return "cts:not-query(" + query + ")";
         }
 
         @Override
-        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+        protected String build(String name) {
             String serializedName = serializeName(name);
             String serializedValue = likeToMarkLogicWildcard(literal.value);
-            String[] options = BASIC_OPTIONS;
+            String options = BASIC_OPTIONS;
             if (caseInsensitive) {
-                options = Arrays.copyOf(options, options.length + 1);
-                options[options.length - 1] = CASE_INSENSITIVE;
+                options = INSENSITIVE_OPTIONS;
             }
-            return sqb.value(sqb.element(serializedName), null, options, 1.0, serializedValue);
+            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), \"%s\", %s)", serializedName,
+                    serializedValue, options);
         }
 
         @Override
@@ -897,35 +899,52 @@ class MarkLogicQueryBuilder {
 
     private static class RangeQueryBuilder extends AbstractNamedQueryBuilder {
 
-        private StructuredQueryBuilder.Operator operator;
+        public enum Operator {
+
+            LT("<"), LE("<="), GE(">="), GT(">");
+
+            private final String markLogicOperator;
+
+            Operator(String markLogicOperator) {
+                this.markLogicOperator = markLogicOperator;
+            }
+
+            public String getMarkLogicOperator() {
+                return markLogicOperator;
+            }
+
+        }
+
+        private Operator operator;
 
         private final Literal literal;
 
-        public RangeQueryBuilder(String path, StructuredQueryBuilder.Operator operator, Literal literal) {
+        public RangeQueryBuilder(String path, Operator operator, Literal literal) {
             super(path);
             this.operator = operator;
             this.literal = literal;
         }
 
         @Override
-        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+        protected String build(String name) {
             String serializedName = serializeName(name);
             Object value = getLiteralValue(literal);
             String valueType = ElementType.getType(value.getClass()).getKey();
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
-            return sqb.range(sqb.element(serializedName), valueType, operator, serializedValue);
+            return String.format("cts:element-range-query(fn:QName(\"\",\"%s\"),\"%s\",%s(\"%s\"))", serializedName,
+                    operator.getMarkLogicOperator(), valueType, serializedValue);
         }
 
         @Override
         public void not() {
-            if (operator == StructuredQueryBuilder.Operator.LT) {
-                operator = StructuredQueryBuilder.Operator.GE;
-            } else if (operator == StructuredQueryBuilder.Operator.GT) {
-                operator = StructuredQueryBuilder.Operator.LE;
-            } else if (operator == StructuredQueryBuilder.Operator.LE) {
-                operator = StructuredQueryBuilder.Operator.GT;
-            } else if (operator == StructuredQueryBuilder.Operator.GE) {
-                operator = StructuredQueryBuilder.Operator.LT;
+            if (operator == Operator.LT) {
+                operator = Operator.GE;
+            } else if (operator == Operator.GT) {
+                operator = Operator.LE;
+            } else if (operator == Operator.LE) {
+                operator = Operator.GT;
+            } else if (operator == Operator.GE) {
+                operator = Operator.LT;
             }
         }
 
@@ -944,22 +963,24 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
-            StructuredQueryDefinition query = super.build(sqb);
+        public String build() {
+            String query = super.build();
             if (in) {
                 return query;
             }
-            return sqb.not(query);
+            return "cts:not-query(" + query + ")";
         }
 
         @Override
-        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+        protected String build(String name) {
             String serializedName = serializeName(name);
-            String[] serializedValues = literals.stream()
-                                                .map(this::getLiteralValue)
-                                                .map(MarkLogicStateSerializer::serializeValue)
-                                                .toArray(String[]::new);
-            return sqb.value(sqb.element(serializedName), serializedValues);
+            String serializedValues = literals.stream()
+                                              .map(this::getLiteralValue)
+                                              .map(MarkLogicStateSerializer::serializeValue)
+                                              .map(s -> "\"" + s + "\"")
+                                              .collect(Collectors.joining(",", "(", ")"));
+            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), %s)", serializedName,
+                    serializedValues);
         }
 
         @Override
@@ -979,18 +1000,18 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
-            StructuredQueryDefinition query = super.build(sqb);
+        public String build() {
+            String query = super.build();
             if (isNull) {
-                return sqb.not(query);
+                return "cts:not-query(" + query + ")";
             }
             return query;
         }
 
         @Override
-        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+        protected String build(String name) {
             String serializedName = serializeName(name);
-            return sqb.containerQuery(sqb.element(serializedName), sqb.and());
+            return String.format("cts:element-query(fn:QName(\"\", \"%s\"), cts:and-query(()))", serializedName);
         }
 
         @Override
@@ -1011,17 +1032,17 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+        public String build() {
             if (children.size() == 1) {
-                return children.get(0).build(sqb);
+                return children.get(0).build();
             }
-            StructuredQueryDefinition[] childrenQueries = children.stream()
-                                                                  .map(child -> child.build(sqb))
-                                                                  .toArray(StructuredQueryDefinition[]::new);
+            String childrenQueries = children.stream()
+                                             .map(QueryBuilder::build)
+                                             .collect(Collectors.joining(",", "(", ")"));
             if (and) {
-                return sqb.and(childrenQueries);
+                return String.format("cts:and-query(%s)", childrenQueries);
             }
-            return sqb.or(childrenQueries);
+            return String.format("cts:or-query(%s)", childrenQueries);
         }
 
         @Override
@@ -1045,22 +1066,22 @@ class MarkLogicQueryBuilder {
         }
 
         @Override
-        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+        public String build() {
             String[] parts = path.split("/");
-            StructuredQueryDefinition query = build(sqb, parts[parts.length - 1]);
+            String query = build(parts[parts.length - 1]);
             for (int i = parts.length - 2; i >= 0; i--) {
-                query = sqb.containerQuery(sqb.element(serializeName(parts[i])), query);
+                query = String.format("cts:element-query(fn:QName(\"\", \"%s\"),%s)", serializeName(parts[i]), query);
             }
             return query;
         }
 
-        protected abstract StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name);
+        protected abstract String build(String name);
 
     }
 
     private interface QueryBuilder {
 
-        StructuredQueryDefinition build(StructuredQueryBuilder sqb);
+        String build();
 
         void not();
 
@@ -1084,6 +1105,68 @@ class MarkLogicQueryBuilder {
 
         default String serializeName(String name) {
             return MarkLogicHelper.serializeKey(name);
+        }
+
+    }
+
+    public class MarkLogicQuery {
+
+        private final String ctsQuery;
+
+        public MarkLogicQuery(String ctsQuery) {
+            this.ctsQuery = ctsQuery;
+        }
+
+        public String getSearchQuery() {
+            String searchQuery = createSearchQuery();
+            return addProjections(searchQuery);
+        }
+
+        public String getSearchQuery(int limit, int offset) {
+            String searchQuery = createSearchQuery();
+            if (limit != 0) {
+                searchQuery = String.format("%s[%s to %s]", searchQuery, offset + 1, offset + limit);
+            }
+            return addProjections(searchQuery);
+        }
+
+        public String getCountQuery() {
+            return String.format("fn:count(%s)", createSearchQuery());
+        }
+
+        public String getCountQuery(int countUpTo) {
+            return String.format("fn:count(%s,%s)", createSearchQuery(), countUpTo);
+        }
+
+        private String createSearchQuery() {
+            return String.format("cts:search(fn:doc(),%s)", ctsQuery);
+        }
+
+        private String addProjections(String searchQuery) {
+            String query = searchQuery;
+            if (!doManualProjection()) {
+                StringBuilder fields = new StringBuilder("let $paths := (");
+                for (int i = 0; i < selectClause.elements.size(); i++) {
+                    Operand op = selectClause.elements.get(i);
+                    if (!(op instanceof Reference)) {
+                        throw new QueryParseException("Projection not supported: " + op);
+                    }
+                    if (i > 0) {
+                        fields.append(',').append('\n');
+                    }
+                    FieldInfo fieldInfo = walkReference((Reference) op);
+                    fields.append('"')
+                          .append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
+                          .append('/')
+                          .append(MarkLogicHelper.serializeKey(fieldInfo.queryField))
+                          .append('"');
+                }
+                fields.append(')');
+                query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/extract.xqy';\n"
+                        + fields.toString() + "let $namespaces := ()\n" + "for $i in " + query
+                        + " return extract:extract-nodes($i, $paths, $namespaces)";
+            }
+            return query;
         }
 
     }

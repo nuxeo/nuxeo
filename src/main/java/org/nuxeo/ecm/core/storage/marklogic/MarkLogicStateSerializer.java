@@ -33,6 +33,7 @@ import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
 /**
@@ -56,14 +57,20 @@ final class MarkLogicStateSerializer {
     }
 
     private static Element serialize(String key, State state) {
+        boolean update = state instanceof StateDiff;
         Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
         for (Entry<String, Serializable> entry : state.entrySet()) {
-            serialize(entry.getKey(), entry.getValue()).ifPresent(element::add);
+            Optional<Element> child = serialize(entry.getKey(), entry.getValue());
+            if (child.isPresent()) {
+                element.add(child.get());
+            } else if (update) {
+                element.add(createNullElement(entry.getKey()));
+            }
         }
         return element;
     }
 
-    public static Optional<Element> serialize(String key, Object value) {
+    private static Optional<Element> serialize(String key, Object value) {
         Optional<Element> result;
         if (value == null) {
             result = Optional.empty();
@@ -108,8 +115,8 @@ final class MarkLogicStateSerializer {
         Element diff = DocumentHelper.createElement(MarkLogicHelper.serializeKey("diff"));
         if (listDiff.diff != null) {
             for (Object object : listDiff.diff) {
-                serialize(key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, object == null ? "NULL" : object).ifPresent(
-                        diff::add);
+                diff.add(serialize(key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX, object).orElseGet(
+                        () -> createNullElement(key + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX)));
             }
         }
         diffParent.add(diff);
@@ -147,9 +154,15 @@ final class MarkLogicStateSerializer {
         return serializedValue;
     }
 
-    public static void addDefaultNamespaces(Element root) {
+    private static void addDefaultNamespaces(Element root) {
         root.addNamespace("xs", XMLConstants.W3C_XML_SCHEMA_NS_URI);
         root.addNamespace("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+    }
+
+    private static Element createNullElement(String key) {
+        Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
+        element.setText("NULL");
+        return element;
     }
 
 }

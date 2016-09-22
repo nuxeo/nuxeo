@@ -55,31 +55,18 @@ import org.dom4j.Node;
 import org.dom4j.QName;
 import org.dom4j.Text;
 import org.dom4j.util.NodeComparator;
-import org.junit.BeforeClass;
-import org.mockito.Answers;
-import org.mockito.Mockito;
-
-import com.marklogic.client.DatabaseClient;
-import com.marklogic.client.impl.DatabaseClientImpl;
 
 public abstract class AbstractTest {
 
     @SuppressWarnings("unchecked")
     private static final Comparator<Node> NODE_COMPARATOR = new NodeComparator();
 
-    protected static DatabaseClient CLIENT;
-
-    @BeforeClass
-    public static void beforeClass() {
-        CLIENT = Mockito.mock(DatabaseClientImpl.class, Answers.CALLS_REAL_METHODS.get());
-    }
-
     public String readFile(String file) throws Exception {
         return new String(Files.readAllBytes(Paths.get(this.getClass().getResource("/" + file).toURI())));
     }
 
     public void assertFileAgainstString(String file, String actual) throws Exception {
-        assertEquals(readFile(file).replaceAll("[\\s\n]", ""), actual);
+        assertEquals(formatString(readFile(file)), formatString(actual));
     }
 
     public void assertXMLFileAgainstString(String file, String actual) throws Exception {
@@ -126,8 +113,8 @@ public abstract class AbstractTest {
 
     public void assertXMLEquals(Namespace expected, Namespace actual) {
         if (expected != null && actual != null) {
-            assertEquals(format("Namespaces %s and %s don't have same prefix.", expected, actual),
-                    expected.getPrefix(), actual.getPrefix());
+            assertEquals(format("Namespaces %s and %s don't have same prefix.", expected, actual), expected.getPrefix(),
+                    actual.getPrefix());
             assertEquals(format("Namespaces %s and %s don't have same uri.", expected, actual), expected.getURI(),
                     actual.getURI());
         } else if (expected == null ^ actual == null) {
@@ -200,6 +187,10 @@ public abstract class AbstractTest {
     public boolean isNotEmptyOrNewLine(Node node) {
         return node.getNodeType() != Node.TEXT_NODE
                 || (!"".equals(node.getText()) && !node.getText().matches("\\s*\n\\s*"));
+    }
+
+    public String formatString(String string) {
+        return string.replaceAll("\n", "").replaceAll("\\s{2,}", "").replaceAll("([^a-zA-z])\\s+", "$1");
     }
 
 }

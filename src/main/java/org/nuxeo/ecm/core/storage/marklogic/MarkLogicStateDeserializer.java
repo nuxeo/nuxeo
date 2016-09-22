@@ -48,6 +48,10 @@ final class MarkLogicStateDeserializer {
 
     private static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
 
+    static {
+        xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
+    }
+
     private MarkLogicStateDeserializer() {
         // nothing
     }
@@ -140,6 +144,7 @@ final class MarkLogicStateDeserializer {
             XMLEvent event = xmler.peek();
             if (event.isEndElement()) {
                 result = null;
+                xmler.nextEvent();
             } else if (event.asStartElement()
                             .getName()
                             .getLocalPart()

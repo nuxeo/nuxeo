@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ecm__name xsi:type="xs:string">folder1</ecm__name>
+  <ecm__majorVersion xsi:type="xs:long">0</ecm__majorVersion>
+  <ecm__acp>
+    <ecm__acp__item>
+      <name xsi:type="xs:string">local</name>
+      <acl>
+        <acl__item>
+          <perm xsi:type="xs:string">Read</perm>
+          <grant xsi:type="xs:boolean">true</grant>
+          <user xsi:type="xs:string">xyz</user>
+        </acl__item>
+        <acl__item>
+          <perm xsi:type="xs:string">Read</perm>
+          <grant xsi:type="xs:boolean">true</grant>
+          <user xsi:type="xs:string">abc@def&lt;&amp;&gt;/</user>
+        </acl__item>
+        <acl__item>
+          <perm xsi:type="xs:string">Read</perm>
+          <grant xsi:type="xs:boolean">true</grant>
+          <user xsi:type="xs:string">café</user>
+        </acl__item>
+        <acl__item>
+          <perm xsi:type="xs:string">Read</perm>
+          <grant xsi:type="xs:boolean">true</grant>
+          <user xsi:type="xs:string">o'hara</user>
+        </acl__item>
+        <acl__item>
+          <perm xsi:type="xs:string">Read</perm>
+          <grant xsi:type="xs:boolean">true</grant>
+          <user xsi:type="xs:string">A_x1234_</user>
+        </acl__item>
+      </acl>
+    </ecm__acp__item>
+  </ecm__acp>
+  <ecm__lifeCyclePolicy xsi:type="xs:string">default</ecm__lifeCyclePolicy>
+  <ecm__racl>
+    <ecm__racl__item xsi:type="xs:string">A_x1234_</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">Administrator</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">abc@def&lt;&amp;&gt;/</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">administrators</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">anonymous</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">café</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">members</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">o'hara</ecm__racl__item>
+    <ecm__racl__item xsi:type="xs:string">xyz</ecm__racl__item>
+  </ecm__racl>
+  <ecm__primaryType xsi:type="xs:string">Folder</ecm__primaryType>
+  <ecm__id xsi:type="xs:string">5f2abfac-931f-4db7-bd37-46a2a6655ef2</ecm__id>
+  <ecm__parentId xsi:type="xs:string">00000000-0000-0000-0000-000000000000</ecm__parentId>
+  <ecm__ancestorIds>
+    <ecm__ancestorIds__item xsi:type="xs:string">00000000-0000-0000-0000-000000000000</ecm__ancestorIds__item>
+  </ecm__ancestorIds>
+  <ecm__minorVersion xsi:type="xs:long">0</ecm__minorVersion>
+  <ecm__lifeCycleState xsi:type="xs:string">project</ecm__lifeCycleState>
+</document>
