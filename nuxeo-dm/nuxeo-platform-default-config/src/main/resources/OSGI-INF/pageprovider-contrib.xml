@@ -2,8 +2,7 @@
 
 <component name="org.nuxeo.ecm.webapp.pageproviders.contrib">
 
-  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
-    point="providers">
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
 
     <documentation>
       This contribution declares page providers used by UI components.
