@@ -1,0 +1,122 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+  Nelson Silva <nsilva@nuxeo.com>
+-->
+
+<!--
+An element listing Nuxeo Drive synchronization roots.
+
+Example:
+
+    <nuxeo-drive-desktop-packages application="Nuxeo Drive"></nuxeo-drive-desktop-packages>
+
+@group Nuxeo UI Elements
+@element nuxeo-drive-sync-roots-management
+-->
+<dom-module id="nuxeo-drive-sync-roots-management">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .table {
+        border: 1px solid #e7e7e7;
+      }
+
+      .row {
+        @apply(--layout-horizontal);
+      }
+
+      .row > div {
+        padding: 0.6em 1em;
+      }
+
+      .headers > div {
+        background-color: #f8f9fb;
+        font-weight: bold;
+      }
+    </style>
+
+    <nuxeo-operation auto id="roots" op="NuxeoDrive.GetRoots" on-response="_handleRoots"></nuxeo-operation>
+    <nuxeo-operation id="disable" op="NuxeoDrive.SetSynchronization" params='{"enable": false}'></nuxeo-operation>
+
+    <template is="dom-if" if="[[_empty(roots)]]">
+      [[i18n('ui.drive.syncRootsManagement.roots.empty',"You currently don't have any synchronization root.")]]
+    </template>
+
+    <template is="dom-if" if="[[!_empty(roots)]]">
+      <div class="table">
+        <div class="row headers">
+          <div class="flex-2">[[i18n('ui.drive.syncRootsManagement.root.name', 'Name')]]</div>
+          <div class="flex-8">[[i18n('ui.drive.syncRootsManagement.root.path', 'Path')]]</div>
+          <div class="flex"></div>
+        </div>
+        <template is="dom-repeat" items="[[roots]]" as="doc">
+          <div class="row">
+            <div class="flex-2">[[doc.title]]</div>
+            <div class="flex-8">[[doc.path]]</div>
+            <div class="actions">
+              <paper-icon-button icon="icons:clear"
+                                 title="[[i18n('label.drive.root.disable', 'Disable)]]"
+                                 on-tap="_disable">
+              </paper-icon-button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <paper-toast id="toast">[[i18n('ui.drive.syncRootsManagement.roots.disabled',
+                                   'Synchronization root disabled')]]</paper-toast>
+
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        is: 'nuxeo-drive-sync-roots-management',
+        properties: {
+          roots: {
+            type: Array,
+            value: []
+          }
+        },
+        behaviors: [Nuxeo.I18nBehavior],
+
+        _handleRoots: function(e) {
+          this.roots = e.detail.response.entries;
+        },
+
+        _empty: function(arr) {
+          return !arr.length;
+        },
+
+        _disable: function(e) {
+          this.$.disable.input = e.model.doc.uid;
+          return this.$.disable.execute()
+            .then(this.refresh.bind(this))
+            .then(function() {
+              this.$.toast.toggle();
+            }.bind(this));
+        },
+
+        refresh: function() {
+          return this.$.roots.execute(this);
+        }
+      });
+    })();
+  </script>
+</dom-module>

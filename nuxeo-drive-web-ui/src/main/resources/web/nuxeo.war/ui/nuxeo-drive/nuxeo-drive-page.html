@@ -1,0 +1,66 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+  Nelson Silva <nsilva@nuxeo.com>
+-->
+<link rel="import" href="nuxeo-authentication-tokens-management.html">
+<link rel="import" href="nuxeo-drive-sync-roots-management.html">
+<link rel="import" href="nuxeo-drive-desktop-packages.html">
+
+<!--
+Nuxeo Drive management page.
+
+Example:
+
+    <nuxeo-drive-page></nuxeo-drive-page>
+
+@group Nuxeo UI Elements
+@element nuxeo-drive-page
+-->
+<dom-module id="nuxeo-drive-page">
+  <template>
+    <paper-header-panel class="flex">
+      <div class="paper-header layout horizontal">
+        <span class="flex">[[i18n('ui.app.drive.heading','Nuxeo Drive')]]</span>
+      </div>
+      <div class="content">
+        <paper-card class="card" elevation="0">
+          <div class="card-content">
+            <div class="title">[[i18n('ui.app.drive.packages','Packages')]]</div>
+            <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
+          </div>
+        </paper-card>
+        <paper-card class="card" elevation="0">
+          <div class="card-content">
+            <div class="title">[[i18n('ui.app.drive.roots','Synchronization Roots')]]</div>
+            <nuxeo-drive-sync-roots-management></nuxeo-drive-sync-roots-management>
+          </div>
+        </paper-card>
+        <paper-card class="card" elevation="0">
+          <div class="card-content">
+            <div class="title">[[i18n('ui.app.drive.tokens','Tokens')]]</div>
+            <nuxeo-authentication-tokens-management application="Nuxeo Drive"></nuxeo-authentication-tokens-management>
+          </div>
+        </paper-card>
+      </div>
+    </paper-header-panel>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-drive-page',
+      behaviors: [Nuxeo.I18nBehavior]
+    });
+  </script>
+</dom-module>

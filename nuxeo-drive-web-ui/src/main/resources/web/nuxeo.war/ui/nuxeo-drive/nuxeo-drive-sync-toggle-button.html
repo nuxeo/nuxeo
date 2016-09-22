@@ -1,0 +1,137 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+  Nelson Silva <nsilva@nuxeo.com>
+-->
+
+<!--
+`nuxeo-drive-sync-toggle-button`
+@group Nuxeo UI
+@element nuxeo-drive-sync-toggle-button
+-->
+<dom-module id="nuxeo-drive-sync-toggle-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      ::content iron-icon:hover {
+        fill: var(--nuxeo-link-hover-color);
+      }
+
+      :host([synchronized]) ::content iron-icon {
+        fill: var(--icon-toggle-pressed-color, --nuxeo-action-color-activated);
+      }
+    </style>
+
+    <nuxeo-operation auto op="NuxeoDrive.GetRoots" on-response="_handleRoots"></nuxeo-operation>
+    <nuxeo-operation id="op" op="NuxeoDrive.SetSynchronization" input="[[document.uid]]"></nuxeo-operation>
+
+    <template is="dom-if" if="[[_isAvailable(document, synchronizationRoot)]]">
+      <paper-icon-button id="syncBut" icon="[[_icon(synchronized)]]" on-tap="toggle"></paper-icon-button>
+      <paper-tooltip for="syncBut">[[_tooltip(synchronized)]]</paper-tooltip>
+    </template>
+  </template>
+
+  <script>
+    (function() {
+      // cache roots
+      var roots;
+
+      Polymer({
+        is: 'nuxeo-drive-sync-toggle-button',
+        behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+        properties: {
+          document: {
+            type: Object,
+            observer: '_update'
+          },
+          synchronized: {
+            type: Boolean,
+            notify: true,
+            reflectToAttribute: true
+          },
+          synchronizationRoot: String
+        },
+
+        toggle: function() {
+          var enable = !this.synchronized;
+          this.$.op.params = {enable: !this.synchronized};
+          return this.$.op.execute().then(function() {
+            // update our root cache
+            var idx = roots.indexOf(this.document.uid);
+            if (enable && idx === -1) {
+              roots.push(this.document.uid);
+            } else if (!enable && idx !== -1) {
+              roots.splice(idx, 1);
+            }
+            // as well as the status
+            this.synchronized = enable;
+          }.bind(this));
+        },
+
+        _isAvailable: function() {
+          if (!this.document) {
+            return false;
+          }
+          if (this._isVersion(this.document)) {
+            return false;
+          }
+          var excludedDoctypes = ['Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Forum', 'Collections'];
+          var isExcluded = excludedDoctypes.indexOf(this.document.type) !== -1;
+          var isFolder = this.document.facets.indexOf('Folderish') !== -1;
+          var isSyncRootCandidate = isFolder && this.document.state !== 'deleted';
+          return !isExcluded && isSyncRootCandidate && !this.synchronizationRoot;
+        },
+
+        _tooltip: function(synchronized) {
+          return synchronized ? this.i18n('ui.driveSyncToggleButton.unsync','Unsynchronize')
+                              : this.i18n('ui.driveSyncToggleButton.sync','Synchronize');
+        },
+
+        _icon: function(synchronized) {
+          return synchronized ? 'notification:sync' : 'notification:sync-disabled';
+        },
+
+        _update: function() {
+          if (!this.document || !roots) {
+            return;
+          }
+          this.synchronized = (roots.indexOf(this.document.uid) !== -1);
+
+          // determine synchronization root (closest synchronized ancestor)
+          var breadcrumb = this.document.contextParameters.breadcrumb.entries;
+          for (var i = breadcrumb.length - 1; i >= 0; i--) {
+            if (roots.indexOf(breadcrumb[i].parentRef) !== -1) {
+              this.synchronizationRoot = breadcrumb[i].parentRef;
+              return;
+            }
+          }
+          this.synchronizationRoot = null;
+        },
+
+        _handleRoots: function(e) {
+          roots = e.detail.response.entries.map(function(doc) {
+            return doc.uid;
+          });
+          this._update();
+        }
+      });
+    })();
+  </script>
+
+</dom-module>
