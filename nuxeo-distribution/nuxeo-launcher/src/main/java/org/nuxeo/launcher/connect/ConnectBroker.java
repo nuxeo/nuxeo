@@ -1210,7 +1210,7 @@ public class ConnectBroker {
      * @param keepExisting If false, the request will remove existing packages that are not part of the resolution
      * @param ignoreMissing Do not error out on missing packages, just handle the rest
      * @param upgradeMode If true, all packages will be upgraded to their last compliant version
-     * @since TODO
+     * @since 8.4
      */
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove, boolean keepExisting, boolean ignoreMissing, boolean upgradeMode) {
