@@ -36,7 +36,7 @@ import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 
 /**
- * @since TODO
+ * @since 8.4
  */
 public class TestConnectBroker extends AbstractPackageManagerTestCase {
 
