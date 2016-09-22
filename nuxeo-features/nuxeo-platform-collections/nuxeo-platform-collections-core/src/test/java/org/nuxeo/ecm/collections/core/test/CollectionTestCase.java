@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -68,18 +69,19 @@ public class CollectionTestCase {
     protected static final String COLLECTION_FOLDER_PATH = "/default-domain/UserWorkspaces/Administrator/"
             + CollectionConstants.DEFAULT_COLLECTIONS_NAME;
 
-    protected static final int MAX_CARDINALITY = 60;
+    protected static final int MAX_CARDINALITY = (int) ((2 * CollectionAsynchrnonousQuery.MAX_RESULT) + 1);
 
     protected static final int WORK_TIME_OUT_MS = 5000;
 
-    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) {
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
-                "Workspace");
+    protected DocumentModel testWorkspace;
+
+    public List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) {
+        testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         for (int i = 1; i <= nbFile; i++) {
-            DocumentModel testFile = session.createDocumentModel(testWorkspace.getPath().toString(),
-                    TEST_FILE_NAME + i, "File");
+            DocumentModel testFile = session.createDocumentModel(testWorkspace.getPath().toString(), TEST_FILE_NAME + i,
+                    "File");
             testFile = session.createDocument(testFile);
             result.add(testFile);
         }
