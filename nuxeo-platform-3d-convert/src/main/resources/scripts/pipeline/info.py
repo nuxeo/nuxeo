@@ -29,17 +29,22 @@ def get_mesh_info(m):
     max = Vector([max[0], max[1], max[2]])
     return {'dim': dim, 'cen': cen, 'min': min, 'max': max}
 
-for obj in bpy.context.scene.objects:
+scene = bpy.context.scene
+for obj in scene.objects:
     if obj.type == 'MESH':
-        bpy.context.scene.objects.active = obj
+        clone = obj.copy()
+        scene.objects.link(clone)
+        scene.objects.active = clone
+        bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True)
+        bpy.ops.object.modifier_apply(apply_as='DATA', modifier='decimate')
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='DESELECT')
         bpy.ops.mesh.select_non_manifold()
-        bm = bmesh.from_edit_mesh(obj.data)
+        bm = bmesh.from_edit_mesh(clone.data)
         selected_vertices = [v for v in bm.verts if v.select]
         selected_edges = [e for e in bm.edges if e.select]
         selected_polygons = [p for p in bm.faces if p.select]
-        mesh_info = get_mesh_info(obj)
+        mesh_info = get_mesh_info(clone)
         info['parts'][obj.name] = {
             'non_manifold_vertices': len(selected_vertices),
             'non_manifold_edges': len(selected_edges),
@@ -68,8 +73,10 @@ for obj in bpy.context.scene.objects:
         bb_max[1] = mesh_info['max'].y if (bb_max[1] is None or mesh_info['max'].y > bb_max[1]) else bb_max[1]
         bb_max[2] = mesh_info['max'].z if (bb_max[2] is None or mesh_info['max'].z > bb_max[2]) else bb_max[2]
         global_lod_success = global_lod_success and lod_success
-        bpy.ops.mesh.select_all(action='DESELECT')
         bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.select_all(action='DESELECT')
+        clone.select = True
+        bpy.ops.object.delete()
 
 info['global'] = {
     'non_manifold_vertices': non_manifold_vertices,

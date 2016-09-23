@@ -1,12 +1,8 @@
 if args.outdir == None:
     sys.exit()
 
-try:
-    lod_id
-except NameError:
-    outfile = args.outdir + '/convert/transmissionformat.dae'
-else:
-    outfile = args.outdir + '/convert/transmissionformat-' + str(lod_id) + '-' + str(perc_poly) + '-' + str(max_poly) + '.dae'
+outfile = args.outdir + '/convert/'
+outfile += 'transmissionformat-' + str(lod_id) + '-' + str(perc_poly) + '-' + str(max_poly) + '.dae'
 
 # get the meshes
 meshes = [obj for obj in bpy.data.objects if obj.type == 'MESH']
@@ -34,7 +30,8 @@ elif out_ext == 'obj':
 elif out_ext == 'dae':
     print('Exporting COLLADA')
     # export a collada model
-    bpy.ops.wm.collada_export(filepath=outfile, include_uv_textures=True, include_material_textures=True)
+    bpy.ops.wm.collada_export(
+        filepath=outfile, include_uv_textures=True, include_material_textures=True, apply_modifiers=True)
 
 elif out_ext == 'gltf':
     print('Exporting glTF')

@@ -62,7 +62,6 @@ if args.operators is None:
 base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
 perc_poly = 100
 max_poly = None
-current_lod = 1.0
 lod_id = 'default'
 lod_success = True
 
