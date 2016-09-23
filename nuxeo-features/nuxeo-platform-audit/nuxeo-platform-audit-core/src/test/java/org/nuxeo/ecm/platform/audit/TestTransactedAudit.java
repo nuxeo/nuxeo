@@ -73,7 +73,7 @@ public class TestTransactedAudit {
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);
-        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
+        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), repo.getRepositoryName());
 
         assertThat(trail, notNullValue());
         assertThat(trail.size(), is(3));
