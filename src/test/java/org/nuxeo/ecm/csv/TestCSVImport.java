@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.csv.CSVImporterOptions.ImportMode;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -119,7 +120,8 @@ public class TestCSVImport {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCreateAllDocuments() throws InterruptedException, IOException {
-        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
+
         TransactionHelper.commitOrRollbackTransaction();
 
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_OK_CSV), DOCS_OK_CSV, options);
@@ -449,7 +451,7 @@ public class TestCSVImport {
 
     @Test
     public void shouldCreateDocumentWithGivenLifeCycleState() throws InterruptedException {
-        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
         TransactionHelper.commitOrRollbackTransaction();
 
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_LIFECYCLE_CSV),
@@ -476,7 +478,7 @@ public class TestCSVImport {
         acp.addACE(ACL.LOCAL_ACL, ACE.builder("leela", "ReadWrite").build());
         session.setACP(root.getRef(), acp, true);
 
-        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -504,7 +506,7 @@ public class TestCSVImport {
 
     @Test
     public void shouldCreateDocumentWithDefinedCreator() throws InterruptedException {
-        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
         TransactionHelper.commitOrRollbackTransaction();
 
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_CREATOR_CSV),
