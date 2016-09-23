@@ -46,7 +46,6 @@
     point="responseHeaders">
     <header name="X-UA-Compatible">IE=10; IE=11</header>
     <header name="Cache-Control">no-cache</header>
-    <header name="Pragma">no-cache</header>
     <header name="X-Content-Type-Options">nosniff</header>
     <header name="X-XSS-Protection">1; mode=block</header>
   </extension>
