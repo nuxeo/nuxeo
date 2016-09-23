@@ -1,6 +1,10 @@
 # Nuxeo Platform 3D
 
+<img src="3D-Preview-Example.png" width="300"/>
+
 Support for previewing 3D content with ray-tracing renders and WebGL 3D viewer.
+
+Requirements: minimum version for Nuxeo Platform is 8.3.
 
 Supported 3D file formats:
 
@@ -16,11 +20,33 @@ Supported 3D file formats:
 
     mvn clean install
 
-## Deploying
+# Installation
 
-Copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/`.
+## Server-side
 
-## QA results
+Copy the 5 built artifacts into `$NUXEO_HOME/templates/custom/bundles/`
+
+## Client-side
+
+### Step 1: Install Blender
+Install it directly from `https://www.blender.org/download/`.
+Add it to your PATH On Mac OS: `PATH=$PATH:/Applications/:/Applications/blender.app/Contents/MacOS`
+
+### Step 2: Install collada2gltf
+Install it directly from `https://github.com/KhronosGroup/glTF/releases/download/v1.0-draft2/collada2gltf_mac_v1.0-draft_x64.gz`
+and add it to `/usr/bin`.
+Make collada2gltf accessible with a command line.
+
+# How to use it
+Create a new document type "3D".
+Then add to the main content the ".obj" document and all other formats as attached files.
+
+Available features: 
+- Preview your 3D asset
+- List of downloadable transmission formats
+- Render views available on the right panel
+
+# QA results
 
 [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/addons_nuxeo-platform-3d-master)](https://qa.nuxeo.org/jenkins/job/master/job/addons_nuxeo-platform-3d-master/)
 
