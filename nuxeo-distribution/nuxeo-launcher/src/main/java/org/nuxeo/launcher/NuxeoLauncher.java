@@ -29,8 +29,6 @@ import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT_REGEX;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_TERMSNCONDITIONS;
-import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_USERNAME_REGEX;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Console;
@@ -1530,7 +1528,7 @@ public abstract class NuxeoLauncher {
         if (params.length > 0) {
             username = params[0];
         } else {
-            username = prompt("Username: ", s -> Pattern.matches(REGISTRATION_USERNAME_REGEX, s), "Username cannot be empty.");
+            username = prompt("Username: ", s -> StringUtils.isNotBlank(s), "Username cannot be empty.");
         }
         char[] password;
         if (params.length == 3 || params.length == 5) {
