@@ -19,11 +19,6 @@
 
 package org.nuxeo.ecm.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -55,12 +50,17 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, SQLDirectoryFeature.class , TransientStoreFeature.class })
+@Features({ CoreFeature.class, SQLDirectoryFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common", //
         "org.nuxeo.ecm.platform.usermanager.api", //
@@ -112,11 +112,11 @@ public class TestCSVImport {
     @Inject
     protected CoreFeature coreFeature;
 
-
     private File getCSVFile(String name) {
         return new File(FileUtils.getResourcePathFromContext(name));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldCreateAllDocuments() throws InterruptedException, IOException {
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
@@ -330,14 +330,16 @@ public class TestCSVImport {
         importLog = importLogs.get(5);
         assertEquals(7, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to convert field 'complexTest:complexItem' with value "
-                + "'{\"arrayProp\":[\"1\"],\"boolProp\":invalidBooleanValue,\"stringProp\":\"testString1\"}'",
+        assertEquals(
+                "Unable to convert field 'complexTest:complexItem' with value "
+                        + "'{\"arrayProp\":[\"1\"],\"boolProp\":invalidBooleanValue,\"stringProp\":\"testString1\"}'",
                 importLog.getMessage());
         importLog = importLogs.get(6);
         assertEquals(8, importLog.getLine());
         assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
-        assertEquals("Unable to convert field 'complexTest:complexItem' with value "
-                + "'{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}'",
+        assertEquals(
+                "Unable to convert field 'complexTest:complexItem' with value "
+                        + "'{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}'",
                 importLog.getMessage());
 
         assertFalse(session.exists(new PathRef("/myfile")));
