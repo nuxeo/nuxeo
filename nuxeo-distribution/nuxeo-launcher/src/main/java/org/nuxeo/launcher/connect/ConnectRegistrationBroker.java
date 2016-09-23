@@ -114,11 +114,6 @@ public class ConnectRegistrationBroker {
     public List<ConnectProject> getAvailableProjects(String username, char[] password) throws ConfigurationException {
         List<ConnectProject> studioProjects = registration().getAvailableProjectsForRegistration(username,
                 new String(password));
-        // TODO NXP-19258 returned list is too much great in my case:
-        // nuxeoctl register => 1260 projects
-        // cat tmp/connect.nuxeo.com_443_#nuxeo#site#_studio.json |python -mjson.tool|grep '"name":'|sort|uniq|wc -l
-        // => 79
-        // projects 1260 != 79 !
         if (studioProjects.isEmpty()) {
             throw new ConfigurationException("Wrong login or password.");
         }
