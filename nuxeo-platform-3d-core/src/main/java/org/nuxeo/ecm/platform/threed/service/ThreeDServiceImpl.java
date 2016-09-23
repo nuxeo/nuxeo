@@ -129,7 +129,6 @@ public class ThreeDServiceImpl extends DefaultComponent implements ThreeDService
         List<Map<String, Serializable>> emptyList = new ArrayList<>();
         doc.setPropertyValue(TRANSMISSIONS_PROPERTY, (Serializable) emptyList);
         doc.setPropertyValue(RENDER_VIEWS_PROPERTY, (Serializable) emptyList);
-        doc.getCoreSession().saveDocument(doc);
     }
 
     @Override

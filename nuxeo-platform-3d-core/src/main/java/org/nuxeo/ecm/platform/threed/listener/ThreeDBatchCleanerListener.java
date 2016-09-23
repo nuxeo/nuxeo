@@ -18,13 +18,17 @@
  */
 package org.nuxeo.ecm.platform.threed.listener;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
 
 /**
  * Listener cleaning batch date when batch update is scheduled.
@@ -33,22 +37,21 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ThreeDBatchCleanerListener implements EventListener {
 
-    public static final String CLEAN_BATCH_DATA = "CleanBatchData";
+    public static final String GENERATE_BATCH_DATA = "generateBatchData";
 
     @Override
     public void handleEvent(Event event) {
-
-        Boolean clean = (Boolean) event.getContext().getProperty(CLEAN_BATCH_DATA);
-        if (!Boolean.TRUE.equals(clean)) {
-            // ignore the event - we are blocked by the caller
-            return;
-        }
-
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        ThreeDService threeDService = Framework.getService(ThreeDService.class);
-        threeDService.cleanBatchData(doc);
-
+        if (doc.hasFacet(THREED_FACET) && !doc.isProxy()) {
+            Property origThreeDProperty = doc.getProperty("file:content");
+            Blob threedMain = (Blob) origThreeDProperty.getValue();
+            if ((origThreeDProperty.isDirty() || doc.getProperty("files:files").isDirty()) && threedMain != null) {
+                ThreeDService threeDService = Framework.getService(ThreeDService.class);
+                threeDService.cleanBatchData(doc);
+                docCtx.setProperty(GENERATE_BATCH_DATA, true);
+            }
+        }
     }
 }

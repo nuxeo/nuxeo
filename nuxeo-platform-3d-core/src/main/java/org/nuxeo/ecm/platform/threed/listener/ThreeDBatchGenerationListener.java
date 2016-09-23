@@ -18,9 +18,7 @@
  */
 package org.nuxeo.ecm.platform.threed.listener;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -30,7 +28,7 @@ import org.nuxeo.ecm.platform.threed.service.ThreeDBatchUpdateWork;
 import org.nuxeo.runtime.api.Framework;
 
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
-import static org.nuxeo.ecm.platform.threed.listener.ThreeDBatchCleanerListener.CLEAN_BATCH_DATA;
+import static org.nuxeo.ecm.platform.threed.listener.ThreeDBatchCleanerListener.GENERATE_BATCH_DATA;
 
 /**
  * Listener batch updating transmission formats and renders if the main Blob has changed.
@@ -45,18 +43,18 @@ public class ThreeDBatchGenerationListener implements EventListener {
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
+        Boolean generate = (Boolean) event.getContext().getProperty(GENERATE_BATCH_DATA);
+        if (!Boolean.TRUE.equals(generate)) {
+            // ignore the event - we are blocked by the caller
+            return;
+        }
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(THREED_FACET) && !doc.isProxy()) {
-            Property origThreeDProperty = doc.getProperty("file:content");
-            Blob threedMain = (Blob) origThreeDProperty.getValue();
-            if ((origThreeDProperty.isDirty() || doc.getProperty("files:files").isDirty()) && threedMain != null) {
-                docCtx.setProperty(CLEAN_BATCH_DATA, true);
-                ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
-                workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
-            }
+            ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
         }
     }
 }

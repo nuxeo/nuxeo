@@ -28,16 +28,28 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.AbstractFileImporter
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
+
 import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.*;
 
 public class ThreeDImporter extends AbstractFileImporter {
+    public static final String MIMETYPE_ZIP = "application/zip";
 
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
             TypeManager typeService) throws IOException {
 
-        if (!SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(content.getFilename()))) {
+        boolean isThreeD = SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(content.getFilename()));
+        boolean isZipThreeD = MIMETYPE_ZIP.equals(content.getMimeType());
+        String title = null;
+        if (isZipThreeD) {
+            title = getModelFilename(content);
+            isZipThreeD = title != null;
+        }
+
+        if (!(isThreeD || isZipThreeD)) {
             return null;
         }
         DocumentModel container = session.getDocument(new PathRef(path));
@@ -45,13 +57,44 @@ public class ThreeDImporter extends AbstractFileImporter {
         if (docType == null) {
             docType = getDefaultDocType();
         }
-        String title = FileManagerUtils.fetchTitle(content.getFilename());
+        if (isThreeD) {
+            title = FileManagerUtils.fetchTitle(content.getFilename());
+        }
         DocumentModel doc = session.createDocumentModel(docType);
         doc.setPropertyValue("dc:title", title);
         PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
         doc.setPathInfo(path, pss.generatePathSegment(doc));
         updateDocument(doc, content);
+        doc = session.createDocument(doc);
+        session.save();
         return doc;
+    }
+
+    protected String getModelFilename(final Blob zipContent) throws IOException {
+        /* Extract ZIP contents */
+        ZipEntry zipEntry;
+        ZipInputStream zipInputStream = null;
+        String threeDFilename = null;
+        try {
+            zipInputStream = new ZipInputStream(zipContent.getStream());
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                if (!zipEntry.isDirectory()) {
+                    if (SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(zipEntry.getName()))) {
+                        threeDFilename = FileManagerUtils.fetchTitle(zipEntry.getName());
+                        break;
+                    }
+                }
+            }
+        } finally {
+            try {
+                if (zipInputStream != null) {
+                    zipInputStream.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return threeDFilename;
     }
 
     @Override
