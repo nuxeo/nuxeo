@@ -38,8 +38,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.ecm.csv.CSVImporterOptions.ImportMode;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -55,6 +54,8 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
 
     public static final List<String> IGNORE_FIELDS_ON_UPDATE = Arrays.asList(NXQL.ECM_LIFECYCLESTATE);
 
+    protected CSVImporterOptions importerOptions = CSVImporterOptions.DEFAULT_OPTIONS;
+
     @Override
     public void createDocument(CoreSession session, String parentPath, String name, String type,
             Map<String, Serializable> values) {
@@ -64,8 +65,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, values.get(NXQL.ECM_LIFECYCLESTATE));
             values.remove(NXQL.ECM_LIFECYCLESTATE);
         }
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue("nuxeo.csv.importMode")) {
+        if (importerOptions.importMode.equals(ImportMode.CREATE)) {
             if (values.containsKey(NXQL.ECM_UUID)) {
                 ((DocumentModelImpl) doc).setId((String) values.get(NXQL.ECM_UUID));
                 values.remove(NXQL.ECM_UUID);
@@ -127,4 +127,10 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             Map<String, Serializable> values) {
         return exists(session, parentPath, name, null);
     }
+
+    @Override
+    public void setImporterOptions(CSVImporterOptions importerOptions) {
+        this.importerOptions = importerOptions;
+    }
+
 }

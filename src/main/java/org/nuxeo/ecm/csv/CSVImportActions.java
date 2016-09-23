@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.csv.CSVImportLog.Status;
+import org.nuxeo.ecm.csv.CSVImporterOptions.ImportMode;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -65,12 +66,22 @@ public class CSVImportActions implements Serializable {
 
     protected String csvImportId;
 
+    protected ImportMode importMode = CSVImporterOptions.ImportMode.CREATE;
+
     public boolean getNotifyUserByEmail() {
         return notifyUserByEmail;
     }
 
     public void setNotifyUserByEmail(boolean notifyUserByEmail) {
         this.notifyUserByEmail = notifyUserByEmail;
+    }
+
+    public ImportMode getImportMode() {
+        return importMode;
+    }
+
+    public void setImportMode(ImportMode importMode) {
+        this.importMode = importMode;
     }
 
     public void uploadListener(FileUploadEvent event) throws Exception {
@@ -84,11 +95,11 @@ public class CSVImportActions implements Serializable {
 
     public void importCSVFile() {
         if (csvFile != null) {
-            CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail).build();
+            CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail)
+                    .importMode(importMode).build();
             CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-            csvImportId = csvImporter.launchImport(documentManager, navigationContext.getCurrentDocument()
-                                                                                     .getPathAsString(), csvFile,
-                    csvFileName, options);
+            csvImportId = csvImporter.launchImport(documentManager,
+                    navigationContext.getCurrentDocument().getPathAsString(), csvFile, csvFileName, options);
         }
     }
 

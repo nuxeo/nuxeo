@@ -49,4 +49,8 @@ public interface CSVImporterDocumentFactory extends Serializable {
     public boolean exists(CoreSession session, String parentPath, String name, String type,
             Map<String, Serializable> values);
 
+    /**
+     * @since 8.4
+     */
+    public void setImporterOptions(CSVImporterOptions importerOptions);
 }
