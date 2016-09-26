@@ -56,6 +56,11 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
 
     public static final String VALIDATOR_ID = "DocumentConstraintValidator";
 
+    /**
+     * @since 8.4
+     */
+    public static final String CTX_JSFVALIDATOR = "jsfValidator";
+
     private boolean transientValue = false;
 
     private boolean initialState;
@@ -129,14 +134,18 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
 
     protected List<ConstraintViolation> doValidate(FacesContext context, ValueReference vref, ValueExpression e,
             Object value) {
-        DocumentValidationService s = Framework.getService(DocumentValidationService.class);
+        DocumentValidationService validationService = Framework.getService(DocumentValidationService.class);
+        // document validation
         DocumentValidationReport report = null;
+        if (!validationService.isActivated(CTX_JSFVALIDATOR, null)) {
+            return null;
+        }
         XPathAndField field = resolveField(context, vref, e);
         if (field != null) {
             boolean validateSubs = getHandleSubProperties().booleanValue();
             // use the xpath to validate the field
             // this allow to get the custom message defined for field if there's error
-            report = s.validate(field.xpath, value, validateSubs);
+            report = validationService.validate(field.xpath, value, validateSubs);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("VALIDATED  value '%s' for expression '%s', base=%s, prop=%s", value,
                         e.getExpressionString(), vref.getBase(), vref.getProperty()));
