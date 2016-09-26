@@ -52,7 +52,7 @@ public class TransmissionFormatItem {
 
     protected Long percTex;
 
-    protected Long maxTex;
+    protected String maxTex;
 
     protected Long size;
 
@@ -70,8 +70,8 @@ public class TransmissionFormatItem {
             filename = blob.getFilename();
             percPoly = (Long) doc.getPropertyValue(propertyPath + "/percPoly");
             maxPoly = (Long) doc.getPropertyValue(propertyPath + "/maxPoly");
-            percTex = (Long) doc.getPropertyValue(propertyPath + "/percPoly");
-            maxTex = (Long) doc.getPropertyValue(propertyPath + "/maxPoly");
+            percTex = (Long) doc.getPropertyValue(propertyPath + "/percTex");
+            maxTex = (String) doc.getPropertyValue(propertyPath + "/maxTex");
             name = (String) doc.getPropertyValue(propertyPath + "/name");
             info = new ThreeDInfo((Map<String, Serializable>) doc.getPropertyValue(propertyPath + "/info"));
             size = blob.getLength();
@@ -97,7 +97,7 @@ public class TransmissionFormatItem {
     }
 
     public String getMaxTex() {
-        return (maxTex == null) ? null : maxTex.toString();
+        return (maxTex == null) ? null : maxTex;
     }
 
     public String getSize() {
@@ -115,7 +115,15 @@ public class TransmissionFormatItem {
 
     public String getTextureSize() {
         Long texturesSize = info.getTexturesSize();
-        return (texturesSize == null) ? "-" : texturesSize.toString();
+        if (texturesSize == null) {
+            return "-";
+        }
+        if (texturesSize < 1024) {
+            return texturesSize + " B";
+        }
+        int exp = (int) (Math.log(texturesSize) / Math.log(1024));
+        String pre = String.valueOf(("kMGTPE").charAt(exp - 1));
+        return String.format("%.1f %sB", texturesSize / Math.pow(1024, exp), pre);
     }
 
     public Boolean getHasTextures() {

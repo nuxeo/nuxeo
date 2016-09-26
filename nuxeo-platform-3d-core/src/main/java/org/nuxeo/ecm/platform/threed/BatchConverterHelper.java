@@ -159,7 +159,7 @@ public class BatchConverterHelper {
         int maxWidth = resources.stream().mapToInt(resource -> (Integer) resource.getProperty(WIDTH)).max().orElse(0);
         int maxHeight = resources.stream().mapToInt(resource -> (Integer) resource.getProperty(HEIGHT)).max().orElse(0);
         long resourcesSize = resources.stream()
-                                      .mapToLong(resource -> resource.getBlob().getFile().getTotalSpace())
+                                      .mapToLong(resource -> resource.getBlob().getFile().length())
                                       .sum();
 
         infoMap.put(TEXTURE_LOD_SUCCESS, Boolean.TRUE);
