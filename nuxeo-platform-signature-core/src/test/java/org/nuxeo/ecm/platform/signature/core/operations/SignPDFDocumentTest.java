@@ -51,14 +51,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, AutomationFeature.class })
-@Deploy({
-    "org.nuxeo.ecm.platform.signature.core",
-    "org.nuxeo.ecm.platform.signature.core.test",
-    "org.nuxeo.ecm.core.convert.api", //
-    "org.nuxeo.ecm.core.convert", //
-    "org.nuxeo.ecm.core.mimetype", //
-    "org.nuxeo.ecm.core.cache", //
-    "org.nuxeo.ecm.platform.convert" })
+@Deploy({ "org.nuxeo.ecm.platform.signature.core", "org.nuxeo.ecm.platform.signature.core.test",
+        "org.nuxeo.ecm.core.convert.api", //
+        "org.nuxeo.ecm.core.convert", //
+        "org.nuxeo.ecm.core.mimetype", //
+        "org.nuxeo.ecm.core.cache", //
+        "org.nuxeo.ecm.platform.convert" })
 public class SignPDFDocumentTest {
 
     protected static final String ORIGINAL_PDF = "pdf-tests/original.pdf";
@@ -123,7 +121,8 @@ public class SignPDFDocumentTest {
         DocumentModel doc = session.createDocumentModel("File");
         assertNotNull(doc);
         doc.setPathInfo("/", "file1");
-        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain", null, "foo.txt");
+        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain",
+                null, "foo.txt");
         doc.setPropertyValue("file:content", (Serializable) origBlob);
         doc = session.createDocument(doc);
         OperationContext ctx = new OperationContext(session);
