@@ -473,6 +473,11 @@
         <artifactId>nuxeo-dam</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-web-ui</artifactId>
+        <version>${nuxeo.dam.version}</version>
+      </dependency>
 
       <!-- Quota -->
       <dependency>
