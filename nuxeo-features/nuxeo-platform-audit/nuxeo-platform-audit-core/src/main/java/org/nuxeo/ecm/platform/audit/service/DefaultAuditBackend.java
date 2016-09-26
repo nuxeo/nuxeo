@@ -54,7 +54,10 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent)Framework.getRuntime().getComponent("org.nuxeo.ecm.core.persistence.PersistenceComponent")).getApplicationStartedOrder()+1;
+        return ((DefaultComponent) Framework.getRuntime()
+                                            .getComponent("org.nuxeo.ecm.core.persistence.PersistenceComponent"))
+                                                                                                                 .getApplicationStartedOrder()
+                + 1;
     }
 
     @Override
@@ -84,7 +87,8 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
         ClassLoader last = thread.getContextClassLoader();
         try {
             thread.setContextClassLoader(PersistenceProvider.class.getClassLoader());
-            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(PersistenceProviderFactory.class);
+            PersistenceProviderFactory persistenceProviderFactory = Framework.getLocalService(
+                    PersistenceProviderFactory.class);
             persistenceProvider = persistenceProviderFactory.newProvider("nxaudit-logs");
             persistenceProvider.openPersistenceUnit();
         } finally {
@@ -220,7 +224,8 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
         });
     }
 
-    protected List<?> nativeQuery(EntityManager em, String query, Map<String, Object> params, int pageNb, int pageSize) {
+    protected List<?> nativeQuery(EntityManager em, String query, Map<String, Object> params, int pageNb,
+            int pageSize) {
         return LogEntryProvider.createProvider(em).nativeQuery(query, params, pageNb, pageSize);
     }
 

@@ -117,7 +117,8 @@ public interface AuditReader {
      * @param pageSize number of results per page
      * @return a list of log entries.
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb, int pageSize);
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb,
+            int pageSize);
 
     List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] category, String path, int pageNb,
             int pageSize);

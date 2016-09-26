@@ -115,8 +115,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
-        List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.id = " + entry.getId()
-                + " and log.extendedInfos['id'] is not null", 1, 10);
+        List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
+                "log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
         assertEquals(1, entries.size());
         assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }

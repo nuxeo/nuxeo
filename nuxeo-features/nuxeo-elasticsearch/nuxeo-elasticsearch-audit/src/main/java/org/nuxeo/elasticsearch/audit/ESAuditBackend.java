@@ -243,8 +243,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         List<LogEntry> logEntries = buildLogEntries(searchResponse);
         // Scroll on next results
         for (; //
-        searchResponse.getHits().getHits().length > 0 && logEntries.size() < searchResponse.getHits().getTotalHits(); //
-        searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
+                searchResponse.getHits().getHits().length > 0
+                        && logEntries.size() < searchResponse.getHits().getTotalHits(); //
+                searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
             // Build log entries
             logEntries.addAll(buildLogEntries(searchResponse));
         }
@@ -567,6 +568,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     public String migrate(final int batchSize) {
 
         final String MIGRATION_WORK_ID = "AuditMigration";

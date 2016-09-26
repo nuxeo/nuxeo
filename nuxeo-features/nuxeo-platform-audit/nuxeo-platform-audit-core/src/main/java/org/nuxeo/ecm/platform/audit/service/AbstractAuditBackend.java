@@ -82,8 +82,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     protected final AuditBackendDescriptor config;
 
     protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
-       this.component = component;
-       this.config = config;
+        this.component = component;
+        this.config = config;
     }
 
     protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
@@ -152,9 +152,10 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         }
 
         // Global extended info
-        populateExtendedInfo(entry, source, context,  component.getExtendedInfoDescriptors());
+        populateExtendedInfo(entry, source, context, component.getExtendedInfoDescriptors());
         // Event id related extended info
-        populateExtendedInfo(entry, source, context,  component.getEventExtendedInfoDescriptors().get(entry.getEventId()));
+        populateExtendedInfo(entry, source, context,
+                component.getEventExtendedInfoDescriptors().get(entry.getEventId()));
 
         if (eventContext != null) {
             @SuppressWarnings("unchecked")
@@ -213,14 +214,12 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
 
-
-
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel document = docCtx.getSourceDocument();
             if (document.hasFacet(SYSTEM_DOCUMENT) && !document.hasFacet(FORCE_AUDIT_FACET)) {
                 // do not log event on System documents
-               // unless it has the FORCE_AUDIT_FACET facet
+                // unless it has the FORCE_AUDIT_FACET facet
                 return null;
             }
 
@@ -295,8 +294,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     }
 
     @Override
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path,
-            int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path, int pageNb,
+            int pageSize) {
         String[] categories = { category };
         return queryLogsByPage(eventIds, dateRange, categories, path, pageNb, pageSize);
     }
