@@ -96,7 +96,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
                         uuid = doc.getId();
                     }
 
-                    List<LogEntry> logEntries = logService.getLogEntriesFor(uuid);
+                    List<LogEntry> logEntries = logService.getLogEntriesFor(uuid, repo);
 
                     docLogs.put(docRef, logEntries);
                 } catch (DocumentNotFoundException e) {

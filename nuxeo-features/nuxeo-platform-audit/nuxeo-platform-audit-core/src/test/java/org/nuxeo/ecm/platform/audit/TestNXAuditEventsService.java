@@ -176,7 +176,7 @@ public class TestNXAuditEventsService {
         eventService.fireEvent(event);
         waitForAsyncCompletion();
 
-        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId());
+        List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId(), repo.source.getRepositoryName());
         assertEquals(2, entries.size());
 
         // entries are not ordered => skip creation log

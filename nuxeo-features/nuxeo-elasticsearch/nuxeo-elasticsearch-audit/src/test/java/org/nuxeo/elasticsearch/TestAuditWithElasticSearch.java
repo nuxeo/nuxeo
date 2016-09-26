@@ -46,8 +46,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
-        "org.nuxeo.elasticsearch.seqgen",
+@Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit",
+        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
@@ -70,8 +70,8 @@ public class TestAuditWithElasticSearch {
     @Test
     public void shouldUseESBackend() throws Exception {
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
+                                                                     .getComponent(NXAuditEventsService.NAME);
         Assert.assertNotNull(audit);
 
         AuditBackend backend = audit.getBackend();
@@ -96,7 +96,7 @@ public class TestAuditWithElasticSearch {
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);
-        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
+        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
 
         Assert.assertNotNull(trail);
         Assert.assertEquals(2, trail.size());
@@ -118,8 +118,8 @@ public class TestAuditWithElasticSearch {
         entryById = reader.getLogEntryByID(123L);
         Assert.assertNull(entryById);
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
+        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
+                                                                     .getComponent(NXAuditEventsService.NAME);
         AuditBackend backend = audit.getBackend();
         Assert.assertEquals(1L, backend.getEventsCount(entry.getEventId()).longValue());
     }

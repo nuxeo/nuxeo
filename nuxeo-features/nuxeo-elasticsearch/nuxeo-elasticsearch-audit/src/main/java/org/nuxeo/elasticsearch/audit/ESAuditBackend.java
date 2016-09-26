@@ -123,6 +123,22 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             entries.add(logEntry);
             addLogEntries(entries);
         }
+
+        @Override
+        public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+            throw new UnsupportedOperationException("Not implemented yet!");
+        }
+
+        @Override
+        public List<LogEntry> getLogEntriesFor(String uuid) {
+            throw new UnsupportedOperationException("Not implemented yet!");
+        }
+
+        @Override
+        public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap,
+                boolean doDefaultSort) {
+            throw new UnsupportedOperationException("Not implemented yet!");
+        }
     };
 
     protected Client getClient() {
@@ -186,8 +202,17 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     @Override
+    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        TermQueryBuilder docFilter = QueryBuilders.termQuery("docUUID", uuid);
+        TermQueryBuilder repoFilter = QueryBuilders.termQuery("repositoryId", repositoryId);
+        QueryBuilder filter;
+        filter = QueryBuilders.boolQuery().must(docFilter);
+        filter = QueryBuilders.boolQuery().must(repoFilter);
+        return getLogEntries(filter, false);
+    }
+
+    @Override
     public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         TermQueryBuilder docFilter = QueryBuilders.termQuery("docUUID", uuid);
         QueryBuilder filter;
         if (MapUtils.isEmpty(filterMap)) {
@@ -199,11 +224,17 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 ((BoolQueryBuilder) filter).must(QueryBuilders.termQuery(entry.getColumnName(), entry.getObject()));
             }
         }
-        TimeValue keepAlive = TimeValue.timeValueMinutes(1);
-        builder.setQuery(QueryBuilders.constantScoreQuery(filter)).setScroll(keepAlive).setSize(100);
+        return getLogEntries(filter, doDefaultSort);
+    }
+
+    protected List<LogEntry> getLogEntries(QueryBuilder filter, boolean doDefaultSort) {
+        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         if (doDefaultSort) {
             builder.addSort("eventDate", SortOrder.DESC);
         }
+        TimeValue keepAlive = TimeValue.timeValueMinutes(1);
+        builder.setQuery(QueryBuilders.constantScoreQuery(filter)).setScroll(keepAlive).setSize(100);
+
         logSearchRequest(builder);
         SearchResponse searchResponse = builder.get();
         logSearchResponse(searchResponse);
@@ -212,8 +243,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         List<LogEntry> logEntries = buildLogEntries(searchResponse);
         // Scroll on next results
         for (; //
-        searchResponse.getHits().getHits().length > 0 && logEntries.size() < searchResponse.getHits().getTotalHits(); //
-        searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
+                searchResponse.getHits().getHits().length > 0
+                        && logEntries.size() < searchResponse.getHits().getTotalHits(); //
+                searchResponse = runNextScroll(searchResponse.getScrollId(), keepAlive)) {
             // Build log entries
             logEntries.addAll(buildLogEntries(searchResponse));
         }
@@ -536,6 +568,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     public String migrate(final int batchSize) {
 
         final String MIGRATION_WORK_ID = "AuditMigration";

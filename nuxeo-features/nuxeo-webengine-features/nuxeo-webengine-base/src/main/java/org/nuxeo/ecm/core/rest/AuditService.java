@@ -56,7 +56,8 @@ public class AuditService extends DefaultAdapter {
         DocumentObject document = (DocumentObject) getTarget();
         DocumentModel model = document.getAdapter(DocumentModel.class);
         String id = model.getId();
-        return logs.getLogEntriesFor(id);
+        String repo = model.getRepositoryName();
+        return logs.getLogEntriesFor(id, repo);
     }
 
 }

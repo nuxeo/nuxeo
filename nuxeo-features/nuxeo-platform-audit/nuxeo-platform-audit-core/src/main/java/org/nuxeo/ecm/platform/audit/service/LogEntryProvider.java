@@ -106,6 +106,19 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
+    public List<LogEntry> getLogEntriesFor(String uuid, String repositoryId) {
+        if (log.isDebugEnabled()) {
+            log.debug("getLogEntriesFor() UUID=" + uuid + " and repositoryId=" + repositoryId);
+        }
+        Query query = em.createNamedQuery("LogEntry.findByDocumentAndRepository");
+        query.setParameter("docUUID", uuid);
+        query.setParameter("repositoryId", repositoryId);
+        return doPublish(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public List<LogEntry> getLogEntriesFor(String uuid) {
         if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() UUID=" + uuid);
@@ -116,7 +129,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
     }
 
     @SuppressWarnings("unchecked")
-    @Deprecated
+    @Override
     public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
         if (log.isDebugEnabled()) {
             log.debug("getLogEntriesFor() UUID=" + uuid);
@@ -137,11 +150,18 @@ public class LogEntryProvider implements BaseLogEntryProvider {
             String currentColumnName = currentFilterMapEntry.getColumnName();
 
             if ("LIKE".equals(currentOperator)) {
-                queryStr.append(" AND log.").append(currentColumnName).append(" LIKE :").append(
-                        currentQueryParameterName).append(" ");
+                queryStr.append(" AND log.")
+                        .append(currentColumnName)
+                        .append(" LIKE :")
+                        .append(currentQueryParameterName)
+                        .append(" ");
             } else {
-                queryStr.append(" AND log.").append(currentColumnName).append(currentOperator).append(":").append(
-                        currentQueryParameterName).append(" ");
+                queryStr.append(" AND log.")
+                        .append(currentColumnName)
+                        .append(currentOperator)
+                        .append(":")
+                        .append(currentQueryParameterName)
+                        .append(" ");
             }
         }
 
@@ -189,7 +209,7 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         Query query = em.createQuery("from LogEntry log where " + whereClause);
         if (pageNb > 1) {
             query.setFirstResult((pageNb - 1) * pageSize);
-        }else if(pageNb == 0){
+        } else if (pageNb == 0) {
             log.warn("Requested pageNb equals 0 but page index start at 1. Will fallback to fetch the first page");
         }
         query.setMaxResults(pageSize);

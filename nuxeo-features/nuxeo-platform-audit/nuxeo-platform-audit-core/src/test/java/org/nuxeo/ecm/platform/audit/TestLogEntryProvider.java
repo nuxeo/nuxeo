@@ -76,21 +76,25 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         return new String[] { eventId() };
     }
 
-    protected LogEntry doCreateEntry(String docId) {
+    protected LogEntry doCreateEntry(String docId, String repositoryId) {
         LogEntry createdEntry = new LogEntryImpl();
         createdEntry.setEventId(eventId());
         createdEntry.setDocUUID(docId);
         createdEntry.setEventDate(new Date());
         createdEntry.setDocPath("/" + docId);
-        createdEntry.setRepositoryId("test");
+        createdEntry.setRepositoryId(repositoryId);
         createdEntry.setExtendedInfos(createExtendedInfos());
         return createdEntry;
     }
 
-    protected LogEntry doCreateEntryAndPersist(String docId) {
-        LogEntry entry = doCreateEntry(docId);
+    protected LogEntry doCreateEntryAndPersist(String docId, String repositoryId) {
+        LogEntry entry = doCreateEntry(docId, repositoryId);
         entityManager.persist(entry);
         return entry;
+    }
+
+    protected LogEntry doCreateEntryAndPersist(String docId) {
+        return doCreateEntryAndPersist(docId, "test");
     }
 
     protected List<LogEntry> doEncapsulate(LogEntry entry) {
@@ -101,7 +105,7 @@ public class TestLogEntryProvider extends PersistenceTestCase {
 
     @Test
     public void testAddLogEntry() {
-        LogEntry entry = doCreateEntry("id");
+        LogEntry entry = doCreateEntry("id", "test");
         providerUnderTest.addLogEntry(entry);
         boolean hasId = entry.getId() != 0;
         assertTrue(hasId);
@@ -111,8 +115,8 @@ public class TestLogEntryProvider extends PersistenceTestCase {
     public void testHavingKey() {
         LogEntry entry = doCreateEntryAndPersist("id");
         providerUnderTest.addLogEntry(entry);
-        List<LogEntry> entries = providerUnderTest.nativeQueryLogs("log.id = " + entry.getId()
-                + " and log.extendedInfos['id'] is not null", 1, 10);
+        List<LogEntry> entries = providerUnderTest.nativeQueryLogs(
+                "log.id = " + entry.getId() + " and log.extendedInfos['id'] is not null", 1, 10);
         assertEquals(1, entries.size());
         assertEquals(new Long(1L), entries.get(0).getExtendedInfos().get("id").getValue(Long.class));
     }
@@ -128,6 +132,36 @@ public class TestLogEntryProvider extends PersistenceTestCase {
         LogEntry fetchedEntry = fetchedEntries.get(0);
         assertNotNull(fetchedEntry);
         assertEquals("id", fetchedEntry.getDocUUID());
+    }
+
+    @Test
+    public void testByUuidAndRepository() {
+        LogEntry entry1 = doCreateEntryAndPersist("id", "repository1");
+        providerUnderTest.addLogEntry(entry1);
+        LogEntry entry2 = doCreateEntryAndPersist("id", "repository2");
+        providerUnderTest.addLogEntry(entry2);
+
+        List<LogEntry> fetchedEntries = providerUnderTest.getLogEntriesFor("id");
+        assertNotNull(fetchedEntries);
+        int entriesCount = fetchedEntries.size();
+        assertEquals(2, entriesCount);
+        List<LogEntry> fetchedEntries1 = providerUnderTest.getLogEntriesFor("id", "repository1");
+        assertNotNull(fetchedEntries1);
+        int entriesCount1 = fetchedEntries1.size();
+        assertEquals(1, entriesCount1);
+        List<LogEntry> fetchedEntries2 = providerUnderTest.getLogEntriesFor("id", "repository2");
+        assertNotNull(fetchedEntries2);
+        int entriesCount2 = fetchedEntries2.size();
+        assertEquals(1, entriesCount2);
+
+        LogEntry fetchedEntry1 = fetchedEntries1.get(0);
+        assertNotNull(fetchedEntry1);
+        assertEquals("id", fetchedEntry1.getDocUUID());
+        assertEquals("repository1", fetchedEntry1.getRepositoryId());
+        LogEntry fetchedEntry2 = fetchedEntries2.get(0);
+        assertNotNull(fetchedEntry2);
+        assertEquals("id", fetchedEntry2.getDocUUID());
+        assertEquals("repository2", fetchedEntry2.getRepositoryId());
     }
 
     @SuppressWarnings("deprecation")
