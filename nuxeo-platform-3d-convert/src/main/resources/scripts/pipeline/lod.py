@@ -6,7 +6,7 @@ for ob in bpy.context.scene.objects:
 
 scene = bpy.context.scene
 for obj in scene.objects:
-    if obj.type == 'MESH' and len(obj.modifiers) == 0:
+    if obj.type == 'MESH' and len([d for d in obj.modifiers if d.name == 'decimate']) == 0:
         mod = obj.modifiers.new(name='decimate', type='DECIMATE')
 
 if perc_poly is not None and max_poly is not None:
