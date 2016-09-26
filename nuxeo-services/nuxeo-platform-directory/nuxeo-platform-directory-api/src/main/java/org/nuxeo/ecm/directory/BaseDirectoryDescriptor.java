@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.directory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -63,6 +64,29 @@ public class BaseDirectoryDescriptor implements Cloneable {
     public static final boolean READ_ONLY_DEFAULT = false;
 
     public static final SubstringMatchType SUBSTRING_MATCH_TYPE_DEFAULT = SubstringMatchType.subinitial;
+
+    public static final char DEFAULT_DATA_FILE_CHARACTER_SEPARATOR = ',';
+
+    /**
+     * Doesn't create or modify the table in any way.
+     */
+    public static final String CREATE_TABLE_POLICY_NEVER = "never";
+
+    /**
+     * Always recreates the table from scratch and loads the CSV data.
+     */
+    public static final String CREATE_TABLE_POLICY_ALWAYS = "always";
+
+    /**
+     * If the table doesn't exist then creates it and loads the CSV data. If the table already exists, only adds missing
+     * columns (with null values).
+     */
+    public static final String CREATE_TABLE_POLICY_ON_MISSING_COLUMNS = "on_missing_columns";
+
+    public static final String CREATE_TABLE_POLICY_DEFAULT = CREATE_TABLE_POLICY_NEVER;
+
+    public static final List<String> CREATE_TABLE_POLICIES = Arrays.asList(CREATE_TABLE_POLICY_NEVER,
+            CREATE_TABLE_POLICY_ALWAYS, CREATE_TABLE_POLICY_ON_MISSING_COLUMNS);
 
     @XNode("@name")
     public String name;
@@ -129,6 +153,45 @@ public class BaseDirectoryDescriptor implements Cloneable {
      */
     @XNodeList(value = "deleteConstraint", type = ArrayList.class, componentType = DirectoryDeleteConstraintDescriptor.class)
     List<DirectoryDeleteConstraintDescriptor> deleteConstraints;
+
+    @XNode("dataFile")
+    public String dataFileName;
+
+    public String getDataFileName() {
+        return dataFileName;
+    }
+
+    @XNode(value = "dataFileCharacterSeparator", trim = false)
+    public String dataFileCharacterSeparator = ",";
+
+    public char getDataFileCharacterSeparator() {
+        char sep;
+        if (StringUtils.isEmpty(dataFileCharacterSeparator)) {
+            sep = DEFAULT_DATA_FILE_CHARACTER_SEPARATOR;
+        } else {
+            sep = dataFileCharacterSeparator.charAt(0);
+            if (dataFileCharacterSeparator.length() > 1) {
+                log.warn("More than one character found for character separator, will use the first one \"" + sep
+                        + "\"");
+            }
+        }
+        return sep;
+    }
+
+    @XNode("createTablePolicy")
+    public String createTablePolicy;
+
+    public String getCreateTablePolicy() {
+        if (StringUtils.isBlank(createTablePolicy)) {
+            return CREATE_TABLE_POLICY_DEFAULT;
+        }
+        String ctp = createTablePolicy.toLowerCase();
+        if (!CREATE_TABLE_POLICIES.contains(ctp)) {
+            throw new DirectoryException("Invalid createTablePolicy: " + createTablePolicy + ", it should be one of: "
+                    + CREATE_TABLE_POLICIES);
+        }
+        return ctp;
+    }
 
     public boolean isReadOnly() {
         return readOnly == null ? READ_ONLY_DEFAULT : readOnly.booleanValue();
@@ -234,6 +297,15 @@ public class BaseDirectoryDescriptor implements Cloneable {
         }
         if (other.deleteConstraints != null) {
             deleteConstraints = other.deleteConstraints;
+        }
+        if (other.dataFileName != null) {
+            dataFileName = other.dataFileName;
+        }
+        if (other.dataFileCharacterSeparator != null) {
+            dataFileCharacterSeparator = other.dataFileCharacterSeparator;
+        }
+        if (other.createTablePolicy != null) {
+            createTablePolicy = other.createTablePolicy;
         }
     }
 
