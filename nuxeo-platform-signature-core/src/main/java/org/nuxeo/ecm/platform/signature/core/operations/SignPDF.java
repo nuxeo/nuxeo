@@ -16,9 +16,12 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  *      Mickael Vachette <mv@nuxeo.com>
+ *      Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.signature.core.operations;
 
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -26,6 +29,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -34,6 +38,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 public class SignPDF {
 
     public static final String ID = "Services.SignPDF";
+
+    @Context
+    protected OperationContext ctx;
 
     @Context
     protected UserManager userManager;
@@ -54,7 +61,11 @@ public class SignPDF {
     protected DocumentModel doc = null;
 
     @OperationMethod
-    public Blob run(Blob blob) {
+    public Blob run(Blob blob) throws OperationException {
+        if (!(ctx.getPrincipal() instanceof NuxeoPrincipal)
+                || !((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
+            throw new OperationException("Not allowed. You must be administrator to use this operation");
+        }
         DocumentModel user = userManager.getUserModel(username);
         return signatureService.signPDF(blob, doc, user, password, reason);
     }

@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     Vladimir Pasquier
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.signature.core.operations;
 
@@ -34,9 +35,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
@@ -133,5 +136,31 @@ public class SignPDFDocumentTest {
         params.put("reason", "TEST");
         Blob signedBlob = (Blob) automationService.run(ctx, SignPDFDocument.ID, params);
         assertNotNull(signedBlob);
+    }
+
+    @Test
+    public void testNotAllowedToSignPDFDocument() throws Exception {
+        DocumentModel doc = session.createDocumentModel("File");
+        assertNotNull(doc);
+        doc.setPathInfo("/", "file1");
+        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain",
+                null, "foo.txt");
+        doc.setPropertyValue("file:content", (Serializable) origBlob);
+        doc = session.createDocument(doc);
+
+        CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
+        OperationContext ctx = new OperationContext(notAdminSession);
+        ctx.setInput(doc);
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", DEFAULT_USER_ID);
+        params.put("password", USER_KEY_PASSWORD);
+        params.put("reason", "TEST");
+        try {
+            automationService.run(ctx, SignPDFDocument.ID, params);
+        } catch (OperationException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains("Not allowed"));
+        }
+        notAdminSession.close();
     }
 }
