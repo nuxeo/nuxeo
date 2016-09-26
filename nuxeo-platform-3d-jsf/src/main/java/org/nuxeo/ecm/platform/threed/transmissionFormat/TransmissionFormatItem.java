@@ -80,6 +80,15 @@ public class TransmissionFormatItem {
         }
     }
 
+    private String formatAsReadable(long value, long base, String unit) {
+        if (value < base) {
+            return value + " " + unit;
+        }
+        int exp = (int) (Math.log(value) / Math.log(base));
+        String pre = String.valueOf(("kMGTPE").charAt(exp - 1));
+        return String.format("%.1f %s%s", value / Math.pow(base, exp), pre, unit);
+    }
+
     public String getSrc() {
         return DocumentModelFunctions.bigFileUrl(doc, blobPropertyName, filename);
     }
@@ -89,7 +98,10 @@ public class TransmissionFormatItem {
     }
 
     public String getMaxPoly() {
-        return (maxPoly == null) ? null : maxPoly.toString();
+        if (maxPoly == null) {
+            return "-";
+        }
+        return formatAsReadable(maxPoly, 1000, "");
     }
 
     public String getPercTex() {
@@ -110,7 +122,10 @@ public class TransmissionFormatItem {
 
     public String getPolygons() {
         Long polygons = info.getPolygons();
-        return (polygons == null) ? "-" : polygons.toString();
+        if (polygons == null) {
+            return "-";
+        }
+        return formatAsReadable(polygons, 1000, "");
     }
 
     public String getTextureSize() {
@@ -118,12 +133,7 @@ public class TransmissionFormatItem {
         if (texturesSize == null) {
             return "-";
         }
-        if (texturesSize < 1024) {
-            return texturesSize + " B";
-        }
-        int exp = (int) (Math.log(texturesSize) / Math.log(1024));
-        String pre = String.valueOf(("kMGTPE").charAt(exp - 1));
-        return String.format("%.1f %sB", texturesSize / Math.pow(1024, exp), pre);
+        return formatAsReadable(texturesSize, 1024, "B");
     }
 
     public Boolean getHasTextures() {
