@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.directory.sql;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,11 +29,16 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.schema.types.SchemaImpl;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Delete;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
@@ -40,9 +46,10 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
 
 @XObject(value = "tableReference")
 public class TableReference extends AbstractReference implements Cloneable {
@@ -67,9 +74,6 @@ public class TableReference extends AbstractReference implements Cloneable {
     @XNode("@targetColumn")
     protected String targetColumn;
 
-    @XNode("@schema")
-    protected String schemaName;
-
     @XNode("@dataFile")
     protected String dataFileName;
 
@@ -85,11 +89,39 @@ public class TableReference extends AbstractReference implements Cloneable {
     }
 
     private void initialize(SQLSession sqlSession) throws DirectoryException {
+        Connection connection = sqlSession.sqlConnection;
         SQLDirectory directory = getSQLSourceDirectory();
-        String createTablePolicy = directory.getDescriptor().createTablePolicy;
         Table table = getTable();
-        SQLHelper helper = new SQLHelper(sqlSession.sqlConnection, table, dataFileName, createTablePolicy);
-        helper.setupTable();
+        SQLHelper helper = new SQLHelper(connection, table, directory.getDescriptor().getCreateTablePolicy());
+        boolean loadData = helper.setupTable();
+        if (loadData && dataFileName != null) {
+            // fake schema for DirectoryCSVLoader.loadData
+            SchemaImpl schema = new SchemaImpl(tableName, null);
+            schema.addField(sourceColumn, StringType.INSTANCE, null, 0, Collections.emptySet());
+            schema.addField(targetColumn, StringType.INSTANCE, null, 0, Collections.emptySet());
+            Insert insert = new Insert(table);
+            for (Column column : table.getColumns()) {
+                insert.addColumn(column);
+            }
+            try (PreparedStatement ps = connection.prepareStatement(insert.getStatement())) {
+                Consumer<Map<String, Object>> loader = new Consumer<Map<String, Object>>() {
+                    @Override
+                    public void accept(Map<String, Object> map) {
+                        try {
+                            ps.setString(1, (String) map.get(sourceColumn));
+                            ps.setString(2, (String) map.get(targetColumn));
+                            ps.execute();
+                        } catch (SQLException e) {
+                            throw new DirectoryException(e);
+                        }
+                    }
+                };
+                DirectoryCSVLoader.loadData(dataFileName, BaseDirectoryDescriptor.DEFAULT_DATA_FILE_CHARACTER_SEPARATOR,
+                        schema, loader);
+            } catch (SQLException e) {
+                throw new DirectoryException(String.format("Table '%s' initialization failed", tableName), e);
+            }
+        }
     }
 
     @Override
@@ -485,10 +517,6 @@ public class TableReference extends AbstractReference implements Cloneable {
 
     public String getTableName() {
         return tableName;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
     }
 
     public String getDataFileName() {

@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
 import javax.transaction.Synchronization;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractDirectory;
+import org.nuxeo.ecm.directory.DirectoryCSVLoader;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.runtime.api.Framework;
@@ -103,8 +103,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     private final boolean nativeCase;
 
-    private DataSource dataSource;
-
     private Table table;
 
     private Schema schema;
@@ -153,15 +151,33 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     /**
-     * Lazy init connection
+     * Lazily initializes the connection.
      *
+     * @return {@code true} if CSV data should be loaded
+     * @since 8.4
+     */
+    protected boolean initConnectionIfNeeded() {
+        // double checked locking with volatile pattern to ensure concurrent lazy init
+        if (dialect == null) {
+            synchronized (this) {
+                if (dialect == null) {
+                    return initConnection();
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Initializes the table.
+     *
+     * @return {@code true} if CSV data should be loaded
      * @since 6.0
      */
-    protected void initConnection() {
+    protected boolean initConnection() {
         SQLDirectoryDescriptor descriptor = getDescriptor();
 
-        Connection sqlConnection = getConnection();
-        try {
+        try (Connection sqlConnection = getConnection()) {
             dialect = Dialect.createDialect(sqlConnection, null);
             // setup table and fields maps
             table = SQLHelper.addTable(descriptor.tableName, dialect, useNativeCase());
@@ -205,16 +221,12 @@ public class SQLDirectory extends AbstractDirectory {
                         getSchema()));
             }
 
-            SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.dataFileName,
-                    descriptor.getDataFileCharacterSeparator(), descriptor.createTablePolicy);
-            helper.setupTable();
-
-        } finally {
-            try {
-                sqlConnection.close();
-            } catch (SQLException e) {
-                throw new DirectoryException(e);
-            }
+            SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.getCreateTablePolicy());
+            boolean loadData = helper.setupTable();
+            return loadData;
+        } catch (SQLException e) {
+            // exception on close
+            throw new DirectoryException(e);
         }
     }
 
@@ -232,21 +244,15 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public Session getSession() throws DirectoryException {
-        checkConnection();
+        boolean loadData = initConnectionIfNeeded();
         SQLSession session = new SQLSession(this, getDescriptor());
         addSession(session);
-        return session;
-    }
-
-    protected void checkConnection() {
-        // double checked locking with volatile pattern to ensure concurrent lazy init
-        if (dialect == null) {
-            synchronized (this) {
-                if (dialect == null) {
-                    initConnection();
-                }
-            }
+        if (loadData && descriptor.getDataFileName() != null) {
+            Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());
+            DirectoryCSVLoader.loadData(descriptor.getDataFileName(), descriptor.getDataFileCharacterSeparator(),
+                    schema, session::createEntry);
         }
+        return session;
     }
 
     protected void addSession(final SQLSession session) throws DirectoryException {
