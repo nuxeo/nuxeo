@@ -118,6 +118,10 @@ public class TransmissionFormatItem {
         return (texturesSize == null) ? "-" : texturesSize.toString();
     }
 
+    public Boolean getHasTextures() {
+        return info.getTexturesSize() > 0;
+    }
+
     public Boolean getGeometryLodSuccess() {
         return info.getGeometryLodSuccess();
     }

@@ -54,25 +54,29 @@
                                 </c:if>
                                 #{item.polygons}
                             </td>
-                            <td class="lodColumn">
-                                <h:graphicImage class="tf-icon" url="/icons/ic_image_black_24px.svg"/>
-                                <c:if test="#{!empty item.percTex}">
-                                    #{item.percTex} %
-                                </c:if>
-                                <c:if test="#{!empty item.maxTex and !empty item.percTex}">
-                                    |
-                                </c:if>
-                                <c:if test="#{!empty item.maxTex}">
-                                    &lt; #{item.maxTex}
-                                </c:if>
-                                <c:if test="#{!item.textureLodSuccess}">
-                                    <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
-                                </c:if>
-                                <c:if test="#{item.textureLodSuccess}">
-                                    <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
-                                </c:if>
-                                #{item.textureSize}
-                            </td>
+                            <c:choose>
+                                <c:when test="#{item.hasTextures}">
+                                    <td class="lodColumn">
+                                        <h:graphicImage class="tf-icon" url="/icons/ic_image_black_24px.svg"/>
+                                        <c:if test="#{!empty item.percTex}">
+                                            #{item.percTex} %
+                                        </c:if>
+                                        <c:if test="#{!empty item.maxTex and !empty item.percTex}">
+                                            |
+                                        </c:if>
+                                        <c:if test="#{!empty item.maxTex}">
+                                            &lt; #{item.maxTex}
+                                        </c:if>
+                                        <c:if test="#{!item.textureLodSuccess}">
+                                            <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                                        </c:if>
+                                        <c:if test="#{item.textureLodSuccess}">
+                                            <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                                        </c:if>
+                                        #{item.textureSize}
+                                    </td>
+                                </c:when>
+                            </c:choose>
                             <td class="actionsColumn">
                                 <h:outputLink value="javascript:NX3D.show3DFormat('#{item.src}')">
                                     <h:graphicImage url="/icons/contextual_menu/preview.png"/>
