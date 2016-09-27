@@ -204,9 +204,19 @@ Contributors:
                     return list.length > 0;
                 },
 
+                formatAsReadable: function(value, base, unit) {
+                    value = Number(value);
+                    if (value < base) {
+                        return value + ' ' + unit;
+                    }
+                    var exp = parseInt((Math.log(value) / Math.log(base)));
+                    var pre = String(('kMGTPE').charAt(exp - 1));
+                    return (Math.round(value / Math.pow(base, exp) * 10) / 10) + ' ' + pre + unit;
+                },
+
                 _getPolyInfo: function(f) {
                     var perc = f.percPoly == null ? '' : f.percPoly + ' %';
-                    var max = f.maxPoly == null ? '' : '< ' + f.maxPoly;
+                    var max = f.maxPoly == null ? '' : '< ' + this.formatAsReadable(f.maxPoly, 1000, '');
                     return f.percPoly != null && f.maxPoly != null ? perc + ' | ' + max : perc + max;
                 },
 
