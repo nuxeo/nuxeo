@@ -54,7 +54,7 @@ public class DocumentRemovedCommentEventListener extends AbstractCommentListener
                     + "check the service relation adapters configuration");
             return;
         }
-        Graph graph = relationManager.getGraphByName(config.graphName);
+        Graph graph = relationManager.getGraph(config.graphName, coreSession);
         List<Statement> statementList = graph.getStatements(null, null, documentRes);
 
         // remove comments

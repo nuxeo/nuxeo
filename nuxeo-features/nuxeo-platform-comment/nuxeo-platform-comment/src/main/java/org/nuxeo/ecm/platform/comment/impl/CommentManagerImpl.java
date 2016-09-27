@@ -93,7 +93,7 @@ public class CommentManagerImpl implements CommentManager {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
                 ResourceAdapter.CORE_SESSION_CONTEXT_KEY, docModel.getCoreSession());
         RelationManager relationManager = Framework.getService(RelationManager.class);
-        Graph graph = relationManager.getGraphByName(config.graphName);
+        Graph graph = relationManager.getGraph(config.graphName, docModel.getCoreSession());
         Resource docResource = relationManager.getResource(config.documentNamespace, docModel, ctxMap);
         if (docResource == null) {
             throw new NuxeoException("Could not adapt document model to relation resource ; "
@@ -195,7 +195,7 @@ public class CommentManagerImpl implements CommentManager {
         Resource predicateRes = new ResourceImpl(config.predicateNamespace);
 
         Statement stmt = new StatementImpl(commentRes, predicateRes, documentRes);
-        relationManager.getGraphByName(config.graphName).add(stmt);
+        relationManager.getGraph(config.graphName, session).add(stmt);
 
         UserManager userManager = Framework.getService(UserManager.class);
         if (userManager != null) {
@@ -399,7 +399,7 @@ public class CommentManagerImpl implements CommentManager {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
                 ResourceAdapter.CORE_SESSION_CONTEXT_KEY, comment.getCoreSession());
         RelationManager relationManager = Framework.getService(RelationManager.class);
-        Graph graph = relationManager.getGraphByName(config.graphName);
+        Graph graph = relationManager.getGraph(config.graphName, comment.getCoreSession());
         Resource commentResource = relationManager.getResource(config.commentNamespace, comment, ctxMap);
         if (commentResource == null) {
             throw new NuxeoException("Could not adapt document model to relation resource ; "
