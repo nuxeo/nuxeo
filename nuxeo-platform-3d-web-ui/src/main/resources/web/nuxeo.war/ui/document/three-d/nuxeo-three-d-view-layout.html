@@ -156,8 +156,8 @@ Contributors:
                     <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
                         <div class="item">
                             <label class="layout flex-2">[[format.name]]</label>
-                            <span class="layout flex">[[format.lod]] %</span>
-                            <span class="layout flex">[[format.maxPoly]] [[i18n('label.widget.3d.polygons', 'polys')]]</span>
+                            <span class="layout flex">[[_getPolyInfo(format)]]</span>
+                            <span class="layout flex">[[_getTexInfo(format)]]</span>
                             <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
                             <a href="[[format.content.data]]" title="download">
                                 <iron-icon icon="icons:file-download"></iron-icon>
@@ -191,17 +191,29 @@ Contributors:
 
                 _loadFormat: function(e) {
                     var lod = e.model.dataHost.itemForElement(e.target);
-                    this.$.threedViewer.set('src', lod.content.data.replace(':8080',':5000'));
+                    this.querySelector('#threedViewer').set('src', lod.content.data);
                 },
 
                 _setCoords: function(e) {
                     var renderView = e.model.dataHost.itemForElement(e.target);
-                    window.threed = this.$.threedViewer;
-                    this.$.threedViewer.set('sphericalCoords',[renderView.azimuth, renderView.zenith]);
+                    window.threed = this.querySelector('#threedViewer');
+                    this.querySelector('#threedViewer').set('sphericalCoords',[renderView.azimuth, renderView.zenith]);
                 },
 
                 _hasItems: function(list) {
                     return list.length > 0;
+                },
+
+                _getPolyInfo: function(f) {
+                    var perc = f.percPoly == null ? '' : f.percPoly + ' %';
+                    var max = f.maxPoly == null ? '' : '< ' + f.maxPoly;
+                    return f.percPoly != null && f.maxPoly != null ? perc + ' | ' + max : perc + max;
+                },
+
+                _getTexInfo: function(f) {
+                    var perc = f.percTex == null ? '' : f.percTex + ' %';
+                    var max = f.maxTex == null ? '' : '< ' + f.maxTex;
+                    return f.percTex != null && f.maxTex != null ? perc + ' | ' + max : perc + max;
                 }
             });
         })();
