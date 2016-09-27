@@ -195,6 +195,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         DocumentModel copiedTestFile = session.copy(testFile.getRef(), testFile.getParentRef(),
                 TEST_FILE_NAME + "_BIS");
 
+        copiedTestFile = session.getDocument(copiedTestFile.getRef());
         assertFalse(collectionManager.isCollected(copiedTestFile));
 
         // Let's add to another collection and see it still does not belong to the original one.

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.collections.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
@@ -101,6 +104,16 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
                                                               .getAdapter(CollectionMember.class);
             assertTrue(collectionMemberAdapter.getCollectionIds().contains(copiedCollectionId));
         }
+
+        String copiedMemberFolderPath = copiedFolder.getPathAsString() + "/MemberFolder";
+        PathRef copiedMemberFolderPathRef = new PathRef(copiedMemberFolderPath);
+        DocumentModelIterator it = session.getChildrenIterator(copiedMemberFolderPathRef);
+        int size = 0;
+        for (DocumentModel copiedMember : it) {
+            assertFalse(collectionManager.isCollected(copiedMember));
+            size++;
+        }
+        assertEquals(nbMembers, size);
     }
 
     @Test

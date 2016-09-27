@@ -96,11 +96,12 @@ public class DuplicatedCollectionListener implements EventListener {
             // proceed to the deep collection copy
             int offset = 0;
             DocumentModelList deepCopiedCollections;
+            CoreSession session = ctx.getCoreSession();
             do {
-                deepCopiedCollections = ctx.getCoreSession()
-                                           .query("SELECT * FROM Collection WHERE ecm:path STARTSWITH "
-                                                   + NXQL.escapeString(doc.getPathAsString()), null,
-                                                   CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
+                deepCopiedCollections = session.query(
+                        "SELECT * FROM Document WHERE ecm:mixinType = 'Collection' AND ecm:path STARTSWITH "
+                                + NXQL.escapeString(doc.getPathAsString()) + " ORDER BY ecm:uuid",
+                        null, CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
                 offset += deepCopiedCollections.size();
                 for (DocumentModel deepCopiedCollection : deepCopiedCollections) {
                     collectionManager.processCopiedCollection(deepCopiedCollection);
@@ -112,13 +113,15 @@ public class DuplicatedCollectionListener implements EventListener {
             offset = 0;
             DocumentModelList deepCopiedMembers;
             do {
-                deepCopiedMembers = ctx.getCoreSession()
-                                       .query("SELECT * FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:path STARTSWITH "
-                                               + NXQL.escapeString(doc.getPathAsString()), null,
-                                               CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
+
+                deepCopiedMembers = session.query(
+                        "SELECT * FROM Document WHERE " + CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME
+                                + "/* IS NOT NULL AND ecm:path STARTSWITH " + NXQL.escapeString(doc.getPathAsString())
+                                + " ORDER BY ecm:uuid",
+                        null, CollectionAsynchrnonousQuery.MAX_RESULT, offset, false);
                 offset += deepCopiedMembers.size();
                 for (DocumentModel deepCopiedMember : deepCopiedMembers) {
-                    processCopiedMember(deepCopiedMember, ctx.getCoreSession());
+                    processCopiedMember(deepCopiedMember, session);
                 }
             } while (deepCopiedMembers.size() >= CollectionAsynchrnonousQuery.MAX_RESULT);
         }
@@ -128,12 +131,19 @@ public class DuplicatedCollectionListener implements EventListener {
      * @since 8.4
      */
     private void processCopiedMember(DocumentModel doc, CoreSession session) {
-        doc.getAdapter(CollectionMember.class).setCollectionIds(null);
+        if (!Framework.getLocalService(CollectionManager.class).isCollected(doc)) {
+            // should never happen but we may have dirty members which have no longer the CollectionMember facet but
+            // sill collectionMember:collectionIds valued
+            doc.setPropertyValue(CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME, null);
+        } else {
+            doc.getAdapter(CollectionMember.class).setCollectionIds(null);
+        }
         if (doc.isVersion()) {
             doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
-        session.saveDocument(doc);
+        doc = session.saveDocument(doc);
         doc.removeFacet(CollectionConstants.COLLECTABLE_FACET);
+        doc = session.saveDocument(doc);
     }
 
 }
