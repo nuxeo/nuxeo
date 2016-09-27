@@ -42,6 +42,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -54,7 +55,9 @@ public class BlobToFileTest {
 
     protected static final String DIRECTORY = FileUtils.getTempDirectoryPath() + "/blob-to-file";
 
-    protected static final String ORIGINAL_PDF = "src/test/resources/pdfMerge1.pdf";
+    protected static final String PDF_NAME = "pdfMerge1.pdf";
+
+    protected static final String PDF_PATH = "src/test/resources/" + PDF_NAME;
 
     @Inject
     AutomationService automationService;
@@ -68,7 +71,7 @@ public class BlobToFileTest {
 
     @Before
     public void setUp() throws Exception {
-        pdfFile = FileUtils.getFile(ORIGINAL_PDF);
+        pdfFile = FileUtils.getFile(PDF_PATH);
         blob = Blobs.createBlob(pdfFile);
     }
 
@@ -84,6 +87,10 @@ public class BlobToFileTest {
         Map<String, Object> params = buildParams();
         Blob exportedBlob = (Blob) automationService.run(ctx, BlobToFile.ID, params);
         assertNotNull(exportedBlob);
+        File[] directoryContent = FileUtils.convertFileCollectionToFileArray(
+                FileUtils.listFiles(FileUtils.getFile(DIRECTORY), null, false));
+        assertEquals(1, directoryContent.length);
+        assertEquals(PDF_NAME, directoryContent[0].getName());
     }
 
     @Test
