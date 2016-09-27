@@ -511,6 +511,7 @@ public abstract class NuxeoLauncher {
             + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
             + "        pack\t\t\tBuild a static archive.\n"
             + "        showconf\t\tDisplay the instance configuration.\n"
+            + "        connect-report\t\tDump a json report about the running server.\n"
             + "        mp-list\t\t\tList local Nuxeo Packages.\n"
             + "        mp-listall\t\tList all Nuxeo Packages.\n"
             + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n"
