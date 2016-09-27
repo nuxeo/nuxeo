@@ -29,8 +29,7 @@ import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT_REGEX;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_TERMSNCONDITIONS;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+
 import java.io.Console;
 import java.io.File;
 import java.io.FileWriter;
@@ -96,7 +95,6 @@ import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.registration.RegistrationException;
 import org.nuxeo.connect.tools.report.client.ReportConnector;
-import org.nuxeo.connect.tools.report.client.StreamFeeder;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
@@ -3051,21 +3049,9 @@ public abstract class NuxeoLauncher {
                 Json.createGeneratorFactory(new MapBuilder<String, Object>().with(JsonGenerator.PRETTY_PRINTING, prettyprint).build())
                         .createGenerator(out)) {
             generator.writeStartObject();
-            // show config
-            generator.writeStartObject("config");
-            try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
-                JAXBContext context = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
-                        PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
-                Marshaller marshaller = context.createMarshaller();
-                marshaller.marshal(info, jsonWriter(context, bytes));
-                new StreamFeeder().feed(generator, Json.createParser(new ByteArrayInputStream(bytes.toByteArray())));
-            }
-            generator.writeEnd();
-            generator.flush();
-            // runtime
             ReportConnector.of().feed(generator);
             generator.writeEnd();
-        } catch (IOException | JAXBException | InterruptedException | ExecutionException cause) {
+        } catch (IOException | InterruptedException | ExecutionException cause) {
             log.error("Cannot dump connect report", cause);
             errorValue = EXIT_CODE_ERROR;
             return false;

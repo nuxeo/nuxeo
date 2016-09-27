@@ -519,6 +519,7 @@ public class ConfigurationGenerator {
             log.info("Missing " + nuxeoConf);
             configurable = false;
             userConfig = new CryptoProperties();
+            defaultConfig = new Properties();
         } else if (userConfig == null || userConfig.size() == 0 || forceReload) {
             try {
                 setBasicConfiguration();
@@ -1865,9 +1866,9 @@ public class ConfigurationGenerator {
             env.loadProperties(userConfig);
             env.setServerHome(getNuxeoHome());
             env.init();
-            env.setData(userConfig.getProperty(Environment.NUXEO_DATA_DIR));
-            env.setLog(userConfig.getProperty(Environment.NUXEO_LOG_DIR));
-            env.setTemp(userConfig.getProperty(Environment.NUXEO_TMP_DIR));
+            env.setData(userConfig.getProperty(Environment.NUXEO_DATA_DIR, "data"));
+            env.setLog(userConfig.getProperty(Environment.NUXEO_LOG_DIR, "logs"));
+            env.setTemp(userConfig.getProperty(Environment.NUXEO_TMP_DIR, "tmp"));
             env.setPath(PARAM_MP_DIR, getDistributionMPDir(), env.getServerHome());
             env.setPath(Environment.NUXEO_MP_DIR, getPackagesDir(), env.getServerHome());
         }
