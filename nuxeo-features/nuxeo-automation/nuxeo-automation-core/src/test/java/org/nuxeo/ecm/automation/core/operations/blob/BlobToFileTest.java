@@ -91,13 +91,20 @@ public class BlobToFileTest {
         CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
         OperationContext ctx = buildCtx(notAdminSession);
         Map<String, Object> params = buildParams();
+        testNotAllowed(ctx, BlobToFile.ID, params);
+        for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
+            testNotAllowed(ctx, alias, params);
+        }
+        notAdminSession.close();
+    }
+
+    protected void testNotAllowed(OperationContext ctx, String id, Map<String, Object> params) throws IOException {
         try {
-            automationService.run(ctx, BlobToFile.ID, params);
+            automationService.run(ctx, id, params);
         } catch (OperationException e) {
             assertNotNull(e.getMessage());
             assertTrue(e.getMessage().contains("Not allowed"));
         }
-        notAdminSession.close();
     }
 
     protected OperationContext buildCtx(CoreSession coreSession) throws IOException {
