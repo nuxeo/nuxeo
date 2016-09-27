@@ -1,0 +1,25 @@
+{
+  "name": "nuxeo-3d-elements",
+  "version": "0.2.0",
+  "description": "Nuxeo 3D Web Components.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuxeo/nuxeo-3d-elements.git"
+  },
+  "contributors": [
+    "Tiago Cardoso <tcardoso@nuxeo.com>"
+  ],
+  "license": "Apache 2.0",
+  "private": true,
+  "dependencies": {
+    "@polymer/polymer": "^1.2.5-npm-test.2",
+    "@polymer/iron-elements": "0.0.3",
+    "@polymer/paper-elements": "0.0.3",
+    "nuxeo-elements": "nuxeo/nuxeo-elements",
+    "three.js": "mrdoob/three.js"
+  },
+  "devDependencies": {
+    "@polymer/iron-component-page": "0.0.3",
+    "web-component-tester": "4.2.2"
+  }
+}

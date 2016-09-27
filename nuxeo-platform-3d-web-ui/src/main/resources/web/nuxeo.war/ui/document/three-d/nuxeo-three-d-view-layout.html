@@ -1,0 +1,210 @@
+<!--
+(C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+    Tiago Cardoso <tcardoso@nuxeo.com>
+-->
+
+<!--
+`three-d-view-layout`
+@group Nuxeo UI
+@element three-d-view-layout
+-->
+<dom-module id="nuxeo-three-d-view-layout">
+
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            .properties {
+                -moz-column-width: 25em; /* Firefox */
+                -webkit-column-width: 25em; /* webkit, Safari, Chrome */
+                column-width: 25em;
+                column-count: 3;
+                -moz-column-count: 3; /* Firefox */
+                -webkit-column-count: 3; /* webkit, Safari, Chrome */
+            }
+
+            .properties label {
+                width: 10em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .render-views {
+                @apply(--layout-horizontal);
+                @apply(--layout-wrap);
+
+            }
+
+            .render-views > .item {
+                @apply(--layout-vertical);
+                @apply(--layout-center);
+            }
+
+            .render-views > .item label {
+                color: #999;
+            }
+
+            .render-views > .item img {
+                width:200px;
+            }
+
+            .transmission-formats {
+            }
+
+            .transmission-formats > .item {
+                @apply(--layout-horizontal);
+                @apply(--layout-flex);
+            }
+
+            .transmission-formats > .item label {
+                color: #999;
+            }
+
+            nuxeo-3d-viewer {
+                width: 100%;
+                height: 400px;
+            }
+
+            .title {
+                font-size: 1.64rem;
+            }
+
+            .attachments {
+                border-top: 1px dashed #ddd;
+                background-color: #fafafd;
+            }
+        </style>
+
+        <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
+            <nuxeo-dropzone document="{{document}}"
+                            message="Drop to replace the 3D content"
+                            message-empty="Click here or drop to replace the 3D"
+                            uploaded-message="3D file uploaded"
+                            empty="[[!document.properties.file:content.data]]">
+                <nuxeo-3d-viewer id="threedViewer"
+                                 src="[[document.properties.threed:transmissionFormats.0.content.data]]"
+                                 hidden="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+                </nuxeo-3d-viewer>
+            </nuxeo-dropzone>
+        </template>
+        <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+            <p>No transmission formats available.</p>
+        </template>
+        <div class="card-section">
+            <div class="horizontal layout center">
+                <template is="dom-if" if="[[document.properties.file:content]]">
+                    <p class="title">
+                        <a href="[[document.properties.file:content.data]]">[[document.title]]</a>
+                    </p>
+                    <div class="horizontal flex end-justified layout">
+                        <nuxeo-document-view-delete-blob document="{{document}}"
+                                                         tool-tip="Delete 3D content"
+                                                         confirm-message="Do you really want to delete this 3D?"
+                                                         delete-message="3D deleted"
+                                                         hidden="[[!document.properties.file:content]]">
+                        </nuxeo-document-view-delete-blob>
+                        <nuxeo-upload-blob-button document="{{document}}"
+                                                  uploaded-message="3D uploaded"
+                                                  tool-tip="Upload 3D"></nuxeo-upload-blob-button>
+                    </div>
+                </template>
+                <template is="dom-if" if="[[!document.properties.file:content]]">
+                    <p class="title">
+                        <span>[[document.title]]</span>
+                    </p>
+                </template>
+            </div>
+        </div>
+        <div class="card-section sep">
+            <p class="title">[[i18n('heading.renderViews', 'Render Views')]]</p>
+            <template is="dom-if" if="{{_hasItems(document.properties.threed:renderViews)}}">
+                <div class="render-views">
+                    <template is="dom-repeat" items="[[document.properties.threed:renderViews]]" as="renderView">
+                        <div class="item">
+                            <img src="[[renderView.thumbnail.data]]" on-tap="_setCoords" />
+                            <a href="[[renderView.content.data]]" title="download">
+                                <label class="layout flex-2">[[renderView.title]]</label>
+                                <iron-icon icon="icons:file-download"></iron-icon>
+                            </a>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template is="dom-if" if="{{!_hasItems(document.properties.threed:renderViews)}}">
+                <p>No items.</p>
+            </template>
+        </div>
+        <div class="card-section sep">
+            <p class="title">[[i18n('heading.transitionFormats', 'Level of Detail Versions')]]</p>
+            <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
+                <div class="transmission-formats">
+                    <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
+                        <div class="item">
+                            <label class="layout flex-2">[[format.name]]</label>
+                            <span class="layout flex">[[format.lod]] %</span>
+                            <span class="layout flex">[[format.maxPoly]] [[i18n('label.widget.3d.polygons', 'polys')]]</span>
+                            <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
+                            <a href="[[format.content.data]]" title="download">
+                                <iron-icon icon="icons:file-download"></iron-icon>
+                            </a>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+                <p>No items.</p>
+            </template>
+        </div>
+        <div class="card-section attachments">
+            <nuxeo-document-attachments document="{{document}}"></nuxeo-document-attachments>
+        </div>
+    </template>
+
+    <script>
+        (function() {
+            'use strict';
+
+            Polymer({
+                is: 'nuxeo-three-d-view-layout',
+                properties: {
+                    document: {
+                        type: Object,
+                        notify: true
+                    }
+                },
+                behaviors: [Nuxeo.I18nBehavior],
+
+                _loadFormat: function(e) {
+                    var lod = e.model.dataHost.itemForElement(e.target);
+                    this.$.threedViewer.set('src', lod.content.data.replace(':8080',':5000'));
+                },
+
+                _setCoords: function(e) {
+                    var renderView = e.model.dataHost.itemForElement(e.target);
+                    window.threed = this.$.threedViewer;
+                    this.$.threedViewer.set('sphericalCoords',[renderView.azimuth, renderView.zenith]);
+                },
+
+                _hasItems: function(list) {
+                    return list.length > 0;
+                }
+            });
+        })();
+    </script>
+
+</dom-module>

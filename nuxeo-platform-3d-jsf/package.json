@@ -1,6 +1,6 @@
 {
-  "name": "nuxeo-platform-3d",
-  "description": "Nuxeo Platform 3D",
+  "name": "nuxeo-platform-3d-jsf",
+  "description": "Nuxeo Platform 3D JSF",
   "version": "0.0.1",
   "homepage": "http://www.nuxeo.com",
   "license": "Apache-2.0",

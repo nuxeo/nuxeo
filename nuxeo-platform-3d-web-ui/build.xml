@@ -17,7 +17,7 @@
   ~  Contributors:
   ~     Tiago Cardoso <tcardoso@nuxeo.com>
   -->
-<project name="Nuxeo Platform 3D" default="build" basedir=".">
+<project name="Nuxeo Platform 3D" default="build" basedir="../nuxeo-platform-3d-web-ui">
 
     <!-- set executable names based on OS family -->
     <condition property="cmd.npm" value="npm.cmd" else="npm">

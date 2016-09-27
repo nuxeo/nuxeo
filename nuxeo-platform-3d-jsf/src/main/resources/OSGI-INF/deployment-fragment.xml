@@ -20,4 +20,13 @@
         <delete path="${bundle.fileName}.tmp"/>
     </install>
 
+    <extension target="web#STD-AUTH-FILTER">
+        <filter-mapping>
+            <filter-name>NuxeoAuthenticationFilter</filter-name>
+            <url-pattern>/platform-3d/*</url-pattern>
+            <dispatcher>REQUEST</dispatcher>
+            <dispatcher>FORWARD</dispatcher>
+        </filter-mapping>
+    </extension>
+
 </fragment>
