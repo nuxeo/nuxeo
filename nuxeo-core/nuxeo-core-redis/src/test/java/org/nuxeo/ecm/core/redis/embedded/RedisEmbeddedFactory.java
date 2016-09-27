@@ -17,8 +17,12 @@ package org.nuxeo.ecm.core.redis.embedded;
 
 import static org.joor.Reflect.on;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -37,9 +41,7 @@ public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
     final RedisEmbeddedConnection connection = wrapConnection(new RedisEmbeddedConnection());
 
     RedisEmbeddedConnection wrapConnection(RedisEmbeddedConnection connection) {
-        connection = synchronizedConnection(connection);
-        connection = logConnection(connection);
-        return connection;
+        return logConnection(connection);
     }
 
     RedisEmbeddedConnection logConnection(RedisEmbeddedConnection connection) {
@@ -50,29 +52,91 @@ public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
 
         class Logger implements MethodInterceptor {
 
-
             @Override
-            public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
+            public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy)
+                    throws Throwable {
+                class Stringifier {
 
+                    StringBuilder sb = new StringBuilder();
+
+                    Stringifier append(Object[] args) {
+                        StringBuilder sb = new StringBuilder();
+                        Iterator<Object> it = Arrays.stream(args).iterator();
+                        while (it.hasNext()) {
+                            append(it.next());
+                            if (it.hasNext()) {
+                                sb.append(',');
+                            }
+                        }
+                        return this;
+                    }
+
+                    Stringifier append(byte[] bytes) {
+                        int mark = sb.length();
+                        try {
+                            sb.append(new String(bytes, "UTF-8").replaceAll("\\p{C}", "x"));
+                        } catch (UnsupportedEncodingException cause) {
+                            sb.setLength(mark);
+                            sb.append(Arrays.toString(bytes));
+                        }
+                        return this;
+                    }
+
+                    Stringifier append(Object object) {
+                        if (object == null) {
+                            sb.append("null");
+                            return this;
+                        }
+                        if (object instanceof byte[]) {
+                            return append((byte[]) object);
+                        }
+                        Class<? extends Object> typeof = object.getClass();
+                        if (object instanceof Collection<?>) {
+                            return append((Collection<?>) object);
+                        }
+                        if (typeof.isArray() && !typeof.getComponentType().isPrimitive()) {
+                            return append((Object[])object);
+                        }
+                        sb.append(object.toString());
+                        return this;
+                    }
+
+                    Stringifier append(Collection<?> collection) {
+                        Iterator<?> it = collection.iterator();
+                        while (it.hasNext()) {
+                            append(it.next());
+                            if (it.hasNext()) {
+                                sb.append(',');
+                            }
+                        }
+                        return this;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return sb.toString();
+                    }
+                }
+                if (method.getDeclaringClass() == Object.class) {
+                    return on(connection).call(method.getName(), arguments).get();
+                }
                 try {
+                    log.trace(String.format("%s(%s) ->", method.getName(), new Stringifier().append(arguments)));
                     Object result = on(connection).call(method.getName(), arguments).get();
-                    log.trace(String.format("%s(%s) <- %s",
-                            method.getName(),
-                            Arrays.deepToString(arguments),
-                            result));
+                    log.trace(String.format("%s(%s) <- %s", method.getName(), new Stringifier().append(arguments),
+                            new Stringifier().append(result)), new Throwable("stack trace"));
                     return result;
                 } catch (Throwable error) {
-                    log.trace(String.format("%s(%s) <- %s",
-                            method.getName(),
-                            Arrays.deepToString(arguments),
-                            error));
+                    log.trace(String.format("%s(%s) <- error", method.getName(), new Stringifier().append(arguments)), error);
+                    if (error instanceof InterruptedException) {
+                        Thread.currentThread().interrupt();
+                    }
                     throw error;
                 }
             }
 
             RedisEmbeddedConnection createProxy() {
-                return RedisEmbeddedConnection.class
-                        .cast(Enhancer.create(RedisEmbeddedConnection.class, this));
+                return RedisEmbeddedConnection.class.cast(Enhancer.create(RedisEmbeddedConnection.class, this));
             }
 
         }
@@ -80,27 +144,7 @@ public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
         return new Logger().createProxy();
     }
 
-    RedisEmbeddedConnection synchronizedConnection(RedisEmbeddedConnection connection) {
-        class Synchronizer implements MethodInterceptor {
-
-            @Override
-            public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
-                synchronized (connection) {
-                    return on(connection).call(method.getName(), arguments).get();
-                }
-            }
-
-            RedisEmbeddedConnection createProxy() {
-                return RedisEmbeddedConnection.class
-                        .cast(Enhancer.create(RedisEmbeddedConnection.class, this));
-            }
-        }
-        return new Synchronizer().createProxy();
-    }
-
     RedisEmbeddedGuessConnectionError error = new RedisEmbeddedGuessConnectionError.NoError();
-
-    protected final RedisEmbeddedLuaEngine lua = new RedisEmbeddedLuaEngine(connection);
 
     @Override
     public PooledObject<Jedis> makeObject() throws Exception {

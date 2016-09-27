@@ -1,0 +1,19 @@
+--
+-- Pop a work
+--
+local dataKey = KEYS[1]
+local stateKey = KEYS[2]
+local countKey = KEYS[3]
+local scheduledKey = KEYS[4]
+local queuedKey = KEYS[5]
+local runningKey = KEYS[6]
+local completedKey = KEYS[7]
+local canceledKey = KEYS[8]
+
+local id = redis.call('RPOP', queuedKey)
+if (id == false) then
+  return false
+end
+redis.call('SREM', scheduledKey, id)
+redis.call('HINCRBY', countKey, scheduledKey, -1) 
+return id

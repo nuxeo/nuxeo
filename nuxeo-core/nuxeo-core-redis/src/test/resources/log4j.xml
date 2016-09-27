@@ -21,18 +21,16 @@
     </layout>
   </appender>
 
-  <category name="org.nuxeo.ecm.core.work.WorkQueuing">
+  <category name="org.nuxeo.ecm.core.work">
     <priority value="TRACE" />
     <appender-ref ref="FILE" />
   </category>
   
-<!-- 
-  <category name="org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedConnection">
+
+  <category name="org.nuxeo.ecm.core.redis.embedded">
     <priority value="TRACE" />
     <appender-ref ref="FILE" />
   </category>
--->
-
 <!--
   <category name="org.nuxeo.runtime">
     <priority value="INFO" />

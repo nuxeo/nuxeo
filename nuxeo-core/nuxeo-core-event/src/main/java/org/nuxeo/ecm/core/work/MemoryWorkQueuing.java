@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,18 +173,6 @@ public class MemoryWorkQueuing implements WorkQueuing {
         }
         work.setWorkInstanceState(State.UNKNOWN);
         listener.queueChanged(work, queue.workCanceled(work));
-    }
-
-    @Override
-    public int setSuspending(String queueId) {
-        MemoryBlockingQueue queue = getQueue(queueId);
-        List<Runnable> scheduled = new ArrayList<>();
-        queue.drainTo(scheduled);
-        for (Runnable r : scheduled) {
-            Work work = WorkHolder.getWork(r);
-            listener.queueChanged(work, queue.workCanceled(work));
-        }
-        return scheduled.size();
     }
 
     @Override

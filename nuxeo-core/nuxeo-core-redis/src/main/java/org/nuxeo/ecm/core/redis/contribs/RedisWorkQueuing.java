@@ -145,6 +145,8 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected byte[] schedulingWorkSha;
 
+    protected byte[] popWorkSha;
+
     protected byte[] runningWorkSha;
 
     protected byte[] cancelledScheduledWorkSha;
@@ -168,6 +170,8 @@ public class RedisWorkQueuing implements WorkQueuing {
                     .getBytes();
             schedulingWorkSha = admin.load("org.nuxeo.ecm.core.redis", "scheduling-work")
                     .getBytes();
+            popWorkSha = admin.load("org.nuxeo.ecm.core.redis", "pop-work")
+                    .getBytes();
             runningWorkSha = admin.load("org.nuxeo.ecm.core.redis", "running-work")
                     .getBytes();
             cancelledScheduledWorkSha = admin.load("org.nuxeo.ecm.core.redis", "cancelled-scheduled-work")
@@ -183,7 +187,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     @Override
     public NuxeoBlockingQueue init(WorkQueueDescriptor config) {
-        evalSha(metricsWorkQueueSha, keys(config.id), Collections.emptyList());
+        evalSha(initWorkQueueSha, keys(config.id), Collections.emptyList());
         RedisBlockingQueue queue = new RedisBlockingQueue(config.id, this);
         allQueued.put(config.id, queue);
         return queue;
@@ -351,18 +355,6 @@ public class RedisWorkQueuing implements WorkQueuing {
             listener.queueActivated(metrics);
         } else {
             listener.queueDeactivated(metrics);
-        }
-    }
-
-    @Override
-    public int setSuspending(String queueId) {
-        try {
-            int n = suspendScheduledWork(queueId);
-            log.info("Suspending " + n + " work instances from queue: " + queueId);
-            allQueued.remove(queueId);
-            return n;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -776,14 +768,11 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Work call(Jedis jedis) {
-                // pop from queue
-                byte[] workIdBytes = jedis.rpop(queuedKey(queueId));
-                if (workIdBytes == null) {
+                String id = (String)jedis.evalsha(popWorkSha, keys(queueId), Collections.emptyList());
+                if (id == null) {
                     return null;
                 }
-                // get data
-                byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                return deserializeWork(workBytes);
+                return deserializeWork(jedis.hget(dataKey(),bytes(id)));
             }
 
         });
