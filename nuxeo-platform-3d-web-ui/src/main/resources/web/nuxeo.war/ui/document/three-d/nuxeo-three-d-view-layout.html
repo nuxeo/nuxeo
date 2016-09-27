@@ -157,7 +157,9 @@ Contributors:
                         <div class="item">
                             <label class="layout flex-2">[[format.name]]</label>
                             <span class="layout flex">[[_getPolyInfo(format)]]</span>
+                            <span class="layout flex">[[_getPolyNumber(format)]]</span>
                             <span class="layout flex">[[_getTexInfo(format)]]</span>
+                            <span class="layout flex">[[_getTexSize(format)]]</span>
                             <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
                             <a href="[[format.content.data]]" title="download">
                                 <iron-icon icon="icons:file-download"></iron-icon>
@@ -224,6 +226,17 @@ Contributors:
                     var perc = f.percTex == null ? '' : f.percTex + ' %';
                     var max = f.maxTex == null ? '' : '< ' + f.maxTex;
                     return f.percTex != null && f.maxTex != null ? perc + ' | ' + max : perc + max;
+                },
+
+                _getPolyNumber: function(f) {
+                    return this.formatAsReadable(f.info.polygons, 1000, '');
+                },
+
+                _getTexSize: function(f) {
+                    if (Number(f.info.textures_size) > 0) {
+                        return this.formatAsReadable(f.info.textures_size, 1024, 'B');
+                    }
+                    return null;
                 }
             });
         })();
