@@ -55,7 +55,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
                     + "check the service relation adapters configuration");
             return;
         }
-        Graph graph = relationManager.getGraphByName(config.graphName);
+        Graph graph = relationManager.getGraph(config.graphName, docModel.getCoreSession());
         List<Statement> statementList = graph.getStatements(commentRes, null, null);
         graph.remove(statementList);
     }
