@@ -574,6 +574,12 @@
       <artifactId>nuxeo-rest-api-server</artifactId>
     </dependency>
 
+    <!-- Connect Tools Report -->
+    <dependency>
+      <groupId>org.nuxeo.connect.tools</groupId>
+      <artifactId>nuxeo-connect-tools-report-core</artifactId>
+    </dependency>
+
     <!-- Scope test -->
 <!--
     <dependency>
