@@ -1257,27 +1257,22 @@ public abstract class NuxeoLauncher {
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
         } else if (launcher.commandIs("connect-report")) {
-            if (!launcher.isConnectReportInstalled()) {
-                log.warn(String.format("The %s marketplace is not installed, cannot dump report", NUXEO_CONNECT_TOOLS_REPORT_PKG_NAME));
-                commandSucceeded = false;
+            boolean gzip = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true")).booleanValue();
+            boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT_DESC, "false"));
+            Path outputpath;
+            if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
+                outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
             } else {
-                boolean gzip = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true")).booleanValue();
-                boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT_DESC, "false"));
-                Path outputpath;
-                if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
-                    outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
-                } else {
-                    Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
-                    outputpath = dir.resolve("nuxeo-connect-tools-report.json".concat(
-                            gzip ? ".gz" : ""));
-                }
-                log.info("Dumping connect report in " + outputpath);
-                OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-                if (gzip) {
-                    output = new GZIPOutputStream(output, 512, true);
-                }
-                commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
+                Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
+                outputpath = dir.resolve("nuxeo-connect-tools-report.json".concat(
+                        gzip ? ".gz" : ""));
             }
+            log.info("Dumping connect report in " + outputpath);
+            OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            if (gzip) {
+                output = new GZIPOutputStream(output, 512, true);
+            }
+            commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
         } else {
             log.error("Unknown command " + launcher.command);
             printLongHelp();
@@ -3018,18 +3013,6 @@ public abstract class NuxeoLauncher {
             errorValue = EXIT_CODE_ERROR;
         }
         return cmdOK;
-    }
-
-    static final String NUXEO_CONNECT_TOOLS_REPORT_PKG_NAME = "nuxeo-connect-tools-report";
-
-    protected boolean isConnectReportInstalled() {
-        for (PackageInfo pkg : info.packages) {
-            if (NUXEO_CONNECT_TOOLS_REPORT_PKG_NAME.equals(pkg.name)) {
-                return true;
-            }
-        }
-        errorValue = EXIT_CODE_ERROR;
-        return false;
     }
 
     protected boolean dumpConnectReport(OutputStream out, boolean prettyprint) {
