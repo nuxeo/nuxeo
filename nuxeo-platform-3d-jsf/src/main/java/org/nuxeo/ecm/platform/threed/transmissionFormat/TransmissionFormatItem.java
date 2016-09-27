@@ -99,7 +99,7 @@ public class TransmissionFormatItem {
 
     public String getMaxPoly() {
         if (maxPoly == null) {
-            return "-";
+            return null;
         }
         return formatAsReadable(maxPoly, 1000, "");
     }
