@@ -2750,20 +2750,24 @@
       <dependency>
         <groupId>com.tngtech.jgiven</groupId>
         <artifactId>jgiven-core</artifactId>
-        <version>0.11.4</version>
+        <version>0.12.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.tngtech.jgiven</groupId>
         <artifactId>jgiven-junit</artifactId>
-        <version>0.11.4</version>
+        <version>0.12.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>com.tngtech.java</groupId>
         <artifactId>junit-dataprovider</artifactId>
         <version>1.10.0</version>
-        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.fusesource.jansi</groupId>
+        <artifactId>jansi</artifactId>
+        <version>1.13</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -5591,7 +5595,7 @@
         <plugin>
           <groupId>com.tngtech.jgiven</groupId>
           <artifactId>jgiven-maven-plugin</artifactId>
-          <version>0.11.4</version>
+          <version>0.12.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
