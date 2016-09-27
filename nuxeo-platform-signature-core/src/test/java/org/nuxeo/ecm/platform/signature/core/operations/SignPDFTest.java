@@ -45,6 +45,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,28 +119,17 @@ public class SignPDFTest {
     @Test
     public void testSignPDF() throws Exception {
         // first user signs
-        Blob origBlob = Blobs.createBlob(origPdfFile);
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(origBlob);
-        Map<String, Object> params = new HashMap<>();
-        params.put("username", DEFAULT_USER_ID);
-        params.put("password", USER_KEY_PASSWORD);
-        params.put("reason", "TEST");
+        OperationContext ctx = buildCtx(session);
+        Map<String, Object> params = buildParams();
         Blob signedBlob = (Blob) automationService.run(ctx, SignPDF.ID, params);
         assertNotNull(signedBlob);
     }
 
     @Test
     public void testNotAllowedToSignPDF() throws Exception {
-        // first user signs
-        Blob origBlob = Blobs.createBlob(origPdfFile);
         CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
-        OperationContext ctx = new OperationContext(notAdminSession);
-        ctx.setInput(origBlob);
-        Map<String, Object> params = new HashMap<>();
-        params.put("username", DEFAULT_USER_ID);
-        params.put("password", USER_KEY_PASSWORD);
-        params.put("reason", "TEST");
+        OperationContext ctx = buildCtx(notAdminSession);
+        Map<String, Object> params = buildParams();
         try {
             automationService.run(ctx, SignPDF.ID, params);
         } catch (OperationException e) {
@@ -147,5 +137,20 @@ public class SignPDFTest {
             assertTrue(e.getMessage().contains("Not allowed"));
         }
         notAdminSession.close();
+    }
+
+    protected OperationContext buildCtx(CoreSession coreSession) throws IOException {
+        OperationContext ctx = new OperationContext(coreSession);
+        Blob origBlob = Blobs.createBlob(origPdfFile);
+        ctx.setInput(origBlob);
+        return ctx;
+    }
+
+    protected Map<String, Object> buildParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", DEFAULT_USER_ID);
+        params.put("password", USER_KEY_PASSWORD);
+        params.put("reason", "TEST");
+        return params;
     }
 }

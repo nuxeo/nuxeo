@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.signature.core.operations;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,40 +122,17 @@ public class SignPDFDocumentTest {
 
     @Test
     public void testSignPDFDocument() throws Exception {
-        DocumentModel doc = session.createDocumentModel("File");
-        assertNotNull(doc);
-        doc.setPathInfo("/", "file1");
-        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain",
-                null, "foo.txt");
-        doc.setPropertyValue("file:content", (Serializable) origBlob);
-        doc = session.createDocument(doc);
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(doc);
-        Map<String, Object> params = new HashMap<>();
-        params.put("username", DEFAULT_USER_ID);
-        params.put("password", USER_KEY_PASSWORD);
-        params.put("reason", "TEST");
+        OperationContext ctx = buildCtx(session);
+        Map<String, Object> params = buildParams();
         Blob signedBlob = (Blob) automationService.run(ctx, SignPDFDocument.ID, params);
         assertNotNull(signedBlob);
     }
 
     @Test
     public void testNotAllowedToSignPDFDocument() throws Exception {
-        DocumentModel doc = session.createDocumentModel("File");
-        assertNotNull(doc);
-        doc.setPathInfo("/", "file1");
-        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain",
-                null, "foo.txt");
-        doc.setPropertyValue("file:content", (Serializable) origBlob);
-        doc = session.createDocument(doc);
-
         CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
-        OperationContext ctx = new OperationContext(notAdminSession);
-        ctx.setInput(doc);
-        Map<String, Object> params = new HashMap<>();
-        params.put("username", DEFAULT_USER_ID);
-        params.put("password", USER_KEY_PASSWORD);
-        params.put("reason", "TEST");
+        OperationContext ctx = buildCtx(notAdminSession);
+        Map<String, Object> params = buildParams();
         try {
             automationService.run(ctx, SignPDFDocument.ID, params);
         } catch (OperationException e) {
@@ -162,5 +140,26 @@ public class SignPDFDocumentTest {
             assertTrue(e.getMessage().contains("Not allowed"));
         }
         notAdminSession.close();
+    }
+
+    protected OperationContext buildCtx(CoreSession coreSession) throws IOException {
+        OperationContext ctx = new OperationContext(coreSession);
+        DocumentModel doc = session.createDocumentModel("File");
+        assertNotNull(doc);
+        doc.setPathInfo("/", "file1");
+        Blob origBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("pdf-tests/hello.txt"), "text/plain",
+                null, "foo.txt");
+        doc.setPropertyValue("file:content", (Serializable) origBlob);
+        doc = session.createDocument(doc);
+        ctx.setInput(doc);
+        return ctx;
+    }
+
+    protected Map<String, Object> buildParams() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", DEFAULT_USER_ID);
+        params.put("password", USER_KEY_PASSWORD);
+        params.put("reason", "TEST");
+        return params;
     }
 }
