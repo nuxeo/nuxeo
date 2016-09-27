@@ -16,6 +16,7 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  *      Mickael Vachette <mv@nuxeo.com>
+ *      Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.signature.core.operations;
 
@@ -26,12 +27,13 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
@@ -43,12 +45,14 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, AutomationFeature.class })
@@ -115,14 +119,38 @@ public class SignPDFTest {
     @Test
     public void testSignPDF() throws Exception {
         // first user signs
+        OperationContext ctx = buildCtx(session);
+        Map<String, Object> params = buildParams();
+        Blob signedBlob = (Blob) automationService.run(ctx, SignPDF.ID, params);
+        assertNotNull(signedBlob);
+    }
+
+    @Test
+    public void testNotAllowedToSignPDF() throws Exception {
+        CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
+        OperationContext ctx = buildCtx(notAdminSession);
+        Map<String, Object> params = buildParams();
+        try {
+            automationService.run(ctx, SignPDF.ID, params);
+        } catch (OperationException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains("Not allowed"));
+        }
+        notAdminSession.close();
+    }
+
+    protected OperationContext buildCtx(CoreSession coreSession) throws IOException {
+        OperationContext ctx = new OperationContext(coreSession);
         Blob origBlob = Blobs.createBlob(origPdfFile);
-        OperationContext ctx = new OperationContext(session);
         ctx.setInput(origBlob);
+        return ctx;
+    }
+
+    protected Map<String, Object> buildParams() {
         Map<String, Object> params = new HashMap<>();
         params.put("username", DEFAULT_USER_ID);
         params.put("password", USER_KEY_PASSWORD);
         params.put("reason", "TEST");
-        Blob signedBlob = (Blob) automationService.run(ctx, SignPDF.ID, params);
-        assertNotNull(signedBlob);
+        return params;
     }
 }

@@ -16,9 +16,12 @@
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
  *      Mickael Vachette <mv@nuxeo.com>
+ *      Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.signature.core.operations;
 
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -26,6 +29,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
@@ -39,6 +43,9 @@ public class SignPDFDocument {
     public static final String ID = "Services.SignPDFDocument";
 
     private static final String MIME_TYPE_PDF = "application/pdf";
+
+    @Context
+    protected OperationContext ctx;
 
     @Context
     protected UserManager userManager;
@@ -56,7 +63,11 @@ public class SignPDFDocument {
     protected String reason;
 
     @OperationMethod
-    public Blob run(DocumentModel doc) {
+    public Blob run(DocumentModel doc) throws OperationException {
+        if (!(ctx.getPrincipal() instanceof NuxeoPrincipal)
+                || !((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
+            throw new OperationException("Not allowed. You must be administrator to use this operation");
+        }
         DocumentModel user = userManager.getUserModel(username);
         Blob originalBlob = doc.getAdapter(BlobHolder.class).getBlob();
         boolean originalIsPdf = MIME_TYPE_PDF.equals(originalBlob.getMimeType());
