@@ -10,10 +10,15 @@ local runningKey = KEYS[6]
 local completedKey = KEYS[7]
 local canceledKey = KEYS[8]
 
+local state = ARGV[1]
+
 local id = redis.call('RPOP', queuedKey)
 if (id == false) then
   return false
 end
 redis.call('SREM', scheduledKey, id)
-redis.call('HINCRBY', countKey, scheduledKey, -1) 
+redis.call('HINCRBY', countKey, scheduledKey, -1)
+redis.call('SADD', runningKey, id)
+redis.call('HSET', stateKey, id, state)
+redis.call('HINCRBY', countKey, runningKey, 1)
 return id

@@ -23,9 +23,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
-import static org.nuxeo.ecm.core.work.api.Work.State.UNKNOWN;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
+import static org.nuxeo.ecm.core.work.api.Work.State.UNKNOWN;
 
 import java.io.File;
 import java.io.Serializable;
@@ -229,7 +229,6 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, null));
     }
 
-    @Test
     public void testDuplicatedWorks() throws Exception {
         deployAndStart();
         int duration = 2000; // 2s
@@ -245,7 +244,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
         service.enableProcessing("SleepWork", true);
 
-        assertTrue(service.awaitCompletion("SleepWork", duration*2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion("SleepWork", duration*10, TimeUnit.MILLISECONDS));
         assertMetrics(0,0,1,0);
     }
 

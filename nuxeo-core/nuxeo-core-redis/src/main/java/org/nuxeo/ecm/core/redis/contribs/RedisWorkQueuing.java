@@ -768,7 +768,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Work call(Jedis jedis) {
-                String id = (String)jedis.evalsha(popWorkSha, keys(queueId), Collections.emptyList());
+                String id = (String)jedis.evalsha(popWorkSha, keys(queueId), Collections.singletonList(bytes(State.RUNNING)));
                 if (id == null) {
                     return null;
                 }
