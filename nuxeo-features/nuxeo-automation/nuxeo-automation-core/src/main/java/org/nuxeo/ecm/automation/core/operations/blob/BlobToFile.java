@@ -21,20 +21,28 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 import java.io.File;
 import java.io.IOException;
 
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = BlobToFile.ID, category = Constants.CAT_BLOB, label = "Export to File", description = "Save the input blob(s) as a file(s) into the given target directory. The blob(s) filename is used as the file name. You can specify an optional <b>prefix</b> string to prepend to the file name. Return back the blob(s).", aliases = { "Blob.ToFile" })
+@Operation(id = BlobToFile.ID, category = Constants.CAT_BLOB, label = "Export to File", description = "Save the input blob(s) as a file(s) into the given target directory. The blob(s) filename is used as the file name. You can specify an optional <b>prefix</b> string to prepend to the file name. Return back the blob(s).", aliases = {
+        "Blob.ToFile" })
 public class BlobToFile {
 
     public static final String ID = "Blob.ExportToFS";
+
+    @Context
+    protected OperationContext ctx;
 
     @Param(name = "directory", required = true)
     protected String directory;
@@ -69,7 +77,11 @@ public class BlobToFile {
     }
 
     @OperationMethod(collector = BlobCollector.class)
-    public Blob run(Blob blob) throws IOException {
+    public Blob run(Blob blob) throws IOException, OperationException {
+        if (!(ctx.getPrincipal() instanceof NuxeoPrincipal)
+                || !((NuxeoPrincipal) ctx.getPrincipal()).isAdministrator()) {
+            throw new OperationException("Not allowed. You must be administrator to use this operation");
+        }
         init();
         writeFile(blob);
         return blob;
