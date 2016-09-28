@@ -85,7 +85,7 @@ public class LoginScreenConfig implements Serializable {
 
     protected String footerStyle;
 
-    protected String newsIframeUrl = "//www.nuxeo.com/standalone-login-page/";
+    protected String newsIframeUrl = "//www.nuxeo.com/login-page-embedded/";
 
     protected String newsIframeFullUrl = null;
 

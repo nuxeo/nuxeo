@@ -300,12 +300,11 @@ form > * {
 }
 .news-container {
   border: none;
-  height: 500px;
-  width: 365px;
+  height: 700px;
+  width: 550px;
   overflow: auto;
-  background-color: rgba(255,255,255,0.7);
-  opacity: .8;
-  filter: alpha(opacity = 80);
+  background-color: rgba(255,255,255,0);
+  z-index: -1;
 }
 
 /* Mobile devices */
