@@ -41,7 +41,7 @@
                 <rich:treeNode expanded="#{node.expanded}"
                   highlightedClass="treeNodeHighlightedClass"
                   selectedClass="treeNodeSelectedClass"
-                  oncomplete="jQuery('span.popupTarget').contextMenu('treeExplorer_popupMenu');">
+                  ontoggle="javascript:jQuery('span.popupTarget').contextMenu('treeExplorer_popupMenu');">
                   <div id="nodeRefTarget:#{node.document.id}"
                     class="nxDropTarget#{node.isSelected(currentDocument) ? ' selected' : ''}">
                     <span class="popupTarget" docRef="#{node.document.ref}">
