@@ -8,8 +8,8 @@
 
         <command name="blender_pipeline" enabled="true">
             <commandLine>docker</commandLine>
-            <testParameterString>pull tcardoso/blender</testParameterString>
-            <parameterString>run --rm -v #{scriptsDir}:/scripts:ro -v #{inDir}:/in:ro -v #{outDir}:/out tcardoso/blender
+            <testParameterString>pull nuxeo/blender</testParameterString>
+            <parameterString>run --rm -v #{scriptsDir}:/scripts:ro -v #{inDir}:/in:ro -v #{outDir}:/out nuxeo/blender
                 -P /scripts/#{scriptFile} -- --input /in/#{inFile} --outdir /out --operators #{operators}
                 --renderids #{renderIds} -li #{lodIds}  -pp #{percPoly} -mp #{maxPoly} -d #{dimensions} -c #{coords}
             </parameterString>
@@ -18,8 +18,8 @@
         </command>
         <command name="collada2gltlf" enabled="true">
             <commandLine>docker</commandLine>
-            <testParameterString>pull tcardoso/collada2gltf</testParameterString>
-            <parameterString>run --rm -v #{inDir}:/in:ro -v #{outDir}:/out tcardoso/collada2gltf
+            <testParameterString>pull nuxeo/collada2gltf</testParameterString>
+            <parameterString>run --rm -v #{inDir}:/in:ro -v #{outDir}:/out nuxeo/collada2gltf
                 -f /in/#{inFile} -o /out/#{outFile} -e
             </parameterString>
             <installationDirective>Please, install docker (https://www.docker.com/)
