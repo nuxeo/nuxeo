@@ -50,6 +50,7 @@ import javax.inject.Inject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -120,6 +121,7 @@ public class BlobToFileTest {
     protected void testNotAllowed(OperationContext ctx, String id, Map<String, Object> params) throws IOException {
         try {
             automationService.run(ctx, id, params);
+            fail("Expected OperationException");
         } catch (OperationException e) {
             assertNotNull(e.getMessage());
             assertTrue(e.getMessage().contains("Not allowed"));
