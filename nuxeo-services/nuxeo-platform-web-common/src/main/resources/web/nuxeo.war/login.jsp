@@ -300,24 +300,41 @@ form > * {
 }
 .news-container {
   border: none;
-  height: 700px;
-  width: 550px;
+  height: 650px;
+  width: 500px;
   overflow: auto;
   background-color: rgba(255,255,255,0);
-  z-index: -1;
 }
 
 /* Mobile devices */
-@media all and (max-device-width: 800px) {
+@media all and (max-width: 850px) {
   body {
     height: auto;
-    background-image: none;
     background-position: center center;
+  }
+  section {
+    flex-direction: column;
+    display: block;
   }
   header {
     text-align: center;
   }
-  footer, video, .news, welcome {
+  footer, video, .welcome {
+    display: none;
+  }
+}
+
+@media all and (max-height: 880px) and (max-width: 850px) {
+  .news {
+    display: none;
+  }
+}
+
+@media all and (max-width: 500px) {
+  form {
+    width: auto;
+  }
+  .news {
     display: none;
   }
 }
