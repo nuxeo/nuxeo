@@ -156,10 +156,26 @@ Contributors:
                     <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
                         <div class="item">
                             <label class="layout flex-2">[[format.name]]</label>
+                            <iron-icon icon="image:details"></iron-icon>
                             <span class="layout flex">[[_getPolyInfo(format)]]</span>
+                            <template is="dom-if" if="{{format.info.geometry_lod_success}}">
+                                <iron-icon icon="icons:done"></iron-icon>
+                            </template>
+                            <template is="dom-if" if="{{!format.info.geometry_lod_success}}">
+                                <iron-icon icon="icons:warning"></iron-icon>
+                            </template>
                             <span class="layout flex">[[_getPolyNumber(format)]]</span>
-                            <span class="layout flex">[[_getTexInfo(format)]]</span>
-                            <span class="layout flex">[[_getTexSize(format)]]</span>
+                            <template is="dom-if" if="{{_hasTextures(format)}}">
+                                <iron-icon icon="image:image"></iron-icon>
+                                <span class="layout flex">[[_getTexInfo(format)]]</span>
+                                <template is="dom-if" if="{{format.info.texture_lod_success}}">
+                                    <iron-icon icon="icons:done"></iron-icon>
+                                </template>
+                                <template is="dom-if" if="{{!format.info.texture_lod_success}}">
+                                    <iron-icon icon="icons:warning"></iron-icon>
+                                </template>
+                                <span class="layout flex">[[_getTexSize(format)]]</span>
+                            </template>
                             <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
                             <a href="[[format.content.data]]" title="download">
                                 <iron-icon icon="icons:file-download"></iron-icon>
@@ -206,7 +222,7 @@ Contributors:
                     return list.length > 0;
                 },
 
-                formatAsReadable: function(value, base, unit) {
+                _formatAsReadable: function(value, base, unit) {
                     value = Number(value);
                     if (value < base) {
                         return value + ' ' + unit;
@@ -218,7 +234,7 @@ Contributors:
 
                 _getPolyInfo: function(f) {
                     var perc = f.percPoly == null ? '' : f.percPoly + ' %';
-                    var max = f.maxPoly == null ? '' : '< ' + this.formatAsReadable(f.maxPoly, 1000, '');
+                    var max = f.maxPoly == null ? '' : '< ' + this._formatAsReadable(f.maxPoly, 1000, '');
                     return f.percPoly != null && f.maxPoly != null ? perc + ' | ' + max : perc + max;
                 },
 
@@ -229,14 +245,15 @@ Contributors:
                 },
 
                 _getPolyNumber: function(f) {
-                    return this.formatAsReadable(f.info.polygons, 1000, '');
+                    return this._formatAsReadable(f.info.polygons, 1000, '');
+                },
+
+                _hasTextures: function(f) {
+                    return f.info.textures_size > 0;
                 },
 
                 _getTexSize: function(f) {
-                    if (Number(f.info.textures_size) > 0) {
-                        return this.formatAsReadable(f.info.textures_size, 1024, 'B');
-                    }
-                    return null;
+                    return this._hasTextures(f) ? this._formatAsReadable(f.info.textures_size, 1024, 'B') : null;
                 }
             });
         })();
