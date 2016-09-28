@@ -8,7 +8,7 @@
     <param name="Target" value="System.out" />
 
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 
@@ -21,18 +21,23 @@
     </layout>
   </appender>
 
-  <appender name="JTA" class="org.apache.log4j.FileAppender">
+  <appender name="REDIS" class="org.apache.log4j.FileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
-    <param name="File" value="target/jta.log" />
+    <param name="File" value="target/redis.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 
-  <category name="org.nuxeo.ecm.core.management.jtajca" additivity="false">
+  <category name="org.nuxeo.ecm.core.redis.embedded" additivity="false">
      <priority value="TRACE"/>
-     <appender-ref ref="JTA"/>
+     <appender-ref ref="REDIS"/>
+  </category>
+  
+    <category name="org.nuxeo.ecm.core.work" additivity="false">
+     <priority value="TRACE"/>
+     <appender-ref ref="REDIS"/>
   </category>
 
 <!--
