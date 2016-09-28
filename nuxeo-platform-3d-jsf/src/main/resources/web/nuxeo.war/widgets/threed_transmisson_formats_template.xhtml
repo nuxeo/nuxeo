@@ -46,12 +46,14 @@
                                 <c:if test="#{!empty item.maxPoly}">
                                     &lt; #{item.maxPoly}
                                 </c:if>
-                                <c:if test="#{!item.textureLodSuccess}">
-                                    <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
-                                </c:if>
-                                <c:if test="#{item.textureLodSuccess}">
-                                    <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
-                                </c:if>
+                                <c:choose>
+                                    <c:when test="#{item.geometryLodSuccess}">
+                                        <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                                    </c:otherwise>
+                                </c:choose>
                                 #{item.polygons}
                             </td>
                             <c:choose>
@@ -67,12 +69,14 @@
                                         <c:if test="#{!empty item.maxTex}">
                                             &lt; #{item.maxTex}
                                         </c:if>
-                                        <c:if test="#{!item.textureLodSuccess}">
-                                            <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
-                                        </c:if>
-                                        <c:if test="#{item.textureLodSuccess}">
-                                            <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
-                                        </c:if>
+                                        <c:choose>
+                                            <c:when test="#{item.textureLodSuccess}">
+                                                <h:graphicImage class="tf-icon" url="/icons/ic_done_black_24px.svg"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <h:graphicImage class="tf-icon" url="/icons/ic_warning_black_24px.svg"/>
+                                            </c:otherwise>
+                                        </c:choose>
                                         #{item.textureSize}
                                     </td>
                                 </c:when>
