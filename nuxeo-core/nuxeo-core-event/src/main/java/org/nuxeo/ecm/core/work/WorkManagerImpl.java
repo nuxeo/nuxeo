@@ -225,9 +225,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
             return;
         }
-        queuing.setActive(config.id, false);
-        WorkThreadPoolExecutor executor = executors.remove(config.id);
-        executor.shutdownAndSuspend();
+        WorkThreadPoolExecutor executor = executors.get(config.id);
+        try {
+            executor.shutdownAndSuspend();
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while deactivating queue " + config.id, cause);
+        }
         log.info("Deactivated work queue " + config.id);
     }
 
@@ -285,6 +289,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isProcessingEnabled(String queueId) {
+        if (queueId == null) {
+            return isProcessingEnabled();
+        }
         return queuing.getQueue(queueId).active;
     }
 
@@ -374,9 +381,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public boolean shutdownQueue(String queueId, long timeout, TimeUnit unit) throws InterruptedException {
         WorkThreadPoolExecutor executor = getExecutor(queueId);
-        boolean terminated = shutdownExecutors(Collections.singleton(executor), timeout, unit);
-        removeExecutor(queueId); // start afresh
-        return terminated;
+        return shutdownExecutors(Collections.singleton(executor), timeout, unit);
     }
 
     protected boolean shutdownExecutors(Collection<WorkThreadPoolExecutor> list, long timeout, TimeUnit unit)
@@ -413,13 +418,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     public boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException {
         shutdownInProgress = true;
         try {
-            return shutdownExecutors(executors.values(), timeout, unit);
+            return shutdownExecutors(new ArrayList<>(executors.values()), timeout, unit);
         } finally {
             shutdownInProgress = false;
             started = false;
-            completionSynchronizer = null;
-            executors.clear();
-            queuing = null;
         }
     }
 
@@ -593,7 +595,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Work work = WorkHolder.getWork(r);
             if (isShutdown()) {
                 work.setWorkInstanceState(State.SCHEDULED);
-                queuing.workSchedule(queueId, work);
+                queuing.workReschedule(queueId, work);
                 throw new RejectedExecutionException(queueId + " was shutdown, rescheduled " + work);
             }
             work.setWorkInstanceState(State.RUNNING);
@@ -611,7 +613,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
                 if (isShutdown() && t != null) {
                     work.setWorkInstanceState(State.SCHEDULED);
-                    queuing.workSchedule(queueId, work);
+                    queuing.workReschedule(queueId, work);
                     return;
                 }
                 work.setWorkInstanceState(State.UNKNOWN);
@@ -625,29 +627,26 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             }
         }
 
-        // called during shutdown
-        // with tasks from the queue if new tasks are submitted
-        // or with tasks drained from the queue
-        protected void removedFromQueue(Runnable r) {
-            Work work = WorkHolder.getWork(r);
-            work.setWorkInstanceState(State.UNKNOWN);
-            completionSynchronizer.signalCompletedWork();
-        }
 
         /**
          * Initiates a shutdown of this executor and asks for work instances to suspend themselves.
+         * @throws InterruptedException
          */
-        public void shutdownAndSuspend() {
-            // don't consume the queue anymore
-            queuing.setActive(queueId, false);
-            // suspend and reschedule all running work
-            for (Work work : running) {
-                log.trace("rescheduling " + work);
-                work.setWorkInstanceSuspending();
-                work.setWorkInstanceState(State.SCHEDULED);
-                queuing.workReschedule(queueId, work);
+        public void shutdownAndSuspend() throws InterruptedException {
+            try {
+                // don't consume the queue anymore
+                queuing.setActive(queueId, false);
+                // suspend all running work
+                for (Work work : running) {
+                    log.trace("rescheduling " + work);
+                    work.setWorkInstanceSuspending();
+                    work.setWorkInstanceState(State.SCHEDULED);
+                    queuing.workReschedule(queueId, work);
+                }
+                shutdownNow();
+            } finally {
+                executors.remove(queueId);
             }
-            shutdownNow();
         }
 
         public void removeScheduled(String workId) {
@@ -851,6 +850,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 return true;
             }
             completionSynchronizer.waitForCompletedWork(pause);
+            if (!isProcessingEnabled(queueId)) {
+                return true;
+            }
         } while (System.currentTimeMillis() < deadline);
         log.info("awaitCompletion timeout after " + durationInMs + " ms");
         SequenceTracer.destroy("timeout after " + durationInMs + " ms");

@@ -123,7 +123,7 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> impleme
             return null;
         }
         if (!active) {
-            offer(runnable);
+            queuing.workReschedule(queueId, WorkHolder.getWork(runnable));
             return null;
         }
         return runnable;

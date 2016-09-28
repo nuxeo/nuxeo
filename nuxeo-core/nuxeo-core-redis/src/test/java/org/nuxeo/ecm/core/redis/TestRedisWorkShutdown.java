@@ -76,6 +76,7 @@ public class TestRedisWorkShutdown {
                 } catch (InterruptedException cause) {
                     Thread.currentThread()
                             .interrupt();
+                    throw new RuntimeException(cause);
                 }
             } else {
                 ;
@@ -105,17 +106,20 @@ public class TestRedisWorkShutdown {
             canShutdown.await(10, TimeUnit.SECONDS);
             assertMetrics(0, 2, 0, 0);
             // when I shutdown
-            works.shutdown(0, TimeUnit.SECONDS);
+            works.shutdown(10, TimeUnit.SECONDS);
         } finally {
             // then works are suspending
             canProceed.countDown();
         }
         // then works are re-scheduled
-        List<Work> scheduled = new ScheduledRetriever().listScheduled();
-        Assert.assertThat(scheduled.size(), Matchers.is(2));
-        canProceed = new CountDownLatch(1);
-        // when I reboot
-        works.init();
+        try {
+            List<Work> scheduled = new ScheduledRetriever().listScheduled();
+            Assert.assertThat(scheduled.size(), Matchers.is(2));
+            canProceed = new CountDownLatch(1);
+        } finally {
+            // when I reboot
+            works.init();
+        }
         Assert.assertTrue(works.awaitCompletion(10, TimeUnit.SECONDS));
         // works are completed
         assertMetrics(0, 0, 2, 2);
