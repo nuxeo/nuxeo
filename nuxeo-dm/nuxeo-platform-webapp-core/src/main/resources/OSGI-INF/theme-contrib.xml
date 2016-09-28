@@ -19,6 +19,9 @@
     <resource name="richfaces-jquery.js" type="jsfjs" target="bodystart">
       <uri>org.richfaces:jquery.js</uri>
     </resource>
+    <resource name="jquery-migrate.js">
+      <uri>/scripts/jquery-migrate-1.4.1.js</uri>
+    </resource>
     <resource name="richfaces.js" type="jsfjs" target="bodystart">
       <uri>org.richfaces:richfaces.js</uri>
       <require>jsf.js</require>
@@ -371,6 +374,7 @@
         <resource>jsf.js</resource>
         <resource>fixjsfviewstate.js</resource>
         <resource>richfaces-jquery.js</resource>
+        <resource>jquery-migrate.js</resource>
         <resource>richfaces.js</resource>
         <resource>richfaces-queue.js</resource>
         <resource>richfaces-base-component.js</resource>
