@@ -88,6 +88,46 @@ Contributors:
                 border-top: 1px dashed #ddd;
                 background-color: #fafafd;
             }
+
+            .flex {
+                font-size: 12px;
+                margin: auto;
+            }
+
+            .format {
+                display: inline-block;
+                width: 100%;
+            }
+
+            .format-name {
+                float: left;
+                width: 25%;
+            }
+
+            .format-info {
+                float: left;
+                height: 100%;
+                width: 65%;
+            }
+
+            .format-polygons {
+                height: 50%;
+                display: flex;
+            }
+
+            .format-textures {
+                height: 50%;
+                display: flex;
+            }
+
+            .format-buttons {
+                float: left;
+                width: 8%;
+            }
+
+            .format-info-element {
+                float: left;
+            }
         </style>
 
         <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
@@ -154,33 +194,53 @@ Contributors:
             <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
                 <div class="transmission-formats">
                     <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
-                        <div class="item">
-                            <label class="layout flex-2">[[format.name]]</label>
-                            <iron-icon icon="image:details"></iron-icon>
-                            <span class="layout flex">[[_getPolyInfo(format)]]</span>
-                            <template is="dom-if" if="{{format.info.geometry_lod_success}}">
-                                <iron-icon icon="icons:done"></iron-icon>
-                            </template>
-                            <template is="dom-if" if="{{!format.info.geometry_lod_success}}">
-                                <iron-icon icon="icons:warning"></iron-icon>
-                            </template>
-                            <span class="layout flex">[[_getPolyNumber(format)]]</span>
-                            <template is="dom-if" if="{{_hasTextures(format)}}">
-                                <iron-icon icon="image:image"></iron-icon>
-                                <span class="layout flex">[[_getTexInfo(format)]]</span>
-                                <template is="dom-if" if="{{format.info.texture_lod_success}}">
-                                    <iron-icon icon="icons:done"></iron-icon>
-                                </template>
-                                <template is="dom-if" if="{{!format.info.texture_lod_success}}">
-                                    <iron-icon icon="icons:warning"></iron-icon>
-                                </template>
-                                <span class="layout flex">[[_getTexSize(format)]]</span>
-                            </template>
-                            <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
-                            <a href="[[format.content.data]]" title="download">
-                                <iron-icon icon="icons:file-download"></iron-icon>
-                            </a>
+
+                        <div class="format">
+
+                            <div class="format-name">
+                                <label class="layout flex-2">[[format.name]]</label>
+                            </div>
+
+                            <div class="format-info">
+                                <div class="format-polygons item">
+                                    <iron-icon class="format-info-element" icon="image:details"></iron-icon>
+                                    <span class="layout flex format-info-element">[[_getPolyInfo(format)]]</span>
+                                    <template class="format-info-element" is="dom-if"
+                                              if="{{format.info.geometry_lod_success}}">
+                                        <iron-icon icon="icons:done"></iron-icon>
+                                    </template>
+                                    <template class="format-info-element" is="dom-if"
+                                              if="{{!format.info.geometry_lod_success}}">
+                                        <iron-icon icon="icons:warning"></iron-icon>
+                                    </template>
+                                    <span class="layout flex format-info-element">[[_getPolyNumber(format)]] [[i18n('label.widget.3d.polygons', 'polys')]]</span>
+                                </div>
+                                <div class="format-textures item">
+                                    <template is="dom-if" if="{{_hasTextures(format)}}">
+                                        <iron-icon class="format-info-element" icon="image:image"></iron-icon>
+                                        <span class="layout flex format-info-element">[[_getTexInfo(format)]]</span>
+                                        <template class="format-info-element" is="dom-if"
+                                                  if="{{format.info.texture_lod_success}}">
+                                            <iron-icon icon="icons:done"></iron-icon>
+                                        </template>
+                                        <template class="format-info-element" is="dom-if"
+                                                  if="{{!format.info.texture_lod_success}}">
+                                            <iron-icon icon="icons:warning"></iron-icon>
+                                        </template>
+                                        <span class="layout flex format-info-element">[[_getTexSize(format)]]</span>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div class="format-buttons">
+                                <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
+                                <a href="[[format.content.data]]" title="download">
+                                    <iron-icon icon="icons:file-download"></iron-icon>
+                                </a>
+                            </div>
+
                         </div>
+
                     </template>
                 </div>
             </template>
