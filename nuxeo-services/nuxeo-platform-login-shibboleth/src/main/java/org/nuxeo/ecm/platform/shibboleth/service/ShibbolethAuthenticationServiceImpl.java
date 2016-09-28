@@ -39,6 +39,13 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
 
     protected ShibbolethAuthenticationConfig config;
 
+    /**
+     * Attribute to keep the login URL for redirection
+     *
+     * @since 8.4
+     */
+    protected String redirectLoginURL;
+
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIG_EP.equals(extensionPoint)) {
@@ -90,12 +97,13 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
 
     @Override
     public String getLoginURL(HttpServletRequest request) {
-        return getLoginURL(getRedirectUrl(request));
+        redirectLoginURL = getRedirectUrl(request);
+        return getLoginURL(redirectLoginURL);
     }
 
     @Override
     public String getLogoutURL(HttpServletRequest request) {
-        return getLogoutURL(getRedirectUrl(request));
+        return getLogoutURL(redirectLoginURL);
     }
 
     @Override
