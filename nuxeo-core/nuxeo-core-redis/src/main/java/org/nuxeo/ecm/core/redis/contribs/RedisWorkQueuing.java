@@ -148,12 +148,10 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     @Override
     public BlockingQueue<Runnable> initScheduleQueue(String queueId) {
-        if (allScheduled.containsKey(queueId)) {
-            throw new IllegalStateException(queueId + " is already configured");
+        if (!allScheduled.containsKey(queueId)) {
+            allScheduled.put(queueId, newBlockingQueue(queueId));
         }
-        final BlockingQueue<Runnable> scheduled = newBlockingQueue(queueId);
-        allScheduled.put(queueId, scheduled);
-        return scheduled;
+        return allScheduled.get(queueId);
     }
 
     @Override
@@ -339,17 +337,6 @@ public class RedisWorkQueuing implements WorkQueuing {
     public State getWorkState(String workId) {
         try {
             return getWorkStateInfo(workId);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public int setSuspending(String queueId) {
-        try {
-            int n = suspendScheduledWork(queueId);
-            log.info("Suspending " + n + " work instances from queue: " + queueId);
-            return n;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

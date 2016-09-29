@@ -155,12 +155,6 @@ public interface WorkQueuing {
      */
     int getQueueSize(String queueId, State state);
 
-    /**
-     * Notifies this queuing that all work should be suspending.
-     *
-     * @return the number of scheduled instances removed from queue
-     */
-    int setSuspending(String queueId);
 
     /**
      * Finds which queues have completed work.

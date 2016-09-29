@@ -326,9 +326,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public boolean shutdownQueue(String queueId, long timeout, TimeUnit unit) throws InterruptedException {
         WorkThreadPoolExecutor executor = getExecutor(queueId);
-        boolean terminated = shutdownExecutors(Collections.singleton(executor), timeout, unit);
-        removeExecutor(queueId); // start afresh
-        return terminated;
+        return shutdownExecutors(Collections.singleton(executor), timeout, unit);
     }
 
     protected boolean shutdownExecutors(Collection<WorkThreadPoolExecutor> list, long timeout, TimeUnit unit)
@@ -357,11 +355,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     public boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException {
         shutdownInProgress = true;
         try {
-            return shutdownExecutors(executors.values(), timeout, unit);
+            return shutdownExecutors(new ArrayList<>(executors.values()), timeout, unit);
         } finally {
             shutdownInProgress = false;
             started = false;
-            executors.clear();
         }
     }
 
@@ -674,6 +671,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 				}
 				shutdownNow();
 			} finally {
+			    executors.remove(queueId);
 				completionSynchronizer.signalShutdown();
 			}
         }
