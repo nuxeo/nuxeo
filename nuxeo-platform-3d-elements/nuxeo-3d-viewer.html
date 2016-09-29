@@ -134,21 +134,34 @@ Polymer({
     this.$.threed.height = this.height;
     this._setup();
     this._loaderChanged();
-    this.load();
     this.async(this.notifyResize, 1);
   },
 
   load: function() {
-    this.clear();
 
-    var onLoad = function(gltf) {
-      this._processLoad(gltf);
-      this._resize();
-      //this.zupdate();
-      this._render();
+    var onLoadFromSrc = function(src) {
+      return function(gltf) {
+        if(src != this.src) {
+          return;
+        }
+        this.clear();
+        this._processLoad(gltf);
+        this._resize();
+        this._render();
+      }.bind(this);
     }.bind(this);
+
+    var onProgressFromTS = function(timestamp) {
+      return function(event) {
+        if (timestamp != this.latestLoadTS) {
+          return;
+        }
+      }.bind(this);
+    }.bind(this);
+
     if (this.src) {
-      this.gltfLoader.load(this.src, onLoad);
+      this.latestLoadTS = Date.now();
+      this.gltfLoader.load(this.src, onLoadFromSrc(this.src), onProgressFromTS(this.latestLoadTS));
     }
   },
 
@@ -176,7 +189,7 @@ Polymer({
   },
 
   _sourceChanged: function() {
-      this.load();
+    this.load();
   },
 
   _sphericalCoordsChanged: function() {
@@ -210,6 +223,7 @@ Polymer({
     this.cameras = {};
     this.camera = new THREE.PerspectiveCamera(25, 0.5 , 0.001, 2000);
     this.root.add(this.camera);
+    this._cameraComposition(this.camera);
   },
 
   _setupLights: function() {
@@ -301,9 +315,9 @@ Polymer({
     var object = data.scene;
 
     if (data.cameras && data.cameras.length) {
-      for (var camera of data.cameras) {
-        var cameraName = camera.parent.name;
-        this.cameras[cameraName] = camera;
+      for (var dataCamera of data.cameras) {
+        var cameraName = dataCamera.parent.name;
+        this.cameras[cameraName] = dataCamera;
       }
     }
 
@@ -316,7 +330,6 @@ Polymer({
     }
 
     this._objectComposition(object);
-    this._cameraComposition(this.camera);
     this.scene.add(object);
   },
 
