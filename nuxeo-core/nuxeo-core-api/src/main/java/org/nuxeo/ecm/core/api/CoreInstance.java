@@ -26,7 +26,10 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
@@ -255,6 +258,89 @@ public class CoreInstance {
      */
     public Collection<CoreSessionRegistrationInfo> getRegistrationInfos() {
         return Framework.getService(CoreSessionService.class).getCoreSessionRegistrationInfos();
+    }
+
+    /**
+     * Gets the name of the currently logged-in principal.
+     *
+     * @return the principal name, or {@code null} if there was no login
+     * @since 8.4
+     */
+    protected static String getCurrentPrincipalName() {
+        Principal p = ClientLoginModule.getCurrentPrincipal();
+        return p == null ? null : p.getName();
+    }
+
+    /**
+     * Runs the given {@link Function} with a system {@link CoreSession} while logged in as a system user.
+     *
+     * @param repositoryName the repository name for the {@link CoreSession}
+     * @param function the function taking a system {@link CoreSession} and returning a result of type {@code <R>}
+     * @param <R> the function return type
+     * @return the result of the function
+     * @since 8.4
+     */
+    public static <R> R doPrivileged(String repositoryName, Function<CoreSession, R> function) {
+        MutableObject<R> result = new MutableObject<R>();
+        new UnrestrictedSessionRunner(repositoryName, getCurrentPrincipalName()) {
+            @Override
+            public void run() {
+                result.setValue(function.apply(session));
+            }
+        }.runUnrestricted();
+        return result.getValue();
+    }
+
+    /**
+     * Runs the given {@link Function} with a system {@link CoreSession} while logged in as a system user.
+     *
+     * @param session an existing session
+     * @param function the function taking a system {@link CoreSession} and returning a result of type {@code <R>}
+     * @param <R> the function return type
+     * @return the result of the function
+     * @since 8.4
+     */
+    public static <R> R doPrivileged(CoreSession session, Function<CoreSession, R> function) {
+        MutableObject<R> result = new MutableObject<R>();
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                result.setValue(function.apply(session));
+            }
+        }.runUnrestricted();
+        return result.getValue();
+    }
+
+    /**
+     * Runs the given {@link Consumer} with a system {@link CoreSession} while logged in as a system user.
+     *
+     * @param repositoryName the repository name for the {@link CoreSession}
+     * @param consumer the consumer taking a system {@link CoreSession}
+     * @since 8.4
+     */
+    public static void doPrivileged(String repositoryName, Consumer<CoreSession> consumer) {
+        new UnrestrictedSessionRunner(repositoryName, getCurrentPrincipalName()) {
+            @Override
+            public void run() {
+                consumer.accept(session);
+            }
+        }.runUnrestricted();
+    }
+
+    /**
+     * Runs the given {@link Consumer} with a system {@link CoreSession} while logged in as a system user.
+     *
+     * @param session an existing session
+     * @param consumer the consumer taking a system {@link CoreSession}
+     * @since 8.4
+     */
+    public static void doPrivileged(CoreSession session, Consumer<CoreSession> consumer) {
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                consumer.accept(session);
+            }
+        }.runUnrestricted();
     }
 
 }
