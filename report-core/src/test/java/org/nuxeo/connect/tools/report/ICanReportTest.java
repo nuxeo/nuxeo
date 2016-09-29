@@ -30,8 +30,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.connect.tools.report.ICanReportTest.Given;
+import org.nuxeo.connect.tools.report.ICanReportTest.Then;
+import org.nuxeo.connect.tools.report.ICanReportTest.When;
 import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
+import org.nuxeo.launcher.info.InstanceInfo;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunnerWithParms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,13 +55,10 @@ import com.tngtech.jgiven.annotation.ScenarioState;
 import com.tngtech.jgiven.annotation.ScenarioState.Resolution;
 import com.tngtech.jgiven.junit.ScenarioTest;
 
-import org.nuxeo.connect.tools.report.ICanReportTest.Given;
-import org.nuxeo.connect.tools.report.ICanReportTest.Then;
-import org.nuxeo.connect.tools.report.ICanReportTest.When;
-
 /**
+ * Runs registered reports and checks they can be reloaded.
  *
- *
+ * @since 8.3
  */
 @RunWith(FeaturesRunnerWithParms.class)
 @Features(ReportFeature.class)
@@ -111,6 +113,21 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
               .the_report_is_a_runtime_snapshot().which()
                   .i_can_unmarshall_it().and()
                   .contains_the_bundle$bundle("org.nuxeo.connect.tools.report.core").end();
+        // formatter:on
+    }
+
+    @Test
+    public void i_can_run_config_report() throws IOException {
+        // @formatter:off
+        given()
+               .the_report_to_run$name("config").and()
+               .the_report_component_is_installed().and()
+               .the_report_is_registered();
+        when()
+            .i_run_the_report().and()
+            .i_unmarshall();
+        then()
+              .the_report_is_a_config().end();
         // formatter:on
     }
 
@@ -202,6 +219,13 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
 
         public RuntimeSnapshotReport the_report_is_a_runtime_snapshot() throws IOException {
             return apidoc;
+        }
+
+        @ScenarioStage
+        ConfigReport config;
+
+        public ConfigReport the_report_is_a_config() throws IOException {
+            return config;
         }
 
         Then which() {
@@ -373,5 +397,35 @@ public class ICanReportTest extends ScenarioTest<Given, When, Then> {
 
     }
 
+
+    public static class ConfigReport extends Stage<ConfigReport> {
+
+        @ExpectedScenarioState
+        byte[] bytes;
+
+        @ExpectedScenarioState
+        ObjectNode report;
+
+        @ProvidedScenarioState
+        InstanceInfo snapshot;
+
+        ConfigReport i_can_unmarshall_it() throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @IntroWord
+        ConfigReport which() {
+            return self();
+        }
+
+        @ScenarioStage
+        Then then;
+
+        @Hidden
+        Then end() {
+            return then;
+        }
+
+    }
 
 }

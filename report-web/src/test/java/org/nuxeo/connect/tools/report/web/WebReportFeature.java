@@ -16,10 +16,14 @@
  */
 package org.nuxeo.connect.tools.report.web;
 
-/**
- * 
- *
- */
-public class CanRunReportFromWeb {
+import org.nuxeo.connect.tools.report.ReportFeature;
+import org.nuxeo.ecm.webengine.test.WebEngineFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
+
+@Features({ ReportFeature.class, WebEngineFeature.class })
+@Deploy("org.nuxeo.connect.tools.report.web")
+public class WebReportFeature extends SimpleFeature {
 
 }

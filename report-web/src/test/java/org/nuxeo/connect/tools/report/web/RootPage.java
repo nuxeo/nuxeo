@@ -14,24 +14,21 @@
  * limitations under the License.
  *
  */
-package org.nuxeo.connect.tools.report.management;
+package org.nuxeo.connect.tools.report.web;
 
-import java.io.OutputStream;
-import java.lang.management.ThreadMXBean;
-
-import org.nuxeo.connect.tools.report.ReportWriter;
+import org.nuxeo.runtime.test.runner.web.WebPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
- * Monitor deadlocked threads
  *
- * @see ThreadMXBean#findMonitorDeadlockedThreads()
  *
  */
-public class MXThreadMonitorDeadlockedReport implements ReportWriter {
+public class RootPage extends WebPage {
 
-    @Override
-    public void write(OutputStream output) {
-        MXComponent.instance.exec("java.lang:type=Threading", "findMonitorDeadlockedThreads").run(output);
+    ReportRunnerPage getRunnerPage() {
+        WebElement link = findElement(By.partialLinkText("report"));
+        link.click();
+        return getPage(ReportRunnerPage.class);
     }
-
 }

@@ -26,8 +26,11 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
- * @ToDo move root in another module and define report as a fragment
+ * Routes request to the report runner.
  *
+ * @ToDo move root in another module and define report runner as a fragment
+ *
+ * @since 8.3
  */
 @Path("/connect-tools")
 @WebObject(type = "root", administrator = Access.GRANT)

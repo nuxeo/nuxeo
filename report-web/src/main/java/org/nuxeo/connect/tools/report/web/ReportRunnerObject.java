@@ -40,7 +40,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Runs report
+ * The report runner exposed as a resource itself.
  *
  * @since 8.3
  */

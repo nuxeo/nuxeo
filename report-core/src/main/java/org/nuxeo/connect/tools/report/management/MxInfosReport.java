@@ -20,6 +20,11 @@ import java.io.OutputStream;
 
 import org.nuxeo.connect.tools.report.ReportWriter;
 
+/**
+ * Registered MBean infos report.
+ *
+ * @since 8.3
+ */
 public class MxInfosReport implements ReportWriter {
 
     @Override

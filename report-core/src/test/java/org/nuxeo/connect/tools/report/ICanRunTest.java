@@ -31,6 +31,7 @@ import org.nuxeo.connect.tools.report.ICanRunTest.When;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunnerWithParms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,7 +46,7 @@ import com.tngtech.jgiven.attachment.MediaType;
 import com.tngtech.jgiven.junit.ScenarioTest;
 
 /**
- *
+ * Checks that the aggregated report could be ran and reloaded in memory.
  *
  */
 @RunWith(FeaturesRunnerWithParms.class)
@@ -139,7 +140,8 @@ public class ICanRunTest extends ScenarioTest<Given, When, Then> {
         given()
                 .the_runtime_is_started().and()
                 .the_runner_is_installed().and()
-                .it_generate_reports_of("mx-names", "mx-infos", "mx-attributes", "mx-thread-dump", "mx-class-histogram", "apidoc");
+                .it_generate_reports_of("mx-names", "mx-infos", "mx-attributes", "mx-thread-dump", "mx-thread-deadlocked",
+                        "mx-thread-monitor-deadlocked", "mx-class-histogram", "apidoc");
         when()
                 .i_run_a_report();
         then()

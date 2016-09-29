@@ -21,6 +21,11 @@ import java.util.Collections;
 
 import org.nuxeo.connect.tools.report.ReportWriter;
 
+/**
+ * VM class histogram report.
+ *
+ * @since 8.3
+ */
 public class MxClassHistogramReport implements ReportWriter {
 
     @Override

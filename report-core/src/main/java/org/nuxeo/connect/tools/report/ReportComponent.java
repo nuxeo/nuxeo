@@ -141,7 +141,7 @@ public class ReportComponent extends DefaultComponent {
         @Override
         public void run(String host, int port, String... names) throws IOException {
             ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(Runtime.class.getClassLoader());
+            Thread.currentThread().setContextClassLoader(Management.class.getClassLoader());
             try (Socket sock = new Socket(host, port)) {
                 try (OutputStream sink =
                         sock.getOutputStream()) {

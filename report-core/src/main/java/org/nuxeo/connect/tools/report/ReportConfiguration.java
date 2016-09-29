@@ -26,7 +26,7 @@ import org.nuxeo.connect.tools.report.ReportConfiguration.Contribution;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
- *
+ * Registry of report contributions, used internally by the component.
  *
  * @since 8.3
  */

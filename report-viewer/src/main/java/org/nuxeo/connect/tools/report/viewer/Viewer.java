@@ -37,7 +37,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
+ * Prints a report in an human friendly way.
  *
+ *
+ * @since 8.4
  *
  */
 public class Viewer {
@@ -46,7 +49,6 @@ public class Viewer {
 
         class Arguments {
             Options options = new Options()
-                    .addOption(Option.builder("l").longOpt("at").hasArg().argName("path").desc("link path to thread dump report (/...)").build())
                     .addOption(Option.builder("i").longOpt("input").hasArg().argName("file").desc("report input file").build())
                     .addOption(Option.builder("o").longOpt("output").hasArg().argName("file").desc("thread dump output file").build());
             final CommandLine commandline = new DefaultParser().parse(options, varargs);

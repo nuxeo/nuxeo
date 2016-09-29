@@ -30,9 +30,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.connect.tools.report.ICanRunTest;
 import org.nuxeo.connect.tools.report.ReportFeature;
-import org.nuxeo.connect.tools.report.viewer.ICanRunViewerTest.Given;
-import org.nuxeo.connect.tools.report.viewer.ICanRunViewerTest.Then;
-import org.nuxeo.connect.tools.report.viewer.ICanRunViewerTest.When;
+import org.nuxeo.connect.tools.report.viewer.ICanRunTheViewerTest.Given;
+import org.nuxeo.connect.tools.report.viewer.ICanRunTheViewerTest.Then;
+import org.nuxeo.connect.tools.report.viewer.ICanRunTheViewerTest.When;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -44,12 +44,13 @@ import com.tngtech.jgiven.attachment.MediaType;
 import com.tngtech.jgiven.junit.ScenarioTest;
 
 /**
- *
+ * Verify that we could print the report in an human friendly way using the main
+ * API.
  *
  */
 @RunWith(FeaturesRunner.class)
 @Features(ReportFeature.class)
-public class ICanRunViewerTest extends ScenarioTest<Given, When, Then> {
+public class ICanRunTheViewerTest extends ScenarioTest<Given, When, Then> {
 
     static class Given extends ICanRunTest.Given {
 
