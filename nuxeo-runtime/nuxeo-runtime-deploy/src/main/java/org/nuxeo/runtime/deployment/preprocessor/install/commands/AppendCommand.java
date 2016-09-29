@@ -26,6 +26,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
@@ -74,12 +77,12 @@ public class AppendCommand implements Command {
             }
         }
         if (pattern == null) {
-            FileUtils.append(srcFile, dstFile, addNewLine);
+            append(srcFile, dstFile, addNewLine);
         } else {
             ArrayList<File> files = new ArrayList<File>();
             FileUtils.collectFiles(srcFile, pattern, files);
             for (File file : files) {
-                FileUtils.append(file, dstFile);
+                append(file, dstFile, false);
             }
         }
     }
@@ -94,4 +97,18 @@ public class AppendCommand implements Command {
         return "append " + ctx.expandVars(src.toString()) + " > " + ctx.expandVars(dst.toString());
     }
 
+    private void append(File srcFile, File dstFile, boolean appendNewLine) throws IOException {
+        String srcExt = FileUtils.getFileExtension(srcFile.getName());
+        String dstExt = FileUtils.getFileExtension(dstFile.getName());
+
+        if (StringUtils.equalsIgnoreCase(srcExt, dstExt) && "json".equalsIgnoreCase(srcExt)) {
+            ObjectMapper m = new ObjectMapper();
+            ObjectNode destNode = m.readValue(dstFile, ObjectNode.class);
+            ObjectNode srcNode = m.readValue(srcFile, ObjectNode.class);
+            destNode.setAll(srcNode);
+            m.writeValue(dstFile, destNode);
+        } else {
+            FileUtils.append(srcFile, dstFile, appendNewLine);
+        }
+    }
 }
