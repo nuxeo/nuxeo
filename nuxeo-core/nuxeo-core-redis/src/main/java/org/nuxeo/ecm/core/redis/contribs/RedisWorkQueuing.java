@@ -768,11 +768,14 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Work call(Jedis jedis) {
-                String id = (String)jedis.evalsha(popWorkSha, keys(queueId), Collections.singletonList(bytes(State.RUNNING)));
+                Object id = jedis.evalsha(popWorkSha, keys(queueId), Collections.singletonList(bytes(State.RUNNING)));
                 if (id == null) {
                     return null;
                 }
-                return deserializeWork(jedis.hget(dataKey(),bytes(id)));
+                if (id instanceof String) {
+                    id = bytes((String)id);
+                }
+                return deserializeWork(jedis.hget(dataKey(),(byte[])id));
             }
 
         });
