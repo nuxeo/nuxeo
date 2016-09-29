@@ -1447,19 +1447,15 @@ public class ConnectBroker {
         return "false";
     }
 
-    protected boolean pkgUpgradeByType(PackageType type) {
-        List<String> upgradeNames = getPackageManager().listInstalledPackagesNames(type);
-        // use uprage mode
-        return pkgRequest(null, upgradeNames, null, null, true, false, true);
-    }
-
     public boolean pkgHotfix() {
         List<String> hotFixNames = getPackageManager().listHotfixesNames(targetPlatform, allowSNAPSHOT);
         return pkgRequest(null, hotFixNames, null, null, true, false);
     }
 
     public boolean pkgUpgrade() {
-        return pkgUpgradeByType(PackageType.ADDON);
+        List<String> upgradeNames = getPackageManager().listInstalledPackagesNames(null);
+        // use upgrade mode
+        return pkgRequest(null, upgradeNames, null, null, true, false, true);
     }
 
     /**
