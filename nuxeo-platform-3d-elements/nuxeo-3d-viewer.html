@@ -18,6 +18,7 @@ Tiago Cardoso <tcardoso@nuxeo.com>
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../paper-progress/paper-progress.html">
 
 <script src="../three.js/build/three.js"></script>
 <script src="../three.js/examples/js/controls/OrbitControls.js"></script>
@@ -49,25 +50,36 @@ Example - Load a source with complete loader. Loads animations, shaders and all 
 <dom-module id="nuxeo-3d-viewer">
 
   <template>
-  <style>
-  :host {
-    display: block;
-  }
+    <style>
+      :host {
+        display: block;
+      }
 
-  #threed {
-    width:100%;
-    height:100%;
-  }
+      #threed {
+        position: relative;
+        width:100%;
+        height:100%;
+      }
 
-  #threed canvas {
-    display: block;
-    width:100% !important;
-  }
+      #threed canvas {
+        display: block;
+        width:100% !important;
+      }
 
-  </style>
-  <div id="threed">
-  </div>
-</template>
+      #progress {;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+      }
+
+    </style>
+    <div id="threed">
+      <paper-progress id="progress" hidden="true"></paper-progress>
+    </div>
+  </template>
 
 </dom-module>
 <script>
@@ -156,11 +168,14 @@ Polymer({
         if (timestamp != this.latestLoadTS) {
           return;
         }
+        document.getElementById('progress').value = event.loaded / event.total * 100;
       }.bind(this);
     }.bind(this);
 
     if (this.src) {
       this.latestLoadTS = Date.now();
+      document.getElementById('progress').value = 0;
+      document.getElementById('progress').hidden = false;
       this.gltfLoader.load(this.src, onLoadFromSrc(this.src), onProgressFromTS(this.latestLoadTS));
     }
   },
@@ -331,6 +346,7 @@ Polymer({
 
     this._objectComposition(object);
     this.scene.add(object);
+    document.getElementById('progress').hidden = true;
   },
 
   _objectComposition: function(object) {
@@ -365,7 +381,7 @@ Polymer({
         object.material.bumpScale = scale;
       }
 
-    }
+    };
     prepare(object, true);
     object.traverse(function (child) {
       prepare(child, true);
