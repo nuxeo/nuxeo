@@ -838,9 +838,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             CachableUserIdentificationInfo cachedUserInfo) throws ServletException {
         logLogout(cachedUserInfo.getUserInfo());
 
-        // invalidate Session !
-        service.invalidateSession(request);
-
         request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         Map<String, String> parameters = new HashMap<String, String>();
         String securityError = request.getParameter(SECURITY_ERROR);
@@ -892,6 +889,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         } catch (LoginException e) {
             log.error("Unable to logout " + e.getMessage());
         }
+
+        // invalidate Session !
+        // NXP-16997 : the session has to be invalidated at the end for the shibboleth plugin
+        // because it needs the login url for redirection (and this url is stored in the session)
+        service.invalidateSession(request);
+
         return redirected;
     }
 
