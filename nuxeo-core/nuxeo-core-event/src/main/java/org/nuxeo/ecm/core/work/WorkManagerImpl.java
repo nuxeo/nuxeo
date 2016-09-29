@@ -850,9 +850,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 return true;
             }
             completionSynchronizer.waitForCompletedWork(pause);
-            if (!isProcessingEnabled(queueId)) {
-                return true;
-            }
         } while (System.currentTimeMillis() < deadline);
         log.info("awaitCompletion timeout after " + durationInMs + " ms");
         SequenceTracer.destroy("timeout after " + durationInMs + " ms");
@@ -875,6 +872,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
             }
             return true;
+        }
+        if (!isProcessingEnabled(queueId)) {
+            return getExecutor(queueId).runningCount.getCount() == 0L;
         }
         boolean ret = getQueueSize(queueId, null) == 0;
         if (ret == false) {
