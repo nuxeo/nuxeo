@@ -29,8 +29,7 @@ import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT_REGEX;
 import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_TERMSNCONDITIONS;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+
 import java.io.Console;
 import java.io.File;
 import java.io.FileWriter;
@@ -96,7 +95,6 @@ import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.registration.RegistrationException;
 import org.nuxeo.connect.tools.report.client.ReportConnector;
-import org.nuxeo.connect.tools.report.client.StreamFeeder;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
@@ -513,6 +511,7 @@ public abstract class NuxeoLauncher {
             + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
             + "        pack\t\t\tBuild a static archive.\n"
             + "        showconf\t\tDisplay the instance configuration.\n"
+            + "        connect-report\t\tDump a json report about the running server.\n"
             + "        mp-list\t\t\tList local Nuxeo Packages.\n"
             + "        mp-listall\t\tList all Nuxeo Packages.\n"
             + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n"
@@ -1259,27 +1258,22 @@ public abstract class NuxeoLauncher {
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
         } else if (launcher.commandIs("connect-report")) {
-            if (!launcher.isConnectReportInstalled()) {
-                log.warn(String.format("The %s marketplace is not installed, cannot dump report", NUXEO_CONNECT_TOOLS_REPORT_PKG_NAME));
-                commandSucceeded = false;
+            boolean gzip = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true")).booleanValue();
+            boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT_DESC, "false"));
+            Path outputpath;
+            if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
+                outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
             } else {
-                boolean gzip = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true")).booleanValue();
-                boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT_DESC, "false"));
-                Path outputpath;
-                if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
-                    outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
-                } else {
-                    Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
-                    outputpath = dir.resolve("nuxeo-connect-tools-report.json".concat(
-                            gzip ? ".gz" : ""));
-                }
-                log.info("Dumping connect report in " + outputpath);
-                OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-                if (gzip) {
-                    output = new GZIPOutputStream(output, 512, true);
-                }
-                commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
+                Path dir = Paths.get(launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
+                outputpath = dir.resolve("nuxeo-connect-tools-report.json".concat(
+                        gzip ? ".gz" : ""));
             }
+            log.info("Dumping connect report in " + outputpath);
+            OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
+            if (gzip) {
+                output = new GZIPOutputStream(output, 512, true);
+            }
+            commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
         } else {
             log.error("Unknown command " + launcher.command);
             printLongHelp();
@@ -3022,18 +3016,6 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    static final String NUXEO_CONNECT_TOOLS_REPORT_PKG_NAME = "nuxeo-connect-tools-report";
-
-    protected boolean isConnectReportInstalled() {
-        for (PackageInfo pkg : info.packages) {
-            if (NUXEO_CONNECT_TOOLS_REPORT_PKG_NAME.equals(pkg.name)) {
-                return true;
-            }
-        }
-        errorValue = EXIT_CODE_ERROR;
-        return false;
-    }
-
     protected boolean dumpConnectReport(OutputStream out, boolean prettyprint) {
         class MapBuilder<K, V> {
             final Map<K, V> store = new HashMap<>();
@@ -3051,21 +3033,9 @@ public abstract class NuxeoLauncher {
                 Json.createGeneratorFactory(new MapBuilder<String, Object>().with(JsonGenerator.PRETTY_PRINTING, prettyprint).build())
                         .createGenerator(out)) {
             generator.writeStartObject();
-            // show config
-            generator.writeStartObject("config");
-            try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
-                JAXBContext context = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
-                        PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
-                Marshaller marshaller = context.createMarshaller();
-                marshaller.marshal(info, jsonWriter(context, bytes));
-                new StreamFeeder().feed(generator, Json.createParser(new ByteArrayInputStream(bytes.toByteArray())));
-            }
-            generator.writeEnd();
-            generator.flush();
-            // runtime
             ReportConnector.of().feed(generator);
             generator.writeEnd();
-        } catch (IOException | JAXBException | InterruptedException | ExecutionException cause) {
+        } catch (IOException | InterruptedException | ExecutionException cause) {
             log.error("Cannot dump connect report", cause);
             errorValue = EXIT_CODE_ERROR;
             return false;
