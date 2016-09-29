@@ -8,15 +8,16 @@ RUN apt-get update \
 		libfreetype6 \
 		libgl1-mesa-dev \
 		libglu1-mesa \
+		libxrender1 \
 		libxi6 \
 		ca-certificates \
 		unzip \
 	&& apt-get -y autoremove \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV BLENDER_MAJOR 2.77
-ENV BLENDER_VERSION 2.77a
-ENV BLENDER_BZ2_URL http://mirror.cs.umn.edu/blender.org/release/Blender$BLENDER_MAJOR/blender-$BLENDER_VERSION-linux-glibc211-x86_64.tar.bz2
+ENV BLENDER_MAJOR 2.78
+ENV BLENDER_VERSION 2.78
+ENV BLENDER_BZ2_URL http://download.blender.org/release/Blender$BLENDER_MAJOR/blender-$BLENDER_VERSION-linux-glibc219-x86_64.tar.bz2
 ENV MATERIALS_SPECIALS_URL https://github.com/meta-androcto/downloads/raw/master/AF_materials_specials.zip
 
 RUN mkdir /usr/local/blender \
