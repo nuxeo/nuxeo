@@ -85,12 +85,18 @@ public class ReportComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC, reloadListener = new ReloadListener(context));
-    }
+        Framework.addListener(new RuntimeServiceListener() {
 
-    @Override
-    public void deactivate(ComponentContext context) {
-        Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
+                    return;
+                }
+                Framework.removeListener(this);
+                Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
+            }
+        });
+        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC, reloadListener = new ReloadListener(context));
     }
 
     final ReportConfiguration configuration = new ReportConfiguration();
