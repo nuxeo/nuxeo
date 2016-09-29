@@ -10,7 +10,7 @@
 
    <h3> ${pkg.title} (${pkg.id}) </h3>
 
-   <p><a href="https://www.nuxeo.com/en/services/nuxeo-admin-center-tc" target="_blank">${Context.getMessage('label.termsAndConditions.message.accept')}</a></p>
+   <p><a href="http://www.nuxeo.com/services/nuxeo-admin-center-terms-conditions/" target="_blank">${Context.getMessage('label.termsAndConditions.message.accept')}</a></p>
 
    <div class="termsAndConditionsBlock" style="white-space:pre-line">
    ${content}
