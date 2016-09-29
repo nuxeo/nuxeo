@@ -270,6 +270,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             Path outDir = tempDirectory(null);
             params.addNamedParameter(OUT_DIR_PARAMETER, outDir.toString());
 
+            params.addNamedParameter(USER_ID_PARAMETER, UserIdHelper.getUid());
+
             ExecResult result = Framework.getService(CommandLineExecutorService.class).execCommand(commandName, params);
             if (!result.isSuccessful()) {
                 throw result.getError();

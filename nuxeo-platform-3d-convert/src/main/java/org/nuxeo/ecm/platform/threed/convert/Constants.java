@@ -61,6 +61,8 @@ public class Constants {
 
     public static final String OUTPUT_FILE_PARAMETER = "outFile";
 
+    public static final String USER_ID_PARAMETER = "userId";
+
     public static final String SCRIPTS_DIRECTORY = "scripts";
 
     public static final String SCRIPTS_PIPELINE_DIRECTORY = "pipeline";

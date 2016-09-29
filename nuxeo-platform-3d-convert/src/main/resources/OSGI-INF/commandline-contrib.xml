@@ -9,9 +9,9 @@
         <command name="blender_pipeline" enabled="true">
             <commandLine>docker</commandLine>
             <testParameterString>pull nuxeo/blender</testParameterString>
-            <parameterString>run --rm -v #{scriptsDir}:/scripts:ro -v #{inDir}:/in:ro -v #{outDir}:/out nuxeo/blender
+            <parameterString>run --rm -v #{scriptsDir}:/scripts:ro -v #{inDir}:/in:ro -v #{outDir}:/out -u=#{userId} nuxeo/blender
                 -P /scripts/#{scriptFile} -- --input /in/#{inFile} --outdir /out --operators #{operators}
-                --renderids #{renderIds} -li #{lodIds}  -pp #{percPoly} -mp #{maxPoly} -d #{dimensions} -c #{coords}
+                --renderids #{renderIds} -li #{lodIds} -pp #{percPoly} -mp #{maxPoly} -d #{dimensions} -c #{coords}
             </parameterString>
             <installationDirective>Please, install docker (https://www.docker.com/)
             </installationDirective>
@@ -19,11 +19,17 @@
         <command name="collada2gltlf" enabled="true">
             <commandLine>docker</commandLine>
             <testParameterString>pull nuxeo/collada2gltf</testParameterString>
-            <parameterString>run --rm -v #{inDir}:/in:ro -v #{outDir}:/out nuxeo/collada2gltf
+            <parameterString>run --rm -v #{inDir}:/in:ro -v #{outDir}:/out -u=#{userId} nuxeo/collada2gltf
                 -f /in/#{inFile} -o /out/#{outFile} -e
             </parameterString>
             <installationDirective>Please, install docker (https://www.docker.com/)
             </installationDirective>
+        </command>
+        <command name="useruid" enabled="true">
+            <commandLine>id</commandLine>
+            <testParameterString>-u</testParameterString>
+            <parameterString>-u #{username}</parameterString>
+            <installationDirective>Please, install id command</installationDirective>
         </command>
     </extension>
 

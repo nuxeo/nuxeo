@@ -111,6 +111,8 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
             params.addNamedParameter(OUT_DIR_PARAMETER, outPath.toString());
             params.addNamedParameter(OUTPUT_FILE_PARAMETER, inputFile.removeFileExtension().lastSegment() + ".gltf");
 
+            params.addNamedParameter(USER_ID_PARAMETER, UserIdHelper.getUid());
+
             ExecResult result = Framework.getService(CommandLineExecutorService.class).execCommand(commandName, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
