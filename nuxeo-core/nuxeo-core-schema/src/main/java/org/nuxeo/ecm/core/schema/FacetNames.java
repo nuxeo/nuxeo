@@ -95,6 +95,13 @@ public final class FacetNames {
      */
     public static final String NOT_FULLTEXT_INDEXABLE = "NotFulltextIndexable";
 
+    /**
+     * It will display the big folder document without its children
+     *
+     * @since 8.4
+     */
+    public static final String BIG_FOLDER = "BigFolder";
+
     @Deprecated
     public static final String BROWSE_VIA_SEARCH = "BrowseViaSearch";
 

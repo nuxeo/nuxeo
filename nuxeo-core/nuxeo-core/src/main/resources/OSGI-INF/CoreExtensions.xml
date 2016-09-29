@@ -57,6 +57,7 @@
     <facet name="HiddenInNavigation" perDocumentQuery="false"/>
     <facet name="SystemDocument" />
     <facet name="NotFulltextIndexable" />
+    <facet name="BigFolder" />
 
     <!-- facet to be used for full-text indexing of related text content
       (e.g. comments, annotations, tags...) -->
