@@ -73,8 +73,8 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
     @Override
     public void doInitializeRepository(CoreSession session) {
         if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue("nuxeo.picture.migration.enabled")) {
-            if (log.isWarnEnabled()) {
-                log.warn(
+            if (log.isInfoEnabled()) {
+                log.info(
                         "Starting picture migration handler (this may take some time depending on the number of documents)");
             }
             boolean txStarted = false;
@@ -98,8 +98,8 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
             return;
         }
 
-        if (log.isWarnEnabled()) {
-            log.warn(String.format("Started migration of %d documents with the 'Picture' facet", pictureIds.size()));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Started migration of %d documents with the 'Picture' facet", pictureIds.size()));
         }
 
         long pictureMigratedCount = 0;
@@ -117,8 +117,8 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
             TransactionHelper.startTransaction();
         }
 
-        if (log.isWarnEnabled()) {
-            log.warn(String.format("Finished migration of %d/%d documents with the 'Picture' facet",
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Finished migration of %d/%d documents with the 'Picture' facet",
                     pictureMigratedCount, pictureIds.size()));
         }
     }

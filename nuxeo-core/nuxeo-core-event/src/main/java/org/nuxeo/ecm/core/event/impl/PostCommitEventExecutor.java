@@ -179,7 +179,7 @@ public class PostCommitEventExecutor {
             futureTask.cancel(true); // mayInterruptIfRunning=true
         } catch (TimeoutException e) {
             if (!bulk) {
-                log.warn(String.format("Events postcommit execution exceeded timeout of %sms, leaving thread running",
+                log.info(String.format("Events postcommit execution exceeded timeout of %sms, leaving thread running",
                         Long.valueOf(timeoutMillis)));
                 // don't cancel task, let it run
             } else {
