@@ -1448,24 +1448,13 @@ public class ConnectBroker {
     }
 
     protected boolean pkgUpgradeByType(PackageType type) {
-        List<DownloadablePackage> upgrades = getPackageManager().listInstalledPackages();
-        List<String> upgradeNames = new ArrayList<>();
-        for (DownloadablePackage upgrade : upgrades) {
-            if (upgrade.getType() == type) {
-                upgradeNames.add(upgrade.getName());
-            }
-        }
+        List<String> upgradeNames = getPackageManager().listInstalledPackagesNames(type);
+        // use uprage mode
         return pkgRequest(null, upgradeNames, null, null, true, false, true);
     }
 
     public boolean pkgHotfix() {
-        List<DownloadablePackage> hotFixes = getPackageManager().listPackages(PackageType.HOT_FIX, targetPlatform);
-        List<String> hotFixNames = new ArrayList<>();
-        hotFixes.forEach(pkg -> {
-            if(!pkg.getVersion().isSnapshot() || allowSNAPSHOT){
-                hotFixNames.add(pkg.getName());
-            }
-        });
+        List<String> hotFixNames = getPackageManager().listHotfixesNames(targetPlatform, allowSNAPSHOT);
         return pkgRequest(null, hotFixNames, null, null, true, false);
     }
 
