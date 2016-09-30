@@ -168,14 +168,14 @@ Polymer({
         if (timestamp != this.latestLoadTS) {
           return;
         }
-        document.getElementById('progress').value = event.loaded / event.total * 100;
+        this.$.progress.value = event.loaded / event.total * 100;
       }.bind(this);
     }.bind(this);
 
     if (this.src) {
       this.latestLoadTS = Date.now();
-      document.getElementById('progress').value = 0;
-      document.getElementById('progress').hidden = false;
+      this.$.progress.value = 0;
+      this.$.progress.hidden = false;
       this.gltfLoader.load(this.src, onLoadFromSrc(this.src), onProgressFromTS(this.latestLoadTS));
     }
   },
@@ -272,6 +272,7 @@ Polymer({
   _setupControls: function() {
     this.controls = new THREE.OrbitControls(this.camera, this.$.threed);
     this.controls.addEventListener('change', this._controlsUpdated.bind(this));
+    this._sphericalCoordsChanged();
   },
 
   _controlsUpdated: function() {
@@ -302,7 +303,7 @@ Polymer({
   },
 
   setCameraFromAngles: function(azimuthDegrees, zenithDegrees) {
-    if (!this.controls) {
+    if (!this.controls || azimuthDegrees == undefined || zenithDegrees == undefined) {
       return;
     }
     this.controls.reset();
