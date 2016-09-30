@@ -77,7 +77,6 @@ public class BlobToFileTest {
 
     @Before
     public void setUp() throws Exception {
-        targetDirectory = Framework.createTempDirectory("target").toFile();
         tempDirectory = Framework.createTempDirectory("tmp").toFile();
         pdfFile = new File(tempDirectory.getAbsolutePath(), PDF_NAME);
         blob = Blobs.createBlob(pdfFile);
@@ -96,7 +95,8 @@ public class BlobToFileTest {
     @Test
     public void testExportBlobToFS() throws Exception {
         OperationContext ctx = buildCtx(session);
-        Map<String, Object> params = buildParams();
+        targetDirectory = createAllowedTargetDirectory();
+        Map<String, Object> params = buildParams(targetDirectory);
         Blob outputBlob = (Blob) automationService.run(ctx, BlobToFile.ID, params);
         assertNotNull(outputBlob);
         assertEquals(pdfFile, outputBlob.getFile());
@@ -107,24 +107,39 @@ public class BlobToFileTest {
     }
 
     @Test
-    public void testNotAllowedToExportBlobToFS() throws Exception {
+    public void testNotAllowedWhenNotAdmin() throws Exception {
         CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
         OperationContext ctx = buildCtx(notAdminSession);
-        Map<String, Object> params = buildParams();
-        testNotAllowed(ctx, BlobToFile.ID, params);
+        targetDirectory = createAllowedTargetDirectory();
+        Map<String, Object> params = buildParams(targetDirectory);
+        String errorMessage = "Not allowed. You must be administrator";
+        testNotAllowed(ctx, BlobToFile.ID, params, errorMessage);
         for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
-            testNotAllowed(ctx, alias, params);
+            testNotAllowed(ctx, alias, params, errorMessage);
         }
         notAdminSession.close();
     }
 
-    protected void testNotAllowed(OperationContext ctx, String id, Map<String, Object> params) throws IOException {
+    @Test
+    public void testNotAllowedWhenForbiddenTargetDirectory() throws Exception {
+        OperationContext ctx = buildCtx(session);
+        targetDirectory = createForbiddenTargetDirectory();
+        Map<String, Object> params = buildParams(targetDirectory);
+        String errorMessage = "Not allowed. The target directory is forbidden";
+        testNotAllowed(ctx, BlobToFile.ID, params, errorMessage);
+        for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
+            testNotAllowed(ctx, alias, params, errorMessage);
+        }
+    }
+
+    protected void testNotAllowed(OperationContext ctx, String id, Map<String, Object> params, String message)
+            throws IOException {
         try {
             automationService.run(ctx, id, params);
             fail("Expected OperationException");
         } catch (OperationException e) {
             assertNotNull(e.getMessage());
-            assertTrue(e.getMessage().contains("Not allowed"));
+            assertTrue(e.getMessage().contains(message));
         }
     }
 
@@ -134,10 +149,22 @@ public class BlobToFileTest {
         return ctx;
     }
 
-    protected Map<String, Object> buildParams() {
+    protected Map<String, Object> buildParams(File directory) {
         Map<String, Object> params = new HashMap<>();
-        params.put("directory", targetDirectory.getAbsolutePath());
+        params.put("directory", directory.getAbsolutePath());
         params.put("prefix", "");
         return params;
+    }
+
+    protected File createAllowedTargetDirectory() throws IOException {
+        File directory = File.createTempFile("target", "",
+                FileUtils.getTempDirectory().getParentFile().getParentFile());
+        directory.delete();
+        directory.mkdirs();
+        return directory;
+    }
+
+    protected File createForbiddenTargetDirectory() throws IOException {
+        return Framework.createTempDirectory("target").toFile();
     }
 }

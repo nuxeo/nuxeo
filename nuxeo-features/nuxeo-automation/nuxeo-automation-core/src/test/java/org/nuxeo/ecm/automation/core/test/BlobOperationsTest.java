@@ -74,6 +74,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@SuppressWarnings("deprecation")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -233,7 +234,8 @@ public class BlobOperationsTest {
 
     @Test
     public void testExportBlobToFile() throws Exception {
-        File dir = Framework.createTempFile("autoamtion-test-", ".tmp");
+        File dir = File.createTempFile("automation-test-", ".tmp",
+                org.apache.commons.io.FileUtils.getTempDirectory().getParentFile().getParentFile());
         dir.delete();
         dir.mkdirs();
 

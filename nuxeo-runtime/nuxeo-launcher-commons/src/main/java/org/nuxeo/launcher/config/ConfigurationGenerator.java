@@ -386,17 +386,7 @@ public class ConfigurationGenerator {
     public ConfigurationGenerator(boolean quiet, boolean debug) {
         this.quiet = quiet;
         this.debug = debug;
-        File serverHome = Environment.getDefault().getServerHome();
-        if (serverHome != null) {
-            nuxeoHome = serverHome.getAbsoluteFile();
-        } else {
-            File userDir = new File(System.getProperty("user.dir"));
-            if ("bin".equalsIgnoreCase(userDir.getName())) {
-                nuxeoHome = userDir.getParentFile().getAbsoluteFile();
-            } else {
-                nuxeoHome = userDir.getAbsoluteFile();
-            }
-        }
+        nuxeoHome = retrieveNuxeoHome();
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoConfPath != null) {
             nuxeoConf = new File(nuxeoConfPath).getAbsoluteFile();
@@ -440,6 +430,24 @@ public class ConfigurationGenerator {
         } else {
             log.info(homeInfo);
             log.info(confInfo);
+        }
+    }
+
+    /**
+     * @since 8.4
+     * @return the File corresponding to Nuxeo Home directory
+     */
+    public static File retrieveNuxeoHome() {
+        File serverHome = Environment.getDefault().getServerHome();
+        if (serverHome != null) {
+            return serverHome.getAbsoluteFile();
+        } else {
+            File userDir = new File(System.getProperty("user.dir"));
+            if ("bin".equalsIgnoreCase(userDir.getName())) {
+                return userDir.getParentFile().getAbsoluteFile();
+            } else {
+                return userDir.getAbsoluteFile();
+            }
         }
     }
 
