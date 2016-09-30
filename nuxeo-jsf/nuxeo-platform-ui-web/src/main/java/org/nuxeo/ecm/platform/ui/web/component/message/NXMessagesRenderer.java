@@ -157,13 +157,13 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
                                                       .append("});\n")
                                                       .toString();
             if (showDetail) {
-                message = String.format(scriptContent,
-                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(detail)),
-                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)), errorType,
+                message = String.format(scriptContent.replaceAll("%", "&#37;"),
+                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(detail)).replaceAll("%", "&#37;"),
+                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)).replaceAll("%", "&#37;"), errorType,
                         severityStyleClass, timeout);
             } else {
-                message = String.format(scriptContent, "",
-                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)), errorType,
+                message = String.format(scriptContent.replaceAll("%", "&#37;"), "",
+                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)).replaceAll("%", "&#37;"), errorType,
                         severityStyleClass, timeout);
             }
             writer.writeText(message, null);
