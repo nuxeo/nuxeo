@@ -100,8 +100,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         assertEquals(createdWorflowInstanceId, node.get("entries").getElements().next().get("id").getTextValue());
 
         // Check GET /api/id/{documentId}/@workflow/{workflowInstanceId}/task
-        response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/"
-                + createdWorflowInstanceId + "/task");
+        response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdWorflowInstanceId + "/task");
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         JsonNode taskNode = node.get("entries").getElements().next();
@@ -115,8 +115,9 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         assertEquals(taskUid, taskNode.get("id").getTextValue());
 
         // Complete task via task adapter
-        response = getResponse(RequestType.PUT, "/id/" + note.getId() + "/@" + TaskAdapter.NAME + "/" + taskUid
-                + "/start_review", getBodyForStartReviewTaskCompletion(taskUid).toString());
+        response = getResponse(RequestType.PUT,
+                "/id/" + note.getId() + "/@" + TaskAdapter.NAME + "/" + taskUid + "/start_review",
+                getBodyForStartReviewTaskCompletion(taskUid).toString());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
@@ -247,19 +248,16 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", RunnableWorkflowJsonEnricher.NAME);
-        ClientResponse response = getResponse(RequestType.GET,
-                "/id/" + note.getId(), headers);
+        ClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId(), headers);
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunnableWorkflowJsonEnricher.NAME);
+        ArrayNode runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                                           .get(RunnableWorkflowJsonEnricher.NAME);
         // We can start both default workflow on the note
         assertEquals(2, runnableWorkflowModels.size());
 
         // Start SerialDocumentReview on Note 0
-        response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         node = mapper.readTree(response.getEntityInputStream());
@@ -295,11 +293,11 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(0, node.get("entries").size());
 
-        response = getResponse(RequestType.GET,
-                "/id/" + note.getId(), headers);
+        response = getResponse(RequestType.GET, "/id/" + note.getId(), headers);
 
         node = mapper.readTree(response.getEntityInputStream());
-        runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunnableWorkflowJsonEnricher.NAME);
+        runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                                 .get(RunnableWorkflowJsonEnricher.NAME);
         // Cannot start default wf because of current lifecycle state of the note
         assertEquals(0, runnableWorkflowModels.size());
 
@@ -313,11 +311,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -449,11 +444,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     public void testDelegateTask() throws IOException {
         // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -481,11 +473,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     public void testReassignTask() throws IOException {
         // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
-                RequestType.POST,
-                "/workflow",
-                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
-                        Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -583,7 +572,6 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
-
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fetch." + DocumentRouteWriter.ENTITY_TYPE, DocumentRouteWriter.FETCH_INITATIOR);
         response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId, queryParams);
@@ -629,19 +617,19 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     public void testTasksEnricher() throws IOException {
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         Map<String, String> headers = new HashMap<>();
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", PendingTasksJsonEnricher.NAME);
-        response = getResponse(RequestType.GET,
-                "/id/" + note.getId(), headers);
+        response = getResponse(RequestType.GET, "/id/" + note.getId(), headers);
 
         node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(PendingTasksJsonEnricher.NAME);
+        ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                              .get(PendingTasksJsonEnricher.NAME);
         assertEquals(1, tasksNode.size());
         ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT_IDS);
         assertEquals(1, targetDocumentIdsNode.size());
@@ -655,21 +643,22 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     public void testRunningWorkflowEnricher() throws IOException {
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         Map<String, String> headers = new HashMap<>();
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", RunningWorkflowJsonEnricher.NAME);
-        response = getResponse(RequestType.GET,
-                "/id/" + note.getId(), headers);
+        response = getResponse(RequestType.GET, "/id/" + note.getId(), headers);
 
         node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode workflowsNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunningWorkflowJsonEnricher.NAME);
+        ArrayNode workflowsNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                                  .get(RunningWorkflowJsonEnricher.NAME);
         assertEquals(1, workflowsNode.size());
-        ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0).get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
+        ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0)
+                                                                     .get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
         assertEquals(1, attachedDocumentIdsNode.size());
         assertEquals(note.getId(), attachedDocumentIdsNode.get(0).get("id").getTextValue());
     }
@@ -681,8 +670,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     public void testFetchTaskTargetDocuments() throws IOException {
         DocumentModel note = RestServerInit.getNote(0, session);
 
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
