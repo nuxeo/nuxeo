@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-core-test</artifactId>
   <name>Nuxeo Core Test Framework</name>
-  <description>Nuxeo Core: Testing framewok</description>
+  <description>Nuxeo Core: Testing framework</description>
 
   <dependencies>
 

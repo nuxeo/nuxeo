@@ -16,14 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.pipe.queue;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.annotation.Experimental;
@@ -31,6 +23,14 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipeConsumer;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Simple Queue based implementation that starts a dedicated thread to consume an in-memory message queue.
@@ -65,7 +65,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
             }
         }
 
-        queue = new ConcurrentLinkedQueue<EventBundle>();
+        queue = new ConcurrentLinkedQueue<>();
         consumerTPE = new ThreadPoolExecutor(1, 1, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
         consumerTPE.prestartCoreThread();
         consumerTPE.execute(new Runnable() {
@@ -87,7 +87,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                 consumer = new LocalEventBundlePipeConsumer();
                 consumer.initConsumer(getName(), getParameters());
                 while (!stop) {
-                    List<EventBundle> messages = new ArrayList<EventBundle>();
+                    List<EventBundle> messages = new ArrayList<>();
                     EventBundle message;
                     while ((message = queue.poll()) != null) {
                         messages.add(message);
@@ -145,6 +145,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
             }
             Thread.sleep(pause);
         } while (System.currentTimeMillis() < deadline);
+
         return false;
     }
 

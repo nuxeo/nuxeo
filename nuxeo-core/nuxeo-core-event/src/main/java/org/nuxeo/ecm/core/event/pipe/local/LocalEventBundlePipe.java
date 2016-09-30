@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.core.event.pipe.local;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Local In memory implementation: directly relays to WorkManager
@@ -44,8 +44,7 @@ public class LocalEventBundlePipe extends AbstractEventBundlePipe<EventBundle> i
 
     @Override
     protected void send(EventBundle message) {
-        List<EventBundle> messages = new ArrayList<EventBundle>();
-        messages.add(message);
+        List<EventBundle> messages = Collections.singletonList(message);
         consumer.receiveMessage(messages);
     }
 

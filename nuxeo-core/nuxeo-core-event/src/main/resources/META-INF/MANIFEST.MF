@@ -31,7 +31,9 @@ Import-Package: javax.naming,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.model,
  org.nuxeo.runtime.transaction,
- org.osgi.framework;version="1.4"
+ org.osgi.framework;version="1.4",
+ org.nuxeo.common,
+ org.nuxeo.runtime
 Bundle-SymbolicName: org.nuxeo.ecm.core.event;singleton:=true
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/workmanager-service.xml,

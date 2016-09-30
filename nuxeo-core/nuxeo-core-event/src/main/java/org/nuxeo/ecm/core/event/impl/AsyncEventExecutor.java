@@ -20,32 +20,28 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.EventStats;
-import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.ecm.core.event.*;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Executor of async listeners passing them to the WorkManager.
  */
+@SuppressWarnings("PackageAccessibility")
 public class AsyncEventExecutor {
 
     private static final Log log = LogFactory.getLog(AsyncEventExecutor.class);
@@ -103,9 +99,7 @@ public class AsyncEventExecutor {
             }
             if (txStarted) {
                 TransactionHelper.commitOrRollbackTransaction();
-                for (CoreSession session : sessions.values()) {
-                    session.close();
-                }
+                sessions.values().forEach(CoreSession::close);
             }
 
             bundle = connectedBundle;

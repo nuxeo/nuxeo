@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import java.net.URL;
-
 import org.junit.Before;
 import org.nuxeo.ecm.core.event.impl.PostCommitEventExecutor;
 import org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener;
 import org.nuxeo.ecm.core.event.test.EventListenerTest;
 import org.nuxeo.ecm.core.event.test.TestEventServiceComponent;
 import org.nuxeo.runtime.api.Framework;
+
+import java.net.URL;
 
 /**
  * Run the existing EventListeners tests using the LocalPipe implementation.
@@ -36,7 +36,7 @@ public class TestEventListenerViaLocalPipe extends TestEventServiceComponent {
     @Before
     public void setUp() throws Exception {
         System.setProperty("org.nuxeo.runtime.testing", "true");
-        // super.setUp();
+//        super.setUp();
         wipeRuntime();
         initUrls();
         if (urls == null) {
