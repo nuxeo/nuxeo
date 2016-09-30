@@ -59,7 +59,7 @@ print(args)
 if args.operators is None:
     sys.exit()
 
-bpy.ops.wm.addon_enable(module="AF_materials_specials")
+bpy.ops.wm.addon_enable(module="materials_utils")
 base_path = os.path.dirname(os.path.abspath(__file__)) + '/pipeline/'
 perc_poly = 100
 max_poly = None

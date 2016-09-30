@@ -159,14 +159,13 @@ for obj in scene.objects:
             mat_slot.material.use_transparency = True
             mat_slot.material.use_face_texture = True
             mat_slot.material.use_face_texture_alpha = True
-            textures_used += len([tex for tex in mat_slot.material.texture_slots if tex is not None])
-        if textures_used > 1:
+            textures_used += len([tex for tex in mat_slot.material.texture_slots if tex is not None and tex.use_map_color_diffuse])
+        if textures_used > 0:
             bpy.ops.xps_tools.convert_to_cycles_selected()
-        else:
-            bpy.ops.ml.refresh_active()
         obj.select = False
 
 # render and write file
+scene.render.engine = 'CYCLES'
 scene.render.filepath = outfile
 bpy.ops.render.render(write_still=True)
 
