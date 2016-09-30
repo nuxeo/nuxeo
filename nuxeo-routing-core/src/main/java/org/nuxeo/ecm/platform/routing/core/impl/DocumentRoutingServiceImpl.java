@@ -48,8 +48,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -303,7 +303,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void resumeInstance(String routeId, String nodeId, Map<String, Object> data, String status,
             CoreSession session) {
-        completeTask(routeId, nodeId, null, data, status, session);
+        AttachedDocumentsChecker adc = new AttachedDocumentsChecker(session, routeId);
+        adc.runUnrestricted();
+        if (!adc.isWowkflowCanceled) {
+            completeTask(routeId, nodeId, null, data, status, session);
+        }
     }
 
     @Override
@@ -1021,6 +1025,41 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         public DocumentModelList runQuery() {
             runUnrestricted();
             return docs;
+        }
+    }
+
+    /**
+     * Cancel the workflow instance if all its attached document don't exist anymore. If the workflow is cancelled then
+     * the isWowkflowCanceled is set to true.
+     *
+     * @since 8.4
+     */
+    class AttachedDocumentsChecker extends UnrestrictedSessionRunner {
+
+        String workflowInstanceId;
+
+        Boolean isWowkflowCanceled = false;
+
+        protected AttachedDocumentsChecker(CoreSession session, String workflowInstanceId) {
+            super(session);
+            this.workflowInstanceId = workflowInstanceId;
+        }
+
+        @Override
+        public void run() {
+            DocumentModel routeDoc = session.getDocument(new IdRef(workflowInstanceId));
+            DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+            if (routeInstance.getAttachedDocuments().isEmpty()) {
+                return;
+            }
+            for (String attachedDocumentId : routeInstance.getAttachedDocuments()) {
+                if (session.exists(new IdRef(attachedDocumentId))) {
+                    return;
+                }
+            }
+            DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
+            routingEngine.cancel(routeInstance, session);
+            isWowkflowCanceled = true;
         }
     }
 

@@ -29,12 +29,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -46,24 +49,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter;
 import org.nuxeo.ecm.platform.routing.core.io.TaskWriter;
 import org.nuxeo.ecm.platform.routing.core.io.enrichers.PendingTasksJsonEnricher;
 import org.nuxeo.ecm.platform.routing.core.io.enrichers.RunnableWorkflowJsonEnricher;
 import org.nuxeo.ecm.platform.routing.core.io.enrichers.RunningWorkflowJsonEnricher;
+import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -80,6 +92,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
         "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.actions" })
 public class WorkflowEndpointTest extends RoutingRestBaseTest {
+
+    @Inject
+    WorkManager workManager;
 
     @Test
     public void testAdapter() throws IOException {
@@ -706,6 +721,66 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         ArrayNode wfAttachedDocuments = (ArrayNode) node.get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
         assertEquals(1, wfAttachedDocuments.size());
         assertEquals(note.getId(), wfAttachedDocuments.get(0).get("uid").getTextValue());
+    }
+
+    /**
+     * Trigger the escalation rule that resumes a ParallelDocumentReview workflow instance of which all attached
+     * documents have been deleted.
+     *
+     * The expected behaviour is that workflow instance is cancelled.
+     *
+     * @throws InterruptedException
+     * @since 8.4
+     */
+    @Test
+    public void testResumeWorkflowWithDeletedAttachedDoc()
+            throws JsonProcessingException, IOException, InterruptedException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        // Start SerialDocumentReview on Note 0
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        // Complete first task
+        String taskId = getCurrentTaskId(createdWorflowInstanceId);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, -1);
+        String out = getBodyForStartReviewTaskCompletion(taskId, calendar.getTime());
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Let's remove the attached document.
+        session.removeDocument(note.getRef());
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        EventContext eventContext = new EventContextImpl();
+        eventContext.setProperty("category", "escalation");
+        Event event = new EventImpl(DocumentRoutingEscalationListener.EXECUTE_ESCALATION_RULE_EVENT, eventContext);
+        EventService eventService = Framework.getService(EventService.class);
+        eventService.fireEvent(event);
+
+        awaitEscalationWorks();
+
+        // Check GET /workflow/{workflowInstanceId}
+        response = getResponse(RequestType.GET, "/workflow");
+        node = mapper.readTree(response.getEntityInputStream());
+        // we expect that the workflow has been canceled because of deleted documents
+        assertEquals(0, node.get("entries").size());
+
+    }
+
+    protected void awaitEscalationWorks() throws InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        workManager.awaitCompletion("escalation", 10000, TimeUnit.MILLISECONDS);
     }
 
 }

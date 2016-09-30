@@ -23,6 +23,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.restapi.test.BaseTest;
-import com.ibm.icu.util.Calendar;
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -58,9 +60,13 @@ public class RoutingRestBaseTest extends BaseTest {
     protected String getBodyForStartReviewTaskCompletion(String taskId) throws IOException {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, 1);
+        return getBodyForStartReviewTaskCompletion(taskId, calendar.getTime());
+    }
+
+    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate) throws IOException {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
+                + DateParser.formatW3CDateTime(dueDate) + "\","
                 + "\"participants\": [\"user:Administrator\"]," + "\"assignees\": [\"user:Administrator\"]" + "}" + "}";
         return jsonBody;
     }
