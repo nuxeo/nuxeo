@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 /**
- * Basic class for messages files translations.
+ * Checks en and fr translations formats, and checks for identical keys.
  *
  * @since 7.3
  */
