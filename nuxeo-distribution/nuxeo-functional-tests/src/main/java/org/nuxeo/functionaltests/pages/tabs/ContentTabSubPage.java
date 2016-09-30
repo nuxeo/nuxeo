@@ -117,7 +117,7 @@ public class ContentTabSubPage extends DocumentBasePage {
         // find the link to doc type that needs to be created
         WebElement link = fancyBox.findElement(By.linkText(docType));
         assertNotNull(link);
-        Locator.waitUntilEnabledAndClick(link);
+        link.click();
         return asPage(pageClassToProxy);
     }
 
@@ -164,7 +164,7 @@ public class ContentTabSubPage extends DocumentBasePage {
             final int timeout) {
         filterInput.clear();
         filterInput.sendKeys(filter);
-        Locator.waitUntilEnabledAndClick(filterButton);
+        filterButton.click();
         Locator.waitUntilGivenFunction(driver -> {
             try {
                 return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
@@ -242,7 +242,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public ContentTabSubPage copyByIndex(int... indexes) {
         getElement().checkByIndex(indexes);
-        Locator.waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(COPY));
+        getElement().getSelectionActionByTitle(COPY).click();
         return asPage(ContentTabSubPage.class);
     }
 
@@ -254,7 +254,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public ContentTabSubPage copyByTitle(String... titles) {
         getElement().checkByTitle(titles);
-        Locator.waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(COPY));
+        getElement().getSelectionActionByTitle(COPY).click();
         return asPage(ContentTabSubPage.class);
     }
 
@@ -264,7 +264,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {
-        Locator.waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(PASTE));
+        getElement().getSelectionActionByTitle(PASTE).click();
         return asPage(ContentTabSubPage.class);
     }
 

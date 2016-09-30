@@ -21,7 +21,6 @@ package org.nuxeo.functionaltests.pages;
 
 import java.util.List;
 
-import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -89,7 +88,7 @@ public class LoginPage extends AbstractPage {
                 }
             }
         }
-        Locator.waitUntilEnabledAndClick(submitButton);
+        submitButton.click();
     }
 
     /**
