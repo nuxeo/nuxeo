@@ -34,8 +34,7 @@ from distutils.version import LooseVersion
 
 REQUIRED_GIT_VERSION = "1.8.4"
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
-DEFAULT_MP_CONF_URL = ("https://raw.github.com/nuxeo/"
-                       "integration-scripts/master/marketplace.ini")
+DEFAULT_MP_CONF_URL = ("https://raw.github.com/nuxeo/integration-scripts/master/marketplace.ini")
 
 
 class ExitException(Exception):
@@ -52,8 +51,7 @@ class Repository(object):
 
     def __init__(self, basedir, alias, dirmapping=True, is_nuxeoecm=True):
         assert_git_config()
-        (self.basedir, self.driveletter,
-         self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
+        (self.basedir, self.driveletter, self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
         self.mp_dir = os.path.join(self.basedir, "marketplace")
         if not os.path.isdir(self.mp_dir):
             os.mkdir(self.mp_dir)
@@ -84,8 +82,7 @@ class Repository(object):
         """Set the list of Nuxeo addons in 'self.modules'."""
         os.chdir(self.basedir)
         self.modules = []
-        log("Using Maven introspection of the POM file"
-            " to find the list of modules...")
+        log("Using Maven introspection of the POM file to find the list of modules...")
 
         output = check_output("mvn -N help:effective-pom")
         for line in output.split("\n"):
@@ -96,15 +93,12 @@ class Repository(object):
             self.modules.append(m.group(1))
 
     def eval_addons(self):
-        """Set the list of Nuxeo addons in 'self.addons' and
-        'self.optional_addons'."""
+        """Set the list of Nuxeo addons in 'self.addons' and 'self.optional_addons'."""
         os.chdir(os.path.join(self.basedir, "addons"))
-        log("Using Maven introspection of the POM files"
-            " to find the list of addons...")
+        log("Using Maven introspection of the POM files to find the list of addons...")
         output = check_output("mvn -N help:effective-pom")
         self.addons = self.parse_modules(output)
-        output = check_output("mvn -N help:effective-pom " +
-                              "-f pom-optionals.xml")
+        output = check_output("mvn -N help:effective-pom -f pom-optionals.xml")
         self.optional_addons = self.parse_modules(output)
 
     def parse_modules(self, pom):
@@ -213,17 +207,14 @@ class Repository(object):
         for module in self.modules:
             os.chdir(os.path.join(self.basedir, module))
             log("[%s]" % module)
-            p = system("git archive --prefix=%s/ %s" % (module, version),
-                       wait=False)
+            p = system("git archive --prefix=%s/ %s" % (module, version), wait=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.addons:
             self.eval_addons()
-        for addon in self.addons + (self.optional_addons
-                                    if with_optionals else []):
+        for addon in self.addons + (self.optional_addons if with_optionals else []):
             os.chdir(os.path.join(self.basedir, "addons", addon))
             log("[%s]" % addon)
-            p = system("git archive --prefix=addons/%s/ %s" % (addon, version),
-                       wait=False)
+            p = system("git archive --prefix=addons/%s/ %s" % (addon, version), wait=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         make_zip(archive, archive_dir)
         shutil.rmtree(archive_dir)
@@ -321,21 +312,17 @@ class Repository(object):
             self.eval_modules()
             for module in self.modules:
                 # Ignore modules which are not Git sub-repositories
-                if (not os.path.isdir(module) or
-                        os.path.isdir(os.path.join(module, ".git"))):
+                if (not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git"))):
                     self.git_pull(module, version, fallback_branch)
             # Addons
             os.chdir(os.path.join(self.basedir, "addons"))
             self.eval_addons()
             if not self.is_online:
-                self.url_pattern = self.url_pattern.replace("module",
-                                                            "addons/module")
-            for addon in self.addons + (self.optional_addons
-                                        if with_optionals else []):
+                self.url_pattern = self.url_pattern.replace("module", "addons/module")
+            for addon in self.addons + (self.optional_addons if with_optionals else []):
                 self.git_pull(addon, version, fallback_branch)
             if not self.is_online:
-                self.url_pattern = self.url_pattern.replace("addons/module",
-                                                            "module")
+                self.url_pattern = self.url_pattern.replace("addons/module", "module")
             # Marketplace packages
             self.clone_mp(marketplace_conf)
             os.chdir(cwd)
@@ -386,8 +373,7 @@ def check_output(cmd):
     """Return Shell command output."""
     args = shlex.split(cmd)
     try:
-        p = subprocess.Popen(args, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=platform.system() == "Windows")
     # pylint: disable=C0103
     except OSError, e:
@@ -402,15 +388,12 @@ def check_output(cmd):
     if retcode != 0:
         if err is None or err == "":
             err = out
-        raise ExitException(retcode,
-                            "Command '%s' returned non-zero exit code (%s)\n%s"
-                            % (cmd, retcode, err))
+        raise ExitException(retcode, "Command '%s' returned non-zero exit code (%s)\n%s" % (cmd, retcode, err))
     return out.strip()
 
 
 # pylint: disable=R0912,R0913
-def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
-           wait=True, run=True, stdin=subprocess.PIPE,
+def system(cmd, failonerror=True, delay_stdout=True, logOutput=True, wait=True, run=True, stdin=subprocess.PIPE,
            stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     """Shell execution.
 
@@ -431,9 +414,7 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
             if logOutput:
                 # Merge stderr with stdout
                 stderr = subprocess.STDOUT
-            p = subprocess.Popen(args, stdin=stdin, stdout=stdout,
-                                 stderr=stderr,
-                                 shell=platform.system() == "Windows")
+            p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr, shell=platform.system() == "Windows")
             if wait:
                 out, err = p.communicate()
                 if logOutput:
@@ -485,8 +466,7 @@ def system_with_retries(cmd, failonerror=True):
         elif retries > 10:
             return system(cmd, failonerror=failonerror)
         else:
-            log("Error executing %s - retrying in 10 seconds..." % cmd,
-                sys.stderr)
+            log("Error executing %s - retrying in 10 seconds..." % cmd, sys.stderr)
             time.sleep(10)
 
 
