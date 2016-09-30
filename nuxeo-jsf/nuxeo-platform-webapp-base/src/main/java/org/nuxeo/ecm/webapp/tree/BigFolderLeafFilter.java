@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.tree;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
  * Simple filter that accepts if the document has the {@code BigFolder} facet.
@@ -31,13 +32,17 @@ public class BigFolderLeafFilter implements Filter {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @deprecated since 8.4, use {@link (org.nuxeo.ecm.core.schema.FacetNames.BIG_FOLDER)} instead.
+     */
+    @Deprecated
     public static final String BIG_FOLDER_FACET = "BigFolder";
 
     /**
      * Accepts if the document has the {@code BigFolder} facet.
      */
     public boolean accept(DocumentModel document) {
-        return document.hasFacet(BIG_FOLDER_FACET);
+        return document.hasFacet(FacetNames.BIG_FOLDER);
     }
 
 }
