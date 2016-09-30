@@ -274,7 +274,6 @@ Contributors:
 
                 _setCoords: function(e) {
                     var renderView = e.model.dataHost.itemForElement(e.target);
-                    window.threed = this.querySelector('#threedViewer');
                     this.querySelector('#threedViewer').set('sphericalCoords',[renderView.azimuth, renderView.zenith]);
                 },
 

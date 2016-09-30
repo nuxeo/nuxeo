@@ -38,7 +38,10 @@ gulp.task('vulcanize', function () {
             stripComments: true,
             inlineCss: true,
             inlineScripts: true,
-            excludes: [dist('bower_components/polymer/polymer.html')]
+            stripExcludes: [
+                dist('bower_components/polymer/polymer.html'),
+                dist('bower_components/paper-progress/paper-progress.html')
+            ]
 
         }))
         .pipe(gulp.dest(dist()))
