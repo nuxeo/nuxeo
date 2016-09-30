@@ -18,17 +18,11 @@ RUN apt-get update \
 ENV BLENDER_MAJOR 2.78
 ENV BLENDER_VERSION 2.78
 ENV BLENDER_BZ2_URL http://download.blender.org/release/Blender$BLENDER_MAJOR/blender-$BLENDER_VERSION-linux-glibc219-x86_64.tar.bz2
-ENV MATERIALS_SPECIALS_URL https://github.com/meta-androcto/downloads/raw/master/AF_materials_specials.zip
 
 RUN mkdir /usr/local/blender \
 	&& curl -SL "$BLENDER_BZ2_URL" -o blender.tar.bz2 \
 	&& tar -jxvf blender.tar.bz2 -C /usr/local/blender --strip-components=1 \
 	&& rm blender.tar.bz2
-
-RUN mkdir /usr/local/blender/$BLENDER_MAJOR/scripts/addons/AF_materials_specials \
-	&& curl -SL "$MATERIALS_SPECIALS_URL" -o AF_materials_specials.zip \
-	&& unzip AF_materials_specials.zip -d /usr/local/blender/$BLENDER_MAJOR/scripts/addons \
-	&& rm AF_materials_specials.zip
 
 VOLUME ["/scripts", "/in", "/out"]
 ENTRYPOINT ["/usr/local/blender/blender", "-b"]
