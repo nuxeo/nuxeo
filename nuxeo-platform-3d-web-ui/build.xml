@@ -19,33 +19,33 @@
   -->
 <project name="Nuxeo Platform 3D" default="build" basedir="../nuxeo-platform-3d-web-ui">
 
-    <!-- set executable names based on OS family -->
-    <condition property="cmd.npm" value="npm.cmd" else="npm">
-        <os family="windows"/>
-    </condition>
-    <condition property="cmd.bower" value="bower.cmd" else="bower">
-        <os family="windows"/>
-    </condition>
-    <condition property="cmd.gulp" value="gulp.cmd" else="gulp">
-        <os family="windows"/>
-    </condition>
-    <condition property="cmd.mvn" value="mvn.cmd" else="mvn">
-        <os family="windows"/>
-    </condition>
+  <!-- set executable names based on OS family -->
+  <condition property="cmd.npm" value="npm.cmd" else="npm">
+    <os family="windows"/>
+  </condition>
+  <condition property="cmd.bower" value="bower.cmd" else="bower">
+    <os family="windows"/>
+  </condition>
+  <condition property="cmd.gulp" value="gulp.cmd" else="gulp">
+    <os family="windows"/>
+  </condition>
+  <condition property="cmd.mvn" value="mvn.cmd" else="mvn">
+    <os family="windows"/>
+  </condition>
 
-    <target name="init" description="Download all node and web dependencies">
-        <exec executable="${cmd.npm}" failonerror="true">
-            <arg value="install"/>
-        </exec>
-        <exec executable="${cmd.bower}" failonerror="true">
-            <arg value="update"/>
-        </exec>
-    </target>
+  <target name="init" description="Download all node and web dependencies">
+    <exec executable="${cmd.npm}" failonerror="true">
+      <arg value="install"/>
+    </exec>
+    <exec executable="${cmd.bower}" failonerror="true">
+      <arg value="update"/>
+    </exec>
+  </target>
 
-    <target name="build" depends="init">
-        <exec executable="${cmd.gulp}" failonerror="true">
-            <arg value="default"/>
-        </exec>
-    </target>
+  <target name="build" depends="init">
+    <exec executable="${cmd.gulp}" failonerror="true">
+      <arg value="default"/>
+    </exec>
+  </target>
 
 </project>
