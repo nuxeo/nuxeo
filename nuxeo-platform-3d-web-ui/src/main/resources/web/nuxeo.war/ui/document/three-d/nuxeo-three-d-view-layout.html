@@ -132,9 +132,9 @@ Contributors:
 
         <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
             <nuxeo-dropzone document="{{document}}"
-                            message="Drop to replace the 3D content"
-                            message-empty="Click here or drop to replace the 3D"
-                            uploaded-message="3D file uploaded"
+                            message="[[i18n('label.widget.threed.dropzone.replace','Drop to replace the 3D content')]]"
+                            message-empty="[[i18n('label.widget.threed.dropzone.empty', 'Click here or drop to replace the 3D')]]"
+                            uploaded-message="[[i18n('label.widget.threed.dropzone.uploaded', '3D file uploaded')]]"
                             empty="[[!document.properties.file:content.data]]">
                 <nuxeo-3d-viewer id="threedViewer"
                                  src="[[document.properties.threed:transmissionFormats.0.content.data]]"
@@ -143,7 +143,7 @@ Contributors:
             </nuxeo-dropzone>
         </template>
         <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-            <p>No transmission formats available.</p>
+            <p>[[i18n('label.widget.threed.transmission_formats.not_available', 'No transmission formats available.')]]</p>
         </template>
         <div class="card-section">
             <div class="horizontal layout center">
@@ -152,15 +152,17 @@ Contributors:
                         <a href="[[document.properties.file:content.data]]">[[document.title]]</a>
                     </p>
                     <div class="horizontal flex end-justified layout">
-                        <nuxeo-document-view-delete-blob document="{{document}}"
-                                                         tool-tip="Delete 3D content"
-                                                         confirm-message="Do you really want to delete this 3D?"
-                                                         delete-message="3D deleted"
+                        <nuxeo-document-view-delete-blob
+                                document="{{document}}"
+                                                         tool-tip="[[i18n('label.widget.threed.delete.message', 'Delete 3D content')]]"
+                                                         confirm-message="[[i18n('label.widget.threed.delete.confirm', 'Do you really want to delete this 3D?')]]"
+                                                         delete-message="[[i18n('label.widget.threed.delete.done', '3D deleted')]]"
                                                          hidden="[[!document.properties.file:content]]">
                         </nuxeo-document-view-delete-blob>
                         <nuxeo-upload-blob-button document="{{document}}"
-                                                  uploaded-message="3D uploaded"
-                                                  tool-tip="Upload 3D"></nuxeo-upload-blob-button>
+                                                  uploaded-message="[[i18n('label.widget.threed.upload.done', '3D uploaded')]]"
+                                                  tool-tip="[[i18n('label.widget.threed.upload.message', 'Upload 3D')]]">
+                        </nuxeo-upload-blob-button>
                     </div>
                 </template>
                 <template is="dom-if" if="[[!document.properties.file:content]]">
@@ -177,7 +179,7 @@ Contributors:
                     <template is="dom-repeat" items="[[document.properties.threed:renderViews]]" as="renderView">
                         <div class="item">
                             <img src="[[renderView.thumbnail.data]]" on-tap="_setCoords" />
-                            <a href="[[renderView.content.data]]" title="download">
+                            <a href="[[renderView.content.data]]" title="[[i18n('label.widget.threed.render_views.download', 'Download Render View')]]">
                                 <label class="layout flex-2">[[renderView.title]]</label>
                                 <iron-icon icon="icons:file-download"></iron-icon>
                             </a>
@@ -190,7 +192,7 @@ Contributors:
             </template>
         </div>
         <div class="card-section sep">
-            <p class="title">[[i18n('heading.transitionFormats', 'Level of Detail Versions')]]</p>
+            <p class="title">[[i18n('heading.transmissionFormats', 'Transmission Formats')]]</p>
             <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
                 <div class="transmission-formats">
                     <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
@@ -213,7 +215,7 @@ Contributors:
                                               if="{{!format.info.geometry_lod_success}}">
                                         <iron-icon icon="icons:warning"></iron-icon>
                                     </template>
-                                    <span class="layout flex format-info-element">[[_getPolyNumber(format)]] [[i18n('label.widget.3d.polygons', 'polys')]]</span>
+                                    <span class="layout flex format-info-element">[[_getPolyNumber(format)]] [[i18n('label.widget.threed.unit.polygons', 'polygons')]]</span>
                                 </div>
                                 <div class="format-textures item">
                                     <template is="dom-if" if="{{_hasTextures(format)}}">
@@ -234,7 +236,7 @@ Contributors:
 
                             <div class="format-buttons">
                                 <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
-                                <a href="[[format.content.data]]" title="download">
+                                <a href="[[format.content.data]]" title="[[i18n('label.widget.threed.transmission_formats.download', 'Download Transmission Format')]]">
                                     <iron-icon icon="icons:file-download"></iron-icon>
                                 </a>
                             </div>
@@ -245,7 +247,7 @@ Contributors:
                 </div>
             </template>
             <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-                <p>No items.</p>
+                <p>[[i18n('label.widget.threed.transmission_formats.not_available', 'No transmission formats available.')]]</p>
             </template>
         </div>
         <div class="card-section attachments">
