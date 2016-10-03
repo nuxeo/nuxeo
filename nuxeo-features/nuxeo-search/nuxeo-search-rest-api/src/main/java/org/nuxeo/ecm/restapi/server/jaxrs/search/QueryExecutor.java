@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -73,6 +74,11 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     public static final String SORT_ORDER = "sortOrder";
 
     public static final String ORDERED_PARAMS = "queryParams";
+
+    /**
+     * @since 8.4
+     */
+    public static final String QUICK_FILTERS = "quickFilters";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
@@ -160,6 +166,28 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
             }
         }
         return sortInfoList;
+    }
+
+    /**
+     * @since 8.4
+     */
+    protected List<QuickFilter> getQuickFilters(String providerName, MultivaluedMap<String, String> queryParams) {
+        PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
+        String quickFilters = queryParams.getFirst(QUICK_FILTERS);
+        List<QuickFilter> quickFilterList = new ArrayList<>();
+        if (!StringUtils.isBlank(quickFilters)) {
+            String[] filters = quickFilters.split(",");
+            List<QuickFilter> ppQuickFilters = pageProviderDefinition.getQuickFilters();
+            for (String filter : filters) {
+                for (QuickFilter quickFilter : ppQuickFilters) {
+                    if (quickFilter.getName().equals(filter)) {
+                        quickFilterList.add(quickFilter);
+                        break;
+                    }
+                }
+            }
+        }
+        return quickFilterList;
     }
 
     protected Properties getNamedParameters(MultivaluedMap<String, String> queryParams) {
@@ -257,13 +285,14 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         Properties namedParameters = getNamedParameters(queryParams);
         Object[] parameters = getParameters(queryParams);
         List<SortInfo> sortInfo = getSortInfo(queryParams);
+        List<QuickFilter> quickFilters = getQuickFilters(pageProviderName, queryParams);
         Map<String, Serializable> props = getProperties();
 
         DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
             pageProviderName, namedParameters);
 
-        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, parameters, props,
-            searchDocumentModel);
+        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, quickFilters, parameters,
+                props, searchDocumentModel);
     }
 
     protected DocumentModelList queryByLang(String query, Long pageSize, Long currentPageIndex, Long maxResults,
@@ -289,12 +318,16 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return res;
     }
 
+    /**
+     * @since 8.4
+     */
     protected DocumentModelList queryByPageProvider(String pageProviderName, Long pageSize, Long currentPageIndex,
-        List<SortInfo> sortInfo, Object[] parameters, Map<String, Serializable> props,
-        DocumentModel searchDocumentModel) throws RestOperationException {
+            List<SortInfo> sortInfo, List<QuickFilter> quickFilters, Object[] parameters,
+            Map<String, Serializable> props, DocumentModel searchDocumentModel) throws RestOperationException {
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-            (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
-                sortInfo, pageSize, currentPageIndex, props, parameters), null);
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
+                        sortInfo, pageSize, currentPageIndex, props, quickFilters, parameters),
+                null);
         if (res.hasError()) {
             RestOperationException err = new RestOperationException(res.getErrorMessage());
             err.setStatus(HttpServletResponse.SC_BAD_REQUEST);

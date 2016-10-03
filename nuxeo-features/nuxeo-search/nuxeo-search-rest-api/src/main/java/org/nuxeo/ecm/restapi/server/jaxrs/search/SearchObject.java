@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.search.core.InvalidSearchParameterException;
 import org.nuxeo.ecm.platform.search.core.SavedSearch;
 import org.nuxeo.ecm.platform.search.core.SavedSearchConstants;
@@ -244,6 +245,7 @@ public class SearchObject extends QueryExecutor {
         List<SortInfo> sortInfo = getSortInfo(params);
 
         if (!StringUtils.isEmpty(search.getPageProviderName())) {
+            List<QuickFilter> quickFilters = getQuickFilters(search.getPageProviderName(), params);
             return querySavedSearchByPageProvider(
                     search.getPageProviderName(),
                     pageSize != null ? pageSize : search.getPageSize(),
@@ -251,6 +253,7 @@ public class SearchObject extends QueryExecutor {
                     search.getQueryParams(),
                     search.getNamedParams(),
                     sortInfo != null ? sortInfo : getSortInfo(search.getSortBy(), search.getSortOrder()),
+                    quickFilters,
                     search.getDocument().getType() != SavedSearchConstants.PARAMETERIZED_SAVED_SEARCH_TYPE_NAME ? search.getDocument()
                             : null);
         } else if (!StringUtils.isEmpty(search.getQuery()) && !StringUtils.isEmpty(search.getQueryLanguage())) {
@@ -280,7 +283,7 @@ public class SearchObject extends QueryExecutor {
 
     protected DocumentModelList querySavedSearchByPageProvider(String pageProviderName, Long pageSize,
             Long currentPageIndex, String orderedParams, Map<String, String> namedParameters, List<SortInfo> sortInfo,
-            DocumentModel searchDocumentModel) throws RestOperationException {
+            List<QuickFilter> quickFilters, DocumentModel searchDocumentModel) throws RestOperationException {
         Properties namedParametersProps = getNamedParameters(namedParameters);
         Object[] parameters = orderedParams != null ? replaceParameterPattern(new Object[] { orderedParams })
                 : new Object[0];
@@ -297,7 +300,7 @@ public class SearchObject extends QueryExecutor {
             }
         }
 
-        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, parameters, props,
+        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, quickFilters, parameters, props,
                 documentModel);
     }
 
