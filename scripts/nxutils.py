@@ -42,6 +42,17 @@ class ExitException(Exception):
         self.return_code = return_code
         self.message = message
 
+def deprecated(func):
+    '''This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used.'''
+    def new_func(*args, **kwargs):
+        warnings.warn("Call to deprecated function {}.".format(func.__name__), category=DeprecationWarning)
+        return func(*args, **kwargs)
+    new_func.__name__ = func.__name__
+    new_func.__doc__ = func.__doc__
+    new_func.__dict__.update(func.__dict__)
+    return new_func
 
 # pylint: disable=R0902
 class Repository(object):
@@ -70,6 +81,7 @@ class Repository(object):
         else:
             self.url_pattern = remote_url + "/module"
         self.modules = []
+        self.sub_modules = {}
         self.addons = []
         self.optional_addons = []
         self.is_nuxeoecm = is_nuxeoecm
@@ -78,38 +90,64 @@ class Repository(object):
         long_path_workaround_cleanup(self.driveletter, self.oldbasedir)
 
     # pylint: disable=C0103
+    @deprecated
     def eval_modules(self):
         """Set the list of Nuxeo addons in 'self.modules'."""
-        os.chdir(self.basedir)
-        self.modules = []
-        log("Using Maven introspection of the POM file to find the list of modules...")
+        self.modules = self.retrieve_modules(self.basedir)
 
-        output = check_output("mvn -N help:effective-pom")
-        for line in output.split("\n"):
-            line = line.strip()
-            m = re.match("<module>(.*?)</module>", line)
-            if not m:
-                continue
-            self.modules.append(m.group(1))
-
+    @deprecated
     def eval_addons(self):
         """Set the list of Nuxeo addons in 'self.addons' and 'self.optional_addons'."""
-        os.chdir(os.path.join(self.basedir, "addons"))
-        log("Using Maven introspection of the POM files to find the list of addons...")
-        output = check_output("mvn -N help:effective-pom")
-        self.addons = self.parse_modules(output)
-        output = check_output("mvn -N help:effective-pom -f pom-optionals.xml")
-        self.optional_addons = self.parse_modules(output)
+        addons_dir = os.path.join(self.basedir, "addons")
+        self.addons = self.retrieve_modules(addons_dir)
+        self.optional_addons = self.retrieve_modules(addons_dir, "pom-optionals.xml")
 
-    def parse_modules(self, pom):
-        """Extract modules names from a Maven POM"""
+    def execute_on_modules(self, function, with_optionals=False):
+        """Executes the given function on each first and second level modules of Nuxeo repository.
+
+        'function' the function to execute on module.
+        'with_optionals' weither or not we execute function on optionals (modules with pom-optionals.xml file)
+        """
+        cwd = os.getcwd()
+        os.chdir(self.basedir)
+        if not self.modules and self.is_nuxeoecm:
+            self.modules = self.retrieve_modules(self.basedir)
+        # First level
+        for module in self.modules:
+            function(module)
+            # Second level - addons in first level of nuxeo's module and regular addons
+            if not self.is_online:
+                self.url_pattern = self.url_pattern.replace("module", "%s/module" % module)
+            os.chdir(module)
+            if not module in self.sub_modules and self.is_nuxeoecm:
+                module_dir = os.path.join(self.basedir, module)
+                self.sub_modules[module] = self.retrieve_modules(module_dir)
+                # Handle optionals
+                if with_optionals:
+                    self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir, "pom-optionals.xml")
+            for sub_module in self.sub_modules[module]:
+                function(sub_module)
+            os.chdir(self.basedir)
+            if not self.is_online:
+                self.url_pattern = self.url_pattern.replace("%s/module" % module, "module")
+        os.chdir(cwd)
+
+    def retrieve_modules(self, project_dir, pom_name = "pom.xml"):
+        """Retrieve all modules of input Maven project and return it."""
         modules = []
-        for line in pom.split("\n"):
-            line = line.strip()
-            m = re.match("<module>(.*?)</module>", line)
-            if not m:
-                continue
-            modules.append(m.group(1))
+        if os.path.exists(os.path.join(project_dir, pom_name)):
+            log("Using Maven introspection of the POM file %s/%s to find the list of modules..." % (project_dir, pom_name))
+            cwd = os.getcwd()
+            os.chdir(project_dir)
+            output = check_output("mvn -N help:effective-pom -f " + pom_name)
+            os.chdir(cwd)
+            modules = []
+            for line in output.split("\n"):
+                line = line.strip()
+                m = re.match("<module>(.*?)</module>", line)
+                if not m:
+                    continue
+                modules.append(m.group(1))
         return modules
 
     def git_pull(self, module, version, fallback_branch=None):
@@ -140,18 +178,18 @@ class Repository(object):
         os.chdir(self.basedir)
         log("[.]")
         system(command)
-        if not self.modules and self.is_nuxeoecm:
-            self.eval_modules()
-        for module in self.modules:
-            os.chdir(os.path.join(self.basedir, module))
-            log("[%s]" % module)
-            system(command)
-        if not self.addons and self.is_nuxeoecm:
-            self.eval_addons()
-        for addon in self.addons + (self.optional_addons if with_optionals else []):
-            os.chdir(os.path.join(self.basedir, "addons", addon))
-            log("[%s]" % addon)
-            system(command)
+        self.execute_on_modules(lambda module: self.system_module(command, module), with_optionals)
+        os.chdir(cwd)
+
+    def system_module(self, command, module):
+        """Execute the given command on given module.
+
+        'command': the command to execute.
+        'module': the module into execute command."""
+        cwd = os.getcwd()
+        os.chdir(module)
+        log("[%s]" % module)
+        system(command)
         os.chdir(cwd)
 
     def git_recurse(self, command, with_optionals=False):
@@ -164,23 +202,14 @@ class Repository(object):
         os.chdir(self.basedir)
         log("[.]")
         system(command)
-        if not self.modules and self.is_nuxeoecm:
-            self.eval_modules()
-        for module in self.modules:
-            module_path = os.path.join(self.basedir, module)
-            if not os.path.isdir(os.path.join(module_path, ".git")):
-                continue
-            os.chdir(module_path)
+        self.execute_on_modules(lambda module: self.git_module(command, module), with_optionals)
+        os.chdir(cwd)
+
+    def git_module(self, command, module):
+        cwd = os.getcwd()
+        os.chdir(module)
+        if os.path.isdir(".git"):
             log("[%s]" % module)
-            system(command)
-        if not self.addons and self.is_nuxeoecm:
-            self.eval_addons()
-        for addon in self.addons + (self.optional_addons if with_optionals else []):
-            module_path = os.path.join(self.basedir, "addons", addon)
-            if not os.path.isdir(os.path.join(module_path, ".git")):
-                continue
-            os.chdir(module_path)
-            log("[%s]" % addon)
             system(command)
         os.chdir(cwd)
 
@@ -202,22 +231,17 @@ class Repository(object):
         p = system("git archive %s" % version, wait=False)
         # pylint: disable=E1103
         system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
-        if not self.modules:
-            self.eval_modules()
-        for module in self.modules:
-            os.chdir(os.path.join(self.basedir, module))
-            log("[%s]" % module)
-            p = system("git archive --prefix=%s/ %s" % (module, version), wait=False)
-            system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
-        if not self.addons:
-            self.eval_addons()
-        for addon in self.addons + (self.optional_addons if with_optionals else []):
-            os.chdir(os.path.join(self.basedir, "addons", addon))
-            log("[%s]" % addon)
-            p = system("git archive --prefix=addons/%s/ %s" % (addon, version), wait=False)
-            system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
+        self.execute_on_modules(lambda module: self.archive_module(archive_dir, version, module), with_optionals)
         make_zip(archive, archive_dir)
         shutil.rmtree(archive_dir)
+        os.chdir(cwd)
+
+    def archive_module(self, archive_dir, version, module):
+        cwd = os.getcwd()
+        os.chdir(module)
+        log("[%s]" % module)
+        p = system("git archive --prefix=%s/ %s" % (module, version), wait=False)
+        system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         os.chdir(cwd)
 
     def git_update(self, version, fallback_branch=None):
@@ -306,26 +330,16 @@ class Repository(object):
         if version is None:
             version = self.get_current_version()
         self.git_update(version, fallback_branch)
-
         if self.is_nuxeoecm:
-            # Main modules
-            self.eval_modules()
-            for module in self.modules:
-                # Ignore modules which are not Git sub-repositories
-                if (not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git"))):
-                    self.git_pull(module, version, fallback_branch)
-            # Addons
-            os.chdir(os.path.join(self.basedir, "addons"))
-            self.eval_addons()
-            if not self.is_online:
-                self.url_pattern = self.url_pattern.replace("module", "addons/module")
-            for addon in self.addons + (self.optional_addons if with_optionals else []):
-                self.git_pull(addon, version, fallback_branch)
-            if not self.is_online:
-                self.url_pattern = self.url_pattern.replace("addons/module", "module")
+            self.execute_on_modules(lambda module: self.clone_module(module, version, fallback_branch), with_optionals)
             # Marketplace packages
             self.clone_mp(marketplace_conf)
-            os.chdir(cwd)
+        os.chdir(cwd)
+
+    def clone_module(self, module, version, fallback_branch):
+        # Ignore modules which are not Git sub-repositories
+        if (not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git"))):
+            self.git_pull(module, version, fallback_branch)
 
     def get_current_version(self):
         """Return branch or tag version of current Git workspace."""
