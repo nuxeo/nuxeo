@@ -204,4 +204,8 @@ public class CSVImporterOptions implements Serializable {
     public int getBatchSize() {
         return batchSize;
     }
+
+    public ImportMode getImportMode() {
+        return importMode;
+    }
 }

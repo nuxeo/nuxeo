@@ -65,7 +65,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, values.get(NXQL.ECM_LIFECYCLESTATE));
             values.remove(NXQL.ECM_LIFECYCLESTATE);
         }
-        if (importerOptions.importMode.equals(ImportMode.CREATE)) {
+        if (importerOptions.importMode.equals(ImportMode.IMPORT)) {
             if (values.containsKey(NXQL.ECM_UUID)) {
                 ((DocumentModelImpl) doc).setId((String) values.get(NXQL.ECM_UUID));
                 values.remove(NXQL.ECM_UUID);

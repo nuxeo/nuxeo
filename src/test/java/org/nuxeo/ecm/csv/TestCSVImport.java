@@ -120,7 +120,7 @@ public class TestCSVImport {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCreateAllDocuments() throws InterruptedException, IOException {
-        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
 
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -451,7 +451,7 @@ public class TestCSVImport {
 
     @Test
     public void shouldCreateDocumentWithGivenLifeCycleState() throws InterruptedException {
-        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
         TransactionHelper.commitOrRollbackTransaction();
 
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_LIFECYCLE_CSV),
@@ -478,7 +478,7 @@ public class TestCSVImport {
         acp.addACE(ACL.LOCAL_ACL, ACE.builder("leela", "ReadWrite").build());
         session.setACP(root.getRef(), acp, true);
 
-        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
@@ -506,7 +506,7 @@ public class TestCSVImport {
 
     @Test
     public void shouldCreateDocumentWithDefinedCreator() throws InterruptedException {
-        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.IMPORT).build();
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
         TransactionHelper.commitOrRollbackTransaction();
 
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_CREATOR_CSV),
