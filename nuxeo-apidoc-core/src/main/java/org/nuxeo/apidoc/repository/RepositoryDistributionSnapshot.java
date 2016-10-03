@@ -405,7 +405,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
         String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME
-                + " = " + NXQL.escapeString(id);
+                + " = " + NXQL.escapeString(id) + " OR " + OperationInfo.PROP_ALIASES + " = " + NXQL.escapeString(id);
         DocumentModelList docs = getCoreSession().query(query);
         return docs.isEmpty() ? null : docs.get(0).getAdapter(OperationInfo.class);
     }

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -97,7 +98,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @JsonCreator
-    private RuntimeSnapshot(@JsonProperty("serverInfo") ServerInfo serverInfo, @JsonProperty("creationDate") Date created,
+    private RuntimeSnapshot(@JsonProperty("serverInfo") ServerInfo serverInfo,
+            @JsonProperty("creationDate") Date created,
             @JsonProperty("seamComponents") List<SeamComponentInfo> seamComponents,
             @JsonProperty("operations") List<OperationInfo> operations) {
         this.serverInfo = serverInfo;
@@ -536,6 +538,12 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             if (op.getName().equals(id)) {
                 return op;
             }
+
+            String finalId = id;
+            Optional<String> first = Arrays.stream(op.getAliases()).filter(s -> s.equals(finalId)).findFirst();
+            if (first.isPresent()) {
+                return op;
+            }
         }
         return null;
     }
@@ -571,7 +579,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return false;
     }
 
-    final List<String> aliases = new LinkedList<>(Arrays.asList("current"));
+    final List<String> aliases = new LinkedList<>(Collections.singletonList("current"));
 
     @Override
     @JsonIgnore
