@@ -16,7 +16,7 @@ package org.nuxeo.ecm.platform.thumbnail.factories;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 
@@ -27,17 +27,23 @@ import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
  */
 public class ThumbnailFolderishFactory extends ThumbnailDocumentFactory {
 
+    /**
+     * @since 7.10-HF15
+     */
+    public static final String FIRST_CHILD_QUERY = "SELECT * FROM Document WHERE ecm:parentId = '%s' AND "
+            + "ecm:currentLifeCycleState <> 'deleted' AND ecm:mixinType <> 'HiddenInNavigation' AND "
+            + "ecm:mixinType <> 'Folderish'";
+
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.isFolder()) {
             throw new NuxeoException("Document is not folderish");
         }
-        DocumentRef docRef = doc.getRef();
-        if (session.hasChildren(docRef)) {
-            DocumentModel child = session.getChildren(docRef).get(0);
-            if (!child.isFolder()) {
-                return session.getChildren(docRef).get(0).getAdapter(ThumbnailAdapter.class).getThumbnail(session);
-            }
+
+        String query = String.format(FIRST_CHILD_QUERY, doc.getId());
+        DocumentModelList children = session.query(query, 1);
+        if (!children.isEmpty()) {
+            return children.get(0).getAdapter(ThumbnailAdapter.class).getThumbnail(session);
         }
         return getDefaultThumbnail(doc);
     }
