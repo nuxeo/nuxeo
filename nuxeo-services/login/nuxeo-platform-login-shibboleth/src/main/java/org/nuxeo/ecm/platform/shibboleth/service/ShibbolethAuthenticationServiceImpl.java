@@ -37,6 +37,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implements ShibbolethAuthenticationService {
 
+    /**
+     * @since 8.4
+     */
+    private static final String REDIRECT_URL = "redirect_url";
+
     public static final String CONFIG_EP = "config";
 
     protected ShibbolethAuthenticationConfig config;
@@ -92,12 +97,14 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
 
     @Override
     public String getLoginURL(HttpServletRequest request) {
-        return getLoginURL(getRedirectUrl(request));
+        String redirectUrl = getRedirectUrl(request);
+        request.getSession().setAttribute(REDIRECT_URL, redirectUrl);
+        return getLoginURL(redirectUrl);
     }
 
     @Override
     public String getLogoutURL(HttpServletRequest request) {
-        return getLogoutURL(getRedirectUrl(request));
+        return getLogoutURL((String) request.getSession().getAttribute(REDIRECT_URL));
     }
 
     @Override
