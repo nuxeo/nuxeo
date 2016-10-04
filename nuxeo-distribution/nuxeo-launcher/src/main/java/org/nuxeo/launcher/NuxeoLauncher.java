@@ -524,7 +524,7 @@ public abstract class NuxeoLauncher {
             + "        mp-set\t\t\tInstall a list of Nuxeo Packages and remove those not in the list.\n"
             + "        mp-request\t\tInstall and uninstall Nuxeo Package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
             + "        mp-purge\t\tUninstall and remove all packages from the local cache.\n"
-            + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
+            + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform but do not upgrade already installed ones (requires a registered instance).\n"
             + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
             + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
             + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n"
