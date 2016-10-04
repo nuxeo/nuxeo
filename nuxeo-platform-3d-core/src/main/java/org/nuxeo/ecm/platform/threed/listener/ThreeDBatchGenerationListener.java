@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.threed.service.ThreeDBatchUpdateWork;
 import org.nuxeo.runtime.api.Framework;
@@ -53,8 +54,19 @@ public class ThreeDBatchGenerationListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(THREED_FACET) && !doc.isProxy()) {
             ThreeDBatchUpdateWork work = new ThreeDBatchUpdateWork(doc.getRepositoryName(), doc.getId());
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+            WorkManager manager = Framework.getLocalService(WorkManager.class);
+
+            ThreeDBatchUpdateWork running = (ThreeDBatchUpdateWork) manager.find(work.getId(), Work.State.RUNNING);
+            ThreeDBatchUpdateWork scheduled = (ThreeDBatchUpdateWork) manager.find(work.getId(), Work.State.SCHEDULED);
+            if (running != null) {
+                running.suspended();
+                running.setStatus("Suspended");
+            } else if (scheduled != null) {
+                scheduled.suspended();
+                scheduled.setStatus("Suspended");
+            }
+
+            manager.schedule(work, WorkManager.Scheduling.ENQUEUE, true);
         }
     }
 }

@@ -29,7 +29,12 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
-import org.nuxeo.ecm.platform.threed.*;
+import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDDocument;
+import org.nuxeo.ecm.platform.threed.ThreeDInfo;
+import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.Serializable;
@@ -81,6 +86,10 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     @Override
     public void work() {
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
+        // Extract
         setStatus("Extracting");
         setProgress(Progress.PROGRESS_INDETERMINATE);
 
@@ -99,11 +108,17 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
             return;
         }
 
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
         // Perform batch conversion
-        ThreeDService service = Framework.getLocalService(ThreeDService.class);
         setStatus("Batch conversion");
+        ThreeDService service = Framework.getLocalService(ThreeDService.class);
         BlobHolder batch = service.batchConvert(originalThreeD);
 
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
         // Saving thumbnail to the document
         setStatus("Saving thumbnail");
         List<ThreeDRenderView> threeDRenderViews = BatchConverterHelper.getRenders(batch);
@@ -120,9 +135,14 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
             }
         }
 
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
+        // Save 3D blob information
         setStatus("Saving 3D information on main content");
         List<BlobHolder> resources = BatchConverterHelper.getResources(batch);
-        ThreeDInfo mainInfo = BatchConverterHelper.getMainInfo(batch, resources);
+        ThreeDInfo mainInfo;
+        mainInfo = BatchConverterHelper.getMainInfo(batch, resources);
         if (mainInfo != null) {
             try {
                 startTransaction();
@@ -135,6 +155,10 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
             }
         }
 
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
+        // Convert transmission formats
         setStatus("Converting Collada to glTF");
 
         List<TransmissionThreeD> colladaThreeDs = BatchConverterHelper.getTransmissions(batch, resources);
@@ -142,12 +166,20 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
                                                                      .map(service::convertColladaToglTF)
                                                                      .collect(Collectors.toList());
 
-        startTransaction();
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
+        // Save transmission formats
         setStatus("Saving transmission formats");
+        startTransaction();
         openSystemSession();
         DocumentModel doc = session.getDocument(new IdRef(docId));
         saveNewTransmissionThreeDs(doc, transmissionThreeDs);
 
+        if (isWorkInstanceSuspended()) {
+            return;
+        }
+        // Finalize
         fireThreeDConversionsDoneEvent(doc);
         setStatus("Done");
     }
