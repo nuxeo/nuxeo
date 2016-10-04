@@ -70,7 +70,7 @@ public class ITDomainTest extends AbstractTest {
     }
 
     @Test
-    public void tesMultipleDomainsDashboard() throws UserNotConnectedException, IOException {
+    public void testMultipleDomainsDashboard() throws UserNotConnectedException, IOException {
         login(TEST_USERNAME, TEST_PASSWORD);
 
         // check dashboard on default domain as member
@@ -103,6 +103,7 @@ public class ITDomainTest extends AbstractTest {
 
         // check result on dashboard
         userHome = page.getUserHome();
+        DocumentBasePage.makeBreadcrumbUsable(driver);
         assertTrue(userHome.hasSelectDomainInput());
         assertTrue(userHome.hasUserWorkspace(TEST_WORKSPACE_TITLE));
         assertTrue(userHome.hasDomainDocument(TEST_FILE_TITLE));
@@ -110,6 +111,7 @@ public class ITDomainTest extends AbstractTest {
         assertFalse(userHome.hasDomainDocument(TEST_NEW_FILE_TITLE));
 
         userHome = userHome.selectDomain(TEST_NEW_DOMAIN_TITLE);
+        DocumentBasePage.makeBreadcrumbUsable(driver);
         assertTrue(userHome.hasSelectDomainInput());
         assertFalse(userHome.hasUserWorkspace(TEST_WORKSPACE_TITLE));
         assertFalse(userHome.hasDomainDocument(TEST_FILE_TITLE));
