@@ -87,7 +87,7 @@ public class NuxeoValidationSupport {
         }
     }
 
-    public ConnectionInterceptor addTransactionInterceptor(ConnectionInterceptor stack) {
+    public ConnectionInterceptor addValidationInterceptors(ConnectionInterceptor stack) {
         if (onBorrow == NOOP && onReturn == NOOP) {
             return stack;
         }
