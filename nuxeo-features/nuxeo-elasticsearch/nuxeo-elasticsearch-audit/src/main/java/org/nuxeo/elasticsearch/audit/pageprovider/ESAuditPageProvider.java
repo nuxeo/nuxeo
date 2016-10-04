@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -199,8 +200,11 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
             if (!allowSimplePattern()) {
                 throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
             }
-            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
-                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+            String originalPattern = def.getPattern();
+            String pattern = quickFiltersClause.isEmpty() ? originalPattern
+                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                    ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
+                    : originalPattern + " WHERE " + quickFiltersClause;
 
             String baseQuery = getESBackend().expandQueryVariables(pattern, params);
             searchBuilder = getESBackend().buildQuery(baseQuery, null);

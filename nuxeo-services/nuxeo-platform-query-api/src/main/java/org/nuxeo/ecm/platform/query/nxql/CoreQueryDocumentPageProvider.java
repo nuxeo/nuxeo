@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.*;
@@ -252,8 +253,11 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         WhereClauseDefinition whereClause = def.getWhereClause();
         if (whereClause == null) {
 
-            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
-                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+            String originalPattern = def.getPattern();
+            String pattern = quickFiltersClause.isEmpty() ? originalPattern
+                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                            ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
+                            : originalPattern + " WHERE " + quickFiltersClause;
 
             newQuery = NXQLQueryBuilder.getQuery(pattern, getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
