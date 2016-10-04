@@ -113,7 +113,7 @@
 
     <widget name="summary_threed_render_view" type="threed_render_view">
       <labels>
-        <label mode="any">heading.renderViews</label>
+        <label mode="any">label.widget.threed.heading.renderViews</label>
       </labels>
       <translated>true</translated>
       <controls mode="any">
@@ -126,7 +126,7 @@
 
     <widget name="summary_threed_transmission_format" type="threed_transmission_format">
       <labels>
-        <label mode="any">heading.threed_transmission_formats</label>
+        <label mode="any">label.widget.threed.heading.threed_transmission_formats</label>
       </labels>
       <translated>true</translated>
       <controls mode="any">
