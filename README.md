@@ -1,6 +1,6 @@
-# Nuxeo Storage MarkLogic
+# Nuxeo Core Storage MarkLogic
 
-Nuxeo Storage MarkLogic is a backend connector.
+Nuxeo Core Storage MarkLogic is a backend connector.
 
 # Contributing / Reporting issues
 

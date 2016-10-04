@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.storage.marklogic;
+package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,7 +31,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.storage.marklogic.MarkLogicHelper.ElementType;
+import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
 /**
  * MarkLogic Serializer to convert {@link State} into {@link String}.

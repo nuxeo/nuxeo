@@ -2,14 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-addons-parent</artifactId>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-parent</artifactId>
     <version>8.4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.storage.marklogic</groupId>
-  <artifactId>nuxeo-storage-marklogic</artifactId>
-  <name>Nuxeo Storage MarkLogic</name>
+  <artifactId>nuxeo-core-storage-marklogic</artifactId>
+  <name>Nuxeo Core Storage MarkLogic</name>
 
   <dependencies>
     <dependency>

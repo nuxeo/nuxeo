@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.storage.marklogic;
+package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.io.Serializable;
 import java.util.Map.Entry;

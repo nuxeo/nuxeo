@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.storage.marklogic;
+package org.nuxeo.ecm.core.storage.marklogic;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryFactory;

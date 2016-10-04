@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.storage.marklogic;
+package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -31,7 +31,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.storage.marklogic.MarkLogicHelper.ElementType;
+import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
 /**
  * MarkLogic Deserializer to convert {@link String} into {@link State}.

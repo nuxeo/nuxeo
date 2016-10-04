@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.storage.marklogic;
+package org.nuxeo.ecm.core.storage.marklogic;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;

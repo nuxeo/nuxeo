@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.storage.marklogic;
+package org.nuxeo.ecm.core.storage.marklogic;
 
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
@@ -68,7 +68,7 @@ import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
-import org.nuxeo.ecm.storage.marklogic.MarkLogicHelper.ElementType;
+import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 import org.nuxeo.runtime.api.Framework;
 
 import com.marklogic.client.io.StringHandle;

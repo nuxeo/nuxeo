@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.storage.marklogic.MarkLogicRepositoryService" version="1.0.0">
+<component name="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" version="1.0.0">
 
   <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService</require>
 
@@ -7,10 +7,10 @@
     Manages MarkLogic repositories.
   </documentation>
 
-  <implementation class="org.nuxeo.ecm.storage.marklogic.MarkLogicRepositoryService" />
+  <implementation class="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.storage.marklogic.MarkLogicRepositoryService" />
+    <provide interface="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" />
   </service>
 
   <extension-point name="repository">
@@ -37,7 +37,7 @@
         </repository>
       </code>
     </documentation>
-    <object class="org.nuxeo.ecm.storage.marklogic.MarkLogicRepositoryDescriptor" />
+    <object class="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryDescriptor" />
   </extension-point>
 
 </component>
