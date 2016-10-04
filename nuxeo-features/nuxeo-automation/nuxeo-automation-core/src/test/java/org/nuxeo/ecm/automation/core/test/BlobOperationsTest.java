@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.Serializable;
@@ -29,8 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,7 +73,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings("deprecation")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
@@ -371,7 +369,7 @@ public class BlobOperationsTest {
         try {
             service.run(ctx, ConcatenatePDFs.ID, params);
             // Should fails before
-            Assert.fail();
+            fail();
         } catch (OperationException e) {
             assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getCause().getMessage());
         }
@@ -391,7 +389,7 @@ public class BlobOperationsTest {
         try {
             service.run(ctx, ConcatenatePDFs.ID, params);
             // Should fails before
-            Assert.fail();
+            fail();
         } catch (OperationException e) {
             assertNotNull("The blob to append from variable context: 'blobToAppend' is not a blob.",
                     e.getCause().getMessage());
