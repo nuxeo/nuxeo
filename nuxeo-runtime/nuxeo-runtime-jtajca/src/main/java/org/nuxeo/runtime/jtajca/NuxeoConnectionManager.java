@@ -119,7 +119,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             }
 
             stack = new ConnectionHandleInterceptor(stack);
-            stack = validationSupport.addTransactionInterceptor(stack);
+            stack = validationSupport.addValidationInterceptors(stack);
             stack = new TCCLInterceptor(stack, classLoader);
             if (connectionTracker != null) {
                 stack = new ConnectionTrackingInterceptor(stack, name, connectionTracker);
