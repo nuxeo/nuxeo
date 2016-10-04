@@ -27,10 +27,7 @@ import org.nuxeo.runtime.api.Framework;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Simple Queue based implementation that starts a dedicated thread to consume an in-memory message queue.
@@ -64,9 +61,8 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                 log.error("Unable to read batchSize parameter", e);
             }
         }
-
         queue = new ConcurrentLinkedQueue<>();
-        consumerTPE = new ThreadPoolExecutor(1, 1, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+        consumerTPE = new ThreadPoolExecutor(1, 1, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
         consumerTPE.prestartCoreThread();
         consumerTPE.execute(new Runnable() {
 
@@ -99,7 +95,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                         send(messages);
                     }
 
-                    // XXX this is a hack !
+                    // XXX this is a hack ! TODO: find a better approach
                     try {
                         if (Framework.isTestModeSet()) {
                             Thread.sleep(5);
@@ -110,7 +106,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                         consumerTPE.shutdown();
                     }
                 }
-                consumer = null;
+
             }
         });
     }
@@ -122,7 +118,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
     @Override
     protected void send(EventBundle message) {
-        queue.add(message);
+        queue.offer(message);
     }
 
     @Override

@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -27,6 +24,9 @@ import org.nuxeo.ecm.core.event.impl.AsyncEventExecutor;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Consumes EventBundles by running AsynchronousListeners
@@ -58,9 +58,7 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
 
     @Override
     protected boolean processEventBundles(List<EventBundle> bundles) {
-
-        try {
-            EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);
+            EventServiceAdmin eventService = Framework.getService(EventServiceAdmin.class);//
             EventListenerList listeners = eventService.getListenerList();
             List<EventListenerDescriptor> postCommitAsync = listeners.getEnabledAsyncPostCommitListenersDescriptors();
 
@@ -69,18 +67,9 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
                 asyncExec.run(postCommitAsync, eventBundle);
             }
             return true;
-        } catch (NullPointerException npe) {
-            if (stopping) {
-                log.warn("Trying to send events in pipe after shutdown");
-            } else {
-                log.error("Unable to acess Runtime in the context of EventPipe processing", npe);
-            }
-            return false;
-        }
     }
 
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         return asyncExec.waitForCompletion(timeoutMillis);
     }
-
 }

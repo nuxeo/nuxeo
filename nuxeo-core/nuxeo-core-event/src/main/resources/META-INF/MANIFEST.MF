@@ -33,7 +33,8 @@ Import-Package: javax.naming,
  org.nuxeo.runtime.transaction,
  org.osgi.framework;version="1.4",
  org.nuxeo.common,
- org.nuxeo.runtime
+ org.nuxeo.runtime,
+ com.codahale.metrics
 Bundle-SymbolicName: org.nuxeo.ecm.core.event;singleton:=true
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/workmanager-service.xml,

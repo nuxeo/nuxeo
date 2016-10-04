@@ -20,35 +20,13 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.rmi.dgc.VMID;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.*;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.event.EventStats;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
@@ -57,6 +35,16 @@ import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import java.rmi.dgc.VMID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the event service.
@@ -104,7 +92,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected boolean bulkModeEnabled = false;
 
-    protected EventPipeRegistry registredPipes = new EventPipeRegistry();
+    protected EventPipeRegistry registeredPipes = new EventPipeRegistry();
 
     protected EventDispatcherRegistry dispatchers = new EventDispatcherRegistry();
 
@@ -121,7 +109,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
         EventDispatcherDescriptor dispatcherDescriptor = dispatchers.getDispatcherDescriptor();
         if (dispatcherDescriptor != null) {
-            List<EventPipeDescriptor> pipes = registredPipes.getPipes();
+            List<EventPipeDescriptor> pipes = registeredPipes.getPipes();
             if (pipes.size() > 0) {
                 pipeDispatcher = dispatcherDescriptor.getInstance();
                 pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
@@ -175,12 +163,9 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public void waitForAsyncCompletion(long timeout) {
-        Set<AsyncWaitHook> notCompleted = new HashSet<AsyncWaitHook>();
-        for (AsyncWaitHook hook : asyncWaitHooks) {
-            if (!hook.waitForAsyncCompletion()) {
-                notCompleted.add(hook);
-            }
-        }
+        Set<AsyncWaitHook> notCompleted = asyncWaitHooks.stream()
+                .filter(hook -> !hook.waitForAsyncCompletion())
+                .collect(Collectors.toSet());
         if (!notCompleted.isEmpty()) {
             throw new RuntimeException("Async tasks are still running : " + notCompleted);
         }
@@ -210,7 +195,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     public void addEventPipe(EventPipeDescriptor pipeDescriptor) {
-        registredPipes.addContribution(pipeDescriptor);
+        registeredPipes.addContribution(pipeDescriptor);
         log.debug("Registered event pipe: " + pipeDescriptor.getName());
     }
 
@@ -226,7 +211,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     public void removeEventPipe(EventPipeDescriptor pipeDescriptor) {
-        registredPipes.removeContribution(pipeDescriptor);
+        registeredPipes.removeContribution(pipeDescriptor);
         log.debug("Unregistered event pipe: " + pipeDescriptor.getName());
     }
 
