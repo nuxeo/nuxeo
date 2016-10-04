@@ -61,18 +61,18 @@ Contributors:
 
     <!-- Full Text -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.fullText', 'Full Text')]]</label>
+      <label>[[i18n('assetsSearch.fullText', 'Full Text')]]</label>
       <paper-input id="searchInput" autofocus="true"
                    value="{{searchTerm}}" tabindex="0"
                    type="search"
-                   placeholder="[[i18n('ui.assetsSearch.fullText.placeholder', 'Search something ...')]]"
+                   placeholder="[[i18n('assetsSearch.fullText.placeholder', 'Search something ...')]]"
                    no-label-float>
       </paper-input>
     </div>
 
     <!-- Asset type -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.assetType', 'Asset type')]]</label>
+      <label>[[i18n('assetsSearch.assetType', 'Asset type')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.system_primaryType_agg]]"
         value="{{params.system_primaryType_agg}}">
@@ -81,7 +81,7 @@ Contributors:
 
     <!-- Asset format -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.assetFormat', 'Asset format')]]</label>
+      <label>[[i18n('assetsSearch.assetFormat', 'Asset format')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.system_mimetype_agg]]"
         value="{{params.system_mimetype_agg}}">
@@ -90,7 +90,7 @@ Contributors:
 
     <!-- Asset Width -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.assetWidth', 'Asset Width')]]</label>
+      <label>[[i18n('assetsSearch.assetWidth', 'Asset Width')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.asset_width_agg]]"
         value="{{params.asset_width_agg}}">
@@ -99,7 +99,7 @@ Contributors:
 
     <!-- Asset Height -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.assetHeight', 'Asset Height')]]</label>
+      <label>[[i18n('assetsSearch.assetHeight', 'Asset Height')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.asset_height_agg]]"
         value="{{params.asset_height_agg}}">
@@ -108,7 +108,7 @@ Contributors:
 
     <!-- Color Profile -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.colorProfile', 'Color Profile')]]</label>
+      <label>[[i18n('assetsSearch.colorProfile', 'Color Profile')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.color_profile_agg]]"
         value="{{params.color_profile_agg}}">
@@ -117,7 +117,7 @@ Contributors:
 
     <!-- Color Depth -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.colorDepth', 'Color Depth')]]</label>
+      <label>[[i18n('assetsSearch.colorDepth', 'Color Depth')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.color_depth_agg]]"
         value="{{params.color_depth_agg}}">
@@ -126,7 +126,7 @@ Contributors:
 
     <!-- Video Duration -->
     <div class="layout vertical row">
-      <label>[[i18n('ui.assetsSearch.videoDuration', 'Video Duration')]]</label>
+      <label>[[i18n('assetsSearch.videoDuration', 'Video Duration')]]</label>
       <nuxeo-checkbox-aggregation
         data="[[aggregations.video_duration_agg]]"
         value="{{params.video_duration_agg}}">
