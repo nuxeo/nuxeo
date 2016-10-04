@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -156,8 +157,11 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         WhereClauseDefinition whereClause = def.getWhereClause();
         if (whereClause == null) {
 
-            String pattern = quickFiltersClause.isEmpty() ? def.getPattern()
-                    : NXQLQueryBuilder.appendClause(def.getPattern(), quickFiltersClause);
+            String originalPattern = def.getPattern();
+            String pattern = quickFiltersClause.isEmpty() ? originalPattern
+                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                    ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
+                    : originalPattern + " WHERE " + quickFiltersClause;
 
             ret = PageProviderQueryBuilder.makeQuery(pattern, getParameters(), def.getQuotePatternParameters(),
                     def.getEscapePatternParameters(), isNativeQuery());
