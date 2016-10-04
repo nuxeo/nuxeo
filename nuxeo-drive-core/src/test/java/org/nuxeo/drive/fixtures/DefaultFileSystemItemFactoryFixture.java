@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -72,6 +73,7 @@ import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -82,7 +84,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
+@RandomBug.Repeat(issue = DefaultFileSystemItemFactoryFixture.NXP_20338)
 public class DefaultFileSystemItemFactoryFixture {
+
+    protected static final String NXP_20338 = "Random transaction timeout";
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
 
