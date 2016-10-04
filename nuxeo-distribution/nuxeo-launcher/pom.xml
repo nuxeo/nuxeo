@@ -154,12 +154,6 @@
       <artifactId>nuxeo-connect-tools-report-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.connect</groupId>
-      <artifactId>nuxeo-connect-client</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

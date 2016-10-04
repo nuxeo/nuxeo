@@ -1277,7 +1277,7 @@ public class ConnectBroker {
                     requestPlatform = null;
                     if ("ask".equalsIgnoreCase(relax)) {
                         relax = readConsole(
-                                "Package %s not available on platform version %s.\n"
+                                "Package(s) %s not available on platform version %s.\n"
                                         + "Do you want to relax the constraint (yes/no)? [no] ",
                                 "no", StringUtils.join(nonCompliantPkg, ", "), targetPlatform);
                     }
@@ -1293,7 +1293,7 @@ public class ConnectBroker {
                             }
                         } else {
                             throw new PackageException(String.format(
-                                    "Package %s not available on platform version %s (relax is not allowed)",
+                                    "Package(s) %s not available on platform version %s (relax is not allowed)",
                                     StringUtils.join(nonCompliantPkg, ", "), targetPlatform));
                         }
                     }
