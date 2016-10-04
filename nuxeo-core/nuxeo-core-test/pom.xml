@@ -208,4 +208,17 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>marklogic</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.core</groupId>
+          <artifactId>nuxeo-core-storage-marklogic</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
 </project>
