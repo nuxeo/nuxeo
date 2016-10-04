@@ -539,6 +539,12 @@
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
       </dependency>
+      <!-- Nuxeo core addons -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-marklogic</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
 
       <!-- Nuxeo Services -->
       <dependency>
@@ -6317,6 +6323,14 @@
        <properties>
         <nuxeo.test.core>mongodb</nuxeo.test.core>
         <nuxeo.mongodb.server.default>localhost:27017</nuxeo.mongodb.server.default>
+      </properties>
+    </profile>
+    <profile>
+      <id>marklogic</id>
+       <properties>
+        <nuxeo.test.core>marklogic</nuxeo.test.core>
+        <nuxeo.test.marklogic.host>localhost</nuxeo.test.marklogic.host>
+        <nuxeo.test.marklogic.port>8030</nuxeo.test.marklogic.port>
       </properties>
     </profile>
 
