@@ -37,6 +37,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -77,6 +78,7 @@ public class TestSequenceGeneratorWithElasticSearch {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-20582: timeout waiting termination")
     public void testConcurrency() throws Exception {
         final String seqName = "mt";
         int nbCalls = 5000;
