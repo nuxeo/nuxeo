@@ -55,14 +55,14 @@ Example:
     <nuxeo-operation id="disable" op="NuxeoDrive.SetSynchronization" params='{"enable": false}'></nuxeo-operation>
 
     <template is="dom-if" if="[[_empty(roots)]]">
-      [[i18n('ui.drive.syncRootsManagement.roots.empty',"You currently don't have any synchronization root.")]]
+      [[i18n('driveSyncRootsManagement.roots.empty',"You currently don't have any synchronization root.")]]
     </template>
 
     <template is="dom-if" if="[[!_empty(roots)]]">
       <div class="table">
         <div class="row headers">
-          <div class="flex-2">[[i18n('ui.drive.syncRootsManagement.root.name', 'Name')]]</div>
-          <div class="flex-8">[[i18n('ui.drive.syncRootsManagement.root.path', 'Path')]]</div>
+          <div class="flex-2">[[i18n('driveSyncRootsManagement.root.name', 'Name')]]</div>
+          <div class="flex-8">[[i18n('driveSyncRootsManagement.root.path', 'Path')]]</div>
           <div class="flex"></div>
         </div>
         <template is="dom-repeat" items="[[roots]]" as="doc">
@@ -71,7 +71,7 @@ Example:
             <div class="flex-8">[[doc.path]]</div>
             <div class="actions">
               <paper-icon-button icon="icons:clear"
-                                 title="[[i18n('label.drive.root.disable', 'Disable)]]"
+                                 title="[[i18n('driveSyncRootsManagement.root.disable', 'Disable)]]"
                                  on-tap="_disable">
               </paper-icon-button>
             </div>
@@ -80,7 +80,7 @@ Example:
       </div>
     </template>
 
-    <paper-toast id="toast">[[i18n('ui.drive.syncRootsManagement.roots.disabled',
+    <paper-toast id="toast">[[i18n('driveSyncRootsManagement.roots.disabled',
                                    'Synchronization root disabled')]]</paper-toast>
 
   </template>

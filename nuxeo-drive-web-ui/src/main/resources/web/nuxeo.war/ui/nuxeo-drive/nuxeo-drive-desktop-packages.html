@@ -73,8 +73,8 @@ Example:
 
     <div class="table">
       <div class="row headers">
-        <div class="flex-2">[[i18n('ui.drive.desktopPackages.platform', 'Platform')]]</div>
-        <div class="flex-10">[[i18n('ui.drive.desktopPackages.install', 'Package to Install')]]</div>
+        <div class="flex-2">[[i18n('driveDesktopPackages.platform', 'Platform')]]</div>
+        <div class="flex-10">[[i18n('driveDesktopPackages.install', 'Package to Install')]]</div>
       </div>
       <template is="dom-repeat" items="[[packages]]" as="pkg">
         <div class="row">
@@ -118,7 +118,7 @@ Example:
       });
 
       PACKAGES.push({
-        name: window.nuxeo.I18n.translate('ui.drive.desktopPackages.ubuntu.name',
+        name: window.nuxeo.I18n.translate('driveDesktopPackages.ubuntu.name',
                                           'Read the documentation about the Linux client'),
         platform: 'ubuntu',
         url: 'https://github.com/nuxeo/nuxeo-drive#ubuntudebian-and-other-linux-variants-client'
