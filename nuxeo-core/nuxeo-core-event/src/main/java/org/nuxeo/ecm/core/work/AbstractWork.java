@@ -435,6 +435,7 @@ public abstract class AbstractWork implements Work {
             } finally {
                 if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                     if (!ok || isSuspending()) {
+                        log.trace(this + " is suspending, rollbacking");
                         TransactionHelper.setTransactionRollbackOnly();
                     }
                     TransactionHelper.commitOrRollbackTransaction();

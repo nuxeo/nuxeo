@@ -24,8 +24,12 @@ if redis.call('SADD', scheduledKey, id) == 0 then
   }
 end
 
-redis.call('HSET', dataKey, id, data)
-redis.call('HSET', stateKey, id, state)
+local isrunning = redis.call('SISMEMBER', runningKey, id)
+if not isrunning or isrunning == 0 then
+    redis.call('HSET', dataKey, id, data)
+    redis.call('HSET', stateKey, id, state)
+end
+
 redis.call('LPUSH', queuedKey, id)
 
 return { 

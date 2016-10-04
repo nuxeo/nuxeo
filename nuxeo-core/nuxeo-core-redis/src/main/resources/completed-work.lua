@@ -20,8 +20,12 @@ local state = ARGV[2]
 
 
 redis.call('SREM', runningKey, workId)
-redis.call('HDEL', stateKey, workId)
-redis.call('HDEL', dataKey, workId)
+local isscheduled = redis.call('SISMEMBER', scheduledKey, workId)
+if not isscheduled or isscheduled == 0 then
+    redis.call('HDEL', stateKey, workId)
+    redis.call('HDEL', dataKey, workId)
+end
+
 return { 
     redis.call('HINCRBY', countKey, scheduledKey, 0), 
     redis.call('HINCRBY', countKey, runningKey, -1), 

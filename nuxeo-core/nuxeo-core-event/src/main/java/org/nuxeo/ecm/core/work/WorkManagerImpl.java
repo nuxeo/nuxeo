@@ -609,9 +609,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Work work = WorkHolder.getWork(r);
             try {
                 if (work.isSuspending()) {
+                    log.trace(work + " is suspending, giving up");
                     return;
                 }
-                if (isShutdown() && t != null) {
+                if (isShutdown()) {
+                    log.trace("rescheduling " + work.getId(), t);
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
                     return;
@@ -638,8 +640,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 queuing.setActive(queueId, false);
                 // suspend all running work
                 for (Work work : running) {
-                    log.trace("rescheduling " + work);
                     work.setWorkInstanceSuspending();
+                    log.trace("suspending and rescheduling " + work.getId());
                     work.setWorkInstanceState(State.SCHEDULED);
                     queuing.workReschedule(queueId, work);
                 }

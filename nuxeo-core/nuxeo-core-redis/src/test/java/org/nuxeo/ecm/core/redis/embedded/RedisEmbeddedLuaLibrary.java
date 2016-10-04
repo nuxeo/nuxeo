@@ -122,6 +122,11 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
                 String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
                 return valueOfOrFalse(connection.scard(key));
             }
+            case "sismember": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey.get(2), String.class);
+                String member = (String)CoerceLuaToJava.coerce(luaKey.get(3), String.class);
+                return valueOfOrFalse(connection.sismember(key, member));
+            }
             case "rpop": {
                 String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
                 return valueOfOrFalse(connection.rpop(key));
@@ -152,6 +157,8 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
                 return valueOfOrFalse(connection.sadd(key, value));
             case "scard":
                 return valueOfOrFalse(connection.scard(key));
+            case "sismember":
+                return valueOfOrFalse(connection.sismember(key, value));
             case "lpush":
                 return valueOfOrFalse(connection.lpush(key, value));
             case "rpop": {
