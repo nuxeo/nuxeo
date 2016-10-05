@@ -27,13 +27,16 @@ import static org.junit.Assert.assertTrue;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
+import org.nuxeo.ecm.core.storage.dbs.DBSHelper;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
@@ -89,6 +92,8 @@ public class StorageConfiguration {
 
     private DatabaseHelper databaseHelper;
 
+    private DBSHelper dbsHelper;
+
     final CoreFeature feature;
 
     public StorageConfiguration(CoreFeature feature) {
@@ -127,7 +132,8 @@ public class StorageConfiguration {
             initMongoDB();
             break;
         default:
-            throw new ExceptionInInitializerError("Unknown test core mode: " + coreType);
+            isDBS = true;
+            initExternal();
         }
     }
 
@@ -177,6 +183,17 @@ public class StorageConfiguration {
         }
     }
 
+    protected void initExternal() {
+        // Get DBSHelper by reflection
+        String className = String.format("org.nuxeo.ecm.core.storage.%s.DBSHelperImpl", coreType);
+        try {
+            dbsHelper = (DBSHelper) Class.forName(className).newInstance();
+            dbsHelper.init();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException("DBSHelperImpl not found: " + className, e);
+        }
+    }
+
     public boolean isVCS() {
         return isVCS;
     }
@@ -219,6 +236,10 @@ public class StorageConfiguration {
 
     public boolean isDBSMongoDB() {
         return isDBS && CORE_MONGODB.equals(coreType);
+    }
+
+    public boolean isDBSExternal() {
+        return dbsHelper != null;
     }
 
     public String getRepositoryName() {
@@ -285,6 +306,14 @@ public class StorageConfiguration {
         }
     }
 
+    public List<String> getExternalBundles() {
+        if (isDBSExternal()) {
+            return Arrays.asList(String.format("org.nuxeo.ecm.storage.%s", coreType),
+                    String.format("org.nuxeo.ecm.storage.%s.test", coreType));
+        }
+        return Collections.emptyList();
+    }
+
     public URL getBlobManagerContrib(FeaturesRunner runner) {
         String bundleName = "org.nuxeo.ecm.core.test";
         String contribPath = "OSGI-INF/test-storage-blob-contrib.xml";
@@ -319,6 +348,9 @@ public class StorageConfiguration {
                 contribPath = "OSGI-INF/test-storage-repo-mem-contrib.xml";
             } else if (isDBSMongoDB()) {
                 contribPath = "OSGI-INF/test-storage-repo-mongodb-contrib.xml";
+            } else if (isDBSExternal()) {
+                bundleName = String.format("org.nuxeo.ecm.storage.%s.test", coreType);
+                contribPath = "OSGI-INF/test-storage-repo-contrib.xml";
             } else {
                 throw new NuxeoException("Unkown DBS test configuration (not mem/mongodb)");
             }
@@ -398,5 +430,4 @@ public class StorageConfiguration {
         }
         return timestamp;
     }
-
 }
