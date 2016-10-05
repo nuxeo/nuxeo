@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 
 import javax.inject.Inject;
 
@@ -32,7 +33,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
@@ -125,13 +125,13 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
             return;
         }
         String userSchema = userManager.getUserSchemaName();
-        DocumentPart userPart = doc.getPart(userSchema);
-        if (userPart == null) {
+        Collection<Property> properties = doc.getPropertyObjects(userSchema);
+        if (properties.isEmpty()) {
             return;
         }
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
         jg.writeObjectFieldStart("properties");
-        for (Property property : userPart.getChildren()) {
+        for (Property property : properties) {
             String localName = property.getField().getName().getLocalName();
             jg.writeFieldName(localName);
             if (localName.equals(getPasswordField())) {

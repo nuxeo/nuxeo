@@ -300,6 +300,11 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    public Collection<Property> getPropertyObjects(String schema) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Map<String, Object> getProperties(String schemaName) {
         throw new UnsupportedOperationException();
     }
@@ -311,6 +316,11 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public Object getProperty(String schemaName, String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Property getPropertyObject(String schema, String name) {
         throw new UnsupportedOperationException();
     }
 

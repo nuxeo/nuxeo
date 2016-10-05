@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -199,6 +200,12 @@ public class SimpleDocumentModel implements DocumentModel {
     public Object getProperty(String schemaName, String name) {
         DataModel dm = getDataModelInternal(schemaName);
         return dm != null ? dm.getData(name) : null;
+    }
+
+    @Override
+    public Property getPropertyObject(String schema, String name) {
+        DocumentPart part = getPart(schema);
+        return part == null ? null : part.get(name);
     }
 
     @Override
@@ -616,6 +623,12 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public DocumentPart[] getParts() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<Property> getPropertyObjects(String schema) {
+        DocumentPart part = getPart(schema);
+        return part == null ? Collections.emptyList() : part.getChildren();
     }
 
     @Override

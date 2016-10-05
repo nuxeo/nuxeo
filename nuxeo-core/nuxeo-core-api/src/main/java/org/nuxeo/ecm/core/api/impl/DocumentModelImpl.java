@@ -662,6 +662,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    public Property getPropertyObject(String schema, String name) {
+        DocumentPart part = getPart(schema);
+        return part == null ? null : part.get(name);
+    }
+
+    @Override
     public void setPathInfo(String parentPath, String name) {
         path = new Path(parentPath == null ? name : parentPath + '/' + name);
         ref = new PathRef(parentPath, name);
@@ -1353,6 +1359,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             parts[i++] = ((DataModelImpl) dm).getDocumentPart();
         }
         return parts;
+    }
+
+    @Override
+    public Collection<Property> getPropertyObjects(String schema) {
+        DocumentPart part = getPart(schema);
+        return part == null ? Collections.emptyList() : part.getChildren();
     }
 
     @Override

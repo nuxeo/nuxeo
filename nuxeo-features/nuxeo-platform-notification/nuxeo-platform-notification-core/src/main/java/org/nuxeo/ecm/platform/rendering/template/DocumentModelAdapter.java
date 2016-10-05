@@ -21,17 +21,12 @@
 
 package org.nuxeo.ecm.platform.rendering.template;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.ObjectWrapper;
@@ -77,31 +72,11 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
             return wrapper.wrap(accessor.getValue(doc));
         }
         // may be a schema name (doc.dublincore.title)
-        DocumentPart part = doc.getPart(key);
-        if (part != null) {
-            // TODO it is easier for now to export the part as a map
-            // may be in future we may want to implement a property template model
-            try {
-                Map<String, Serializable> map = (Map<String, Serializable>) part.getValue();
-                return wrapper.wrap(unPrefixedMap(map));
-            } catch (PropertyException e) {
-                throw new TemplateModelException("Failed to get value for schema root property: " + key, e);
-            }
+        Map<String, Object> properties = doc.getProperties(key);
+        if (properties != null) {
+            return wrapper.wrap(properties);
         }
         return wrapper.wrap(null);
-    }
-
-    private static Map<String, Serializable> unPrefixedMap(Map<String, Serializable> map) {
-        Map<String, Serializable> res = new HashMap<String, Serializable>();
-        for (Entry<String, Serializable> e : map.entrySet()) {
-            String key = e.getKey();
-            int pos = key.indexOf(':');
-            if (pos > -1) {
-                key = key.substring(pos + 1);
-            }
-            res.put(key, e.getValue());
-        }
-        return res;
     }
 
     /**
@@ -131,12 +106,11 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         for (DocumentFieldAccessor accessor : DocumentFieldAccessor.getAcessors()) {
             values.add(accessor.getValue(doc));
         }
-        try {
-            for (DocumentPart part : doc.getParts()) {
-                values.add(unPrefixedMap((Map<String, Serializable>) part.getValue()));
+        for (String schema : doc.getSchemas()) {
+            Map<String, Object> properties = doc.getProperties(schema);
+            if (properties != null) {
+                values.add(properties);
             }
-        } catch (PropertyException e) {
-            throw new TemplateModelException("failed to fetch a document", e);
         }
         return (TemplateCollectionModel) wrapper.wrap(values);
     }
