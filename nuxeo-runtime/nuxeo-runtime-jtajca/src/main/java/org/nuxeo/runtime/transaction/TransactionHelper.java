@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.naming.NamingException;
 import javax.transaction.HeuristicMixedException;
@@ -490,6 +491,39 @@ public class TransactionHelper {
         try {
             runnable.run();
             completedAbruptly = false;
+        } finally {
+            try {
+                if (completedAbruptly) {
+                    setTransactionRollbackOnly();
+                }
+            } finally {
+                if (startTransaction) {
+                    commitOrRollbackTransaction();
+                }
+            }
+        }
+    }
+
+    /**
+     * Calls the given {@link Supplier} in a transactional context. Will not start a new transaction if one already
+     * exists.
+     *
+     * @param supplier the {@link Supplier}
+     * @return the supplier's result
+     * @since 8.4
+     */
+    public static <R> R runInTransaction(Supplier<R> supplier) {
+        boolean startTransaction = !isTransactionActiveOrMarkedRollback();
+        if (startTransaction) {
+            if (!startTransaction()) {
+                throw new TransactionRuntimeException("Cannot start transaction");
+            }
+        }
+        boolean completedAbruptly = true;
+        try {
+            R result = supplier.get();
+            completedAbruptly = false;
+            return result;
         } finally {
             try {
                 if (completedAbruptly) {
