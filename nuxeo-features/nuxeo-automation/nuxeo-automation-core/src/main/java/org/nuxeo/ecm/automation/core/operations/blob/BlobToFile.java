@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -32,7 +33,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -60,7 +60,7 @@ public class BlobToFile {
     }
 
     protected boolean isTargetDirectoryForbidden() {
-        File nuxeoHome = ConfigurationGenerator.retrieveNuxeoHome();
+        File nuxeoHome = Environment.getDefault().getServerHome().getAbsoluteFile();
         return Paths.get(directory)
                     .toAbsolutePath()
                     .normalize()
