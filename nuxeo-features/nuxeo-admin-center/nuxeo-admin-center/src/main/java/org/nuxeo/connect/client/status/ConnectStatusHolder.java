@@ -1,15 +1,17 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
@@ -88,7 +90,7 @@ public class ConnectStatusHolder {
                 try {
                     instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
                 } catch (CanNotReachConnectServer e) {
-                    log.warn("can not reach Nuxeo Online Services", e);
+                    log.warn("Cannot reach Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper("Nuxeo Online Services is not reachable");
                     instanceStatus.canNotReachConnectServer = true;
                 } catch (ConnectClientVersionMismatchError e) {
@@ -98,7 +100,7 @@ public class ConnectStatusHolder {
                     instanceStatus = new SubscriptionStatusWrapper(e.getMessage());
                     instanceStatus.versionMismatch = true;
                 } catch (ConnectSecurityError e) {
-                    log.warn("Can not authenticated against Nuxeo Online Services", e);
+                    log.warn("Cannot authenticate against Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper(e);
                 } catch (ConnectServerError e) {
                     log.error("Error while calling Nuxeo Online Services", e);
