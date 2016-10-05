@@ -17,6 +17,8 @@
 # Contributors:
 #   Julien Carsique
 #
+HERE=$(cd $(dirname $BASH_SOURCE); pwd -P)
+. $HERE/nxutils.sh
 
 # usage: "gitf [git instructions]"
 gitf() {
@@ -30,20 +32,13 @@ gitf() {
 }
 
 gitfa() {
-  if [ -d "addons" ]; then
-    from_root=true
-    gitf "$@"
-    cd addons
-  else
-    from_root=false
-  fi
-  for dir in . $(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1|tr '\n' ' '); do
-    [ $dir = "." ] && $from_root && continue;
-    if [ -e "$dir"/.git ]; then
-      echo "[$dir]"
-      (cd "$dir" ; git "$@")
+  git_args=$@
+  function git_command {
+    if [ -e .git ]; then
+      echo "[$1]"
+      git $git_args
       echo
     fi
-  done
-  $from_root && cd ..
+  }
+  _execute_on_modules "git_command"
 }
