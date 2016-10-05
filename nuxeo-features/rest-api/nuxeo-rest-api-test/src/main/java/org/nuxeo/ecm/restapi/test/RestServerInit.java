@@ -51,6 +51,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class RestServerInit implements RepositoryInit {
 
+    public static final int MAX_NOTE = 5;
+
     /**
      *
      */
@@ -85,7 +87,7 @@ public class RestServerInit implements RepositoryInit {
             doc = session.createDocument(doc);
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < MAX_NOTE; i++) {
             DocumentModel doc = session.createDocumentModel("/folder_1", "note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
             doc.setPropertyValue("dc:source", "Source" + i);
