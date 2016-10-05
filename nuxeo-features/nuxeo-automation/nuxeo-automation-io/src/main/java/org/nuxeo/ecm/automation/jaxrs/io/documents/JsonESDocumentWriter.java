@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -49,13 +50,13 @@ import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
@@ -234,11 +235,13 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     protected static void writeProperties(JsonGenerator jg, DocumentModel doc, String schema, ServletRequest request)
             throws IOException {
-        DocumentPart part = doc.getPart(schema);
-        if (part == null) {
+        Collection<Property> properties = doc.getPropertyObjects(schema);
+        if (properties.isEmpty()) {
             return;
         }
-        String prefix = part.getSchema().getNamespace().prefix;
+
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        String prefix = schemaManager.getSchema(schema).getNamespace().prefix;
         if (prefix == null || prefix.length() == 0) {
             prefix = schema;
         }
@@ -251,7 +254,7 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
                     + "/";
         }
 
-        for (Property p : part.getChildren()) {
+        for (Property p : properties) {
             jg.writeFieldName(prefix + p.getField().getName().getLocalName());
             JSONPropertyWriter.writePropertyValue(jg, p, DateTimeFormat.W3C, blobUrlPrefix);
         }

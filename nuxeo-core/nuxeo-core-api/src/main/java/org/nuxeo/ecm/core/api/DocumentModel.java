@@ -509,6 +509,16 @@ public interface DocumentModel extends Serializable {
     Object getProperty(String schemaName, String name);
 
     /**
+     * Gets a property object from the given schema.
+     *
+     * @param schema the schema name
+     * @param name the property name
+     * @return the property, or {@code null} if no such property exists
+     * @since 8.4
+     */
+    Property getPropertyObject(String schema, String name);
+
+    /**
      * Sets the property value from the given schema.
      * <p>
      * This operation will not fetch the data model if not already fetched
@@ -778,14 +788,33 @@ public interface DocumentModel extends Serializable {
      *
      * @param schema the schema
      * @return the document aprt or null if none exists for that schema
+     * @deprecated since 8.4, use direct {@link Property} getters instead
+     * @see #getPropertyObject
+     * @see #getPropertyObjects
      */
-    // TODO throw an exception if schema is not impl by the doc?
+    @Deprecated
     DocumentPart getPart(String schema);
 
     /**
      * Gets this document's parts.
+     * @deprecated since 8.4, use direct {@link Property} getters instead
+     * @see #getSchemas
+     * @see #getPropertyObject
+     * @see #getPropertyObjects
      */
+    @Deprecated
     DocumentPart[] getParts();
+
+    /**
+     * Gets the {@link Property} objects for the given schema.
+     * <p>
+     * An empty list is returned if the document doesn't have the schema.
+     *
+     * @param schema the schema
+     * @return the properties
+     * @since 8.4
+     */
+    Collection<Property> getPropertyObjects(String schema);
 
     /**
      * Gets a property given a xpath.

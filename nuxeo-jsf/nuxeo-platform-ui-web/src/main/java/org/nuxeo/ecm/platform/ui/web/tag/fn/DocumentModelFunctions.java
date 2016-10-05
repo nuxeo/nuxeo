@@ -21,13 +21,11 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
@@ -332,20 +329,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (doc == null) {
             return false;
         }
-        for (DocumentPart part : doc.getParts()) {
-            if (part.isDirty()) {
-                // check if dirty properties are not empty
-                Iterator<Property> props = part.getDirtyChildren();
-                if (props != null) {
-                    while (props.hasNext()) {
-                        Property prop = props.next();
-                        Serializable value = prop.getValue();
-                        if (value != null) {
-                            if (isPropertyValueDirty(value)) {
-                                return true;
-                            }
-                        }
-                    }
+        for (String schema : doc.getSchemas()) {
+            for (Property property : doc.getPropertyObjects(schema)) {
+                if (property.isDirty() && isPropertyValueDirty(property.getValue())) {
+                    return true;
                 }
             }
         }
@@ -354,6 +341,10 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     @SuppressWarnings("rawtypes")
     protected static boolean isPropertyValueDirty(Object value) {
+        if (value == null) {
+            // common case
+            return false;
+        }
         if (value instanceof String) {
             if (!StringUtils.isBlank((String) value)) {
                 return true;

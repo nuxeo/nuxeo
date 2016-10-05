@@ -60,7 +60,7 @@ public class SchemaTemplate extends PropertyWrapper implements TemplateHashModel
                 return wrapper.wrap(doc.getProperty(schemaName, name));
             } else {
                 // use normal Property lookup in Part
-                return wrap(doc.getPart(schemaName).get(name));
+                return wrap(doc.getPropertyObject(schemaName, name));
             }
         } catch (PropertyException e) {
             throw new TemplateModelException(e);

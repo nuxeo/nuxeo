@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -1052,8 +1051,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             ArrayList<String> searchFields = new ArrayList<String>();
             // searchFields collects the non- null fields inside the SearchDocumentModel
             // some schemas are skipped because they contains ContentView related info
-            for (DocumentPart part : searchDocumentModel.getParts()) {
-                for (Property prop : part.getChildren()) {
+            for (String schema : searchDocumentModel.getSchemas()) {
+                for (Property prop : searchDocumentModel.getPropertyObjects(schema)) {
                     if (prop.getValue() != null
                             && !SKIPPED_SCHEMAS_FOR_SEARCHFIELD.contains(prop.getSchema().getNamespace().prefix)) {
                         if (prop.isList()) {
