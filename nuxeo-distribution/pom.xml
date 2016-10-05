@@ -220,6 +220,20 @@
         <classifier>jar-with-dependencies</classifier>
       </dependency>
 
+      <!-- Provided scope -->
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongo-java-driver</artifactId>
+        <version>${mongo.java.driver.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.novemberain</groupId>
+        <artifactId>quartz-mongodb</artifactId>
+        <version>${quartz.mongodb.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
       <!-- Test scope -->
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>

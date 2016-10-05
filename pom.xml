@@ -217,6 +217,11 @@
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <it.jacoco.destFile>${java.io.tmpdir}/jacoco-it.dump</it.jacoco.destFile>
     <sonar.jacoco.itReportPath>${it.jacoco.destFile}</sonar.jacoco.itReportPath>
+
+    <!-- MongoDB -->
+    <mongo.java.driver.version>3.3.0</mongo.java.driver.version>
+    <quartz.mongodb.version>2.0.0</quartz.mongodb.version>
+
   </properties>
 
   <dependencyManagement>
@@ -2816,7 +2821,7 @@
       <dependency>
         <groupId>com.novemberain</groupId>
         <artifactId>quartz-mongodb</artifactId>
-        <version>2.0.0</version>
+        <version>${quartz.mongodb.version}</version>
         <exclusions>
           <!-- exclude unneeded Clojure -->
           <exclusion>
@@ -4671,7 +4676,7 @@
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
-        <version>3.3.0</version>
+        <version>${mongo.java.driver.version}</version>
       </dependency>
 
       <dependency>

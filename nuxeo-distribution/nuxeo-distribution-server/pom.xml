@@ -618,7 +618,6 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongo-java-driver</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Needed by mongodb-quartz-cluster template -->
