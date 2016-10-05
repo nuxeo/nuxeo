@@ -148,13 +148,13 @@ public class DocumentListTest extends BaseTest {
         // NXQL on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
+        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentId AND\n"
                 + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
                 + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
                 + "        'deleted'");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
-        queryParams.add("parentIdVar", folder.getId());
+        queryParams.add("parentId", folder.getId());
         ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams);
 
         // Then I get document listing as result

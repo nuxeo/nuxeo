@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -60,6 +62,8 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  * @author Anahide Tchertchian
  */
 public class NXQLQueryBuilder {
+
+    private static final Log log = LogFactory.getLog(NXQLQueryBuilder.class);
 
     // @since 5.9.2
     public static final String DEFAULT_SELECT_STATEMENT = "SELECT * FROM Document";
@@ -204,20 +208,20 @@ public class NXQLQueryBuilder {
                 } else if (parameter instanceof List) {
                     replaceStringList(pattern, (List<?>) parameter, quoteParameters, escape, key);
                 } else if (parameter instanceof Boolean) {
-                    pattern = pattern.replaceAll(key, ((Boolean) parameter) ? "1" : "0");
+                    pattern = buildPattern(pattern, key, ((Boolean) parameter) ? "1" : "0");
                 } else if (parameter instanceof Number) {
-                    pattern = pattern.replaceAll(key, parameter.toString());
+                    pattern = buildPattern(pattern, key, parameter.toString());
                 } else if (parameter instanceof Literal) {
                     if (quoteParameters) {
-                        pattern = pattern.replaceAll(key, "'" + parameter.toString() + "'");
+                        pattern = buildPattern(pattern, key, "'" + parameter.toString() + "'");
                     } else {
-                        pattern = pattern.replaceAll(key, ((Literal) parameter).asString());
+                        pattern = buildPattern(pattern, key, ((Literal) parameter).asString());
                     }
                 } else {
                     if (quoteParameters) {
-                        pattern = pattern.replaceAll(key, "'" + parameter + "'");
+                        pattern = buildPattern(pattern, key, "'" + parameter + "'");
                     } else {
-                        pattern = pattern.replaceAll(key, parameter != null ? parameter.toString() : null);
+                        pattern = buildPattern(pattern, key, parameter != null ? parameter.toString() : null);
                     }
                 }
             }
@@ -287,7 +291,8 @@ public class NXQLQueryBuilder {
         for (Object param : listParams) {
             result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
-        return pattern.replaceAll(key, '(' + StringUtils.join(result, ", " + "") + ')');
+
+        return buildPattern(pattern, key, '(' + StringUtils.join(result, ", " + "") + ')');
     }
 
     /**
@@ -715,6 +720,19 @@ public class NXQLQueryBuilder {
      */
     public static String appendClause(String query, String clause) {
         return query + " AND " + clause;
+    }
+
+    private static String buildPattern(String pattern, String key, String replacement) {
+        int index = pattern.indexOf(key);
+        while (index >= 0) {
+            // All keys not prefixed by a letter or a digit has to be replaced, because
+            // It could be part of a schema name
+            if (!Character.isLetterOrDigit(pattern.charAt(index - 1))) {
+                pattern = pattern.substring(0, index) + pattern.substring(index).replaceFirst(key, replacement);
+            }
+            index = pattern.indexOf(key, index + 1);
+        }
+        return pattern;
     }
 
 }
