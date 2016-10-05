@@ -89,6 +89,10 @@ The documentation for the Nuxeo Platform is available in our [Documentation Cent
 * User documentation: [http://doc.nuxeo.com/x/6ICo](http://doc.nuxeo.com/x/6ICo)
 * Core Developer Guide: [http://doc.nuxeo.com/x/B4BH](http://doc.nuxeo.com/x/B4BH)
 
+## Benchmarks
+
+The Nuxeo Platform is [benchmarked continuously](https://benchmarks.nuxeo.com/) to test its massive scalability on several databases.
+
 ## QA results
 
 Follow the status of the Nuxeo Platform continuous integration build on our QA platform: [https://qa.nuxeo.org/jenkins](https://qa.nuxeo.org/jenkins)
