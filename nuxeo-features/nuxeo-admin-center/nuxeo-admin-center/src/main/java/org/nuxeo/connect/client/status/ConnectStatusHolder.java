@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ public class ConnectStatusHolder {
                 try {
                     instanceStatus = new SubscriptionStatusWrapper(getService().getConnector().getConnectStatus());
                 } catch (CanNotReachConnectServer e) {
-                    log.warn("can not reach Nuxeo Online Services", e);
+                    log.warn("Cannot reach Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper("Nuxeo Online Services is not reachable");
                     instanceStatus.canNotReachConnectServer = true;
                 } catch (ConnectClientVersionMismatchError e) {
@@ -100,7 +100,7 @@ public class ConnectStatusHolder {
                     instanceStatus = new SubscriptionStatusWrapper(e.getMessage());
                     instanceStatus.versionMismatch = true;
                 } catch (ConnectSecurityError e) {
-                    log.warn("Can not authenticated against Nuxeo Online Services", e);
+                    log.warn("Cannot authenticate against Nuxeo Online Services", e);
                     instanceStatus = new SubscriptionStatusWrapper(e);
                 } catch (ConnectServerError e) {
                     log.error("Error while calling Nuxeo Online Services", e);
