@@ -152,18 +152,23 @@ video {
   width: 100%;
   height: 100%;
 }
-header {
+
+.header {
   <%=headerStyle%>;
+  text-align: center;
+  margin-bottom: 1.5em;
 }
+
 footer {
-  color: #d6d6d6;
-  font-size: 1em;
+  padding: 1em 1.5em;
+  color: #b6b6b6;
+  font-size: .65em;
+  text-transform: uppercase;
+  letter-spacing: .03em;
   text-align: center;
   <%=footerStyle%>;
 }
-header, footer {
-  padding: 1em 1.5em;
-}
+
 section {
   flex: 1 1 auto;
   display: flex;
@@ -175,9 +180,10 @@ section {
   display: -webkit-box;
   -webkit-box-align: center;
 }
+
 .main {
   flex: 2 1 65%;
-  display: flex;  
+  display: flex;
   align-items: center;
   justify-content: center;
   -webkit-box-flex: 2;
@@ -188,7 +194,7 @@ section {
   flex: 1 1 35%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   -webkit-box-flex: 1;
   -webkit-box-pack: center;
   min-width: 400px;
@@ -213,24 +219,43 @@ form {
   flex-direction: column;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  width: 18em;
+  width: 20em;
   margin: 0;
   padding: 1em;
   background: <%=loginBoxBackgroundStyle%>;
 }
+
 form > * {
   flex: 1 1 auto;
   -webkit-box-flex: 1;
   width: 100%;
 }
+
 .login_input {
-  border: 0;
-  border-radius: 2px;
-  box-shadow: 1px 1px 2px #e0e0e0 inset, 0 1px 2px rgba(0,0,0,0.2);
+  border: 1px solid #979797;
   padding: .7em;
-  margin: 0 0 .4em;
-  font-size:115%;
+  margin: 0 0 .8em;
+  font-size: 110%;
 }
+
+.login_input:hover,
+.login_input:focus {
+  border-color: #2e9cff;
+  box-shadow: 0 0 0 50px white inset, 0 0 3px #2e9cff;
+  outline: none;
+  color: #00adff;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow:0 0 0 50px white inset;
+  -webkit-text-fill-color: #343434;
+}
+
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 50px white inset, 0 0 3px #2e9cff;
+  -webkit-text-fill-color: #00adff;
+}
+
 .login_button {
   border: 0;
   background-color: <%= loginButtonBackgroundColor %>;
@@ -244,9 +269,13 @@ form > * {
   -webkit-appearance: none;
   -webkit-border-radius: 0;
 }
-.login_button:hover {
-  box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.3) inset;
+
+.login_button:hover,
+.login_button:focus {
+  box-shadow: 0 -5px 0 rgba(0, 0, 0, 0.3) inset;
+  outline: none;
 }
+
 /* Other ids */
 .loginOptions {
   border-top: 1px solid #ccc;
@@ -301,7 +330,7 @@ form > * {
 .news-container {
   border: none;
   height: 650px;
-  width: 500px;
+  width: 95%;
   overflow: auto;
   background-color: rgba(255,255,255,0);
 }
@@ -316,9 +345,6 @@ form > * {
     flex-direction: column;
     display: block;
   }
-  header {
-    text-align: center;
-  }
   footer, video, .welcome {
     display: none;
   }
@@ -328,15 +354,33 @@ form > * {
   .news {
     display: none;
   }
+
+  form {
+    margin-top: 2em;
+  }
 }
 
 @media all and (max-width: 500px) {
   form {
     width: auto;
+    margin-top: 0;
+  }
+
+  .header {
+    background-color: #fff;
   }
   .news {
     display: none;
   }
+}
+
+@media all and (min-width: 500px) {
+  form {
+    background-color: #fff;
+    padding: 2.5em;
+    width: 20em;
+  }
+
 }
 -->
 </style>
@@ -353,13 +397,13 @@ form > * {
 <% } %>
 <!-- Locale: <%= selectedLanguage %> -->
 <div class="container">
-  <header>
-    <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
-  </header>
   <section>
     <div class="main">
       <%@ include file="login_welcome.jsp" %>
       <form method="post" action="startup" autocomplete="<%= fieldAutocomplete %>">
+        <div class="header">
+          <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
+        </div>
         <!-- To prevent caching -->
         <%
           response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1
