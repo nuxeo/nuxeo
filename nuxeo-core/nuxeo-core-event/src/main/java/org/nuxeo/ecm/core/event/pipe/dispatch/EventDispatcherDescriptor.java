@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.core.event.pipe.dispatch;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * XMap Descriptor for contributing a new {@link EventBundleDispatcher}
@@ -36,7 +36,7 @@ public class EventDispatcherDescriptor {
     public static final Log log = LogFactory.getLog(EventDispatcherDescriptor.class);
 
     public EventDispatcherDescriptor() {
-    };
+    }
 
     public EventDispatcherDescriptor(String name, Class<? extends EventBundleDispatcher> clazz) {
         this.name = name;
@@ -47,7 +47,7 @@ public class EventDispatcherDescriptor {
     protected String name;
 
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> parameters = new HashMap<String, String>();
+    Map<String, String> parameters = new HashMap<>();
 
     public String getName() {
         return name == null ? clazz.getName() : name;
@@ -74,7 +74,7 @@ public class EventDispatcherDescriptor {
     @Override
     public EventDispatcherDescriptor clone() {
         EventDispatcherDescriptor copy = new EventDispatcherDescriptor(name, clazz);
-        copy.parameters = new HashMap<String, String>(parameters);
+        copy.parameters = new HashMap<>(parameters);
         return copy;
     }
 }

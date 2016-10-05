@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class EventDispatcherRegistry {
 
-    protected List<EventDispatcherDescriptor> contribs = new ArrayList<EventDispatcherDescriptor>();
+    protected List<EventDispatcherDescriptor> contribs = new ArrayList<>();
 
     public void addContrib(EventDispatcherDescriptor contrib) {
         contribs.add(contrib);

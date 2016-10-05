@@ -16,13 +16,9 @@
  */
 package org.nuxeo.ecm.core.event.pipe;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
+
+import java.util.*;
 
 /**
  * Contribution registry for EventPipeDescriptor
@@ -31,7 +27,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class EventPipeRegistry extends ContributionFragmentRegistry<EventPipeDescriptor> {
 
-    protected Map<String, EventPipeDescriptor> reg = new HashMap<String, EventPipeDescriptor>();
+    protected Map<String, EventPipeDescriptor> reg = new HashMap<>();
 
     @Override
     public EventPipeDescriptor clone(EventPipeDescriptor desc) {
@@ -67,7 +63,7 @@ public class EventPipeRegistry extends ContributionFragmentRegistry<EventPipeDes
     }
 
     public List<EventPipeDescriptor> getPipes() {
-        return new ArrayList<EventPipeDescriptor>(reg.values());
+        return new ArrayList<>(reg.values());
     }
 
 

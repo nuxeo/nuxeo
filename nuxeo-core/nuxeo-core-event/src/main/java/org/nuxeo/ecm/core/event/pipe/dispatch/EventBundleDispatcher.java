@@ -16,12 +16,12 @@
  */
 package org.nuxeo.ecm.core.event.pipe.dispatch;
 
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for dispatching {@link EventBundle} between different {@link EventBundlePipe}
@@ -35,14 +35,14 @@ public interface EventBundleDispatcher {
      *
      * @param pipeDescriptors descriptors of the underlying {@link EventBundlePipe}s
      */
-    public void init(List<EventPipeDescriptor> pipeDescriptors, Map<String, String> parameters);
+    void init(List<EventPipeDescriptor> pipeDescriptors, Map<String, String> parameters);
 
     /**
      * Forward an {@link EventBundle} to the underlying {@link EventBundlePipe}s
      *
      * @param events
      */
-    public void sendEventBundle(EventBundle events);
+    void sendEventBundle(EventBundle events);
 
     /**
      * Wait until the end of processing
@@ -51,13 +51,13 @@ public interface EventBundleDispatcher {
      * @return
      * @throws InterruptedException
      */
-    public boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
+    boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
 
     /**
      * Shutdown callback
      *
      * @throws InterruptedException
      */
-    public void shutdown() throws InterruptedException;
+    void shutdown() throws InterruptedException;
 
 }

@@ -16,14 +16,13 @@
  */
 package org.nuxeo.ecm.core.event.pipe.dispatch;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.EventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Basic implementation that simply forwards {@link EventBundle} to all underlying {@link EventBundlePipe}
@@ -41,13 +40,7 @@ public class SimpleEventBundlePipeDispatcher implements EventBundleDispatcher {
 
         this.parameters = parameters;
 
-        pipeDescriptors.sort(new Comparator<EventPipeDescriptor>() {
-            @Override
-            public int compare(EventPipeDescriptor o1, EventPipeDescriptor o2) {
-
-                return o1.getPriority().compareTo(o2.getPriority());
-            }
-        });
+        pipeDescriptors.sort((o1, o2) -> o1.getPriority().compareTo(o2.getPriority()));
 
         for (EventPipeDescriptor descriptor : pipeDescriptors) {
             EventBundlePipe pipe = descriptor.getInstance();
