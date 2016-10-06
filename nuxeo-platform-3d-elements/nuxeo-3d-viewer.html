@@ -242,19 +242,29 @@ Polymer({
   },
 
   _setupLights: function() {
-    var ambient = new THREE.AmbientLight(0xffffff, 0.7);
+    var ambient = new THREE.AmbientLight(0xffffff, 0.5);
     this.root.add(ambient);
 
-    var spot1 = new THREE.SpotLight(0xffffff, 0.5);
-    spot1.position.set(0, 5, 0);
-    spot1.target.position.set(0, 0, 0);
-    spot1.shadow.camera.far = 10;
-    spot1.castShadow = true;
-    spot1.shadow.darkness = 0.001;
-    spot1.shadow.bias = 0.01;
-    spot1.shadow.mapSize.width = 1024;
-    spot1.shadow.mapSize.height = 1024;
-    this.root.add(spot1);
+    var bottom = new THREE.DirectionalLight(0xffffff, 0.3);
+    bottom.position.set(0, -5, 0);
+    bottom.target.position.set(0, 0, 0);
+    this.root.add(bottom);
+
+    var top = new THREE.DirectionalLight(0xffffff, 0.3);
+    top.position.set(0, 5, 0);
+    top.target.position.set(0, 0, 0);
+    this.root.add(top);
+
+    var spot = new THREE.SpotLight(0xffffff, 0.5);
+    spot.position.set(0, 5, 0);
+    spot.target.position.set(0, 0, 0);
+    spot.shadow.camera.far = 10;
+    spot.castShadow = true;
+    spot.shadow.darkness = 0.001;
+    spot.shadow.bias = 0.01;
+    spot.shadow.mapSize.width = 1024;
+    spot.shadow.mapSize.height = 1024;
+    this.root.add(spot);
   },
 
   _setupRenderer: function() {
