@@ -135,33 +135,43 @@ public class DefaultMonitorComponent extends DefaultComponent {
         transactionMonitor = null;
     }
 
-    protected static ObjectInstance bind(Object managed) {
+    public static class ServerInstance {
+        public final MBeanServer server;
+        public final ObjectName name;
+
+        ServerInstance(MBeanServer server, ObjectName name) {
+            this.server = server;
+            this.name = name;
+        }
+    }
+
+    protected static ServerInstance bind(Object managed) {
         return bind(managed, "default");
     }
 
-    protected static ObjectInstance bind(Class<?> itf, Object managed) {
+    protected static ServerInstance bind(Class<?> itf, Object managed) {
         return bind(itf, managed, "default");
     }
 
-    protected static ObjectInstance bind(Object managed, String name) {
+    protected static ServerInstance bind(Object managed, String name) {
         return bind(managed.getClass().getInterfaces()[0], managed, name);
     }
 
-    protected static ObjectInstance bind(Class<?> itf, Object managed, String name) {
+    protected static ServerInstance bind(Class<?> itf, Object managed, String name) {
         MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         name = Defaults.instance.name(itf, name);
         try {
-            return mbs.registerMBean(managed, new ObjectName(name));
+            ObjectInstance oi = mbs.registerMBean(managed, new ObjectName(name));
+            return new ServerInstance(mbs, oi.getObjectName());
         } catch (InstanceAlreadyExistsException | MBeanRegistrationException | NotCompliantMBeanException
                 | MalformedObjectNameException e) {
             throw new UnsupportedOperationException("Cannot bind " + managed + " on " + name, e);
         }
     }
 
-    protected static void unbind(ObjectInstance instance) {
-        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
+    protected static void unbind(ServerInstance instance) {
         try {
-            mbs.unregisterMBean(instance.getObjectName());
+            instance.server.unregisterMBean(instance.name);
         } catch (MBeanRegistrationException | InstanceNotFoundException e) {
             LogFactory.getLog(DefaultMonitorComponent.class).error("Cannot unbind " + instance, e);
         }

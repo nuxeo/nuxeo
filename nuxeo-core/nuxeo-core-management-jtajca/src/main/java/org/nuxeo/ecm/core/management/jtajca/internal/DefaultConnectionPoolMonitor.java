@@ -18,11 +18,12 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import javax.management.ObjectInstance;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
+import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.ServerInstance;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.metrics.MetricsService;
+
 import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
@@ -44,7 +45,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
         this.cm = cm;
     }
 
-    protected ObjectInstance self;
+    protected ServerInstance self;
 
     public NuxeoConnectionManager getManager() {
         return cm;
@@ -54,11 +55,11 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
     public void install() {
         self = DefaultMonitorComponent.bind(this, name);
         registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "count"),
-                new JmxAttributeGauge(self.getObjectName(), "ConnectionCount"));
+                new JmxAttributeGauge(self.name, "ConnectionCount"));
         registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "idle"),
-                new JmxAttributeGauge(self.getObjectName(), "IdleConnectionCount"));
+                new JmxAttributeGauge(self.name, "IdleConnectionCount"));
         registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "killed"),
-                new JmxAttributeGauge(self.getObjectName(), "KilledActiveConnectionCount"));
+                new JmxAttributeGauge(self.name, "KilledActiveConnectionCount"));
     }
 
     @Override

@@ -22,12 +22,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.management.ObjectInstance;
-
 import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
+import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.ServerInstance;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -72,13 +71,13 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
         return values;
     }
 
-    protected ObjectInstance self;
+    protected ServerInstance self;
 
     @Override
     public void install() {
         self = DefaultMonitorComponent.bind(CoreSessionMonitor.class, this);
         registry.register(MetricRegistry.name("nuxeo.repositories", "sessions"),
-                new JmxAttributeGauge(self.getObjectName(), "Count"));
+                new JmxAttributeGauge(self.name, "Count"));
     }
 
     @Override

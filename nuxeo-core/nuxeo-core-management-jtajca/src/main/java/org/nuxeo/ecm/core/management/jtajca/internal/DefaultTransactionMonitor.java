@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.ObjectInstance;
 import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -43,6 +42,7 @@ import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
+import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.ServerInstance;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -79,7 +79,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor, Tra
         }
     }
 
-    protected ObjectInstance self;
+    protected ServerInstance self;
 
     protected void bindManagementInterface() {
         self = DefaultMonitorComponent.bind(TransactionMonitor.class, this);
