@@ -151,6 +151,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             doc.putContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING, true);
         }
 
+        beforeCreateDocument(doc);
         doc = session.createDocument(doc);
 
         // load into the document the system properties, document needs to exist
@@ -163,6 +164,13 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     /**
+     * @since 8.4
+     */
+    protected void beforeCreateDocument(DocumentModel doc) {
+        // Empty default implementation
+    }
+
+    /**
      * Updates an existing document.
      */
     protected DocumentModel updateDocument(ExportedDocument xdoc, DocumentModel doc) {
@@ -171,12 +179,20 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
 
         loadFacetsInfo(doc, xdoc.getDocument());
 
+        beforeSaveDocument(doc);
         doc = session.saveDocument(doc);
 
         unsavedDocuments += 1;
         saveIfNeeded();
 
         return doc;
+    }
+
+    /**
+     * @since 8.4
+     */
+    protected void beforeSaveDocument(DocumentModel doc) {
+        // Empty default implementation
     }
 
     public int getSaveInterval() {
