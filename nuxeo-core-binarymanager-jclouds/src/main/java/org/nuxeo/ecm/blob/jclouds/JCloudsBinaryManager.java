@@ -76,6 +76,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
     public static final String BLOBSTORE_LOCATION_KEY = "jclouds.blobstore.location";
 
+    public static final String BLOBSTORE_ENDPOINT_KEY = "jclouds.blobstore.endpoint";
+
     public static final String DEFAULT_LOCATION = null;
 
     public static final String BLOBSTORE_IDENTITY_KEY = "jclouds.blobstore.identity";
@@ -89,6 +91,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
     protected String container;
+
+    protected String endpoint;
 
     protected String storeProvider;
 
@@ -108,6 +112,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         if (isBlank(container)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_MAP_NAME_KEY);
         }
+
+        endpoint = Framework.getProperty(BLOBSTORE_ENDPOINT_KEY);
 
         String storeLocation = Framework.getProperty(BLOBSTORE_LOCATION_KEY);
         if (isBlank(storeLocation)) {
@@ -152,7 +158,13 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             });
         }
 
-        BlobStoreContext context = ContextBuilder.newBuilder(storeProvider).credentials(storeIdentity, storeSecret).buildView(
+        ContextBuilder builder = ContextBuilder.newBuilder(storeProvider).credentials(storeIdentity, storeSecret);
+
+        if (isNotBlank(endpoint)) {
+            builder.endpoint(endpoint);
+        }
+
+        BlobStoreContext context = builder.buildView(
                 BlobStoreContext.class);
 
         // Try to create container if it doesn't exist
