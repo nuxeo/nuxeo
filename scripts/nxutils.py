@@ -113,23 +113,25 @@ class Repository(object):
         if not self.modules and self.is_nuxeoecm:
             self.modules = self.retrieve_modules(self.basedir)
         # First level
+        addons = ["addons", "addons-core"]
         for module in self.modules:
             function(module)
-            # Second level - addons in first level of nuxeo's module and regular addons
-            if not self.is_online:
-                self.url_pattern = self.url_pattern.replace("module", "%s/module" % module)
-            os.chdir(module)
-            if not module in self.sub_modules and self.is_nuxeoecm:
-                module_dir = os.path.join(self.basedir, module)
-                self.sub_modules[module] = self.retrieve_modules(module_dir)
-                # Handle optionals
-                if with_optionals:
-                    self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir, "pom-optionals.xml")
-            for sub_module in self.sub_modules[module]:
-                function(sub_module)
-            os.chdir(self.basedir)
-            if not self.is_online:
-                self.url_pattern = self.url_pattern.replace("%s/module" % module, "module")
+            # Second level - addons
+            if module in addons:
+                if not self.is_online:
+                    self.url_pattern = self.url_pattern.replace("module", "%s/module" % module)
+                os.chdir(module)
+                if not module in self.sub_modules and self.is_nuxeoecm:
+                    module_dir = os.path.join(self.basedir, module)
+                    self.sub_modules[module] = self.retrieve_modules(module_dir)
+                    # Handle optionals
+                    if with_optionals:
+                        self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir, "pom-optionals.xml")
+                for sub_module in self.sub_modules[module]:
+                    function(sub_module)
+                os.chdir(self.basedir)
+                if not self.is_online:
+                    self.url_pattern = self.url_pattern.replace("%s/module" % module, "module")
         os.chdir(cwd)
 
     def retrieve_modules(self, project_dir, pom_name = "pom.xml"):

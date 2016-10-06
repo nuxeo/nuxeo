@@ -37,8 +37,9 @@ function _execute_on_modules {
 
   # Execute on current directory
   $f "."
-  # Loop on first level
-  for dir in $(_retrieve_modules); do
+  # Loop on addons
+  addons="addons addons-core"
+  for dir in ${addons}; do
     (
     cd $dir
     $f $dir

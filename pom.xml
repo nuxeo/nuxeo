@@ -6343,6 +6343,7 @@
     <profile>
       <id>addons</id>
       <modules>
+        <module>addons-core</module>
         <module>addons</module>
       </modules>
     </profile>
