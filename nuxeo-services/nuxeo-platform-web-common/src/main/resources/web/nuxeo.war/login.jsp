@@ -46,7 +46,7 @@ if (cookies != null) {
 }
 String selectedLanguage = null;
 if (localeCookie != null) {
-    selectedLanguage = localeCookie.getValue();
+  selectedLanguage = localeCookie.getValue();
 }
 
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
@@ -459,7 +459,7 @@ input:-webkit-autofill:focus {
         <input type="hidden" name="form_submitted_marker" id="form_submitted_marker" />
         <input class="login_button" type="submit" name="Submit"
           value="<fmt:message bundle="${messages}" key="label.login.logIn" />" />
-		<% if (useExternalProviders) {%>
+        <% if (useExternalProviders) {%>
         <div class="loginOptions">
           <p><fmt:message bundle="${messages}" key="label.login.loginWithAnotherId" /></p>
           <div class="idList">
