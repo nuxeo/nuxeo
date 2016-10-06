@@ -23,10 +23,24 @@
   </properties>
 
   <modules>
+    <module>nuxeo-core-storage-marklogic</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
+      <!-- MarkLogic -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-marklogic</artifactId>
+        <version>${nuxeo.addons.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-marklogic</artifactId>
+        <version>${nuxeo.addons.core.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
