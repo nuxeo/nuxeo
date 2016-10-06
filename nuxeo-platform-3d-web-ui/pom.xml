@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-3d-web-ui</artifactId>
-  <version>8.4-SNAPSHOT</version>
+  <description>Nuxeo Platform 3D Web UI</description>
 
   <build>
     <plugins>
@@ -24,7 +24,7 @@
             <phase>process-resources</phase>
             <configuration>
               <target>
-                <ant antfile="${basedir}/build.xml" dir="${basedir}"></ant>
+                <ant antfile="${basedir}/build.xml" dir="${basedir}"/>
               </target>
             </configuration>
             <goals>
