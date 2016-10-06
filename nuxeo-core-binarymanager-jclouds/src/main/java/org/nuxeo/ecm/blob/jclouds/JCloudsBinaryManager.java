@@ -164,8 +164,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             builder.endpoint(endpoint);
         }
 
-        BlobStoreContext context = builder.buildView(
-                BlobStoreContext.class);
+        BlobStoreContext context = builder.buildView(BlobStoreContext.class);
 
         // Try to create container if it doesn't exist
         blobStore = context.getBlobStore();
@@ -173,8 +172,10 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         if (storeLocation == null) {
             created = blobStore.createContainerInLocation(null, container);
         } else {
-            Location location = new LocationBuilder().scope(LocationScope.REGION).id(storeLocation).description(
-                    storeLocation).build();
+            Location location = new LocationBuilder().scope(LocationScope.REGION)
+                                                     .id(storeLocation)
+                                                     .description(storeLocation)
+                                                     .build();
             created = blobStore.createContainerInLocation(location, container);
         }
         if (created) {
@@ -211,8 +212,11 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             if (currentObject == null) {
                 // no data, store the blob
                 ByteSource byteSource = Files.asByteSource(file);
-                Blob remoteBlob = blobStore.blobBuilder(digest).payload(byteSource).contentLength(byteSource.size()).contentMD5(
-                        byteSource.hash(Hashing.md5())).build();
+                Blob remoteBlob = blobStore.blobBuilder(digest)
+                                           .payload(byteSource)
+                                           .contentLength(byteSource.size())
+                                           .contentMD5(byteSource.hash(Hashing.md5()))
+                                           .build();
                 try {
                     blobStore.putBlob(container, remoteBlob);
                 } catch (Exception e) {
@@ -234,7 +238,9 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                     throw new IOException("Unable to validate stored binary", e);
                 }
                 if (checkBlob == null
-                        || remoteBlob.getMetadata().getContentMetadata().getContentLength() != checkBlob.getMetadata().getContentMetadata().getContentLength()) {
+                        || remoteBlob.getMetadata().getContentMetadata().getContentLength() != checkBlob.getMetadata()
+                                                                                                        .getContentMetadata()
+                                                                                                        .getContentLength()) {
                     if (checkBlob != null) {
                         // Remote blob is incomplete - remove it
                         try {
@@ -336,7 +342,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             Set<String> unmarked = new HashSet<>();
             ListContainerOptions options = ListContainerOptions.NONE;
             for (;;) {
-                PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container, options);
+                PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container,
+                        options);
                 for (StorageMetadata metadata : metadatas) {
                     String digest = metadata.getName();
                     if (!isMD5(digest)) {
