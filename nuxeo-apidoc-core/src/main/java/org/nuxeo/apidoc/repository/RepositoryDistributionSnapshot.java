@@ -295,8 +295,10 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public ServiceInfo getService(String id) {
+        // Select only not overriden ticket and old imported NXService without overriden value
         String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc()) + " AND " + ServiceInfo.PROP_CLASS_NAME
-                + " = " + NXQL.escapeString(id) + " AND " + ServiceInfo.PROP_OVERRIDEN + " = 0";
+                + " = " + NXQL.escapeString(id) + " AND (" + ServiceInfo.PROP_OVERRIDEN + " = 0 OR "
+                + ServiceInfo.PROP_OVERRIDEN + " is NULL)";
         DocumentModelList docs = getCoreSession().query(query);
         if (docs.size() > 1) {
             throw new AssertionError("Multiple services found for " + id);
