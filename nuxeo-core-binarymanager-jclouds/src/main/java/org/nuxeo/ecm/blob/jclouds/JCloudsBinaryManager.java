@@ -237,10 +237,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
                     }
                     throw new IOException("Unable to validate stored binary", e);
                 }
-                if (checkBlob == null
-                        || remoteBlob.getMetadata().getContentMetadata().getContentLength() != checkBlob.getMetadata()
-                                                                                                        .getContentMetadata()
-                                                                                                        .getContentLength()) {
+                if (checkBlob == null || !remoteBlob.getMetadata().getContentMetadata().getContentLength().equals(
+                        checkBlob.getMetadata().getContentMetadata().getContentLength())) {
                     if (checkBlob != null) {
                         // Remote blob is incomplete - remove it
                         try {
