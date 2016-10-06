@@ -148,6 +148,7 @@ class Repository(object):
                 if not m:
                     continue
                 modules.append(m.group(1))
+            modules = sorted(set(modules))
         return modules
 
     def git_pull(self, module, version, fallback_branch=None):
