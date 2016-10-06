@@ -194,6 +194,7 @@
         <dependency>
           <groupId>org.nuxeo.ecm.core</groupId>
           <artifactId>nuxeo-core-storage-marklogic</artifactId>
+          <type>test-jar</type>
           <scope>test</scope>
         </dependency>
       </dependencies>
