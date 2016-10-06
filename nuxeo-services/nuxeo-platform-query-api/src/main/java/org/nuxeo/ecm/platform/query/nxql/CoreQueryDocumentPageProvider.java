@@ -233,7 +233,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             for (QuickFilter quickFilter : quickFilters) {
                 String clause = quickFilter.getClause();
                 if (!quickFiltersClause.isEmpty() && clause != null) {
-                    quickFiltersClause += NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
+                    quickFiltersClause = NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
                 } else {
                     quickFiltersClause = clause != null ? clause : "";
                 }

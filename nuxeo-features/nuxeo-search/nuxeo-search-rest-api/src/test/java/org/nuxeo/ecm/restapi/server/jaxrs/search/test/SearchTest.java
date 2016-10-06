@@ -170,6 +170,22 @@ public class SearchTest extends BaseTest {
     }
 
     @Test
+    public void iCanPerformPageProviderWithQuickFilter() throws IOException {
+        // Given a repository, when I perform a pageprovider on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("quickFilters", "testQF,testQF2");
+        queryParams.add("parentIdVar", folder.getId());
+        ClientResponse response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER"),
+                queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    @Test
     public void iCanPerformPageProviderWithNamedParametersInvalid() throws Exception {
         ClientResponse response = getResponse(RequestType.GET,
                 getSearchPageProviderExecutePath("namedParamProviderInvalid"));
