@@ -358,6 +358,7 @@ Polymer({
     this._objectComposition(object);
     this.scene.add(object);
     this.$.progress.hidden = true;
+    this._animate();
   },
 
   _objectComposition: function(object) {
