@@ -50,10 +50,16 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.reload.ReloadService;
+import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * Runtime Component that also provides the POJO implementation of the {@link ConversionService}.
@@ -78,11 +84,46 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     protected Thread gcThread;
 
+    protected GCTask gcTask;
+
+    ReloadListener reloadListener;
+
+    class ReloadListener implements EventListener {
+
+
+        @Override
+        public void handleEvent(Event event) {
+            if (ReloadService.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
+                startGC();
+            } else if (ReloadService.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
+                endGC();
+            }
+        }
+
+        @Override
+        public boolean aboutToHandleEvent(Event event) {
+            return true;
+        }
+    }
     @Override
     public void activate(ComponentContext context) {
         converterDescriptors.clear();
         translationHelper.clear();
         self = this;
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
+                    return;
+                }
+                Framework.removeListener(this);
+                Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
+                endGC();
+            }
+        });
+        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC,
+                reloadListener = new ReloadListener());
     }
 
     @Override
@@ -396,7 +437,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     protected void startGC() {
         log.debug("CasheCGTaskActivator activated starting GC thread");
-        gcThread = new Thread(new GCTask(), "Nuxeo-Convert-GC");
+        gcTask = new GCTask();
+        gcThread = new Thread(gcTask, "Nuxeo-Convert-GC");
         gcThread.setDaemon(true);
         gcThread.start();
         log.debug("GC Thread started");
@@ -404,7 +446,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     public void endGC() {
+        if (gcTask == null) {
+            return;
+        }
         log.debug("Stopping GC Thread");
+        gcTask.GCEnabled = false;
+        gcTask = null;
         gcThread.interrupt();
         gcThread = null;
     }
