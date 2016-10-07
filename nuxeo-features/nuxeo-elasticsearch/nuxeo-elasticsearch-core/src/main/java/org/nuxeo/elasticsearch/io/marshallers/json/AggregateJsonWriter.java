@@ -116,17 +116,19 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         for (Bucket bucket : buckets) {
             jg.writeStartObject();
 
+            jg.writeObjectField("key", bucket.getKey());
+
             Property prop = PropertyFactory.createProperty(null, field, Property.NONE);
             if (prop.isList()) {
                 ListType t = (ListType) prop.getType();
                 t.getField();
                 prop = PropertyFactory.createProperty(null, t.getField(), Property.NONE);
             }
-            log.warn(String.format("Writing %s for field %s resolved to %s", fieldName, field.getName().toString(),
+            log.debug(String.format("Writing %s for field %s resolved to %s", fieldName, field.getName().toString(),
                     prop.getName()));
             prop.setValue(bucket.getKey());
 
-            writeEntityField("key", prop, jg);
+            writeEntityField("fetchedKey", prop, jg);
             jg.writeNumberField("docCount", bucket.getDocCount());
             jg.writeEndObject();
 

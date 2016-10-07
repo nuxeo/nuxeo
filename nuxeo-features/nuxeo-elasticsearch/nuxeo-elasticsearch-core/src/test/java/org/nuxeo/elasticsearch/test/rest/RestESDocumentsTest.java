@@ -19,7 +19,6 @@
 package org.nuxeo.elasticsearch.test.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -218,9 +217,9 @@ public class RestESDocumentsTest extends BaseTest {
         assertEquals(RestServerInit.MAX_NOTE, docCount);
         // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
         String keyText = bucket.get("key").getTextValue();
-        assertNotEquals("europe/France", keyText);
-        String keyIdText = bucket.get("key").get("properties").get("id").getTextValue();
-        assertEquals("France", keyIdText);
+        assertEquals("europe/France", keyText);
+        String fetchedkeyIdText = bucket.get("fetchedKey").get("properties").get("id").getTextValue();
+        assertEquals("France", fetchedkeyIdText);
 
         // And verify contributed aggregates
         assertEquals("terms", node.get("aggregations").get("subjects").get("type").getTextValue());
@@ -229,8 +228,8 @@ public class RestESDocumentsTest extends BaseTest {
         assertEquals(RestServerInit.MAX_NOTE, docCount);
         // Check that the key of the bucket which is a l10nsubjects vocabulary entry has been fetch
         keyText = firstBucket.get("key").getTextValue();
-        assertNotEquals("art/cinema", keyText);
-        keyIdText = firstBucket.get("key").get("properties").get("id").getTextValue();
-        assertEquals("cinema", keyIdText);
+        assertEquals("art/cinema", keyText);
+        fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").getTextValue();
+        assertEquals("cinema", fetchedkeyIdText);
     }
 }
