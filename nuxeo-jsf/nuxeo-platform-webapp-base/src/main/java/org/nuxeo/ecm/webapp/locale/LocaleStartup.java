@@ -126,15 +126,17 @@ public class LocaleStartup implements Serializable {
         // check if locale is accepted for setup
         boolean set = false;
         if (ctx != null) {
-            Iterator<Locale> it = ctx.getApplication().getSupportedLocales();
-            while (it.hasNext()) {
-                Locale current = it.next();
-                if (current.equals(locale)) {
-                    localeSelector.setLocale(locale);
-                    localeSelector.setCookieEnabled(true);
-                    localeSelector.select();
-                    set = true;
-                    break;
+            Locale jsfDefault = ctx.getApplication().getDefaultLocale();
+            if (jsfDefault != null && jsfDefault.getLanguage().equals(locale)) {
+                set = true;
+            } else {
+                Iterator<Locale> it = ctx.getApplication().getSupportedLocales();
+                while (it.hasNext()) {
+                    Locale current = it.next();
+                    if (current.equals(locale)) {
+                        set = true;
+                        break;
+                    }
                 }
             }
         }
@@ -143,6 +145,10 @@ public class LocaleStartup implements Serializable {
                 log.debug(
                         "Locale was not set to '" + locale + "' as it could not be validated as a supported language.");
             }
+        } else {
+            localeSelector.setLocale(locale);
+            localeSelector.setCookieEnabled(true);
+            localeSelector.select();
         }
     }
 
