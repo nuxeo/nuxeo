@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.apache.geronimo.connector.outbound.GeronimoConnectionEventListener;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.assertj.core.api.Assertions;
 import org.h2.tools.Server;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.datasource.TestValidateConnection.CaptureValidationErrors;
 import org.nuxeo.runtime.datasource.TestValidateConnection.ReportException.CaughtSite;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoValidationSupport;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -119,6 +121,7 @@ public class TestValidateConnection {
         } finally {
             server.stop();
         }
+        Assertions.assertThat(NuxeoContainer.getConnectionManager(jdbcName).listActive()).hasSize(0);
     }
 
     static class ReportException extends Exception {
