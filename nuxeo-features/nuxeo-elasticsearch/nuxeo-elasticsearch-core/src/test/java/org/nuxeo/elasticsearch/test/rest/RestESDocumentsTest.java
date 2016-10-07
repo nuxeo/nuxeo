@@ -40,6 +40,7 @@ import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOpe
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.io.marshallers.json.AggregateJsonWriter;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -61,6 +63,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -72,12 +75,13 @@ import com.sun.jersey.api.client.ClientResponse;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class })
 @Jetty(port = 18090)
-@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
+@Deploy({"org.nuxeo.ecm.platform.contentview.jsf", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.core.io"})
 @LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:contentviews-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:test-directory-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
@@ -88,6 +92,9 @@ public class RestESDocumentsTest extends BaseTest {
 
     @Inject
     AutomationService automationService;
+
+    @Inject
+    private SchemaManager schemaManager;
 
     @Test
     public void iCanBrowseTheRepoByItsId() throws Exception {
@@ -161,12 +168,68 @@ public class RestESDocumentsTest extends BaseTest {
         namedParameters.put("defaults:dc_nature_agg", "[\"article\"]");
         Properties namedProperties = new Properties(namedParameters);
         params.put("namedParameters", namedProperties);
-
         PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) automationService.run(ctx,
                 DocumentPageProviderOperation.ID, params);
 
         // test page size
         assertEquals(20, result.getPageSize());
         assertEquals(11, result.size());
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void iCanQueryESQLPageProviderAndFetchAggregateKeys() throws Exception {
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("fetch." + AggregateJsonWriter.ENTITY_TYPE, AggregateJsonWriter.FETCH_KEY);
+        for (int i = 0; i < RestServerInit.MAX_NOTE; i++) {
+            DocumentModel doc = RestServerInit.getNote(i, session);
+            doc.setPropertyValue("dc:coverage", "europe/France");
+            doc.setPropertyValue("dc:subjects", new String[] { "art/cinema" });
+            doc = session.saveDocument(doc);
+        }
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        // wait for async jobs
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
+        esa.refresh();
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        // Given a repository, when I perform a ESQL pageprovider on it
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_3", null, null, null,
+                headers);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+        // And verify contributed aggregates
+        assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+        JsonNode bucket = node.get("aggregations").get("coverage").get("buckets").get(0);
+        int docCount = bucket.get("docCount").getIntValue();
+        assertEquals(RestServerInit.MAX_NOTE, docCount);
+        // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
+        String keyText = bucket.get("key").getTextValue();
+        assertEquals("europe/France", keyText);
+        String fetchedkeyIdText = bucket.get("fetchedKey").get("properties").get("id").getTextValue();
+        assertEquals("France", fetchedkeyIdText);
+
+        // And verify contributed aggregates
+        assertEquals("terms", node.get("aggregations").get("subjects").get("type").getTextValue());
+        JsonNode firstBucket = node.get("aggregations").get("subjects").get("buckets").get(0);
+        docCount = firstBucket.get("docCount").getIntValue();
+        assertEquals(RestServerInit.MAX_NOTE, docCount);
+        // Check that the key of the bucket which is a l10nsubjects vocabulary entry has been fetch
+        keyText = firstBucket.get("key").getTextValue();
+        assertEquals("art/cinema", keyText);
+        fetchedkeyIdText = firstBucket.get("fetchedKey").get("properties").get("id").getTextValue();
+        assertEquals("cinema", fetchedkeyIdText);
     }
 }

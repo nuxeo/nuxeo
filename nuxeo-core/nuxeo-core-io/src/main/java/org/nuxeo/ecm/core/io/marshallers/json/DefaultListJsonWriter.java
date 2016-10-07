@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.jackson.JsonGenerator;
@@ -151,8 +152,13 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
             if (paginable.hasAggregateSupport()) {
                 Map<String, Aggregate<? extends Bucket>> aggregates = paginable.getAggregates();
                 if (aggregates != null && !paginable.getAggregates().isEmpty()) {
-                    jg.writeObjectField("aggregations", paginable.getAggregates());
+                    jg.writeObjectFieldStart("aggregations");
+                    for (Entry<String, Aggregate<? extends Bucket>> e : aggregates.entrySet()) {
+                        writeEntityField(e.getKey(), e.getValue(), jg);
+                    }
+                    jg.writeEndObject();
                 }
+
             }
         }
     }

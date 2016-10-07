@@ -1,0 +1,3 @@
+id, label_en, label_fr, parent, obsolete
+"art","Art","Art","","0"
+"cinema","Cinema","Cinéma","art","0"
