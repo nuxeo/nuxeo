@@ -202,18 +202,6 @@
         </snapshotRepository>
       </distributionManagement>
     </profile>
-    <profile>
-      <id>addons</id>
-      <modules>
-        <module>nuxeo-core-storage-marklogic</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>marklogic</id>
-      <modules>
-        <module>nuxeo-core-storage-marklogic</module>
-      </modules>
-    </profile>
   </profiles>
 
 </project>

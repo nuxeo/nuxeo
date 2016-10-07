@@ -189,8 +189,27 @@
 
   <profiles>
     <profile>
+      <id>addons</id>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>org.nuxeo</groupId>
+            <artifactId>nuxeo-addons-core-parent</artifactId>
+            <version>${nuxeo.addons.core.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+    <profile>
       <id>marklogic</id>
       <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.core</groupId>
+          <artifactId>nuxeo-core-storage-marklogic</artifactId>
+          <scope>test</scope>
+        </dependency>
         <dependency>
           <groupId>org.nuxeo.ecm.core</groupId>
           <artifactId>nuxeo-core-storage-marklogic</artifactId>
