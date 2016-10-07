@@ -41,6 +41,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
 
+import static org.nuxeo.ecm.csv.CSVImporterOptions.ImportMode.CREATE;
+import static org.nuxeo.ecm.csv.CSVImporterOptions.ImportMode.IMPORT;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -66,7 +69,10 @@ public class CSVImportActions implements Serializable {
 
     protected String csvImportId;
 
-    protected ImportMode importMode = CSVImporterOptions.ImportMode.CREATE;
+    /**
+     * @since 8.4
+     */
+    protected Boolean useImportMode = false;
 
     public boolean getNotifyUserByEmail() {
         return notifyUserByEmail;
@@ -76,12 +82,16 @@ public class CSVImportActions implements Serializable {
         this.notifyUserByEmail = notifyUserByEmail;
     }
 
-    public ImportMode getImportMode() {
-        return importMode;
+    public Boolean getUseImportMode() {
+        return useImportMode;
     }
 
-    public void setImportMode(ImportMode importMode) {
-        this.importMode = importMode;
+    public void setUseImportMode(Boolean importMode) {
+        this.useImportMode = importMode;
+    }
+
+    protected ImportMode getImportMode() {
+        return useImportMode ? IMPORT : CREATE;
     }
 
     public void uploadListener(FileUploadEvent event) throws Exception {
@@ -96,7 +106,8 @@ public class CSVImportActions implements Serializable {
     public void importCSVFile() {
         if (csvFile != null) {
             CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail)
-                    .importMode(importMode).build();
+                                                                         .importMode(getImportMode())
+                                                                         .build();
             CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
             csvImportId = csvImporter.launchImport(documentManager,
                     navigationContext.getCurrentDocument().getPathAsString(), csvFile, csvFileName, options);

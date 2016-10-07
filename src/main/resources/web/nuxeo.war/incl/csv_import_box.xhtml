@@ -41,6 +41,14 @@
                     </h:selectBooleanCheckbox>
                     <h:outputLabel for="csv_import_notifyUserByEmail"
                       value="#{messages['label.csv.import.notifyUserByEmail']}" />
+
+                    <h:selectBooleanCheckbox styleClass="dataInputText"
+                                             value="#{csvImportActions.useImportMode}"
+                                             id="csv_import_useImportMode">
+                      <a4j:ajax execute="@this" render="@this" />
+                    </h:selectBooleanCheckbox>
+                    <h:outputLabel for="csv_import_useImportMode"
+                                   value="#{messages['label.csv.import.useImportMode']}" />
                   </h:form>
                 </c:if>
               </a4j:outputPanel>
