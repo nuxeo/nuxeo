@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.csv;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -51,11 +56,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
@@ -79,7 +79,7 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.csv:OSGI-INF/test-ui-types-contrib.xml", //
         "org.nuxeo.ecm.csv:OSGI-INF/csv-importer-service.xml" //
 })
-public class TestCSVImport {
+public class TestCSVImporterCreateMode {
 
     private static final String DOCS_OK_CSV = "docs_ok.csv";
 
@@ -527,8 +527,6 @@ public class TestCSVImport {
         assertEquals(2, contributors.size());
         assertTrue(contributors.contains("leela"));
         assertTrue(contributors.contains("Administrator"));
-        Calendar creationDate = (Calendar) doc.getPropertyValue("dc:created");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
 
         assertTrue(session.exists(new PathRef("/myfile2")));
         doc = session.getDocument(new PathRef("/myfile2"));
@@ -539,8 +537,6 @@ public class TestCSVImport {
         assertTrue(contributors.contains("contributor2"));
         assertTrue(contributors.contains("leela"));
         assertTrue(contributors.contains("Administrator"));
-        creationDate = (Calendar) doc.getPropertyValue("dc:created");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
     }
 
     public CoreSession openSessionAs(String username) {
