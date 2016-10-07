@@ -24,7 +24,6 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROP
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -93,6 +92,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
             jg.writeObjectField("buckets", agg.getBuckets());
             jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
         } else {
+            addNeededFetch();
             String fieldName = agg.getField();
             Field field = schemaManager.getField(fieldName);
             writeBuckets("buckets", agg.getBuckets(), field, jg);
@@ -100,7 +100,14 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         }
     }
 
-    private void writeBuckets(String fieldName, List<Bucket> buckets, Field field, JsonGenerator jg)
+    protected void addNeededFetch() {
+        ctx.addParameterValues(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE, "properties");
+        ctx.addParameterValues(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE, "parent");
+        ctx.addParameterValues(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE, "label");
+        ctx.addParameterValues(MAX_DEPTH_PARAM, "max");
+    }
+
+    protected void writeBuckets(String fieldName, List<Bucket> buckets, Field field, JsonGenerator jg)
             throws IOException, JsonGenerationException {
         jg.writeArrayFieldStart(fieldName);
         for (Bucket bucket : buckets) {
@@ -116,16 +123,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                     prop.getName()));
             prop.setValue(bucket.getKey());
 
-            try (Closeable resource = ctx.wrap()
-                                         .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
-                                                 "properties")
-                                         .with(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE, "parent")
-                                         .with(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
-                                                 "label")
-                                         .with(MAX_DEPTH_PARAM, "max")
-                                         .open()) {
-                writeEntityField("key", prop, jg);
-            }
+            writeEntityField("key", prop, jg);
             jg.writeNumberField("docCount", bucket.getDocCount());
             jg.writeEndObject();
         }
