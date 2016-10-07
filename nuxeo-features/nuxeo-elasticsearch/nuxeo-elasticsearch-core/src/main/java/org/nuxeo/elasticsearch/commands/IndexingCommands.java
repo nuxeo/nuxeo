@@ -83,9 +83,6 @@ public class IndexingCommands {
             }
             // we already have an index command, don't care about the new command
             return;
-        } else if (command.type == Type.INSERT && commandTypes.contains(Type.UPDATE)) {
-            // it is possible to receive an update before an insert, just take insert in account
-            clear();
         }
         if (command.type == Type.DELETE) {
             // no need to keep event before delete.
