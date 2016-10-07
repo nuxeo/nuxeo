@@ -113,7 +113,8 @@ public class DuplicatedCollectionListener implements EventListener {
             offset = 0;
             DocumentModelList deepCopiedMembers;
             do {
-
+                // CollectionMember is a dynamically added facet. Using it in where clause does not scale.
+                // Better check existence of collectionMember:collectionIds property to detect copied members
                 deepCopiedMembers = session.query(
                         "SELECT * FROM Document WHERE " + CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME
                                 + "/* IS NOT NULL AND ecm:path STARTSWITH " + NXQL.escapeString(doc.getPathAsString())
