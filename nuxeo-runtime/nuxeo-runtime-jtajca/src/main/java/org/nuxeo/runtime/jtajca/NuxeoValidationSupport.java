@@ -21,14 +21,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.resource.ResourceException;
-import javax.resource.spi.ConnectionRequestInfo;
-import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ManagedConnection;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
 import org.apache.geronimo.connector.outbound.ConnectionReturnAction;
 import org.apache.geronimo.connector.outbound.ManagedConnectionInfo;
+import org.tranql.connector.AbstractManagedConnection;
+import org.tranql.connector.jdbc.ConnectionHandle;
 
 /**
  *
@@ -46,30 +47,31 @@ public class NuxeoValidationSupport {
         this.onReturn = onReturn == null ? NOOP : onReturn;
     }
 
-    interface Validation {
-        boolean validate(Object handle);
-
+    public interface Validation {
+        boolean validate(ManagedConnection mc);
     }
 
     static final Validation NOOP = new Validation() {
         @Override
-        public boolean validate(Object handle) {
+        public boolean validate(ManagedConnection mc) {
             return true;
         }
     };
 
-    static class ValidSQLConnection implements Validation {
+    public static class ValidSQLConnection implements Validation {
         @Override
-        public boolean validate(Object handle) {
+        public boolean validate(ManagedConnection mc) {
             try {
-                return ((Connection) handle).isValid(0);
+                @SuppressWarnings("unchecked")
+                AbstractManagedConnection<Connection, ConnectionHandle> jdbcManagedConnection = (AbstractManagedConnection<Connection, ConnectionHandle>) mc;
+                return jdbcManagedConnection.getPhysicalConnection().isValid(0);
             } catch (SQLException cause) {
                 return false;
             }
         }
     }
 
-    static class QuerySQLConnection implements Validation {
+    public static class QuerySQLConnection implements Validation {
         final String sql;
 
         QuerySQLConnection(String sql) {
@@ -77,11 +79,14 @@ public class NuxeoValidationSupport {
         }
 
         @Override
-        public boolean validate(Object handle) {
-            try (Statement statement = ((Connection) handle).unwrap(Connection.class).createStatement()) {
+        public boolean validate(ManagedConnection mc) {
+            @SuppressWarnings("unchecked")
+            AbstractManagedConnection<Connection, ConnectionHandle> jdbcManagedConnection = (AbstractManagedConnection<Connection, ConnectionHandle>) mc;
+            try (Statement statement = jdbcManagedConnection.getPhysicalConnection().createStatement()) {
                 return statement.execute(sql);
             } catch (SQLException cause) {
-                LogFactory.getLog(QuerySQLConnection.class).warn(String.format("Caught error executing '%s', invalidating", sql), cause);
+                LogFactory.getLog(QuerySQLConnection.class)
+                        .warn(String.format("Caught error executing '%s', invalidating", sql), cause);
                 return false;
             }
         }
@@ -91,12 +96,12 @@ public class NuxeoValidationSupport {
         if (onBorrow == NOOP && onReturn == NOOP) {
             return stack;
         }
-        return new ValidationHandleInterceptor(stack);
+        return new ValidationInterceptor(stack);
     }
 
-    class ValidationHandleInterceptor implements ConnectionInterceptor {
+    class ValidationInterceptor implements ConnectionInterceptor {
 
-        public ValidationHandleInterceptor(ConnectionInterceptor next) {
+        public ValidationInterceptor(ConnectionInterceptor next) {
             this.next = next;
         }
 
@@ -104,41 +109,36 @@ public class NuxeoValidationSupport {
 
         @Override
         public void getConnection(ConnectionInfo ci) throws ResourceException {
-            ManagedConnectionInfo mci = ci.getManagedConnectionInfo();
-            ManagedConnectionFactory mcf = mci.getManagedConnectionFactory();
-            ConnectionRequestInfo cri = mci.getConnectionRequestInfo();
             while (true) {
                 // request for a connection
-                ConnectionInfo tryee = new ConnectionInfo(new ManagedConnectionInfo(mcf, cri));
-                next.getConnection(tryee);
+                next.getConnection(ci);
                 // validate connection
-                Object handle = tryee.getConnectionProxy();
-                if (handle == null) {
-                    handle = tryee.getConnectionHandle();
-                }
-                if (onBorrow.validate(handle)) {
-                    // save handle an return connection
-                    if (tryee.getConnectionProxy() != null) {
-                        ci.setConnectionProxy(handle);
-                    } else {
-                        ci.setConnectionHandle(handle);
-                    }
+                if (onBorrow.validate(ci.getManagedConnectionInfo().getManagedConnection())) {
                     return;
                 }
                 // destroy invalid connection and retry
-                LogFactory.getLog(NuxeoValidationSupport.class).warn("Returning invalid connection " + tryee);
-                returnConnection(tryee, ConnectionReturnAction.DESTROY);
+                LogFactory.getLog(NuxeoValidationSupport.class).warn("Returning invalid connection " + ci);
+                returnConnection(ci, ConnectionReturnAction.DESTROY);
             }
         }
 
         @Override
         public void returnConnection(ConnectionInfo info, ConnectionReturnAction returnAction) {
             if (returnAction == ConnectionReturnAction.RETURN_HANDLE) {
-                if (!onReturn.validate(info.getConnectionHandle())) {
+                if (!onReturn.validate(info.getManagedConnectionInfo().getManagedConnection())) {
                     returnAction = ConnectionReturnAction.DESTROY;
                 }
             }
-            next.returnConnection(info, returnAction);
+            try {
+                next.returnConnection(info, returnAction);
+            } finally {
+                if (returnAction == ConnectionReturnAction.DESTROY) {
+                    // recycle managed connection info for a new managed connection
+                    ManagedConnectionInfo mci = info.getManagedConnectionInfo();
+                    mci = new ManagedConnectionInfo(mci.getManagedConnectionFactory(), mci.getConnectionRequestInfo());
+                    info.setManagedConnectionInfo(mci);
+                }
+            }
         }
 
         @Override
