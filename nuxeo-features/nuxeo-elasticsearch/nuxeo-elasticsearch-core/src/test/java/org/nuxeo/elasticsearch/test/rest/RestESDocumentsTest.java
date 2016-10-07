@@ -213,13 +213,24 @@ public class RestESDocumentsTest extends BaseTest {
 
         // And verify contributed aggregates
         assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
-        JsonNode firstBucket = node.get("aggregations").get("coverage").get("buckets").get(0);
-        int firstDocCount = firstBucket.get("docCount").getIntValue();
-        assertEquals(RestServerInit.MAX_NOTE, firstDocCount);
+        JsonNode bucket = node.get("aggregations").get("coverage").get("buckets").get(0);
+        int docCount = bucket.get("docCount").getIntValue();
+        assertEquals(RestServerInit.MAX_NOTE, docCount);
         // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
-        String keyText = firstBucket.get("key").getTextValue();
-        assertNotEquals("France", keyText);
-        String keyIdText = firstBucket.get("key").get("properties").get("id").getTextValue();
+        String keyText = bucket.get("key").getTextValue();
+        assertNotEquals("europe/France", keyText);
+        String keyIdText = bucket.get("key").get("properties").get("id").getTextValue();
         assertEquals("France", keyIdText);
+
+        // And verify contributed aggregates
+        assertEquals("terms", node.get("aggregations").get("subjects").get("type").getTextValue());
+        JsonNode firstBucket = node.get("aggregations").get("subjects").get("buckets").get(0);
+        docCount = firstBucket.get("docCount").getIntValue();
+        assertEquals(RestServerInit.MAX_NOTE, docCount);
+        // Check that the key of the bucket which is a l10nsubjects vocabulary entry has been fetch
+        keyText = firstBucket.get("key").getTextValue();
+        assertNotEquals("art/cinema", keyText);
+        keyIdText = firstBucket.get("key").get("properties").get("id").getTextValue();
+        assertEquals("cinema", keyIdText);
     }
 }
