@@ -38,8 +38,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.platform.shibboleth.service
-        .ShibbolethAuthenticationService;
+import org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
@@ -56,7 +55,6 @@ import org.slf4j.LoggerFactory;
 public class ShibbolethUserMapper implements UserMapper {
 
     private static final Logger log = LoggerFactory.getLogger(ShibbolethUserMapper.class);
-
 
     public static final String DEFAULT_REGISTRATION = "default_registration";
 
@@ -98,18 +96,18 @@ public class ShibbolethUserMapper implements UserMapper {
         DocumentModel userDoc = null;
         String userName = userInfo.getUserName();
         if (email != null && !email.isEmpty()) {
-            userDoc = findUser(email);
+            userDoc = findUser(userManager.getUserEmailField(), email);
         }
         if (userDoc != null && userName != null) {
             updateACP(userName, email, userDoc);
         } else {
-            userDoc = findUser(userInfo.getUserName());
+            userDoc = findUser(userManager.getUserIdField(), userInfo.getUserName());
         }
         if (userDoc == null) {
             userDoc = createUser(userInfo);
+        } else {
+            userDoc = updateUser(userDoc, userInfo);
         }
-        // Update user with related infos
-        userDoc = updateUser(userDoc, userInfo);
 
         String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
         return userManager.getPrincipal(userId);
@@ -119,8 +117,14 @@ public class ShibbolethUserMapper implements UserMapper {
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
             public void run() {
+
+                NuxeoPrincipal principal = userManager.getPrincipal(
+                        (String) userDoc.getProperty(userSchemaName, "username"));
+                ArrayList<String> groups = new ArrayList<>(principal.getGroups());
+
                 userManager.deleteUser(userDoc);
-                userDoc.setPropertyValue("user:username",userName);
+                userDoc.setPropertyValue("user:username", userName);
+                userDoc.setPropertyValue("user:groups", groups);
                 userManager.createUser(userDoc);
                 // Fetching the registrations
                 UserInvitationService userInvitationService = Framework.getLocalService(UserRegistrationService.class);
@@ -181,9 +185,9 @@ public class ShibbolethUserMapper implements UserMapper {
         groupSchemaName = userManager.getGroupSchemaName();
     }
 
-    private DocumentModel findUser(String userName) {
+    private DocumentModel findUser(String field, String userName) {
         Map<String, Serializable> query = new HashMap<>();
-        query.put(userManager.getUserIdField(), userName);
+        query.put(field, userName);
         DocumentModelList users = userManager.searchUsers(query, null);
 
         if (users.isEmpty()) {
@@ -203,7 +207,8 @@ public class ShibbolethUserMapper implements UserMapper {
     }
 
     @Override
-    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params) {
+    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object nativePrincipal,
+            Map<String, Serializable> params) {
         throw new UnsupportedOperationException();
     }
 
