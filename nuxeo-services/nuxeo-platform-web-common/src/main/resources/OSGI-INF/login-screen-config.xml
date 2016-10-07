@@ -3,6 +3,11 @@
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="loginScreen">
     <loginScreenConfig>
+      <defaultLocale>en</defaultLocale>
+      <supportedLocales>
+        <locale>en_GB</locale>
+        <locale>en_US</locale>
+      </supportedLocales>
       <videos loop="false">
         <video src="//media.nuxeo.com/videos/login_8_4.webm" type="video/webm" />
         <video src="//media.nuxeo.com/videos/login_8_4.mp4" type="video/mp4" />
