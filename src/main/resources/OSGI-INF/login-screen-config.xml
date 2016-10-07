@@ -1,0 +1,44 @@
+<component name="org.nuxeo.ecm.platform.ui.web.login.lang.ext"
+  version="1.0">
+  <require>org.nuxeo.ecm.platform.ui.web.login</require>
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="loginScreen">
+    <loginScreenConfig>
+      <supportedLocales append="true">
+        <locale>ar_SA</locale><!-- Arabic - Saudi Arabia -->
+        <locale>az_AZ</locale><!-- Azerbaijani - Azerbaijan -->
+        <locale>ca_ES</locale><!-- Catalan - Spain -->
+        <locale>cs_CZ</locale><!-- Czech - Czech Republic -->
+        <locale>de</locale><!-- German - Germany -->
+        <locale>de_DE</locale><!-- German - Germany -->
+        <locale>el_GR</locale><!-- Greek - Greece -->
+        <locale>es</locale><!-- Spanish - Spain -->
+        <locale>es_ES</locale><!-- Spanish - Spain -->
+        <locale>eu_ES</locale><!-- Basque -->
+        <locale>fr</locale><!-- French - France -->
+        <locale>fr_FR</locale><!-- French - France -->
+        <locale>fr_CA</locale><!-- French - Canada -->
+        <locale>gl_ES</locale><!-- Galician -->
+        <locale>it_IT</locale><!-- Italian - Italy -->
+        <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
+        <locale>mk_MK</locale><!-- Macedonian - Macedonia -->
+        <locale>nl</locale><!-- Dutch - Netherlands -->
+        <locale>nl_NL</locale><!-- Dutch - Netherlands -->
+        <locale>pl</locale><!-- Polish - Poland -->
+        <locale>pl_PL</locale><!-- Polish - Poland -->
+        <locale>pt</locale><!-- Portuguese - Portugal -->
+        <locale>pt_PT</locale><!-- Portuguese - Portugal -->
+        <locale>pt_BR</locale><!-- Portuguese - Brazil -->
+        <locale>ru</locale><!-- Russian - Russia -->
+        <locale>ru_RU</locale><!-- Russian - Russia -->
+        <locale>sq_AL</locale><!-- Albanian -->
+        <locale>sr_SP</locale><!-- Serbian(Cyrillic) - Serbia -->
+        <locale>sv_SE</locale><!-- Swedish -->
+        <locale>tr_TR</locale><!-- Turkish - Turkey -->
+        <locale>vi_VN</locale><!-- Vietnamese - Vietnam -->
+        <locale>zh_CN</locale><!-- Chinese (Simplified) - China -->
+      </supportedLocales>
+    </loginScreenConfig>
+  </extension>
+</component>

@@ -9,7 +9,7 @@
   <artifactId>nuxeo-platform-lang-ext</artifactId>
   <name>Nuxeo EP Language Extensions</name>
   <description>
-    Nuxeo Enterprise Platform: The Nuxeo Language Extensions package.
+    The Nuxeo Language Extensions package.
   </description>
 
   <dependencies>
