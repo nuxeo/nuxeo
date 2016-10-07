@@ -23,7 +23,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_NAME;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
@@ -153,13 +152,9 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
             if (paginable.hasAggregateSupport()) {
                 Map<String, Aggregate<? extends Bucket>> aggregates = paginable.getAggregates();
                 if (aggregates != null && !paginable.getAggregates().isEmpty()) {
-                    Writer<Aggregate> writer = registry.getWriter(ctx, Aggregate.class, APPLICATION_JSON_TYPE);
                     jg.writeObjectFieldStart("aggregations");
-                    OutputStream out = new OutputStreamWithJsonWriter(jg);
-
                     for (Entry<String, Aggregate<? extends Bucket>> e : aggregates.entrySet()) {
-                        jg.writeFieldName(e.getKey());
-                        writer.write(e.getValue(), Aggregate.class, Aggregate.class, APPLICATION_JSON_TYPE, out);
+                        writeEntityField(e.getKey(), e.getValue(), jg);
                     }
                     jg.writeEndObject();
                 }

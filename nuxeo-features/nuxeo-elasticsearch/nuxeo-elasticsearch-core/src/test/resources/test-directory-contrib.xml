@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="test-directory-contrib">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="l10nsubjects">
+      <schema>l10nxvocabulary</schema>
+      <parentDirectory>l10nsubjects</parentDirectory>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>l10nsubjects</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>l10nsubjects.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="l10ncoverage">
+      <schema>l10nxvocabulary</schema>
+      <parentDirectory>l10ncoverage</parentDirectory>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>l10ncoverage</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>l10ncoverage.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+
+</component>

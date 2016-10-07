@@ -81,7 +81,8 @@ import com.sun.jersey.api.client.ClientResponse;
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:contentviews-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:test-directory-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
 
@@ -186,8 +187,7 @@ public class RestESDocumentsTest extends BaseTest {
         headers.put("fetch." + AggregateJsonWriter.ENTITY_TYPE, AggregateJsonWriter.FETCH_KEY);
         for (int i = 0; i < RestServerInit.MAX_NOTE; i++) {
             DocumentModel doc = RestServerInit.getNote(i, session);
-            doc.setPropertyValue("dc:coverage", "France");
-            doc.setPropertyValue("dc:nature", "note");
+            doc.setPropertyValue("dc:coverage", "europe/France");
             doc.setPropertyValue("dc:subjects", new String[] { "art/cinema" });
             doc = session.saveDocument(doc);
         }
@@ -203,7 +203,7 @@ public class RestESDocumentsTest extends BaseTest {
         esa.refresh();
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         // Given a repository, when I perform a ESQL pageprovider on it
-        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_2", null, null, null,
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/aggregates_3", null, null, null,
                 headers);
 
         // Then I get document listing as result
@@ -219,7 +219,7 @@ public class RestESDocumentsTest extends BaseTest {
         // Check that the key of the bucket which is a l10ncoverage vocabulary entry has been fetch
         String keyText = firstBucket.get("key").getTextValue();
         assertNotEquals("France", keyText);
-        String keyIdText = firstBucket.get("key").get("id").getTextValue();
+        String keyIdText = firstBucket.get("key").get("properties").get("id").getTextValue();
         assertEquals("France", keyIdText);
     }
 }

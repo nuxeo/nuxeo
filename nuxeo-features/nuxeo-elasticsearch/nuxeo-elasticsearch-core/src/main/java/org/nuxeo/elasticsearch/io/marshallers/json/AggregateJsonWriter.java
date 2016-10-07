@@ -18,30 +18,42 @@
  */
 package org.nuxeo.elasticsearch.io.marshallers.json;
 
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.MAX_DEPTH_PARAM;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
-import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
-import org.nuxeo.ecm.core.io.registry.MarshallingException;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
+import org.nuxeo.elasticsearch.aggregate.TermAggregate;
 
+/**
+ * @since 8.4
+ */
+@SuppressWarnings("rawtypes")
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
 
@@ -67,66 +79,57 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         return true;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     @Override
     protected void writeEntityBody(Aggregate agg, JsonGenerator jg) throws IOException {
-
-        Set<String> fetchElements = ctx.getFetched(ENTITY_TYPE);
-        boolean fetch = false;
-        for (String fetchElement : fetchElements) {
-            if (FETCH_KEY.equals(fetchElement)) {
-                fetch = true;
-                break;
-            }
-        }
-
+        boolean fetch = ctx.getFetched(ENTITY_TYPE).contains(FETCH_KEY);
         jg.writeObjectField("id", agg.getId());
         jg.writeObjectField("field", agg.getField());
         jg.writeObjectField("properties", agg.getProperties());
         jg.writeObjectField("ranges", agg.getRanges());
         jg.writeObjectField("selection", agg.getSelection());
         jg.writeObjectField("type", agg.getType());
-        jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
-        if (!fetch) {
+        if (!fetch || !(agg instanceof TermAggregate || agg instanceof SignificantTermAggregate)) {
             jg.writeObjectField("buckets", agg.getBuckets());
+            jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
         } else {
             String fieldName = agg.getField();
             Field field = schemaManager.getField(fieldName);
-            List<Bucket> buckets = agg.getBuckets();
-            // XXX Why the object resolver is null for coverage, and other fields that have one in dublincore schema
-            // definition.?
-            ObjectResolver or = field.getType().getObjectResolver();
-            jg.writeArrayFieldStart("buckets");
-            for (Bucket bucket : buckets) {
-                jg.writeStartObject();
-                jg.writeFieldName("key");
-                writeFetchProperty(jg, or, bucket.getKey(), agg.getId());
-                jg.writeNumberField("docCount", bucket.getDocCount());
-                jg.writeEndObject();
-            }
-            jg.writeEndArray();
+            writeBuckets("buckets", agg.getBuckets(), field, jg);
+            writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
         }
     }
 
-    protected void writeFetchProperty(JsonGenerator jg, ObjectResolver resolver, Object value, String aggName)
-            throws IOException {
-        if (value == null) {
-            return;
-        }
-        if (resolver != null) {
-            Object object = resolver.fetch(value);
-            if (object != null) {
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    writeEntity(object, baos);
-                    jg.writeRawValue(baos.toString());
-                } catch (MarshallingException e) {
-                    log.error("Unable to marshall as json the entity referenced by the aggregation " + aggName, e);
-                }
+    private void writeBuckets(String fieldName, List<Bucket> buckets, Field field, JsonGenerator jg)
+            throws IOException, JsonGenerationException {
+        jg.writeArrayFieldStart(fieldName);
+        for (Bucket bucket : buckets) {
+            jg.writeStartObject();
+
+            Property prop = PropertyFactory.createProperty(null, field, Property.NONE);
+            if (prop.isList()) {
+                ListType t = (ListType) prop.getType();
+                t.getField();
+                prop = PropertyFactory.createProperty(null, t.getField(), Property.NONE);
             }
-        } else {
-            jg.writeString((String) value);
+            log.warn(String.format("Writing %s for field %s resolved to %s", fieldName, field.getName().toString(),
+                    prop.getName()));
+            prop.setValue(bucket.getKey());
+
+            try (Closeable resource = ctx.wrap()
+                                         .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
+                                                 "properties")
+                                         .with(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE, "parent")
+                                         .with(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
+                                                 "label")
+                                         .with(MAX_DEPTH_PARAM, "max")
+                                         .open()) {
+                writeEntityField("key", prop, jg);
+            }
+            jg.writeNumberField("docCount", bucket.getDocCount());
+            jg.writeEndObject();
         }
+        jg.writeEndArray();
     }
 
 }
