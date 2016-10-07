@@ -92,6 +92,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
         public InterceptorsImpl(NuxeoValidationSupport validationSupport, TransactionSupport transactionSupport,
                 PoolingSupport pooling, SubjectSource subjectSource, String name, ConnectionTracker connectionTracker,
                 TransactionManager transactionManager, ClassLoader classLoader) {
+            poolingSupport = pooling;
             // check for consistency between attributes
             if (subjectSource == null && pooling instanceof PartitionedPool
                     && ((PartitionedPool) pooling).isPartitionBySubject()) {
@@ -101,14 +102,12 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             // Set up the interceptor stack
             MCFConnectionInterceptor tail = new MCFConnectionInterceptor();
             ConnectionInterceptor stack = tail;
-
             stack = transactionSupport.addXAResourceInsertionInterceptor(stack, name);
             stack = pooling.addPoolingInterceptors(stack);
             if (log.isTraceEnabled()) {
                 log.trace("Connection Manager " + name + " installed pool " + stack);
             }
-
-            poolingSupport = pooling;
+            stack = validationSupport.addValidationInterceptors(stack);
             stack = transactionSupport.addTransactionInterceptors(stack, transactionManager);
 
             if (subjectSource != null) {
@@ -122,7 +121,6 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             }
 
             stack = new ConnectionHandleInterceptor(stack);
-            stack = validationSupport.addValidationInterceptors(stack);
             stack = new TCCLInterceptor(stack, classLoader);
             if (connectionTracker != null) {
                 stack = new ConnectionTrackingInterceptor(stack, name, connectionTracker);
