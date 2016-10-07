@@ -19,8 +19,6 @@
 package org.nuxeo.runtime.datasource;
 
 import java.io.PrintWriter;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -398,12 +396,12 @@ public class PooledDataSourceFactory implements ObjectFactory {
         }
 
         @Override
-        public ManagedConnection matchManagedConnections(Set set, Subject subject, ConnectionRequestInfo connectionRequestInfo)
+        public ManagedConnection matchManagedConnections(@SuppressWarnings("rawtypes") Set set, Subject subject, ConnectionRequestInfo connectionRequestInfo)
                 throws ResourceException {
-            for (Iterator<Object> i = set.iterator(); i.hasNext();) {
+            for (@SuppressWarnings("unchecked") Iterator<Object> i = set.iterator(); i.hasNext();) {
                 Object o = i.next();
                 if (o instanceof ManagedConnectionHandle) {
-                    ManagedConnectionHandle mc = (ManagedConnectionHandle) o;
+                    ManagedConnectionHandle<?,?> mc = (ManagedConnectionHandle<?,?>) o;
                     if (mc.matches(this, subject, connectionRequestInfo)) {
                         return mc;
                     }
@@ -516,31 +514,6 @@ public class PooledDataSourceFactory implements ObjectFactory {
             return "Pooled JDBC Driver Connection Factory [" + user + "@" + url + "]";
         }
 
-        private Class<?> loadClass(String name) throws ClassNotFoundException {
-            // first try the TCL, then the classloader that defined us
-            ClassLoader cl = getContextClassLoader();
-            if (cl != null) {
-                try {
-                    return cl.loadClass(name);
-                } catch (ClassNotFoundException e) {
-                    // ignore this
-                }
-            }
-            return Class.forName(name);
-        }
-
-        private ClassLoader getContextClassLoader() {
-            return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    try {
-                        return Thread.currentThread().getContextClassLoader();
-                    } catch (SecurityException e) {
-                        return null;
-                    }
-                }
-            });
-        }
     }
 
     protected String refAttribute(Reference ref, String key, String defvalue) {

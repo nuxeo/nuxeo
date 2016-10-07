@@ -58,7 +58,6 @@ public class ConnectionHelper {
         try {
             Method m = connection.getClass().getMethod("getInnermostDelegate");
             m.setAccessible(true); // needed, method of inner private class
-            @SuppressWarnings("resource")
             Connection delegate = (Connection) m.invoke(connection);
             if (delegate == null) {
                 log.error("Cannot access underlying connection, you must use "
