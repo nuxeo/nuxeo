@@ -80,11 +80,10 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             if (values.containsKey(NXQL.ECM_UUID)) {
                 throw new NuxeoException("CSV file contains UUID. Import using Import Mode to avoid overwriting.");
             }
-            doc = session.createDocument(doc);
             for (Map.Entry<String, Serializable> entry : values.entrySet()) {
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
-            session.saveDocument(doc);
+            session.createDocument(doc);
         }
     }
 
