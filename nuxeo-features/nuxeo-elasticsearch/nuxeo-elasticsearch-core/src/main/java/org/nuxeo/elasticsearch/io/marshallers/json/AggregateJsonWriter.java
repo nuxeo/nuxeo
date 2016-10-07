@@ -43,9 +43,12 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.ecm.platform.query.core.BucketRange;
+import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
 
@@ -126,6 +129,18 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
             writeEntityField("key", prop, jg);
             jg.writeNumberField("docCount", bucket.getDocCount());
             jg.writeEndObject();
+
+            if (bucket instanceof BucketRange) {
+                BucketRange bucketRange = (BucketRange) bucket;
+                jg.writeNumberField("from", bucketRange.getFrom());
+                jg.writeNumberField("to", bucketRange.getTo());
+            }
+
+            if (bucket instanceof BucketRangeDate) {
+                BucketRangeDate bucketRange = (BucketRangeDate) bucket;
+                jg.writeStringField("fromAsDate", DateParser.formatW3CDateTime(bucketRange.getFromAsDate().toDate()));
+                jg.writeStringField("toAsDate", DateParser.formatW3CDateTime(bucketRange.getToAsDate().toDate()));
+            }
         }
         jg.writeEndArray();
     }
