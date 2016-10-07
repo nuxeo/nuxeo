@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.locale;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Locale;
 
 import javax.faces.context.FacesContext;
@@ -110,18 +111,41 @@ public class LocaleStartup implements Serializable {
     }
 
     protected void setupLocale(Locale locale) {
-        if (locale == null) {
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (locale == null && ctx != null) {
             log.debug("Locale not set, falling back to request locale");
-            locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+            locale = ctx.getExternalContext().getRequestLocale();
+        }
+        if (locale == null && ctx != null) {
+            log.debug("Locale not set, falling back to default JSF locale");
+            locale = ctx.getApplication().getDefaultLocale();
         }
         if (locale == null) {
             log.debug("Locale not set, falling back to default locale");
             locale = Locale.getDefault();
         }
         LocaleSelector localeSelector = LocaleSelector.instance();
-        localeSelector.setLocale(locale);
-        localeSelector.setCookieEnabled(true);
-        localeSelector.select();
+        // check if locale is accepted for setup
+        boolean set = false;
+        if (ctx != null) {
+            Iterator<Locale> it = ctx.getApplication().getSupportedLocales();
+            while (it.hasNext()) {
+                Locale current = it.next();
+                if (current.equals(locale)) {
+                    localeSelector.setLocale(locale);
+                    localeSelector.setCookieEnabled(true);
+                    localeSelector.select();
+                    set = true;
+                    break;
+                }
+            }
+        }
+        if (!set) {
+            if (log.isDebugEnabled()) {
+                log.debug(
+                        "Locale was not set to '" + locale + "' as it could not be validated as a supported language.");
+            }
+        }
     }
 
 }
