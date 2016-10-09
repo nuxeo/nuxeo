@@ -51,8 +51,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     public static final String MIMETYPE_ZIP = "application/zip";
 
-    protected Path tempDirectory(Map<String, Serializable> parameters) throws ConversionException {
-        Path directory = new Path(getTmpDirectory(parameters)).append(BLENDER_PATH_PREFIX + UUID.randomUUID());
+    protected Path tempDirectory(Map<String, Serializable> parameters, String sufix) throws ConversionException {
+        Path directory = new Path(getTmpDirectory(parameters)).append(BLENDER_PATH_PREFIX + UUID.randomUUID() + sufix);
         boolean dirCreated = new File(directory.toString()).mkdirs();
         if (!dirCreated) {
             throw new ConversionException("Unable to create tmp dir: " + directory);
@@ -198,7 +198,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
         }
 
         List<Closeable> toClose = new ArrayList<>();
-        Path inDirectory = tempDirectory(null);
+        Path inDirectory = tempDirectory(null, "_in");
         try {
             CmdParameters params = new CmdParameters();
 
@@ -267,7 +267,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             }
 
             // Deal with output directory
-            Path outDir = tempDirectory(null);
+            Path outDir = tempDirectory(null, "_out");
             params.addNamedParameter(OUT_DIR_PARAMETER, outDir.toString());
 
             params.addNamedParameter(USER_ID_PARAMETER, UserIdHelper.getUid());

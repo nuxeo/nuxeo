@@ -78,7 +78,7 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
         List<String> filesToDelete = new ArrayList<>();
 
         try {
-            Path directory = new Path(getTmpDirectory(parameters)).append(DAE2GLTF_PATH_PREFIX + UUID.randomUUID());
+            Path directory = new Path(getTmpDirectory(parameters)).append(DAE2GLTF_PATH_PREFIX + UUID.randomUUID() + "_in");
             boolean dirCreated = new File(directory.toString()).mkdirs();
             if (!dirCreated) {
                 throw new ConversionException("Unable to create tmp dir: " + directory);
@@ -102,7 +102,7 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
             filesToDelete.add(directory.toString());
 
             String baseDir = getTmpDirectory(parameters);
-            Path outPath = new Path(baseDir).append(DAE2GLTF_OUTPUT_PATH_PREFIX + UUID.randomUUID());
+            Path outPath = new Path(baseDir).append(DAE2GLTF_OUTPUT_PATH_PREFIX + UUID.randomUUID() + "_out");
             File outDir = new File(outPath.toString());
             dirCreated = outDir.mkdir();
             if (!dirCreated) {
