@@ -17,6 +17,7 @@
  *     Bogdan Stefanescu
  *     Thierry Delprat
  *     Florent Guillaume
+ *     Andrei Nechaev
  */
 package org.nuxeo.ecm.core.event.impl;
 

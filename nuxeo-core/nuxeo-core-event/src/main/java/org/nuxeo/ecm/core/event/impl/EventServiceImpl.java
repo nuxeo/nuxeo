@@ -17,6 +17,7 @@
  *     Bogdan Stefanescu
  *     Thierry Delprat
  *     Florent Guillaume
+ *     Andrei Nechaev
  */
 package org.nuxeo.ecm.core.event.impl;
 
@@ -110,7 +111,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         EventDispatcherDescriptor dispatcherDescriptor = dispatchers.getDispatcherDescriptor();
         if (dispatcherDescriptor != null) {
             List<EventPipeDescriptor> pipes = registeredPipes.getPipes();
-            if (pipes.size() > 0) {
+            if (!pipes.isEmpty()) {
                 pipeDispatcher = dispatcherDescriptor.getInstance();
                 pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
             }
@@ -123,15 +124,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
         postCommitExec.shutdown(timeoutMillis);
-        Set<AsyncWaitHook> notTerminated = new HashSet<AsyncWaitHook>();
-        for (AsyncWaitHook hook : asyncWaitHooks) {
-            if (hook.shutdown() == false) {
-                notTerminated.add(hook);
-            }
-        }
+        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream()
+                .filter(hook -> hook.shutdown() == false)
+                .collect(Collectors.toSet());
         if (!notTerminated.isEmpty()) {
             throw new RuntimeException("Asynch services are still running : " + notTerminated);
         }
+
         if (asyncExec.shutdown(timeoutMillis) == false) {
             throw new RuntimeException("Async executor is still running, timeout expired");
         }
