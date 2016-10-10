@@ -29,6 +29,9 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
+import org.nuxeo.ecm.platform.filemanager.core.listener.MimetypeIconUpdater;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
 import org.nuxeo.ecm.platform.threed.ThreeD;
 import org.nuxeo.ecm.platform.threed.ThreeDDocument;
@@ -44,6 +47,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.MAIN_INFO_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
@@ -241,6 +245,11 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(THREED_CONVERSIONS_DONE_EVENT);
         Framework.getLocalService(EventService.class).fireEvent(event);
+        // force the 3d doc icon
+        MimetypeIconUpdater iconUpdater = new MimetypeIconUpdater();
+        MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeEntry mimeTypeEntry = mimetypeRegistry.getMimetypeEntryByMimeType(THREED_TYPE);
+        iconUpdater.updateIconField(mimeTypeEntry, doc);
     }
 
 }
