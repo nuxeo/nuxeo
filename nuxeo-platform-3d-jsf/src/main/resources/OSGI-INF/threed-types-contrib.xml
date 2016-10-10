@@ -6,8 +6,8 @@
     <type id="ThreeD">
       <label>3D</label>
       <default-view>view_documents</default-view>
-      <icon>/icons/image.gif</icon>
-      <bigIcon>/icons/image_100.png</bigIcon>
+      <icon>/icons/3d.png</icon>
+      <bigIcon>/icons/3d_big.png</bigIcon>
       <category>SimpleDocument</category>
       <description>ThreeD.description</description>
       <layouts mode="any">
