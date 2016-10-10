@@ -130,8 +130,7 @@ public class UpdateManager {
         Entry entry = registry.get(key);
         if (entry == null) { // New Entry
             entry = createEntry(key);
-        } else if (!entry.hasBaseVersion()
-                && entry.getLastVersion(false) == null) {
+        } else if (!entry.hasBaseVersion() && entry.getLastVersion(false) == null) {
             // Existing Entry but all versions provided only by packages with upgradeOnly => check missing base
             // version...
             if (createBaseVersion(entry)) {
@@ -172,7 +171,8 @@ public class UpdateManager {
      * @return null if no update required, else the right UpdateOptions
      * @throws PackageException
      */
-    protected UpdateOptions shouldUpdate(String key, UpdateOptions opt, Match<File> currentJar) throws PackageException {
+    protected UpdateOptions shouldUpdate(String key, UpdateOptions opt, Match<File> currentJar)
+            throws PackageException {
         log.debug("Look for updating " + opt.file.getName());
         if (opt.upgradeOnly && currentJar == null) {
             log.debug("=> don't update (upgradeOnly)");
