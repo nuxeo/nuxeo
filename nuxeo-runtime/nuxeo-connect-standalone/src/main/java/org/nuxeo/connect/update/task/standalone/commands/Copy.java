@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.task.standalone.commands;
 
@@ -153,7 +155,13 @@ public class Copy extends AbstractCommand {
         }
         try {
             FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
-            if (filenameMatcher.match(fileToCopy.getName()) && (overwriteIfNewerVersion || upgradeOnly)) {
+            boolean isVersionnedJarFile = filenameMatcher.match(fileToCopy.getName());
+            if(isVersionnedJarFile){
+                log.warn(String.format(
+                        "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
+                        fileToCopy.getName()));
+            }
+            if (isVersionnedJarFile && (overwriteIfNewerVersion || upgradeOnly)) {
                 // Compare source and destination versions set in filename
                 FileVersion fileToCopyVersion, dstVersion = null;
                 String filenameWithoutVersion = filenameMatcher.getValue();
