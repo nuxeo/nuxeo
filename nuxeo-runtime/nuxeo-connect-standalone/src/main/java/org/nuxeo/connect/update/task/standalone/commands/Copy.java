@@ -160,8 +160,13 @@ public class Copy extends AbstractCommand {
         }
         try {
             FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
-            if (filenameMatcher.match(fileToCopy.getName())
-                    && (overwriteIfNewerVersion || upgradeOnly)) {
+            boolean isVersionnedJarFile = filenameMatcher.match(fileToCopy.getName());
+            if (isVersionnedJarFile) {
+                log.warn(String.format(
+                        "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
+                        fileToCopy.getName()));
+            }
+            if (isVersionnedJarFile && (overwriteIfNewerVersion || upgradeOnly)) {
                 // Compare source and destination versions set in filename
                 FileVersion fileToCopyVersion, dstVersion = null;
                 String filenameWithoutVersion = filenameMatcher.getValue();
