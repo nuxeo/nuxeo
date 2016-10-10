@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.apache.geronimo.connector.outbound.GeronimoConnectionEventListener;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.assertj.core.api.Assertions;
 import org.h2.tools.Server;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.datasource.TestValidateConnection.CaptureValidationErrors;
 import org.nuxeo.runtime.datasource.TestValidateConnection.ReportException.CaughtSite;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoValidationSupport;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -40,6 +42,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  *
@@ -118,6 +121,7 @@ public class TestValidateConnection {
         } finally {
             server.stop();
         }
+        Assertions.assertThat(NuxeoContainer.getConnectionManager(jdbcName).listActive()).hasSize(0);
     }
 
     static class ReportException extends Exception {
@@ -136,27 +140,25 @@ public class TestValidateConnection {
     }
 
     protected void checkPooledConnection(PooledDataSource ds) throws ReportException, InterruptedException {
-        Connection connection;
-
+        TransactionHelper.startTransaction();
         try {
-            connection = ds.getConnection();
+            Connection connection = ds.getConnection();
+            try (Statement statement = connection.createStatement()) {
+                statement.execute("SELECT 1");
+            } catch (SQLException cause) {
+                throw new ReportException(CaughtSite.onUse, cause);
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException cause) {
+                    throw new ReportException(CaughtSite.onReturn, cause);
+                }
+            }
         } catch (SQLException cause) {
             throw new ReportException(CaughtSite.onBorrow, cause);
-        }
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT 1");
-        } catch (SQLException cause) {
-            throw new ReportException(CaughtSite.onUse, cause);
         } finally {
-            try {
-                connection.close();
-            } catch (SQLException cause) {
-                throw new ReportException(CaughtSite.onReturn, cause);
-            }
+            TransactionHelper.commitOrRollbackTransaction();
         }
-
-        Thread.sleep(10); // wait for connections being filled
     }
 
 }

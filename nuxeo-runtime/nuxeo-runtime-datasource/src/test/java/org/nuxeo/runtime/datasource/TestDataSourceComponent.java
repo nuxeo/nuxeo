@@ -27,10 +27,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.sql.DataSource;
-import org.junit.Ignore;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -42,23 +42,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({ ContainerFeature.class, RuntimeFeature.class})
 public class TestDataSourceComponent {
 
-    protected static final ClassLoader LOADER = TestDataSourceComponent.class.getClassLoader();
-
     private static final String DATASOURCE_CONTRIB = "org.nuxeo.runtime.datasource:datasource-contrib.xml";
 
     private static final String XADATASOURCE_CONTRIB = "org.nuxeo.runtime.datasource:xadatasource-contrib.xml";
 
-    private static final String XADATASOURCE_PG_CONTRIB = "org.nuxeo.runtime.datasource:xadatasource-pg-contrib.xml";
-
-    /** This directory will be deleted and recreated. */
-    private static final String DIRECTORY = "target/test/h2";
-
-    /** Property used in the datasource URL. */
-    private static final String PROP_NAME = "ds.test.home";
-
     private static final String COUNT_SQL = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SESSIONS";
-
-    private static final String COUNT_SQL_PG = "SELECT COUNT(*) FROM PG_STAT_ACTIVITY";
 
     @Test
     public void testJNDIName() throws Exception {
@@ -93,6 +81,37 @@ public class TestDataSourceComponent {
     }
 
     @Test
+    @LocalDeploy(DATASOURCE_CONTRIB)
+    public void testNonShared() throws Exception {
+        PooledDataSource ds = (PooledDataSource)DataSourceHelper.getDataSource("foo");
+        TransactionHelper.startTransaction();
+        try (Connection c1 = ds.getConnection()) {
+            int n1 = countPhysicalConnections(c1);
+            try (Connection c2 = ds.getConnection(false)) {
+                int n2 = countPhysicalConnections(c2);
+                assertEquals(n1, n2);
+            }
+            try (Connection c2 = ds.getConnection(true)) {
+                int n2 = countPhysicalConnections(c2);
+                assertEquals(n1+1, n2);
+            }
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+    }
+
+    public int countPhysicalConnections(Connection conn) throws SQLException {
+        Statement st = conn.createStatement();
+        try {
+            ResultSet rs = st.executeQuery(COUNT_SQL);
+            rs.next();
+            return rs.getInt(1);
+        } finally {
+            st.close();
+        }
+    }
+
+    @Test
     @LocalDeploy(XADATASOURCE_CONTRIB)
     public void testXANoTx() throws Exception {
         checkDataSourceOk("foo", true);
@@ -109,67 +128,5 @@ public class TestDataSourceComponent {
         }
     }
 
-    public static class NXP12086 implements ConditionalIgnoreRule.Condition {
-
-        @Override
-        public boolean shouldIgnore() {
-            return true;
-        }
-
-    }
-
-    @Test
-    @Ignore
-    // NXP12086
-    @LocalDeploy(XADATASOURCE_CONTRIB)
-    public void testXANoLeak() throws Exception {
-        dotestXANoLeak(COUNT_SQL);
-    }
-
-    // PostgreSQL test, see pg XML contrib for connection parameters
-    @Ignore
-    @Test
-    @LocalDeploy(XADATASOURCE_PG_CONTRIB)
-    public void testXANoLeakPostgreSQL() throws Exception {
-        dotestXANoLeak(COUNT_SQL_PG);
-    }
-
-    // without PatchedDataSourceXAConnectionFactory we leaked
-    // connections on close (PoolableConnectionFactory.destroyObject)
-    public void dotestXANoLeak(String countStatement) throws Exception {
-        // in contrib, pool is configured with maxIdle = 1
-        DataSource ds = DataSourceHelper.getDataSource("foo");
-        Connection conn1 = ds.getConnection();
-        int n = countPhysicalConnections(conn1, countStatement) - 1;
-        Connection conn2 = ds.getConnection();
-        assertEquals(n + 2, countPhysicalConnections(conn1, countStatement));
-        Connection conn3 = ds.getConnection();
-        assertEquals(n + 3, countPhysicalConnections(conn1, countStatement));
-
-        conn3.close();
-        // conn3 idle in pool, conn1+conn2 active
-        assertEquals(n + 3, countPhysicalConnections(conn1, countStatement));
-        conn2.close();
-        // conn2 closed, conn3 idle in pool, conn1 active
-        assertEquals(n + 2, countPhysicalConnections(conn1, countStatement));
-        // conn1 closed, conn3 idle in pool
-        conn1.close();
-
-        Connection conn4 = ds.getConnection(); // reuses from pool
-        assertEquals(n + 1, countPhysicalConnections(conn4, countStatement));
-        conn4.close();
-
-    }
-
-    public int countPhysicalConnections(Connection conn, String statement) throws SQLException {
-        Statement st = conn.createStatement();
-        try {
-            ResultSet rs = st.executeQuery(statement);
-            rs.next();
-            return rs.getInt(1);
-        } finally {
-            st.close();
-        }
-    }
 
 }
