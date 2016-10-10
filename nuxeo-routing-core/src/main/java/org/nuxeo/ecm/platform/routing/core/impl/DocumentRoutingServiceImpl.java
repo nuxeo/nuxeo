@@ -305,7 +305,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             CoreSession session) {
         AttachedDocumentsChecker adc = new AttachedDocumentsChecker(session, routeId);
         adc.runUnrestricted();
-        if (!adc.isWowkflowCanceled) {
+        if (!adc.isWorkflowCanceled) {
             completeTask(routeId, nodeId, null, data, status, session);
         }
     }
@@ -1034,11 +1034,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      *
      * @since 8.4
      */
-    class AttachedDocumentsChecker extends UnrestrictedSessionRunner {
+    public static class AttachedDocumentsChecker extends UnrestrictedSessionRunner {
 
         String workflowInstanceId;
 
-        Boolean isWowkflowCanceled = false;
+        boolean isWorkflowCanceled;
 
         protected AttachedDocumentsChecker(CoreSession session, String workflowInstanceId) {
             super(session);
@@ -1049,17 +1049,18 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         public void run() {
             DocumentModel routeDoc = session.getDocument(new IdRef(workflowInstanceId));
             DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-            if (routeInstance.getAttachedDocuments().isEmpty()) {
+            List<String> attachedDocumentIds = routeInstance.getAttachedDocuments();
+            if (attachedDocumentIds.isEmpty()) {
                 return;
             }
-            for (String attachedDocumentId : routeInstance.getAttachedDocuments()) {
+            for (String attachedDocumentId : attachedDocumentIds) {
                 if (session.exists(new IdRef(attachedDocumentId))) {
                     return;
                 }
             }
             DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
             routingEngine.cancel(routeInstance, session);
-            isWowkflowCanceled = true;
+            isWorkflowCanceled = true;
         }
     }
 
