@@ -32,9 +32,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Simple Queue based implementation that starts a dedicated thread to consume an in-memory message queue.
@@ -85,6 +82,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
             @Override
             public void run() {
+
                 consumer = new LocalEventBundlePipeConsumer();
                 consumer.initConsumer(getName(), getParameters());
                 while (!stop) {
@@ -139,21 +137,15 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
     @Override
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
-        final Lock waiting = new ReentrantLock();
-        final Condition flag = waiting.newCondition();
-
         long deadline = System.currentTimeMillis() + timeoutMillis;
         int pause = (int) Math.min(timeoutMillis, 500L);
+
+        // XXX use Condition
         do {
             if (queue.size() == 0) {
                 return true;
             }
-            waiting.lock();
-            try {
-                flag.await(pause, TimeUnit.MILLISECONDS);
-            } finally {
-                waiting.unlock();
-            }
+            Thread.sleep(pause);
         } while (System.currentTimeMillis() < deadline);
 
 

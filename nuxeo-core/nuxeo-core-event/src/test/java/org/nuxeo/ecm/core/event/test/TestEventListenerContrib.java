@@ -21,13 +21,8 @@
 
 package org.nuxeo.ecm.core.event.test;
 
-import java.net.URL;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
@@ -36,6 +31,13 @@ import org.nuxeo.ecm.core.event.script.ScriptingPostCommitEventListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import java.net.URL;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestEventListenerContrib extends NXRuntimeTestCase {
 
