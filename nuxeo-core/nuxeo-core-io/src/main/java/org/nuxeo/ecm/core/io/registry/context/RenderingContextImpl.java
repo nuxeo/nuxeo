@@ -233,19 +233,47 @@ public class RenderingContextImpl implements RenderingContext {
         return false;
     }
 
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public <T> List<T> getParameters(String name) {
         if (StringUtils.isEmpty(name)) {
             return null;
         }
         String realName = name.toLowerCase().trim();
-        @SuppressWarnings("unchecked")
         List<T> values = (List<T>) parameters.get(realName);
+        List<T> result;
         if (values != null) {
-            return new ArrayList<T>(values);
+            result = new ArrayList<T>(values);
         } else {
-            return new ArrayList<T>();
+            result = new ArrayList<T>();
         }
+        if (WRAPPED_CONTEXT.toLowerCase().equals(realName)) {
+            return result;
+        } else {
+            Object wrapped = getWrappedEntity(realName);
+            if (wrapped == null) {
+                return result;
+            }
+            if (wrapped instanceof List) {
+                for (Object element: (List) wrapped) {
+                    try {
+                        T casted = (T) element;
+                        result.add(casted);
+                    } catch (ClassCastException e) {
+                        return null;
+                    }
+                }
+            } else {
+                try {
+                    T casted = (T) wrapped;
+                    result.add(casted);
+                } catch (ClassCastException e) {
+                    return null;
+                }
+            }
+        }
+        return result;
     }
 
     @Override
