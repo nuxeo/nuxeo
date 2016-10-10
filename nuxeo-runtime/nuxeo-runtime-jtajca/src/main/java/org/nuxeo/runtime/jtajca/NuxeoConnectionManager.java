@@ -18,11 +18,14 @@ package org.nuxeo.runtime.jtajca;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import javax.resource.ResourceException;
 import javax.transaction.TransactionManager;
@@ -89,6 +92,7 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
         public InterceptorsImpl(NuxeoValidationSupport validationSupport, TransactionSupport transactionSupport,
                 PoolingSupport pooling, SubjectSource subjectSource, String name, ConnectionTracker connectionTracker,
                 TransactionManager transactionManager, ClassLoader classLoader) {
+            poolingSupport = pooling;
             // check for consistency between attributes
             if (subjectSource == null && pooling instanceof PartitionedPool
                     && ((PartitionedPool) pooling).isPartitionBySubject()) {
@@ -98,14 +102,12 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             // Set up the interceptor stack
             MCFConnectionInterceptor tail = new MCFConnectionInterceptor();
             ConnectionInterceptor stack = tail;
-
             stack = transactionSupport.addXAResourceInsertionInterceptor(stack, name);
             stack = pooling.addPoolingInterceptors(stack);
             if (log.isTraceEnabled()) {
                 log.trace("Connection Manager " + name + " installed pool " + stack);
             }
-
-            poolingSupport = pooling;
+            stack = validationSupport.addValidationInterceptors(stack);
             stack = transactionSupport.addTransactionInterceptors(stack, transactionManager);
 
             if (subjectSource != null) {
@@ -119,7 +121,6 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             }
 
             stack = new ConnectionHandleInterceptor(stack);
-            stack = validationSupport.addTransactionInterceptor(stack);
             stack = new TCCLInterceptor(stack, classLoader);
             if (connectionTracker != null) {
                 stack = new ConnectionTrackingInterceptor(stack, name, connectionTracker);
@@ -267,6 +268,17 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             }
         }
 
+
+        /**
+         * List active connections
+         *
+         *
+         * @since 8.4
+         */
+        public Set<TimeToLive> list() {
+            return new HashSet<>(ttls.values());
+        }
+
         public class TimeToLive {
 
             public final ConnectionInfo info;
@@ -344,6 +356,10 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
 
     public int getActiveTimeoutMinutes() {
         return activemonitor.ttl / (60 * 1000);
+    }
+
+    public Set<ConnectionInfo> listActive() {
+        return activemonitor.ttls.values().stream().map(ttl -> ttl.info).collect(Collectors.toSet());
     }
 
     public void enterActiveMonitor(int delay) {
