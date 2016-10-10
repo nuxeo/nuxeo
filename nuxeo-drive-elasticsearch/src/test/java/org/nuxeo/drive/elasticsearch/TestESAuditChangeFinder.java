@@ -36,9 +36,9 @@ import org.nuxeo.runtime.test.runner.RandomBug;
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ ESAuditFeature.class })
 @SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class})
-@RandomBug.Repeat(issue = TestESAuditChangeFinder.NXP_20338)
+@RandomBug.Repeat(issue = TestESAuditChangeFinder.NXP_20517)
 public class TestESAuditChangeFinder {
 
-    protected static final String NXP_20338 = "InstanceNotFoundException";
+    protected static final String NXP_20517 = "InstanceNotFoundException";
 
 }
