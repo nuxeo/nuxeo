@@ -53,7 +53,7 @@ import com.marklogic.client.query.RawQueryDefinition;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
-@LocalDeploy("org.nuxeo.ecm.storage.marklogic.test:OSGI-INF/test-types-contrib.xml")
+@LocalDeploy("org.nuxeo.ecm.core.storage.marklogic.test:OSGI-INF/test-types-contrib.xml")
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
