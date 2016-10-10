@@ -4571,6 +4571,12 @@
         <artifactId>cors-filter</artifactId>
         <version>2.4</version>
       </dependency>
+      <dependency>
+        <groupId>io.github.lukehutch</groupId>
+        <artifactId>fast-classpath-scanner</artifactId>
+        <version>2.0.4</version>
+      </dependency>
+
       <!-- dmk adaptor -->
       <dependency>
         <groupId>com.sun.jdmk</groupId>
