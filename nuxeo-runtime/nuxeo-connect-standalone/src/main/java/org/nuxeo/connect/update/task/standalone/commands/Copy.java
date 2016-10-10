@@ -156,7 +156,7 @@ public class Copy extends AbstractCommand {
         try {
             FileMatcher filenameMatcher = FileMatcher.getMatcher("{n:.*-}[0-9]+.*\\.jar");
             boolean isVersionnedJarFile = filenameMatcher.match(fileToCopy.getName());
-            if(isVersionnedJarFile){
+            if (isVersionnedJarFile) {
                 log.warn(String.format(
                         "Use of the <copy /> command on JAR files is not recommended, prefer using <update /> command to ensure a safe rollback. (%s)",
                         fileToCopy.getName()));
@@ -204,8 +204,8 @@ public class Copy extends AbstractCommand {
             }
             if (dst.exists()) { // backup the destination file if exist.
                 if (!doOverwrite && !append) { // force a rollback
-                    throw new PackageException("Copy command has overwrite flag on false but destination file exists: "
-                            + dst);
+                    throw new PackageException(
+                            "Copy command has overwrite flag on false but destination file exists: " + dst);
                 }
                 if (task instanceof UninstallTask) {
                     // no backup for uninstall task
