@@ -110,6 +110,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                         }
                     } catch (InterruptedException e) {
                         consumerTPE.shutdown();
+                        Thread.currentThread().interrupt();
                     }
                 }
 
