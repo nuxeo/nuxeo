@@ -28,6 +28,8 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTI
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.NXCONTENT_CATEGORY_HEADER;
 
+import java.io.Closeable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -57,6 +59,17 @@ public class TestRenderingContext {
         assertEquals(VALUE1, ctx.getParameter(PARAM));
     }
 
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void canSetAndGetSimpleWrappedParameters() throws Exception {
+        RenderingContext ctx = RenderingContext.CtxBuilder.get();
+        try (Closeable resource = ctx.wrap().with(PARAM, VALUE1).open()) {
+            assertEquals(VALUE1, ctx.getParameter(PARAM));
+        }
+    }
+
     @Test
     public void canSetAndGetMultipleParameters() throws Exception {
         RenderingContext ctx = RenderingContext.CtxBuilder.paramValues(PARAM, VALUE1, VALUE2).get();
@@ -64,6 +77,23 @@ public class TestRenderingContext {
         assertEquals(2, list.size());
         assertTrue(list.contains(VALUE1));
         assertTrue(list.contains(VALUE2));
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void canSetAndGetMultipleWrappedParameters() throws Exception {
+        RenderingContext ctx = RenderingContext.CtxBuilder.get();
+        List<String> expectedList = new ArrayList<>();
+        expectedList.add(VALUE1);
+        expectedList.add(VALUE2);
+        try (Closeable resource = ctx.wrap().with(PARAM, expectedList).open()) {
+            List<String> list = ctx.getParameters(PARAM);
+            assertEquals(2, list.size());
+            assertTrue(list.contains(VALUE1));
+            assertTrue(list.contains(VALUE2));
+        }
     }
 
     @Test
