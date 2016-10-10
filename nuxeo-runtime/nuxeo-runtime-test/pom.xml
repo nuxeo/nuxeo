@@ -41,6 +41,10 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.github.lukehutch</groupId>
+      <artifactId>fast-classpath-scanner</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -59,6 +63,7 @@
       <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
 
+    
     <dependency>
       <groupId>org.javasimon</groupId>
       <artifactId>javasimon-core</artifactId>
@@ -203,6 +208,7 @@
       <groupId>org.concordion</groupId>
       <artifactId>concordion</artifactId>
     </dependency>
+
 
     <dependency>
       <groupId>org.ow2.asm</groupId>
