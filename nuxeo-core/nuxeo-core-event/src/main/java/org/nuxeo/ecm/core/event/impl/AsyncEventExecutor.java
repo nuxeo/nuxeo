@@ -70,41 +70,46 @@ public class AsyncEventExecutor {
 
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         WorkManager workManager = getWorkManager();
-        if (workManager!=null) {
-            return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
-        } else {
+        if (workManager == null) {
             return false;
         }
+
+        return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     public void run(final List<EventListenerDescriptor> listeners, EventBundle bundle) {
-
         // EventBundle that have gone through bus have been serialized
         // we need to reconnect them before filtering
         // this means we need a valid transaction !
-        if (bundle instanceof ReconnectedEventBundleImpl) {
-            EventBundle connectedBundle = new EventBundleImpl();
-            Map<String, CoreSession> sessions = new HashMap<String, CoreSession>();
-            boolean txStarted = false;
-            if (TransactionHelper.isNoTransaction()) {
-                txStarted = TransactionHelper.startTransaction();
-            }
-            List<Event> events = ((ReconnectedEventBundleImpl)bundle).getReconnectedEvents();
-            for (Event event : events) {
-                connectedBundle.push(event);
-                CoreSession session = event.getContext().getCoreSession();
-                if (!(sessions.keySet().contains(session.getRepositoryName()))) {
-                    sessions.put(session.getRepositoryName(), session);
+        if (!(bundle instanceof ReconnectedEventBundleImpl)) {
+            scheduleListeners(listeners, bundle);
+        } else {
+            final EventBundle tmpBundle = bundle;
+
+            TransactionHelper.runInTransaction(() -> {
+                EventBundle connectedBundle = new EventBundleImpl();
+                Map<String, CoreSession> sessions = new HashMap<>();
+                boolean txStarted = false;
+
+                txStarted = TransactionHelper.isTransactionActive();
+                List<Event> events = ((ReconnectedEventBundleImpl)tmpBundle).getReconnectedEvents();
+                for (Event event : events) {
+                    connectedBundle.push(event);
+                    CoreSession session = event.getContext().getCoreSession();
+                    if (!(sessions.keySet().contains(session.getRepositoryName()))) {
+                        sessions.put(session.getRepositoryName(), session);
+                    }
                 }
-            }
-            if (txStarted) {
-                TransactionHelper.commitOrRollbackTransaction();
-                sessions.values().forEach(CoreSession::close);
-            }
+                if (txStarted) {
+                    sessions.values().forEach(CoreSession::close);
+                }
 
-            bundle = connectedBundle;
+                scheduleListeners(listeners, connectedBundle);
+            });
         }
+    }
 
+    private void scheduleListeners(final List<EventListenerDescriptor> listeners, EventBundle bundle) {
         for (EventListenerDescriptor listener : listeners) {
             EventBundle filtered = listener.filterBundle(bundle);
             if (filtered.isEmpty()) {
