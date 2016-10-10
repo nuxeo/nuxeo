@@ -85,7 +85,6 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
             @Override
             public void run() {
-
                 consumer = new LocalEventBundlePipeConsumer();
                 consumer.initConsumer(getName(), getParameters());
                 while (!stop) {
