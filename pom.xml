@@ -72,6 +72,7 @@
 
   <modules>
     <module>nuxeo-platform-lang-ext</module>
+    <module>nuxeo-platform-lang-ext-incomplete</module>
     <module>nuxeo-chemistry</module>
     <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
@@ -142,6 +143,11 @@
       <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-platform-lang-ext</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-platform-lang-ext-incomplete</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
