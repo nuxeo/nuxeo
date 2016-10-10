@@ -1,18 +1,22 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.task.update;
 
@@ -126,6 +130,14 @@ public class UpdateManager {
         Entry entry = registry.get(key);
         if (entry == null) { // New Entry
             entry = createEntry(key);
+        } else if (!entry.hasBaseVersion()
+                && entry.getLastVersion(false) == null) {
+            // Existing Entry but all versions provided only by packages with upgradeOnly => check missing base
+            // version...
+            if (createBaseVersion(entry)) {
+                log.warn("Registry repaired: JAR introduced without corresponding entry in the registry (copy task?) : "
+                        + key);
+            }
         }
         Version v = entry.getVersion(opt.version);
         boolean newVersion = v == null;
@@ -333,14 +345,15 @@ public class UpdateManager {
     protected void rollbackVersion(Entry entry, Version version, RollbackOptions opt) throws PackageException {
         File versionFile = getBackup(version.getPath());
         if (!versionFile.isFile()) {
-            log.error("Could not rollback version " + version.getPath() + " since the backup file was not found");
+            log.warn("Could not rollback version " + version.getPath() + " since the backup file was not found");
             return;
         }
         Match<File> m = findInstalledJar(entry.getKey());
         File oldFile = m != null ? m.object : null;
         File targetFile = getTargetFile(version.getPath());
-        deleteOldFile(targetFile, oldFile, opt.deleteOnExit);
-        copy(versionFile, targetFile);
+        if (deleteOldFile(targetFile, oldFile, opt.deleteOnExit)) {
+            copy(versionFile, targetFile);
+        }
     }
 
     public String getServerRelativePath(File someFile) {
@@ -367,20 +380,34 @@ public class UpdateManager {
      * Create a new entry in the registry given the entry key. A base version will be automatically created if needed.
      *
      * @param key
-     * @throws Exception
+     * @throws PackageException
      */
     public Entry createEntry(String key) throws PackageException {
         Entry entry = new Entry(key);
-        Match<File> m = JarUtils.findJar(serverRoot, key);
+        createBaseVersion(entry);
+        registry.put(key, entry);
+        return entry;
+    }
+
+    /**
+     * Create a base version for the given entry if needed.
+     *
+     * @param entry
+     * @return true if a base version was actually created, false otherwise
+     * @throws PackageException
+     * @since 1.4.26
+     */
+    public boolean createBaseVersion(Entry entry) throws PackageException {
+        Match<File> m = JarUtils.findJar(serverRoot, entry.getKey());
         if (m != null) {
             String path = getServerRelativePath(m.object);
             Version base = new Version(m.version);
             base.setPath(path);
             entry.setBaseVersion(base);
             backupFile(m.object, path);
+            return true;
         }
-        registry.put(key, entry);
-        return entry;
+        return false;
     }
 
     /**
@@ -441,9 +468,9 @@ public class UpdateManager {
         }
     }
 
-    protected void deleteOldFile(File targetFile, File oldFile, boolean deleteOnExit) {
+    protected boolean deleteOldFile(File targetFile, File oldFile, boolean deleteOnExit) {
         if (oldFile == null || !oldFile.exists()) {
-            return;
+            return false;
         }
         if (deleteOnExit) {
             if (targetFile.getName().equals(oldFile.getName())) {
@@ -454,6 +481,7 @@ public class UpdateManager {
         } else {
             oldFile.delete();
         }
+        return true;
     }
 
     public Match<File> findInstalledJar(String key) {
