@@ -308,8 +308,8 @@ public class StorageConfiguration {
 
     public List<String> getExternalBundles() {
         if (isDBSExternal()) {
-            return Arrays.asList(String.format("org.nuxeo.ecm.storage.%s", coreType),
-                    String.format("org.nuxeo.ecm.storage.%s.test", coreType));
+            return Arrays.asList(String.format("org.nuxeo.ecm.core.storage.%s", coreType),
+                    String.format("org.nuxeo.ecm.core.storage.%s.test", coreType));
         }
         return Collections.emptyList();
     }
@@ -349,7 +349,7 @@ public class StorageConfiguration {
             } else if (isDBSMongoDB()) {
                 contribPath = "OSGI-INF/test-storage-repo-mongodb-contrib.xml";
             } else if (isDBSExternal()) {
-                bundleName = String.format("org.nuxeo.ecm.storage.%s.test", coreType);
+                bundleName = String.format("org.nuxeo.ecm.core.storage.%s.test", coreType);
                 contribPath = "OSGI-INF/test-storage-repo-contrib.xml";
             } else {
                 throw new NuxeoException("Unkown DBS test configuration (not mem/mongodb)");
