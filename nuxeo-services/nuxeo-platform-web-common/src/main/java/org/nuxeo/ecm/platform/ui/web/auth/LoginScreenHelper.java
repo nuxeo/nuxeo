@@ -52,7 +52,10 @@ public class LoginScreenHelper {
         PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
                                                                                                .getComponent(
                                                                                                        PluggableAuthenticationService.NAME);
-        return authService.getLoginScreenConfig();
+        if (authService != null) {
+            return authService.getLoginScreenConfig();
+        }
+        return null;
     }
 
     public static void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
