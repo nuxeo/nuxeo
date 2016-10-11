@@ -43,6 +43,12 @@
         </startupPage>
       </startupPages>
 
+      <defaultLocale>es_ES</defaultLocale>
+      <supportedLocales>
+        <locale>es_ES</locale>
+        <locale>fr</locale>
+      </supportedLocales>
+
     </loginScreenConfig>
 
   </extension>
