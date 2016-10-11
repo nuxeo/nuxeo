@@ -29,6 +29,11 @@
         </startupPage>
       </startupPages>
 
+      <defaultLocale>fr</defaultLocale>
+      <supportedLocales append="true">
+        <locale>de</locale>
+      </supportedLocales>
+
     </loginScreenConfig>
 
   </extension>

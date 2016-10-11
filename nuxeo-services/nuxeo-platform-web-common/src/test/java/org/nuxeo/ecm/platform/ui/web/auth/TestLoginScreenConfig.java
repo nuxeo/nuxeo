@@ -21,11 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.Environment.DISTRIBUTION_PACKAGE;
 import static org.nuxeo.common.Environment.DISTRIBUTION_VERSION;
 import static org.nuxeo.common.Environment.PRODUCT_VERSION;
@@ -46,6 +41,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.sun.jersey.api.uri.UriComponent;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
@@ -109,6 +110,11 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         // Highest priority wins
         assertEquals("nxstartup.faces", LoginScreenHelper.getStartupPagePath());
+
+        assertEquals("es_ES", config.getDefaultLocale());
+        assertEquals(2, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        assertTrue(config.getSupportedLocales().contains("fr"));
     }
 
     @Test
@@ -179,6 +185,12 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         // Highest priority wins
         assertEquals("ui/", LoginScreenHelper.getStartupPagePath());
+
+        assertEquals("fr", config.getDefaultLocale());
+        assertEquals(3, config.getSupportedLocales().size());
+        assertTrue(config.getSupportedLocales().contains("es_ES"));
+        assertTrue(config.getSupportedLocales().contains("fr"));
+        assertTrue(config.getSupportedLocales().contains("de"));
     }
 
     @Test

@@ -21,8 +21,10 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -127,6 +129,24 @@ public class LoginScreenConfig implements Serializable {
      */
     @XNode("loginButtonBackgroundColor")
     protected String loginButtonBackgroundColor;
+
+    /**
+     * @since 8.4
+     */
+    @XNode("defaultLocale")
+    protected String defaultLocale;
+
+    /**
+     * @since 8.4
+     */
+    @XNode("supportedLocales@append")
+    boolean appendSupportedLocales;
+
+    /**
+     * @since 8.4
+     */
+    @XNodeList(value = "supportedLocales/locale", type = ArrayList.class, componentType = String.class)
+    List<String> supportedLocales;
 
     public LoginScreenConfig() {
     }
@@ -311,6 +331,34 @@ public class LoginScreenConfig implements Serializable {
         return disableBackgroundSizeCover;
     }
 
+    /**
+     * @since 8.4
+     */
+    public String getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public boolean isAppendSupportedLocales() {
+        return appendSupportedLocales;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public List<String> getSupportedLocales() {
+        List<String> res = new ArrayList<>();
+        if (supportedLocales != null) {
+            res.addAll(supportedLocales);
+        }
+        if (!res.contains(getDefaultLocale())) {
+            res.add(getDefaultLocale());
+        }
+        return res;
+    }
+
     protected void merge(LoginScreenConfig newConfig) {
         if (newConfig.newsIframeUrl != null) {
             setNewsIframeUrl(newConfig.newsIframeUrl);
@@ -396,6 +444,21 @@ public class LoginScreenConfig implements Serializable {
                 }
             }
         }
+
+        if (newConfig.defaultLocale != null) {
+            defaultLocale = newConfig.defaultLocale;
+        }
+
+        boolean append = newConfig.isAppendSupportedLocales();
+        List<String> newLocales = newConfig.getSupportedLocales();
+        Set<String> mergedLocales = new HashSet<String>();
+        if (append && supportedLocales != null) {
+            mergedLocales.addAll(supportedLocales);
+        }
+        if (newLocales != null) {
+            mergedLocales.addAll(newLocales);
+        }
+        supportedLocales = new ArrayList<>(mergedLocales);
     }
 
     /**
@@ -437,6 +500,11 @@ public class LoginScreenConfig implements Serializable {
             for (LoginVideo v : videos) {
                 clone.videos.add(v.clone());
             }
+        }
+        clone.defaultLocale = defaultLocale;
+        clone.appendSupportedLocales = appendSupportedLocales;
+        if (supportedLocales != null) {
+            clone.supportedLocales = new ArrayList<>(supportedLocales);
         }
         return clone;
     }
