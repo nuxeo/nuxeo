@@ -85,31 +85,39 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
                 consumer = new LocalEventBundlePipeConsumer();
                 consumer.initConsumer(getName(), getParameters());
-                while (!stop) {
-                    List<EventBundle> messages = new ArrayList<>();
-                    EventBundle message;
-                    while ((message = queue.poll()) != null) {
-                        messages.add(message);
-                        if (messages.size() >= batchSize) {
+                boolean interrupted = false;
+                try {
+                    while (!stop) {
+                        List<EventBundle> messages = new ArrayList<>();
+                        EventBundle message;
+                        while ((message = queue.poll()) != null) {
+                            messages.add(message);
+                            if (messages.size() >= batchSize) {
+                                send(messages);
+                            }
+                        }
+                        if (messages.size() > 0) {
                             send(messages);
                         }
-                    }
-                    if (messages.size() > 0) {
-                        send(messages);
-                    }
 
-                    // XXX this is a hack ! TODO: find a better approach
-                    try {
-                        if (Framework.isTestModeSet()) {
-                            Thread.sleep(5);
-                        } else {
-                            Thread.sleep(200);
+                        // XXX this is a hack ! TODO: find a better approach
+                        try {
+                            if (Framework.isTestModeSet()) {
+                                Thread.sleep(5);
+                            } else {
+                                Thread.sleep(200);
+                            }
+                        } catch (InterruptedException e) {
+                            consumerTPE.shutdown();
+                            interrupted = true;
                         }
-                    } catch (InterruptedException e) {
-                        consumerTPE.shutdown();
+                    }
+                } finally {
+                    if (interrupted) {
                         Thread.currentThread().interrupt();
                     }
                 }
+
 
             }
         });
