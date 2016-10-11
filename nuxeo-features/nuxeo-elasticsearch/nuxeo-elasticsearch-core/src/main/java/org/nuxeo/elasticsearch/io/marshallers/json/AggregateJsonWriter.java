@@ -96,18 +96,26 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
             jg.writeObjectField("buckets", agg.getBuckets());
             jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
         } else {
-            try (Closeable resource = ctx.wrap()
-                                         .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
-                                                 "properties")
-                                         .with(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE, "parent")
-                                         .with(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
-                                                 "label")
-                                         .with(MAX_DEPTH_PARAM, "max")
-                                         .open()) {
-                String fieldName = agg.getField();
-                Field field = schemaManager.getField(fieldName);
-                writeBuckets("buckets", agg.getBuckets(), field, jg);
-                writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
+            String fieldName = agg.getField();
+            Field field = schemaManager.getField(fieldName);
+            if (field != null) {
+                try (Closeable resource = ctx.wrap()
+                                             .with(FETCH_PROPERTIES + "." + DocumentModelJsonWriter.ENTITY_TYPE,
+                                                     "properties")
+                                             .with(FETCH_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
+                                                     "parent")
+                                             .with(TRANSLATE_PROPERTIES + "." + DirectoryEntryJsonWriter.ENTITY_TYPE,
+                                                     "label")
+                                             .with(MAX_DEPTH_PARAM, "max")
+                                             .open()) {
+
+                    writeBuckets("buckets", agg.getBuckets(), field, jg);
+                    writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
+                }
+            } else {
+                log.warn(String.format("Could not resolve field %s for aggrgeate %s", fieldName, agg.getId()));
+                jg.writeObjectField("buckets", agg.getBuckets());
+                jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
             }
         }
     }
