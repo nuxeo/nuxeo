@@ -95,9 +95,7 @@ public class AsyncEventExecutor {
             TransactionHelper.runInTransaction(() -> {
                 EventBundle connectedBundle = new EventBundleImpl();
                 Map<String, CoreSession> sessions = new HashMap<>();
-                boolean txStarted = false;
 
-                txStarted = TransactionHelper.isTransactionActive();
                 List<Event> events = ((ReconnectedEventBundleImpl)tmpBundle).getReconnectedEvents();
                 for (Event event : events) {
                     connectedBundle.push(event);
@@ -106,10 +104,8 @@ public class AsyncEventExecutor {
                         sessions.put(session.getRepositoryName(), session);
                     }
                 }
-                if (txStarted) {
-                    sessions.values().forEach(CoreSession::close);
-                }
 
+                sessions.values().forEach(CoreSession::close);
                 scheduleListeners(listeners, connectedBundle);
             });
         }
@@ -191,7 +187,7 @@ public class AsyncEventExecutor {
                 setDocuments(repositoryName, docIds);
             }
             Integer count = listener.getRetryCount();
-            retryCount = count == null ? DEFAULT_RETRY_COUNT : count.intValue();
+            retryCount = count == null ? DEFAULT_RETRY_COUNT : count;
             if (retryCount < 0) {
                 retryCount = DEFAULT_RETRY_COUNT;
             }
