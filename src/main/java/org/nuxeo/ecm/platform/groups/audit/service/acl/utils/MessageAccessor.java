@@ -27,14 +27,16 @@ import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.runtime.api.Framework;
 
 public class MessageAccessor {
-    protected static LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
 
     public static String get(CoreSession session, String key) {
         Locale locale = null;
-        if (localeProvider != null)
+        LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
+        if (localeProvider != null) {
             locale = localeProvider.getLocale(session);
-        if (locale == null)
+        }
+        if (locale == null) {
             locale = Locale.ENGLISH;
+        }
 
         try {
             return I18NUtils.getMessageString("messages", key, null, locale);
@@ -42,4 +44,5 @@ public class MessageAccessor {
             return key;
         }
     }
+
 }
