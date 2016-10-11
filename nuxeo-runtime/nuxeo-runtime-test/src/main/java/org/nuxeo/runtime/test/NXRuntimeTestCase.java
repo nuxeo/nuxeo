@@ -25,13 +25,10 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -41,7 +38,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.commons.io.FileUtils;
@@ -76,6 +72,8 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
+
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 
 /**
  * Abstract base class for test cases that require a test runtime service.
@@ -270,74 +268,20 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     public static URL[] introspectClasspath(ClassLoader loader) {
-        // normal case
-        if (loader instanceof URLClassLoader) {
-            return ((URLClassLoader) loader).getURLs();
-        }
-        // surefire suite runner
-        final Class<? extends ClassLoader> loaderClass = loader.getClass();
-        if (loaderClass.getName().equals("org.apache.tools.ant.AntClassLoader")) {
-            try {
-                Method method = loaderClass.getMethod("getClasspath");
-                String cp = (String) method.invoke(loader);
-                String[] paths = cp.split(File.pathSeparator);
-                URL[] urls = new URL[paths.length];
-                for (int i = 0; i < paths.length; i++) {
-                    urls[i] = new URL("file:" + paths[i]);
-                }
-                return urls;
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | MalformedURLException cause) {
-                throw new AssertionError("Cannot introspect mavent class loader", cause);
-            }
-        }
-        // try getURLs method
-        try {
-            Method m = loaderClass.getMethod("getURLs");
-            return (URL[]) m.invoke(loader);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException cause) {
-            throw new AssertionError("Unsupported classloader type: " + loaderClass.getName()
-                    + "\nWon't be able to load OSGI bundles");
-        }
-    }
+        return new FastClasspathScanner().getUniqueClasspathElements().stream()
+                .map(file -> {
+                    try {
+                        return file.toURI().toURL();
+                    } catch (MalformedURLException cause) {
+                        throw new Error("Could not get URL from " + file, cause);
+                    }
+                }).toArray(URL[]::new);
+     }
+
 
     protected void initUrls() throws Exception {
         ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
         urls = introspectClasspath(classLoader);
-        // special cases such as Surefire with useManifestOnlyJar or Jacoco
-        // Look for nuxeo-runtime
-        boolean found = false;
-        JarFile surefirebooterJar = null;
-        for (URL url : urls) {
-            URI uri = url.toURI();
-            if (uri.getPath().matches(".*/nuxeo-runtime-[^/]*\\.jar")) {
-                found = true;
-                break;
-            } else if (uri.getScheme().equals("file") && uri.getPath().contains("surefirebooter")) {
-                surefirebooterJar = new JarFile(new File(uri));
-            }
-        }
-        if (!found && surefirebooterJar != null) {
-            try {
-                String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
-                if (cp != null) {
-                    String[] cpe = cp.split(" ");
-                    URL[] newUrls = new URL[cpe.length];
-                    for (int i = 0; i < cpe.length; i++) {
-                        // Don't need to add 'file:' with maven surefire
-                        // >= 2.4.2
-                        String newUrl = cpe[i].startsWith("file:") ? cpe[i] : "file:" + cpe[i];
-                        newUrls[i] = new URL(newUrl);
-                    }
-                    urls = newUrls;
-                }
-            } catch (Exception e) {
-                // skip
-            } finally {
-                surefirebooterJar.close();
-            }
-        }
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.append("URLs on the classpath: ");
