@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     annejubert
+ *     Yannis JULIENNE
+ *     
  */
 
 package org.nuxeo.io.fsexporter.test;
@@ -74,12 +76,14 @@ public class TestFSExporterAccents {
         session.createDocument(mySectionSameName2);
 
         // creation of a workspace with an empty name
-        DocumentModel myWorkspaceEmptyName = session.createDocumentModel("/default-domain/workspaces", " ", "Folder");
+        // NXP-20502: Trailing spaces are not allowed on all platforms so we only test leading spaces
+        DocumentModel myWorkspaceEmptyName = session.createDocumentModel("/default-domain/workspaces", "  '", "Folder");
         myWorkspaceEmptyName.setPropertyValue("dc:title", "my workspace é empty name");
         session.createDocument(myWorkspaceEmptyName);
 
         // creation of a workspace with a special character
-        DocumentModel myWorkspace = session.createDocumentModel("/default-domain/workspaces", "myWorkspace &", "Folder");
+        DocumentModel myWorkspace = session.createDocumentModel("/default-domain/workspaces", "myWorkspace &",
+                "Folder");
         myWorkspace.setPropertyValue("dc:title", "my first workspace !");
         session.createDocument(myWorkspace);
 
