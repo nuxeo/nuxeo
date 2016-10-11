@@ -135,6 +135,10 @@ public class TestSQLRepositoryQuery {
         return coreFeature.getStorageConfiguration().isDBSMongoDB();
     }
 
+    protected boolean isDBSMarkLogic() {
+        return coreFeature.getStorageConfiguration().isDBSMarkLogic();
+    }
+
     protected void waitForFulltextIndexing() {
         nextTransaction();
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
@@ -151,7 +155,7 @@ public class TestSQLRepositoryQuery {
      * Query of NOT (something) matches docs where (something) did not match because the field was null.
      */
     public boolean notMatchesNull() {
-        return isDBSMongoDB();
+        return isDBSMongoDB() || isDBSMarkLogic();
     }
 
     public boolean supportsDistinct() {
@@ -892,6 +896,7 @@ public class TestSQLRepositoryQuery {
     @Test
     public void testQueryConstantsLeft() throws Exception {
         assumeTrue("DBS MongoDB cannot query const = const", !isDBSMongoDB());
+        assumeTrue("DBS MarkLogic cannot query const = const", !isDBSMarkLogic());
 
         String sql;
         DocumentModelList dml;
@@ -2959,10 +2964,10 @@ public class TestSQLRepositoryQuery {
 
         clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
         it = session.queryAndFetch("SELECT tst:title" + FROM_WHERE + clause, "NXQL");
-        // MongoDB query projecting on a non-wildcard values doesn't repeat matches
+        // MongoDB/MarkLogic query projecting on a non-wildcard values doesn't repeat matches
         // as this would entail re-evaluating the projection from the full state
         // just to get duplicated identical rows
-        assertEquals(isDBSMongoDB() ? 1 : 3, it.size());
+        assertEquals(isDBSMongoDB() || isDBSMarkLogic() ? 1 : 3, it.size());
         it.close();
     }
 

@@ -132,13 +132,17 @@ public class TestSQLRepositoryProperties {
         // due to xml parsing
         ExternalBlobAdapter adapter = blobHolderAdapterService.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
-                + Environment.getDefault().getTemp().getPath() + " ");
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME,
+                "\n" + Environment.getDefault().getTemp().getPath() + " ");
         adapter.setProperties(props);
 
         doc = session.createDocumentModel("TestDocument");
         doc.setPathInfo("/", "doc");
         doc = session.createDocument(doc);
+    }
+
+    protected boolean isDBSMarkLogic() {
+        return coreFeature.getStorageConfiguration().isDBSMarkLogic();
     }
 
     protected CoreSession openSessionAs(String username) {
@@ -267,6 +271,7 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testArrayWithNullFirst() throws Exception {
+        assumeTrue("MarkLogic repository doesn't handle null values", !isDBSMarkLogic());
         assertNotNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { null, "bar" };
         doc.setPropertyValue("tp:stringArray", values);
