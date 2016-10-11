@@ -65,11 +65,13 @@ public class DefaultLocaleProvider implements LocaleProvider {
     public Locale getLocaleWithDefault(String requestedLocale) {
         Locale res = null;
         LoginScreenConfig screenConfig = LoginScreenHelper.getConfig();
-        List<String> supported = screenConfig.getSupportedLocales();
-        if (!StringUtils.isBlank(requestedLocale) && supported.contains(requestedLocale)) {
-            res = LocaleUtils.toLocale(requestedLocale);
-        } else {
-            res = LocaleUtils.toLocale(screenConfig.getDefaultLocale());
+        if (screenConfig != null) {
+            List<String> supported = screenConfig.getSupportedLocales();
+            if (!StringUtils.isBlank(requestedLocale) && supported.contains(requestedLocale)) {
+                res = LocaleUtils.toLocale(requestedLocale);
+            } else {
+                res = LocaleUtils.toLocale(screenConfig.getDefaultLocale());
+            }
         }
         if (res == null) {
             return Locale.getDefault();
