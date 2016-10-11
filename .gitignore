@@ -14,3 +14,6 @@ target
 *.iml
 *.ipr
 *.iws
+*~bak
+*-bak
+*.bak
