@@ -20,6 +20,7 @@
 package org.nuxeo.ftest.caprest;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,6 +94,7 @@ public class ITRemoteAutomationClientTCK {
         testCreateChild2();
         testUpdateChild2();
         testGetChildren();
+        testGetChildrenWithWebAdapter();
     }
 
     public void testBlobSuite() throws Exception {
@@ -162,6 +164,16 @@ public class ITRemoteAutomationClientTCK {
         assertNotNull(root);
         Documents children = (Documents) session.newRequest("Document.GetChildren").setInput(root.getPath()).execute();
         assertEquals(2, children.size());
+
+    }
+
+    public void testGetChildrenWithWebAdapter() throws Exception {
+        JsonNode node = client.getRestClient()
+                              .newRequest("/path/TestFolder1/@children")
+                              .execute()
+                              .asJson();
+
+        assertEquals(2, node.get("resultsCount").getIntValue());
 
     }
 
