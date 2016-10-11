@@ -23,301 +23,303 @@ Contributors:
 -->
 <dom-module id="nuxeo-three-d-view-layout">
 
-    <template>
-        <style>
-            :host {
-                display: block;
-            }
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
 
-            .properties {
-                -moz-column-width: 25em; /* Firefox */
-                -webkit-column-width: 25em; /* webkit, Safari, Chrome */
-                column-width: 25em;
-                column-count: 3;
-                -moz-column-count: 3; /* Firefox */
-                -webkit-column-count: 3; /* webkit, Safari, Chrome */
-            }
+      .properties {
+        -moz-column-width: 25em; /* Firefox */
+        -webkit-column-width: 25em; /* webkit, Safari, Chrome */
+        column-width: 25em;
+        column-count: 3;
+        -moz-column-count: 3; /* Firefox */
+        -webkit-column-count: 3; /* webkit, Safari, Chrome */
+      }
 
-            .properties label {
-                width: 10em;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
+      .properties label {
+        width: 10em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-            .render-views {
-                @apply(--layout-horizontal);
-                @apply(--layout-wrap);
+      .render-views {
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
 
-            }
+      }
 
-            .render-views > .item {
-                @apply(--layout-vertical);
-                @apply(--layout-center);
-            }
+      .render-views > .item {
+        @apply(--layout-vertical);
+        @apply(--layout-center);
+      }
 
-            .render-views > .item label {
-                color: #999;
-            }
+      .render-views > .item label {
+        color: #999;
+      }
 
-            .render-views > .item img {
-                width:200px;
-            }
+      .render-views > .item img {
+        width: 200px;
+      }
 
-            .transmission-formats {
-            }
+      .transmission-formats {
+      }
 
-            .transmission-formats > .item {
-                @apply(--layout-horizontal);
-                @apply(--layout-flex);
-            }
+      .transmission-formats > .item {
+        @apply(--layout-horizontal);
+        @apply(--layout-flex);
+      }
 
-            .transmission-formats > .item label {
-                color: #999;
-            }
+      .transmission-formats > .item label {
+        color: #999;
+      }
 
-            nuxeo-3d-viewer {
-                width: 100%;
-                height: 400px;
-            }
+      nuxeo-3d-viewer {
+        width: 100%;
+        height: 400px;
+      }
 
-            .title {
-                font-size: 1.64rem;
-            }
+      .title {
+        font-size: 1.64rem;
+      }
 
-            .attachments {
-                border-top: 1px dashed #ddd;
-                background-color: #fafafd;
-            }
+      .attachments {
+        border-top: 1px dashed #ddd;
+        background-color: #fafafd;
+      }
 
-            .flex {
-                font-size: 12px;
-                margin: auto;
-            }
+      .flex {
+        font-size: 12px;
+        margin: auto;
+      }
 
-            .format {
-                display: inline-block;
-                width: 100%;
-            }
+      .format {
+        display: inline-block;
+        width: 100%;
+      }
 
-            .format-name {
-                float: left;
-                width: 25%;
-            }
+      .format-name {
+        float: left;
+        width: 25%;
+      }
 
-            .format-info {
-                float: left;
-                height: 100%;
-                width: 65%;
-            }
+      .format-info {
+        float: left;
+        height: 100%;
+        width: 65%;
+      }
 
-            .format-polygons {
-                height: 50%;
-                display: flex;
-            }
+      .format-polygons {
+        height: 50%;
+        display: flex;
+      }
 
-            .format-textures {
-                height: 50%;
-                display: flex;
-            }
+      .format-textures {
+        height: 50%;
+        display: flex;
+      }
 
-            .format-buttons {
-                float: left;
-                width: 8%;
-            }
+      .format-buttons {
+        float: left;
+        width: 8%;
+      }
 
-            .format-info-element {
-                float: left;
-            }
-        </style>
+      .format-info-element {
+        float: left;
+      }
+    </style>
 
-        <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
-            <nuxeo-dropzone document="{{document}}"
-                            message="[[i18n('threeDViewLayout.dropzone.message','Drop to replace the 3D content')]]"
-                            message-empty="[[i18n('threeDViewLayout.dropzone.empty.message', 'Click here or drop to replace the 3D')]]"
-                            uploaded-message="[[i18n('threeDViewLayout.dropzone.uploaded.message', '3D file uploaded')]]"
-                            empty="[[!document.properties.file:content.data]]">
-                <nuxeo-3d-viewer id="threedViewer"
-                                 src="[[document.properties.threed:transmissionFormats.0.content.data]]"
-                                 hidden="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-                </nuxeo-3d-viewer>
-            </nuxeo-dropzone>
-        </template>
-        <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-            <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
-        </template>
-        <div class="card-section">
-            <div class="horizontal layout center">
-                <template is="dom-if" if="[[document.properties.file:content]]">
-                    <p class="title">
-                        <a href="[[document.properties.file:content.data]]">[[document.title]]</a>
-                    </p>
-                    <div class="horizontal flex end-justified layout">
-                        <nuxeo-document-view-delete-blob
-                                document="{{document}}"
-                                                         tool-tip="[[i18n('threeDViewLayout.delete.tooltip', 'Delete 3D content')]]"
-                                                         confirm-message="[[i18n('threeDViewLayout.delete.confirm.message', 'Do you really want to delete this 3D?')]]"
-                                                         delete-message="[[i18n('threeDViewLayout.deleted.message', '3D deleted')]]"
-                                                         hidden="[[!document.properties.file:content]]">
-                        </nuxeo-document-view-delete-blob>
-                        <nuxeo-upload-blob-button document="{{document}}"
-                                                  uploaded-message="[[i18n('threeDViewLayout.uploaded.messaged', '3D uploaded')]]"
-                                                  tool-tip="[[i18n('threeDViewLayout.upload.tooltip', 'Upload 3D')]]">
-                        </nuxeo-upload-blob-button>
-                    </div>
-                </template>
-                <template is="dom-if" if="[[!document.properties.file:content]]">
-                    <p class="title">
-                        <span>[[document.title]]</span>
-                    </p>
-                </template>
-            </div>
-        </div>
-        <div class="card-section sep">
-            <p class="title">[[i18n('threeDViewLayout.renderViews.heading', 'Render Views')]]</p>
-            <template is="dom-if" if="{{_hasItems(document.properties.threed:renderViews)}}">
-                <div class="render-views">
-                    <template is="dom-repeat" items="[[document.properties.threed:renderViews]]" as="renderView">
-                        <div class="item">
-                            <img src="[[renderView.thumbnail.data]]" on-tap="_setCoords" />
-                            <a href="[[renderView.content.data]]" title="[[i18n('threeDViewLayout.renderViews.download', 'Download Render View')]]">
-                                <label class="layout flex-2">[[renderView.title]]</label>
-                                <iron-icon icon="icons:file-download"></iron-icon>
-                            </a>
-                        </div>
-                    </template>
-                </div>
-            </template>
-            <template is="dom-if" if="{{!_hasItems(document.properties.threed:renderViews)}}">
-                <p>No items.</p>
-            </template>
-        </div>
-        <div class="card-section sep">
-            <p class="title">[[i18n('threeDViewLayout.threed_transmissionFormats.heading', 'Transmission Formats')]]</p>
-            <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
-                <div class="transmission-formats">
-                    <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
-
-                        <div class="format">
-
-                            <div class="format-name">
-                                <label class="layout flex-2">[[format.name]]</label>
-                            </div>
-
-                            <div class="format-info">
-                                <div class="format-polygons item">
-                                    <iron-icon class="format-info-element" icon="image:details"></iron-icon>
-                                    <span class="layout flex format-info-element">[[_getPolyInfo(format)]]</span>
-                                    <template class="format-info-element" is="dom-if"
-                                              if="{{format.info.geometry_lod_success}}">
-                                        <iron-icon icon="icons:done"></iron-icon>
-                                    </template>
-                                    <template class="format-info-element" is="dom-if"
-                                              if="{{!format.info.geometry_lod_success}}">
-                                        <iron-icon icon="icons:warning"></iron-icon>
-                                    </template>
-                                    <span class="layout flex format-info-element">[[_getPolyNumber(format)]] [[i18n('threeDViewLayout.unit.polygons', 'polygons')]]</span>
-                                </div>
-                                <div class="format-textures item">
-                                    <template is="dom-if" if="{{_hasTextures(format)}}">
-                                        <iron-icon class="format-info-element" icon="image:image"></iron-icon>
-                                        <span class="layout flex format-info-element">[[_getTexInfo(format)]]</span>
-                                        <template class="format-info-element" is="dom-if"
-                                                  if="{{format.info.texture_lod_success}}">
-                                            <iron-icon icon="icons:done"></iron-icon>
-                                        </template>
-                                        <template class="format-info-element" is="dom-if"
-                                                  if="{{!format.info.texture_lod_success}}">
-                                            <iron-icon icon="icons:warning"></iron-icon>
-                                        </template>
-                                        <span class="layout flex format-info-element">[[_getTexSize(format)]]</span>
-                                    </template>
-                                </div>
-                            </div>
-
-                            <div class="format-buttons">
-                                <iron-icon icon="icons:visibility" on-tap="_loadFormat" ></iron-icon>
-                                <a href="[[format.content.data]]" title="[[i18n('threeDViewLayout.transmissionFormats.download', 'Download Transmission Format')]]">
-                                    <iron-icon icon="icons:file-download"></iron-icon>
-                                </a>
-                            </div>
-
-                        </div>
-
-                    </template>
-                </div>
-            </template>
-            <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-                <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
-            </template>
-        </div>
-        <div class="card-section attachments">
-            <nuxeo-document-attachments document="{{document}}"></nuxeo-document-attachments>
-        </div>
+    <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
+      <nuxeo-dropzone document="{{document}}"
+                      message="[[i18n('threeDViewLayout.dropzone.message','Drop to replace the 3D content')]]"
+                      message-empty="[[i18n('threeDViewLayout.dropzone.empty.message', 'Click here or drop to replace the 3D')]]"
+                      uploaded-message="[[i18n('threeDViewLayout.dropzone.uploaded.message', '3D file uploaded')]]"
+                      empty="[[!document.properties.file:content.data]]">
+        <nuxeo-3d-viewer id="threedViewer"
+                         src="[[document.properties.threed:transmissionFormats.0.content.data]]"
+                         hidden="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+        </nuxeo-3d-viewer>
+      </nuxeo-dropzone>
     </template>
+    <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+      <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
+    </template>
+    <div class="card-section">
+      <div class="horizontal layout center">
+        <template is="dom-if" if="[[document.properties.file:content]]">
+          <p class="title">
+            <a href="[[document.properties.file:content.data]]">[[document.title]]</a>
+          </p>
+          <div class="horizontal flex end-justified layout">
+            <nuxeo-document-view-delete-blob
+              document="{{document}}"
+              tool-tip="[[i18n('threeDViewLayout.delete.tooltip', 'Delete 3D content')]]"
+              confirm-message="[[i18n('threeDViewLayout.delete.confirm.message', 'Do you really want to delete this 3D?')]]"
+              delete-message="[[i18n('threeDViewLayout.deleted.message', '3D deleted')]]"
+              hidden="[[!document.properties.file:content]]">
+            </nuxeo-document-view-delete-blob>
+            <nuxeo-upload-blob-button document="{{document}}"
+                                      uploaded-message="[[i18n('threeDViewLayout.uploaded.messaged', '3D uploaded')]]"
+                                      tool-tip="[[i18n('threeDViewLayout.upload.tooltip', 'Upload 3D')]]">
+            </nuxeo-upload-blob-button>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!document.properties.file:content]]">
+          <p class="title">
+            <span>[[document.title]]</span>
+          </p>
+        </template>
+      </div>
+    </div>
+    <div class="card-section sep">
+      <p class="title">[[i18n('threeDViewLayout.renderViews.heading', 'Render Views')]]</p>
+      <template is="dom-if" if="{{_hasItems(document.properties.threed:renderViews)}}">
+        <div class="render-views">
+          <template is="dom-repeat" items="[[document.properties.threed:renderViews]]" as="renderView">
+            <div class="item">
+              <img src="[[renderView.thumbnail.data]]" on-tap="_setCoords"/>
+              <a href="[[renderView.content.data]]"
+                 title="[[i18n('threeDViewLayout.renderViews.download', 'Download Render View')]]">
+                <label class="layout flex-2">[[renderView.title]]</label>
+                <iron-icon icon="icons:file-download"></iron-icon>
+              </a>
+            </div>
+          </template>
+        </div>
+      </template>
+      <template is="dom-if" if="{{!_hasItems(document.properties.threed:renderViews)}}">
+        <p>No items.</p>
+      </template>
+    </div>
+    <div class="card-section sep">
+      <p class="title">[[i18n('threeDViewLayout.threed_transmissionFormats.heading', 'Transmission Formats')]]</p>
+      <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
+        <div class="transmission-formats">
+          <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
 
-    <script>
-        (function() {
-            'use strict';
+            <div class="format">
 
-            Polymer({
-                is: 'nuxeo-three-d-view-layout',
-                properties: {
-                    document: {
-                        type: Object,
-                        notify: true
-                    }
-                },
-                behaviors: [Nuxeo.I18nBehavior],
+              <div class="format-name">
+                <label class="layout flex-2">[[format.name]]</label>
+              </div>
 
-                _loadFormat: function(e) {
-                    var lod = e.model.dataHost.itemForElement(e.target);
-                    this.querySelector('#threedViewer').set('src', lod.content.data);
-                },
+              <div class="format-info">
+                <div class="format-polygons item">
+                  <iron-icon class="format-info-element" icon="image:details"></iron-icon>
+                  <span class="layout flex format-info-element">[[_getPolyInfo(format)]]</span>
+                  <template class="format-info-element" is="dom-if"
+                            if="{{format.info.geometry_lod_success}}">
+                    <iron-icon icon="icons:done"></iron-icon>
+                  </template>
+                  <template class="format-info-element" is="dom-if"
+                            if="{{!format.info.geometry_lod_success}}">
+                    <iron-icon icon="icons:warning"></iron-icon>
+                  </template>
+                  <span class="layout flex format-info-element">[[_getPolyNumber(format)]] [[i18n('threeDViewLayout.unit.polygons', 'polygons')]]</span>
+                </div>
+                <div class="format-textures item">
+                  <template is="dom-if" if="{{_hasTextures(format)}}">
+                    <iron-icon class="format-info-element" icon="image:image"></iron-icon>
+                    <span class="layout flex format-info-element">[[_getTexInfo(format)]]</span>
+                    <template class="format-info-element" is="dom-if"
+                              if="{{format.info.texture_lod_success}}">
+                      <iron-icon icon="icons:done"></iron-icon>
+                    </template>
+                    <template class="format-info-element" is="dom-if"
+                              if="{{!format.info.texture_lod_success}}">
+                      <iron-icon icon="icons:warning"></iron-icon>
+                    </template>
+                    <span class="layout flex format-info-element">[[_getTexSize(format)]]</span>
+                  </template>
+                </div>
+              </div>
 
-                _setCoords: function(e) {
-                    var renderView = e.model.dataHost.itemForElement(e.target);
-                    this.querySelector('#threedViewer').set('sphericalCoords',[renderView.azimuth, renderView.zenith]);
-                },
+              <div class="format-buttons">
+                <iron-icon icon="icons:visibility" on-tap="_loadFormat"></iron-icon>
+                <a href="[[format.content.data]]"
+                   title="[[i18n('threeDViewLayout.transmissionFormats.download', 'Download Transmission Format')]]">
+                  <iron-icon icon="icons:file-download"></iron-icon>
+                </a>
+              </div>
 
-                _hasItems: function(list) {
-                    return list.length > 0;
-                },
+            </div>
 
-                _formatAsReadable: function(value, base, unit) {
-                    value = Number(value);
-                    if (value < base) {
-                        return value + ' ' + unit;
-                    }
-                    var exp = parseInt((Math.log(value) / Math.log(base)));
-                    var pre = String(('kMGTPE').charAt(exp - 1));
-                    return (Math.round(value / Math.pow(base, exp) * 10) / 10) + ' ' + pre + unit;
-                },
+          </template>
+        </div>
+      </template>
+      <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+        <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
+      </template>
+    </div>
+    <div class="card-section attachments">
+      <nuxeo-document-attachments document="{{document}}"></nuxeo-document-attachments>
+    </div>
+  </template>
 
-                _getPolyInfo: function(f) {
-                    var perc = f.percPoly == null ? '' : f.percPoly + ' %';
-                    var max = f.maxPoly == null ? '' : '< ' + this._formatAsReadable(f.maxPoly, 1000, '');
-                    return f.percPoly != null && f.maxPoly != null ? perc + ' | ' + max : perc + max;
-                },
+  <script>
+    (function () {
+      'use strict';
 
-                _getTexInfo: function(f) {
-                    var perc = f.percTex == null ? '' : f.percTex + ' %';
-                    var max = f.maxTex == null ? '' : '< ' + f.maxTex;
-                    return f.percTex != null && f.maxTex != null ? perc + ' | ' + max : perc + max;
-                },
+      Polymer({
+        is: 'nuxeo-three-d-view-layout',
+        properties: {
+          document: {
+            type: Object,
+            notify: true
+          }
+        },
+        behaviors: [Nuxeo.I18nBehavior],
 
-                _getPolyNumber: function(f) {
-                    return this._formatAsReadable(f.info.polygons, 1000, '');
-                },
+        _loadFormat: function (e) {
+          var lod = e.model.dataHost.itemForElement(e.target);
+          this.querySelector('#threedViewer').set('src', lod.content.data);
+        },
 
-                _hasTextures: function(f) {
-                    return f.info.textures_size > 0;
-                },
+        _setCoords: function (e) {
+          var renderView = e.model.dataHost.itemForElement(e.target);
+          this.querySelector('#threedViewer').set('sphericalCoords', [renderView.azimuth, renderView.zenith]);
+        },
 
-                _getTexSize: function(f) {
-                    return this._hasTextures(f) ? this._formatAsReadable(f.info.textures_size, 1024, 'B') : null;
-                }
-            });
-        })();
-    </script>
+        _hasItems: function (list) {
+          return list.length > 0;
+        },
+
+        _formatAsReadable: function (value, base, unit) {
+          value = Number(value);
+          if (value < base) {
+            return value + ' ' + unit;
+          }
+          var exp = parseInt((Math.log(value) / Math.log(base)));
+          var pre = String(('kMGTPE').charAt(exp - 1));
+          return (Math.round(value / Math.pow(base, exp) * 10) / 10) + ' ' + pre + unit;
+        },
+
+        _getPolyInfo: function (f) {
+          var perc = f.percPoly == null ? '' : f.percPoly + ' %';
+          var max = f.maxPoly == null ? '' : '< ' + this._formatAsReadable(f.maxPoly, 1000, '');
+          return f.percPoly != null && f.maxPoly != null ? perc + ' | ' + max : perc + max;
+        },
+
+        _getTexInfo: function (f) {
+          var perc = f.percTex == null ? '' : f.percTex + ' %';
+          var max = f.maxTex == null ? '' : '< ' + f.maxTex;
+          return f.percTex != null && f.maxTex != null ? perc + ' | ' + max : perc + max;
+        },
+
+        _getPolyNumber: function (f) {
+          return this._formatAsReadable(f.info.polygons, 1000, '');
+        },
+
+        _hasTextures: function (f) {
+          return f.info.textures_size > 0;
+        },
+
+        _getTexSize: function (f) {
+          return this._hasTextures(f) ? this._formatAsReadable(f.info.textures_size, 1024, 'B') : null;
+        }
+      });
+    })();
+  </script>
 
 </dom-module>

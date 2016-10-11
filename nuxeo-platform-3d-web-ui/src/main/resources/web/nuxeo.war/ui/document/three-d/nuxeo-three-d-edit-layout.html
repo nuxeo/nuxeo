@@ -24,34 +24,34 @@ Contributors:
 @element three-d-edit-layout
 -->
 <dom-module id="nuxeo-three-d-edit-layout">
-    <template>
-        <style>
-            :host {
-                display: block;
-            }
-        </style>
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
 
-        <nuxeo-file-edit-layout document={{document}} upload-enabled$="[[uploadEnabled]]"></nuxeo-file-edit-layout>
+    <nuxeo-file-edit-layout document={{document}} upload-enabled$="[[uploadEnabled]]"></nuxeo-file-edit-layout>
 
-    </template>
-    <script>
-        (function() {
-            'use strict';
+  </template>
+  <script>
+    (function () {
+      'use strict';
 
-            Polymer({
-                is: 'nuxeo-three-d-edit-layout',
+      Polymer({
+        is: 'nuxeo-three-d-edit-layout',
 
-                properties: {
-                    document: {
-                        type: Object
-                    },
+        properties: {
+          document: {
+            type: Object
+          },
 
-                    uploadEnabled: {
-                        type: Boolean,
-                        value: false
-                    }
-                }
-            });
-        })();
-    </script>
+          uploadEnabled: {
+            type: Boolean,
+            value: false
+          }
+        }
+      });
+    })();
+  </script>
 </dom-module>
