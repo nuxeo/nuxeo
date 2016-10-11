@@ -60,4 +60,14 @@ public interface LocaleProvider {
      */
     public TimeZone getTimeZone(CoreSession session);
 
+    /**
+     * Returns the default locale for given requested locale.
+     * <p>
+     * Checks if requested locale is part of supported locales, and fall-backs on a default locale if not (or if
+     * requested locale is empty).
+     *
+     * @since 8.4
+     */
+    public Locale getLocaleWithDefault(String requestedLocale);
+
 }

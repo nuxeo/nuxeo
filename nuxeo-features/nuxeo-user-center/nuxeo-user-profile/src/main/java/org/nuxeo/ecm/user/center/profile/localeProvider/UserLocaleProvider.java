@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
+import org.nuxeo.ecm.platform.web.common.locale.DefaultLocaleProvider;
 import org.nuxeo.ecm.user.center.profile.UserProfileConstants;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.api.Framework;
@@ -36,8 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.6
  */
-public class UserLocaleProvider implements LocaleProvider {
-    
+public class UserLocaleProvider extends DefaultLocaleProvider {
+
     public static final Log log = LogFactory.getLog(UserLocaleProvider.class);
 
     @Override
@@ -81,13 +81,13 @@ public class UserLocaleProvider implements LocaleProvider {
     @Override
     public Locale getLocaleWithDefault(CoreSession session) {
         Locale locale = getLocale(session);
-        return locale == null ? Locale.getDefault() : locale;
+        return locale == null ? getDefaultLocale() : locale;
     }
 
     @Override
     public Locale getLocaleWithDefault(DocumentModel userProfileDoc) {
         Locale locale = getLocale(userProfileDoc);
-        return locale == null ? Locale.getDefault() : locale;
+        return locale == null ? getDefaultLocale() : locale;
     }
 
 }
