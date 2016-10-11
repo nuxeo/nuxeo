@@ -18,11 +18,16 @@
  */
 package org.nuxeo.ecm.platform.web.common.locale;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
+import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 
 /**
  * Provides the default locale and timezone from the server.
@@ -33,27 +38,51 @@ public class DefaultLocaleProvider implements LocaleProvider {
 
     @Override
     public Locale getLocale(CoreSession repo) {
-        return Locale.getDefault();
+        return getLocaleWithDefault(repo);
     }
 
     @Override
     public Locale getLocale(DocumentModel userProfileDoc) {
-        return Locale.getDefault();
+        return getLocaleWithDefault(userProfileDoc);
     }
 
     @Override
     public TimeZone getTimeZone(CoreSession repo) {
-        return TimeZone.getDefault();
+        return getDefaultTimezone();
     }
 
     @Override
     public Locale getLocaleWithDefault(CoreSession session) {
-        return Locale.getDefault();
+        return getDefaultLocale();
     }
 
     @Override
     public Locale getLocaleWithDefault(DocumentModel userProfileDoc) {
-        return Locale.getDefault();
+        return getDefaultLocale();
+    }
+
+    @Override
+    public Locale getLocaleWithDefault(String requestedLocale) {
+        Locale res = null;
+        LoginScreenConfig screenConfig = LoginScreenHelper.getConfig();
+        List<String> supported = screenConfig.getSupportedLocales();
+        if (!StringUtils.isBlank(requestedLocale) && supported.contains(requestedLocale)) {
+            res = LocaleUtils.toLocale(requestedLocale);
+        } else {
+            res = LocaleUtils.toLocale(screenConfig.getDefaultLocale());
+        }
+        if (res == null) {
+            return Locale.getDefault();
+        }
+        return res;
+    }
+
+    protected Locale getDefaultLocale() {
+        return getLocaleWithDefault((String) null);
+    }
+
+    protected TimeZone getDefaultTimezone() {
+        return TimeZone.getDefault();
     }
 
 }

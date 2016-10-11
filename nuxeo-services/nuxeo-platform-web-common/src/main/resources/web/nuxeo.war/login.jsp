@@ -14,6 +14,7 @@
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo" %>
 <%@ page import="org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper" %>
+<%@ page import="org.nuxeo.ecm.platform.web.common.locale.LocaleProvider"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -48,6 +49,7 @@ String selectedLanguage = null;
 if (localeCookie != null) {
   selectedLanguage = localeCookie.getValue();
 }
+selectedLanguage = Framework.getLocalService(LocaleProvider.class).getLocaleWithDefault(selectedLanguage).getLanguage();
 
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
 String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
