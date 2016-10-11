@@ -321,9 +321,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void resumeInstance(String routeId, String nodeId,
-            Map<String, Object> data, String status, CoreSession session) {
-        completeTask(routeId, nodeId, null, data, status, session);
+    public void resumeInstance(String routeId, String nodeId, Map<String, Object> data, String status,
+            CoreSession session) {
+        AttachedDocumentsChecker adc = new AttachedDocumentsChecker(session, routeId);
+        adc.runUnrestricted();
+        if (!adc.isWorkflowCanceled) {
+            completeTask(routeId, nodeId, null, data, status, session);
+        }
     }
 
     @Override
@@ -1062,6 +1066,42 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         public DocumentModelList runQuery() throws ClientException {
             runUnrestricted();
             return docs;
+        }
+    }
+
+    /**
+     * Cancel the workflow instance if all its attached document don't exist anymore. If the workflow is cancelled then
+     * the isWowkflowCanceled is set to true.
+     *
+     * @since 8.4
+     */
+    public static class AttachedDocumentsChecker extends UnrestrictedSessionRunner {
+
+        String workflowInstanceId;
+
+        boolean isWorkflowCanceled;
+
+        protected AttachedDocumentsChecker(CoreSession session, String workflowInstanceId) {
+            super(session);
+            this.workflowInstanceId = workflowInstanceId;
+        }
+
+        @Override
+        public void run() {
+            DocumentModel routeDoc = session.getDocument(new IdRef(workflowInstanceId));
+            DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+            List<String> attachedDocumentIds = routeInstance.getAttachedDocuments();
+            if (attachedDocumentIds.isEmpty()) {
+                return;
+            }
+            for (String attachedDocumentId : attachedDocumentIds) {
+                if (session.exists(new IdRef(attachedDocumentId))) {
+                    return;
+                }
+            }
+            DocumentRoutingEngineService routingEngine = Framework.getService(DocumentRoutingEngineService.class);
+            routingEngine.cancel(routeInstance, session);
+            isWorkflowCanceled = true;
         }
     }
 

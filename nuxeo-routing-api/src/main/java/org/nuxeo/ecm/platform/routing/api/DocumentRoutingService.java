@@ -125,6 +125,8 @@ public interface DocumentRoutingService {
      * will be cancelled.
      * <p/>
      * Called by the UI action corresponding to a task button.
+     * <p/>
+     * If all attached documents of the workflow instance have been deleted then the workflow is cancelled.
      *
      * @param routeId the id of the route instance
      * @param nodeId the node id to resume on
