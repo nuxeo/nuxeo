@@ -30,6 +30,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
@@ -124,7 +125,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                     throw result.getError();
                 }
                 thumbBlob.setMimeType("image/jpeg");
-                thumbBlob.setFilename(String.format("%.2f-seconds.jpeg", timecode));
+                thumbBlob.setFilename(String.format(Locale.ENGLISH, "%.2f-seconds.jpeg", timecode));
                 blobs.add(thumbBlob);
                 timecodes.add(timecode);
                 comments.add(String.format("%s %d", blob.getFilename(), i));
