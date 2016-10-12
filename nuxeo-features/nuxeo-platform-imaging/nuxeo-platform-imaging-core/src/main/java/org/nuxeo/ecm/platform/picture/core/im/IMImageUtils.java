@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
@@ -153,6 +154,16 @@ public class IMImageUtils implements ImageUtils {
                 ImageRotater.rotate(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath(), angle);
             }
         }.call(blob, null, "rotate");
+    }
+
+    @Override
+    public Blob convertToPDF(Blob blob) {
+        return new ImageMagickCaller() {
+            @Override
+            public void callImageMagick() throws CommandNotAvailable, CommandException {
+                ImageConverter.convert(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath());
+            }
+        }.call(blob, "pdf", "converter");
     }
 
     @Override
