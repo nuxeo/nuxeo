@@ -5,57 +5,39 @@
   <style type="text/css">
     <!--
     body {
-      font: normal 11px "Lucida Grande", sans-serif;
-      background-color: #fff;
+      font: normal 14px "Lucida Grande", sans-serif;
+      background: #213f7d url(img/home_bg.png) no-repeat right bottom;
       color: #343434;
+      margin: 0;
     }
 
-    h1 {
-      color: #343434;
-      font: bold 14px "Lucida Grande", sans-serif;
-      padding: 0;
-      margin: 2px 0 15px 0;
-      border-bottom: 1px dotted #8B8B8B;
+    code {
+      white-space: pre;
+      display: block;
+    }
+
+    header {
+      background-color: #fff;
+      padding: 1.5em 3em;
     }
 
     h2 {
-      color: #999;
-      font: bold 10px "Lucida Grande", sans-serif;
-      padding: 0;
-      margin: 0 0 0 0;
-    }
-
-    .login {
-      background: #fff;
-      opacity: 0.8;
-      filter: alpha(opacity=80);
-      border: 1px solid #4E9AE1;
-      padding: 20px 75px 5px 70px;
-      width: 250px;
-    }
-
-    .login_label {
-      font: bold 10px "Lucida Grande", sans-serif;
-      text-align: right;
-      color: #454545;
-      margin: 0 4px 0 0;
-      width: 70px;
-    }
-
-    .login_input {
-      border: 1px inset #454545;
-      background: white;
-      padding: 3px;
-      color: #454545;
-      margin: 0 10px 5px 0px;
-      font: normal 10px "Lucida Grande", sans-serif;
-    }
-
-    .formTitle {
-      margin: 0 0 20px 0;
+      color: #157dcc;
       text-align: center;
-      color: #4a4a4a;
-      font-size: 14px;
+    }
+
+    a {
+      color: #157dcc;
+      text-decoration: none;
+      transition: all .2s ease-in-out;
+    }
+
+    a:hover, .footer a:hover {
+      color: #00adff;
+    }
+
+    .logo img {
+      height: 20px;
     }
 
     .footer {
@@ -63,67 +45,62 @@
       font-size: 9px;
     }
 
-    .loginLegal {
-      padding: 0;
-      margin: 0 0 10px 0;
-    }
-
-    .version {
-      padding-right: 50px;
-    }
-
-    .block_container {
-      margin-right: 50px;
-      border: none;
-      height: 500px;
-      width: 350px;
-      overflow: auto;
-      background-color: #ffffff;
-      opacity: 0.8;
-      filter: alpha(opacity=80);
-    }
-
     .welcome {
       background: #fff;
       opacity: 0.8;
       filter: alpha(opacity=80);
-      border: 1px solid #4E9AE1;
-      width: 400px;
-      padding: 20px;
+      width: 500px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+      padding: 45px;
       margin: 150px auto;
     }
 
     .welcomeText {
-      font: 12px "Lucida Grande", sans-serif;
       text-align: left;
       color: #454545;
+      line-height: 1.5em;
       margin: 0 0 0.8em 0;
     }
 
     .footer {
-      font: 9px "Lucida Grande", sans-serif;
+      font-size: 9px;
       text-align: center;
       color: #ccc;
     }
 
+    .footer a {
+      color: #fff;
+    }
     -->
 
   </style>
 </head>
 <body>
-<div class="header"><img src="img/nuxeo.png"></div>
+<header>
+  <div class="logo">
+    <img src="img/nuxeo.png"/>
+  </div>
+</header>
 <div class="welcome">
-  <p class="welcomeText">
-    Welcome to Nuxeo Server.
-  </p>
+  <h2>Welcome to Nuxeo Server</h2>
   <p class="welcomeText">
     This Nuxeo Platform distribution allows you to access all the services and features
     of the Nuxeo Platform through its APIs. It provides no user interface.
-    <a href="https://doc.nuxeo.com/display/NXDOC/Installing+a+New+Package+on+Your+Instance" target="_blank">Install</a>
-    the Nuxeo Web UI or Nuxeo JSF UI package to benefit from the available user interfaces
-    and use the Nuxeo Platform in your browser.
+    <a href="https://doc.nuxeo.com/x/moFH" target="_blank">Install</a>
+    the <a href="https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-web-ui" target="_blank">Nuxeo Web UI</a>
+    or <a href="https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-jsf-ui" target="_blank">Nuxeo JSF UI</a>
+    package to benefit from the available user interfaces and use the Nuxeo Platform in your browser.
   </p>
+  <code>
+    # To install nuxeo-web-ui package
+    $ ./bin/nuxeoctl mp-install nuxeo-web-ui
+
+    # To install nuxeo-jsf-ui
+    $ ./bin/nuxeoctl mp-install nuxeo-jsf-ui
+  </code>
 </div>
-<div class="footer">Copyright &copy; 2001-2016 Nuxeo SA (http://nuxeo.com/) and others.</div>
+<div class="footer">Copyright &copy; 2001-2016 Nuxeo SA <a href="https://nuxeo.com" target="_blank">nuxeo.com</a> and
+  others.
+</div>
 </body>
 </html>
