@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
+import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
@@ -46,7 +47,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected final String key;
+    protected String key;
 
     protected final DocumentRef docRef;
 
@@ -64,16 +65,26 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         repositoryName = doc.getRepositoryName();
         renditionName = def.getName();
         setOriginatingUsername(doc.getCoreSession().getPrincipal().getName());
+        this.id = buildId(doc, def);
     }
 
-    @Override
-    public String getId() {
-        return "rendition:" + key;
+    protected String buildId(DocumentModel doc, RenditionDefinition def) {
+        StringBuffer sb = new StringBuffer("rendition:");
+        sb.append(doc.getId());
+        String variant = def.getProvider().getVariant(doc, def);
+        if (variant != null) {
+            sb.append("::");
+            sb.append(variant);
+        }
+        sb.append("::");
+        sb.append(def.getName());
+        return sb.toString();
     }
 
     @Override
     public String getTitle() {
-        return "Lazy Rendition for " + renditionName + " on " + docRef.toString();
+        return "Lazy Rendition for " + renditionName + " on " + docRef.toString()
+                + " on behalf of " + originatingUsername;
     }
 
     @Override
@@ -93,8 +104,17 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         RenditionService rs = Framework.getService(RenditionService.class);
         RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
 
+        RenditionProvider renditionProvider = def.getProvider();
+        if (renditionProvider instanceof AbstractLazyCachableRenditionProvider) {
+            String rendKey = ((AbstractLazyCachableRenditionProvider) renditionProvider).buildRenditionKey(doc, def);
+            if (!rendKey.equals(key)) {
+                refreshStoreEntry(rendKey);
+                this.key = rendKey;
+            }
+        }
+
         List<Blob> blobs = doComputeRendition(session, doc, def);
-        doStore(blobs);
+        updateAndCompleteStoreEntry(blobs);
     }
 
     @Override
@@ -108,10 +128,27 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         emptyBlob.setFilename("error");
         emptyBlob.setMimeType("text/plain;" + LazyRendition.ERROR_MARKER);
         blobs.add(emptyBlob);
-        doStore(blobs);
+        updateAndCompleteStoreEntry(blobs);
     }
 
-    void doStore(List<Blob> blobs) {
+    void refreshStoreEntry(String renditionKey) {
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+        TransientStore ts = tss.getStore(getTransientStoreName());
+
+        // Release old key
+        if (ts.exists(key)) {
+            ts.release(key);
+        }
+        ts.putParameter(renditionKey, AbstractLazyCachableRenditionProvider.WORKERID_KEY, getId());
+        List<Blob> blobs = new ArrayList<Blob>();
+        StringBlob emptyBlob = new StringBlob("");
+        emptyBlob.setFilename("inprogress");
+        emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
+        blobs.add(emptyBlob);
+        ts.putBlobs(renditionKey, blobs);
+    }
+
+    void updateAndCompleteStoreEntry(List<Blob> blobs) {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 
