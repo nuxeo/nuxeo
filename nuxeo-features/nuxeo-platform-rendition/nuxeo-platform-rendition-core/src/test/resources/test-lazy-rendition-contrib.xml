@@ -27,6 +27,7 @@
         class="org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider">
       <operationChain>Dummy</operationChain>
       <allowEmptyBlob>true</allowEmptyBlob>
+      <sourceDocumentModificationDatePropertyName>dc:issued</sourceDocumentModificationDatePropertyName>
     </renditionDefinition>
 
     <renditionDefinition name="lazyDelayedErrorAutomationRendition" enabled="true"

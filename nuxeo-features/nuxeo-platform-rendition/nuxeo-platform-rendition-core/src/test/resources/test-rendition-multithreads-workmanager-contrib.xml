@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendition.workmanager.test" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.rendition.workmanager</require>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="renditionBuilder">
+      <maxThreads>4</maxThreads>
+      <category>renditionBuilder</category>
+    </queue>
+  </extension>
+
+</component>
