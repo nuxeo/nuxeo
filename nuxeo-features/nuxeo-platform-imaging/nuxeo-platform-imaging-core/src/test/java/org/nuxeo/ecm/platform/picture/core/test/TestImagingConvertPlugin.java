@@ -167,4 +167,19 @@ public class TestImagingConvertPlugin {
         }
     }
 
+    @Test
+    public void testConvertToPDF() throws Exception {
+        String converter = "pictureConvertToPDF";
+
+        for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
+            String path = ImagingResourcesHelper.TEST_DATA_FOLDER + filename;
+            Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
+            blob.setFilename(filename);
+            BlobHolder bh = new SimpleBlobHolder(blob);
+
+            BlobHolder result = conversionService.convert(converter, bh, null);
+            assertNotNull(result);
+        }
+    }
+
 }

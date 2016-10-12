@@ -117,6 +117,11 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     @Override
+    public Blob convertToPDF(Blob blob) {
+        return getLibrarySelectorService().getImageUtils().convertToPDF(blob);
+    }
+
+    @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
         log.warn("org.nuxeo.ecm.platform.picture.ImagingComponent.getImageMetadata is deprecated. Please use "
                 + "org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(org.nuxeo.ecm.core.api.Blob)");

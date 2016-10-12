@@ -19,6 +19,11 @@
       <destinationMimeType>image/jpeg</destinationMimeType>
     </converter>
 
+    <converter name="pictureConvertToPDF" class="org.nuxeo.ecm.platform.picture.convert.ConvertToPDFPictureConverter">
+      <sourceMimeType>image/jpeg</sourceMimeType>
+      <destinationMimeType>application/pdf</destinationMimeType>
+    </converter>
+
   </extension>
 
 </component>
