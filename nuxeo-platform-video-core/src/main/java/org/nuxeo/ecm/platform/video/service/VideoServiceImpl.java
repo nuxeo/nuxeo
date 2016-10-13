@@ -191,7 +191,9 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         Work work = new VideoConversionWork(repositoryName, docId, conversionName);
         State state = workManager.getWorkState(work.getId());
-        if (state == State.SCHEDULED) {
+        if (state == null) { // DONE
+            return null;
+        } else if (state == State.SCHEDULED) {
             String queueId = workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION);
             long queueSize = workManager.getQueueSize(queueId, State.SCHEDULED);
             return new VideoConversionStatus(VideoConversionStatus.STATUS_CONVERSION_QUEUED, 0L, queueSize);
