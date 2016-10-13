@@ -6,7 +6,6 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-Name: Nuxeo ECM Select2 Integration
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/widgettypes-contrib.xml,
- OSGI-INF/operations-contrib.xml,
  OSGI-INF/theme-contrib.xml,
  OSGI-INF/actions-contrib.xml,
  OSGI-INF/select2-properties.xml
