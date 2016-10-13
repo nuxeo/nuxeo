@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
@@ -36,9 +37,12 @@ import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.VersionType;
+import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +53,10 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
@@ -70,6 +77,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     private final Timer bulkIndexTimer;
 
+    private final boolean useExternalVersion;
+
     private JsonESDocumentWriter jsonESDocumentWriter;
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
@@ -79,6 +88,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         deleteTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "delete"));
         bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "bulkIndex"));
         this.jsonESDocumentWriter = new JsonESDocumentWriter();// default writer
+        this.useExternalVersion = esa.useExternalVersion();
     }
 
     /**
@@ -136,8 +146,13 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     void processBulkIndexCommands(List<IndexingCommand> cmds) throws ClientException {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
+        Set<String> docIds = new HashSet<>(cmds.size());
         for (IndexingCommand cmd : cmds) {
             if (cmd.getType() == Type.DELETE || cmd.getType() == Type.UPDATE_DIRECT_CHILDREN) {
+                continue;
+            }
+            if (! docIds.add(cmd.getTargetDocumentId()) ) {
+                // do not submit the same doc 2 times
                 continue;
             }
             try {
@@ -161,8 +176,28 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             }
             BulkResponse response = bulkRequest.execute().actionGet();
             if (response.hasFailures()) {
-                log.error(response.buildFailureMessage());
+                logBulkFailure(response);
             }
+        }
+    }
+
+    protected void logBulkFailure(BulkResponse response) {
+        boolean isError = false;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Ignore indexing of some docs more recent versions has already been indexed");
+        for (BulkItemResponse item : response.getItems()) {
+            if (item.isFailed()) {
+                if (item.getFailure().getStatus() == RestStatus.CONFLICT) {
+                    sb.append("\n  ").append(item.getFailureMessage());
+                } else {
+                    isError = true;
+                }
+            }
+        }
+        if (isError) {
+            log.error(response.buildFailureMessage());
+        } else {
+            log.info(sb);
         }
     }
 
@@ -227,7 +262,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                     esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
                     request.request().toString()));
         }
-        request.execute().actionGet();
+        try {
+            request.execute().actionGet();
+        } catch (VersionConflictEngineException e) {
+            log.info("Ignore indexing of doc " + cmd.getTargetDocumentId() +
+                    " a more recent version has already been indexed: " + e.getMessage());
+        }
     }
 
     void processDeleteCommand(IndexingCommand cmd) {
@@ -311,8 +351,12 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
-            return esa.getClient().prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
+            IndexRequestBuilder ret = esa.getClient().prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).setSource(builder);
+            if (useExternalVersion && cmd.getOrder() > 0) {
+                ret.setVersionType(VersionType.EXTERNAL).setVersion(cmd.getOrder());
+            }
+            return ret;
         } catch (ClientException e) {
             throw e;
         } catch (Exception e) {

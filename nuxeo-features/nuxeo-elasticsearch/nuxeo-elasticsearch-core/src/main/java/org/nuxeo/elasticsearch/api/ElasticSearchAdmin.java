@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.elasticsearch.client.Client;
+import java.util.NoSuchElementException;
 
 /**
  * Administration interface for Elasticsearch service
@@ -175,5 +176,12 @@ public interface ElasticSearchAdmin {
      */
     boolean isEmbedded();
 
+    /**
+     * When true use an external version for Elasticsearch document, this enable an optimistic concurrency control
+     * ensuring that an older version of a document never overwrites a newer version.
+     *
+     * @since 8.3
+     */
+    boolean useExternalVersion();
 
 }
