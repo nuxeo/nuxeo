@@ -7,7 +7,6 @@
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
     <param name="Threshold" value="WARN" />
-
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
     </layout>
@@ -16,36 +15,26 @@
   <appender name="FILE" class="org.apache.log4j.FileAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="File" value="target/trace.log" />
+    <param name="Threshold" value="DEBUG" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
     </layout>
   </appender>
 
-  <appender name="POOL" class="org.apache.log4j.FileAppender">
-    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
-    <param name="File" value="target/pool.log" />
-    <param name="Append" value="false" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
-    </layout>
-  </appender>
-
-  <category name="org.nuxeo.ecm.core.management.jtajca" additivity="false">
-    <appender-ref ref="POOL"/>
-  </category>
-
-  <category name="org.nuxeo.elasticsearch.work.ScrollingIndexingWorker" additivity="false">
-    <appender-ref ref="FILE"/>
-  </category>
-  <category name="org.nuxeo.elasticsearch.work.BucketIndexingWorker" additivity="false">
-    <appender-ref ref="FILE"/>
-  </category>
-  <category name="org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl" additivity="false">
-    <priority value="INFO" />
+  <category name="org.nuxeo.elasticsearch.core" additivity="false">
     <appender-ref ref="FILE"/>
   </category>
 
+  <!-- Remove pool warning from the console -->
+  <category name="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration" additivity="false">
+    <appender-ref ref="FILE"/>
+  </category>
+
+  <!-- Remove NodeEnvironment warning about about max file descriptors from the console -->
+  <category name="org.elasticsearch.env" additivity="false">
+    <appender-ref ref="FILE"/>
+  </category>
 
   <root>
     <priority value="WARN" />

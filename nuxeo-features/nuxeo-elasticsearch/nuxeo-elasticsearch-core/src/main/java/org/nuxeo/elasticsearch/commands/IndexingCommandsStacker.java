@@ -96,7 +96,6 @@ public abstract class IndexingCommandsStacker {
         boolean recurse = false;
         switch (eventId) {
             case DOCUMENT_CREATED:
-            case LifeCycleConstants.TRANSITION_EVENT:
                 type = Type.INSERT;
                 break;
             case DOCUMENT_CREATED_BY_COPY:
@@ -109,6 +108,7 @@ public abstract class IndexingCommandsStacker {
             case BINARYTEXT_UPDATED:
             case DOCUMENT_TAG_UPDATED:
             case DOCUMENT_PROXY_UPDATED:
+            case LifeCycleConstants.TRANSITION_EVENT:
                 type = Type.UPDATE;
                 break;
             case DOCUMENT_MOVED:
