@@ -4,7 +4,7 @@
 
 Support for previewing 3D content with ray-tracing renders and WebGL 3D viewer.
 
-Requirements: minimum version for Nuxeo Platform is 8.3.
+Requirements: minimum version for Nuxeo Platform is 8.4.
 
 Supported 3D file formats:
 
@@ -24,22 +24,18 @@ Supported 3D file formats:
 
 ## Server-side
 
+### Step 1: Install bundles
 Copy the 5 built artifacts into `$NUXEO_HOME/templates/custom/bundles/`
 
-## Client-side
-
-### Step 1: Install Blender
-Install it directly from `https://www.blender.org/download/`.
-Add it to your PATH On Mac OS: `PATH=$PATH:/Applications/:/Applications/blender.app/Contents/MacOS`
-
-### Step 2: Install collada2gltf
-Install it directly from `https://github.com/KhronosGroup/glTF/releases/download/v1.0-draft2/collada2gltf_mac_v1.0-draft_x64.gz`
-and add it to `/usr/bin`.
-Make collada2gltf accessible with a command line.
+### Step 2: Install Docker
+Install it directly from `https://docs.docker.com/engine/installation/`.
 
 # How to use it
 Create a new document type "3D".
-Then add to the main content the ".obj" document and all other formats as attached files.
+Then add to the main content the (e.g.) ".obj" document and all other assets (textures, materials,..) as attached files.
+it is possible to add a Zip file with all the content inside (subdirectories are allowed).
+
+Draging and droping a 3D file (supported extension or zip with supported content) will also result in a 3D document.
 
 Available features: 
 - Preview your 3D asset
