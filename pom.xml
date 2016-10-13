@@ -60,6 +60,7 @@
     <nuxeo.javaagent.version>9.1-SNAPSHOT</nuxeo.javaagent.version>
     <nuxeo.forum.version>9.1-SNAPSHOT</nuxeo.forum.version>
     <nuxeo.pdfutils.version>9.1-SNAPSHOT</nuxeo.pdfutils.version>
+    <nuxeo.threed.version>9.1-SNAPSHOT</nuxeo.threed.version>
 
     <!-- optional addons -->
     <nuxeo.sync.version>9.1-SNAPSHOT</nuxeo.sync.version>
@@ -121,6 +122,7 @@
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-forum</module>
     <module>nuxeo-platform-pdf-utils</module>
+    <module>nuxeo-platform-3d</module>
   </modules>
 
   <dependencyManagement>
@@ -1005,6 +1007,33 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-pdf-utils</artifactId>
         <version>${nuxeo.pdfutils.version}</version>
+      </dependency>
+
+      <!-- 3D -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-api</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-core</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-convert</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-jsf</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-web-ui</artifactId>
+        <version>${nuxeo.threed.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
