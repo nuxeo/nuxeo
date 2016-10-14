@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Java Client
+Bundle-SymbolicName: org.nuxeo.java.client.test;singleton:=true
