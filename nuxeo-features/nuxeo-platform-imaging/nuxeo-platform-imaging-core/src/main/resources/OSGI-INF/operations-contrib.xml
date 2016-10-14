@@ -24,5 +24,11 @@
       </operation>
     </chain>
 
+    <chain id="Image.Blob.ConvertToPDF">
+      <operation id="Blob.RunConverter">
+        <param name="convert" type="string">pictureConvertToPDF</param>
+      </operation>
+    </chain>
+
   </extension>
 </component>
