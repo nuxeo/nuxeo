@@ -1,0 +1,3 @@
+[{"id":"studioA-1.0.0","name":"studioA", "version":"1.0.0","targetPlatforms":["server-8.3","server-8.4"],"title":"Studio A","description":"description of studioA", "type":"studio", "visibility":"PUBLIC", "sourceUrl":"test/studioA-1.0.0", "state":0}
+,{"id":"studioA-1.0.1","name":"studioA", "version":"1.0.1","targetPlatforms":["server-8.3","server-8.4"],"title":"Studio A","description":"description of studioA", "type":"studio", "visibility":"PUBLIC", "sourceUrl":"test/studioA-1.0.1", "state":0}
+,{"id":"studioA-1.0.2-SNAPSHOT","name":"studioA", "version":"1.0.2-SNAPSHOT","targetPlatforms":["server-8.3","server-8.4"],"title":"Studio A","description":"description of studioA", "type":"studio", "visibility":"PUBLIC", "sourceUrl":"test/studioA-1.0.2-SNAPSHOT", "state":0}]

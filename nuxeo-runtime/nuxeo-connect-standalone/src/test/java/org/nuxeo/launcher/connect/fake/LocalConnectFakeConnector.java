@@ -19,7 +19,16 @@
 
 package org.nuxeo.launcher.connect.fake;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.nuxeo.connect.connector.fake.AbstractFakeConnector;
+import org.nuxeo.connect.data.AbstractJSONSerializableData;
+import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.data.PackageDescriptor;
 import org.nuxeo.connect.update.PackageType;
 
 public class LocalConnectFakeConnector extends AbstractFakeConnector {
@@ -60,7 +69,28 @@ public class LocalConnectFakeConnector extends AbstractFakeConnector {
 
     @Override
     protected String getJSONDataForDownload(String pkgId) {
-        throw new UnsupportedOperationException();
+        Map<DownloadablePackage, String> jsonByPackage = new HashMap<>();
+        jsonByPackage.putAll(getJSONbyPackageFromJSON(addonJSON));
+        jsonByPackage.putAll(getJSONbyPackageFromJSON(hotfixJSON));
+        jsonByPackage.putAll(getJSONbyPackageFromJSON(studioJSON));
+
+        DownloadablePackage foundPkg = jsonByPackage.keySet().stream().filter(
+                pkg -> pkg.getId().equals(pkgId)).findFirst().orElse(null);
+        return jsonByPackage.get(foundPkg);
+    }
+
+    private Map<DownloadablePackage, String> getJSONbyPackageFromJSON(String json) {
+        Map<DownloadablePackage, String> result = new HashMap<>();
+        try {
+            JSONArray array = new JSONArray(json);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject ob = (JSONObject) array.get(i);
+                result.put(AbstractJSONSerializableData.loadFromJSON(PackageDescriptor.class, ob), ob.toString());
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException("Unable to parse json", e);
+        }
+        return result;
     }
 
 }
