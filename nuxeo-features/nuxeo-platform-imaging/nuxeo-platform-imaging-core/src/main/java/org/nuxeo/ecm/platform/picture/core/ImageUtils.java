@@ -34,6 +34,9 @@ public interface ImageUtils {
 
     Blob rotate(Blob blob, int angle);
 
+    /**
+     * @since 8.4
+     */
     Blob convertToPDF(Blob blob);
 
     /**

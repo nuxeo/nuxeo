@@ -72,6 +72,8 @@ public interface ImagingService {
      *
      * @param blob a Blob containing the image
      * @return a Blob holding the resulting PDF
+     *
+     * @since 8.4
      */
     Blob convertToPDF(Blob blob);
 
