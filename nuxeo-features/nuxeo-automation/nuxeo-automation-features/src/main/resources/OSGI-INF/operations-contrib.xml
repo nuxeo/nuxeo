@@ -125,6 +125,11 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetNuxeoPrincipal" />
 
+  	<operation
+      class="org.nuxeo.ecm.automation.core.operations.users.SuggestUserEntries" />
+      
+    <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries" />
   </extension>
 
   <extension point="chains"

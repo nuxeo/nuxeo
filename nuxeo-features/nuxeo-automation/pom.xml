@@ -21,7 +21,6 @@
     <module>nuxeo-automation-test</module>
     <module>nuxeo-automation-io</module>
     <module>nuxeo-automation-scripting</module>
-    <module>nuxeo-automation-select2</module>
   </modules>
 
   <developers>
