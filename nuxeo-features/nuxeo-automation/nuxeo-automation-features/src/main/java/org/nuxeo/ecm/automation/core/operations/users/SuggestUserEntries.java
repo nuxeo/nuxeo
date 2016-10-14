@@ -16,15 +16,12 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ecm.platform.ui.select2.automation;
+package org.nuxeo.ecm.automation.core.operations.users;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -36,6 +33,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,9 +47,11 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * SuggestUser Operation.
@@ -139,9 +139,9 @@ public class SuggestUserEntries {
         boolean userOnly = isGroupRestriction;
 
         if (!isGroupRestriction && searchType != null && !searchType.isEmpty()) {
-            if (searchType.equals(Select2Common.USER_TYPE)) {
+            if (searchType.equals(SuggestConstants.USER_TYPE)) {
                 userOnly = true;
-            } else if (searchType.equals(Select2Common.GROUP_TYPE)) {
+            } else if (searchType.equals(SuggestConstants.GROUP_TYPE)) {
                 groupOnly = true;
             }
         }
@@ -164,12 +164,12 @@ public class SuggestUserEntries {
                         obj.element(key, value);
                     }
                     String userId = user.getId();
-                    obj.put(Select2Common.ID, userId);
-                    obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
-                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
-                    Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
+                    obj.put(SuggestConstants.ID, userId);
+                    obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.USER_TYPE);
+                    obj.put(SuggestConstants.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
+                    SuggestConstants.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField,
                             hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
-                    Select2Common.computeUserGroupIcon(obj, hideIcon);
+                    SuggestConstants.computeUserGroupIcon(obj, hideIcon);
                     if (isGroupRestriction) {
                         // We need to load all data about the user particularly
                         // its
@@ -214,12 +214,12 @@ public class SuggestUserEntries {
                         obj.element(key, value);
                     }
                     String groupId = group.getId();
-                    obj.put(Select2Common.ID, groupId);
+                    obj.put(SuggestConstants.ID, groupId);
                     // If the group hasn't an label, let's put the groupid
-                    Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
-                    obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
-                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
-                    Select2Common.computeUserGroupIcon(obj, hideIcon);
+                    SuggestConstants.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
+                    obj.put(SuggestConstants.TYPE_KEY_NAME, SuggestConstants.GROUP_TYPE);
+                    obj.put(SuggestConstants.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
+                    SuggestConstants.computeUserGroupIcon(obj, hideIcon);
                     result.add(obj);
                 }
             }
@@ -249,7 +249,7 @@ public class SuggestUserEntries {
     private Blob searchOverflowMessage() {
         JSONArray result = new JSONArray();
         JSONObject obj = new JSONObject();
-        obj.put(Select2Common.LABEL,
+        obj.put(SuggestConstants.LABEL,
                 I18NUtils.getMessageString("messages", "label.security.searchOverFlow", new Object[0], getLocale()));
         result.add(obj);
         return Blobs.createBlob(result.toString(), "application/json");
@@ -259,7 +259,7 @@ public class SuggestUserEntries {
         if (lang == null) {
             lang = (String) ctx.get("lang");
             if (lang == null) {
-                lang = Select2Common.DEFAULT_LANG;
+                lang = SuggestConstants.DEFAULT_LANG;
             }
         }
         return lang;

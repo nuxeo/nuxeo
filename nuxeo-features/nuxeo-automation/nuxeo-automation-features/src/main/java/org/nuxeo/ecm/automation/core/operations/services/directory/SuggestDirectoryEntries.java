@@ -17,7 +17,7 @@
  *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ecm.platform.ui.select2.automation;
+package org.nuxeo.ecm.automation.core.operations.services.directory;
 
 import java.io.Serializable;
 import java.text.Collator;
@@ -30,9 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
@@ -42,6 +39,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,7 +53,9 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * SuggestDirectoryEntries Operation
@@ -112,14 +112,14 @@ public class SuggestDirectoryEntries {
                         // translations are in messages*.properties files
                         value = translate(value.toString());
                     }
-                    obj.element(Select2Common.LABEL, value);
+                    obj.element(SuggestConstants.LABEL, value);
                 }
                 obj.element(key, value);
 
             }
             if (displayObsoleteEntries) {
-                if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                    obj.element(Select2Common.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
+                if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID) && obj.getInt(SuggestConstants.OBSOLETE_FIELD_ID) > 0) {
+                    obj.element(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
         }
@@ -169,9 +169,9 @@ public class SuggestDirectoryEntries {
                 // When serializing in JSON, we are now able to COMPUTED_ID
                 // which is the chained path of the entry (i.e absolute path
                 // considering its ancestor)
-                ja.getObj().element(Select2Common.COMPUTED_ID,
+                ja.getObj().element(SuggestConstants.COMPUTED_ID,
                         (!isRoot ? (getComputedId() + keySeparator) : "") + ja.getId());
-                ja.getObj().element(Select2Common.ABSOLUTE_LABEL,
+                ja.getObj().element(SuggestConstants.ABSOLUTE_LABEL,
                         (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "") + ja.getLabel());
                 result.add(ja.toJSONObject());
             }
@@ -179,19 +179,19 @@ public class SuggestDirectoryEntries {
         }
 
         public String getComputedId() {
-            return isRoot ? null : obj.optString(Select2Common.COMPUTED_ID);
+            return isRoot ? null : obj.optString(SuggestConstants.COMPUTED_ID);
         }
 
         public String getId() {
-            return isRoot ? null : obj.optString(Select2Common.ID);
+            return isRoot ? null : obj.optString(SuggestConstants.ID);
         }
 
         public String getLabel() {
-            return isRoot ? null : obj.optString(Select2Common.LABEL);
+            return isRoot ? null : obj.optString(SuggestConstants.LABEL);
         }
 
         public String getAbsoluteLabel() {
-            return isRoot ? null : obj.optString(Select2Common.ABSOLUTE_LABEL);
+            return isRoot ? null : obj.optString(SuggestConstants.ABSOLUTE_LABEL);
         }
 
         public JSONObject getObj() {
@@ -199,7 +199,7 @@ public class SuggestDirectoryEntries {
         }
 
         public int getOrder() {
-            return isRoot ? -1 : obj.optInt(Select2Common.DIRECTORY_ORDER_FIELD_NAME);
+            return isRoot ? -1 : obj.optInt(SuggestConstants.DIRECTORY_ORDER_FIELD_NAME);
         }
 
         private SuggestDirectoryEntries getOuterType() {
@@ -207,7 +207,7 @@ public class SuggestDirectoryEntries {
         }
 
         public String getParentId() {
-            return isRoot ? null : obj.optString(Select2Common.PARENT_FIELD_ID);
+            return isRoot ? null : obj.optString(SuggestConstants.PARENT_FIELD_ID);
         }
 
         public List<JSONAdapter> getSortedChildren() {
@@ -240,7 +240,7 @@ public class SuggestDirectoryEntries {
                     String id = getId();
                     if (id != null) {
                         Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                        filter.put(Select2Common.PARENT_FIELD_ID, getId());
+                        filter.put(SuggestConstants.PARENT_FIELD_ID, getId());
                         try {
                             isLeaf = session.query(filter, Collections.emptySet(),  new HashMap<String, String>(), false, 1, -1).isEmpty();
                         } catch (DirectoryException ce) {
@@ -258,7 +258,7 @@ public class SuggestDirectoryEntries {
         }
 
         public boolean isObsolete() {
-            return isRoot ? false : obj.optInt(Select2Common.OBSOLETE_FIELD_ID) > 0;
+            return isRoot ? false : obj.optInt(SuggestConstants.OBSOLETE_FIELD_ID) > 0;
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
@@ -326,7 +326,7 @@ public class SuggestDirectoryEntries {
                 } else {
                     // We don't want it to be selectable, we just serialize the
                     // label
-                    return new JSONObject().element(Select2Common.LABEL, getLabel()).element("children",
+                    return new JSONObject().element(SuggestConstants.LABEL, getLabel()).element("children",
                             getChildrenJSONArray());
                 }
             }
@@ -364,7 +364,7 @@ public class SuggestDirectoryEntries {
     protected String prefix;
 
     @Param(name = "labelFieldName", required = false)
-    protected String labelFieldName = Select2Common.DIRECTORY_DEFAULT_LABEL_COL_NAME;
+    protected String labelFieldName = SuggestConstants.DIRECTORY_DEFAULT_LABEL_COL_NAME;
 
     @Param(name = "dbl10n", required = false)
     protected boolean dbl10n = false;
@@ -376,7 +376,7 @@ public class SuggestDirectoryEntries {
     protected boolean filterParent = false;
 
     @Param(name = "keySeparator", required = false)
-    protected String keySeparator = Select2Common.DEFAULT_KEY_SEPARATOR;
+    protected String keySeparator = SuggestConstants.DEFAULT_KEY_SEPARATOR;
 
     @Param(name = "displayObsoleteEntries", required = false)
     protected boolean displayObsoleteEntries = false;
@@ -421,7 +421,7 @@ public class SuggestDirectoryEntries {
         if (lang == null) {
             lang = (String) ctx.get("lang");
             if (lang == null) {
-                lang = Select2Common.DEFAULT_LANG;
+                lang = SuggestConstants.DEFAULT_LANG;
             }
         }
         return lang;
@@ -464,7 +464,7 @@ public class SuggestDirectoryEntries {
             String schemaName = directory.getSchema();
             Schema schema = schemaManager.getSchema(schemaName);
 
-            Field parentField = schema.getField(Select2Common.PARENT_FIELD_ID);
+            Field parentField = schema.getField(SuggestConstants.PARENT_FIELD_ID);
             isChained = parentField != null;
 
             String parentDirectory = directory.getParentDirectory();
@@ -475,11 +475,11 @@ public class SuggestDirectoryEntries {
             DocumentModelList entries = null;
             boolean postFilter = true;
 
-            label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
+            label = SuggestConstants.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
 
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             if (!displayObsoleteEntries) {
-                filter.put(Select2Common.OBSOLETE_FIELD_ID, Long.valueOf(0));
+                filter.put(SuggestConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
             Set<String> fullText = new TreeSet<String>();
             if (dbl10n || !localize) {
