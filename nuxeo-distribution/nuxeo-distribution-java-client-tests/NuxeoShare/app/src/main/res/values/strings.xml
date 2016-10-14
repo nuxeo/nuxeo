@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Nuxeo Share</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Login</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_url">Nuxeo Server URL (example: http://demo.nuxeo.com/nuxeo)</string>
+    <string name="action_sign_in">Store Data</string>
+    <string name="clear">Clear</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_spash">SpashActivity</string>
+</resources>

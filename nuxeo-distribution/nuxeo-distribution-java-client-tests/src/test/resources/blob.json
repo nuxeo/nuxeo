@@ -1,0 +1,57 @@
+[
+  {
+    "fieldType": "string",
+    "description": "desc field0",
+    "roles": [
+      "Decision",
+      "Score"
+    ],
+    "name": "field0",
+    "columnName": "col0",
+    "sqlTypeHint": "whatever"
+  },
+  {
+    "fieldType": "string",
+    "description": "desc field1",
+    "roles": [
+      "Decision",
+      "Score"
+    ],
+    "name": "field1",
+    "columnName": "col1",
+    "sqlTypeHint": "whatever"
+  },
+  {
+    "fieldType": "string",
+    "description": "desc field2",
+    "roles": [
+      "Decision",
+      "Score"
+    ],
+    "name": "field2",
+    "columnName": "col2",
+    "sqlTypeHint": "whatever"
+  },
+  {
+    "fieldType": "string",
+    "description": "desc field3",
+    "roles": [
+      "Decision",
+      "Score"
+    ],
+    "name": "field3",
+    "columnName": "col3",
+    "sqlTypeHint": "whatever"
+  },
+  {
+    "fieldType": "string",
+    "description": "desc field4",
+    "roles": [
+      "Decision",
+      "Score"
+    ],
+    "name": "field4",
+    "columnName": "col4",
+    "sqlTypeHint": "whatever"
+  }
+]

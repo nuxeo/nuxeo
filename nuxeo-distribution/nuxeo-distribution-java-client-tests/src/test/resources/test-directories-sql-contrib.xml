@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.java.client.test.test-directories">
+
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="continent">
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <schema>vocabulary</schema>
+      <table>continent</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>continent.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+
+</component>

@@ -33,6 +33,7 @@
     <module>nuxeo-marketplace-dm</module>
     <module>nuxeo-marketplace-jsf-ui</module>
     <module>nuxeo-distribution-tomcat</module>
+    <module>nuxeo-distribution-java-client-tests</module>
     <!-- Functional Tests -->
     <module>nuxeo-distribution-tomcat-wizard-tests</module>
     <module>nuxeo-distribution-cap-webdriver-tests</module>

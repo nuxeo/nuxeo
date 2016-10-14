@@ -128,6 +128,7 @@
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.6</ant.assembly.version>
     <nuxeo.ftest.version>1.7.25-SNAPSHOT</nuxeo.ftest.version>
+    <nuxeo.java.client.version>2.2-SNAPSHOT</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
@@ -4789,7 +4790,7 @@
       <dependency>
         <groupId>org.nuxeo.client</groupId>
         <artifactId>nuxeo-java-client</artifactId>
-        <version>2.2-SNAPSHOT</version>
+        <version>${nuxeo.java.client.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
