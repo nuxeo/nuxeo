@@ -36,20 +36,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -75,11 +70,9 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
-import org.nuxeo.ecm.platform.rendition.lazy.AbstractRenditionBuilderWork;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -103,17 +96,9 @@ public class TestRenditionService {
 
     private static final String RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION = "test-rendition-definition-providers-contrib.xml";
 
-    private static final String RENDITION_WORKMANAGER_COMPONENT_LOCATION = "test-rendition-multithreads-workmanager-contrib.xml";
-
     public static final String PDF_RENDITION_DEFINITION = "pdf";
 
     public static final String ZIP_TREE_EXPORT_RENDITION_DEFINITION = "zipTreeExport";
-
-    public static final CountDownLatch countDownLatch = new CountDownLatch(1);
-
-    public static final Calendar LATCH_ISSUED_DATE = new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
-
-    public static final Log log = LogFactory.getLog(TestRenditionService.class);
 
     @Inject
     protected RuntimeHarness runtimeHarness;
@@ -723,8 +708,6 @@ public class TestRenditionService {
 
     @Test
     public void shouldStoreLatestNonVersionedRendition() throws Exception {
-        runtimeHarness.deployContrib(RENDITION_CORE, RENDITION_WORKMANAGER_COMPONENT_LOCATION);
-
         final StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
         final String repositoryName = session.getRepositoryName();
         final String username = session.getPrincipal().getName();
@@ -793,8 +776,6 @@ public class TestRenditionService {
             assertNotNull(rend.getBlob());
             assertTrue(rendition.getBlob().getString().contains(desc));
         }
-
-        runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_WORKMANAGER_COMPONENT_LOCATION);
     }
 
     protected static class RenditionThread extends Thread {
@@ -867,61 +848,6 @@ public class TestRenditionService {
 
     protected void nextTransaction() {
         txFeature.nextTransaction();
-    }
-
-    @Test
-    public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
-        final String renditionName = "lazyAutomation";
-        final String sourceDocumentModificationDatePropertyName = "dc:issued";
-        Calendar issued = LATCH_ISSUED_DATE;
-        String desc = "description";
-        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
-        folder.setPropertyValue("dc:title", folder.getName());
-        folder.setPropertyValue("dc:description", desc);
-        folder.setPropertyValue("dc:issued", issued);
-        folder = session.createDocument(folder);
-        session.save();
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
-
-        folder = session.getDocument(folder.getRef());
-        Rendition rendition = renditionService.getRendition(folder, renditionName, true);
-        assertNotNull(rendition);
-        assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
-
-        for (int i = 0; i < 3; i++) {
-            folder = session.getDocument(folder.getRef());
-            issued = (Calendar) folder.getPropertyValue(sourceDocumentModificationDatePropertyName);
-            issued.add(Calendar.HOUR_OF_DAY, 1);
-            folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
-            desc = "description" + Integer.toString(i);
-            folder.setPropertyValue("dc:description", desc);
-            session.saveDocument(folder);
-            session.save();
-
-            rendition = renditionService.getRendition(folder, renditionName, true);
-            assertNotNull(rendition);
-            assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
-        }
-
-        String queueId = works.getCategoryQueueId(AbstractRenditionBuilderWork.CATEGORY);
-        assertEquals(1, works.listWorkIds(queueId, Work.State.RUNNING).size());
-        assertEquals(1, works.listWorkIds(queueId, Work.State.SCHEDULED).size());
-
-        countDownLatch.countDown();
-
-        session.save();
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
-
-        folder = session.getDocument(folder.getRef());
-        rendition = renditionService.getRendition(folder, renditionName, true);
-        assertNotNull(rendition);
-        assertNotNull(rendition.getBlob());
-        assertFalse(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
-        String content = rendition.getBlob().getString();
-        assertTrue(content.contains("dummy"));
-        assertTrue(content.contains(desc));
     }
 
     @Test
