@@ -45,6 +45,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -168,7 +169,7 @@ public class ConnectBroker {
         return cset;
     }
 
-    protected LocalPackage getInstalledPackage(String pkgName) {
+    protected LocalPackage getInstalledPackageByName(String pkgName) {
         try {
             return service.getPersistence().getActivePackage(pkgName);
         } catch (PackageException e) {
@@ -178,7 +179,12 @@ public class ConnectBroker {
     }
 
     protected boolean isInstalledPackage(String pkgName) {
-        return service.getPersistence().getActivePackageId(pkgName) != null;
+        try {
+            return service.getPersistence().getActivePackageId(pkgName) != null;
+        } catch (PackageException e) {
+            log.error(e);
+            return false;
+        }
     }
 
     protected boolean isLocalPackageId(String pkgId) {
@@ -302,6 +308,30 @@ public class ConnectBroker {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Load package definition from a local file or directory and get package Id from it.
+     *
+     * @return null the package definition cannot be loadedfor any reason.
+     * @since 8.4
+     */
+    protected String getLocalPackageFileId(File pkgFile) {
+        PackageDefinition packageDefinition = null;
+        try {
+            if (pkgFile.isFile()) {
+                packageDefinition = service.loadPackageFromZip(pkgFile);
+            } else if (pkgFile.isDirectory()) {
+                File manifest = new File(pkgFile, LocalPackage.MANIFEST);
+                packageDefinition = service.loadPackage(manifest);
+            }
+        } catch (PackageException e) {
+            return null;
+        }
+        if (packageDefinition != null) {
+            return packageDefinition.getId();
+        }
+        return null;
     }
 
     protected boolean isLocalPackageFile(String pkgFile) {
@@ -1049,7 +1079,6 @@ public class ConnectBroker {
     protected boolean downloadPackages(List<String> packagesToDownload) {
         boolean isRegistered = LogicalInstanceIdentifier.isRegistered();
         List<String> packagesAlreadyDownloaded = new ArrayList<String>();
-        Map<String, String> packagesToRemove = new HashMap<String, String>();
         for (String pkg : packagesToDownload) {
             LocalPackage localPackage;
             try {
@@ -1070,20 +1099,10 @@ public class ConnectBroker {
                     packagesAlreadyDownloaded.add(pkg);
                 } else {
                     log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
-                    packagesToRemove.put(localPackage.getId(), pkg);
                 }
             } else {
                 log.info(String.format("Package '%s' is already in local cache.", pkg));
                 packagesAlreadyDownloaded.add(pkg);
-            }
-        }
-
-        // First remove SNAPSHOT packages to replace
-        for (String pkgToRemove : packagesToRemove.keySet()) {
-            if (pkgRemove(pkgToRemove) == null) {
-                log.error(String.format("Failed to remove '%s'. Download of '%s' skipped", pkgToRemove,
-                        packagesToRemove.get(pkgToRemove)));
-                packagesToDownload.remove(packagesToRemove.get(pkgToRemove));
             }
         }
 
@@ -1223,22 +1242,63 @@ public class ConnectBroker {
             List<String> solverInstall = new ArrayList<>();
             List<String> solverRemove = new ArrayList<>();
             List<String> solverUpgrade = new ArrayList<>();
+            // Potential local cache snapshots to replace
+            List<String> localSnapshotsToMaybeReplace = new ArrayList<>();
             if (pkgsToInstall != null) {
-                // If install request is a file name, add to cache and get the
-                // id
                 List<String> namesOrIdsToInstall = new ArrayList<>();
                 for (String pkgToInstall : pkgsToInstall) {
-                    if (isLocalPackageFile(pkgToInstall)) {
-                        LocalPackage addedPkg = pkgAdd(pkgToInstall, ignoreMissing);
-                        if (addedPkg != null) {
-                            namesOrIdsToInstall.add(addedPkg.getId());
-                        } else {
-                            cmdOk = false;
+                    String nameOrIdToInstall = pkgToInstall;
+                    if (!upgradeMode) {
+                        boolean isLocalPackageFile = isLocalPackageFile(pkgToInstall);
+                        if (isLocalPackageFile) {
+                            // If install request is a file name, get the id
+                            nameOrIdToInstall = getLocalPackageFileId(getLocalPackageFile(pkgToInstall));
                         }
-                        // TODO: set flag to prefer local package
-                    } else {
-                        namesOrIdsToInstall.add(pkgToInstall);
+                        // get corresponding local package if present.
+                        // if request is a name, prefer installed package
+                        LocalPackage localPackage = getInstalledPackageByName(nameOrIdToInstall);
+                        if (localPackage != null) {
+                            // as not in upgrade mode, replace the package name by the installed package id
+                            nameOrIdToInstall = localPackage.getId();
+                        } else {
+                            if (isLocalPackageId(nameOrIdToInstall)) {
+                                // if request is an id, get potential package in local cache
+                                localPackage = getLocalPackage(nameOrIdToInstall);
+                            } else {
+                                // if request is a name but there is no installed package matching, get the best version
+                                // in local cache to replace it if it is a snapshot and it happens to be the actual
+                                // version to install afterward
+                                LocalPackage potentialMatchingPackage = getLocalPackage(nameOrIdToInstall);
+                                if (potentialMatchingPackage != null
+                                        && potentialMatchingPackage.getVersion().isSnapshot()
+                                        && !localSnapshotsToMaybeReplace.contains(potentialMatchingPackage.getId())) {
+                                    localSnapshotsToMaybeReplace.add(potentialMatchingPackage.getId());
+                                }
+                            }
+                        }
+                        // first install of local file or directory
+                        if (localPackage == null && isLocalPackageFile) {
+                            LocalPackage addedPkg = pkgAdd(pkgToInstall, ignoreMissing);
+                            if (addedPkg == null) {
+                                cmdOk = false;
+                            }
+                        }
+                        // if a requested SNAPSHOT package is present, replace it in local cache
+                        if (localPackage != null && localPackage.getVersion().isSnapshot()) {
+                            if (localPackage.getPackageState().isInstalled()) {
+                                // if it's already installed, unintall it
+                                pkgUninstall(nameOrIdToInstall);
+                            }
+                            // use the local file name if given and ensure we replace the right version, in case
+                            // nameOrIdToInstall is a name
+                            String pkgToAdd = isLocalPackageFile ? pkgToInstall : localPackage.getId();
+                            LocalPackage addedPkg = pkgAdd(pkgToAdd, ignoreMissing);
+                            if (addedPkg == null) {
+                                cmdOk = false;
+                            }
+                        }
                     }
+                    namesOrIdsToInstall.add(nameOrIdToInstall);
                 }
 
                 if (upgradeMode) {
@@ -1325,6 +1385,18 @@ public class ConnectBroker {
                 List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
                 List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
                 List<String> packagesIdsToReInstall = new ArrayList<>();
+
+                // Replace snapshots to install but already in cache (requested by name)
+                if (CollectionUtils.containsAny(packageIdsToInstall, localSnapshotsToMaybeReplace)) {
+                    for (Object pkgIdObj : CollectionUtils.intersection(packageIdsToInstall,
+                            localSnapshotsToMaybeReplace)) {
+                        String pkgId = (String) pkgIdObj;
+                        LocalPackage addedPkg = pkgAdd(pkgId, ignoreMissing);
+                        if (addedPkg == null) {
+                            cmdOk = false;
+                        }
+                    }
+                }
 
                 // Download remote packages
                 if (!downloadPackages(resolution.getDownloadPackageIds())) {

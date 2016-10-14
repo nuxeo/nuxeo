@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.standalone;
 
@@ -220,10 +222,10 @@ public class PackagePersistence {
         return getPackage(pkgId);
     }
 
-    public synchronized String getActivePackageId(String name) {
-        name = name + '-';
+    public synchronized String getActivePackageId(String name) throws PackageException {
         for (Entry<String, PackageState> entry : states.entrySet()) {
-            if (entry.getKey().startsWith(name) && entry.getValue().isInstalled()) {
+            if (entry.getKey().startsWith(name) && entry.getValue().isInstalled()
+                    && getPackage(entry.getKey()).getName().equals(name)) {
                 return entry.getKey();
             }
         }

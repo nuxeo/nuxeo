@@ -22,9 +22,14 @@
     </layout>
   </appender>
 
-  <!-- <logger name="org.nuxeo.connect">
-    <level value="DEBUG" />
-  </logger> -->
+  <!-- Used for log assertions in TestConnectBroker -->
+  <logger name="org.nuxeo.launcher.connect.ConnectBroker">
+    <level value="INFO" />
+  </logger>
+  <logger name="org.nuxeo.connect.update">
+    <level value="INFO" />
+  </logger>
+  
 
   <root>
     <priority value="WARN" />
