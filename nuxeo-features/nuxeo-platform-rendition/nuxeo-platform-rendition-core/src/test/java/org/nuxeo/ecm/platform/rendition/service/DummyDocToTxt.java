@@ -31,6 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.util.Calendar;
+
 @Operation(id = DummyDocToTxt.ID, category = Constants.CAT_CONVERSION, label = "Convert Doc To Txt", description = "very dummy just for tests !")
 public class DummyDocToTxt {
 
@@ -44,13 +46,18 @@ public class DummyDocToTxt {
         DocumentRef docRef = doc.getRef();
         String content = doc.getTitle();
         String desc = "";
+        Calendar issued = null;
         Boolean delayed = null;
         try {
             desc = (String) doc.getPropertyValue("dc:description");
+            issued = (Calendar) doc.getPropertyValue("dc:issued");
             delayed = (Boolean) doc.getContextData("delayed");
         } catch (PropertyException ignored) {}
         if (StringUtils.isNotBlank(desc)) {
             content += String.format("%n" + desc);
+        }
+        if (TestRenditionService.LATCH_ISSUED_DATE.equals(issued)) {
+            TestRenditionService.countDownLatch.await();
         }
         if (delayed != null) {
             // Sync #1

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -81,7 +82,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
             blobs.add(emptyBlob);
             ts.putBlobs(key, blobs);
-            Framework.getService(WorkManager.class).schedule(work);
+            Framework.getService(WorkManager.class).schedule(work, Scheduling.IF_NOT_SCHEDULED);
         } else {
             ts.release(key);
         }
