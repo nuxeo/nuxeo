@@ -15,6 +15,21 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService"
+    point="renditionDefinitions">
+
+    <renditionDefinition name="imageToPDF">
+      <label>label.rendition.pdf</label>
+      <icon>/icons/pdf.png</icon>
+      <contentType>application/pdf</contentType>
+      <operationChain>Image.Blob.ConvertToPDF</operationChain>
+      <filters>
+        <filter-id>hasPictureFacet</filter-id>
+      </filters>
+    </renditionDefinition>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 

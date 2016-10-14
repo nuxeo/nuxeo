@@ -20,14 +20,19 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -111,5 +116,26 @@ public class TestPictureRenditions {
 
         runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.picture.core",
                 "OSGI-INF/imaging-picture-renditions-override.xml");
+    }
+
+    @Test
+    public void shouldDeclareRenditionDefinitionImageToPDF() {
+        List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
+        List<RenditionDefinition> imageToPDFRenditionDefinitions = renditionDefinitions.stream()
+            .filter(rD -> rD.getName().equals("imageToPDF")).collect(Collectors.toList());
+        assertEquals(1, imageToPDFRenditionDefinitions.size());
+        RenditionDefinition imageToPDFRenditionDefinition = imageToPDFRenditionDefinitions.get(0);
+        assertEquals("Image.Blob.ConvertToPDF", imageToPDFRenditionDefinition.getOperationChain());
+        assertEquals(1, imageToPDFRenditionDefinition.getFilterIds().size());
+        assertEquals("hasPictureFacet", imageToPDFRenditionDefinition.getFilterIds().get(0));
+    }
+
+    @Test
+    public void shouldMakeRenditionAvailableImageToPDF() throws Exception {
+        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
+        DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
+        doc.setProperty("file", "filename", source.getFilename());
+        doc.setProperty("file", "content", source);
+        assertNotNull(renditionService.getRendition(doc, "imageToPDF"));
     }
 }
