@@ -230,4 +230,32 @@ public interface DBSRepository extends Repository, LockManager {
      * @since 8.4
      */
     ScrollResult scroll(String scrollId);
+
+    /**
+     * Called when created a transaction.
+     *
+     * @since 8.10
+     */
+    default void begin() {
+
+    }
+
+    /**
+     * Saves and flushes to database.
+     *
+     * @since 8.10
+     */
+    default void commit() {
+
+    }
+
+    /**
+     * Rolls back the save state by applying the undo log.
+     *
+     * @since 8.10
+     */
+    default void rollback() {
+
+    }
+
 }

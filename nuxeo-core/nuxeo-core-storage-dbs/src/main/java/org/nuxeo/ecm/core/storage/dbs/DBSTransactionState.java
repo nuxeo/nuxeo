@@ -715,6 +715,7 @@ public class DBSTransactionState {
      */
     public void begin() {
         undoLog = new HashMap<>();
+        repository.begin();
     }
 
     /**
@@ -723,6 +724,7 @@ public class DBSTransactionState {
     public void commit() {
         save();
         commitSave();
+        repository.commit();
     }
 
     /**
@@ -744,6 +746,7 @@ public class DBSTransactionState {
         applyUndoLog();
         // the transaction ended, the proxied DBSSession will disappear and cannot be reused anyway
         undoLog = null;
+        repository.rollback();
     }
 
     protected void clearTransient() {
