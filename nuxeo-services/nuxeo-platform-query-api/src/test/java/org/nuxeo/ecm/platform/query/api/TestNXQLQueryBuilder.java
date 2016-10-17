@@ -226,4 +226,29 @@ public class TestNXQLQueryBuilder {
         assertEquals("param2", matches.get(2));
     }
 
+    @Test
+    public void iCanReplacePattern() {
+
+        // Given a regexp when I put named parameters
+        String pattern1 = "SELECT * FROM Document WHERE dc:title = :myTitle";
+        String pattern2 = "SELECT * FROM Document WHERE dc:title = :title";
+        String pattern3 = "SELECT * FROM Document WHERE dc:title = :title OR dc:title = :titleLonger";
+        String pattern4 = "SELECT * FROM Document WHERE dc:title = :titleLongest OR dc:title = :title OR dc:title = :titleLonger";
+        String pattern5 = "SELECT * FROM Document WHERE dc:title = :titleLonger OR dc:title = :title";
+
+        String replacedPattern1 = NXQLQueryBuilder.buildPattern(pattern1, ":title", "'test'");
+        String replacedPattern2 = NXQLQueryBuilder.buildPattern(pattern2, ":title", "'test'");
+        String replacedPattern3 = NXQLQueryBuilder.buildPattern(pattern3, ":title", "'test'");
+        String replacedPattern4 = NXQLQueryBuilder.buildPattern(pattern4, ":title", "'test'");
+        String replacedPattern5 = NXQLQueryBuilder.buildPattern(pattern5, ":title", "'test'");
+
+        assertEquals("SELECT * FROM Document WHERE dc:title = :myTitle", replacedPattern1);
+        assertEquals("SELECT * FROM Document WHERE dc:title = 'test'", replacedPattern2);
+        assertEquals("SELECT * FROM Document WHERE dc:title = 'test' OR dc:title = :titleLonger", replacedPattern3);
+        assertEquals("SELECT * FROM Document WHERE dc:title = :titleLongest OR dc:title = 'test' OR dc:title = :titleLonger", replacedPattern4);
+        assertEquals("SELECT * FROM Document WHERE dc:title = :titleLonger OR dc:title = 'test'", replacedPattern5);
+
+    }
+
+
 }
