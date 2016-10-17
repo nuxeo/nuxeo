@@ -722,12 +722,16 @@ public class NXQLQueryBuilder {
         return query + " AND " + clause;
     }
 
-    private static String buildPattern(String pattern, String key, String replacement) {
+    /**
+     * @since 8.4
+     */
+    public static String buildPattern(String pattern, String key, String replacement) {
         int index = pattern.indexOf(key);
         while (index >= 0) {
             // All keys not prefixed by a letter or a digit has to be replaced, because
             // It could be part of a schema name
-            if (!Character.isLetterOrDigit(pattern.charAt(index - 1))) {
+            if (!Character.isLetterOrDigit(pattern.charAt(index - 1)) && (index + key.length() == pattern.length()
+                    || !Character.isLetterOrDigit(pattern.charAt(index + key.length())))) {
                 pattern = pattern.substring(0, index) + pattern.substring(index).replaceFirst(key, replacement);
             }
             index = pattern.indexOf(key, index + 1);

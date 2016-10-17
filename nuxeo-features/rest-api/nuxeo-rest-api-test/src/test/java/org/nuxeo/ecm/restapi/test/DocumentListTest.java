@@ -148,13 +148,34 @@ public class DocumentListTest extends BaseTest {
         // NXQL on it
         DocumentModel folder = RestServerInit.getFolder(1, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentId AND\n"
+        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
                 + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:note1,:note2)\n"
                 + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
                 + "        'deleted'");
         queryParams.add("note1", "Note 1");
         queryParams.add("note2", "Note 2");
-        queryParams.add("parentId", folder.getId());
+        queryParams.add("parentIdVar", folder.getId());
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    @Test
+    public void iCanPerformQueriesWithNamedParametersOnRepositoryAndSameVariables() throws IOException {
+        // Given a repository and named parameters, when I perform a query in
+        // NXQL on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("query", "SELECT * FROM Document WHERE " + "ecm:parentId = :parentIdVar AND\n"
+                + "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " + "IN (:title,:title2)\n"
+                + "        AND ecm:isCheckedInVersion = 0 AND " + "ecm:currentLifeCycleState !=\n"
+                + "        'deleted'");
+        queryParams.add("title", "Note 1");
+        queryParams.add("title2", "Note 2");
+        queryParams.add("parentIdVar", folder.getId());
         ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH, queryParams);
 
         // Then I get document listing as result
