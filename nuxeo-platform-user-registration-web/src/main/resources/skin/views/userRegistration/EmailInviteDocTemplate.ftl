@@ -2,33 +2,28 @@
 <body>
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
 <#if documentTitle != "">
-<p>You have been invited to access <a href="${info['docUrl']}">${documentTitle}</a>.</p>
+<p>You have been granted permission to access <b>${documentTitle}</b>.</p>
 <#else>
-<p>You have been invited to access ${productName}.</p>
+<p>You have been granted permission to access <b>${productName}</b>.</p>
 </#if>
-
+<br />
 <#if comment != "">
 <br/>
 <p>From the sender: </p>
 <p>${comment}</p>
 </#if>
 
+<p>Username and password are required for connection :</p>
+<p>- username already defined is ${userinfo.login}</p>
 <#if !userAlreadyExists>
-<p>Your username is ${userinfo.login} but you need to add a password now. <br />
-Click on the following link to validate your invitation by adding your password:</p>
+<p>- password has to be defined by validating your invitation through this <a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">link</a>.</p>
 </#if>
-
-<a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">[Validate my invitation]</a>
-
-<p>Once validated, you'll be able to log in to the application then browse, create and share documents to your collaborators.</p>
-
 <#if userAlreadyExists>
-<p>Here are your login credentials:</p>
-<p>Username:  ${userinfo.login}</p>
-<p>Password: Your usual account password.</p>
+<p>- your usual account password.</p>
+<p>You can validate your invitation through this <a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">link</a>.</p>
 </#if>
-</p>
-
+<br />
+<p>Once your invitation is validated, you'll be able to log in to the application and access <a href="${info['docUrl']}">${documentTitle}</a>.</p>
 <br />
 The ${productName} Administrators team.
 </body>
