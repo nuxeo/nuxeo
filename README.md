@@ -40,6 +40,9 @@ This module builds, packages and tests the Nuxeo products.
 
 # Building
 
+Open Nuxeo in [Eclipse Che](https://www.eclipse.org/che/):  
+[![Open in Eclipse Che](http://beta.codenvy.com/factory/resources/codenvy-contribute.svg)](https://beta.codenvy.com/f?id=r3pbh9wv7tjvbws7)
+
 ## Requirements
 
 Running the Nuxeo Platform requires Java 8.
