@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
@@ -70,6 +72,9 @@ public class TestPictureRenditions {
 
     @Inject
     protected RenditionService renditionService;
+
+    @Inject
+    protected ImagingService imagingService;
 
     @Inject
     protected RuntimeHarness runtimeHarness;
@@ -137,5 +142,9 @@ public class TestPictureRenditions {
         doc.setProperty("file", "filename", source.getFilename());
         doc.setProperty("file", "content", source);
         assertNotNull(renditionService.getRendition(doc, "imageToPDF"));
+
+        Blob pdfRendition = imagingService.convertToPDF(source);
+        assertNotNull(pdfRendition);
+        assertEquals("pdf", FilenameUtils.getExtension(pdfRendition.getFilename()));
     }
 }

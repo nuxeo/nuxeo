@@ -32,6 +32,9 @@ public class ImagingConvertConstants {
 
     public static final String OPERATION_CROP = "pictureCrop";
 
+    /**
+     * @since 8.4
+     */
     public static final String OPERATION_CONVERT_TO_PDF = "pictureConvertToPDF";
 
     /** Operation specific options */
