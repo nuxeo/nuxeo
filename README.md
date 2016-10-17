@@ -30,7 +30,7 @@ Services related to the theme and theme rendering
 * **nuxeo-jsf**:
 JSF related services
 * **nuxeo-webengine**:
-Services and framework related to WebEngine, the Nuxeo lighweight rendering engine
+Services and framework related to WebEngine, the Nuxeo lightweight rendering engine
 * **nuxeo-features**:
 Advanced high-level services, such as audit, imaging, publisher, thumbnails, search
 * **nuxeo-dm**:
