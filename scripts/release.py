@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-(C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+(C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and contributors.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the GNU Lesser General Public License
@@ -266,10 +266,30 @@ given the path parameter.
         if next_snapshot != "auto":
             self.next_snapshot = next_snapshot
         elif self.is_final:
-            snapshot_split = re.match("(^.*)(\d+)(-SNAPSHOT$)", self.snapshot)
-            self.next_snapshot = (snapshot_split.group(1)
-                    + str(int(snapshot_split.group(2)) + 1)  # increment minor
-                    + snapshot_split.group(3))
+            semver = re.compile(r'^(?P<major>(?:0|[1-9][0-9]*))'
+                                '(?:\.(?P<minor>(?:0|[1-9][0-9]*)))?'
+                                '(?:\.(?P<patch>(?:0|[1-9][0-9]*)))?')
+
+            match = semver.match(self.snapshot)
+            verinfo = match.groupdict()
+
+            for key in ['patch', 'minor', 'major']:
+                if verinfo[key]:
+                    verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
+                    break
+
+            if verinfo['patch']:
+                self.next_snapshot = '%d.%d.%d-SNAPSHOT' % (
+                    int(verinfo['major']),
+                    int(verinfo['minor'] if verinfo['minor'] else 0),
+                    int(verinfo['patch']))
+            elif verinfo['minor']:
+                self.next_snapshot = '%d.%d-SNAPSHOT' % (
+                    int(verinfo['major']),
+                    int(verinfo['minor']))
+            elif verinfo['major']:
+                self.next_snapshot = '%d-SNAPSHOT' % (
+                    int(verinfo['major']))
         else:
             self.next_snapshot = self.snapshot
 
