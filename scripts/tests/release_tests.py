@@ -51,16 +51,28 @@ class ReleaseTestCase(unittest.TestCase):
             patcher.start()
             self.addCleanup(patcher.stop)
 
+    def assertNextSnapshot(self, current, expected, policy='auto_last'):
+        self.mocks.etree_parse.return_value.getroot.return_value.find.return_value.text = current
+        self.assertEqual(expected,
+                         Release(Repository(os.getcwd(), 'nuxeo_scripts'), 'some_branch', 'auto', 'auto',
+                                 is_final=True, auto_increment_policy=policy).next_snapshot)
+
     def testSetNextSnapshot(self):
-        self.mocks.etree_parse.return_value.getroot.return_value.find.return_value.text = '1.0.0-SNAPSHOT'
+        self.assertNextSnapshot('1.0.19-SNAPSHOT', '1.0.20-SNAPSHOT')
 
-        release = Release(Repository(os.getcwd(), 'nuxeo_scripts'), 'some_branch', 'auto', 'auto', is_final=True)
-        self.assertEqual('1.0.1-SNAPSHOT', release.next_snapshot)
+        self.assertNextSnapshot('1.0.2-SNAPSHOT', '1.0.3-SNAPSHOT', policy='auto_last')
+        self.assertNextSnapshot('1.2-SNAPSHOT', '1.3-SNAPSHOT', policy='auto_last')
+        self.assertNextSnapshot('29-SNAPSHOT', '30-SNAPSHOT', policy='auto_last')
 
-        release.snapshot = '1.2-SNAPSHOT'
-        release.set_next_snapshot('auto')
-        self.assertEqual('1.3-SNAPSHOT', release.next_snapshot)
+        self.assertNextSnapshot('1.0.2-SNAPSHOT', '1.0.3-SNAPSHOT', policy='auto_patch')
+        self.assertNextSnapshot('1.2-SNAPSHOT', '1.2.1-SNAPSHOT', policy='auto_patch')
+        self.assertNextSnapshot('29-SNAPSHOT', '29.0.1-SNAPSHOT', policy='auto_patch')
 
-        release.snapshot = '1.0.19-SNAPSHOT'
-        release.set_next_snapshot('auto')
-        self.assertEqual('1.0.20-SNAPSHOT', release.next_snapshot)
+        self.assertNextSnapshot('1.0.2-SNAPSHOT', '1.1.0-SNAPSHOT', policy='auto_minor')
+        self.assertNextSnapshot('1.2-SNAPSHOT', '1.3-SNAPSHOT', policy='auto_minor')
+        self.assertNextSnapshot('29-SNAPSHOT', '29.1-SNAPSHOT', policy='auto_minor')
+
+        self.assertNextSnapshot('1.0.2-SNAPSHOT', '2.0.0-SNAPSHOT', policy='auto_major')
+        self.assertNextSnapshot('1.2-SNAPSHOT', '2.0-SNAPSHOT', policy='auto_major')
+        self.assertNextSnapshot('29-SNAPSHOT', '30-SNAPSHOT', policy='auto_major')
+

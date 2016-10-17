@@ -118,7 +118,9 @@ class ReleaseMP(object):
                                      is_final=True,
                                      skipTests=self.mp_config.getboolean(marketplace, "skipTests"),
                                      skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
-                                     other_versions=self.mp_config.get(marketplace, "other_versions", None))
+                                     other_versions=self.mp_config.get(marketplace, "other_versions", None),
+                                     auto_increment_policy=self.mp_config.get(marketplace, "auto_increment_policy",
+                                                                              "auto_last"))
                 mp_release.log_summary()
                 mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only, dodeploy=True)
                 prepared = True
@@ -177,7 +179,9 @@ class ReleaseMP(object):
                                      is_final=True,
                                      skipTests=self.mp_config.getboolean(marketplace, "skipTests"),
                                      skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
-                                     other_versions=self.mp_config.get(marketplace, "other_versions", None))
+                                     other_versions=self.mp_config.get(marketplace, "other_versions", None),
+                                     auto_increment_policy=self.mp_config.get(marketplace, "auto_increment_policy",
+                                                                              "auto_last"))
                 mp_release.log_summary()
                 mp_release.release_branch(dryrun=dryrun, upgrade_only=upgrade_only)
                 self.mp_config.set(marketplace, "next_snapshot", "done")
@@ -223,9 +227,16 @@ class ReleaseMP(object):
                 mp_repo = Repository(os.getcwd(), self.alias)
                 # Perform release
                 (_, branch, tag, next_snapshot, maintenance_version, is_final, skipTests, skipITs, _, other_versions,
-                 _, _) = Release.read_release_log(mp_repo.basedir)
-                mp_release = Release(mp_repo, branch, tag, next_snapshot, maintenance_version, is_final=is_final,
-                                     skipTests=skipTests, skipITs=skipITs, other_versions=other_versions)
+                 _, _, _) = Release.read_release_log(mp_repo.basedir)
+                mp_release = Release(mp_repo,
+                                     branch,
+                                     tag,
+                                     next_snapshot,
+                                     maintenance_version,
+                                     is_final=is_final,
+                                     skipTests=skipTests,
+                                     skipITs=skipITs,
+                                     other_versions=other_versions)
                 mp_release.perform(dryrun=dryrun, upgrade_only=upgrade_only)
                 performed = True
             except Exception, e:
