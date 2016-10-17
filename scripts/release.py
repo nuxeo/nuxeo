@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-(C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+(C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and contributors.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the GNU Lesser General Public License
@@ -263,11 +263,14 @@ given the path parameter.
         if next_snapshot != "auto":
             self.next_snapshot = next_snapshot
         elif self.is_final:
-            snapshot_split = re.match("(^.*)(\d+)(-SNAPSHOT$)", self.snapshot)
+            semver = re.compile('^(.*\.)'
+                                '(0|[1-9][0-9]*)(-SNAPSHOT)')
+
+            match = semver.match(self.snapshot)
             self.next_snapshot = (
-                snapshot_split.group(1)
-                + str(int(snapshot_split.group(2)) + 1)  # increment minor
-                + snapshot_split.group(3))
+                match.group(1)
+                + str(int(match.group(2)) + 1)  # increment patch (semver MAJOR.MINOR.PATCH)
+                + match.group(3))
         else:
             self.next_snapshot = self.snapshot
 
