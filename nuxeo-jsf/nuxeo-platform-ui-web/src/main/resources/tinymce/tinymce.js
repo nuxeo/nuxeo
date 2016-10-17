@@ -888,6 +888,15 @@ function Sizzle( selector, context, results, seed ) {
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector;
 
+  // NXP-20757: this try/catch seems to fix IE 'permission denied' errors as described here:
+  // http://bugs.jquery.com/ticket/14535
+  try {
+    document === document; //may cause permission denied
+  }
+  catch (err){
+    document = window.document; //resets document, and no more permission denied errors.
+  }
+
 	if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
 		setDocument( context );
 	}
