@@ -144,23 +144,31 @@ given the path parameter.
                                        other_versions))
             msg_commit = f.readline().split("=")[1].strip()
             msg_tag = f.readline().split("=")[1].strip()
+            auto_increment_policy = f.readline().split("=")[1].strip()
         if other_versions == "::":
             other_versions = None
         return (remote_alias, branch, tag, next_snapshot,
                 maintenance_version, is_final, skipTests, skipITs, profiles,
-                other_versions, msg_commit, msg_tag)
+                other_versions, msg_commit, msg_tag, auto_increment_policy)
 
     # pylint: disable=R0913
     def __init__(self, repo, branch, tag, next_snapshot,
-                 maintenance_version="auto", is_final=False,
-                 skipTests=False, skipITs=False,
-                 other_versions=None, profiles='', msg_commit='', msg_tag=''):
+                 maintenance_version="auto",
+                 is_final=False,
+                 skipTests=False,
+                 skipITs=False,
+                 other_versions=None,
+                 profiles='',
+                 msg_commit='',
+                 msg_tag='',
+                 auto_increment_policy='auto_patch'):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
         self.maintenance_version = maintenance_version
         self.skipTests = skipTests
         self.skipITs = skipITs
+        self.auto_increment_policy = auto_increment_policy
         if profiles:
             self.profiles = ',' + profiles
         else:
@@ -263,14 +271,36 @@ given the path parameter.
         if next_snapshot != "auto":
             self.next_snapshot = next_snapshot
         elif self.is_final:
-            semver = re.compile('^(.*\.)'
-                                '(0|[1-9][0-9]*)(-SNAPSHOT)')
+            semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
+                                '(?:\.(?P<minor>(?:0|[1-9][0-9]*)))?'
+                                '(?:\.(?P<patch>(?:0|[1-9][0-9]*)))?')
 
             match = semver.match(self.snapshot)
-            self.next_snapshot = (
-                match.group(1)
-                + str(int(match.group(2)) + 1)  # increment patch (semver MAJOR.MINOR.PATCH)
-                + match.group(3))
+            verinfo = match.groupdict()
+
+            policy = self.auto_increment_policy
+
+            for key in ['patch', 'minor', 'major']:
+                if (verinfo[key] and policy == 'auto_last') or policy == 'auto_%s' % key:
+                    verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
+                    break
+
+            if verinfo['patch']:
+                if policy in ['auto_minor', 'auto_major']:
+                    verinfo['patch'] = 0
+                self.next_snapshot = '%d.%d.%d-SNAPSHOT' % (
+                    int(verinfo['major']),
+                    int(verinfo['minor'] if verinfo['minor'] else 0),
+                    int(verinfo['patch']))
+            elif verinfo['minor']:
+                if policy == 'auto_major':
+                    verinfo['minor'] = 0
+                self.next_snapshot = '%d.%d-SNAPSHOT' % (
+                    int(verinfo['major']),
+                    int(verinfo['minor']))
+            elif verinfo['major']:
+                self.next_snapshot = '%d-SNAPSHOT' % (
+                    int(verinfo['major']))
         else:
             self.next_snapshot = self.snapshot
 
@@ -308,7 +338,7 @@ given the path parameter.
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
                         "SKIP_ITS=%s\nPROFILES=%s\nOTHER_VERSIONS=%s\n"
                         "FILES_PATTERN=%s\nPROPS_PATTERN=%s\nMSG_COMMIT=%s\n"
-                        "MSG_TAG=%s\n" %
+                        "MSG_TAG=%s\nAUTO_INCREMENT_POLICY=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance_version,
                          self.is_final, self.skipTests, self.skipITs,
@@ -317,7 +347,9 @@ given the path parameter.
                                    for other_version in self.other_versions)),
                          self.custom_patterns.files,
                          self.custom_patterns.props[35:],
-                         self.msg_commit, self.msg_tag))
+                         self.msg_commit,
+                         self.msg_tag,
+                         self.auto_increment_policy))
             log("Parameters stored in %s" % release_log)
         log("")
 
@@ -874,6 +906,16 @@ messages:\n
             help="""Like '--mc' option but specific to tag messages. \
 Default tag message:\n
 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
+""")
+        versioning_options.add_option(
+            '--aip', '--auto-increment-policy', action="store", type="string", dest='auto_increment_policy',
+            default='auto_patch',
+            help="""Configure the increment policy used when next is set to auto. Default: 'auto_patch'\n
+Available options:\n
+ - auto_last: increment last existing number (1.0.0 => 1.0.1, 1.0 => 1.1, 1 => 2)
+ - auto_major: 1.0.0 => 2.0.0
+ - auto_minor: 1.0.0 => 1.1.0
+ - auto_patch: 1.0.0 => 1.0.1
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
