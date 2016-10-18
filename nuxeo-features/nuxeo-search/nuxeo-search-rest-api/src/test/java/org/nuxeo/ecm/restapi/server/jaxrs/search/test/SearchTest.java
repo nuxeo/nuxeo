@@ -189,8 +189,6 @@ public class SearchTest extends BaseTest {
         for (JsonNode qf : node.get("quickFilters")) {
             String name = qf.get("name").getTextValue();
             boolean active = qf.get("active").getBooleanValue();
-            System.out.println("toto " + name + " active " + active);
-
             assertEquals("testQF".equals(name) || "testQF2".equals(name),
                     active);
         }
