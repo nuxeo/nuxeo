@@ -97,7 +97,6 @@
     <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
-    <module>nuxeo-web-mobile</module>
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-groups-rights-audit</module>
@@ -458,23 +457,6 @@
         <groupId>org.nuxeo.binary.metadata</groupId>
         <artifactId>nuxeo-binary-metadata</artifactId>
         <version>${nuxeo.binary.metadata.version}</version>
-      </dependency>
-
-      <!-- Web Mobile -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.mobile</groupId>
-        <artifactId>nuxeo-web-mobile</artifactId>
-        <version>${nuxeo.web.mobile.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.mobile</groupId>
-        <artifactId>nuxeo-application-definition</artifactId>
-        <version>${nuxeo.web.mobile.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.mobile</groupId>
-        <artifactId>nuxeo-web-mobile-cap</artifactId>
-        <version>${nuxeo.web.mobile.version}</version>
       </dependency>
 
       <!-- External Indexer WS Gateway -->
