@@ -183,6 +183,17 @@ public class SearchTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(2, getLogEntries(node).size());
+
+        assertTrue(node.get("quickFilters").isArray());
+        assertEquals(3, node.get("quickFilters").size());
+        for (JsonNode qf : node.get("quickFilters")) {
+            String name = qf.get("name").getTextValue();
+            boolean active = qf.get("active").getBooleanValue();
+            System.out.println("toto " + name + " active " + active);
+
+            assertEquals("testQF".equals(name) || "testQF2".equals(name),
+                    active);
+        }
     }
 
     @Test

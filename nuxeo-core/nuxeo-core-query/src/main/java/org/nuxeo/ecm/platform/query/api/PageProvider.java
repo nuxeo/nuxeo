@@ -429,4 +429,9 @@ public interface PageProvider<T> extends Serializable {
      */
     void addQuickFilter(QuickFilter quickFilter);
 
+    /**
+     * @since 8.4
+     */
+    List<QuickFilter> getAvailableQuickFilters();
+
 }

@@ -346,6 +346,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
+    public List<QuickFilter> getAvailableQuickFilters() {
+        return definition.getQuickFilters();
+    }
+
+    @Override
     public void addQuickFilter(QuickFilter quickFilter) {
         if (quickFilters == null) {
             quickFilters = new ArrayList<>();

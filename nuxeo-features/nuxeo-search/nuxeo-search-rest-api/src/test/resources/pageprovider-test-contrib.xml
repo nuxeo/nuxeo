@@ -44,6 +44,9 @@
         <quickFilter name="testQF2">
           <clause>ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'</clause>
         </quickFilter>
+        <quickFilter name="testQF3">
+          <clause>ecm:isCheckedInVersion = 1</clause>
+        </quickFilter>
       </quickFilters>
       <pageSize>50</pageSize>
     </coreQueryPageProvider>

@@ -37,6 +37,43 @@ import org.nuxeo.ecm.platform.query.api.QuickFilter;
 @XObject(value = "quickFilters")
 public class QuickFilterDescriptor implements QuickFilter {
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((clause == null) ? 0 : clause.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((sortInfos == null) ? 0 : sortInfos.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        QuickFilterDescriptor other = (QuickFilterDescriptor) obj;
+        if (clause == null) {
+            if (other.clause != null)
+                return false;
+        } else if (!clause.equals(other.clause))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (sortInfos == null) {
+            if (other.sortInfos != null)
+                return false;
+        } else if (!sortInfos.equals(other.sortInfos))
+            return false;
+        return true;
+    }
+
     @XNode("@name")
     protected String name;
 

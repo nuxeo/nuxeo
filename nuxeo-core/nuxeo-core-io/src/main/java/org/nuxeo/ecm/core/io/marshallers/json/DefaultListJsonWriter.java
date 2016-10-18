@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 
 /**
  * Base class to convert {@link List} as json.
@@ -159,6 +160,18 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
                     jg.writeEndObject();
                 }
 
+            }
+            List<QuickFilter> qfs = paginable.getActiveQuickFilters();
+            List<QuickFilter> aqfs = paginable.getAvailableQuickFilters();
+            if (aqfs != null) {
+                jg.writeArrayFieldStart("quickFilters");
+                for (QuickFilter aqf : aqfs) {
+                    jg.writeStartObject();
+                    jg.writeStringField("name", aqf.getName());
+                    jg.writeBooleanField("active", qfs.contains(aqf));
+                    jg.writeEndObject();
+                }
+                jg.writeEndArray();
             }
         }
     }

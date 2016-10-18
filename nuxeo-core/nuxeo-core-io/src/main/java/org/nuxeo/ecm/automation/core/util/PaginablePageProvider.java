@@ -20,11 +20,13 @@
 package org.nuxeo.ecm.automation.core.util;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 
 /**
  * Wraps a {@link org.nuxeo.ecm.platform.query.api.PageProvider}.
@@ -110,5 +112,15 @@ public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<
     @Override
     public boolean hasAggregateSupport() {
         return pageProvider.hasAggregateSupport();
+    }
+
+    @Override
+    public List<QuickFilter> getActiveQuickFilters() {
+        return pageProvider.getQuickFilters();
+    }
+
+    @Override
+    public List<QuickFilter> getAvailableQuickFilters() {
+        return pageProvider.getAvailableQuickFilters();
     }
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -97,5 +98,15 @@ public interface Paginable<T> extends List<T> {
      * @since 6.0
      */
     boolean hasAggregateSupport();
+
+    /**
+     * @since 8.4
+     */
+    List<QuickFilter> getActiveQuickFilters();
+
+    /**
+     * @since 8.4
+     */
+    List<QuickFilter> getAvailableQuickFilters();
 
 }

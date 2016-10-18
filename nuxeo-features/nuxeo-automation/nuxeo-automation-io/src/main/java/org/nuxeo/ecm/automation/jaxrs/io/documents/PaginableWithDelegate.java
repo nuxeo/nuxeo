@@ -19,11 +19,13 @@
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 
 /**
  * Paginable object that uses a delegate to handle pagination.
@@ -111,6 +113,16 @@ public class PaginableWithDelegate<T> extends ArrayList<T> implements Paginable<
     @Override
     public boolean hasAggregateSupport() {
         return delegate.hasAggregateSupport();
+    }
+
+    @Override
+    public List<QuickFilter> getActiveQuickFilters() {
+        return delegate.getActiveQuickFilters();
+    }
+
+    @Override
+    public List<QuickFilter> getAvailableQuickFilters() {
+        return delegate.getAvailableQuickFilters();
     }
 
 }
