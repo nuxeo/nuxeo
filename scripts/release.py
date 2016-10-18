@@ -196,7 +196,7 @@ given the path parameter.
         """Set other versions and replacement patterns"""
         Patterns = namedtuple('Patterns', ['files', 'props'])
         self.default_patterns = Patterns(
-            # Files extentions
+            # Files extensions
             "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
             # Properties like nuxeo.*.version
             "{%s}(nuxeo|marketplace)\\..*version" % NAMESPACES.get("pom"))
@@ -206,29 +206,24 @@ given the path parameter.
         if other_versions:
             # Parse custom patterns
             other_versions_split = other_versions.split(':')
-            if (len(other_versions_split) == 3):
+            if len(other_versions_split) == 3:
                 if other_versions_split[0]:
                     custom_files_pattern = other_versions_split[0]
                     try:
                         re.compile(custom_files_pattern)
                     except re.error, e:
-                        raise ExitException(1, "Bad pattern: '%s'\n%s" %
-                                            (custom_files_pattern, e.message))
+                        raise ExitException(1, "Bad pattern: '%s'\n%s" % (custom_files_pattern, e.message))
                 if other_versions_split[1]:
                     try:
                         re.compile(other_versions_split[1])
                     except re.error, e:
-                        raise ExitException(e, 1, "Bad pattern: '%s'\n/s" %
-                                            other_versions_split[1], e.message)
-                    custom_props_pattern = "{%s}%s" % (NAMESPACES.get("pom"),
-                                                       other_versions_split[1])
+                        raise ExitException(e, 1, "Bad pattern: '%s'\n%s" % (other_versions_split[1], e.message))
+                    custom_props_pattern = "{%s}%s" % (NAMESPACES.get("pom"), other_versions_split[1])
                 other_versions = other_versions_split[2]
             elif len(other_versions_split) == 1:
                 other_versions = other_versions_split[0]
             else:
-                raise ExitException(
-                    1, "Could not parse other_versions parameter '%s'."
-                    % other_versions)
+                raise ExitException(1, "Could not parse other_versions parameter '%s'." % other_versions)
             other_versions_split = []
             if other_versions:
                 # Parse version replacements
@@ -272,28 +267,23 @@ given the path parameter.
             self.next_snapshot = next_snapshot
         elif self.is_final:
             semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
-                                '(?:\.(?P<minor>(?:0|[1-9][0-9]*)))?'
-                                '(?:\.(?P<patch>(?:0|[1-9][0-9]*)))?')
-
-            match = semver.match(self.snapshot)
-            verinfo = match.groupdict()
-
-            policy = self.auto_increment_policy
-
+                                '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
+                                '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
+            verinfo = semver.match(self.snapshot).groupdict()
             for key in ['patch', 'minor', 'major']:
-                if (verinfo[key] and policy == 'auto_last') or policy == 'auto_%s' % key:
+                if ((verinfo[key] and self.auto_increment_policy == 'auto_last')
+                    or self.auto_increment_policy == 'auto_%s' % key):
                     verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
                     break
-
             if verinfo['patch']:
-                if policy in ['auto_minor', 'auto_major']:
+                if self.auto_increment_policy in ['auto_minor', 'auto_major']:
                     verinfo['patch'] = 0
                 self.next_snapshot = '%d.%d.%d-SNAPSHOT' % (
                     int(verinfo['major']),
                     int(verinfo['minor'] if verinfo['minor'] else 0),
                     int(verinfo['patch']))
             elif verinfo['minor']:
-                if policy == 'auto_major':
+                if self.auto_increment_policy == 'auto_major':
                     verinfo['minor'] = 0
                 self.next_snapshot = '%d.%d-SNAPSHOT' % (
                     int(verinfo['major']),
@@ -590,7 +580,7 @@ given the path parameter.
                 msg_commit = ''
                 post_release_change = False
             for other_version in self.other_versions:
-                if (len(other_version) == 3 and self.update_versions(other_version[0], other_version[2])):
+                if len(other_version) == 3 and self.update_versions(other_version[0], other_version[2]):
                     post_release_change = True
                     msg_commit += "\nUpdate %s to %s" % (other_version[0], other_version[2])
             if post_release_change:
@@ -651,7 +641,7 @@ given the path parameter.
             msg_commit = ''
             post_release_change = False
         for other_version in self.other_versions:
-            if (len(other_version) == 3 and self.update_versions(other_version[0], other_version[2])):
+            if len(other_version) == 3 and self.update_versions(other_version[0], other_version[2]):
                 post_release_change = True
                 msg_commit += "\nUpdate %s to %s" % (other_version[0], other_version[2])
         if post_release_change:
@@ -910,12 +900,13 @@ Default tag message:\n
         versioning_options.add_option(
             '--aip', '--auto-increment-policy', action="store", type="string", dest='auto_increment_policy',
             default='auto_patch',
-            help="""Configure the increment policy used when next is set to auto. Default: 'auto_patch'\n
+            help="""Version increment policy when in 'auto' mode. Default: 'auto_patch'\n
 Available options:\n
- - auto_last: increment last existing number (1.0.0 => 1.0.1, 1.0 => 1.1, 1 => 2)
- - auto_major: 1.0.0 => 2.0.0
- - auto_minor: 1.0.0 => 1.1.0
- - auto_patch: 1.0.0 => 1.0.1
+ - 'auto_last': increment last explicitly defined number (1.0.0 => 1.0.1, 1.0 => 1.1, 1 => 2)\n
+ - 'auto_major': 1.0.0 => 2.0.0\n
+ - 'auto_minor': 1.0.0 => 1.1.0\n
+ - 'auto_patch': 1.0.0 => 1.0.1\n
+Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should be optional.
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
@@ -928,11 +919,10 @@ Available options:\n
         if ("command" in locals() and command == "perform"
             and os.path.isfile(Release.get_release_log(os.getcwd()))
                 and options == parser.get_default_values()):
-            (options.remote_alias, options.branch, options.tag,
-             options.next_snapshot, options.maintenance_version,
-             options.is_final, options.skipTests, options.skipITs,
-             options.profiles, options.other_versions, options.msg_commit,
-             options.msg_tag) = Release.read_release_log(os.getcwd())
+            (options.remote_alias, options.branch, options.tag, options.next_snapshot, options.maintenance_version,
+             options.is_final, options.skipTests, options.skipITs, options.profiles, options.other_versions,
+             options.msg_commit, options.msg_tag,
+             options.auto_increment_policy) = Release.read_release_log(os.getcwd())
         repo = Repository(os.getcwd(), options.remote_alias)
         system("git fetch %s" % (options.remote_alias))
         if "command" in locals():
@@ -958,11 +948,9 @@ Available options:\n
                 if options.branch == "auto":
                     options.branch = repo.get_current_version()
                 repo.git_update(options.branch)
-        release = Release(repo, options.branch, options.tag,
-                          options.next_snapshot, options.maintenance_version,
-                          options.is_final, options.skipTests, options.skipITs,
-                          options.other_versions, options.profiles,
-                          options.msg_commit, options.msg_tag)
+        release = Release(repo, options.branch, options.tag, options.next_snapshot, options.maintenance_version,
+                          options.is_final, options.skipTests, options.skipITs, options.other_versions,
+                          options.profiles, options.msg_commit, options.msg_tag, options.auto_increment_policy)
         if ("command" not in locals() or
                 command != "maintenance" and command != "package"):
             release.log_summary("command" in locals() and command != "perform")
