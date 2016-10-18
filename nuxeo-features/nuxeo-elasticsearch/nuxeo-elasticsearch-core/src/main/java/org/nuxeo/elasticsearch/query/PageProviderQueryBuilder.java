@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -64,10 +65,22 @@ public class PageProviderQueryBuilder {
      */
     public static QueryBuilder makeQuery(final DocumentModel model, final WhereClauseDefinition whereClause,
             final Object[] params, final boolean useNativeQuery) {
+        return makeQuery(model, whereClause, null, params, useNativeQuery);
+    }
+
+    /**
+     * @since 8.4
+     */
+    public static QueryBuilder makeQuery(final DocumentModel model, final WhereClauseDefinition whereClause,
+            final String additionalFixedPart, final Object[] params, final boolean useNativeQuery) {
         assert (model != null);
         assert (whereClause != null);
         NxqlQueryConverter.ExpressionBuilder eb = new NxqlQueryConverter.ExpressionBuilder("AND");
         String fixedPart = whereClause.getFixedPart();
+        if (!StringUtils.isBlank(additionalFixedPart)) {
+            fixedPart = (!StringUtils.isBlank(fixedPart))
+                    ? NXQLQueryBuilder.appendClause(fixedPart, additionalFixedPart) : additionalFixedPart;
+        }
         if (params != null) {
             for (Object param : params) {
                 fixedPart = fixedPart.replaceFirst("\\?", convertParam(param, true));

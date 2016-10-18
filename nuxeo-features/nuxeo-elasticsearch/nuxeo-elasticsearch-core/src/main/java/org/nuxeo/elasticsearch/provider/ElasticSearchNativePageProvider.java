@@ -159,7 +159,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
 
             String originalPattern = def.getPattern();
             String pattern = quickFiltersClause.isEmpty() ? originalPattern
-                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                    : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
                     ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
                     : originalPattern + " WHERE " + quickFiltersClause;
 
@@ -167,23 +167,14 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
                     def.getEscapePatternParameters(), isNativeQuery());
         } else {
 
-            // Add the quick filters clauses to the fixed part
-            if (!quickFiltersClause.isEmpty()) {
-                String fixedPart = whereClause.getFixedPart();
-                if (fixedPart != null) {
-                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
-                } else {
-                    whereClause.setFixedPart(quickFiltersClause);
-                }
-            }
 
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
                 throw new NuxeoException(String.format(
                         "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
-            ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, whereClause, getParameters(),
-                    isNativeQuery());
+            ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, whereClause, quickFiltersClause,
+                    getParameters(), isNativeQuery());
         }
         return ret;
     }

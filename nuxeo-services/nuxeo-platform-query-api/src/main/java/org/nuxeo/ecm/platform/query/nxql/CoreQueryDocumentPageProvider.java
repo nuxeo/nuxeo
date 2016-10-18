@@ -27,7 +27,12 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
@@ -255,7 +260,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
 
             String originalPattern = def.getPattern();
             String pattern = quickFiltersClause.isEmpty() ? originalPattern
-                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                    : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
                             ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
                             : originalPattern + " WHERE " + quickFiltersClause;
 
@@ -263,22 +268,13 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                     def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
         } else {
 
-            // Add the quick filters clauses to the fixed part
-            if (!quickFiltersClause.isEmpty()) {
-                String fixedPart = whereClause.getFixedPart();
-                if (fixedPart != null) {
-                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
-                } else {
-                    whereClause.setFixedPart(quickFiltersClause);
-                }
-            }
-
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
                 throw new NuxeoException(String.format(
                         "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
-            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, getParameters(), sortArray);
+            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, quickFiltersClause, getParameters(),
+                    sortArray);
         }
 
         if (query != null && newQuery != null && !newQuery.equals(query)) {

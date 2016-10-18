@@ -202,7 +202,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
             }
             String originalPattern = def.getPattern();
             String pattern = quickFiltersClause.isEmpty() ? originalPattern
-                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                    : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
                     ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
                     : originalPattern + " WHERE " + quickFiltersClause;
 
@@ -211,17 +211,14 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         } else {
 
             // Add the quick filters clauses to the fixed part
-            if (!quickFiltersClause.isEmpty()) {
-                String fixedPart = whereClause.getFixedPart();
-                if (fixedPart != null) {
-                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
-                } else {
-                    whereClause.setFixedPart(quickFiltersClause);
-                }
+            String fixedPart = getFixedPart();
+            if (!StringUtils.isBlank(quickFiltersClause)) {
+                fixedPart = (!StringUtils.isBlank(fixedPart))
+                        ? NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause) : quickFiltersClause;
             }
 
             // Where clause based on DocumentModel
-            String baseQuery = getESBackend().expandQueryVariables(getFixedPart(), params);
+            String baseQuery = getESBackend().expandQueryVariables(fixedPart, params);
             searchBuilder = getESBackend().buildSearchQuery(baseQuery, whereClause.getPredicates(),
                     getSearchDocumentModel());
         }

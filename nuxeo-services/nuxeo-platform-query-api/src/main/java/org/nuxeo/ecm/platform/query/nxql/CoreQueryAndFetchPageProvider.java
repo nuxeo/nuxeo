@@ -238,7 +238,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
 
             String originalPattern = def.getPattern();
             String pattern = quickFiltersClause.isEmpty() ? originalPattern
-                    : StringUtils.containsIgnoreCase(originalPattern, "WHERE")
+                    : StringUtils.containsIgnoreCase(originalPattern, " WHERE ")
                     ? NXQLQueryBuilder.appendClause(originalPattern, quickFiltersClause)
                     : originalPattern + " WHERE " + quickFiltersClause;
 
@@ -246,22 +246,13 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                     def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
         } else {
 
-            // Add the quick filters clauses to the fixed part
-            if (!quickFiltersClause.isEmpty()) {
-                String fixedPart = whereClause.getFixedPart();
-                if (fixedPart != null) {
-                    whereClause.setFixedPart(NXQLQueryBuilder.appendClause(fixedPart, quickFiltersClause));
-                } else {
-                    whereClause.setFixedPart(quickFiltersClause);
-                }
-            }
-
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
                 throw new NuxeoException(String.format(
                         "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
-            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, getParameters(), sortArray);
+            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, quickFiltersClause, getParameters(),
+                    sortArray);
         }
 
         if (query != null && newQuery != null && !newQuery.equals(query)) {
