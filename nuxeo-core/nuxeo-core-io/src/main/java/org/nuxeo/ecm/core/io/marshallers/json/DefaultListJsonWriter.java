@@ -163,7 +163,7 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
             }
             List<QuickFilter> qfs = paginable.getActiveQuickFilters();
             List<QuickFilter> aqfs = paginable.getAvailableQuickFilters();
-            if (aqfs != null) {
+            if (aqfs != null && !aqfs.isEmpty()) {
                 jg.writeArrayFieldStart("quickFilters");
                 for (QuickFilter aqf : aqfs) {
                     jg.writeStartObject();
