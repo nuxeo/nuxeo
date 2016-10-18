@@ -32,6 +32,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -75,6 +77,9 @@ public class TestPictureRenditions {
 
     @Inject
     protected ImagingService imagingService;
+
+    @Inject
+    protected AutomationService automationService;
 
     @Inject
     protected RuntimeHarness runtimeHarness;
@@ -141,10 +146,17 @@ public class TestPictureRenditions {
         DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
         doc.setProperty("file", "filename", source.getFilename());
         doc.setProperty("file", "content", source);
-        assertNotNull(renditionService.getRendition(doc, "imageToPDF"));
 
-        Blob pdfRendition = imagingService.convertToPDF(source);
-        assertNotNull(pdfRendition);
-        assertEquals("pdf", FilenameUtils.getExtension(pdfRendition.getFilename()));
+        Rendition imageToPDFRendition = renditionService.getRendition(doc, "imageToPDF");
+        assertNotNull(imageToPDFRendition);
+        Blob pdfRenditionFromService = imagingService.convertToPDF(source);
+        assertNotNull(pdfRenditionFromService);
+        assertEquals("pdf", FilenameUtils.getExtension(pdfRenditionFromService.getFilename()));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(source);
+        Blob pdfRenditionFromChain = (Blob) automationService.run(ctx, "Image.Blob.ConvertToPDF", null);
+        assertNotNull(pdfRenditionFromChain);
+        assertEquals("pdf", FilenameUtils.getExtension(pdfRenditionFromChain.getFilename()));
     }
 }
