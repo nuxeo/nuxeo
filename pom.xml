@@ -55,7 +55,6 @@
     <nuxeo.easyshare.version>8.4-SNAPSHOT</nuxeo.easyshare.version>
     <nuxeo.logs.viewer.version>8.4-SNAPSHOT</nuxeo.logs.viewer.version>
     <nuxeo.spreadsheet.version>8.4-SNAPSHOT</nuxeo.spreadsheet.version>
-    <nuxeo.theme.compat.version>8.4-SNAPSHOT</nuxeo.theme.compat.version>
     <nuxeo.datadog.reporter.version>8.4-SNAPSHOT</nuxeo.datadog.reporter.version>
     <nuxeo.review.workflows.dashboards.version>8.4-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
     <nuxeo.salesforce.version>8.4-SNAPSHOT</nuxeo.salesforce.version>
@@ -123,7 +122,6 @@
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
     <module>nuxeo-media-publishing</module>
-    <module>nuxeo-theme-compat</module>
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
@@ -886,38 +884,6 @@
         <groupId>org.nuxeo.ecm.media.publishing</groupId>
         <artifactId>nuxeo-media-publishing-youtube</artifactId>
         <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Theme Compat -->
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-fragments</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-html</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-theme-jsf</artifactId>
-        <version>${nuxeo.jsf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-theme-bank</artifactId>
-        <version>${nuxeo.features.version}</version>
       </dependency>
 
       <dependency>
