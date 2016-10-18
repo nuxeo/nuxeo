@@ -347,7 +347,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public List<QuickFilter> getAvailableQuickFilters() {
-        return definition.getQuickFilters();
+        return definition != null ? definition.getQuickFilters() : null;
     }
 
     @Override
