@@ -194,6 +194,29 @@ public class SearchTest extends BaseTest {
         }
     }
 
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void iDonAlterPageProviderDefWithQuickFilter() throws IOException {
+        // Given a repository, when I perform a pageprovider on it
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("quickFilters", "testQF,testQF2");
+        ClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+
+        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"));
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(20, getLogEntries(node).size());
+    }
+
     @Test
     public void iCanPerformPageProviderWithNamedParametersInvalid() throws Exception {
         ClientResponse response = getResponse(RequestType.GET,

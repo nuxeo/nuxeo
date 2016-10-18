@@ -51,6 +51,28 @@
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="TEST_PP_QUICK_FILTER2">
+      <whereClause>
+        <fixedPart>
+		  ecm:isCheckedInVersion = 0
+          AND ecm:currentLifeCycleState != 'deleted'
+        </fixedPart>
+      </whereClause>
+      <quickFilters>
+        <quickFilter name="testQF">
+          <clause>dc:title IN ('Note 1', 'Note 2')</clause>
+          <sort column="dc:title" ascending="true" />
+        </quickFilter>
+        <quickFilter name="testQF2">
+          <clause>ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'</clause>
+        </quickFilter>
+        <quickFilter name="testQF3">
+          <clause>ecm:isCheckedInVersion = 1</clause>
+        </quickFilter>
+      </quickFilters>
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="namedParamProviderInvalid">
       <pattern>
         SELECT * FROM Document where dc:title=:foo
