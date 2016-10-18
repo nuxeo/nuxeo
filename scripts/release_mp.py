@@ -120,7 +120,7 @@ class ReleaseMP(object):
                                      skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
                                      other_versions=self.mp_config.get(marketplace, "other_versions", None),
                                      auto_increment_policy=self.mp_config.get(marketplace, "auto_increment_policy",
-                                                                              "auto_last"))
+                                                                              "auto_patch"))
                 mp_release.log_summary()
                 mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only, dodeploy=True)
                 prepared = True
@@ -181,7 +181,7 @@ class ReleaseMP(object):
                                      skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
                                      other_versions=self.mp_config.get(marketplace, "other_versions", None),
                                      auto_increment_policy=self.mp_config.get(marketplace, "auto_increment_policy",
-                                                                              "auto_last"))
+                                                                              "auto_patch"))
                 mp_release.log_summary()
                 mp_release.release_branch(dryrun=dryrun, upgrade_only=upgrade_only)
                 self.mp_config.set(marketplace, "next_snapshot", "done")
