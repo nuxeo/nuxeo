@@ -16,8 +16,6 @@
   <modules>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-web-embedded</module>
-    <module>nuxeo-platform-intuition</module>
-    <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-sync</module>
   </modules>
 

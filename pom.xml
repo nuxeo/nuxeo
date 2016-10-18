@@ -63,7 +63,6 @@
     <nuxeo.forum.version>8.4-SNAPSHOT</nuxeo.forum.version>
 
     <!-- optional addons -->
-    <nuxeo.semantic.entities.version>8.4-SNAPSHOT</nuxeo.semantic.entities.version>
     <nuxeo.sync.version>8.4-SNAPSHOT</nuxeo.sync.version>
     <!-- end of optional addons -->
   </properties>
@@ -367,18 +366,6 @@
         <version>${nuxeo.video.version}</version>
       </dependency>
 
-      <!-- DEPRECATED Semantic Entities -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-semantic-entities-api</artifactId>
-        <version>${nuxeo.semantic.entities.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-semantic-entities-core</artifactId>
-        <version>${nuxeo.semantic.entities.version}</version>
-      </dependency>
-
       <!-- Document Categorization -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -495,13 +482,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-indexing-gateway</artifactId>
         <version>${nuxeo.indexing.gateway.version}</version>
-      </dependency>
-
-      <!-- DEPRECATED Sinequa ICE Connector -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-intuition</artifactId>
-        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- Exalead Connector -->
