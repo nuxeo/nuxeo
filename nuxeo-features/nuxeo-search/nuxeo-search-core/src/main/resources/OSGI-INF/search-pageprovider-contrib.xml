@@ -106,6 +106,18 @@
           </dateRanges>
         </aggregate>
       </aggregates>
+      <quickFilters>
+        <quickFilter name="noFolder">
+          <clause>ecm:mixinType != 'Folderish'</clause>
+        </quickFilter>
+        <quickFilter name="mostRecent">
+          <sort column="dc:modified" ascending="false" />
+        </quickFilter>
+        <quickFilter name="onlyValidated">
+          <clause>ecm:currentLifeCycleState = 'approved'</clause>
+          <sort column="dc:modified" ascending="false" />
+        </quickFilter>
+      </quickFilters>
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
