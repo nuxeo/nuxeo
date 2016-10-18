@@ -25,7 +25,6 @@
     <nuxeo.shell.version>8.4-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>8.4-SNAPSHOT</nuxeo.webembedded.version>
     <nuxeo.fsconnectors.version>8.4-SNAPSHOT</nuxeo.fsconnectors.version>
-    <nuxeo.classification.version>8.4-SNAPSHOT</nuxeo.classification.version>
     <nuxeo.importer.version>8.4-SNAPSHOT</nuxeo.importer.version>
     <nuxeo.routing.version>8.4-SNAPSHOT</nuxeo.routing.version>
     <nuxeo.smartsearch.version>8.4-SNAPSHOT</nuxeo.smartsearch.version>
@@ -237,23 +236,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-webdav</artifactId>
         <version>${nuxeo.fsconnectors.version}</version>
-      </dependency>
-
-      <!-- Classification -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-classification-api</artifactId>
-        <version>${nuxeo.classification.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-classification-core</artifactId>
-        <version>${nuxeo.classification.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-classification-web</artifactId>
-        <version>${nuxeo.classification.version}</version>
       </dependency>
 
       <!-- Importer -->

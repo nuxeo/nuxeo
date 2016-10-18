@@ -19,7 +19,6 @@
     <module>nuxeo-platform-intuition</module>
     <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-sync</module>
-    <module>nuxeo-platform-classification</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
