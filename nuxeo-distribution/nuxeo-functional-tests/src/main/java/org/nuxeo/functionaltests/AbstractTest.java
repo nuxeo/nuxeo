@@ -206,6 +206,10 @@ public abstract class AbstractTest {
 
     @BeforeClass
     public static void initDriver() throws Exception {
+        // reuse driver since it depends on a system property
+        if (driver != null) {
+            return;
+        }
         String browser = System.getProperty("browser", "firefox");
         // Use the same strings as command-line Selenium
         if (browser.equals("chrome") || browser.equals("firefox")) {
