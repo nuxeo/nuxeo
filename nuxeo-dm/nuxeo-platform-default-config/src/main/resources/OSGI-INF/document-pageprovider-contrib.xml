@@ -63,6 +63,7 @@
           </dateRanges>
         </aggregate>
       </aggregates>
+      <sort column="dc:modified" ascending="false" />
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
