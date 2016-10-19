@@ -2,7 +2,6 @@
 
 * fixeclipse.py: Fix eclipse classpath & .ok files
 * gitf.bat/gitfunctions.sh: Convenient functions for use on Nuxeo projects version controlled under Git
-* nxutils.sh: Convenient functions for use on Nuxeo projects
 * release.py: Manages releasing of Nuxeo source code
 * release_mp.py: Manages releasing of Nuxeo Marketplace packages
 
@@ -12,6 +11,10 @@
 # Usage
 `./<script> <options>`
 
+* Call `fixeclipse` after an execution of `mvn eclipse:eclipse`
+* Use `gitf` (or `gitfa`) to execute recursive Git actions on Nuxeo repositories (including addons)
+* See `release.py -h` and `release_mp.py -h`
+
 # Code
 ## QA
 
@@ -20,8 +23,8 @@
 ## Running Unit Tests
 Follow the Installation steps to acquire the dependencies
 Run:
-` nuxeo$ cd scripts
-nuxeo/scripts$ python -m tests`
+    nuxeo$ cd scripts
+    nuxeo/scripts$ python -m tests
 
 # Contributing / Reporting issues
 https://jira.nuxeo.com/secure/CreateIssue!default.jspa?project=NXBT
