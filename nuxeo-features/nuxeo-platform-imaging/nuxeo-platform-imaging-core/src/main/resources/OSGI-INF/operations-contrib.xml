@@ -25,6 +25,7 @@
     </chain>
 
     <chain id="Image.Blob.ConvertToPDF">
+      <operation id="Context.PopBlob"/>
       <operation id="Blob.RunConverter">
         <param name="converter" type="string">pictureConvertToPDF</param>
       </operation>

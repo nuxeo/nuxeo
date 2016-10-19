@@ -145,7 +145,7 @@ public class TestMagickExecutors {
     @Test
     public void testConverterToPDF() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
-        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".test.pdf");
+        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".document.pdf");
 
         ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 
