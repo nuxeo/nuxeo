@@ -149,14 +149,8 @@ public class TestPictureRenditions {
 
         Rendition imageToPDFRendition = renditionService.getRendition(doc, "imageToPDF");
         assertNotNull(imageToPDFRendition);
-        Blob pdfRenditionFromService = imagingService.convertToPDF(source);
-        assertNotNull(pdfRenditionFromService);
-        assertEquals("pdf", FilenameUtils.getExtension(pdfRenditionFromService.getFilename()));
-
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(source);
-        Blob pdfRenditionFromChain = (Blob) automationService.run(ctx, "Image.Blob.ConvertToPDF", null);
-        assertNotNull(pdfRenditionFromChain);
-        assertEquals("pdf", FilenameUtils.getExtension(pdfRenditionFromChain.getFilename()));
+        Blob pdfRendition = imageToPDFRendition.getBlob();
+        assertNotNull(pdfRendition);
+        assertEquals("pdf", FilenameUtils.getExtension(pdfRendition.getFilename()));
     }
 }
