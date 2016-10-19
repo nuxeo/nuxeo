@@ -208,6 +208,7 @@ public abstract class AbstractTest {
     public static void initDriver() throws Exception {
         // reuse driver since it depends on a system property
         if (driver != null) {
+            proxyManager.startProxy();
             return;
         }
         String browser = System.getProperty("browser", "firefox");
@@ -270,14 +271,8 @@ public abstract class AbstractTest {
 
     @AfterClass
     public static void quitDriver() {
-        if (driver != null) {
-            driver.quit();
-            driver = null;
-        }
-
         try {
             proxyManager.stopProxy();
-            proxyManager = null;
         } catch (Exception e) {
             log.error("Could not stop proxy: " + e.getMessage());
         }
