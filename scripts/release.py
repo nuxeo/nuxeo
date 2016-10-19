@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and contributors.
 
