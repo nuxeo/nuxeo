@@ -75,9 +75,10 @@ public class PictureChangedListener implements EventListener {
             Property fileProp = doc.getProperty("file:content");
             Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
 
-            Boolean forceGeneration = Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_VIEWS_GENERATION));
-            if (forceGeneration
-                    || !viewsProp.isDirty() && (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty())) {
+            boolean forceGeneration = Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_VIEWS_GENERATION));
+            boolean noPictureViews = !viewsProp.isDirty() || viewsProp.size() == 0;
+            boolean fileChanged = ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty();
+            if (forceGeneration || (noPictureViews  && fileChanged)) {
                 preFillPictureViews(docCtx.getCoreSession(), doc);
             } else {
                 docCtx.setProperty(PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, true);
