@@ -87,6 +87,20 @@ function DropZoneUIHandler(idx, dropZoneId, options, targetSelectedCB, cancelCB)
   this.cancelCB = cancelCB;
 }
 
+DropZoneUIHandler.prototype.escapeHtml= function (string) {
+    var entityMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;'
+          };
+    return String(string).replace(/[&<>"'\/]/g, function fromEntityMap (s) {
+              return entityMap[s];
+    });
+};
+
 DropZoneUIHandler.prototype.uploadStarted = function (fileIndex, file) {
   this.nxUploadStarted++;
 
@@ -97,7 +111,8 @@ DropZoneUIHandler.prototype.uploadStarted = function (fileIndex, file) {
   var infoDiv = jQuery("<div></div>");
   infoDiv.addClass("dropzone-info-name");
   infoDiv.attr("id", "dropzone-info-" + this.idx + "-" + fileIndex);
-  infoDiv.html(file.name);
+
+  infoDiv.html(this.escapeHtml(file.name));
 
   var progressDiv = jQuery("<div></div>");
   progressDiv.addClass("dropzone-info-progress");
@@ -116,7 +131,7 @@ DropZoneUIHandler.prototype.uploadFinished = function (fileIndex, file, duration
   jQuery("#dropzone-info-item-" + this.idx + "-" + fileIndex).css("display", "none");
   var fileDiv = jQuery("<div></div>");
   fileDiv.addClass("dropzone-info-summary-item");
-  fileDiv.html(file.name + " (" + getReadableFileSizeString(file.size) + ") in " + (getReadableDurationString(duration)));
+  fileDiv.html(this.escapeHtml(file.name) + " (" + getReadableFileSizeString(file.size) + ") in " + (getReadableDurationString(duration)));
   jQuery("#dropzone-info-summary").append(fileDiv);
   this.nxUploaded++;
   this.uploadedFiles.push(file);
@@ -382,7 +397,7 @@ DropZoneUIHandler.prototype.selectOperation = function (batchId, dropId, url) {
   for (i = 0; i < this.uploadedFiles.length; i++) {
     var fileItem = jQuery("<div></div>");
     var file = this.uploadedFiles[i];
-    fileItem.html(file.name + " (" + getReadableFileSizeString(file.size) + ")");
+    fileItem.html(this.escapeHtml(file.name) + " (" + getReadableFileSizeString(file.size) + ")");
     fileList.append(fileItem);
   }
 
