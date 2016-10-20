@@ -1,8 +1,0 @@
-username, password, firstName, lastName, company, email
-"Administrator","Administrator","","","blabla","devnull@nuxeo.com"
-"user","password","User","Lambda","mycomp","my@mail"
-"user1","password1","User1","Lambda","mycomp","my1@mail"
-"user2","password2","User2","Lambda","mycomp","my2@mail"
-"user3","password3","User3","Lambda","mycomp","my3@mail"
-"nulrich","nulrich","nicolas","ulrich","nuxeo/starship","nulrich@nuxeo.com"
-"ldoguin","ldoguin","laurent","O'doguin","nuxeo/reponseD","ldoguin@nuxeo.com"
