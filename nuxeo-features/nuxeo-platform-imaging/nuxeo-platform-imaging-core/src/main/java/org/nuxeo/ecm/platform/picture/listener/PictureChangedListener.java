@@ -76,7 +76,8 @@ public class PictureChangedListener implements EventListener {
             Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
 
             Boolean forceGeneration = Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_VIEWS_GENERATION));
-            if (forceGeneration || !viewsProp.isDirty() && (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty())) {
+            if (forceGeneration
+                    || !viewsProp.isDirty() && (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty())) {
                 preFillPictureViews(docCtx.getCoreSession(), doc);
             } else {
                 docCtx.setProperty(PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, true);
@@ -93,7 +94,8 @@ public class PictureChangedListener implements EventListener {
 
             Blob blob = Blobs.createBlob(FileUtils.getFileFromURL(fileUrl));
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
-            String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, null);
+            String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
+                    null);
             blob.setMimeType(mimeType);
 
             DocumentModel parentDoc = getParentDocument(session, doc);
@@ -101,7 +103,8 @@ public class PictureChangedListener implements EventListener {
             List<Map<String, Object>> pictureConversions = null;
             if (parentDoc != null && PICTUREBOOK_TYPE_NAME.equals(parentDoc.getType())) {
                 // use PictureBook Properties
-                pictureConversions = (ArrayList<Map<String, Object>>) parentDoc.getPropertyValue("picturebook:picturetemplates");
+                pictureConversions = (ArrayList<Map<String, Object>>) parentDoc.getPropertyValue(
+                        "picturebook:picturetemplates");
                 if (pictureConversions.isEmpty()) {
                     pictureConversions = null;
                 }
