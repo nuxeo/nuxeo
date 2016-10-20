@@ -36,6 +36,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  */
 public class ITErrorTest extends AbstractTest {
 
+    private static final String TEST_USERNAME = "jdoe_ITErrorTest";
+
     @Test
     public void testErrorPathNotFound() throws Exception {
         WebClient client = new WebClient();
