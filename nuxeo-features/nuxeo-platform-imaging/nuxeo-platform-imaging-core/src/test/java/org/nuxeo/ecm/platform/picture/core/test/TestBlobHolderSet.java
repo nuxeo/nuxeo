@@ -118,7 +118,7 @@ public class TestBlobHolderSet {
         bytes = null;
 
         // generated views
-        assertEquals(5, bh.getBlobs().size());
+        assertEquals(6, bh.getBlobs().size());
 
         // test set null blob
         bh.setBlob(null);

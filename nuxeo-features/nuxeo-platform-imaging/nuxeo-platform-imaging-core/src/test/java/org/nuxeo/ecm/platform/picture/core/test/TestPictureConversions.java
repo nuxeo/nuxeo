@@ -102,7 +102,7 @@ public class TestPictureConversions {
 
     @Test
     public void iHaveDefaultPictureConversionsOrder() {
-        String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "OriginalJpeg" };
+        String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "FullHD", "OriginalJpeg" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
         for (int i = 0; i < defaultPictureConversionsOrder.length; i++) {
@@ -115,7 +115,7 @@ public class TestPictureConversions {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
 
         String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "OriginalJpeg", "Thumbnail",
-                "Wide", "ThumbnailWide", "Small", "Medium" };
+                "Wide", "ThumbnailWide", "Small", "Medium", "FullHD" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
         assertEquals(expectedPictureConversionsOrder.length, pictureConversions.size());
@@ -190,7 +190,7 @@ public class TestPictureConversions {
         picture = session.createDocument(picture);
 
         MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
-        assertEquals(4, multiviewPicture.getViews().length);
+        assertEquals(5, multiviewPicture.getViews().length);
         PictureView smallView = multiviewPicture.getView("Small");
         ImageInfo imageInfo = smallView.getImageInfo();
         assertNotNull(imageInfo);
@@ -206,7 +206,7 @@ public class TestPictureConversions {
         picture = session.saveDocument(picture);
 
         multiviewPicture = picture.getAdapter(MultiviewPicture.class);
-        assertEquals(6, multiviewPicture.getViews().length);
+        assertEquals(7, multiviewPicture.getViews().length);
         assertNotNull(multiviewPicture.getView("smallConversion"));
         assertNotNull(multiviewPicture.getView("anotherSmallConversion"));
 
@@ -216,7 +216,7 @@ public class TestPictureConversions {
         picture = session.saveDocument(picture);
 
         multiviewPicture = picture.getAdapter(MultiviewPicture.class);
-        assertEquals(5, multiviewPicture.getViews().length);
+        assertEquals(6, multiviewPicture.getViews().length);
         assertNotNull(multiviewPicture.getView("smallConversion"));
         assertNull(multiviewPicture.getView("anotherSmallConversion"));
 
