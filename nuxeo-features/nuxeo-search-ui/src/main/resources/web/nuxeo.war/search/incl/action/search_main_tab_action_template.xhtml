@@ -8,7 +8,8 @@
   xmlns:a4j="http://richfaces.org/a4j">
 
   <a4j:outputPanel id="#{widget.id}">
-    <nxd:restDocumentLink document="#{currentDocument}" pattern="search"
+    <nxd:restDocumentLink document="#{currentDocument == null ? userWorkspaceManagerActions.currentUserPersonalWorkspace : currentDocument}"
+      pattern="search"
       view="search" addTabInfo="false">
       <f:param name="contentViewName"
         value="#{searchUIActions.currentContentViewName}" />
