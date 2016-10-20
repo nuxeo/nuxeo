@@ -147,7 +147,7 @@ public class TestImagingAdapter {
 
         MultiviewPicture mvp = picture.getAdapter(MultiviewPicture.class);
         PictureView[] views = mvp.getViews();
-        assertEquals(4, views.length);
+        assertEquals(5, views.length);
 
         String path = ImagingResourcesHelper.TEST_DATA_FOLDER + "cat.gif";
         Blob blob = Blobs.createBlob(ImagingResourcesHelper.getFileFromPath(path));
@@ -167,7 +167,7 @@ public class TestImagingAdapter {
         picture = session.getDocument(picture.getRef());
         mvp = picture.getAdapter(MultiviewPicture.class);
         views = mvp.getViews();
-        assertEquals(5, views.length);
+        assertEquals(6, views.length);
 
         view = mvp.getView("a view");
         info = view.getImageInfo();

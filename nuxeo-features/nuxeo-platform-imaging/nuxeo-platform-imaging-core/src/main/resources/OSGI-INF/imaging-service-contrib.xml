@@ -24,11 +24,15 @@
       default="true" rendition="true" />
 
     <pictureConversion id="Small" description="Small size"
-      maxSize="280" order="100" chainId="Image.Blob.Resize"
+      maxSize="560" order="100" chainId="Image.Blob.Resize"
       default="true" rendition="true" />
 
     <pictureConversion id="Medium" description="Medium size"
-      maxSize="550" order="200" chainId="Image.Blob.Resize"
+      maxSize="1000" order="200" chainId="Image.Blob.Resize"
+      default="true" rendition="true" />
+
+    <pictureConversion id="FullHD" description="Full HD size"
+      maxSize="1920" order="300" chainId="Image.Blob.Resize"
       default="true" rendition="true" />
 
     <pictureConversion id="OriginalJpeg" description="Original jpeg image"
