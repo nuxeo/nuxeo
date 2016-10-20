@@ -4781,6 +4781,7 @@
         <artifactId>jettison</artifactId>
         <version>1.3.7</version>
       </dependency>
+      <!-- NXP-20847: to be removed to avoid build dependency cycle -->
       <dependency>
         <groupId>org.nuxeo.client</groupId>
         <artifactId>nuxeo-java-client</artifactId>
