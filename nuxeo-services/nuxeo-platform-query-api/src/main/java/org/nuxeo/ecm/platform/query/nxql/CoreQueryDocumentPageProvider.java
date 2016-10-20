@@ -237,10 +237,12 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             sort = new ArrayList<>();
             for (QuickFilter quickFilter : quickFilters) {
                 String clause = quickFilter.getClause();
-                if (!quickFiltersClause.isEmpty() && clause != null) {
-                    quickFiltersClause = NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
-                } else {
-                    quickFiltersClause = clause != null ? clause : "";
+                if (clause != null) {
+                    if (!quickFiltersClause.isEmpty()) {
+                        quickFiltersClause = NXQLQueryBuilder.appendClause(quickFiltersClause, clause);
+                    } else {
+                        quickFiltersClause = clause;
+                    }
                 }
                 sort.addAll(quickFilter.getSortInfos());
             }
