@@ -128,7 +128,7 @@
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.6</ant.assembly.version>
     <nuxeo.ftest.version>1.7.25-SNAPSHOT</nuxeo.ftest.version>
-    <nuxeo.java.client.version>2.2-SNAPSHOT</nuxeo.java.client.version>
+    <nuxeo.java.client.version>2.2</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
@@ -5808,8 +5808,6 @@
                       <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                       <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
-                      <!-- To be removed after NXP-20276 -->
-                      <exclude>org.nuxeo.client:nuxeo-java-client</exclude>
                     </excludes>
                   </requireReleaseDeps>
                 </rules>
