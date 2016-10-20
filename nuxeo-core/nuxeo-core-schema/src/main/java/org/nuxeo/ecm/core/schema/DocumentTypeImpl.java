@@ -39,6 +39,12 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
 
     protected PrefetchInfo prefetchInfo;
 
+    protected Set<String> subtypes;
+
+    protected Set<String> forbiddenSubtypes;
+
+    protected Set<String> allowedSubtypes;
+
     /**
      * Constructs a document type. Schemas and facets must include those from the super type.
      */
@@ -89,6 +95,62 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
     @Override
     public boolean hasFacet(String facetName) {
         return facets.contains(facetName);
+    }
+
+    @Override
+    public Set<String> getSubtypes() {
+        return subtypes;
+    }
+
+    @Override
+    public void setSubtypes(Collection<String> subtypes) {
+        if (subtypes == null) {
+            this.subtypes = Collections.emptySet();
+        } else {
+            this.subtypes = new HashSet<>(subtypes);
+        }
+        allowedSubtypes = new HashSet<>(this.subtypes);
+        if (this.forbiddenSubtypes != null) {
+            allowedSubtypes.removeAll(this.forbiddenSubtypes);
+        }
+    }
+
+    @Override
+    public boolean hasSubtype(String subtype) {
+        return subtype.contains(subtype);
+    }
+
+    @Override
+    public Set<String> getForbiddenSubtypes() {
+        return forbiddenSubtypes;
+    }
+
+    @Override
+    public void setForbiddenSubtypes(Collection<String> forbiddenSubtypes) {
+        if (forbiddenSubtypes == null) {
+            this.forbiddenSubtypes = Collections.emptySet();
+        } else {
+            this.forbiddenSubtypes = new HashSet<>(forbiddenSubtypes);
+        }
+        if (this.subtypes != null) {
+            allowedSubtypes = new HashSet<>(this.subtypes);
+            allowedSubtypes.removeAll(this.forbiddenSubtypes);
+        }
+    }
+
+    @Override
+    public boolean hasForbiddenSubtype(String subtype) {
+        return forbiddenSubtypes.contains(subtype);
+    }
+
+    @Override
+    public Set<String> getAllowedSubtypes() {
+        return allowedSubtypes;
+    }
+
+    @Override
+    public boolean hasAllowedSubtype(String subtype) {
+        return allowedSubtypes.contains(subtype);
     }
 
 }

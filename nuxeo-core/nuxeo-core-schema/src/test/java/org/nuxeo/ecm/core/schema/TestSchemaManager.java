@@ -365,4 +365,53 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertFalse(schemaManager.hasSuperType("myDoc4", "myDoc2"));
     }
 
+    @Test
+    public void testGetAllowedSubTypes() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/CoreTestExtensions.xml");
+        Collection<String> subtypes = schemaManager.getAllowedSubTypes("myFolder");
+        assertNotNull(subtypes);
+        assertEquals(3, subtypes.size());
+        assertTrue(subtypes.contains("myDoc"));
+        assertTrue(subtypes.contains("myDoc2"));
+        assertTrue(subtypes.contains("myDoc3"));
+
+        subtypes = schemaManager.getAllowedSubTypes("myFolder2");
+        assertNotNull(subtypes);
+        assertEquals(1, subtypes.size());
+        assertTrue(subtypes.contains("myDoc4"));
+
+        subtypes = schemaManager.getAllowedSubTypes("mySpecialFolder");
+        assertNotNull(subtypes);
+        assertEquals(5, subtypes.size());
+        assertTrue(subtypes.contains("myDoc"));
+        assertTrue(subtypes.contains("myDoc2"));
+        assertTrue(subtypes.contains("myDoc3"));
+        assertTrue(subtypes.contains("myDoc4"));
+        assertTrue(subtypes.contains("myFolder"));
+
+        // let's append types to myFolder and override mySpecialFoder
+        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-merge-doctype.xml");
+
+        subtypes = schemaManager.getAllowedSubTypes("myFolder");
+        assertNotNull(subtypes);
+        assertEquals(4, subtypes.size());
+        assertTrue(subtypes.contains("myDoc"));
+        assertTrue(subtypes.contains("myDoc2"));
+        assertTrue(subtypes.contains("myDoc3"));
+        assertTrue(subtypes.contains("myDoc4"));
+
+        subtypes = schemaManager.getAllowedSubTypes("myFolder2");
+        assertNotNull(subtypes);
+        assertEquals(3, subtypes.size());
+        assertTrue(subtypes.contains("myDoc"));
+        assertTrue(subtypes.contains("myDoc2"));
+        assertTrue(subtypes.contains("myDoc3"));
+
+        subtypes = schemaManager.getAllowedSubTypes("mySpecialFolder");
+        assertNotNull(subtypes);
+        assertEquals(1, subtypes.size());
+        assertTrue(subtypes.contains("myDoc"));
+
+    }
+
 }
