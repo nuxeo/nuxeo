@@ -29,6 +29,7 @@
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ChildrenJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.ContextualParametersJsonEnricher" enable="true" />
+    <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.SubtypesJsonEnricher" enable="true" />
     <register class="org.nuxeo.ecm.core.io.marshallers.json.enrichers.UserVisiblePermissionsJsonEnricher" enable="true" />
   </extension>
 </component>
