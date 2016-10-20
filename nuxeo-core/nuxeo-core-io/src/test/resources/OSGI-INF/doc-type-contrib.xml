@@ -20,6 +20,25 @@
       <facet name="Folderish"/>
     </doctype>
 
+    <doctype name="DummyDoc">
+      <facet name="Folderish"/>
+    </doctype>
+
+    <doctype name="MyFolder" extends="Document">
+      <facet name="Folderish"/>
+      <subtypes>
+        <type>File</type>
+        <type>CSDoc</type>
+        <type>RefDoc</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="MyFolder2" extends="MyFolder">
+      <subtypes>
+        <type>DummyDoc</type>
+      </subtypes>
+    </doctype>
+
   </extension>
 
 </component>
