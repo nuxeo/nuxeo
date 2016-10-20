@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.schema;
 
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -80,5 +81,62 @@ public interface DocumentType extends CompositeType {
      * @since 5.7
      */
     boolean hasFacet(String facetName);
+
+    /**
+     * Returns the types of the children that can be created inside this type.
+     *
+     * @since 8.4
+     */
+    Set<String> getSubtypes();
+
+    /**
+     * Sets the types of the children that can be created inside the this type.
+     *
+     * @since 8.4
+     */
+    void setSubtypes(Collection<String> subtypes);
+
+    /**
+     * Returns {@code true} if the given {@code subtype} type was explicitly allowed to be created inside this type.
+     *
+     * @since 8.4
+     */
+    boolean hasSubtype(String subtype);
+
+    /**
+     * Returns the types of the children that cannot be created inside this type.
+     *
+     * @since 8.4
+     */
+    Set<String> getForbiddenSubtypes();
+
+    /**
+     * Sets the types of the children that cannot be created inside the this type.
+     *
+     * @since 8.4
+     */
+    void setForbiddenSubtypes(Collection<String> subtypes);
+
+    /**
+     * Returns {@code true} if the given {@code subtype} type was forbidden from being created inside this type.
+     *
+     * @since 8.4
+     */
+    boolean hasForbiddenSubtype(String subtype);
+
+    /**
+     * Returns the list of types that can effectively be created inside this type.
+     * Allowed types results from the exclusion of the forbidden subtypes from the subtypes.
+     *
+     * @since 8.4
+     */
+    Set<String> getAllowedSubtypes();
+
+    /**
+     * Returns {@code true} if the given {@code subtype} type can effectively be created inside this type.
+     *
+     * @since 8.4
+     */
+    boolean hasAllowedSubtype(String subtype);
 
 }

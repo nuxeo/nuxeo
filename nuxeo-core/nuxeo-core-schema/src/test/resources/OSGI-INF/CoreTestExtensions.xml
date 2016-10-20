@@ -31,6 +31,27 @@
     <proxies type="*">
       <schema name="schema3"/>
     </proxies>
+    <doctype name="myFolder" extends="Document">
+      <subtypes>
+        <type>myDoc</type>
+        <type>myDoc2</type>
+        <type>myDoc3</type>
+      </subtypes>
+    </doctype>
+    <doctype name="myFolder2" extends="myFolder">
+      <subtypes>
+        <type>myDoc4</type>
+      </subtypes>
+    </doctype>
+    <doctype name="mySpecialFolder" extends="Document">
+      <subtypes>
+        <type>myDoc</type>
+        <type>myDoc2</type>
+        <type>myDoc3</type>
+        <type>myDoc4</type>
+        <type>myFolder</type>
+      </subtypes>
+    </doctype>
   </extension>
 
 

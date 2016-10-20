@@ -70,4 +70,11 @@ public interface SchemaManager extends TypeProvider {
      */
     boolean hasSuperType(String docType, String superType);
 
+    /**
+     * Returns the types of the children that can be created inside a given {@code type} type.
+     *
+     * @since 8.4
+     */
+    Set<String> getAllowedSubTypes(String type);
+
 }

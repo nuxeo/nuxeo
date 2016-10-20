@@ -21,6 +21,26 @@
     <proxies>
       <schema name="newschema"/>
     </proxies>
+    <doctype name="myFolder" append="true">
+      <subtypes>
+        <type>myDoc4</type>
+      </subtypes>
+    </doctype>
+    <doctype name="myFolder2" append="true">
+      <subtypes>
+        <type>myDoc</type>
+        <type>myDoc2</type>
+        <type>myDoc3</type>
+      </subtypes>
+      <subtypes-forbidden>
+        <type>myDoc4</type>
+      </subtypes-forbidden>
+    </doctype>
+    <doctype name="mySpecialFolder">
+      <subtypes>
+        <type>myDoc</type>
+      </subtypes>
+    </doctype>
   </extension>
 
 </component>

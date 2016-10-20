@@ -550,6 +550,8 @@ public class SchemaManagerImpl implements SchemaManager {
         Set<String> facetNames = new HashSet<>();
         Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
         facetNames.addAll(Arrays.asList(dtd.facets));
+        Set<String> subtypes = new HashSet<>(Arrays.asList(dtd.subtypes));
+        Set<String> forbidden = new HashSet<>(Arrays.asList(dtd.forbiddenSubtypes));
 
         // inherited
         if (parent != null) {
@@ -582,6 +584,8 @@ public class SchemaManagerImpl implements SchemaManager {
         // create doctype
         PrefetchInfo prefetch = dtd.prefetch == null ? prefetchInfo : new PrefetchInfo(dtd.prefetch);
         DocumentTypeImpl docType = new DocumentTypeImpl(name, parent, docTypeSchemas, facetNames, prefetch);
+        docType.setSubtypes(subtypes);
+        docType.setForbiddenSubtypes(forbidden);
         registerDocumentType(docType);
 
         return docType;
@@ -630,6 +634,12 @@ public class SchemaManagerImpl implements SchemaManager {
         }
         Set<String> subTypes = getDocumentTypeNamesExtending(superType);
         return subTypes != null && subTypes.contains(docType);
+    }
+
+    @Override
+    public Set<String> getAllowedSubTypes(String typeName) {
+        DocumentType dt = getDocumentType(typeName);
+        return dt == null ? null : dt.getAllowedSubtypes();
     }
 
     /*

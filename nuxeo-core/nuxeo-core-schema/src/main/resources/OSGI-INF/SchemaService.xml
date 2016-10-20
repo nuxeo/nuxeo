@@ -62,6 +62,32 @@
         </doctype>
       </code>
 
+      Document types may also specify subtypes, which are sets of other
+      document types that can be created inside the this document type
+      being defined. This can be achieved as follows:
+
+      <code>
+        <doctype name="SomeFolder" extends="Document">
+          <subtypes>
+            <type>File</type>
+          </subtypes>
+        </doctype>
+      </code>
+
+      When extending a doctype, forbidden subtypes can also be specified
+      to prevent a specific type from being created:
+
+      <code>
+        <doctype name="SomeFolder" append="true">
+          <subtypes>
+            <type>SomeOtherFile</type>
+          </subtypes>
+          <subtypes-forbidden>
+            <type>File</type>
+          </subtypes-forbidden>
+        </doctype>
+      </code>
+
       Facets are also defined by this extension point.
       They can have zero or more schemas:
 
