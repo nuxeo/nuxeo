@@ -198,7 +198,7 @@ public class SearchTest extends BaseTest {
      * @since 8.4
      */
     @Test
-    public void iDonAlterPageProviderDefWithQuickFilter() throws IOException {
+    public void iDontAlterPageProviderDefWithQuickFilter() throws IOException {
         // Given a repository, when I perform a pageprovider on it
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("quickFilters", "testQF,testQF2");
@@ -215,6 +215,33 @@ public class SearchTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(20, getLogEntries(node).size());
+    }
+
+    /**
+     * @since 8.4
+     */
+    @Test
+    public void iCanUseAssociativeQuickFilter() throws IOException {
+        // Given a repository, when I perform a pageprovider on it with quick filters
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("quickFilters", "testQF4,testQF");
+        ClientResponse response = getResponse(RequestType.GET,
+                getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        int nbResult = getLogEntries(node).size();
+
+        // When I set the quick filtes the toeher way around
+        queryParams = new MultivaluedMapImpl();
+        queryParams.add("quickFilters", "testQF,testQF4");
+        response = getResponse(RequestType.GET, getSearchPageProviderExecutePath("TEST_PP_QUICK_FILTER2"), queryParams);
+
+        // Then I expect the same number of result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(nbResult, getLogEntries(node).size());
     }
 
     @Test
