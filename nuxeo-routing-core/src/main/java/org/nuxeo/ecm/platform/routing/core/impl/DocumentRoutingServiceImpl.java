@@ -1330,18 +1330,38 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void cleanupDoneAndCanceledRouteInstances(String reprositoryName,
-            final int limit) throws ClientException {
-        new UnrestrictedSessionRunner(reprositoryName) {
+    public int doCleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit) {
+        WfCleaner unrestrictedSessionRunner = new WfCleaner(reprositoryName, limit);
+        unrestrictedSessionRunner.runUnrestricted();
+        return unrestrictedSessionRunner.getNumberOfCleanedUpWf();
+    }
 
-            @Override
-            public void run() throws ClientException {
-                List<String> routeIds = new ArrayList<String>();
-                String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
-                        + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
-                IterableQueryResult results = session.queryAndFetch(query,
-                        "NXQL");
-                int i = 0;
+    @Override
+    public void cleanupDoneAndCanceledRouteInstances(String reprositoryName, final int limit) throws ClientException {
+        doCleanupDoneAndCanceledRouteInstances(reprositoryName, limit);
+    }
+
+    /**
+     * @since 7.1
+     */
+    private final class WfCleaner extends UnrestrictedSessionRunner {
+        private final int limit;
+
+        protected int i = 0;
+
+        private WfCleaner(String repositoryName, int limit) {
+            super(repositoryName);
+            this.limit = limit;
+        }
+
+        @Override
+        public void run() {
+            List<String> routeIds = new ArrayList<>();
+            String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
+                    + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
+            IterableQueryResult results = null;
+            try {
+                results = session.queryAndFetch(query, "NXQL");
                 for (Map<String, Serializable> result : results) {
                     routeIds.add(result.get("ecm:uuid").toString());
                     i++;
@@ -1350,12 +1370,34 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         break;
                     }
                 }
-                results.close();
-                for (String routeDocId : routeIds) {
-                    session.removeDocument(new IdRef(routeDocId));
+            } finally {
+                if (results != null) {
+                    results.close();
                 }
             }
-        }.runUnrestricted();
+            for (String routeDocId : routeIds) {
+                final String associatedTaskQuery = String.format(
+                        "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'",
+                        routeDocId);
+                IterableQueryResult tasks = null;
+                try {
+                    tasks = session.queryAndFetch(associatedTaskQuery, "NXQL");
+                    for (Map<String, Serializable> task : tasks) {
+                        final String taskId = task.get("ecm:uuid").toString();
+                        session.removeDocument(new IdRef(taskId));
+                    }
+                } finally {
+                    if (tasks != null) {
+                        tasks.close();
+                    }
+                }
+                session.removeDocument(new IdRef(routeDocId));
+            }
+        }
+
+        public int getNumberOfCleanedUpWf() {
+            return i;
+        }
     }
 
     @Override
