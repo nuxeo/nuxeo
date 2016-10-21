@@ -27,23 +27,35 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TypeTest extends NXRuntimeTestCase {
+
     TypeService typeService;
+
+    SchemaManager schemaManager;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.platform.types.core.tests", "types-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-core-types-bundle.xml");
         deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-bundle.xml");
+        schemaManager = Framework.getService(SchemaManager.class);
         typeService = (TypeService) runtime.getComponent(TypeService.ID);
     }
 
@@ -268,6 +280,69 @@ public class TypeTest extends NXRuntimeTestCase {
         assertNotNull(typeToBeRemoved);
         assertEquals("initial alternative doc type", typeToBeRemoved.getLabel());
         assertEquals("initial icon", typeToBeRemoved.getIcon());
+    }
+
+    @Test
+    public void testCoreSubTypesWithHotReload() throws Exception {
+        Collection<String> testSchemas = Arrays.asList("schema1", "schema2");
+        Collection<String> testFacets = Arrays.asList("myFacet", "facet1", "facet2");
+
+        Collection<String> subtypes = schemaManager.getAllowedSubTypes("MyDocType");
+        assertNotNull(subtypes);
+        assertEquals(2, subtypes.size());
+        assertTrue(subtypes.contains("MyOtherDocType"));
+        assertTrue(subtypes.contains("MyHiddenDocType"));
+        Collection<String> ecmSubtypes = getEcmSubtypes("MyDocType");
+        assertEquals(subtypes.size(), subtypes.size());
+        ecmSubtypes.containsAll(subtypes);
+        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-override-bundle.xml");
+        subtypes = schemaManager.getAllowedSubTypes("MyDocType");
+        assertNotNull(subtypes);
+        assertEquals(2, subtypes.size());
+        assertTrue(subtypes.contains("MyOtherDocType2"));
+        assertTrue(subtypes.contains("MyHiddenDocType"));
+        ecmSubtypes = getEcmSubtypes("MyDocType");
+        assertEquals(subtypes.size(), subtypes.size());
+        ecmSubtypes.containsAll(subtypes);
+        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+
+        undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-override-bundle.xml");
+        subtypes = schemaManager.getAllowedSubTypes("MyDocType");
+        assertNotNull(subtypes);
+        assertEquals(2, subtypes.size());
+        assertTrue(subtypes.contains("MyOtherDocType"));
+        assertTrue(subtypes.contains("MyHiddenDocType"));
+        ecmSubtypes = getEcmSubtypes("MyDocType");
+        assertEquals(subtypes.size(), subtypes.size());
+        ecmSubtypes.containsAll(subtypes);
+        // let's make sure removing contributions won't affect schemas and facets contributed at the core level
+        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+
+        undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-bundle.xml");
+        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+    }
+
+    protected Collection<String> getEcmSubtypes(String type) {
+        Collection<Type> ecmSubtypes = typeService.getAllowedSubTypes(type);
+        Set<String> result = new HashSet<>();
+        for (Type t : ecmSubtypes) {
+            result.add(t.id);
+        }
+        return result;
+    }
+
+    protected void verifyFacetsAndSchemas(String docType, Collection<String> facets, Collection<String> schemas) {
+        Collection<String> currentFacets = schemaManager.getDocumentType(docType).getFacets();
+        assertNotNull(currentFacets);
+        assertEquals(facets.size(), currentFacets.size());
+        assertTrue(facets.containsAll(currentFacets));
+
+        Collection<String> currentSchemas = Arrays.asList(schemaManager.getDocumentType(docType).getSchemaNames());
+        assertNotNull(currentSchemas);
+        assertEquals(schemas.size(), currentSchemas.size());
+        assertTrue(schemas.containsAll(currentSchemas));
     }
 
 }

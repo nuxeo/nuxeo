@@ -18,6 +18,8 @@
     <provide interface="org.nuxeo.ecm.platform.types.TypeManager" />
   </service>
 
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+
   <extension-point name="types">
     <documentation>
       A document type has the following properties:
