@@ -49,6 +49,7 @@ import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.LockMethod;
 import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
+import org.apache.jackrabbit.webdav.client.methods.MoveMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.lock.LockDiscovery;
 import org.apache.jackrabbit.webdav.lock.Scope;
@@ -132,7 +133,7 @@ public class WebDavClientTest extends AbstractServerTest {
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
         for (DavPropertyName propName : props.getPropertyNames()) {
-            // System.out.println(propName + "  " + props.get(propName).getValue());
+            // System.out.println(propName + " " + props.get(propName).getValue());
         }
     }
 
@@ -147,7 +148,7 @@ public class WebDavClientTest extends AbstractServerTest {
         DavPropertySet props = multiStatus.getResponses()[0].getProperties(200);
 
         for (DavPropertyName propName : props.getPropertyNames()) {
-            // System.out.println(propName + "  " + props.get(propName).getValue());
+            // System.out.println(propName + " " + props.get(propName).getValue());
         }
     }
 
@@ -247,6 +248,38 @@ public class WebDavClientTest extends AbstractServerTest {
         byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
         String expectedType = "File";
         doTestPutFile(name, bytes, mimeType, expectedType);
+    }
+
+    @Test
+    public void testMoveWithRenaming() throws Exception {
+        // create a fake bin tmp file which will finally be a docx file
+        String name = "tmpfile.tmp";
+        String mimeType = "application/binary";
+        byte[] bytes = "Fake BIN".getBytes("UTF-8");
+        String expectedType = "File";
+        doTestPutFile(name, bytes, mimeType, expectedType);
+
+        PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
+        assertTrue(session.exists(pathRef));
+        DocumentModel doc = session.getDocument(pathRef);
+        assertEquals(name, doc.getTitle());
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(name, blob.getFilename());
+        assertEquals("application/binary", blob.getMimeType());
+
+        // rename it to a docx file
+        String newName = "sample.docx";
+        HttpMethod method = new MoveMethod(ROOT_URI + name, ROOT_URI + newName, false);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        doc = session.getDocument(pathRef);
+        assertEquals(newName, doc.getTitle());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(newName, blob.getFilename());
+        assertEquals("application/vnd.openxmlformats-officedocument.wordprocessingml.document", blob.getMimeType());
     }
 
     protected void doTestPutFile(String name, byte[] bytes, String mimeType, String expectedType) throws Exception {

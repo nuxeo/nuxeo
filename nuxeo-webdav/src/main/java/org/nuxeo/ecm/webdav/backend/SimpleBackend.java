@@ -338,6 +338,8 @@ public class SimpleBackend extends AbstractCoreBackend {
                 Blob blob = bh.getBlob();
                 if (blob != null) {
                     blob.setFilename(destinationName);
+                    // as the name may have changed, reset the mime type so that the correct one will be computed
+                    blob.setMimeType(null);
                     blobUpdated = true;
                     bh.setBlob(blob);
                     getSession().saveDocument(source);
