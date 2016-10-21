@@ -29,11 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 public class TypeRegistry extends ContributionFragmentRegistry<Type> {
 
     protected Map<String, Type> types = new HashMap<String, Type>();
+
+    protected Map<String, DocumentTypeDescriptor> dtds = new HashMap<>();
 
     @Override
     public String getContributionId(Type contrib) {
@@ -44,14 +50,17 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
     public void contributionUpdated(String id, Type contrib, Type newOrigContrib) {
         if (contrib.getRemove()) {
             types.remove(id);
+            removeCoreContribution(id);
         } else {
             types.put(id, contrib);
+            updateCoreContribution(id, contrib);
         }
     }
 
     @Override
     public void contributionRemoved(String id, Type origContrib) {
         types.remove(id);
+        removeCoreContribution(id);
     }
 
     @Override
@@ -234,6 +243,41 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
 
     public Type getType(String id) {
         return types.get(id);
+    }
+
+    /**
+     * @since 8.4
+     */
+    protected void updateCoreContribution(String id, Type contrib) {
+        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
+
+        // if there's already a core contribution, unregiser it and register a new one
+        if (dtds.containsKey(id)) {
+            schemaManager.unregisterDocumentType(dtds.get(id));
+        }
+
+        DocumentTypeDescriptor dtd = new DocumentTypeDescriptor();
+        dtd.name = contrib.getId();
+        dtd.subtypes = contrib.getAllowedSubTypes().keySet().toArray(new String[contrib.getAllowedSubTypes().size()]);
+        dtd.forbiddenSubtypes = contrib.getDeniedSubTypes();
+        dtd.append = true;
+
+        // only make a core contrib if there are changes on subtypes
+        if (dtd.subtypes.length > 0 || dtd.forbiddenSubtypes.length > 0) {
+            dtds.put(id, dtd);
+            schemaManager.registerDocumentType(dtd);
+        }
+    }
+
+    /**
+     * @since 8.4
+     */
+    protected void removeCoreContribution(String id) {
+        if (dtds.containsKey(id)) {
+            SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
+            schemaManager.unregisterDocumentType(dtds.get(id));
+            dtds.remove(id);
+        }
     }
 
 }
