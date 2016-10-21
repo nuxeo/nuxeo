@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mvel2.PropertyAccessException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -299,9 +298,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             log.error("Couldn't find user: " + userDest + " to send her a mail.");
             return;
         }
-        // XXX hack, principals have only one model
-        DataModel model = recepient.getModel().getDataModels().values().iterator().next();
-        String email = (String) model.getData("email");
+        String email = recepient.getEmail();
         if (email == null || "".equals(email)) {
             log.error("No email found for user: " + userDest);
             return;

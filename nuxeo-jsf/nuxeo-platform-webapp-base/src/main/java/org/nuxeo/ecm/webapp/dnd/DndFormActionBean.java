@@ -38,9 +38,9 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -142,16 +142,18 @@ public class DndFormActionBean implements Serializable {
         DocumentModel collector = getCollector();
         // Collect meta-data
         JSONObject formData = new JSONObject();
-        for (String key : collector.getSchemas()) {
-            DataModel dataModel = collector.getDataModel(key);
-            for (String field : dataModel.getDirtyFields()) {
-                Object data = dataModel.getData(field);
+        for (String schema : collector.getSchemas()) {
+            for (Property property : collector.getPropertyObjects(schema)) {
+                if (!property.isDirty()) {
+                    continue;
+                }
+                Serializable data = property.getValue();
                 if (data instanceof Date) {
                     data = DateParser.formatW3CDateTime((Date) data);
                 } else if (data instanceof Calendar) {
                     data = DateParser.formatW3CDateTime(((Calendar) data).getTime());
                 }
-                formData.put(field, data);
+                formData.put(property.getName(), data);
             }
         }
         jsonObject.put("docMetaData", formData);

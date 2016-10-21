@@ -21,13 +21,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import java.util.HashMap;
-import java.util.Set;
-
-import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
@@ -41,19 +35,7 @@ public class CommentConverterImpl implements CommentConverter {
     }
 
     public void updateDocumentModel(DocumentModel docModel, DocumentModel comment) {
-
-        DataModelMap dataModelMap = comment.getDataModels();
-        Set<String> keys = dataModelMap.keySet();
-
-        for (String key : keys) {
-            DataModel dataModel = dataModelMap.get(key);
-            String schema = dataModel.getSchema();
-            try {
-                docModel.setProperties(schema, new HashMap<String, Object>(dataModel.getMap()));
-            } catch (PropertyException e) {
-                continue;
-            }
-        }
+        docModel.copyContent(comment);
     }
 
 }

@@ -587,9 +587,7 @@ public class MultiDirectorySession extends BaseSession {
                 dirInfo.getSession().createEntry(map);
             } else {
                 final DocumentModel entry = BaseSession.createEntryModel(null, dirInfo.dirSchemaName, id, null);
-                // Do not set dataModel values with constructor to force fields
-                // dirty
-                entry.getDataModel(dirInfo.dirSchemaName).setMap(map);
+                entry.setProperties(dirInfo.dirSchemaName, map);
                 dirInfo.getSession().updateEntry(entry);
             }
         }
@@ -603,7 +601,7 @@ public class MultiDirectorySession extends BaseSession {
         }
         init();
         final String id = docModel.getId();
-        Map<String, Object> fieldMap = docModel.getDataModel(schemaName).getMap();
+        Map<String, Object> fieldMap = docModel.getProperties(schemaName);
         for (SourceInfo sourceInfo : sourceInfos) {
             // check if entry exists in this source, in case it can be created
             // in optional subdirectories

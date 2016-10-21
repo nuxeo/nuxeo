@@ -36,7 +36,6 @@ import javax.mail.MessagingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -441,9 +440,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         Notification notif = getNotificationByName(notificationName);
 
         NuxeoPrincipal recipient = NotificationServiceHelper.getUsersService().getPrincipal(userPrincipal);
-        // XXX hack, principals have only one model
-        DataModel model = recipient.getModel().getDataModels().values().iterator().next();
-        String email = (String) model.getData("email");
+        String email = recipient.getEmail();
         String mailTemplate = notif.getTemplate();
 
         infoMap.put("mail.to", email);

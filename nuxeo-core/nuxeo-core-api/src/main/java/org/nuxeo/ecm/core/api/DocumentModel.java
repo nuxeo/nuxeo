@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
@@ -49,8 +48,6 @@ import org.nuxeo.ecm.core.schema.Prefetch;
  * {@link CoreSession#getDocument(DocumentRef, String[])}
  *
  * @see CoreSession
- * @see DataModel
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface DocumentModel extends Serializable {
 
@@ -265,18 +262,32 @@ public interface DocumentModel extends Serializable {
     boolean removeFacet(String facet);
 
     /**
+     * INTERNAL, not for public use.
+     * <p>
      * Gets a list with the currently fetched data models.
      *
      * @return the data models that are already fetched as a collection
+     * @deprecated since 8.4, internal method
+     * @see #getSchemas
+     * @see #getProperties
+     * @see #getPropertyObject
+     * @see #getPropertyObjects
      */
+    @Deprecated
     Collection<DataModel> getDataModelsCollection();
 
     /**
      * Gets the data models.
      *
      * @return the data models that are already fetched.
+     * @deprecated since 8.4, use direct {@link Property} getters instead
+     * @see #getSchemas
+     * @see #getProperties
+     * @see #getPropertyObject
+     * @see #getPropertyObjects
      */
-    DataModelMap getDataModels();
+    @Deprecated
+    Map<String, DataModel> getDataModels();
 
     /**
      * Gets the data model corresponding to the given schema.
@@ -285,7 +296,13 @@ public interface DocumentModel extends Serializable {
      *
      * @param schema the schema name
      * @return the data model or null if no such schema is supported
+     * @deprecated since 8.4, use direct {@link Property} getters instead
+     * @see #getSchemas
+     * @see #getProperties
+     * @see #getPropertyObject
+     * @see #getPropertyObjects
      */
+    @Deprecated
     DataModel getDataModel(String schema);
 
     /**

@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -477,13 +476,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
         List<Column> storedColumnList = new LinkedList<>();
         List<String> referenceFieldList = new LinkedList<>();
-        DataModel dataModel = docModel.getDataModel(schemaName);
 
         if (isMultiTenant()) {
             // can only update entry from the current tenant
             String tenantId = getCurrentTenantId();
             if (!StringUtils.isBlank(tenantId)) {
-                String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
+                String entryTenantId = (String) docModel.getProperty(schemaName, TENANT_ID_FIELD);
                 if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Trying to update entry '%s' not part of current tenant '%s'",
@@ -500,7 +498,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (fieldName.equals(idField)) {
                 continue;
             }
-            if (!dataModel.isDirty(fieldName)) {
+            if (!docModel.getPropertyObject(schemaName, fieldName).isDirty()) {
                 continue;
             }
             if (getDirectory().isReference(fieldName)) {
@@ -527,7 +525,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (logger.isLogEnabled()) {
                 List<Serializable> values = new ArrayList<>(storedColumnList.size());
                 for (Column column : storedColumnList) {
-                    Object value = dataModel.getData(column.getKey());
+                    Object value = docModel.getProperty(schemaName, column.getKey());
                     values.add((Serializable) value);
                 }
                 values.add(docModel.getId());
@@ -541,7 +539,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 int index = 1;
                 // TODO: how can I reset dirty fields?
                 for (Column column : storedColumnList) {
-                    Object value = dataModel.getData(column.getKey());
+                    Object value = docModel.getProperty(schemaName, column.getKey());
                     setFieldValue(ps, index, column, value);
                     index++;
                 }
@@ -646,8 +644,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             String tenantId = getCurrentTenantId();
             if (!StringUtils.isBlank(tenantId)) {
                 DocumentModel entry = getEntry(entryId);
-                DataModel dataModel = entry.getDataModel(schemaName);
-                String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
+                String entryTenantId = (String) entry.getProperty(schemaName, TENANT_ID_FIELD);
                 if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'", entryId,
