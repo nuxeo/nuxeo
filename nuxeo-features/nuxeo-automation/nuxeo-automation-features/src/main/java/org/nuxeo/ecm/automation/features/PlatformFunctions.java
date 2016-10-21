@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -78,12 +77,7 @@ public class PlatformFunctions extends CoreFunctions {
                 return key;
             }
             DocumentModel doc = session.getEntry(key);
-            // TODO: which is the best method to get "label" property when not
-            // knowing vocabulary schema?
-            // AT: the best is to accept it as a parameter of the method, and
-            // fallback on "label" when not given
-            DataModel dm = doc.getDataModels().values().iterator().next();
-            return (String) dm.getData("label");
+            return (String) doc.getPropertyValue("label"); // no schema prefix for vocabularies
         }
     }
 

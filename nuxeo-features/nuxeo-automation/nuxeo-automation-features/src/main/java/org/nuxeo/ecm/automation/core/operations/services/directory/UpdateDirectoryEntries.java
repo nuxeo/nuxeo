@@ -86,7 +86,7 @@ public class UpdateDirectoryEntries extends AbstractDirectoryOperation {
                 if (entry.containsKey(idField)) {
                     DocumentModel doc = session.getEntry((String) entry.get(idField));
                     if (doc != null) {
-                        doc.getDataModel(directory.getSchema()).setMap(entry);
+                        doc.setProperties(directory.getSchema(), entry);
                         session.updateEntry(doc);
                         ids.add(doc.getId());
                     }

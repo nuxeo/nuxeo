@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.business;
 
-import java.util.Map.Entry;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -28,7 +26,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -54,13 +51,10 @@ public class BusinessCreateOperation {
     @OperationMethod
     public BusinessAdapter run(BusinessAdapter input) {
         DocumentModel document = input.getDocument();
-        DocumentModel createDocumentModel = session.createDocumentModel(parentPath, name, input.getType());
-
-        for (Entry<String, DataModel> entry : createDocumentModel.getDataModels().entrySet()) {
-            DataModel dataModel = document.getDataModel(entry.getKey());
-            entry.getValue().setMap(dataModel.getMap());
-        }
-
+        // TODO the code intends to copy to a new document with parentPath+name but it's buggy and does not do that
+        // TODO currently we just create a placeless document with an random name
+        // TODO use createDocumentModel instead of document to fix
+        // createDocumentModel.copyContent(document);
         document = session.createDocument(document);
         return document.getAdapter(input.getClass());
     }

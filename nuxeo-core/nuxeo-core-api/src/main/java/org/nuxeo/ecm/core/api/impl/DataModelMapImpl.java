@@ -27,15 +27,9 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 8.4, use {@code HashMap<String, DataModel>} instead
  */
+@Deprecated
 public class DataModelMapImpl extends HashMap<String, DataModel> implements DataModelMap {
-
-    private static final long serialVersionUID = 8797227773838852959L;
-
-    @Override
-    public String toString() {
-        return values().toString();
-    }
 
 }

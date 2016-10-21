@@ -24,16 +24,9 @@ package org.nuxeo.ecm.core.api;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @deprecated since 8.4, use {@code Map<String, DataModel>} instead
  */
+@Deprecated
 public interface DataModelMap extends Map<String, DataModel> {
-
-    // public Collection<DataModel> getDirtyModels();
-    //
-    // public Map<String, Object> getDirtyFields();
-    //
-    // public Collection<DataModel> getDataModels();
-    //
-    // public DataModel getDataModel(String schema);
 
 }

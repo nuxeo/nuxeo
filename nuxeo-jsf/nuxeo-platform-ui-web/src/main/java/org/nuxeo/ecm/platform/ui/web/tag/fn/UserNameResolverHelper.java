@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.cache.Cache;
@@ -111,16 +110,15 @@ public class UserNameResolverHelper implements EventListener {
                     return login;
                 }
             } else {
-                DataModel model = entry.getDataModel(um.getUserSchemaName());
-                return computeUserFullName(model);
+                return computeUserFullName(entry, um.getUserSchemaName());
             }
         }
     }
 
-    protected String computeUserFullName(DataModel model) {
-        String first = (String) model.getData(UserConfig.DEFAULT.firstNameKey);
-        String last = (String) model.getData(UserConfig.DEFAULT.lastNameKey);
-        String username = (String) model.getData(UserConfig.DEFAULT.nameKey);
+    protected String computeUserFullName(DocumentModel entry, String schema) {
+        String first = (String) entry.getProperty(schema, UserConfig.DEFAULT.firstNameKey);
+        String last = (String) entry.getProperty(schema, UserConfig.DEFAULT.lastNameKey);
+        String username = (String) entry.getProperty(schema, UserConfig.DEFAULT.nameKey);
         return Functions.userDisplayName(username, first, last);
     }
 

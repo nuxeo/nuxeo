@@ -37,9 +37,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -97,13 +95,7 @@ public class EmailSenderActionsBean extends InputController implements EmailSend
                     resourcesAccessor.getMessages().get("label.email.nousers.selected"));
         } else {
             NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-            // XXX hack, principals have only one model
-            DataModel dm = currentUser.getModel().getDataModels().values().iterator().next();
-            try {
-                fromEmail = (String) dm.getData(userManager.getUserEmailField());
-            } catch (PropertyException e1) {
-                fromEmail = null;
-            }
+            fromEmail = currentUser.getEmail();
             List<NuxeoPrincipal> listEmails = new ArrayList<NuxeoPrincipal>();
             for (String user : principalListManager.getSelectedUsers()) {
                 NuxeoPrincipal principal = userManager.getPrincipal(user);

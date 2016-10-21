@@ -58,7 +58,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -363,9 +362,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
         List<String> referenceFieldList = new LinkedList<String>();
 
         try {
-            DataModel dataModel = docModel.getDataModel(schemaName);
             for (String fieldName : schemaFieldMap.keySet()) {
-                if (!dataModel.isDirty(fieldName)) {
+                if (!docModel.getPropertyObject(schemaName, fieldName).isDirty()) {
                     continue;
                 }
                 if (getDirectory().isReference(fieldName)) {

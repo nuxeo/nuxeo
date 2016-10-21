@@ -164,9 +164,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
             // FIXME: this should use a "display name" dedicated API
             String displayName = null;
             if (userSortField != null) {
-                // XXX hack, principals have only one model
-                org.nuxeo.ecm.core.api.DataModel dm = user.getDataModels().values().iterator().next();
-                displayName = (String) dm.getData(userSortField);
+                displayName = (String) user.getPropertyValue(userSortField);
             }
             if (StringUtils.isEmpty(displayName)) {
                 displayName = user.getId();

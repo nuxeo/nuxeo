@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.InstanceRef;
@@ -138,7 +137,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected Long pos;
 
-    protected DataModelMap dataModels;
+    protected Map<String, DataModel> dataModels;
 
     protected DocumentRef parentRef;
 
@@ -220,7 +219,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         }
         type = schemaManager.getDocumentType(typeName);
         this.typeName = typeName;
-        dataModels = new DataModelMapImpl();
+        dataModels = new HashMap<>();
         contextData = new ScopedMap();
         instanceFacets = new HashSet<String>();
         instanceFacetsOrig = new HashSet<String>();
@@ -886,7 +885,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public DataModelMap getDataModels() {
+    public Map<String, DataModel> getDataModels() {
         return dataModels;
     }
 
@@ -1127,7 +1126,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public void copyContent(DocumentModel sourceDoc) {
         computeFacetsAndSchemas(((DocumentModelImpl) sourceDoc).instanceFacets);
-        DataModelMap newDataModels = new DataModelMapImpl();
+        Map<String, DataModel> newDataModels = new HashMap<>();
         for (String key : schemas) {
             DataModel oldDM = sourceDoc.getDataModel(key);
             DataModel newDM;
@@ -1500,7 +1499,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         dm.contextData = new ScopedMap();
 
         // copy parts
-        dm.dataModels = new DataModelMapImpl();
+        dm.dataModels = new HashMap<>();
         for (Map.Entry<String, DataModel> entry : dataModels.entrySet()) {
             String key = entry.getKey();
             DataModel data = entry.getValue();
