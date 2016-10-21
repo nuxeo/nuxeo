@@ -87,7 +87,9 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             blobs = ts.getBlobs(key);
         } else {
             blobs = ts.getBlobs(key);
-            ts.release(key);
+            if (ts.isCompleted(key)) {
+                ts.release(key);
+            }
         }
 
         return blobs;

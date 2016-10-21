@@ -109,9 +109,9 @@ public class TestRenditionService {
 
     public static final String ZIP_TREE_EXPORT_RENDITION_DEFINITION = "zipTreeExport";
 
-    public static final CountDownLatch countDownLatch = new CountDownLatch(1);
+    public static final CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
 
-    public static final Calendar LATCH_ISSUED_DATE = new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
+    public static final String CYCLIC_BARRIER_DESCRIPTION = "cyclicBarrierDesc";
 
     public static final Log log = LogFactory.getLog(TestRenditionService.class);
 
@@ -873,24 +873,27 @@ public class TestRenditionService {
     public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
         final String renditionName = "lazyAutomation";
         final String sourceDocumentModificationDatePropertyName = "dc:issued";
-        Calendar issued = LATCH_ISSUED_DATE;
-        String desc = "description";
+        Calendar issued = (Calendar) new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
+        String desc = CYCLIC_BARRIER_DESCRIPTION;
         DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
         folder.setPropertyValue("dc:title", folder.getName());
         folder.setPropertyValue("dc:description", desc);
-        folder.setPropertyValue("dc:issued", issued);
+        folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
         folder = session.createDocument(folder);
         session.save();
         nextTransaction();
         eventService.waitForAsyncCompletion();
 
-        folder = session.getDocument(folder.getRef());
-        Rendition rendition = renditionService.getRendition(folder, renditionName, true);
-        assertNotNull(rendition);
-        assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
-
         for (int i = 0; i < 3; i++) {
             folder = session.getDocument(folder.getRef());
+
+            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            assertNotNull(rendition);
+            assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
+            if (i == 0) {
+                cyclicBarrier.await();
+            }
+
             issued = (Calendar) folder.getPropertyValue(sourceDocumentModificationDatePropertyName);
             issued.add(Calendar.HOUR_OF_DAY, 1);
             folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
@@ -898,30 +901,45 @@ public class TestRenditionService {
             folder.setPropertyValue("dc:description", desc);
             session.saveDocument(folder);
             session.save();
-
-            rendition = renditionService.getRendition(folder, renditionName, true);
-            assertNotNull(rendition);
-            assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+            }
+            if (i == 0) {
+                cyclicBarrier.await();
+            }
         }
 
         String queueId = works.getCategoryQueueId(AbstractRenditionBuilderWork.CATEGORY);
         assertEquals(1, works.listWorkIds(queueId, Work.State.RUNNING).size());
         assertEquals(1, works.listWorkIds(queueId, Work.State.SCHEDULED).size());
 
-        countDownLatch.countDown();
+        cyclicBarrier.await();
 
-        session.save();
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        eventService.waitForAsyncCompletion(5000);
 
         folder = session.getDocument(folder.getRef());
-        rendition = renditionService.getRendition(folder, renditionName, true);
-        assertNotNull(rendition);
-        assertNotNull(rendition.getBlob());
-        assertFalse(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
-        String content = rendition.getBlob().getString();
-        assertTrue(content.contains("dummy"));
-        assertTrue(content.contains(desc));
+        for (int i = 0; i < 5; i++) {
+            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            assertNotNull(rendition);
+            assertNotNull(rendition.getBlob());
+            String mimeType = rendition.getBlob().getMimeType();
+            if (mimeType != null) {
+                if (mimeType.contains(LazyRendition.EMPTY_MARKER)) {
+                    Thread.sleep(1000);
+                    nextTransaction();
+                    eventService.waitForAsyncCompletion(5000);
+                    continue;
+                } else if (mimeType.contains(LazyRendition.ERROR_MARKER)) {
+                    fail("Error generating rendition for folder");
+                }
+            }
+            String content = rendition.getBlob().getString();
+            assertTrue(content.contains("dummy"));
+            assertTrue(content.contains(desc));
+            return;
+        }
+        fail("Could not retrieve rendition for folder");
     }
 
     @Test
