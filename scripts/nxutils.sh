@@ -17,38 +17,32 @@
 # limitations under the License.
 #
 # Contributors:
-#   Kevin Leturc
+#   Kevin Leturc, Julien Carsique
 #
 
+# Usage: "_retrieve_modules <result>"
+#   <result>: name of the variable which will receive the list of Maven modules of the current POM
 function _retrieve_modules {
-  echo $(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1|sort|uniq|tr '\n' ' ')
+  local __resultvar=$1
+  local _list=LIST_$(echo $(basename $PWD)|tr '-' '_'|tr '[:lower:]' '[:upper:]')
+  if [ -z "${!_list}" ]; then
+    [ "$quiet" != true ] && echo "Modules list calculated from POM"
+    local _result="$(grep '<module>' pom.xml |cut -d ">" -f 2 |cut -d "<" -f 1|sort|uniq|tr '\n' ' ')"
+  else
+    [ "$quiet" != true ] && echo "Modules list set from environment variable: $_list"
+    local _result="${!_list}"
+  fi
+  eval "$__resultvar='$_result'"
 }
 
 function _execute_on_modules {
-  # Parameters
   local f=$1
-
-  # Detect whether or not we are at Nuxeo repository's root
-  if [ -d "addons" ]; then
-    from_root=true
-  else
-    from_root=false
-  fi
-
-  # Execute on current directory
-  $f "."
-  # Loop on addons
-  addons="addons addons-core"
-  for dir in ${addons}; do
-    (
-    cd $dir
-    $f $dir
-    # Loop on second level
-    if [ "$from_root" = "true" ]; then
-      for sub_dir in $(_retrieve_modules); do
-        (cd $sub_dir; $f $sub_dir)
-      done
-    fi
+  local _modules=""
+  _retrieve_modules _modules
+  [ "$quiet" != true ] && echo "Execute on modules: $_modules"
+  for dir in $_modules; do
+    ( cd $dir || continue
+      $f $dir
     )
   done
 }
