@@ -36,15 +36,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -70,9 +75,11 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
+import org.nuxeo.ecm.platform.rendition.lazy.AbstractRenditionBuilderWork;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -96,9 +103,17 @@ public class TestRenditionService {
 
     private static final String RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION = "test-rendition-definition-providers-contrib.xml";
 
+    private static final String RENDITION_WORKMANAGER_COMPONENT_LOCATION = "test-rendition-multithreads-workmanager-contrib.xml";
+
     public static final String PDF_RENDITION_DEFINITION = "pdf";
 
     public static final String ZIP_TREE_EXPORT_RENDITION_DEFINITION = "zipTreeExport";
+
+    public static final CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
+
+    public static final String CYCLIC_BARRIER_DESCRIPTION = "cyclicBarrierDesc";
+
+    public static final Log log = LogFactory.getLog(TestRenditionService.class);
 
     @Inject
     protected RuntimeHarness runtimeHarness;
@@ -708,6 +723,8 @@ public class TestRenditionService {
 
     @Test
     public void shouldStoreLatestNonVersionedRendition() throws Exception {
+        runtimeHarness.deployContrib(RENDITION_CORE, RENDITION_WORKMANAGER_COMPONENT_LOCATION);
+
         final StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
         final String repositoryName = session.getRepositoryName();
         final String username = session.getPrincipal().getName();
@@ -776,6 +793,8 @@ public class TestRenditionService {
             assertNotNull(rend.getBlob());
             assertTrue(rendition.getBlob().getString().contains(desc));
         }
+
+        runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_WORKMANAGER_COMPONENT_LOCATION);
     }
 
     protected static class RenditionThread extends Thread {
@@ -848,6 +867,79 @@ public class TestRenditionService {
 
     protected void nextTransaction() {
         txFeature.nextTransaction();
+    }
+
+    @Test
+    public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
+        final String renditionName = "lazyAutomation";
+        final String sourceDocumentModificationDatePropertyName = "dc:issued";
+        Calendar issued = (Calendar) new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
+        String desc = CYCLIC_BARRIER_DESCRIPTION;
+        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
+        folder.setPropertyValue("dc:title", folder.getName());
+        folder.setPropertyValue("dc:description", desc);
+        folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
+        folder = session.createDocument(folder);
+        session.save();
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+
+        for (int i = 0; i < 3; i++) {
+            folder = session.getDocument(folder.getRef());
+
+            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            assertNotNull(rendition);
+            assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
+            if (i == 0) {
+                cyclicBarrier.await();
+            }
+
+            issued = (Calendar) folder.getPropertyValue(sourceDocumentModificationDatePropertyName);
+            issued.add(Calendar.HOUR_OF_DAY, 1);
+            folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
+            desc = "description" + Integer.toString(i);
+            folder.setPropertyValue("dc:description", desc);
+            session.saveDocument(folder);
+            session.save();
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+            }
+            if (i == 0) {
+                cyclicBarrier.await();
+            }
+        }
+
+        String queueId = works.getCategoryQueueId(AbstractRenditionBuilderWork.CATEGORY);
+        assertEquals(1, works.listWorkIds(queueId, Work.State.RUNNING).size());
+        assertEquals(1, works.listWorkIds(queueId, Work.State.SCHEDULED).size());
+
+        cyclicBarrier.await();
+
+        eventService.waitForAsyncCompletion(5000);
+
+        folder = session.getDocument(folder.getRef());
+        for (int i = 0; i < 5; i++) {
+            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            assertNotNull(rendition);
+            assertNotNull(rendition.getBlob());
+            String mimeType = rendition.getBlob().getMimeType();
+            if (mimeType != null) {
+                if (mimeType.contains(LazyRendition.EMPTY_MARKER)) {
+                    Thread.sleep(1000);
+                    nextTransaction();
+                    eventService.waitForAsyncCompletion(5000);
+                    continue;
+                } else if (mimeType.contains(LazyRendition.ERROR_MARKER)) {
+                    fail("Error generating rendition for folder");
+                }
+            }
+            String content = rendition.getBlob().getString();
+            assertTrue(content.contains("dummy"));
+            assertTrue(content.contains(desc));
+            return;
+        }
+        fail("Could not retrieve rendition for folder");
     }
 
     @Test

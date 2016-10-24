@@ -27,8 +27,13 @@
     <priority value="TRACE"/>
     <appender-ref ref="FILE"/>
   </category>
- -->
 
+  <category name="org.nuxeo.ecm.platform.rendition.service">
+    <priority value="DEBUG"/>
+    <appender-ref ref="FILE"/>
+  </category>
+-->
+  
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
