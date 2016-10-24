@@ -250,7 +250,7 @@ public class WebDavClientTest extends AbstractServerTest {
     public void testMoveWithRenaming() throws Exception {
         // create a fake bin tmp file which will finally be a docx file
         String name = "tmpfile.tmp";
-        String mimeType = "application/binary";
+        String mimeType = MimetypeRegistry.DEFAULT_MIMETYPE;
         byte[] bytes = "Fake BIN".getBytes("UTF-8");
         String expectedType = "File";
         doTestPutFile(name, bytes, mimeType, expectedType);
@@ -261,7 +261,7 @@ public class WebDavClientTest extends AbstractServerTest {
         assertEquals(name, doc.getTitle());
         Blob blob = (Blob) doc.getPropertyValue("file:content");
         assertEquals(name, blob.getFilename());
-        assertEquals("application/binary", blob.getMimeType());
+        assertEquals(MimetypeRegistry.DEFAULT_MIMETYPE, blob.getMimeType());
 
         // rename it to a docx file
         String newName = "sample.docx";
