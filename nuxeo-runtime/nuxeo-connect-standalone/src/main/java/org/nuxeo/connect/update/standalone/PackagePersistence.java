@@ -157,7 +157,7 @@ public class PackagePersistence {
             } catch (IOException e) {
                 throw new PackageException("Failed to unzip package: " + file.getName());
             } finally {
-                // cleanup if tmp still exists (should not happen)
+                // cleanup tmp if exists
                 org.apache.commons.io.FileUtils.deleteQuietly(tmp);
             }
         } else {
@@ -187,7 +187,7 @@ public class PackagePersistence {
                 log.info(String.format("Replacement of %s in local cache...", oldpkg));
                 org.apache.commons.io.FileUtils.deleteQuietly(dir);
             }
-            org.apache.commons.io.FileUtils.moveDirectory(file, dir);
+            org.apache.commons.io.FileUtils.copyDirectory(file, dir);
             pkg.getData().setRoot(dir);
             updateState(pkg.getId(), pkg.state);
             return pkg;
