@@ -76,9 +76,7 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
         "org.nuxeo.ecm.csv:OSGI-INF/test-directories-contrib.xml", //
         "org.nuxeo.ecm.csv:OSGI-INF/test-types-contrib.xml", //
-        "org.nuxeo.ecm.csv:OSGI-INF/test-ui-types-contrib.xml", //
-        "org.nuxeo.ecm.csv:OSGI-INF/csv-importer-service.xml" //
-})
+        "org.nuxeo.ecm.csv:OSGI-INF/test-ui-types-contrib.xml" })
 public class TestCSVImporterCreateMode {
 
     private static final String DOCS_OK_CSV = "docs_ok.csv";
