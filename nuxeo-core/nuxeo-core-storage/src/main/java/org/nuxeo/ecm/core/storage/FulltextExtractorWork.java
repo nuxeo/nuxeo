@@ -27,10 +27,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
@@ -136,6 +139,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
 
         // Iterate on each index to set the binaryText column
         BlobsExtractor extractor = new BlobsExtractor();
+        DocumentLocation docLocation = new DocumentLocationImpl(doc);
         List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
         for (String indexName : fulltextConfiguration.indexNames) {
             if (!fulltextConfiguration.indexesAllBinary.contains(indexName)
@@ -147,8 +151,8 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                     fulltextConfiguration.propPathsExcludedByIndexBinary.get(indexName),
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
             List<Blob> blobs = extractor.getBlobs(doc);
-            String text = blobsToText(blobs, docId);
-            text = fulltextParser.parse(text, null);
+            StringBlob stringBlob = blobsToStringBlob(blobs, docId);
+            String text = fulltextParser.parse(stringBlob.getString(), null, stringBlob.getMimeType(), docLocation);
             indexesAndText.add(new IndexAndText(indexName, text));
         }
         if (!indexesAndText.isEmpty()) {
@@ -170,7 +174,8 @@ public abstract class FulltextExtractorWork extends AbstractWork {
         fulltextParser = null;
     }
 
-    protected String blobsToText(List<Blob> blobs, String docId) {
+    protected StringBlob blobsToStringBlob(List<Blob> blobs, String docId) {
+        String mimeType = null;
         List<String> strings = new LinkedList<String>();
         for (Blob blob : blobs) {
             try {
@@ -182,6 +187,9 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 blob = result.getBlob();
                 if (blob == null) {
                     continue;
+                }
+                if (StringUtils.isEmpty(mimeType) && StringUtils.isNotEmpty(blob.getMimeType())) {
+                    mimeType = blob.getMimeType();
                 }
                 String string = new String(blob.getByteArray(), "UTF-8");
                 // strip '\0 chars from text
@@ -197,7 +205,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 continue;
             }
         }
-        return StringUtils.join(strings, " ");
+        return new StringBlob(StringUtils.join(strings, " "), mimeType);
     }
 
     protected BlobHolder convert(BlobHolder blobHolder) throws ConversionException {

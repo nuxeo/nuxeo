@@ -29,24 +29,29 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDefaultFulltextParser extends NXRuntimeTestCase {
 
-    protected void check(String expected, String s) {
+    protected void check(String expected, String s, String mimeType) {
         FulltextParser parser = new DefaultFulltextParser();
         List<String> strings = new ArrayList<String>();
-        parser.parse(s, "fakepath", strings);
+        parser.parse(s, "fakepath", mimeType, null, strings);
         assertEquals(expected, StringUtils.join(strings, "|"));
     }
 
     @Test
     public void testDefaultParser() throws Exception {
-        check("abc", "abc");
-        check("abc|def", "abc def");
-        check("abc|def", " abc    def  ");
-        check("abc|def", "  -,abc DEF?? !");
+        check("abc", "abc", null);
+        check("abc|def", "abc def", null);
+        check("abc|def", " abc    def  ", null);
+        check("abc|def", "  -,abc DEF?? !", null);
         // accents left alone
-        check("hot|caf\u00e9", "hot CAF\u00c9");
+        check("hot|caf\u00e9", "hot CAF\u00c9", null);
         // check html removal and entities unescape
-        check("test|é|test", "test &eacute; test");
-        check("test|é|test", "test <p style=\"something\">&eacute;</p> test");
+        check("test|é|test", "test &eacute; test", null);
+        check("test|é|test", "test &eacute; test", "text/html");
+        check("test|é|test", "<html>test &eacute; test</html>", null);
+
+        check("test|p|style|something|é|p|test", "test <p style=\"something\">&eacute;</p> test", null);
+        check("test|é|test", "test <p style=\"something\">&eacute;</p> test", "text/html");
+        check("test|é|test", "<html>test <p style=\"something\">&eacute;</p> test</html>", null);
     }
 
 }
