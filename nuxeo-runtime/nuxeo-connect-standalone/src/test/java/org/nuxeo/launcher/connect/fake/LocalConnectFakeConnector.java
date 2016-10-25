@@ -58,4 +58,9 @@ public class LocalConnectFakeConnector extends AbstractFakeConnector {
         return data;
     }
 
+    @Override
+    protected String getJSONDataForDownload(String pkgId) {
+        throw new UnsupportedOperationException();
+    }
+
 }
