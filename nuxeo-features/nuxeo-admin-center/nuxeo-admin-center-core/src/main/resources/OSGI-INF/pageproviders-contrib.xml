@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.admin.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+             point="providers">
+
+    <genericPageProvider name="permissions_purge"
+                         class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <whereClause docType="PermissionsSearch">
+        <fixedPart
+            statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
+          ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:isCheckedInVersion = 0
+          AND SORTED_COLUMN IS NOT NULL
+        </fixedPart>
+        <predicate parameter="ecm:acl/*1/principal" operator="IN">
+          <field schema="permissions_search" name="ace_username"/>
+        </predicate>
+        <predicate parameter="ecm:ancestorId" operator="IN">
+          <field schema="permissions_search" name="ecm_ancestorIds"/>
+        </predicate>
+      </whereClause>
+      <pageSize>20</pageSize>
+      <sort column="dc:title" ascending="true"/>
+    </genericPageProvider>
+
+    <coreQueryPageProvider name="permissions_search_folders">
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE dc:title LIKE '?%' AND ecm:mixinType = 'Folderish'
+        AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <pageSize>10</pageSize>
+    </coreQueryPageProvider>
+
+    <genericPageProvider class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider" name="EVENTS_VIEW">
+      <whereClause docType="BasicAuditSearch">
+        <predicate parameter="log.eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate"/>
+          <field schema="basicauditsearch" name="endDate"/>
+        </predicate>
+        <predicate parameter="log.category" operator="=">
+          <field schema="basicauditsearch" name="eventCategory"/>
+        </predicate>
+        <predicate parameter="log.eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds"/>
+        </predicate>
+        <predicate parameter="log.principalName" operator="=">
+          <field schema="basicauditsearch" name="principalName"/>
+        </predicate>
+      </whereClause>
+      <sort column="log.eventDate" ascending="false"/>
+      <pageSize>10</pageSize>
+      <maxPageSize>1000</maxPageSize>
+    </genericPageProvider>
+
+    <genericPageProvider class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider"
+                         name="PERMISSIONS_SEARCH">
+      <whereClause docType="PermissionsSearch">
+        <fixedPart quoteParameters="false" escapeParameters="false"
+                   statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission,
+              ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
+          ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:isCheckedInVersion = 0
+          AND SORTED_COLUMN IS NOT NULL
+          ?
+        </fixedPart>
+        <predicate parameter="ecm:acl/*1/principal" operator="IN">
+          <field schema="permissions_search" name="ace_username"/>
+        </predicate>
+        <predicate parameter="ecm:acl/*1/creator" operator="IN">
+          <field schema="permissions_search" name="ace_creator"/>
+        </predicate>
+        <predicate parameter="ecm:acl/*1/permission" operator="IN">
+          <field schema="permissions_search" name="ace_permission"/>
+        </predicate>
+        <predicate parameter="ecm:acl/*1/begin" operator="&lt;=">
+          <field schema="permissions_search" name="ace_begin"/>
+        </predicate>
+        <predicate parameter="ecm:acl/*1/end" operator="&gt;=">
+          <field schema="permissions_search" name="ace_end"/>
+        </predicate>
+        <predicate parameter="ecm:acl/*1/name" operator="LIKE">
+          <field schema="permissions_search" name="ace_acl_name"/>
+        </predicate>
+        <predicate parameter="ecm:ancestorId" operator="IN">
+          <field schema="permissions_search" name="ecm_ancestorIds"/>
+        </predicate>
+      </whereClause>
+      <parameter>#{adminPermissionsActions.ACEStatusFixedPart}</parameter>
+      <pageSize>20</pageSize>
+      <sort column="dc:title" ascending="true"/>
+    </genericPageProvider>
+
+
+  </extension>
+
+</component>

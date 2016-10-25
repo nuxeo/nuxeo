@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.admin.audit.es.contentView.contrib">
 
-  <require>org.nuxeo.admin.audit.contentView.contrib</require>
+  <require>org.nuxeo.admin.pageproviders</require>
   
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
