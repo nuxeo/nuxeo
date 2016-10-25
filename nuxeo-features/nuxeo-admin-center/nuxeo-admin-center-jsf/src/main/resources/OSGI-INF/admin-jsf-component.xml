@@ -1,0 +1,3 @@
+<component name="org.nuxeo.admin.jsf.component">
+  <implementation class="org.nuxeo.ecm.admin.AdminJSFComponent"/>
+</component>

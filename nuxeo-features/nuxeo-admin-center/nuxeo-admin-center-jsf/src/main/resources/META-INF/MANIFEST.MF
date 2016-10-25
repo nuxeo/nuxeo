@@ -1,0 +1,17 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Vendor: org.nuxeo.ecm.platform
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo Admin Center JSF
+Bundle-SymbolicName: org.nuxeo.admin.center.jsf;singleton:=true
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/action-widgets-contrib.xml,
+ OSGI-INF/actions-contrib.xml,
+ OSGI-INF/admin-jsf-component.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/content-view-contrib.xml,
+ OSGI-INF/layout-contrib.xml,
+ OSGI-INF/theme-contrib.xml,
+ OSGI-INF/urlservice-contrib.xml
+
