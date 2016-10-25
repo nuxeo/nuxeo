@@ -8,16 +8,15 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-cap-cmis-tests</artifactId>
+  <artifactId>nuxeo-server-cmis-tests</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo CAP CMIS Tests</name>
-  <description>CMIS tests on Nuxeo CAP</description>
+  <name>Nuxeo Server CMIS Tests</name>
+  <description>CMIS tests on Nuxeo Server</description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
-      <classifier>nuxeo-cap</classifier>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>

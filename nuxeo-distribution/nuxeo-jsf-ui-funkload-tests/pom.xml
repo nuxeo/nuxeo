@@ -8,16 +8,15 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-cap-funkload-tests</artifactId>
+  <artifactId>nuxeo-jsf-ui-funkload-tests</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo CAP Funkload tests and bench</name>
-  <description>Funkload tests and bench on Nuxeo CAP</description>
+  <name>Nuxeo JSF UI Funkload tests and bench</name>
+  <description>Funkload tests and bench on Nuxeo JSF UI</description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
-      <classifier>nuxeo-cap</classifier>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>

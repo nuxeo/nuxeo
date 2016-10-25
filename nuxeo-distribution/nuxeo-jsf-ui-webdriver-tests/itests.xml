@@ -1,4 +1,4 @@
-<project name="cap-webdriver-tests"
+<project name="jsf-ui-webdriver-tests"
          xmlns:nx="urn:nuxeo-build"
          xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
@@ -11,6 +11,7 @@
   <property name="nuxeo.wizard.done" value="true" />
   <property name="mail.transport.port" value="2525" />
   <property name="mail.transport.host" value="127.0.0.1" />
+  <property name="mp.install" value="nuxeo-jsf-ui" />
 
   <unzip dest="${out.dir}/" overwrite="false">
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />

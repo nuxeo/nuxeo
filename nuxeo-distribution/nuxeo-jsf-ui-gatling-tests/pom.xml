@@ -7,9 +7,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-cap-gatling-tests</artifactId>
-  <name>Nuxeo CAP Gatling Bench</name>
-  <description>Gatling bench on Nuxeo CAP</description>
+  <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
+  <name>Nuxeo JSF UI Gatling Bench</name>
+  <description>Gatling bench on Nuxeo JSF UI</description>
   <packaging>pom</packaging>
 
   <properties>
@@ -62,7 +62,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
-      <classifier>nuxeo-cap</classifier>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
