@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -147,8 +148,8 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                     fulltextConfiguration.propPathsExcludedByIndexBinary.get(indexName),
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
             List<Blob> blobs = extractor.getBlobs(doc);
-            String text = blobsToText(blobs, docId);
-            text = fulltextParser.parse(text, null);
+            MimetypeAndText mimeTypeAndText = blobsToMimetypeAndText(blobs, docId);
+            String text = fulltextParser.parse(mimeTypeAndText.text, null, mimeTypeAndText.mimeType, new IdRef(docId));
             indexesAndText.add(new IndexAndText(indexName, text));
         }
         if (!indexesAndText.isEmpty()) {
@@ -170,7 +171,8 @@ public abstract class FulltextExtractorWork extends AbstractWork {
         fulltextParser = null;
     }
 
-    protected String blobsToText(List<Blob> blobs, String docId) {
+    protected MimetypeAndText blobsToMimetypeAndText(List<Blob> blobs, String docId) {
+        String mimeType = null;
         List<String> strings = new LinkedList<String>();
         for (Blob blob : blobs) {
             try {
@@ -182,6 +184,9 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 blob = result.getBlob();
                 if (blob == null) {
                     continue;
+                }
+                if (StringUtils.isNotEmpty(mimeType) && StringUtils.isNotEmpty(blob.getMimeType())) {
+                    mimeType = blob.getMimeType();
                 }
                 String string = new String(blob.getByteArray(), "UTF-8");
                 // strip '\0 chars from text
@@ -197,7 +202,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                 continue;
             }
         }
-        return StringUtils.join(strings, " ");
+        return new MimetypeAndText(mimeType, StringUtils.join(strings, " "));
     }
 
     protected BlobHolder convert(BlobHolder blobHolder) throws ConversionException {
@@ -207,6 +212,19 @@ public abstract class FulltextExtractorWork extends AbstractWork {
             return null;
         }
         return conversionService.convert(ANY2TEXT, blobHolder, null);
+    }
+
+    protected static class MimetypeAndText implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public String mimeType;
+
+        public String text;
+
+        public MimetypeAndText(String mimeType, String text) {
+            this.mimeType = mimeType;
+            this.text = text;
+        }
     }
 
 }

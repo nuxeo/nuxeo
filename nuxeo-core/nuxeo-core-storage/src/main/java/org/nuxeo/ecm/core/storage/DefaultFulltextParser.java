@@ -27,6 +27,7 @@ import net.htmlparser.jericho.Source;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,10 +47,22 @@ public class DefaultFulltextParser implements FulltextParser {
     protected static final Pattern WORD_SPLIT_PATTERN = Pattern.compile(Framework.getProperty(WORD_SPLIT_PROP,
             WORD_SPLIT_DEF));
 
+    protected static final int HTML_MAGIC_OFFSET = 8192;
+
     @Override
     public String parse(String s, String path) {
+        return parse(s, path, null, null);
+    }
+
+    @Override
+    public void parse(String s, String path, List<String> strings) {
+        parse(s, path, null, null, strings);
+    }
+
+    @Override
+    public String parse(String s, String path, String mimeType, DocumentRef docRef) {
         List<String> strings = new ArrayList<>();
-        parse(s, path, strings);
+        parse(s, path, mimeType, docRef, strings);
         return StringUtils.join(strings, ' ');
     }
 
@@ -61,8 +74,8 @@ public class DefaultFulltextParser implements FulltextParser {
      * This can be subclassed.
      */
     @Override
-    public void parse(String s, String path, List<String> strings) {
-        s = preprocessField(s, path);
+    public void parse(String s, String path, String mimeType, DocumentRef docRef, List<String> strings) {
+        s = preprocessField(s, path, mimeType);
         for (String word : WORD_SPLIT_PATTERN.split(s)) {
             if (!word.isEmpty()) {
                 strings.add(word.toLowerCase());
@@ -75,11 +88,19 @@ public class DefaultFulltextParser implements FulltextParser {
      * <p>
      * The path is unused for now.
      */
-    protected String preprocessField(String s, String path) {
+    protected String preprocessField(String s, String path, String mimeType) {
         if (s == null) {
             return null;
         }
-        if (s.contains("<")) {
+        if (StringUtils.isEmpty(mimeType)) {
+            // Use weak HTML detection here since nuxeo-core-mimetype 'magic.xml' has text/html detection commented
+            String htmlMagicExtraction = s.substring(0, Math.min(s.length(), HTML_MAGIC_OFFSET));
+            String htmlMagicExtractionLC = htmlMagicExtraction.toLowerCase();
+            if (htmlMagicExtractionLC.startsWith("<!doctype html") || htmlMagicExtractionLC.contains("<html")) {
+                mimeType = "text/html";
+            }
+        }
+        if ("text/html".equals(mimeType)) {
             s = removeHtml(s);
         }
         return StringEscapeUtils.unescapeHtml(s);
