@@ -153,6 +153,15 @@ public abstract class FulltextExtractorWork extends AbstractWork {
             List<Blob> blobs = extractor.getBlobs(doc);
             StringBlob stringBlob = blobsToStringBlob(blobs, docId);
             String text = fulltextParser.parse(stringBlob.getString(), null, stringBlob.getMimeType(), docLocation);
+            int fullTextFieldSizeLimit = fulltextConfiguration.fulltextFieldSizeLimit;
+            if (fullTextFieldSizeLimit != 0 && text.length() > fullTextFieldSizeLimit) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Fulltext extract of length: %s for indexName: %s of document: %s truncated to length: %s",
+                            text.length(), indexName, docId, fullTextFieldSizeLimit));
+                }
+                text = text.substring(0, fullTextFieldSizeLimit);
+            }
             indexesAndText.add(new IndexAndText(indexName, text));
         }
         if (!indexesAndText.isEmpty()) {
