@@ -310,6 +310,11 @@ public class RepositoryDescriptor {
         return fulltextDescriptor;
     }
 
+    @XNode("indexing/fulltext@fieldSizeLimit")
+    public void setFulltextFieldSizeLimit(int fieldSizeLimit) {
+        fulltextDescriptor.setFulltextFieldSizeLimit(fieldSizeLimit);
+    }
+
     @XNode("indexing/fulltext@disabled")
     public void setFulltextDisabled(boolean disabled) {
         fulltextDescriptor.setFulltextDisabled(disabled);

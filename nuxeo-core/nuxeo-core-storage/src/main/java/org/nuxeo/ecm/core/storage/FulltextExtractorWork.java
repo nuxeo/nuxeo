@@ -148,6 +148,15 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
             List<Blob> blobs = extractor.getBlobs(doc);
             String text = blobsToText(blobs, docId);
+            int fullTextFieldSizeLimit = fulltextConfiguration.fulltextFieldSizeLimit;
+            if (fullTextFieldSizeLimit != 0 && text.length() > fullTextFieldSizeLimit) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Fulltext extraction of length: %s for indexName: %s of document: %s too large to process",
+                            docId, text.length()));
+                }
+                continue;
+            }
             text = fulltextParser.parse(text, null);
             indexesAndText.add(new IndexAndText(indexName, text));
         }

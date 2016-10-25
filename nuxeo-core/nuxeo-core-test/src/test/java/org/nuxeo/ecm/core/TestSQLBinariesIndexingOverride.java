@@ -186,4 +186,28 @@ public class TestSQLBinariesIndexingOverride {
         assertEquals(0, res.size());
     }
 
+    @Test
+    public void testEnforceFulltextFieldSizeLimit() throws Exception {
+        DocumentModelList res;
+        for (int i = 0; i < 2; i++) {
+            String namePrefix = i == 0 ? "reg" : "big";
+            String name = namePrefix + "Content";
+            // fulltextFieldSizeLimit configured as 1024
+            String content = name + " ";
+            for (int j = 0; j < (i * 100) + 50; j++) {
+                content += name + " ";
+            }
+            DocumentModel doc = session.createDocumentModel("/", name, "File");
+            doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(content));
+            doc = session.createDocument(doc);
+            session.save();
+
+            waitForFulltextIndexing();
+
+            // main index
+            res = session.query("SELECT * FROM Document WHERE ecm:fulltext = '" + content + "'");
+            assertEquals(i == 0 ? 1 : 0, res.size());
+        }
+    }
+
 }
