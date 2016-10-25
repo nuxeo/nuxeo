@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>nuxeo-distribution-cap-gatling-tests</name>
-  <comment>Nuxeo CAP Gatling Bench</comment>
+  <name>nuxeo-jsf-ui-gatling-tests</name>
+  <comment>Nuxeo JSF UI Gatling Bench</comment>
   <projects/>
   <buildSpec>
   </buildSpec>

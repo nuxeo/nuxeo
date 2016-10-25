@@ -35,9 +35,9 @@
     <module>nuxeo-distribution-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-distribution-tomcat-wizard-tests</module>
-    <module>nuxeo-distribution-cap-webdriver-tests</module>
-    <module>nuxeo-distribution-cap-funkload-tests</module>
-    <module>nuxeo-distribution-cap-gatling-tests</module>
+    <module>nuxeo-jsf-ui-webdriver-tests</module>
+    <module>nuxeo-jsf-ui-funkload-tests</module>
+    <module>nuxeo-jsf-ui-gatling-tests</module>
   </modules>
 
   <profiles>
@@ -257,14 +257,14 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap-webdriver-tests</artifactId>
+        <artifactId>nuxeo-jsf-ui-webdriver-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-cap-gatling-tests</artifactId>
+        <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>test-jar</type>
         <scope>test</scope>

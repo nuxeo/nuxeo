@@ -31,7 +31,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
-      <classifier>nuxeo-cap</classifier>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>

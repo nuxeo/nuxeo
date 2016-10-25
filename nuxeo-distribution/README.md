@@ -37,9 +37,9 @@ Maven usage: `mvn clean package [options]`
 
         mvn clean package -pl :nuxeo-distribution-tomcat
 
- * Run CAP WebDriver Functional Tests after build of the needed resources:
+ * Run JSF UI WebDriver Functional Tests after build of the needed resources:
 
-        mvn clean verify -pl :nuxeo-distribution-cap-webdriver-tests -am
+        mvn clean verify -pl :nuxeo-jsf-ui-webdriver-tests -am
 
 ### Build with Ant (deprecated)
 
@@ -59,26 +59,25 @@ Ant usage: `ant package`
  * nuxeo-distribution-resources: Resources for packaging (doc, binaries, configuration templates)
  * nuxeo-distribution-tests: Convenient helper POM listing the Nuxeo test dependencies
  * nuxeo-distribution-server: Server NXR
- * nuxeo-distribution-cap: Content Application Platform NXR
- * nuxeo-distribution-tomcat: Package Nuxeo CAP with Tomcat
+ * nuxeo-distribution-cap: Content Application Platform NXR, **deprecated**
+ * nuxeo-distribution-tomcat: Package Nuxeo Server with Tomcat
  * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests on Startup Wizard
- * nuxeo-distribution-cap-cmis-tests: CMIS tests on Nuxeo CAP
- * nuxeo-distribution-cap-funkload-tests: Funkload tests and bench on Nuxeo CAP
- * nuxeo-distribution-cap-gatling-tests: Gatling bench on Nuxeo CAP
- * nuxeo-distribution-cap-selenium-tests: Selenium functional tests on Nuxeo CAP
- * nuxeo-distribution-cap-webdriver-tests: WebDriver functional tests on Nuxeo CAP
+ * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
+ * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo JSF UI
+ * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo JSF UI
+ * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo JSF UI
  * nuxeo-marketplace-dm: Transitional package for DM
 
 ## Produced packages
 
  * NXR packages
    * Server
-   * Content Application Platform (CAP)
+   * Content Application Platform (CAP), **deprecated**
  * Nuxeo Packages
    * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
    * Server
-   * Content Application Platform (CAP)
+   * Content Application Platform (CAP), **deprecated**
    * SDK
 
 ## Understanding Maven phases and options
@@ -107,16 +106,16 @@ This application can be used to debug, test or develop nuxeo components that nee
 
 Built NXR is in `nuxeo-distribution-server/target/`.
 
-It is packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "server").
+This is the default application packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "server").
 
 
 ### Nuxeo CAP
 
-Basic document management features.
+Basic document management features. **The package has been deprecated; it is kept for helping in transition.**
 
 Built NXR is in `nuxeo-distribution-cap/target/`.
 
-This is the default packaged application in `nuxeo-distribution-tomcat/target/` (see "nuxeo-cap").
+It is packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "nuxeo-cap").
 
 ### Nuxeo Document Management
 

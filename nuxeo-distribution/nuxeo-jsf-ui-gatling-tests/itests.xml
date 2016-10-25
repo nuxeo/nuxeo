@@ -20,6 +20,7 @@
   <property name="nuxeo.wizard.done" value="true" />
   <property name="mail.transport.port" value="2525" />
   <property name="mail.transport.host" value="127.0.0.1" />
+  <property name="mp.install" value="nuxeo-jsf-ui" />
 
   <property name="inject.file" value="${out.dir}/data-test-les-arbres-1.1.csv" />
   <property name="inject.script" value="inject-arbres.py" />
@@ -68,7 +69,7 @@
  </target>
 
   <target name="prepare-environment"
-          depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"
+          depends="_init,prepare-db,prepare-tomcat,prepare-monitor"
           description="prepare all ressources for test">
     <unzip dest="${out.dir}" overwrite="false">
       <artifact:resolveFile key="${inject.artifact}" />

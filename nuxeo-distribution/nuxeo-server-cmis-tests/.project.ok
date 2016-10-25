@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>nuxeo-distribution-cap-cmis-tests</name>
+	<name>nuxeo-server-cmis-tests</name>
 	<comment></comment>
 	<projects>
 	</projects>

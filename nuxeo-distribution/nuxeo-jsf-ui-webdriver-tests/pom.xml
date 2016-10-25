@@ -7,9 +7,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-cap-webdriver-tests</artifactId>
-  <name>Nuxeo CAP WebDriver Tests</name>
-  <description>WebDriver functional tests on Nuxeo CAP</description>
+  <artifactId>nuxeo-jsf-ui-webdriver-tests</artifactId>
+  <name>Nuxeo JSF UI WebDriver Tests</name>
+  <description>WebDriver functional tests on Nuxeo JSF UI</description>
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>
@@ -32,7 +32,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
-      <classifier>nuxeo-cap</classifier>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>

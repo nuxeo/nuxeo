@@ -7,8 +7,6 @@
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <property name="out.dir" value="${maven.project.build.directory}" />
-  <property name="classifier" value="nuxeo-cap" />
-  <property name="wizard.preset" value="nuxeo-cap" />
   <property name="nuxeo.wizard.done" value="false" />
 
   <unzip dest="${out.dir}/" overwrite="false">
