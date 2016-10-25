@@ -4,7 +4,7 @@
     point="repository">
     <repository name="test">
       <indexing>
-        <fulltext>
+        <fulltext fieldSizeLimit="1024">
           <index name="binaries">
             <fieldType>blob</fieldType>
           </index>

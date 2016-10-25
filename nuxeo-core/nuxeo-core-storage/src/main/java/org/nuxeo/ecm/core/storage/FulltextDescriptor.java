@@ -84,6 +84,18 @@ public class FulltextDescriptor {
         }
     }
 
+    public static final int FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT = 0;
+
+    private Integer fulltextFieldSizeLimit;
+
+    public int getFulltextFieldSizeLimit() {
+        return fulltextFieldSizeLimit == null ? FULLTEXT_FIELD_SIZE_LIMIT_DEFAULT : fulltextFieldSizeLimit.intValue();
+    }
+
+    public void setFulltextFieldSizeLimit(int fulltextFieldSizeLimit) {
+        this.fulltextFieldSizeLimit = Integer.valueOf(fulltextFieldSizeLimit);
+    }
+
     /** False if the boolean is null or FALSE, true otherwise. */
     private static boolean defaultFalse(Boolean bool) {
         return Boolean.TRUE.equals(bool);
@@ -157,6 +169,7 @@ public class FulltextDescriptor {
 
     /** Copy constructor. */
     public FulltextDescriptor(FulltextDescriptor other) {
+        fulltextFieldSizeLimit = other.fulltextFieldSizeLimit;
         fulltextDisabled = other.fulltextDisabled;
         fulltextSearchDisabled = other.fulltextSearchDisabled;
         fulltextParser = other.fulltextParser;
@@ -166,6 +179,9 @@ public class FulltextDescriptor {
     }
 
     public void merge(FulltextDescriptor other) {
+        if (other.fulltextFieldSizeLimit != null) {
+            fulltextFieldSizeLimit = other.fulltextFieldSizeLimit;
+        }
         if (other.fulltextDisabled != null) {
             fulltextDisabled = other.fulltextDisabled;
         }
