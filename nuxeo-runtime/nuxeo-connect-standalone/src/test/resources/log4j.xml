@@ -29,6 +29,9 @@
   <logger name="org.nuxeo.connect.update">
     <level value="INFO" />
   </logger>
+  <logger name="org.nuxeo.connect.downloads">
+    <level value="INFO" />
+  </logger>
   
 
   <root>

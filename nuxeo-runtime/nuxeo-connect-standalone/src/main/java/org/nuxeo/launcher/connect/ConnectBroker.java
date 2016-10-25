@@ -813,8 +813,8 @@ public class ConnectBroker {
                 }
             } else {
                 pkg = service.addPackage(fileToAdd);
+                log.info("Added " + packageFileName);
             }
-            log.info("Added " + packageFileName);
             newPackageInfo(cmdInfo, pkg);
         } catch (PackageException e) {
             cmdInfo.exitCode = 1;
