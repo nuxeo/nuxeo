@@ -9,7 +9,7 @@
   </extension>
   
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="pipe">
-    <eventPipe name="localPipe" class="org.nuxeo.ecm.core.event.pipe.queue.QueueBaseEventBundlePipe" priority="0">
+    <eventPipe name="localPipe" class="org.nuxeo.ecm.core.event.pipe.QueueBaseEventBundlePipe" priority="0">
     </eventPipe>
   </extension>
   

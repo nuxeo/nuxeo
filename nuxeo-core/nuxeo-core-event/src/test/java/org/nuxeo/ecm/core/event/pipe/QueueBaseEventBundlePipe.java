@@ -16,12 +16,11 @@
  * Contributors:
  *     tiry
  */
-package org.nuxeo.ecm.core.event.pipe.queue;
+package org.nuxeo.ecm.core.event.pipe;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.pipe.AbstractEventBundlePipe;
 import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipeConsumer;
 import org.nuxeo.runtime.api.Framework;
 
@@ -69,7 +68,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
         consumerTPE.prestartCoreThread();
         consumerTPE.execute(new Runnable() {
 
-            protected boolean send(List<EventBundle> messages) {
+            private boolean send(List<EventBundle> messages) {
                 if (consumer.receiveMessage(messages)) {
                     messages.clear();
                     return true;
@@ -108,7 +107,6 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                                 Thread.sleep(200);
                             }
                         } catch (InterruptedException e) {
-                            consumerTPE.shutdown();
                             interrupted = true;
                         }
                     }
@@ -121,6 +119,7 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
             }
         });
+        consumerTPE.shutdown();
     }
 
     @Override
@@ -145,17 +144,9 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
     @Override
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMillis;
-        int pause = (int) Math.min(timeoutMillis, 500L);
-
-        // XXX use Condition
-        do {
-            if (queue.size() == 0) {
-                return true;
-            }
-            Thread.sleep(pause);
-        } while (System.currentTimeMillis() < deadline);
-
+        if (consumerTPE != null) {
+            consumerTPE.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
+        }
 
         return false;
     }

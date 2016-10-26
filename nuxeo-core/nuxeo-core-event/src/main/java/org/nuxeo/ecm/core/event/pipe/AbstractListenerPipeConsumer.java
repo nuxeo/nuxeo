@@ -71,6 +71,7 @@ public abstract class AbstractListenerPipeConsumer<T> extends AbstractPipeConsum
             return true;
     }
 
+    @Override
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         return asyncExec.waitForCompletion(timeoutMillis);
     }

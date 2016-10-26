@@ -51,4 +51,13 @@ public interface PipeConsumer<T> {
      */
     void shutdown() throws InterruptedException;
 
+    /**
+     * Wait until consumer is done
+     *
+     * @param timeoutMillis
+     * @return
+     * @throws InterruptedException
+     */
+    boolean waitForCompletion(long timeoutMillis) throws InterruptedException;
+
 }
