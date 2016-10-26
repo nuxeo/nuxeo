@@ -16,10 +16,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +47,10 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Safe Edit feature tests.
@@ -114,6 +114,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     private final static String NEW_WORKSPACE_TITLE = "newWorkspaceName";
 
+    private final static String NEW_FILE_TITLE = "new file title";
+
     private final static String DESCRIPTION_ELT_ID = "document_edit:nxl_heading:nxw_description";
 
     private final static String TITLE_ELT_ID = "document_edit:nxl_heading:nxw_title";
@@ -122,7 +124,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     private final static String DRAFT_SAVE_TEXT_NOTIFICATION = "Draft saved";
 
-    private static final String NXDOC_URL_FORMAT = NUXEO_URL + "/nxdoc/default/%s/view_documents?conversationId=0NXMAIN";
+    private static final String NXDOC_URL_FORMAT = NUXEO_URL
+            + "/nxdoc/default/%s/view_documents?conversationId=0NXMAIN";
 
     private void prepare() throws Exception {
         DocumentBasePage documentBasePage;
@@ -385,6 +388,7 @@ public class ITSafeEditTest extends AbstractTest {
         FileDocumentBasePage filePage = createFile(documentBasePage, "Test file", "Test File description", false, null,
                 null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
+        editTabSubPage.setTitle(NEW_FILE_TITLE);
 
         Select2WidgetElement coverageWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")));
@@ -396,7 +400,7 @@ public class ITSafeEditTest extends AbstractTest {
         Locator.waitUntilGivenFunction(input -> {
             LocalStorage ls = new LocalStorage(driver);
             String content = ls.getItemFromLocalStorage(currentDocumentId);
-            return content != null && content.contains(COVERAGE);
+            return content != null && content.contains(COVERAGE) && content.contains(NEW_FILE_TITLE);
         });
 
         waitForSavedNotification();
@@ -413,6 +417,10 @@ public class ITSafeEditTest extends AbstractTest {
         triggerSafeEditRestore();
 
         waitForSavedNotification();
+
+        WebElement titleElt = driver.findElement(By.name(TITLE_ELT_ID));
+        String titleEltValue = titleElt.getAttribute("value");
+        assertEquals(NEW_FILE_TITLE, titleEltValue);
 
         WebElement savedCoverage = driver.findElement(By.xpath(ITSelect2Test.S2_COVERAGE_FIELD_XPATH));
         final String text = savedCoverage.getText();
