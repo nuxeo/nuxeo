@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 import java.util.List;
@@ -67,12 +68,12 @@ public interface FulltextParser {
      * @param path the abstracted path for the property (where all complex indexes have been replaced by {@code *}), or
      *            {@code null}
      * @param mimeType the {@code mimeType} of the string to be parsed and normalized. This may be {@code null}
-     * @param docRef the {@code docRef} of the Document from which the property value string was extracted. This may be
-     *            {@code null}
+     * @param documentLocation the {@code documentLocation} of the Document from which the property value string
+     *            was extracted. This may be {@code null}
      * @return the normalized words as a single space-separated string
      * @since 8.4
      */
-    String parse(String s, String path, String mimeType, DocumentRef docRef);
+    String parse(String s, String path, String mimeType, DocumentLocation documentLocation);
 
     /**
      * Parses one property value to normalize the fulltext for the database.
@@ -83,11 +84,11 @@ public interface FulltextParser {
      * @param path the abstracted path for the property (where all complex indexes have been replaced by {@code *}), or
      *            {@code null}
      * @param mimeType the {@code mimeType} of the string to be parsed and normalized. This may be {@code null}
-     * @param docRef the {@code docRef} of the Document from which the property value string was extracted. This may be
-     *            {@code null}
+     * @param documentLocation the {@code documentLocation} of the Document from which the property value string
+     *            was extracted. This may be {@code null}
      * @param strings the list into which normalized words should be accumulated
      * @since 8.4
      */
-    void parse(String s, String path, String mimeType, DocumentRef docRef, List<String> strings);
+    void parse(String s, String path, String mimeType, DocumentLocation documentLocation, List<String> strings);
 
 }

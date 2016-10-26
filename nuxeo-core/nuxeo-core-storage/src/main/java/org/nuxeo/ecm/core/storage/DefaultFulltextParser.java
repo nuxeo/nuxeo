@@ -27,7 +27,7 @@ import net.htmlparser.jericho.Source;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,21 +60,22 @@ public class DefaultFulltextParser implements FulltextParser {
     }
 
     @Override
-    public String parse(String s, String path, String mimeType, DocumentRef docRef) {
+    public String parse(String s, String path, String mimeType, DocumentLocation documentLocation) {
         List<String> strings = new ArrayList<>();
-        parse(s, path, mimeType, docRef, strings);
+        parse(s, path, mimeType, documentLocation, strings);
         return StringUtils.join(strings, ' ');
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * The default implementation normalizes text to lowercase and removes punctuation.
+     * The default implementation normalizes text to lowercase and removes punctuation. The documentLocation parameter
+     * is currently unused but has some use cases for potential subclasses.
      * <p>
      * This can be subclassed.
      */
     @Override
-    public void parse(String s, String path, String mimeType, DocumentRef docRef, List<String> strings) {
+    public void parse(String s, String path, String mimeType, DocumentLocation documentLocation, List<String> strings) {
         s = preprocessField(s, path, mimeType);
         for (String word : WORD_SPLIT_PATTERN.split(s)) {
             if (!word.isEmpty()) {
