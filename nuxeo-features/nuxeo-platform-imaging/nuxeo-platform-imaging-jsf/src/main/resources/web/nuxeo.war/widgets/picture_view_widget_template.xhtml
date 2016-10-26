@@ -8,7 +8,7 @@
 
   <c:if test="#{fieldOrValue.hasFacet('Picture')}">
 
-    <c:set var="pictureView" value="#{nxu:test(!empty widgetProperty_pictureView, widgetProperty_pictureView, 'Medium')}" />
+    <c:set var="pictureView" value="#{nxu:test(!empty widgetProperty_pictureView, widgetProperty_pictureView, 'FullHD')}" />
     <c:set var="blobPropertyName" value="#{pictureView}:content" />
 
     <c:if test="#{!empty widget.label and widget.handlingLabels}">

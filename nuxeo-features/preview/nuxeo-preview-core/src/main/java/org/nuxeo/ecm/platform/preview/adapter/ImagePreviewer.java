@@ -16,6 +16,7 @@
  * Contributors:
  *     Alexandre Russel
  *     Andre Justo
+ *     Miguel Nixo
  *
  * $Id$
  */
@@ -28,6 +29,8 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
+import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
@@ -35,6 +38,18 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  * @author Alexandre Russel
  */
 public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
+
+    protected Blob getContentBlob(Blob original, DocumentModel doc) {
+        MultiviewPicture multiviewPicture = doc.getAdapter(MultiviewPicture.class);
+        if (multiviewPicture != null) {
+            for (PictureView view : multiviewPicture.getViews()) {
+                if (view.getTitle().equals("FullHD") && view.getBlob() != null) {
+                    return view.getBlob();
+                }
+            }
+        }
+        return original;
+    }
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<>();
@@ -52,9 +67,10 @@ public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreview
         html.append("<nuxeo-image-viewer src=\"image\" controls responsive></nuxeo-image-viewer>");
         html.append("</body>");
         Blob mainBlob = Blobs.createBlob(html.toString(), "text/html", null, "index.html");
-        blob.setFilename("image");
         blobResults.add(mainBlob);
-        blobResults.add(blob);
+        Blob content = getContentBlob(blob, dm);
+        content.setFilename("image");
+        blobResults.add(content);
         return blobResults;
     }
 }
