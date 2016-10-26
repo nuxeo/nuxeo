@@ -20,9 +20,6 @@ package org.nuxeo.ecm.platform.suggestbox.automation;
 
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -35,6 +32,9 @@ import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Operation used to suggest result by getting and calling all the suggesters defined in contributions.
@@ -73,6 +73,7 @@ public class SuggestOperation {
             suggestionJSON.put("label", suggestion.getLabel());
             suggestionJSON.put("type", suggestion.getType());
             suggestionJSON.put("icon", suggestion.getIconURL());
+            suggestionJSON.put("thumbnailUrl", suggestion.getThumbnailURL());
             suggestionJSON.put("url", suggestion.getObjectUrl());
 
             result.add(suggestionJSON);

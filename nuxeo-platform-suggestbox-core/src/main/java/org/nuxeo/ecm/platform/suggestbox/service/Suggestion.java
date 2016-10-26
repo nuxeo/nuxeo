@@ -39,6 +39,8 @@ public abstract class Suggestion implements Serializable {
 
     protected final String iconURL;
 
+    protected String thumbnailURL = "";
+
     protected String description = "";
 
     protected boolean disabled = false;
@@ -49,6 +51,15 @@ public abstract class Suggestion implements Serializable {
         this.label = label;
         this.iconURL = iconURL;
     }
+
+    /**
+     * @since 8.4
+     */
+    public Suggestion(String id, String type, String label, String iconURL, String thumbnailURL) {
+        this(id, type, label, iconURL);
+        this.thumbnailURL = thumbnailURL;
+    }
+
 
     /**
      * The id of the object associated to the suggestion.
@@ -99,6 +110,21 @@ public abstract class Suggestion implements Serializable {
      */
     public boolean getIsDisabled() {
         return disabled;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public String getThumbnailURL() {
+        return thumbnailURL;
+    }
+
+    /**
+     * @since 8.4
+     */
+    public Suggestion withThumbnailURL(String thumbnailURL) {
+        this.thumbnailURL = thumbnailURL;
+        return this;
     }
 
     public Suggestion disable() {

@@ -56,7 +56,9 @@ public class DocumentSuggestion extends Suggestion {
         if (StringUtils.isEmpty(icon)) {
             icon = typeInfo.getIcon();
         }
-        return new DocumentSuggestion(doc.getId(), new DocumentLocationImpl(doc), doc.getTitle(), icon).withDescription(description);
+        String thumbnailURL = String.format("api/v1/id/%s/@rendition/thumbnail", doc.getId());
+        return new DocumentSuggestion(doc.getId(), new DocumentLocationImpl(doc), doc.getTitle(), icon).withDescription(
+                description).withThumbnailURL(thumbnailURL);
     }
 
     public DocumentLocation getDocumentLocation() {
