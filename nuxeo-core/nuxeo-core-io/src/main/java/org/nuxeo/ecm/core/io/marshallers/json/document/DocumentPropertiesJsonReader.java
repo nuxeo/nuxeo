@@ -183,7 +183,15 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         if (jn.isObject()) {
             ObjectResolver resolver = type.getObjectResolver();
             if (resolver == null) {
-                throw new MarshallingException("Unable to parse the property " + property.getPath());
+                try {
+                    if (type.getSuperType() != null && type.getSuperType() instanceof StringType) {
+                        // Let's assume it is a blob of which content has to be stored in a string property.
+                        Blob blob = readEntity(Blob.class, Blob.class, jn);
+                        return blob.getString();
+                    }
+                } catch (IOException e) {
+                    throw new MarshallingException("Unable to parse the property " + property.getPath());
+                }
             }
             Object object = null;
             for (Class<?> clazz : resolver.getManagedClasses()) {
