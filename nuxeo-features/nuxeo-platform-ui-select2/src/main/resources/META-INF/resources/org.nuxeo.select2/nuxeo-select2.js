@@ -428,7 +428,7 @@
             if (select2_params.multiple) {
               var newObj = JSON.parse(initHolder.val());
               newObj.push(e.added);
-              var newValue = JSON.stringify(newObj);
+              newValue = JSON.stringify(newObj);
             } else {
               newValue = JSON.stringify(e.added);
             }
