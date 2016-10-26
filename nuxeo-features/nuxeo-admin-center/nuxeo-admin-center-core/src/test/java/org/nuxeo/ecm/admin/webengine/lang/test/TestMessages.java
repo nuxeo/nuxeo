@@ -18,23 +18,24 @@
  */
 package org.nuxeo.ecm.admin.webengine.lang.test;
 
-import org.nuxeo.ecm.platform.test.TranslationEnFrTestCase;
+import org.nuxeo.ecm.platform.test.TranslationMultiTestCase;
 
 /**
  * Simple integrity tests on messages file(s).
  *
  * @since 7.3
  */
-public class TestMessages extends TranslationEnFrTestCase {
+public class TestMessages extends TranslationMultiTestCase {
 
     @Override
-    protected String getEnTranslationsPath() {
+    protected String getReferenceTranslationsPath() {
         return "i18n/messages_en.properties";
     }
 
     @Override
-    protected String getFrTranslationsPath() {
-        return "i18n/messages_fr.properties";
+    protected String[] getOtherTranslationsPath() {
+        return new String[] { "i18n/messages_fr.properties", "i18n/messages_de.properties",
+                "i18n/messages_jp.properties" };
     }
 
 }
