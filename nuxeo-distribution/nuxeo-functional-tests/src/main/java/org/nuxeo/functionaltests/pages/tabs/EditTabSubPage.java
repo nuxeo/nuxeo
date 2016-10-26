@@ -76,6 +76,15 @@ public class EditTabSubPage extends AbstractPage {
     }
 
     /**
+     * @since 8.10
+     */
+    public EditTabSubPage setTitle(String title) {
+        titleInputText.clear();
+        titleInputText.sendKeys(title);
+        return this;
+    }
+
+    /**
      * Save the modifications.
      *
      * @since 5.7.3
