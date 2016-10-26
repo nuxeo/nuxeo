@@ -49,6 +49,7 @@
     <header name="X-Content-Type-Options">nosniff</header>
     <header name="X-XSS-Protection">1; mode=block</header>
     <header name="X-Frame-Options">${nuxeo.frame.options:=SAMEORIGIN}</header>
+    <header name="Content-Security-Policy">default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' data: connect.nuxeo.com apis.google.com app.box.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self'; font-src 'self' data: fonts.gstatic.com; media-src 'self'; frame-src 'self' www.nuxeo.com accounts.google.com; frame-ancestors 'self'</header>
   </extension>
 
 </component>
