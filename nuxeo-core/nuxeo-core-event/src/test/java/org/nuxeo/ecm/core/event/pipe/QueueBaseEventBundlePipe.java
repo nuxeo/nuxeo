@@ -115,8 +115,6 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
                         Thread.currentThread().interrupt();
                     }
                 }
-
-
             }
         });
         consumerTPE.shutdown();
@@ -144,8 +142,20 @@ public class QueueBaseEventBundlePipe extends AbstractEventBundlePipe<EventBundl
 
     @Override
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
-        if (consumerTPE != null) {
-            consumerTPE.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
+        long deadline = System.currentTimeMillis() + timeoutMillis;
+        int pause = (int) Math.min(timeoutMillis, 500L);
+        // XXX use Condition
+        try {
+            do {
+                if (queue.size() == 0) {
+                    return true;
+                }
+                Thread.sleep(pause);
+            } while (System.currentTimeMillis() < deadline);
+        } finally {
+            if (consumerTPE != null) {
+                consumerTPE.awaitTermination(pause, TimeUnit.MILLISECONDS);
+            }
         }
 
         return false;
