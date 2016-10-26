@@ -103,8 +103,12 @@ public class FulltextConfiguration {
 
     public final boolean fulltextSearchDisabled;
 
+    public final int fulltextFieldSizeLimit;
+
     public FulltextConfiguration(FulltextDescriptor fulltextDescriptor) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+
+        fulltextFieldSizeLimit = fulltextDescriptor.getFulltextFieldSizeLimit();
 
         fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 
