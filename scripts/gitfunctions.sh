@@ -20,14 +20,39 @@
 #   Julien Carsique, Kevin Leturc
 #
 
-if [ -n "$BASH" ]; then
-  HERE=$(cd $(dirname $BASH_SOURCE); pwd -P)
-elif [ -n "ZSH_NAME" ]; then
-  HERE=$(cd $(dirname ${(%):-%N}); pwd -P)
-else
-  HERE=$(cd $(dirname $_); pwd -P)
-fi
-. $HERE/nxutils.sh
+# Usage: _retrieve_modules <result>
+#   result: name of the variable which will receive the list of Maven modules of the current POM
+function _retrieve_modules {
+  local __resultvar=$1
+  local _list=LIST_$(echo $(basename $PWD)|tr '-' '_'|tr '[:lower:]' '[:upper:]')
+  if [ -z "${!_list}" ]; then
+    [ "$quiet" != true ] && echo "Modules list calculated from POM"
+    local _result="$(grep '<module>' pom.xml |cut -d ">" -f 2 |cut -d "<" -f 1|sort|uniq|tr '\n' ' ')"
+  else
+    [ "$quiet" != true ] && echo "Modules list set from environment variable: $_list"
+    local _result="${!_list}"
+  fi
+  eval "$__resultvar='$_result'"
+}
+
+# Usage: _execute_on_modules <function>
+#   function: a Shell function to execute on each module returned by _execute_on_modules
+function _execute_on_modules {
+  local f=$1
+  local _modules=""
+  _retrieve_modules _modules
+  [ "$quiet" != true ] && echo -e "Execute on modules: $_modules\n"
+  for dir in $_modules; do
+    if [ -d $dir ]; then
+      ( cd $dir
+        $f $dir
+      )
+    else
+      echo "[$dir]"
+      echo -e "ERROR: No directory named $dir\n" >&2
+    fi
+  done
+}
 
 gitf() {
   # Parse options
@@ -68,7 +93,7 @@ Recursively executes the given Git command on the current and its direct childre
     for dir in $(ls -d */); do
       dir=${dir%%/};
       if [ -e "$dir"/.git ]; then
-        ( cd "$dir" || continue
+        ( cd "$dir"
           if [ "$recurse" = true ]; then
               git_command
           else
@@ -126,16 +151,20 @@ For instance: LIST_ADDONS_CORE=\"nuxeo-core-storage-marklogic\" or LIST_ADDONS=\
   if [ -d "nuxeo-common" ]; then
     local dir
     for dir in $(ls -d */); do
-      ( dir=${dir%%/};
-        cd "$dir" || continue
+      dir=${dir%%/};
+      ( cd "$dir"
         git_command "$dir"
-        if [[ "$parent_modules" =~ (^|[[:space:]])"$dir"($|[[:space:]]) ]]; then
-          _execute_on_modules "git_command"
-        fi
+        case " $parent_modules " in
+          *" $dir "*) _execute_on_modules "git_command"
+            ;;
+        esac
       )
     done
-  elif [[ "$parent_modules" =~ (^|[[:space:]])"$dir"($|[[:space:]]) ]]; then
-    _execute_on_modules "git_command"
+  else
+    case " $parent_modules " in
+      *" $dir "*) _execute_on_modules "git_command"
+        ;;
+    esac
   fi
 }
 
@@ -182,8 +211,8 @@ For instance: LIST_ADDONS_CORE=\"nuxeo-core-storage-marklogic\" or LIST_ADDONS=\
   # Detect if we are at Nuxeo Platform repository's root
   if [ -d "nuxeo-common" ]; then
     for dir in $(ls -d */); do
-      ( dir=${dir%%/};
-        cd "$dir" || continue
+      dir=${dir%%/};
+      ( cd "$dir"
         shell_command "$dir"
         if [[ "$parent_modules" =~ (^|[[:space:]])"$dir"($|[[:space:]]) ]]; then
           _execute_on_modules "shell_command"
