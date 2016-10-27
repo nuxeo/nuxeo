@@ -19,16 +19,6 @@
 
 package org.nuxeo.ecm.csv;
 
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,6 +29,16 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.csv.CSVImporterOptions.ImportMode;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -52,7 +52,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
 
     public static final String DC_CONTRIBUTORS = "dc:contributors";
 
-    public static final List<String> IGNORE_FIELDS_ON_UPDATE = Arrays.asList(NXQL.ECM_LIFECYCLESTATE);
+    public static final List<String> IGNORE_FIELDS_ON_UPDATE = Collections.singletonList(NXQL.ECM_LIFECYCLESTATE);
 
     protected CSVImporterOptions importerOptions = CSVImporterOptions.DEFAULT_OPTIONS;
 

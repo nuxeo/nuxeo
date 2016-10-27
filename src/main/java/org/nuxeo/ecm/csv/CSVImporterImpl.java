@@ -19,12 +19,12 @@
 
 package org.nuxeo.ecm.csv;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.nuxeo.ecm.core.api.CoreSession;
+import java.util.stream.Collectors;
 
 /**
  * @since 5.7
@@ -70,13 +70,9 @@ public class CSVImporterImpl implements CSVImporter {
 
     protected List<CSVImportLog> filterImportLogs(List<CSVImportLog> importLogs, CSVImportLog.Status... status) {
         List<CSVImportLog.Status> statusList = Arrays.asList(status);
-        List<CSVImportLog> filteredLogs = new ArrayList<CSVImportLog>();
-        for (CSVImportLog log : importLogs) {
-            if (statusList.contains(log.getStatus())) {
-                filteredLogs.add(log);
-            }
-        }
-        return filteredLogs;
+        return importLogs.stream()
+                .filter(log -> statusList.contains(log.getStatus()))
+                .collect(Collectors.toList());
     }
 
     @Override
