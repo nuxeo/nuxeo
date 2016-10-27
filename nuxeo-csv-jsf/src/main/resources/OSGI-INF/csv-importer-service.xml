@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.csv.jsf.CSVImporter">
+
+  <implementation class="org.nuxeo.csv.jsf.CSVImporterImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.csv.jsf.CSVImporter"/>
+  </service>
+
+</component>

@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo CSV
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.csv.jsf;singleton=true
+Nuxeo-Component: OSGI-INF/csv-workmanager-contrib.xml,
+ OSGI-INF/csv-actions-contrib.xml,
+ OSGI-INF/csv-importer-service.xml
+Import-Package: org.nuxeo.ecm.core,
+ org.nuxeo.csv.core,
+ org.apache.commons.lang,
+ org.nuxeo.common,
+ org.nuxeo.ecm.platform.actions,
+ org.nuxeo.ecm.platform.ui.web.api,
+ org.nuxeo.runtime,
+ org.apache.commons.io,
+ org.apache.commons.csv,
+ org.nuxeo.ecm.platform.usermanager,
+ org.nuxeo.ecm.automation,
+ org.nuxeo.ecm.platform.ec.notification,
+ org.nuxeo.ecm.platform.url,
+ org.nuxeo.ecm.platform.ui.web.rest

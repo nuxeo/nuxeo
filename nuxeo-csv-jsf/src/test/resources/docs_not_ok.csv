@@ -1,0 +1,8 @@
+"name","type","dc:description","dc:title","dc:contributors","dc:issued","note:note","complexTest:complexItem","complexTest:listItem"
+"myfile","File","a simple file","My File","contributor1|contributor2|contributor3","10012010","","",""
+"mynote","Note","a simple note","My Note","bender|leela|fry","12/12/2012","","",""
+"nonexisting","NotExistingType","nothing","nothig","bender|leela","12/12/2012","","",""
+"mynote2","Note","another note","Another Note","bender|leela","12/12/2012","note content","",""
+"picture","Domain","a domain","My Domain","bender|leela","12/12/2012","","",""
+"mycomplexfile","ComplexFile","a complex file","My Complex File","joe","12/21/2013","","{\"arrayProp\":[\"1\"],\"boolProp\":invalidBooleanValue,\"stringProp\":\"testString1\"}","[{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString1\"},{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString2\"}]"
+"mycomplexfile2","ComplexFile","another complex file","Another Complex File","joe","12/21/2013","","{\"dateProp\":\"2009-02-13BAD04:40:00.00Z\"],\"boolProp\":true,\"stringProp\":\"testString1\"}","[{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString1\"},{\"arrayProp\":[\"1\"],\"boolProp\":true,\"stringProp\":\"testString2\"}]"
