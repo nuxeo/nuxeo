@@ -29,9 +29,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
@@ -53,9 +55,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.NuxeoConnectClient;
@@ -83,6 +82,8 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
 import org.nuxeo.launcher.info.PackageInfo;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * @since 5.6
@@ -1243,62 +1244,40 @@ public class ConnectBroker {
             List<String> solverRemove = new ArrayList<>();
             List<String> solverUpgrade = new ArrayList<>();
             // Potential local cache snapshots to replace
-            List<String> localSnapshotsToMaybeReplace = new ArrayList<>();
+            Set<String> localSnapshotsToMaybeReplace = new HashSet<>();
             if (pkgsToInstall != null) {
                 List<String> namesOrIdsToInstall = new ArrayList<>();
-                for (String pkgToInstall : pkgsToInstall) {
-                    String nameOrIdToInstall = pkgToInstall;
-                    if (!upgradeMode) {
-                        boolean isLocalPackageFile = isLocalPackageFile(pkgToInstall);
-                        if (isLocalPackageFile) {
-                            // If install request is a file name, get the id
-                            nameOrIdToInstall = getLocalPackageFileId(getLocalPackageFile(pkgToInstall));
-                        }
-                        // get corresponding local package if present.
-                        // if request is a name, prefer installed package
-                        LocalPackage localPackage = getInstalledPackageByName(nameOrIdToInstall);
-                        if (localPackage != null) {
-                            // as not in upgrade mode, replace the package name by the installed package id
-                            nameOrIdToInstall = localPackage.getId();
-                        } else {
-                            if (isLocalPackageId(nameOrIdToInstall)) {
-                                // if request is an id, get potential package in local cache
-                                localPackage = getLocalPackage(nameOrIdToInstall);
-                            } else {
-                                // if request is a name but there is no installed package matching, get the best version
-                                // in local cache to replace it if it is a snapshot and it happens to be the actual
-                                // version to install afterward
-                                LocalPackage potentialMatchingPackage = getLocalPackage(nameOrIdToInstall);
-                                if (potentialMatchingPackage != null
-                                        && potentialMatchingPackage.getVersion().isSnapshot()
-                                        && !localSnapshotsToMaybeReplace.contains(potentialMatchingPackage.getId())) {
-                                    localSnapshotsToMaybeReplace.add(potentialMatchingPackage.getId());
-                                }
-                            }
-                        }
-                        // first install of local file or directory
-                        if (localPackage == null && isLocalPackageFile) {
-                            LocalPackage addedPkg = pkgAdd(pkgToInstall, ignoreMissing);
-                            if (addedPkg == null) {
-                                cmdOk = false;
-                            }
-                        }
-                        // if a requested SNAPSHOT package is present, replace it in local cache
-                        if (localPackage != null && localPackage.getVersion().isSnapshot()) {
-                            if (localPackage.getPackageState().isInstalled()) {
-                                // if it's already installed, unintall it
-                                pkgUninstall(nameOrIdToInstall);
-                            }
-                            // use the local file name if given and ensure we replace the right version, in case
-                            // nameOrIdToInstall is a name
-                            String pkgToAdd = isLocalPackageFile ? pkgToInstall : localPackage.getId();
-                            LocalPackage addedPkg = pkgAdd(pkgToAdd, ignoreMissing);
-                            if (addedPkg == null) {
-                                cmdOk = false;
-                            }
+                Set<String> localSnapshotsToUninstall = new HashSet<>();
+                Set<String> localSnapshotsToReplace = new HashSet<>();
+                cmdOk = checkLocalPackagesAndAddLocalFiles(pkgsToInstall, upgradeMode, ignoreMissing,
+                        namesOrIdsToInstall, localSnapshotsToUninstall, localSnapshotsToReplace,
+                        localSnapshotsToMaybeReplace);
+
+                // Replace snapshots to install but already in cache (requested by id or filename)
+                if (CollectionUtils.isNotEmpty(localSnapshotsToReplace)) {
+                    log.info(String.format("The following SNAPSHOT package(s) will be replaced in local cache : %s",
+                            localSnapshotsToReplace));
+                    String initialAccept = accept;
+                    if ("ask".equalsIgnoreCase(accept)) {
+                        accept = readConsole("Do you want to continue (yes/no)? [yes] ", "yes");
+                    }
+                    if (!Boolean.parseBoolean(accept)) {
+                        log.warn("Exit");
+                        return false;
+                    }
+                    accept = initialAccept;
+                    for (String pkgId : localSnapshotsToUninstall) {
+                        LocalPackage uninstalledPkg = pkgUninstall(pkgId);
+                        if (uninstalledPkg == null) {
+                            cmdOk = false;
                         }
                     }
-                    namesOrIdsToInstall.add(nameOrIdToInstall);
+                    for (String pkgId : localSnapshotsToReplace) {
+                        LocalPackage addedPkg = pkgAdd(pkgId, ignoreMissing);
+                        if (addedPkg == null) {
+                            cmdOk = false;
+                        }
+                    }
                 }
 
                 if (upgradeMode) {
@@ -1449,6 +1428,62 @@ public class ConnectBroker {
             log.debug(e, e);
             return false;
         }
+    }
+
+    private boolean checkLocalPackagesAndAddLocalFiles(List<String> pkgsToInstall, boolean upgradeMode,
+            boolean ignoreMissing, List<String> namesOrIdsToInstall, Set<String> localSnapshotsToUninstall,
+            Set<String> localSnapshotsToReplace, Set<String> localSnapshotsToMaybeReplace) throws PackageException {
+        boolean cmdOk = true;
+        for (String pkgToInstall : pkgsToInstall) {
+            String nameOrIdToInstall = pkgToInstall;
+            if (!upgradeMode) {
+                boolean isLocalPackageFile = isLocalPackageFile(pkgToInstall);
+                if (isLocalPackageFile) {
+                    // If install request is a file name, get the id
+                    nameOrIdToInstall = getLocalPackageFileId(getLocalPackageFile(pkgToInstall));
+                }
+                // get corresponding local package if present.
+                // if request is a name, prefer installed package
+                LocalPackage localPackage = getInstalledPackageByName(nameOrIdToInstall);
+                if (localPackage != null) {
+                    // as not in upgrade mode, replace the package name by the installed package id
+                    nameOrIdToInstall = localPackage.getId();
+                } else {
+                    if (isLocalPackageId(nameOrIdToInstall)) {
+                        // if request is an id, get potential package in local cache
+                        localPackage = getLocalPackage(nameOrIdToInstall);
+                    } else {
+                        // if request is a name but there is no installed package matching, get the best version
+                        // in local cache to replace it if it is a snapshot and it happens to be the actual
+                        // version to install afterward
+                        LocalPackage potentialMatchingPackage = getLocalPackage(nameOrIdToInstall);
+                        if (potentialMatchingPackage != null && potentialMatchingPackage.getVersion().isSnapshot()) {
+                            localSnapshotsToMaybeReplace.add(potentialMatchingPackage.getId());
+                        }
+                    }
+                }
+                // first install of local file or directory
+                if (localPackage == null && isLocalPackageFile) {
+                    LocalPackage addedPkg = pkgAdd(pkgToInstall, ignoreMissing);
+                    if (addedPkg == null) {
+                        cmdOk = false;
+                    }
+                }
+                // if a requested SNAPSHOT package is present, mark it for replacement in local cache
+                if (localPackage != null && localPackage.getVersion().isSnapshot()) {
+                    if (localPackage.getPackageState().isInstalled()) {
+                        // if it's already installed, unintall it
+                        localSnapshotsToUninstall.add(nameOrIdToInstall);
+                    }
+                    // use the local file name if given and ensure we replace the right version, in case
+                    // nameOrIdToInstall is a name
+                    String pkgToAdd = isLocalPackageFile ? pkgToInstall : localPackage.getId();
+                    localSnapshotsToReplace.add(pkgToAdd);
+                }
+            }
+            namesOrIdsToInstall.add(nameOrIdToInstall);
+        }
+        return cmdOk;
     }
 
     /**
