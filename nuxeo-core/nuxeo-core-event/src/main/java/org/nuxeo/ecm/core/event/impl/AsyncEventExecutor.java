@@ -17,16 +17,14 @@
  *     Bogdan Stefanescu
  *     Thierry Delprat
  *     Florent Guillaume
+ *     Andrei Nechaev
  */
 package org.nuxeo.ecm.core.event.impl;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -38,10 +36,18 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Executor of async listeners passing them to the WorkManager.
  */
+@SuppressWarnings("PackageAccessibility")
 public class AsyncEventExecutor {
 
     private static final Log log = LogFactory.getLog(AsyncEventExecutor.class);
@@ -70,10 +76,42 @@ public class AsyncEventExecutor {
 
     public boolean waitForCompletion(long timeoutMillis) throws InterruptedException {
         WorkManager workManager = getWorkManager();
+        if (workManager == null) {
+            return false;
+        }
+
         return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
     public void run(final List<EventListenerDescriptor> listeners, EventBundle bundle) {
+        // EventBundle that have gone through bus have been serialized
+        // we need to reconnect them before filtering
+        // this means we need a valid transaction !
+        if (!(bundle instanceof ReconnectedEventBundleImpl)) {
+            scheduleListeners(listeners, bundle);
+        } else {
+            final EventBundle tmpBundle = bundle;
+
+            TransactionHelper.runInTransaction(() -> {
+                EventBundle connectedBundle = new EventBundleImpl();
+                Map<String, CoreSession> sessions = new HashMap<>();
+
+                List<Event> events = ((ReconnectedEventBundleImpl)tmpBundle).getReconnectedEvents();
+                for (Event event : events) {
+                    connectedBundle.push(event);
+                    CoreSession session = event.getContext().getCoreSession();
+                    if (!(sessions.keySet().contains(session.getRepositoryName()))) {
+                        sessions.put(session.getRepositoryName(), session);
+                    }
+                }
+
+                sessions.values().forEach(CoreSession::close);
+                scheduleListeners(listeners, connectedBundle);
+            });
+        }
+    }
+
+    private void scheduleListeners(final List<EventListenerDescriptor> listeners, EventBundle bundle) {
         for (EventListenerDescriptor listener : listeners) {
             EventBundle filtered = listener.filterBundle(bundle);
             if (filtered.isEmpty()) {
@@ -149,7 +187,7 @@ public class AsyncEventExecutor {
                 setDocuments(repositoryName, docIds);
             }
             Integer count = listener.getRetryCount();
-            retryCount = count == null ? DEFAULT_RETRY_COUNT : count.intValue();
+            retryCount = count == null ? DEFAULT_RETRY_COUNT : count;
             if (retryCount < 0) {
                 retryCount = DEFAULT_RETRY_COUNT;
             }

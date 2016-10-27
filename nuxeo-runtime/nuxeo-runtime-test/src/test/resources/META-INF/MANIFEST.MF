@@ -1,3 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.runtime.test.tests
+Import-Package: org.nuxeo.common,
+ org.nuxeo.osgi,
+ org.nuxeo.runtime,
+ org.osgi.framework

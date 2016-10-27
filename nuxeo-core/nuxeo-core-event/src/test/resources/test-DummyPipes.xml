@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="test-pipes1">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="dispatcher">
+    <eventDispatcher name="dummy" class="org.nuxeo.ecm.core.event.pipe.DummyDispatcher">
+      <parameters>
+        <parameter name="foo">bar</parameter>
+      </parameters>
+    </eventDispatcher>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="pipe">
+    <eventPipe name="dummyPipe1" class="org.nuxeo.ecm.core.event.pipe.DummyPipe" priority="0">
+      <parameters>
+        <parameter name="foo">bar</parameter>
+      </parameters>
+    </eventPipe>
+    <eventPipe name="dummyPipe2" class="org.nuxeo.ecm.core.event.pipe.DummyPipe" priority="1">
+      <parameters>
+        <parameter name="foo">bar</parameter>
+      </parameters>
+    </eventPipe>
+    <eventPipe name="dummyPipe2" class="org.nuxeo.ecm.core.event.pipe.DummyPipe" priority="10">
+      <parameters>
+        <parameter name="fizz">buzz</parameter> 
+      </parameters>
+    </eventPipe>
+  
+  </extension>
+  
+</component>
+
+

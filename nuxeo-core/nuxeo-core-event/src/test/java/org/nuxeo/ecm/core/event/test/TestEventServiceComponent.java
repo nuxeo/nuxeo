@@ -19,13 +19,6 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URL;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -40,6 +33,13 @@ import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.impl.PostCommitEventExecutor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import java.net.URL;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestEventServiceComponent extends NXRuntimeTestCase {
 
@@ -94,6 +94,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         assertFalse(eventListenerDescriptor.isEnabled());
     }
 
+
     @Test
     public void testAsync() throws Exception {
         URL url = getClass().getClassLoader().getResource("test-async-listeners.xml");
@@ -110,7 +111,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         service.fireEvent(test2);
         service.waitForAsyncCompletion();
         Thread.sleep(100); // TODO async completion has race conditions
-        assertEquals(DummyPostCommitEventListener.handledCount(), 1);
+        assertEquals(1, DummyPostCommitEventListener.handledCount());
         assertEquals(1, DummyPostCommitEventListener.eventCount());
 
         // check new information from sync event are retrieved in postcommit

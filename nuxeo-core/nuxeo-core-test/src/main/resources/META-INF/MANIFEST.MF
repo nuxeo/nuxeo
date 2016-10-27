@@ -26,5 +26,7 @@ Import-Package: com.google.inject,
  org.nuxeo.ecm.core.test.annotations,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.test.runner,
- org.osgi.framework
+ org.osgi.framework,
+ org.nuxeo.ecm.core.work,
+ org.nuxeo.runtime
 Require-Bundle: org.nuxeo.ecm.core

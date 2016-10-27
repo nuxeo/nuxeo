@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="test-local-pipes">
+
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="dispatcher">
+    <eventDispatcher name="dispatcher" class="org.nuxeo.ecm.core.event.pipe.dispatch.SimpleEventBundlePipeDispatcher">
+    </eventDispatcher>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="pipe">
+    <eventPipe name="localPipe" class="org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipe" priority="0">
+    </eventPipe>
+  </extension>
+  
+</component>
+
+
