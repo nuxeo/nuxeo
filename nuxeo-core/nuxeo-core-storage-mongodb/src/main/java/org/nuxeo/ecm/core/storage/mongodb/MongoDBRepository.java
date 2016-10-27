@@ -321,26 +321,20 @@ public class MongoDBRepository extends DBSRepositoryBase {
      */
     protected static class UpdateListBuilder {
 
-        protected List<DBObject> updateList = new ArrayList<>(1);
+        protected List<DBObject> updateList = new ArrayList<>(10);
 
         protected DBObject update;
 
-        protected List<String> keys;
+        protected Set<String> prefixKeys;
+
+        protected Set<String> keys;
 
         protected UpdateListBuilder() {
             newUpdate();
         }
 
-        protected void newUpdate() {
-            updateList.add(update = new BasicDBObject());
-            keys = new ArrayList<>();
-        }
-
         protected void update(String op, String key, Object value) {
-            if (conflicts(key, keys)) {
-                newUpdate();
-            }
-            keys.add(key);
+            checkForConflict(key);
             DBObject map = (DBObject) update.get(op);
             if (map == null) {
                 update.put(op, map = new BasicDBObject());
@@ -353,15 +347,47 @@ public class MongoDBRepository extends DBSRepositoryBase {
          * <p>
          * A conflict occurs if one key is equals to or is a prefix of the other.
          */
-        protected boolean conflicts(String key, List<String> previousKeys) {
-            String keydot = key + '.';
-            for (String prev : previousKeys) {
-                if (prev.equals(key) || prev.startsWith(keydot) || key.startsWith(prev + '.')) {
+        protected void checkForConflict(String key) {
+            List<String> pKeys = getPrefixKeys(key);
+            if (conflictKeys(key, pKeys)) {
+                newUpdate();
+            }
+            prefixKeys.addAll(pKeys);
+            keys.add(key);
+        }
+
+        protected void newUpdate() {
+            updateList.add(update = new BasicDBObject());
+            prefixKeys = new HashSet<>();
+            keys = new HashSet<>();
+        }
+
+        protected boolean conflictKeys(String key, List<String> subkeys) {
+            if (prefixKeys.contains(key)) {
+                return true;
+            }
+            for (String sk: subkeys) {
+                if (keys.contains(sk)) {
                     return true;
                 }
             }
             return false;
         }
+
+        /**
+         * return a list of parents key
+         * foo.0.bar -> [foo, foo.0, foo.0.bar]
+         */
+        protected List<String> getPrefixKeys(String key) {
+            List<String> ret = new ArrayList<>(10);
+            int i=0;
+            while ((i = key.indexOf('.', i)) > 0) {
+               ret.add(key.substring(0, i++));
+            }
+            ret.add(key);
+            return ret;
+        }
+
     }
 
     protected void diffToUpdates(StateDiff diff, String prefix, Updates updates) {
