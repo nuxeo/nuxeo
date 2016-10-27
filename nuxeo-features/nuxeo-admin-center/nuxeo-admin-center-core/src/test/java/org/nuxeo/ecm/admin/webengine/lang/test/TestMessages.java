@@ -29,13 +29,13 @@ public class TestMessages extends TranslationMultiTestCase {
 
     @Override
     protected String getReferenceTranslationsPath() {
-        return "i18n/messages_en.properties";
+        return "i18n/messages.properties";
     }
 
     @Override
     protected String[] getOtherTranslationsPath() {
-        return new String[] { "i18n/messages_fr.properties", "i18n/messages_de.properties",
-                "i18n/messages_jp.properties" };
+        return new String[] { "i18n/messages_en.properties", "i18n/messages_fr.properties",
+                "i18n/messages_de.properties", "i18n/messages_jp.properties" };
     }
 
 }
