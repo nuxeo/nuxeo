@@ -1,18 +1,22 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.xml;
 
@@ -33,6 +37,7 @@ import org.nuxeo.connect.update.task.Task;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
  */
 @XObject("package")
 public class PackageDefinitionImpl implements PackageDefinition {
@@ -84,7 +89,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected String license;
 
     /**
-     * A license URL. If no specified the license.txt file in the package is the license content
+     * A license URL. If no specified the license.txt file in the package is the
+     * license content
      */
     @XNode("license-url")
     protected String licenseUrl;
@@ -96,40 +102,53 @@ public class PackageDefinitionImpl implements PackageDefinition {
     protected String[] platforms;
 
     /**
-     * The dependency value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min
-     * and max version are specified the the last version should be used.
+     * The dependency value format is:
+     * <code>package_name[:package_min_version[:package_max_version]]</code> if
+     * no min and max version are specified the the last version should be used.
      */
     @XNodeList(value = "dependencies/package", type = PackageDependency[].class, componentType = PackageDependency.class)
     protected PackageDependency[] dependencies;
 
     /**
-     * The conflict value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min and
-     * max version are specified the the last version should be used.
+     * The optional dependencies are defined for ordering purpose, to make sure that if they are being installed along
+     * with the current package, they will be ordered first.
+     */
+    @XNodeList(value = "optional-dependencies/package", type = PackageDependency[].class, componentType = PackageDependency.class)
+    protected PackageDependency[] optionalDependencies;
+
+    /**
+     * The conflict value format is:
+     * <code>package_name[:package_min_version[:package_max_version]]</code> if
+     * no min and max version are specified the the last version should be used.
      */
     @XNodeList(value = "conflicts/package", type = PackageDependency[].class, componentType = PackageDependency.class)
     protected PackageDependency[] conflicts;
 
     /**
-     * The provides value format is: <code>package_name[:package_min_version[:package_max_version]]</code> if no min and
-     * max version are specified the the last version should be used.
+     * The provides value format is:
+     * <code>package_name[:package_min_version[:package_max_version]]</code> if
+     * no min and max version are specified the the last version should be used.
      */
     @XNodeList(value = "provides/package", type = PackageDependency[].class, componentType = PackageDependency.class)
     protected PackageDependency[] provides;
 
     /**
-     * A class implementing {@link Task}. if not specified the default implementation will be used
+     * A class implementing {@link Task}. if not specified the default
+     * implementation will be used
      */
     @XNode("installer")
     protected TaskDefinitionImpl installer;
 
     /**
-     * A class implementing {@link Task}. if not specified the default implementation will be used
+     * A class implementing {@link Task}. if not specified the default
+     * implementation will be used
      */
     @XNode("uninstaller")
     protected TaskDefinitionImpl uninstaller;
 
     /**
-     * A class implementing {@link Validator}. If not specified not post install validation will be done
+     * A class implementing {@link Validator}. If not specified not post install
+     * validation will be done
      */
     @XNode("validator")
     protected String validator;
@@ -294,6 +313,16 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
+    public PackageDependency[] getOptionalDependencies() {
+        return optionalDependencies;
+    }
+
+    @Override
+    public void setOptionalDependencies(PackageDependency[] optionalDependencies) {
+        this.optionalDependencies = optionalDependencies;
+    }
+
+    @Override
     public PackageDependency[] getConflicts() {
         return conflicts;
     }
@@ -333,7 +362,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (installer instanceof TaskDefinitionImpl) {
             this.installer = (TaskDefinitionImpl) installer;
         } else {
-            this.installer = new TaskDefinitionImpl(installer.getType(), installer.getRequireRestart());
+            this.installer = new TaskDefinitionImpl(installer.getType(),
+                    installer.getRequireRestart());
         }
     }
 
@@ -347,7 +377,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
         if (uninstaller instanceof TaskDefinitionImpl) {
             this.uninstaller = (TaskDefinitionImpl) uninstaller;
         } else {
-            this.uninstaller = new TaskDefinitionImpl(uninstaller.getType(), uninstaller.getRequireRestart());
+            this.uninstaller = new TaskDefinitionImpl(uninstaller.getType(),
+                    uninstaller.getRequireRestart());
         }
     }
 
@@ -404,7 +435,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
         writer.element("home-page", homePage);
         writer.element("license", license);
         writer.element("license-url", licenseUrl);
-        writer.element("hotreload-support", Boolean.valueOf(hotReloadSupport).toString());
+        writer.element("hotreload-support",
+                Boolean.valueOf(hotReloadSupport).toString());
         writer.element("supported", Boolean.valueOf(supported).toString());
         writer.element("require-terms-and-conditions-acceptance",
                 Boolean.valueOf(requireTermsAndConditionsAcceptance).toString());
@@ -427,16 +459,27 @@ public class PackageDefinitionImpl implements PackageDefinition {
             writer.end("dependencies");
         }
 
+        if (optionalDependencies != null) {
+            writer.start("optional-dependencies");
+            writer.startContent();
+            for (PackageDependency dep : optionalDependencies) {
+                writer.element("package", dep.toString());
+            }
+            writer.end("optional-dependencies");
+        }
+
         if (installer != null) {
             writer.start("installer");
             writer.attr("class", installer.getType());
-            writer.attr("restart", String.valueOf(installer.getRequireRestart()));
+            writer.attr("restart",
+                    String.valueOf(installer.getRequireRestart()));
             writer.end();
         }
         if (uninstaller != null) {
             writer.start("uninstaller");
             writer.attr("class", uninstaller.getType());
-            writer.attr("restart", String.valueOf(uninstaller.getRequireRestart()));
+            writer.attr("restart",
+                    String.valueOf(uninstaller.getRequireRestart()));
             writer.end();
         }
         writer.element("validator", validator);
@@ -464,7 +507,8 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
-    public void setRequireTermsAndConditionsAcceptance(boolean requireTermsAndConditionsAcceptance) {
+    public void setRequireTermsAndConditionsAcceptance(
+            boolean requireTermsAndConditionsAcceptance) {
         this.requireTermsAndConditionsAcceptance = requireTermsAndConditionsAcceptance;
     }
 
