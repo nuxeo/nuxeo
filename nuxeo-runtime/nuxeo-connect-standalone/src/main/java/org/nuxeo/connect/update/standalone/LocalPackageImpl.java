@@ -1,18 +1,22 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.standalone;
 
@@ -87,13 +91,13 @@ public class LocalPackageImpl implements LocalPackage {
     public LocalPackageImpl(ClassLoader parent, File file, PackageState state, PackageUpdateService pus)
             throws PackageException {
         this.state = state;
-        this.service = pus;
+        service = pus;
         XMap xmap = StandaloneUpdateService.getXmap();
         if (xmap == null) { // for tests
             xmap = StandaloneUpdateService.createXmap();
         }
         try {
-            this.data = new LocalPackageData(parent, file);
+            data = new LocalPackageData(parent, file);
             InputStream in = new FileInputStream(data.getManifest());
             def = (PackageDefinitionImpl) xmap.load(in);
         } catch (FileNotFoundException e) {
@@ -197,6 +201,11 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public PackageDependency[] getDependencies() {
         return def.getDependencies();
+    }
+
+    @Override
+    public PackageDependency[] getOptionalDependencies() {
+        return def.getOptionalDependencies();
     }
 
     @Override

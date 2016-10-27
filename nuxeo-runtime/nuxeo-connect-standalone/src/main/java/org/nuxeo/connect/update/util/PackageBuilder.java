@@ -1,19 +1,22 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
  *     Bogdan Stefanescu
  *     Mathieu Guillaume
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.util;
 
@@ -67,6 +70,8 @@ public class PackageBuilder {
 
     protected final List<PackageDependency> dependencies;
 
+    protected final List<PackageDependency> optionalDependencies;
+
     protected final List<PackageDependency> conflicts;
 
     protected final List<PackageDependency> provides;
@@ -77,6 +82,7 @@ public class PackageBuilder {
         def = new PackageDefinitionImpl();
         platforms = new ArrayList<>();
         dependencies = new ArrayList<>();
+        optionalDependencies = new ArrayList<>();
         conflicts = new ArrayList<>();
         provides = new ArrayList<>();
         entries = new LinkedHashMap<>();
@@ -241,6 +247,14 @@ public class PackageBuilder {
         return this;
     }
 
+    /**
+     * @since 6.0-HF33
+     */
+    public PackageBuilder optionalDependency(String expr) {
+        optionalDependencies.add(new PackageDependency(expr));
+        return this;
+    }
+
     public PackageBuilder conflict(String expr) {
         conflicts.add(new PackageDependency(expr));
         return this;
@@ -313,6 +327,9 @@ public class PackageBuilder {
         }
         if (!dependencies.isEmpty()) {
             def.setDependencies(dependencies.toArray(new PackageDependency[dependencies.size()]));
+        }
+        if (!optionalDependencies.isEmpty()) {
+            def.setOptionalDependencies(optionalDependencies.toArray(new PackageDependency[optionalDependencies.size()]));
         }
         if (!conflicts.isEmpty()) {
             def.setConflicts(conflicts.toArray(new PackageDependency[conflicts.size()]));
