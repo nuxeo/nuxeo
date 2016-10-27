@@ -50,6 +50,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -869,6 +870,7 @@ public class TestRenditionService {
         txFeature.nextTransaction();
     }
 
+    @Ignore("NXP-20878: failing randomly")
     @Test
     public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
         final String renditionName = "lazyAutomation";
