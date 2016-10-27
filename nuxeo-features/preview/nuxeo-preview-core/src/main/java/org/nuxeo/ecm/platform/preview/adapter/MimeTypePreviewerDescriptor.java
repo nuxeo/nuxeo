@@ -22,7 +22,11 @@
 package org.nuxeo.ecm.platform.preview.adapter;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Alexandre Russel
@@ -30,18 +34,18 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("previewer")
 public class MimeTypePreviewerDescriptor {
 
-    @XNode("pattern")
-    private String pattern;
+    @XNodeList(value = "pattern", type = ArrayList.class, componentType = String.class)
+    private List<String> patterns;
 
     @XNode("@class")
     private Class<? extends MimeTypePreviewer> klass;
 
-    public String getPattern() {
-        return pattern;
+    public List<String> getPatterns() {
+        return patterns;
     }
 
-    public void setPattern(String pattern) {
-        this.pattern = pattern;
+    public void setPatterns(List<String> patterns) {
+        this.patterns = patterns;
     }
 
     public Class<? extends MimeTypePreviewer> getKlass() {
