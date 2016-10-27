@@ -70,7 +70,9 @@ public class PreviewAdapterManagerComponent extends DefaultComponent implements 
             }
         } else if (PREVIEWED_MIME_TYPE.equals(extensionPoint)) {
             MimeTypePreviewerDescriptor desc = (MimeTypePreviewerDescriptor) contribution;
-            previewerFactory.put(desc.getPattern(), newInstance(desc.getKlass()));
+            for (String pattern : desc.getPatterns()) {
+                previewerFactory.put(pattern, newInstance(desc.getKlass()));
+            }
         } else if (BLOB_POST_PROCESSOR_EP.equals(extensionPoint)) {
             BlobPostProcessorDescriptor desc = (BlobPostProcessorDescriptor) contribution;
             blobPostProcessors.add(newInstance(desc.getKlass()));
