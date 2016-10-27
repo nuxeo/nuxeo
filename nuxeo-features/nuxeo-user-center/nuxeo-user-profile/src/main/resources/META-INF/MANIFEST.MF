@@ -8,4 +8,6 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/userprofile-framework.xml,
  OSGI-INF/user-locale-contrib.xml,
- OSGI-INF/enricher-contrib.xml
+ OSGI-INF/enricher-contrib.xml,
+ OSGI-INF/commandline-contrib.xml,
+ OSGI-INF/converter-contrib.xml

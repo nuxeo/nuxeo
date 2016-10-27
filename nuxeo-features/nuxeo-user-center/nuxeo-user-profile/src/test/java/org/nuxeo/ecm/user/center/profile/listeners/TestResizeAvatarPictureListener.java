@@ -52,11 +52,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
-    "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.picture.api",
-    "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.automation.core",
-    "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.commandline.executor",
-    "org.nuxeo.ecm.user.center.profile", "org.nuxeo.ecm.platform.web.common" })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", //
+        "org.nuxeo.ecm.platform.userworkspace.api", //
+        "org.nuxeo.ecm.platform.userworkspace.core", //
+        "org.nuxeo.ecm.platform.picture.api", //
+        "org.nuxeo.ecm.platform.picture.core", //
+        "org.nuxeo.ecm.automation.core", //
+        "org.nuxeo.ecm.platform.rendition.core", //
+        "org.nuxeo.ecm.platform.commandline.executor", //
+        "org.nuxeo.ecm.user.center.profile", //
+        "org.nuxeo.ecm.platform.web.common" })
 public class TestResizeAvatarPictureListener {
 
     @Inject
@@ -99,7 +104,6 @@ public class TestResizeAvatarPictureListener {
         resizedImage = (Blob) userWorkspace.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
 
         assertNotNull(resizedImage);
-        assertEquals(limitSizeAvatar, resizedImage);
 
         imageInfo = imagingService.getImageInfo(resizedImage);
 
@@ -114,13 +118,11 @@ public class TestResizeAvatarPictureListener {
         underTest.resizeAvatar(userWorkspace, underLimitSizeAvatar);
         resizedImage = (Blob) userWorkspace.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
 
+        assertNotNull(resizedImage);
+
         imageInfo = imagingService.getImageInfo(resizedImage);
         assertTrue(imageInfo.getWidth() < RESIZED_IMAGE_WIDTH);
         assertTrue(imageInfo.getHeight() < RESIZED_IMAGE_HEIGHT);
-
-        assertNotNull(resizedImage);
-        assertEquals(underLimitSizeAvatar, resizedImage);
-
     }
 
     protected Blob lookForAvatarBlob(String avatarImagePath) {
