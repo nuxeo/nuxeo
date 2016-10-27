@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu, jcarsique
+ *     bstefanescu
+ *     jcarsique
+ *     Yannis JULIENNE
  */
 package org.nuxeo.connect.update.standalone;
 
@@ -89,13 +91,13 @@ public class LocalPackageImpl implements LocalPackage {
     public LocalPackageImpl(ClassLoader parent, File file, PackageState state, PackageUpdateService pus)
             throws PackageException {
         this.state = state;
-        this.service = pus;
+        service = pus;
         XMap xmap = StandaloneUpdateService.getXmap();
         if (xmap == null) { // for tests
             xmap = StandaloneUpdateService.createXmap();
         }
         try {
-            this.data = new LocalPackageData(parent, file);
+            data = new LocalPackageData(parent, file);
             InputStream in = new FileInputStream(data.getManifest());
             def = (PackageDefinitionImpl) xmap.load(in);
         } catch (FileNotFoundException e) {
@@ -199,6 +201,11 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public PackageDependency[] getDependencies() {
         return def.getDependencies();
+    }
+
+    @Override
+    public PackageDependency[] getOptionalDependencies() {
+        return def.getOptionalDependencies();
     }
 
     @Override
