@@ -15,7 +15,6 @@
     <h3><h:outputText value="#{messages['label.csv.import.title']}" /></h3>
 
     <div class="content">
-      #{}
       <nxu:set var="importStatus" value="#{csv.importStatus}">
         <nxu:set var="importScheduled" value="#{not empty importStatus and importStatus.isScheduled()}">
           <nxu:set var="importRunning" value="#{not empty importStatus and importStatus.isRunning()}">
