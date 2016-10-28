@@ -60,7 +60,7 @@ public class LoginScreenConfig implements Serializable {
     /**
      * @since 7.10
      */
-    @XNodeList(value = "videos/video", type = ArrayList.class, componentType = LoginVideo.class)
+    @XNodeList(value = "videos/video", type = ArrayList.class, componentType = LoginVideo.class, nullByDefault = true)
     protected List<LoginVideo> videos;
 
     /**
