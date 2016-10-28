@@ -162,7 +162,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertEquals("News", config.getProvider("google").getLink(null, null));
         assertEquals(Boolean.TRUE, config.getDisableBackgroundSizeCover());
 
-        assertFalse(config.hasVideos());
+        assertTrue(config.hasVideos());
 
         assertTrue(config.getVideoMuted());
         assertFalse(config.getVideoLoop());
