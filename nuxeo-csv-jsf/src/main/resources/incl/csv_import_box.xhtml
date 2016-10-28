@@ -1,20 +1,22 @@
 <c:if test="true"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:rich="http://richfaces.org/rich"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+      xmlns:nxu="http://nuxeo.org/nxweb/util"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:nxh="http://nuxeo.org/nxweb/html"
+      xmlns:nxl="http://nuxeo.org/nxforms/layout"
+      xmlns:nxd="http://nuxeo.org/nxweb/document"
+      xmlns:jsp="http://java.sun.com/JSP/Page">
 
   <a4j:region>
 
     <h3><h:outputText value="#{messages['label.csv.import.title']}" /></h3>
 
     <div class="content">
+      <jsp:useBean id="csv" scope="application" type="org.nuxeo.csv.core.CSVImporterImpl"/>
       <nxu:set var="importStatus" value="#{csv.importStatus}">
         <nxu:set var="importScheduled" value="#{not empty importStatus and importStatus.isScheduled()}">
           <nxu:set var="importRunning" value="#{not empty importStatus and importStatus.isRunning()}">
@@ -26,6 +28,9 @@
                     <p class="popUpDescription">
                       <h:outputText value="#{messages['label.csv.import.launch.description']}" />
                     </p>
+                    <jsp:useBean id="csvImportActions" scope="application" type="org.nuxeo.csv.jsf.CSVImportActions"/>
+                    <jsp:useBean id="localeSelector" scope="application" type="org.jboss.seam.international.LocaleSelector"/>
+
                     <rich:fileUpload fileUploadListener="#{csvImportActions.uploadListener}"
                       maxFilesQuantity="1" immediateUpload="true"
                       acceptedTypes="csv"

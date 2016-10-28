@@ -110,7 +110,7 @@ public class CSVImportActions implements Serializable {
             CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail)
                                                                          .importMode(getImportMode())
                                                                          .build();
-            CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+            CSVImporter csvImporter = Framework.getService(CSVImporter.class);
             csvImportId = csvImporter.launchImport(documentManager,
                     navigationContext.getCurrentDocument().getPathAsString(), csvFile, csvFileName, options);
         }
@@ -148,7 +148,7 @@ public class CSVImportActions implements Serializable {
         if (csvImportId == null) {
             return null;
         }
-        CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+        CSVImporter csvImporter = Framework.getService(CSVImporter.class);
         return csvImporter.getImportResult(csvImportId);
     }
 

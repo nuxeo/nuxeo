@@ -117,6 +117,8 @@ public class TestCSVImporterCreateMode {
     @SuppressWarnings("unchecked")
     @Test
     public void shouldCreateAllDocuments() throws InterruptedException, IOException {
+        assertNotNull(csvImporter);
+
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
 
         TransactionHelper.commitOrRollbackTransaction();
