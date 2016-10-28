@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  *
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
- *
  */
-package org.nuxeo.ftest.caprest;
+package org.nuxeo.ftest.server;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.test.AbstractAutomationClientTest;
