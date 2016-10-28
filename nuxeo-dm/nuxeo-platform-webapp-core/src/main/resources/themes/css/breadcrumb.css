@@ -70,7 +70,7 @@ author: lkemen@nuxeo.com
   line-height: 24px }
 
 .breadcrumbs .dropdown:after {
-  background: url(/nuxeo/icons/dropdown.png) no-repeat scroll right center;
+  background: url(${basePath}/icons/dropdown.png) no-repeat scroll right center;
   content: "";
   position: absolute;
   top: 0;
