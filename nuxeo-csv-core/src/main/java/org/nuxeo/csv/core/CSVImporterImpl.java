@@ -55,7 +55,7 @@ public class CSVImporterImpl implements CSVImporter {
         return getLastImportLogs(id, -1, status);
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     @Override
     public List<CSVImportLog> getLastImportLogs(String id, int max) {
         List<CSVImportLog> importLogs = CSVImporterWork.getLastImportLogs(id);
