@@ -5,3 +5,4 @@ nuxeo.dbnosql.type=mongodb
 nuxeo.mongodb.server=localhost:27017
 #nuxeo.mongodb.server=mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 nuxeo.mongodb.dbname=nuxeo
+nuxeo.quartz.enable=true

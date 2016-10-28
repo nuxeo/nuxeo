@@ -54,8 +54,6 @@
     </copy>
     <copy todir="${nxr}/templates/mongodb/nxserver/lib">
       <artifact:file artifactId="mongo-java-driver" />
-    </copy>
-    <copy todir="${nxr}/templates/mongodb-quartz-cluster/nxserver/lib">
       <artifact:file artifactId="quartz-mongodb" />
     </copy>
     <copy todir="${nxr}/templates/mysql/lib">

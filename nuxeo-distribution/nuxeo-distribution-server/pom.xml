@@ -624,7 +624,6 @@
       <artifactId>mongo-java-driver</artifactId>
     </dependency>
 
-    <!-- Needed by mongodb-quartz-cluster template -->
     <dependency>
       <groupId>com.novemberain</groupId>
       <artifactId>quartz-mongodb</artifactId>
