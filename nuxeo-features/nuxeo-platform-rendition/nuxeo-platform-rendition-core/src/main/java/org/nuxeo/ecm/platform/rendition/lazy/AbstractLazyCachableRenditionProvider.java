@@ -89,6 +89,13 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             blobs = ts.getBlobs(key);
             if (ts.isCompleted(key)) {
                 ts.release(key);
+            } else {
+                Work work = getRenditionWork(key, doc, def);
+                String workId = work.getId();
+                WorkManager wm = Framework.getService(WorkManager.class);
+                if (wm.find(workId, null) == null) {
+                    wm.schedule(work, Scheduling.IF_NOT_SCHEDULED);
+                }
             }
         }
 
