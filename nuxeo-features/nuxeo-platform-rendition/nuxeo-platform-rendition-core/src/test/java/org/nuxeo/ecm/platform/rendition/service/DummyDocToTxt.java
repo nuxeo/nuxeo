@@ -66,7 +66,7 @@ public class DummyDocToTxt {
                 if (log.isDebugEnabled()) {
                     log.debug(formatLogEntry(docRef, content, desc, issued) + " before barrier " + i);
                 }
-                TestRenditionService.cyclicBarrier.await();
+                TestRenditionService.CYCLIC_BARRIERS[i].await();
             }
         }
         if (delayed != null) {
@@ -95,7 +95,7 @@ public class DummyDocToTxt {
         return Blobs.createBlob(content);
     }
 
-    private String formatLogEntry(DocumentRef docRef, String content, String desc, Calendar issued) {
+    public static String formatLogEntry(DocumentRef docRef, String content, String desc, Calendar issued) {
         return String.format("Doc with id '%s', content '%s', description '%s', issued '%s'",
                 docRef, StringUtils.defaultString(content), StringUtils.defaultString(desc),
                 issued == null ? "" : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(issued.getTime()));
