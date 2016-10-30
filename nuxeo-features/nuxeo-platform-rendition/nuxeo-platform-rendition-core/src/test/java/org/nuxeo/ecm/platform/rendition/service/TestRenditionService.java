@@ -40,8 +40,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
@@ -50,7 +48,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -110,7 +107,8 @@ public class TestRenditionService {
 
     public static final String ZIP_TREE_EXPORT_RENDITION_DEFINITION = "zipTreeExport";
 
-    public static final CyclicBarrier cyclicBarrier = new CyclicBarrier(2);
+    public static CyclicBarrier[] CYCLIC_BARRIERS = new CyclicBarrier[] {
+            new CyclicBarrier(2), new CyclicBarrier(2), new CyclicBarrier(2)};
 
     public static final String CYCLIC_BARRIER_DESCRIPTION = "cyclicBarrierDesc";
 
@@ -870,17 +868,16 @@ public class TestRenditionService {
         txFeature.nextTransaction();
     }
 
-    @Ignore("NXP-20878: failing randomly")
     @Test
     public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
         final String renditionName = "lazyAutomation";
         final String sourceDocumentModificationDatePropertyName = "dc:issued";
-        Calendar issued = (Calendar) new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
+        Calendar issued = new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
         String desc = CYCLIC_BARRIER_DESCRIPTION;
         DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
         folder.setPropertyValue("dc:title", folder.getName());
         folder.setPropertyValue("dc:description", desc);
-        folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
+        folder.setPropertyValue(sourceDocumentModificationDatePropertyName, (Serializable) issued.clone());
         folder = session.createDocument(folder);
         session.save();
         nextTransaction();
@@ -889,26 +886,33 @@ public class TestRenditionService {
         for (int i = 0; i < 3; i++) {
             folder = session.getDocument(folder.getRef());
 
-            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            Rendition rendition = renditionService.getRendition(folder, renditionName, false);
             assertNotNull(rendition);
             assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
             if (i == 0) {
-                cyclicBarrier.await();
+                if (log.isDebugEnabled()) {
+                    log.debug(DummyDocToTxt.formatLogEntry(folder.getRef(), null, desc, issued) + " before barrier 0");
+                }
+                CYCLIC_BARRIERS[0].await();
             }
 
-            issued = (Calendar) folder.getPropertyValue(sourceDocumentModificationDatePropertyName);
-            issued.add(Calendar.HOUR_OF_DAY, 1);
-            folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
+            assertEquals(issued, folder.getPropertyValue(sourceDocumentModificationDatePropertyName));
+            issued.add(Calendar.SECOND, 10);
+            folder.setPropertyValue(sourceDocumentModificationDatePropertyName, (Serializable) issued.clone());
             desc = "description" + Integer.toString(i);
             folder.setPropertyValue("dc:description", desc);
             session.saveDocument(folder);
             session.save();
+
             if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                 TransactionHelper.commitOrRollbackTransaction();
                 TransactionHelper.startTransaction();
             }
             if (i == 0) {
-                cyclicBarrier.await();
+                if (log.isDebugEnabled()) {
+                    log.debug(DummyDocToTxt.formatLogEntry(folder.getRef(), null, desc, issued) + " before barrier 1");
+                }
+                CYCLIC_BARRIERS[1].await();
             }
         }
 
@@ -916,20 +920,23 @@ public class TestRenditionService {
         assertEquals(1, works.listWorkIds(queueId, Work.State.RUNNING).size());
         assertEquals(1, works.listWorkIds(queueId, Work.State.SCHEDULED).size());
 
-        cyclicBarrier.await();
+        if (log.isDebugEnabled()) {
+            log.debug(DummyDocToTxt.formatLogEntry(folder.getRef(), null, desc, issued) + " before barrier 2");
+        }
+        CYCLIC_BARRIERS[2].await();
 
         eventService.waitForAsyncCompletion(5000);
 
         folder = session.getDocument(folder.getRef());
+        assertEquals(issued, folder.getPropertyValue(sourceDocumentModificationDatePropertyName));
         for (int i = 0; i < 5; i++) {
-            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            Rendition rendition = renditionService.getRendition(folder, renditionName, false);
             assertNotNull(rendition);
             assertNotNull(rendition.getBlob());
             String mimeType = rendition.getBlob().getMimeType();
             if (mimeType != null) {
                 if (mimeType.contains(LazyRendition.EMPTY_MARKER)) {
                     Thread.sleep(1000);
-                    nextTransaction();
                     eventService.waitForAsyncCompletion(5000);
                     continue;
                 } else if (mimeType.contains(LazyRendition.ERROR_MARKER)) {
@@ -937,7 +944,9 @@ public class TestRenditionService {
                 }
             }
             String content = rendition.getBlob().getString();
+            assertNotNull(content);
             assertTrue(content.contains("dummy"));
+            assertNotNull(desc);
             assertTrue(content.contains(desc));
             return;
         }
