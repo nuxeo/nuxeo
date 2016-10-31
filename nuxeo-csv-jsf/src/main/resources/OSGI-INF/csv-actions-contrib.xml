@@ -1,4 +1,4 @@
-<component name="org.nuxeo.csv.jsf.actions">
+<component name="org.nuxeo.ecm.csv.jsf.actions">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">

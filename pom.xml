@@ -6,7 +6,7 @@
     <version>8.4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.csv</groupId>
+  <groupId>org.nuxeo.ecm.csv</groupId>
   <artifactId>nuxeo-csv-parent</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo CSV Parent</name>
@@ -25,13 +25,18 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.csv</groupId>
+        <groupId>org.nuxeo.ecm.csv</groupId>
         <artifactId>nuxeo-csv-core</artifactId>
         <version>${nuxeo.csv.importer.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.csv</groupId>
+        <groupId>org.nuxeo.ecm.csv</groupId>
         <artifactId>nuxeo-csv-jsf</artifactId>
+        <version>${nuxeo.csv.importer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-operation</artifactId>
         <version>${nuxeo.csv.importer.version}</version>
       </dependency>
     </dependencies>

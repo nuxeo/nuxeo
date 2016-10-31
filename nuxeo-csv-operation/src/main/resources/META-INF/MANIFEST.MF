@@ -3,7 +3,7 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Bundle-Name: Nuxeo CSV
 Bundle-ManifestVersion: 1
-Bundle-SymbolicName: org.nuxeo.csv.operation;singleton=true
+Bundle-SymbolicName: org.nuxeo.ecm.csv.operation;singleton=true
 Nuxeo-Component: OSGI-INF/csv-operation-contrib.xml
 Import-Package: org.nuxeo.ecm.core,
- org.nuxeo.csv.core
+ org.nuxeo.ecm.csv.core

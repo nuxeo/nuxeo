@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.csv.operation.contrib" version="1.0">
+<component name="org.nuxeo.ecm.csv.operation.contrib" version="1.0">
 
     <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
                 point="operations">
 
-        <operation class="org.nuxeo.csv.operation.CSVImport"/>
+        <operation class="org.nuxeo.ecm.csv.operation.CSVImport"/>
 
     </extension>
 
