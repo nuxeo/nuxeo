@@ -19,6 +19,9 @@
 
 package org.nuxeo.functionaltests;
 
+import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,8 +33,12 @@ import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.nuxeo.client.api.Client;
+import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.common.utils.URIUtils;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
+import okhttp3.Response;
 
 /**
  * Watchman to log info about the test and create snapshot on failure.
@@ -162,11 +169,15 @@ public class LogTestWatchman extends TestWatchman {
 
     protected void logOnServer(String message) {
         if (driver != null) {
-            driver.get(String.format("%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
-                    serverURL, URIUtils.quoteURIPathComponent(message, true)));
-        } else {
-            log.warn(String.format("Cannot log on server message: %s", message));
+            Client client = new NuxeoClient(NUXEO_URL, ADMINISTRATOR, ADMINISTRATOR);
+            Response response = client.get(NUXEO_URL + "/restAPI/systemLog");
+            if (response.isSuccessful()) {
+                driver.get(String.format("%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
+                        serverURL, URIUtils.quoteURIPathComponent(message, true)));
+                return;
+            }
         }
+        log.warn(String.format("Cannot log on server message: %s", message));
     }
 
     public void runBeforeAfters() {
