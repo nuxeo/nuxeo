@@ -15,6 +15,7 @@
   <modules>
     <module>nuxeo-csv-core</module>
     <module>nuxeo-csv-jsf</module>
+    <module>nuxeo-csv-operation</module>
   </modules>
 
   <properties>
