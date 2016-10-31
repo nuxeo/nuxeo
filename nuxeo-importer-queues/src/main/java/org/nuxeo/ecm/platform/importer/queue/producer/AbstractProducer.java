@@ -16,10 +16,14 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.producer;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.metrics.MetricsService;
 
 /**
  * @since 8.3
@@ -30,8 +34,14 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
 
     protected QueuesManager qm;
 
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    protected final Counter producerCounter;
+
     public AbstractProducer(ImporterLogger log) {
         this.log = log;
+        producerCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "producer"));
+
     }
 
     @Override
@@ -41,6 +51,7 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
 
     protected void dispatch(SourceNode node) throws InterruptedException {
         qm.dispatch(node);
+        producerCounter.inc();
         incrementProcessed();
     }
 

@@ -24,12 +24,6 @@ import org.nuxeo.ecm.platform.importer.queue.TaskRunner;
  */
 public interface Consumer extends TaskRunner {
 
-    double getImmediateThroughput();
-
-    double getThroughput();
-
     double getNbDocsCreated();
-
-    ImportStat getImportStat();
 
 }

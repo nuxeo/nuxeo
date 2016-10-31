@@ -121,7 +121,6 @@ public class QueueImporter {
         for (Consumer c : consumers) {
             processedNodesConsumer += c.getNbProcessed();
             nbDocsCreated += c.getNbDocsCreated();
-            importStat.merge(c.getImportStat());
         }
         if (unprocessedNodesConsumer > 0) {
             log.error("Total number of unprocessed doc because of consumers unexpected end: " + unprocessedNodesConsumer);
