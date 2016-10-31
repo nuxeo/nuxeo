@@ -147,6 +147,43 @@
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="expired_search" class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <trackUsage>true</trackUsage>
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <whereClause docType="ExpriredSearch">
+        <fixedPart>
+          ecm:isCheckedInVersion = 0 AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState
+          != 'deleted'
+        </fixedPart>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="expired_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:expired" operator="&lt;">
+          <field schema="expired_search" name="expired_max" />
+        </predicate>
+        <predicate parameter="dc:expired" operator="&gt;">
+          <field schema="expired_search" name="expired_min" />
+        </predicate>
+      </whereClause>
+      <aggregates>
+        <aggregate id="dc_creator_agg" type="terms" parameter="dc:creator">
+          <field schema="expired_search" name="dc_creator_agg" />
+          <properties>
+            <property name="size">10</property>
+          </properties>
+        </aggregate>
+      </aggregates>
+      <sort column="dc:expired" ascending="true" />
+      <pageSize>20</pageSize>
+      <quickFilters>
+        <quickFilter name="approved">
+          <clause>ecm:currentLifeCycleState = 'approved'</clause>
+        </quickFilter>
+      </quickFilters>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>

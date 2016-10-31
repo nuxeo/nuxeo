@@ -29,10 +29,6 @@
       <schema name="advanced_content" />
     </doctype>
 
-    <doctype name="ExpriredSearch" extends="Document">
-      <schema name="expired_search" />
-    </doctype>
-
   </extension>
 
 </component>

@@ -17,6 +17,10 @@
       <schema name="default_search" />
     </doctype>
 
+    <doctype name="ExpriredSearch" extends="SavedSearch">
+      <schema name="expired_search" />
+    </doctype>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
