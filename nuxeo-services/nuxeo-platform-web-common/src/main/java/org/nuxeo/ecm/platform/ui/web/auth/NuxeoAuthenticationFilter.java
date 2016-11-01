@@ -1047,8 +1047,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (session != null) {
                 CachableUserIdentificationInfo savedUserInfo = retrieveIdentityFromCache(httpRequest);
                 if (savedUserInfo != null) {
-                    log.debug("Found User identity in cache :" + savedUserInfo.getUserInfo().getUserName() + '/'
-                            + savedUserInfo.getUserInfo().getPassword());
+                    log.debug("Found User identity in cache :" + savedUserInfo.getUserInfo().getUserName());
                     userIdent = new UserIdentificationInfo(savedUserInfo.getUserInfo());
                     savedUserInfo.setPrincipal(null);
                 }
