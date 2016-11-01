@@ -576,9 +576,6 @@ public final class Framework {
         }
     }
 
-    public static void main(String[] args) {
-    }
-
     /**
      * Creates an empty file in the framework temporary-file directory ({@code nuxeo.tmp.dir} vs {@code java.io.tmpdir}
      * ), using the given prefix and suffix to generate its name.

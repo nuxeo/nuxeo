@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.nuxeo.ecm.automation.OutputCollector;
-import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -87,19 +85,6 @@ public class IterableInputHelper {
             }
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        DocumentModelListImpl o1 = new DocumentModelListImpl();
-        DocumentModelCollector o2 = new DocumentModelCollector();
-        MyIt o3 = new MyIt();
-        MyList o4 = new MyList();
-        MyCol o5 = new MyCol();
-        System.out.println(getIterableType(o1.getClass()));
-        System.out.println(getIterableType(o2.getClass()));
-        System.out.println(getIterableType(o3.getClass()));
-        System.out.println(getIterableType(o4.getClass()));
-        System.out.println(getIterableType(o5.getClass()));
     }
 
     static class MyIt implements Iterable<String> {

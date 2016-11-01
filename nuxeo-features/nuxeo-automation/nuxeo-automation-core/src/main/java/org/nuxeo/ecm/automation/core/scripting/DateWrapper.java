@@ -133,30 +133,4 @@ public class DateWrapper {
     public String toQueryString() {
         return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(getDate());
     }
-
-    public static void main(String[] args) {
-        DateWrapper d = new DateWrapper();
-        System.out.println(d);
-        d.months(2);
-        System.out.println(d);
-        d.months(-2);
-        System.out.println(d);
-        d.months(-2);
-        System.out.println(d);
-        d.months(-1);
-        System.out.println(d);
-
-        d.years(-2);
-        System.out.println(d);
-
-        d.years(4);
-        System.out.println(d);
-
-        d.weeks(2);
-        System.out.println(d);
-
-        d.weeks(-1);
-        System.out.println(d);
-
-    }
 }
