@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +37,15 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
+import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.automation.server.RestBinding;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -87,10 +92,9 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         if (StringUtils.isEmpty(batchId)) {
             batchId = "batchId-" + UUID.randomUUID().toString();
         } else if (!Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(CLIENT_BATCH_ID_FLAG)) {
-            throw new NuxeoException(
-                    String.format(
-                            "Cannot initialize upload batch with a given id since configuration property %s is not set to true",
-                            CLIENT_BATCH_ID_FLAG));
+            throw new NuxeoException(String.format(
+                    "Cannot initialize upload batch with a given id since configuration property %s is not set to true",
+                    CLIENT_BATCH_ID_FLAG));
         }
 
         // That's the way of storing an empty entry
@@ -273,6 +277,19 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         }
 
         OperationContext ctx = new OperationContext(session);
+
+        AutomationServer server = Framework.getService(AutomationServer.class);
+        RestBinding binding = server.getOperationBinding(chainOrOperationId);
+
+        if (binding != null && binding.isAdministrator()) {
+            Principal principal = ctx.getPrincipal();
+            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
+                String message = "Not allowed. You must be administrator to use this operation";
+                log.error(message);
+                throw new WebSecurityException(message);
+            }
+        }
+
         ctx.setInput(blobInput);
         ctx.putAll(contextParams);
 
