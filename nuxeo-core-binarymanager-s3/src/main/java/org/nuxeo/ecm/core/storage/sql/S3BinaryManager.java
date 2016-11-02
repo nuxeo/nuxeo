@@ -130,7 +130,7 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     public static final String ENDPOINT_KEY = "nuxeo.s3storage.endpoint";
 
-    private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
+    private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
     protected String bucketName;
 
@@ -354,7 +354,7 @@ public class S3BinaryManager extends CachingBinaryManager {
     }
 
     protected void removeBinary(String digest) {
-        amazonS3.deleteObject(bucketName, digest);
+        amazonS3.deleteObject(bucketName, bucketNamePrefix + digest);
     }
 
     protected static boolean isMissingKey(AmazonClientException e) {
@@ -566,8 +566,9 @@ public class S3BinaryManager extends CachingBinaryManager {
                     } else {
                         list = binaryManager.amazonS3.listNextBatchOfObjects(list);
                     }
+                    int prefixLength = binaryManager.bucketNamePrefix.length();
                     for (S3ObjectSummary summary : list.getObjectSummaries()) {
-                        String digest = summary.getKey();
+                        String digest = summary.getKey().substring(prefixLength);
                         if (!isMD5(digest)) {
                             // ignore files that cannot be MD5 digests for
                             // safety
