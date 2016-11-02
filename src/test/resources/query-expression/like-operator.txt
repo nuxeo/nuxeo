@@ -1,4 +1,4 @@
-import module namespace extract = 'http://nuxeo.com/extract' at '/ext/extract.xqy';
+import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';
 let $paths :=("/document/ecm__id")
 let $namespaces :=()
 for $i in cts:search(
