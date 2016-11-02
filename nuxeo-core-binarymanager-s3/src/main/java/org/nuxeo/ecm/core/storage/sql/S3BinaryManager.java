@@ -150,7 +150,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
 
-    private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
+    private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
     protected String bucketName;
 
@@ -369,7 +369,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     protected void removeBinary(String digest) {
-        amazonS3.deleteObject(bucketName, digest);
+        amazonS3.deleteObject(bucketName, bucketNamePrefix + digest);
     }
 
     @Override
@@ -528,8 +528,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 } else {
                     list = binaryManager.amazonS3.listNextBatchOfObjects(list);
                 }
+                int prefixLength = binaryManager.bucketNamePrefix.length();
                 for (S3ObjectSummary summary : list.getObjectSummaries()) {
-                    String digest = summary.getKey();
+                    String digest = summary.getKey().substring(prefixLength);
                     if (!isMD5(digest)) {
                         // ignore files that cannot be MD5 digests for
                         // safety

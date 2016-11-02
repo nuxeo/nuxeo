@@ -81,6 +81,7 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
             String secretKey = "CHANGETHIS";
             // ********** NEVER COMMIT THE SECRET KEYS !!! **********
             PROPERTIES.put(S3BinaryManager.BUCKET_NAME_PROPERTY, bucketName);
+            PROPERTIES.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, "testfolder/");
             PROPERTIES.put(S3BinaryManager.AWS_ID_PROPERTY, idKey);
             PROPERTIES.put(S3BinaryManager.AWS_SECRET_PROPERTY , secretKey);
             boolean useKeyStore = false;
@@ -145,12 +146,12 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
 
     protected void doTestS3MaxConnections() throws Exception {
         // store binary
-        byte[] bytes = CONTENT.getBytes("UTF-8");
         binaryManager.getBinary(Blobs.createBlob(CONTENT));
 
-        S3Object o = binaryManager.amazonS3.getObject(binaryManager.bucketName, CONTENT_MD5);
+        String key = binaryManager.bucketNamePrefix + CONTENT_MD5;
+        S3Object o = binaryManager.amazonS3.getObject(binaryManager.bucketName, key);
         try {
-            binaryManager.amazonS3.getObject(binaryManager.bucketName, CONTENT_MD5);
+            binaryManager.amazonS3.getObject(binaryManager.bucketName, key);
             fail("Should throw AmazonClientException");
         } catch (AmazonClientException e) {
             Throwable c = e.getCause();
@@ -169,17 +170,19 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
     /**
      * Lists all objects that look like MD5 digests.
      */
+    @Override
     protected Set<String> listObjects() {
         Set<String> digests = new HashSet<>();
         ObjectListing list = null;
         do {
             if (list == null) {
-                list = binaryManager.amazonS3.listObjects(binaryManager.bucketName);
+                list = binaryManager.amazonS3.listObjects(binaryManager.bucketName, binaryManager.bucketNamePrefix);
             } else {
                 list = binaryManager.amazonS3.listNextBatchOfObjects(list);
             }
+            int prefixLength = binaryManager.bucketNamePrefix.length();
             for (S3ObjectSummary summary : list.getObjectSummaries()) {
-                String digest = summary.getKey();
+                String digest = summary.getKey().substring(prefixLength);
                 if (!S3BinaryManager.isMD5(digest)) {
                     continue;
                 }
