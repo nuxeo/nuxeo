@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -36,6 +37,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -290,6 +293,37 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("Fichier accentué.txt", blob.getFilename());
         assertEquals("text/plain", blob.getMimeType());
         assertEquals(data, blob.getString());
+    }
+
+    /**
+     * @since 8.1O
+     */
+    @Test
+    public void testBatchExecuteAutomationServerBindings() throws IOException {
+
+        ClientResponse response = getResponse(RequestType.POST, "upload");
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+
+        File file = File.createTempFile("nx-test-blob-", ".tmp");
+        try {
+            service = getServiceFor("user1", "user1");
+            CreateBlob.skipProtocolCheck = true;
+            String json = "{\"params\":{";
+            json += "\"file\":\"" + file.toURI().toURL() + "\"";
+            json += "}}";
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/execute/Blob.CreateFromURL", json);
+            assertEquals(Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+
+            service = getServiceFor("Administrator", "Administrator");
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/execute/Blob.CreateFromURL", json);
+            assertEquals(Status.OK.getStatusCode(), response.getStatus());
+
+        } finally {
+            CreateBlob.skipProtocolCheck = false;
+            file.delete();
+        }
+
     }
 
     /**
