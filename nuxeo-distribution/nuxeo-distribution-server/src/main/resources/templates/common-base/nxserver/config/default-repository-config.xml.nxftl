@@ -113,6 +113,12 @@
       <server>${nuxeo.mongodb.server}</server>
       <dbname>${nuxeo.mongodb.dbname}</dbname>
       <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}" />
+      <cache enabled="true" maxSize="1000" concurrencyLevel="10" ttl="10" />
+      <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}">
+<#if "${repository.clustering.invalidation}" == "redis">
+        <invalidatorClass>org.nuxeo.ecm.core.redis.contribs.RedisDBSClusterInvalidator</invalidatorClass>
+</#if>
+      </clustering>
     </repository>
   </extension>
 </#if>
