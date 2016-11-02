@@ -323,7 +323,18 @@ public class CoreFeature extends SimpleFeature {
     }
 
     protected void batchRemoveDocuments(List<DocumentRef> ids) {
-        session.removeDocuments(ids.toArray(new DocumentRef[0]));
+        List<DocumentRef> deferredIds = new ArrayList<>();
+        for (DocumentRef id : ids) {
+            if (!session.exists(id)) {
+                continue;
+            }
+            if (session.canRemoveDocument(id)) {
+                session.removeDocument(id);
+            } else {
+                deferredIds.add(id);
+            }
+        }
+        session.removeDocuments(deferredIds.toArray(new DocumentRef[0]));
     }
 
     protected void initializeSession(FeaturesRunner runner) {

@@ -28,11 +28,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * @since 7.3
  */
-@Features({ CoreFeature.class, SQLDirectoryFeature.class })
+@Features({ CoreFeature.class, SQLDirectoryFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.convert", //
         "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common", //
@@ -43,8 +44,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.rendition.core", //
         "org.nuxeo.ecm.automation.core", //
         "org.nuxeo.ecm.platform.io.core", //
-        "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.core.cache" //
+        "org.nuxeo.ecm.platform.dublincore" //
 })
 @LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
         "org.nuxeo.ecm.platform.rendition.core:test-directories-contrib.xml", //

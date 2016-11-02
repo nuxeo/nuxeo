@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
@@ -40,8 +41,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
@@ -50,7 +49,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -870,7 +868,6 @@ public class TestRenditionService {
         txFeature.nextTransaction();
     }
 
-    @Ignore("NXP-20878: failing randomly")
     @Test
     public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
         final String renditionName = "lazyAutomation";
@@ -887,17 +884,17 @@ public class TestRenditionService {
         eventService.waitForAsyncCompletion();
 
         for (int i = 0; i < 3; i++) {
-            folder = session.getDocument(folder.getRef());
+            folder.refresh(DocumentModel.REFRESH_STATE, null);
 
-            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            Rendition rendition = renditionService.getRendition(folder, renditionName, false);
             assertNotNull(rendition);
             assertTrue(rendition.getBlob().getMimeType().contains(LazyRendition.EMPTY_MARKER));
             if (i == 0) {
                 cyclicBarrier.await();
             }
 
-            issued = (Calendar) folder.getPropertyValue(sourceDocumentModificationDatePropertyName);
-            issued.add(Calendar.HOUR_OF_DAY, 1);
+            assertEquals(issued, folder.getPropertyValue(sourceDocumentModificationDatePropertyName));
+            issued.add(Calendar.SECOND, 10);
             folder.setPropertyValue(sourceDocumentModificationDatePropertyName, issued);
             desc = "description" + Integer.toString(i);
             folder.setPropertyValue("dc:description", desc);
@@ -918,18 +915,31 @@ public class TestRenditionService {
 
         cyclicBarrier.await();
 
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
         eventService.waitForAsyncCompletion(5000);
 
-        folder = session.getDocument(folder.getRef());
+        folder.refresh(DocumentModel.REFRESH_STATE, null);
+        assertEquals(issued, folder.getPropertyValue(sourceDocumentModificationDatePropertyName));
+        try (CoreSession cs = CoreInstance.openCoreSession(session.getRepositoryName())) {
+            DocumentModel doc = cs.getDocument(folder.getRef());
+            // FIXME: Why is value for property dc:issued sometimes not updated in this new session?
+            // The renditionBuilder worker thread experiences the same problem which causes
+            // the below Lazy Rendition to never complete intermittently which then causes the unit test to fail
+            // Also, is it coincidence that unlike dc:issued, dc:description is always updated in this new session?
+            assertEquals(desc, doc.getPropertyValue("dc:description"));
+            assertEquals(issued, doc.getPropertyValue(sourceDocumentModificationDatePropertyName));
+        }
         for (int i = 0; i < 5; i++) {
-            Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+            Rendition rendition = renditionService.getRendition(folder, renditionName, false);
             assertNotNull(rendition);
             assertNotNull(rendition.getBlob());
             String mimeType = rendition.getBlob().getMimeType();
             if (mimeType != null) {
                 if (mimeType.contains(LazyRendition.EMPTY_MARKER)) {
                     Thread.sleep(1000);
-                    nextTransaction();
                     eventService.waitForAsyncCompletion(5000);
                     continue;
                 } else if (mimeType.contains(LazyRendition.ERROR_MARKER)) {
@@ -937,7 +947,9 @@ public class TestRenditionService {
                 }
             }
             String content = rendition.getBlob().getString();
+            assertNotNull(content);
             assertTrue(content.contains("dummy"));
+            assertNotNull(desc);
             assertTrue(content.contains(desc));
             return;
         }
