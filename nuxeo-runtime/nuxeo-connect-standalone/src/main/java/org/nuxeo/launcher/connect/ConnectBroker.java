@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1415,7 +1414,6 @@ public class ConnectBroker {
                     }
                     packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
                 }
-                fixupPackageOrder(packageIdsToInstall);
                 if (!pkgInstall(packageIdsToInstall, ignoreMissing)) {
                     return false;
                 }
@@ -1484,24 +1482,6 @@ public class ConnectBroker {
             namesOrIdsToInstall.add(nameOrIdToInstall);
         }
         return cmdOk;
-    }
-
-    /**
-     * Hack to make sure nuxeo-jsf-ui and nuxeo-web-ui are installed first. This is done to allow conditional execution
-     * checking for these packages.
-     *
-     * @since 8.4
-     */
-    protected void fixupPackageOrder(List<String> packageIdsToInstall) {
-        List<String> addFirst = new ArrayList<String>();
-        for (Iterator<String> it = packageIdsToInstall.iterator(); it.hasNext();) {
-            String pkg = it.next();
-            if (pkg.startsWith("nuxeo-jsf-ui") || pkg.startsWith("nuxeo-web-ui")) {
-                it.remove();
-                addFirst.add(pkg);
-            }
-        }
-        packageIdsToInstall.addAll(0, addFirst);
     }
 
     /**
