@@ -239,11 +239,13 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     private void putInCache(State state) {
-        String stateId = state.get(KEY_ID).toString();
-        Object stateParentId = state.get(KEY_PARENT_ID);
-        cache.put(stateId, state);
-        if (stateParentId != null) {
-            childCache.put(computeChildCacheKey(stateParentId.toString(), state.get(KEY_NAME).toString()), stateId);
+        if (state != null) {
+            String stateId = state.get(KEY_ID).toString();
+            cache.put(stateId, state);
+            Object stateParentId = state.get(KEY_PARENT_ID);
+            if (stateParentId != null) {
+                childCache.put(computeChildCacheKey(stateParentId.toString(), state.get(KEY_NAME).toString()), stateId);
+            }
         }
     }
 
@@ -390,6 +392,9 @@ public class DBSCachingRepository implements DBSRepository {
 
     @Override
     public Session getSession() {
+        if (repository instanceof DBSRepositoryBase) {
+            return ((DBSRepositoryBase) repository).getSession(this);
+        }
         return repository.getSession();
     }
 

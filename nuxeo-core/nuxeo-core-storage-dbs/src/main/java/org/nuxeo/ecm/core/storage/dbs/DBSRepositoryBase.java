@@ -328,6 +328,10 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public Session getSession() {
+        return getSession(this);
+    }
+
+    protected Session getSession(DBSRepository repository) {
         Transaction transaction;
         try {
             transaction = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -343,14 +347,14 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         }
         TransactionContext context = transactionContexts.get(transaction);
         if (context == null) {
-            context = new TransactionContext(transaction, newSession());
+            context = new TransactionContext(transaction, newSession(repository));
             context.init();
         }
         return context.newSession();
     }
 
-    protected DBSSession newSession() {
-        return new DBSSession(this);
+    protected DBSSession newSession(DBSRepository repository) {
+        return new DBSSession(repository);
     }
 
     public Map<Transaction, TransactionContext> transactionContexts = new ConcurrentHashMap<>();
