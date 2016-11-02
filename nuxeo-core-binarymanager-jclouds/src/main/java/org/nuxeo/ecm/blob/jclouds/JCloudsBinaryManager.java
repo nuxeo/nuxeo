@@ -103,34 +103,34 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         super.initialize(blobProviderId, properties);
 
         // Get settings from the configuration
-        // TODO parse properties too
-        storeProvider = Framework.getProperty(BLOBSTORE_PROVIDER_KEY);
+        storeProvider = getConfigurationProperty(BLOBSTORE_PROVIDER_KEY, properties);
         if (isBlank(storeProvider)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_PROVIDER_KEY);
         }
-        container = Framework.getProperty(BLOBSTORE_MAP_NAME_KEY);
+
+        container = getConfigurationProperty(BLOBSTORE_MAP_NAME_KEY, properties);
         if (isBlank(container)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_MAP_NAME_KEY);
         }
 
-        endpoint = Framework.getProperty(BLOBSTORE_ENDPOINT_KEY);
+        endpoint = getConfigurationProperty(BLOBSTORE_ENDPOINT_KEY, properties);
 
-        String storeLocation = Framework.getProperty(BLOBSTORE_LOCATION_KEY);
+        String storeLocation = getConfigurationProperty(BLOBSTORE_LOCATION_KEY, properties);
         if (isBlank(storeLocation)) {
             storeLocation = null;
         }
 
-        String storeIdentity = Framework.getProperty(BLOBSTORE_IDENTITY_KEY);
+        String storeIdentity = getConfigurationProperty(BLOBSTORE_IDENTITY_KEY, properties);
         if (isBlank(storeIdentity)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_IDENTITY_KEY);
         }
 
-        String storeSecret = Framework.getProperty(BLOBSTORE_SECRET_KEY);
+        String storeSecret = getConfigurationProperty(BLOBSTORE_SECRET_KEY, properties);
         if (isBlank(storeSecret)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_SECRET_KEY);
         }
 
-        String cacheSizeStr = Framework.getProperty(CACHE_SIZE_KEY);
+        String cacheSizeStr = getConfigurationProperty(CACHE_SIZE_KEY, properties);
         if (isBlank(cacheSizeStr)) {
             cacheSizeStr = DEFAULT_CACHE_SIZE;
         }
@@ -185,6 +185,16 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         // Create file cache
         initializeCache(cacheSizeStr, new JCloudsFileStorage());
         createGarbageCollector();
+    }
+
+    // Get a property based first on the value in the properties map, then
+    // from the system properties.
+    private String getConfigurationProperty(String key, Map<String, String> properties) {
+        String value = properties.get(key);
+        if (isBlank(value)) {
+            value = Framework.getProperty(key);
+        }
+        return value;
     }
 
     protected void createGarbageCollector() {
