@@ -1162,7 +1162,7 @@ class MarkLogicQueryBuilder {
                           .append('"');
                 }
                 fields.append(')');
-                query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/extract.xqy';\n"
+                query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
                         + fields.toString() + "let $namespaces := ()\n" + "for $i in " + query
                         + " return extract:extract-nodes($i, $paths, $namespaces)";
             }

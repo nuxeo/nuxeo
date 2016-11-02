@@ -220,7 +220,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             log.trace("MarkLogic: UPDATE " + id + ": " + patch);
         }
         try (Session session = xccContentSource.newSession()) {
-            ModuleInvoke request = session.newModuleInvoke("/ext/patch.xqy");
+            ModuleInvoke request = session.newModuleInvoke("/ext/nuxeo/patch.xqy");
             request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
             request.setNewStringVariable("patch-string", patch);
             // ResultSequence will be closed by Session close
@@ -438,7 +438,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             log.trace("MarkLogic: SETLOCK " + id + ": " + lockString);
         }
         try (Session session = xccContentSource.newSession()) {
-            ModuleInvoke request = session.newModuleInvoke("/ext/set-lock.xqy");
+            ModuleInvoke request = session.newModuleInvoke("/ext/nuxeo/set-lock.xqy");
             request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
             request.setNewStringVariable("lock-string", lockString);
             // ResultSequence will be closed by Session close
@@ -460,7 +460,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             log.trace("MarkLogic: REMOVELOCK " + id + ": " + owner);
         }
         try (Session session = xccContentSource.newSession()) {
-            ModuleInvoke request = session.newModuleInvoke("/ext/remove-lock.xqy");
+            ModuleInvoke request = session.newModuleInvoke("/ext/nuxeo/remove-lock.xqy");
             request.setNewStringVariable("uri", ID_FORMATTER.apply(id));
             request.setNewStringVariable("owner", Strings.nullToEmpty(owner));
             // ResultSequence will be closed by Session close
