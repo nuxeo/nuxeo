@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +44,7 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -884,9 +887,24 @@ public class DBSDocument implements Document {
         String mimeType = (String) state.get(KEY_BLOB_MIME_TYPE);
         String encoding = (String) state.get(KEY_BLOB_ENCODING);
         String digest = (String) state.get(KEY_BLOB_DIGEST);
-        Long length = (Long) state.get(KEY_BLOB_LENGTH);
-        return new StorageBlob(binary, name, mimeType, encoding, digest,
-                length.longValue());
+        Long lengthProp = (Long) state.get(KEY_BLOB_LENGTH);
+        long length;
+        if (lengthProp == null) {
+            log.error("Missing blob length for: " + digest);
+            // to avoid crashing, get the length from the binary's stream (may be costly)
+            InputStream stream = null;
+            try {
+                stream = binary.getStream();
+                length = IOUtils.copyLarge(stream, new NullOutputStream());
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            } finally {
+                IOUtils.closeQuietly(stream);
+            }
+        } else {
+            length = lengthProp.longValue();
+        }
+        return new StorageBlob(binary, name, mimeType, encoding, digest, length);
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, State state)
@@ -925,9 +943,7 @@ public class DBSDocument implements Document {
             }
             encoding = blob.getEncoding();
             digest = blob.getDigest();
-            // use binary length now that we know it,
-            // the blob may not have known it (streaming blobs)
-            length = Long.valueOf(binary.getLength());
+            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
         }
 
         state.put(KEY_BLOB_DATA, data);
