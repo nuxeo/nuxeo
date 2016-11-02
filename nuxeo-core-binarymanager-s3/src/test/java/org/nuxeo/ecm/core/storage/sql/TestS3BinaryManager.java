@@ -25,7 +25,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +49,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
@@ -161,6 +164,32 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
     }
 
     @Override
+    @Test
+    public void testBinaryManagerGC() throws Exception {
+        if (binaryManager.bucketNamePrefix.isEmpty()) {
+            // no additional test if no bucket name prefix
+            super.testBinaryManagerGC();
+            return;
+        }
+
+        // create a md5-looking extra file at the root
+        String digest = "12345678901234567890123456789012";
+        try (InputStream in = new ByteArrayInputStream(new byte[] { '0' })) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(1);
+            binaryManager.amazonS3.putObject(binaryManager.bucketName, digest, in, metadata);
+        }
+        assertEquals(Collections.singleton(digest), listAllObjects());
+
+        // run base test with the bucket name prefix
+        super.testBinaryManagerGC();
+
+        // check that the extra file is still here
+        Set<String> res = listAllObjects();
+        assertTrue(res.contains(digest));
+    }
+
+    @Override
     protected S3BinaryManager getBinaryManager() throws IOException {
         S3BinaryManager binaryManager = new S3BinaryManager();
         binaryManager.initialize("repo", PROPERTIES);
@@ -191,4 +220,33 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
         } while (list.isTruncated());
         return digests;
     }
+
+    /**
+     * Removes all objects in the bucket, not only those under the configured prefix.
+     */
+    @Override
+    protected void removeObjects() throws IOException {
+        listAllObjects().forEach(key -> binaryManager.amazonS3.deleteObject(binaryManager.bucketName, key));
+    }
+
+    /**
+     * Lists all objects in the bucket, not only those under the configured prefix.
+     */
+    protected Set<String> listAllObjects() {
+        Set<String> digests = new HashSet<>();
+        ObjectListing list = null;
+        do {
+            if (list == null) {
+                list = binaryManager.amazonS3.listObjects(binaryManager.bucketName);
+            } else {
+                list = binaryManager.amazonS3.listNextBatchOfObjects(list);
+            }
+            for (S3ObjectSummary summary : list.getObjectSummaries()) {
+                String digest = summary.getKey();
+                digests.add(digest);
+            }
+        } while (list.isTruncated());
+        return digests;
+    }
+
 }
