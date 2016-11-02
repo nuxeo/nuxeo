@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Live Connect Web UI for Box
+Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.box.web.ui;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/nuxeo-liveconnect-box-webresources-contrib.xml

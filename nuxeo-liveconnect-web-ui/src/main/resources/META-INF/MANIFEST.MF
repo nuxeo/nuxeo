@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Live Connect Web UI
+Bundle-SymbolicName: org.nuxeo.ecm.liveconnect.web.ui;singleton:=true
+Bundle-Version: 1.0.0
