@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1131,8 +1133,20 @@ public class SQLSession implements Session {
         String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
         String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
         Long lengthProp = node.getSimpleProperty(BLOB_LENGTH).getLong();
-        long length = -1;
-        if (lengthProp != null) {
+        long length;
+        if (lengthProp == null) {
+            log.error("Missing blob length for: " + digest);
+            // to avoid crashing, get the length from the binary's stream (may be costly)
+            InputStream stream = null;
+            try {
+                stream = binary.getStream();
+                length = IOUtils.copyLarge(stream, new NullOutputStream());
+            } catch (IOException e) {
+                throw new StorageException(e);
+            } finally {
+                IOUtils.closeQuietly(stream);
+            }
+        } else {
             length = lengthProp.longValue();
         }
         return new StorageBlob(binary, name, mimeType, encoding, digest, length);
@@ -1171,9 +1185,7 @@ public class SQLSession implements Session {
             }
             encoding = blob.getEncoding();
             digest = blob.getDigest();
-            // use binary length now that we know it,
-            // the blob may not have known it (streaming blobs)
-            length = Long.valueOf(binary.getLength());
+            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
         }
 
         node.getSimpleProperty(BLOB_DATA).setValue(binary);
