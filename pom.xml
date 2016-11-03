@@ -160,7 +160,7 @@
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
     <itext.version>2.1.7</itext.version>
-    <jclouds.version>1.8.1</jclouds.version>
+    <jclouds.version>1.9.2</jclouds.version>
     <guava.version>18.0</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
