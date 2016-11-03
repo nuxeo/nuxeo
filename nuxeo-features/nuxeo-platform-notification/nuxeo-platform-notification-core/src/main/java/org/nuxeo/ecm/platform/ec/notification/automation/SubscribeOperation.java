@@ -22,6 +22,8 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -46,6 +48,9 @@ public class SubscribeOperation {
     @Context
     protected NotificationManager notificationManager;
 
+    @Param(name = "notifications", required = false)
+    protected StringList notifications;
+
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
         docs.forEach(this::run);
@@ -56,7 +61,15 @@ public class SubscribeOperation {
     public DocumentModel run(DocumentModel doc) {
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
         String username = NotificationConstants.USER_PREFIX + principal.getName();
-        notificationManager.addSubscriptions(username, doc, false, principal);
+        if (notifications == null || notifications.isEmpty()) {
+            // subscribe all available notifications
+            notificationManager.addSubscriptions(username, doc, false, principal);
+        } else {
+            // subscribe the specified notifications
+            for (String notification : notifications) {
+                notificationManager.addSubscription(username, notification, doc, false, principal, notification);
+            }
+        }
         return doc;
     }
 
