@@ -21,7 +21,9 @@
 package org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
@@ -36,7 +38,23 @@ public class SystemPathExistTester implements CommandTester {
     public CommandTestResult test(CommandLineDescriptor cmdDescriptor) {
         String cmd = cmdDescriptor.getCommand();
         try {
-            Runtime.getRuntime().exec(new String[] { cmd });
+            ProcessBuilder builder = new ProcessBuilder(cmd);
+            // make sure we have only one InputStream to read to avoid parallelism/deadlock issues
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
+            // close process input immediately
+            process.getOutputStream().close();
+            // consume all process output
+            try (InputStream in = process.getInputStream()) {
+                byte[] bytes = new byte[4096];
+                while (in.read(bytes) != -1) {
+                    // loop
+                }
+            }
+            // wait for process termination
+            process.waitFor();
+        } catch (InterruptedException e) {
+            ExceptionUtils.checkInterrupt(e);
         } catch (IOException e) {
             return new CommandTestResult(
                     "command " + cmd + " not found in system path (descriptor " + cmdDescriptor + ")");
