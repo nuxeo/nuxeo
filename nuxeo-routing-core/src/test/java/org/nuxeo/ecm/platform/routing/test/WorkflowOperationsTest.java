@@ -105,6 +105,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 "datefield",
                 (String) Scripting.newExpression(
                         "org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)").eval(ctx));
+        jsonProperties.put("ids", "[1, 2, 3]");
         OperationChain startWorkflowChain = new OperationChain("startWorkflow");
         startWorkflowChain.add(StartWorkflowOperation.ID).set("id", "myroute").set("variables", jsonProperties);
         automationService.run(ctx, startWorkflowChain);
@@ -119,6 +120,11 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         assertEquals(2, assignesVar.length);
         assertEquals("x", assignesVar[0]);
         assertEquals("y", assignesVar[1]);
+        Long[] ids = (Long[]) vars.get("ids");
+        assertEquals(3, ids.length);
+        assertEquals(Long.valueOf(1L), ids[0]);
+        assertEquals(Long.valueOf(2L), ids[1]);
+        assertEquals(Long.valueOf(3L), ids[2]);
 
         Calendar varDate = Calendar.getInstance();
         varDate.setTime((Date) graph.getVariables().get("datefield"));
