@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,13 +136,18 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
             writer.startElement("script", messages);
             writer.writeAttribute("type", "text/javascript", null);
             String message = "";
+            if (showDetail) {
+                message = detail;
+            }
             String scriptContent = new StringBuilder().append("jQuery(document).ready(function() {\n")
                                                       .append("  jQuery.ambiance({\n")
                                                       .append("    message: \"")
-                                                      .append(message)
+                                                      .append(StringEscapeUtils.escapeJavaScript(
+                                                              StringEscapeUtils.escapeHtml(message)))
                                                       .append("\",\n")
                                                       .append("    title: \"")
-                                                      .append(StringEscapeUtils.escapeJavaScript(summary))
+                                                      .append(StringEscapeUtils.escapeJavaScript(
+                                                              StringEscapeUtils.escapeHtml(summary)))
                                                       .append("\",\n")
                                                       .append("    type: \"")
                                                       .append(errorType)
@@ -156,17 +161,7 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
                                                       .append("  })\n")
                                                       .append("});\n")
                                                       .toString();
-            if (showDetail) {
-                message = String.format(scriptContent,
-                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(detail)),
-                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)), errorType,
-                        severityStyleClass, timeout);
-            } else {
-                message = String.format(scriptContent, "",
-                        StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)), errorType,
-                        severityStyleClass, timeout);
-            }
-            writer.writeText(message, null);
+            writer.writeText(scriptContent, null);
             writer.endElement("script");
         }
     }
