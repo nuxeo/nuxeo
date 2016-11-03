@@ -88,7 +88,7 @@ Contributors:
           if (!this.document) {
             return false;
           }
-          if (this._isVersion(this.document)) {
+          if (this.isVersion(this.document)) {
             return false;
           }
           var excludedDoctypes = ['Domain', 'SectionRoot', 'TemplateRoot', 'WorkspaceRoot', 'Forum', 'Collections'];
