@@ -24,11 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
@@ -98,11 +99,11 @@ public class TestConnectBroker {
                 File pkgZip = new File(testStore, pkgId + ".zip");
                 if (pkgZip.exists()) {
                     response.setContentLength((int) pkgZip.length());
-                    try (ServletOutputStream os = response.getOutputStream()) {
-                        byte[] byteArray = FileUtils.readFileToByteArray(pkgZip);
-                        os.write(byteArray, 0, byteArray.length);
-                    }
                     response.setStatus(HttpServletResponse.SC_OK);
+                    try (ServletOutputStream os = response.getOutputStream();
+                            FileInputStream is = new FileInputStream(pkgZip)) {
+                        IOUtils.copy(is, os);
+                    }
                 } else {
                     response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
@@ -130,7 +131,7 @@ public class TestConnectBroker {
         buildInitialPackageStore();
 
         // add fake connect request handler for package downloads
-        server.addHandler(new FakeConnectDownloadHandler());
+        server.setHandler(new FakeConnectDownloadHandler());
     }
 
     private void buildInitialPackageStore() throws IOException {
@@ -143,7 +144,7 @@ public class TestConnectBroker {
                 ZipUtils.unzip(pkgZip, pkgDir);
                 FileUtils.copyFileToDirectory(uninstallFile, pkgDir);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
         FileUtils.copyFileToDirectory(new File(testStore, ".packages"), nuxeoPackages);

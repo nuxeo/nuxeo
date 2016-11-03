@@ -207,9 +207,9 @@ public class PackagePersistence {
     /**
      * Get the local package having the given name and which is in either one of the following states:
      * <ul>
-     * <li> {@link PackageState#INSTALLING}
-     * <li> {@link PackageState#INSTALLED}
-     * <li> {@link PackageState#STARTED}
+     * <li>{@link PackageState#INSTALLING}
+     * <li>{@link PackageState#INSTALLED}
+     * <li>{@link PackageState#STARTED}
      * </ul>
      *
      * @param name
@@ -224,9 +224,9 @@ public class PackagePersistence {
 
     public synchronized String getActivePackageId(String name) throws PackageException {
         for (Entry<String, PackageState> entry : states.entrySet()) {
-            if (entry.getKey().startsWith(name) && entry.getValue().isInstalled()
-                    && getPackage(entry.getKey()).getName().equals(name)) {
-                return entry.getKey();
+            String pkgId = entry.getKey();
+            if (pkgId.startsWith(name) && entry.getValue().isInstalled() && getPackage(pkgId).getName().equals(name)) {
+                return pkgId;
             }
         }
         return null;
