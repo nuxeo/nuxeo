@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyUpdatedDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
@@ -125,7 +125,7 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyNewNotDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
@@ -138,12 +138,12 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyChangedDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
         property.clearDirtyFlags();
-        Map<String, String> value2 = new HashMap<String, String>();
+        Map<String, String> value2 = new HashMap<>();
         value2.put("test1", "test12");
         value2.put("test2", "test22");
         property.setValue(value2);
@@ -155,7 +155,7 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyNullDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
@@ -178,7 +178,7 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyRemoveDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
@@ -190,12 +190,12 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyChangedWithSameValueNotDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
         property.clearDirtyFlags();
-        Map<String, String> value2 = new HashMap<String, String>();
+        Map<String, String> value2 = new HashMap<>();
         value2.put("test1", "test1");
         value2.put("test2", "test2");
         property.setValue(value2);
@@ -207,12 +207,12 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyPartialChangedPartialDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
         property.clearDirtyFlags();
-        Map<String, String> value2 = new HashMap<String, String>();
+        Map<String, String> value2 = new HashMap<>();
         value2.put("test1", "test12");
         value2.put("test2", "test2");
         property.setValue(value2);
@@ -224,11 +224,11 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyAddChildPartialDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         property.setValue(value);
         property.clearDirtyFlags();
-        Map<String, String> value2 = new HashMap<String, String>();
+        Map<String, String> value2 = new HashMap<>();
         value2.put("test1", "test1");
         value2.put("test2", "test2");
         property.setValue(value2);
@@ -240,12 +240,12 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertySetNullChildPartialDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);
         property.clearDirtyFlags();
-        Map<String, String> value2 = new HashMap<String, String>();
+        Map<String, String> value2 = new HashMap<>();
         value2.put("test1", "test1");
         value2.put("test2", null);
         property.setValue(value2);
@@ -257,7 +257,7 @@ public class TestDirtyProperty {
     @Test
     public void testComplexPropertyRemoveChildPartialDirty() {
         ComplexProperty property = getComplexProperty();
-        Map<String, String> value = new HashMap<String, String>();
+        Map<String, String> value = new HashMap<>();
         value.put("test1", "test1");
         value.put("test2", "test2");
         property.setValue(value);

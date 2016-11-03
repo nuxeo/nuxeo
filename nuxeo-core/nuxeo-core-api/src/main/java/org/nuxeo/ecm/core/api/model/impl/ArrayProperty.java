@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class ArrayProperty extends ScalarProperty {
         // it checks whether the property changed, or their index changed
         if (value == null) {
             childDirty = new boolean[0];
-            super.setValue(value);
+            super.setValue(null);
         } else {
             Object[] oldValues = (Object[]) internalGetValue();
             boolean[] oldChildDirty = getChildDirty();
