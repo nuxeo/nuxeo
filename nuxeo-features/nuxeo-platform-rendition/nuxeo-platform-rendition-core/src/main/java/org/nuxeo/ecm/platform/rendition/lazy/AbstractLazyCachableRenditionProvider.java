@@ -88,7 +88,17 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
         } else {
             blobs = ts.getBlobs(key);
             if (ts.isCompleted(key)) {
-                ts.release(key);
+                if (blobs != null && blobs.size() == 1) {
+                    Blob blob = blobs.get(0);
+                    String mimeType = blob.getMimeType();
+                    if (mimeType != null && mimeType.contains(LazyRendition.ERROR_MARKER)) {
+                        ts.remove(key);
+                    } else {
+                        ts.release(key);
+                    }
+                } else {
+                    ts.release(key);
+                }
             } else {
                 Work work = getRenditionWork(key, doc, def);
                 String workId = work.getId();
