@@ -182,7 +182,7 @@ public class ConnectBroker {
         try {
             return service.getPersistence().getActivePackageId(pkgName) != null;
         } catch (PackageException e) {
-            log.error(e);
+            log.error("Error checking installation of package " + pkgName, e);
             return false;
         }
     }
@@ -313,7 +313,7 @@ public class ConnectBroker {
     /**
      * Load package definition from a local file or directory and get package Id from it.
      *
-     * @return null the package definition cannot be loadedfor any reason.
+     * @return null the package definition cannot be loaded for any reason.
      * @since 8.4
      */
     protected String getLocalPackageFileId(File pkgFile) {
@@ -324,14 +324,14 @@ public class ConnectBroker {
             } else if (pkgFile.isDirectory()) {
                 File manifest = new File(pkgFile, LocalPackage.MANIFEST);
                 packageDefinition = service.loadPackage(manifest);
+            } else {
+                throw new PackageException("Unknown file type (not a file and not a directory) for " + pkgFile);
             }
         } catch (PackageException e) {
+            log.error("Error trying to load package id from " + pkgFile, e);
             return null;
         }
-        if (packageDefinition != null) {
-            return packageDefinition.getId();
-        }
-        return null;
+        return packageDefinition == null ? null : packageDefinition.getId();
     }
 
     protected boolean isLocalPackageFile(String pkgFile) {
