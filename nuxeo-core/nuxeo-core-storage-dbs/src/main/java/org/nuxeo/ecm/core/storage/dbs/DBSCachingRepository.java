@@ -87,6 +87,9 @@ public class DBSCachingRepository implements DBSRepository {
         childCache = newCache(descriptor);
         registry.registerAll(
                 GuavaCacheMetric.of(childCache, "nuxeo", "repositories", repository.getName(), "childCache"));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("DBS cache activated on '%s' repository", repository.getName()));
+        }
         invalidations = new DBSInvalidations();
         if (descriptor.isClusteringEnabled()) {
             initClusterInvalidator(descriptor);
