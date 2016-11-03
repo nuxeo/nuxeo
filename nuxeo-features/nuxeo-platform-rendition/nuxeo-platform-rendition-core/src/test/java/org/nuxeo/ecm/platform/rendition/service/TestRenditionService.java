@@ -328,27 +328,39 @@ public class TestRenditionService {
     @Test
     public void doErrorLazyRendition() throws Exception {
         DocumentModel file = createBlobFile();
+        Calendar issued = new GregorianCalendar(2010, Calendar.OCTOBER, 10, 10, 10, 10);
+        file.setPropertyValue("dc:issued", (Serializable) issued.clone());
+        session.saveDocument(file);
         session.save();
         nextTransaction();
 
         String renditionName = "lazyDelayedErrorAutomationRendition";
-        {
-            Rendition rendition = renditionService.getRendition(file, renditionName);
-            assertNotNull(rendition);
-            Blob blob = rendition.getBlob();
-            assertEquals(0, blob.getLength());
-            String mimeType = blob.getMimeType();
-            assertTrue(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
-            nextTransaction();
-        }
+        for (int i = 0; i < 2; i++) {
+            boolean store = i == 1;
+            if (store) {
+                issued.add(Calendar.SECOND, 10);
+                file.setPropertyValue("dc:issued", (Serializable) issued.clone());
+                session.saveDocument(file);
+                session.save();
+                nextTransaction();
+            }
 
-        {
-            Rendition rendition = renditionService.getRendition(file, renditionName);
-            Blob blob = rendition.getBlob();
-            String mimeType = blob.getMimeType();
-            assertEquals(0, blob.getLength());
-            assertFalse(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
-            assertTrue(mimeType, mimeType.contains(LazyRendition.ERROR_MARKER));
+            for (int j = 0; j < 3; j++) {
+                boolean empty = j != 1;
+                Rendition rendition = renditionService.getRendition(file, renditionName, store);
+                assertNotNull(rendition);
+                Blob blob = rendition.getBlob();
+                assertEquals(0, blob.getLength());
+                String mimeType = blob.getMimeType();
+                String marker = (empty ? LazyRendition.EMPTY_MARKER : LazyRendition.ERROR_MARKER);
+                String falseMarker = (!empty ? LazyRendition.EMPTY_MARKER : LazyRendition.ERROR_MARKER);
+                String markerMsg = String.format("mimeType: %s should contain %s (i=%s,j=%s)", mimeType, marker, i, j);
+                String falseMarkerMsg = String.format(
+                        "mimeType: %s should not contain %s (i=$s,j=%s)", mimeType, falseMarker, i, j);
+                assertTrue(markerMsg, mimeType.contains(marker));
+                assertFalse(falseMarkerMsg, mimeType.contains(falseMarker));
+                nextTransaction();
+            }
         }
     }
 
