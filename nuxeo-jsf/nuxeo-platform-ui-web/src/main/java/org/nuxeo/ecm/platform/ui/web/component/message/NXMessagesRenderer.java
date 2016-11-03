@@ -137,7 +137,7 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
             writer.writeAttribute("type", "text/javascript", null);
             String message = "";
             if (showDetail) {
-                message = StringEscapeUtils.escapeJavaScript(detail);
+                message = detail;
             }
             String scriptContent = new StringBuilder().append("jQuery(document).ready(function() {\n")
                                                       .append("  jQuery.ambiance({\n")
