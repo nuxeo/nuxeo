@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,7 +42,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,9 +57,9 @@ import static org.junit.Assert.assertTrue;
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.notification.core" })
 public class SubscribeAndUnsubscribeTest {
 
-    protected List<DocumentModel> listDocs;
-
     protected DocumentModel testWorkspace;
+
+    protected DocumentModelList listDocModel;
 
     @Inject
     protected CoreSession coreSession;
@@ -72,18 +75,17 @@ public class SubscribeAndUnsubscribeTest {
         testWorkspace = coreSession.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = coreSession.createDocument(testWorkspace);
         String testWorkspacePath = testWorkspace.getPath().toString();
-        listDocs = new ArrayList<>();
+        List<DocumentModel> listDocs = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             DocumentModel testFile = coreSession.createDocumentModel(testWorkspacePath, "testFile" + i, "File");
             testFile = coreSession.createDocument(testFile);
             listDocs.add(testFile);
         }
+        listDocModel = new DocumentModelListImpl(listDocs);
     }
 
     @Test
     public void testSubscribeAndUnsubscribeOperations() throws OperationException {
-        DocumentModelList listDocModel = new DocumentModelListImpl(listDocs);
-
         OperationChain chain = new OperationChain("test-chain");
         chain.add(SubscribeOperation.ID);
         OperationContext ctx = new OperationContext(coreSession);
@@ -109,6 +111,46 @@ public class SubscribeAndUnsubscribeTest {
 
         chain = new OperationChain("test-chain");
         chain.add(UnsubscribeOperation.ID);
+        ctx = new OperationContext(coreSession);
+        ctx.setInput(listDocModel);
+        username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
+
+        // unsubscribe all documents
+        listDocModel = (DocumentModelList) automationService.run(ctx, chain);
+
+        for (DocumentModel doc : listDocModel) {
+            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            assertTrue(docSubscriptions.isEmpty());
+        }
+    }
+
+    @Test
+    public void testSelectiveSubscribeAndUnsubscribeOperations() throws OperationException {
+        Map<String, Object> params = new HashMap<>();
+        params.put("notifications", new StringList(new ArrayList<String>() {{ add("Creation"); }}));
+
+        OperationChain chain = new OperationChain("test-chain");
+        chain.add(SubscribeOperation.ID).from(params);
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(listDocModel);
+        String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
+
+        for (DocumentModel doc : listDocModel) {
+            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            assertTrue(docSubscriptions.isEmpty());
+        }
+
+        // subscribe all documents
+        listDocModel = (DocumentModelList) automationService.run(ctx, chain);
+
+        for (DocumentModel doc : listDocModel) {
+            List docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+            assertEquals(1, docSubscriptions.size());
+            assertTrue(docSubscriptions.contains("Creation"));
+        }
+
+        chain = new OperationChain("test-chain");
+        chain.add(UnsubscribeOperation.ID).from(params);
         ctx = new OperationContext(coreSession);
         ctx.setInput(listDocModel);
         username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
