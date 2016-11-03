@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.api.model.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -26,6 +27,8 @@ import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.TypeException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -93,15 +96,32 @@ public class ArrayProperty extends ScalarProperty {
 
     @Override
     public Serializable normalize(Object value) throws PropertyConversionException {
-        if (isNormalized(value)) {
-            return (Serializable) value;
-        }
-        if (value instanceof Collection) {
-            Collection<?> col = (Collection<?>) value;
-            Class<?> klass = JavaTypes.getClass(getType().getFieldType());
-            return col.toArray((Object[]) Array.newInstance(klass, col.size()));
+        if (value == null) {
+            return null;
+        } else if (value.getClass().isArray()) {
+            return convert(Arrays.asList((Object[]) value));
+        } else if (value instanceof Collection) {
+            return convert((Collection<?>) value);
         }
         throw new PropertyConversionException(value.getClass(), Object[].class, getPath());
+    }
+
+    protected Serializable convert(Collection<?> value) throws PropertyConversionException {
+        try {
+            Type fieldType = getType().getFieldType();
+            Collection<Object> col = new ArrayList<>(value.size());
+            for (Object v : value) {
+                if (v == null) {
+                    col.add(null);
+                } else {
+                    col.add(fieldType.convert(v));
+                }
+            }
+            Class<?> klass = JavaTypes.getClass(fieldType);
+            return col.toArray((Object[]) Array.newInstance(klass, col.size()));
+        } catch (TypeException e) {
+            throw new PropertyConversionException("Unable to convert collection value to desired type.", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -143,8 +163,8 @@ public class ArrayProperty extends ScalarProperty {
      */
     public boolean isDirty(int index) {
         if (index > getChildDirty().length) {
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index + ". Bounds are: 0 - "
-                    + (getChildDirty().length - 1));
+            throw new IndexOutOfBoundsException(
+                    "Index out of bounds: " + index + ". Bounds are: 0 - " + (getChildDirty().length - 1));
         }
         return getChildDirty()[index];
     }
