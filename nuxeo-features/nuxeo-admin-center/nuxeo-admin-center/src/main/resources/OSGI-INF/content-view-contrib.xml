@@ -41,7 +41,7 @@
         <property name="generateUIComments">false</property>
       </pageProvider>
 
-      <searchLayout name="fullauditsearch" filterDisplayType="quick" />
+      <searchLayout name="fullauditsearch" filterDisplayType="default" />
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
