@@ -204,10 +204,17 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
-            String fullName) throws IOException {
+        String fullName) throws IOException {
+        return createDocumentFromBlob(documentManager, input, path, overwrite, fullName, false);
+    }
+
+    public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
+            String fullName, boolean noMimeTypeCheck) throws IOException {
 
         // check mime type to be able to select the best importer plugin
-        input = checkMimeType(input, fullName);
+        if (!noMimeTypeCheck) {
+            input = checkMimeType(input, fullName);
+        }
 
         List<FileImporter> importers = new ArrayList<FileImporter>(fileImporters.values());
         Collections.sort(importers);

@@ -62,6 +62,9 @@ public class FileManagerImport {
     @Param(name = "overwite", required = false)
     protected Boolean overwite = false;
 
+    @Param(name = "noMimeTypeCheck", required = false)
+    protected Boolean noMimeTypeCheck = false;
+
     protected DocumentModel getCurrentDocument() throws OperationException {
         String cdRef = (String) context.get("currentDocument");
         return as.getAdaptedValue(context, cdRef, DocumentModel.class);
@@ -71,7 +74,7 @@ public class FileManagerImport {
     public DocumentModel run(Blob blob) throws OperationException, IOException {
         DocumentModel currentDocument = getCurrentDocument();
         return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(), overwite,
-                blob.getFilename());
+                blob.getFilename(), noMimeTypeCheck);
     }
 
     @OperationMethod
