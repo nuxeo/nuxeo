@@ -91,19 +91,6 @@
       <artifactId>nuxeo-platform-seam-debug</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- Marketplace packages embedded in Tomcat distribution -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-marketplace-dm</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <profiles>
@@ -113,13 +100,6 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-    </profile>
-    <profile>
-      <id>nuxeo-cap</id>
-      <properties>
-        <product.name>cap</product.name>
-      </properties>
-      <!-- profile for building Tomcat with only Nuxeo CAP -->
     </profile>
     <profile>
       <id>sdk</id>
@@ -134,7 +114,7 @@
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
             <configuration>
-              <source>${project.build.directory}/nuxeo-cap-${project.version}-tomcat/nxserver/lib
+              <source>${project.build.directory}/nuxeo-server-${project.version}-tomcat/nxserver/lib
               </source>
             </configuration>
           </plugin>
