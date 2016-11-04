@@ -49,15 +49,15 @@ public class NotificationsJsonEnricher extends AbstractJsonEnricher<DocumentMode
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         jg.writeFieldName(NAME);
-        jg.writeStartObject();
+        jg.writeStartArray();
         try (RenderingContext.SessionWrapper wrapper = ctx.getSession(document)) {
             String username = NotificationConstants.USER_PREFIX + wrapper.getSession().getPrincipal().getName();
             List<String> notifications = document.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
             for (String notification : notifications) {
-                jg.writeBooleanField(notification, true);
+                jg.writeString(notification);
             }
         }
-        jg.writeEndObject();
+        jg.writeEndArray();
     }
 
 }

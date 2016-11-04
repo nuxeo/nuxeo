@@ -39,7 +39,7 @@ import java.util.List;
  * @since 8.10
  */
 @Operation(id = UnsubscribeOperation.ID, category = Constants.CAT_DOCUMENT, label = "Unsubscribe document",
-    description = "Unsubscribe one or more documents. No value is returned.", aliases = { "Collection.Unsubscribe" })
+    description = "Unsubscribe one or more documents. No value is returned.")
 public class UnsubscribeOperation {
 
     public static final String ID = "Document.Unsubscribe";

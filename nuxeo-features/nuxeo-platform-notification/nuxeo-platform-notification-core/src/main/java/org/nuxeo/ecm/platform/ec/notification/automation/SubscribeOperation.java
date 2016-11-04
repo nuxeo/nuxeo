@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.notification.api.NotificationManager;
  * @since 8.10
  */
 @Operation(id = SubscribeOperation.ID, category = Constants.CAT_DOCUMENT, label = "Subscribe document",
-    description = "Subscribe one or more documents. No value is returned.", aliases = { "Collection.Subscribe" })
+    description = "Subscribe one or more documents. No value is returned.")
 public class SubscribeOperation {
 
     public static final String ID = "Document.Subscribe";
