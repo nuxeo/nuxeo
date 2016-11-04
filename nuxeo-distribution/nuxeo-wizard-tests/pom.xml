@@ -8,7 +8,7 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
-  <artifactId>nuxeo-distribution-tomcat-wizard-tests</artifactId>
+  <artifactId>nuxeo-wizard-tests</artifactId>
   <name>Nuxeo Startup Wizard WebDriver tests</name>
   <description>WebDriver tests on Nuxeo Startup Wizard</description>
 

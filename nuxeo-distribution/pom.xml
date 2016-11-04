@@ -35,7 +35,7 @@
     <module>nuxeo-distribution-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-server-tests</module>
-    <module>nuxeo-distribution-tomcat-wizard-tests</module>
+    <module>nuxeo-wizard-tests</module>
     <module>nuxeo-jsf-ui-webdriver-tests</module>
     <module>nuxeo-jsf-ui-funkload-tests</module>
     <module>nuxeo-jsf-ui-gatling-tests</module>

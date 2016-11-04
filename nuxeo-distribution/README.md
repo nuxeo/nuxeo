@@ -61,7 +61,7 @@ Ant usage: `ant package`
  * nuxeo-distribution-server: Server NXR
  * nuxeo-distribution-cap: Content Application Platform NXR, **deprecated**
  * nuxeo-distribution-tomcat: Package Nuxeo Server with Tomcat
- * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests on Startup Wizard
+ * nuxeo-wizard-tests: WebDriver tests on Startup Wizard
  * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
  * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo JSF UI
  * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo JSF UI
