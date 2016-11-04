@@ -29,8 +29,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.picture.api.PictureView;
-import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
@@ -40,14 +38,6 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     protected Blob getContentBlob(Blob original, DocumentModel doc) {
-        MultiviewPicture multiviewPicture = doc.getAdapter(MultiviewPicture.class);
-        if (multiviewPicture != null) {
-            for (PictureView view : multiviewPicture.getViews()) {
-                if (view.getTitle().equals("FullHD") && view.getBlob() != null) {
-                    return view.getBlob();
-                }
-            }
-        }
         return original;
     }
 
