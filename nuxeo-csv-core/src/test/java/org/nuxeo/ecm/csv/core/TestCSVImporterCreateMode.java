@@ -70,8 +70,7 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
         "org.nuxeo.ecm.platform.dublincore", //
-        "org.nuxeo.ecm.csv.core"
-})
+        "org.nuxeo.ecm.csv.core" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-directories-contrib.xml", //
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-types-contrib.xml", //

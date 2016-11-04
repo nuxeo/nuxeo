@@ -35,8 +35,7 @@ public class CSVImporterImpl implements CSVImporter {
     @Override
     public String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
             CSVImporterOptions options) {
-        return new CSVImporterWork(session.getRepositoryName(), parentPath, session.getPrincipal()
-                .getName(), csvFile,
+        return new CSVImporterWork(session.getRepositoryName(), parentPath, session.getPrincipal().getName(), csvFile,
                 csvFileName, options).launch();
     }
 
@@ -55,7 +54,7 @@ public class CSVImporterImpl implements CSVImporter {
         return getLastImportLogs(id, -1, status);
     }
 
-//    @SuppressWarnings("unchecked")
+    // @SuppressWarnings("unchecked")
     @Override
     public List<CSVImportLog> getLastImportLogs(String id, int max) {
         List<CSVImportLog> importLogs = CSVImporterWork.getLastImportLogs(id);
@@ -71,9 +70,7 @@ public class CSVImporterImpl implements CSVImporter {
 
     protected List<CSVImportLog> filterImportLogs(List<CSVImportLog> importLogs, CSVImportLog.Status... status) {
         List<CSVImportLog.Status> statusList = Arrays.asList(status);
-        return importLogs.stream()
-                .filter(log -> statusList.contains(log.getStatus()))
-                .collect(Collectors.toList());
+        return importLogs.stream().filter(log -> statusList.contains(log.getStatus())).collect(Collectors.toList());
     }
 
     @Override

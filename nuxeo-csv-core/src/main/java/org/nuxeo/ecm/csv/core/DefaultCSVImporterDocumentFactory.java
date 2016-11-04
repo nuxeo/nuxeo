@@ -92,8 +92,8 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             // make sure the creator is part of the contributors
             String creator = (String) values.get(DC_CREATOR);
             String[] contributorsArray = (String[]) values.get(DC_CONTRIBUTORS);
-            List<String> contributors = contributorsArray == null ? new ArrayList<>() : new ArrayList<>(
-                    Arrays.asList(contributorsArray));
+            List<String> contributors = contributorsArray == null ? new ArrayList<>()
+                    : new ArrayList<>(Arrays.asList(contributorsArray));
             if (StringUtils.isNotBlank(creator) && !contributors.contains(creator)) {
                 contributors.add(creator);
             }

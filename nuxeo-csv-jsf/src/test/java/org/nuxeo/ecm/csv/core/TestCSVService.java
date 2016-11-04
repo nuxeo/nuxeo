@@ -32,10 +32,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class})
-@Deploy({"org.nuxeo.ecm.actions", "org.nuxeo.ecm.csv.core", "org.nuxeo.ecm.csv.jsf"})
+@Features({ CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.actions", "org.nuxeo.ecm.csv.core", "org.nuxeo.ecm.csv.jsf" })
 public class TestCSVService {
-
 
     @Inject
     private CSVImporter mImporter;
@@ -52,8 +51,8 @@ public class TestCSVService {
         assertNotNull(mSession);
         assertNotNull(mActionService);
 
-//        CSVImportActions actions = Mockito.mock(CSVImportActions.class);
-//        assertNotNull(actions);
-//        mActionService.activate((ComponentContext) actions);
+        // CSVImportActions actions = Mockito.mock(CSVImportActions.class);
+        // assertNotNull(actions);
+        // mActionService.activate((ComponentContext) actions);
     }
 }

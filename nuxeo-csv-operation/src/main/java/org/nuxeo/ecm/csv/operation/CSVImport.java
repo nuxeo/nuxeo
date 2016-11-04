@@ -31,11 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 import java.io.File;
 
-@Operation(
-        id = CSVImport.ID,
-        category = Constants.CAT_DOCUMENT,
-        label = "Import"
-)
+@Operation(id = CSVImport.ID, category = Constants.CAT_DOCUMENT, label = "Import")
 public class CSVImport {
     public static final String ID = "CSV.Import";
 
@@ -55,12 +51,11 @@ public class CSVImport {
     public String importCSV(File file) {
         ImportMode importMode = mDocumentMode ? CSVImporterOptions.ImportMode.IMPORT : ImportMode.CREATE;
         CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(mSendReport)
-                .importMode(importMode)
-                .build();
+                                                                     .importMode(importMode)
+                                                                     .build();
 
         CSVImporter csvImporter = Framework.getService(CSVImporter.class);
-        return csvImporter.launchImport(mSession,
-                mPath, file, file.getName(), options);
+        return csvImporter.launchImport(mSession, mPath, file, file.getName(), options);
     }
 
     @OperationMethod
