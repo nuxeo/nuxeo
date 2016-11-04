@@ -627,8 +627,18 @@
 
       <!-- CSV -->
       <dependency>
-        <groupId>org.nuxeo.csv</groupId>
-        <artifactId>nuxeo-csv</artifactId>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-core</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-jsf</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-operation</artifactId>
         <version>${nuxeo.csv.version}</version>
       </dependency>
 
