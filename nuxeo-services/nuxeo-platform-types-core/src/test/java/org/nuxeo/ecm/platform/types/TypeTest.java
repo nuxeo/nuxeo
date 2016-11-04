@@ -27,8 +27,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -62,7 +63,7 @@ public class TypeTest extends NXRuntimeTestCase {
     @Test
     public void testTypesExtensionPoint() {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
-        assertEquals(5, types.size());
+        assertEquals(6, types.size());
 
         Type type = typeService.getTypeRegistry().getType("MyDocType");
         assertEquals("MyDocType", type.getId());
@@ -125,13 +126,13 @@ public class TypeTest extends NXRuntimeTestCase {
     @Test
     public void testDeploymentOverride() throws Exception {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
-        assertEquals(5, types.size());
+        assertEquals(6, types.size());
 
         deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-override-bundle.xml");
 
         // One removed
         types = typeService.getTypeRegistry().getTypes();
-        assertEquals(4, types.size());
+        assertEquals(6, types.size());
 
         // The Other changed
         Type type = typeService.getTypeRegistry().getType("MyDocType");
@@ -284,44 +285,49 @@ public class TypeTest extends NXRuntimeTestCase {
 
     @Test
     public void testCoreSubTypesWithHotReload() throws Exception {
+        Collection<String> testMyDocTypeSubtypes1 = Arrays.asList("MyOtherDocType", "MyHiddenDocType");
+        Collection<String> testMyDocTypeSubtypes2 = Arrays.asList("MyOtherDocType2", "MyHiddenDocType");
+        Collection<String> testMyDocType2Subtypes1 = Arrays.asList("MyDocType", "MyOtherDocType", "MyHiddenDocType");
+        Collection<String> testMyDocType2Subtypes2 = Arrays.asList("MyDocType", "MyOtherDocType");
+        Collection<String> testMyDocType2Subtypes3 = Arrays.asList("MyDocType");
         Collection<String> testSchemas = Arrays.asList("schema1", "schema2");
         Collection<String> testFacets = Arrays.asList("myFacet", "facet1", "facet2");
 
-        Collection<String> subtypes = schemaManager.getAllowedSubTypes("MyDocType");
-        assertNotNull(subtypes);
-        assertEquals(2, subtypes.size());
-        assertTrue(subtypes.contains("MyOtherDocType"));
-        assertTrue(subtypes.contains("MyHiddenDocType"));
-        Collection<String> ecmSubtypes = getEcmSubtypes("MyDocType");
-        assertEquals(subtypes.size(), subtypes.size());
-        ecmSubtypes.containsAll(subtypes);
-        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+        assertSubtypes("MyDocType", testMyDocTypeSubtypes1);
+        assertSubtypes("MyDocType2", testMyDocType2Subtypes1);
+        assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
+        // deploy ecm contribution to override types
         deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-override-bundle.xml");
-        subtypes = schemaManager.getAllowedSubTypes("MyDocType");
-        assertNotNull(subtypes);
-        assertEquals(2, subtypes.size());
-        assertTrue(subtypes.contains("MyOtherDocType2"));
-        assertTrue(subtypes.contains("MyHiddenDocType"));
-        ecmSubtypes = getEcmSubtypes("MyDocType");
-        assertEquals(subtypes.size(), subtypes.size());
-        ecmSubtypes.containsAll(subtypes);
-        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+        assertSubtypes("MyDocType", testMyDocTypeSubtypes2);
+        // subtypes differ for MyDocType2 because ecm override contrib removed MyOtherDocType from typeService
+        assertSubtypes("MyDocType2", testMyDocType2Subtypes1, Arrays.asList("MyDocType", "MyHiddenDocType"));
+        assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
+        // deploy core contribution to override types
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-core-types-override-bundle.xml");
+        assertSubtypes("MyDocType", testMyDocTypeSubtypes2);
+        // subtypes differ for MyDocType2 because ecm override contrib removed MyOtherDocType from typeService
+        assertSubtypes("MyDocType2", testMyDocType2Subtypes2, testMyDocType2Subtypes3);
+        assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+
+        // undeploy ecm contribution to override types
         undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-override-bundle.xml");
-        subtypes = schemaManager.getAllowedSubTypes("MyDocType");
-        assertNotNull(subtypes);
-        assertEquals(2, subtypes.size());
-        assertTrue(subtypes.contains("MyOtherDocType"));
-        assertTrue(subtypes.contains("MyHiddenDocType"));
-        ecmSubtypes = getEcmSubtypes("MyDocType");
-        assertEquals(subtypes.size(), subtypes.size());
-        ecmSubtypes.containsAll(subtypes);
-        // let's make sure removing contributions won't affect schemas and facets contributed at the core level
-        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+        assertSubtypes("MyDocType", testMyDocTypeSubtypes1);
+        assertSubtypes("MyDocType2", testMyDocType2Subtypes2);
+        assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
 
+        // undeploy core contribution to override types
+        undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-core-types-override-bundle.xml");
+        assertSubtypes("MyDocType", testMyDocTypeSubtypes1);
+        assertSubtypes("MyDocType2", testMyDocType2Subtypes1);
+        assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+
+        // undeploy original ecm contribution to override types
         undeployContrib("org.nuxeo.ecm.platform.types.core.tests", "test-types-bundle.xml");
-        verifyFacetsAndSchemas("MyDocType", testFacets, testSchemas);
+        assertSubtypes("MyDocType", Collections.emptyList());
+        assertSubtypes("MyDocType2", testMyDocType2Subtypes3, Collections.emptyList());
+        assertFacetsAndSchemas("MyDocType", testFacets, testSchemas);
     }
 
     protected Collection<String> getEcmSubtypes(String type) {
@@ -333,7 +339,21 @@ public class TypeTest extends NXRuntimeTestCase {
         return result;
     }
 
-    protected void verifyFacetsAndSchemas(String docType, Collection<String> facets, Collection<String> schemas) {
+    protected void assertSubtypes(String docType, Collection<String> subtypes) {
+        assertSubtypes(docType, subtypes, subtypes);
+    }
+
+    protected void assertSubtypes(String docType, Collection<String> subtypesCore, Collection<String> subtypesEcm) {
+        Collection<String> coreSubtypes = schemaManager.getAllowedSubTypes(docType);
+        assertNotNull(coreSubtypes);
+        assertEquals(subtypesCore.size(), coreSubtypes.size());
+        assertTrue(subtypesCore.containsAll(coreSubtypes));
+        Collection<String> ecmSubtypes = getEcmSubtypes(docType);
+        assertEquals(subtypesEcm.size(), ecmSubtypes.size());
+        assertTrue(ecmSubtypes.containsAll(subtypesEcm));
+    }
+
+    protected void assertFacetsAndSchemas(String docType, Collection<String> facets, Collection<String> schemas) {
         Collection<String> currentFacets = schemaManager.getDocumentType(docType).getFacets();
         assertNotNull(currentFacets);
         assertEquals(facets.size(), currentFacets.size());

@@ -43,6 +43,13 @@
       </contentViews>
     </type>
 
+    <type id="MyDocType2">
+      <subtypes>
+        <type>MyOtherDocType</type>
+        <type>MyHiddenDocType</type>
+      </subtypes>
+    </type>
+
     <type id="MyOtherDocType">
       <label>initial alternative doc type</label>
       <icon>initial icon</icon>

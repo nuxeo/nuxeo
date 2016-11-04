@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -57,13 +58,20 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     private TypeRegistry typeRegistry;
 
+    private Runnable recomputeCallback;
+
     @Override
     public void activate(ComponentContext context) {
         typeRegistry = new TypeRegistry();
+        recomputeCallback = typeRegistry::recomputeTypes;
+        SchemaManagerImpl schemaManager = (SchemaManagerImpl) Framework.getService(SchemaManager.class);
+        schemaManager.registerRecomputeCallback(recomputeCallback);
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        SchemaManagerImpl schemaManager = (SchemaManagerImpl)Framework.getService(SchemaManager.class);
+        schemaManager.unregisterRecomputeCallback(recomputeCallback);
         typeRegistry = null;
     }
 

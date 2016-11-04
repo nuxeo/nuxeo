@@ -125,7 +125,10 @@ public class SchemaManagerImpl implements SchemaManager {
 
     public static final String SCHEMAS_DIR_NAME = "schemas";
 
+    protected List<Runnable> recomputeCallbacks;
+
     public SchemaManagerImpl() {
+        recomputeCallbacks = new ArrayList<>();
         schemaDir = new File(Environment.getDefault().getTemp(), SCHEMAS_DIR_NAME);
         schemaDir.mkdirs();
         clearSchemaDir();
@@ -267,6 +270,7 @@ public class SchemaManagerImpl implements SchemaManager {
             // call recompute() synchronized
             recompute();
             dirty = false;
+            executeRecomputeCallbacks();
         }
     }
 
@@ -779,4 +783,28 @@ public class SchemaManagerImpl implements SchemaManager {
         checkDirty();
     }
 
+    /*
+     * ===== Recompute Callbacks =====
+     */
+
+    /**
+     * @since 8.10
+     */
+    public void registerRecomputeCallback(Runnable callback) {
+        recomputeCallbacks.add(callback);
+    }
+
+    /**
+     * @since 8.10
+     */
+    public void unregisterRecomputeCallback(Runnable callback) {
+        recomputeCallbacks.remove(callback);
+    }
+
+    /**
+     * @since 8.10
+     */
+    protected void executeRecomputeCallbacks() {
+        recomputeCallbacks.forEach(Runnable::run);
+    }
 }

@@ -35,6 +35,9 @@
       <label>removed alternative doc type</label>
     </type>
 
+    <type id="MyOtherDocType2">
+    </type>
+
     <type id="DocTypeWithLayout">
       <label>overridden doc type, but layout left unchanged</label>
     </type>
