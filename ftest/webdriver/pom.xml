@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-error-web-webdriver-tests</artifactId>
-  
+
   <name>Error Web Functional Tests with Webdriver</name>
   <description>Error Web Functional Tests with Webdriver</description>
 
@@ -43,7 +43,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-tomcat</artifactId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
       <type>zip</type>
       <scope>test</scope>
     </dependency>
