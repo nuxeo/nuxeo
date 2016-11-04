@@ -19,6 +19,13 @@
       <facet name="facet1"/>
       <facet name="facet2"/>
     </doctype>
+    <doctype name="MyDocType2" extends="Document">
+      <schema name="schema1"/>
+      <facet name="facet1"/>
+      <subtypes>
+        <type>MyDocType</type>
+      </subtypes>
+    </doctype>
   </extension>
 
 </component>

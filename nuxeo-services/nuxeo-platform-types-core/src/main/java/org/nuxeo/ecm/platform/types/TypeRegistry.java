@@ -246,6 +246,44 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
     }
 
     /**
+     * @since 8.10
+     */
+    protected void recomputeTypes() {
+        for (Type type : types.values()) {
+            type.setAllowedSubTypes(getCoreAllowedSubtypes(type));
+            //  do not need to add denied subtypes because allowed subtypes already come filtered from core
+            type.setDeniedSubTypes(new String[0]);
+        }
+    }
+
+    /**
+     * @since 8.10
+     */
+    protected Map<String, SubType> getCoreAllowedSubtypes(Type type) {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        Collection<String> coreAllowedSubtypes = schemaManager.getAllowedSubTypes(type.getId());
+        if (coreAllowedSubtypes == null) {
+            // there are no subtypes to take care of
+            return Collections.emptyMap();
+        }
+
+        Map<String, SubType> ecmSubTypes = type.getAllowedSubTypes();
+        Map<String, SubType> allowedSubTypes = new HashMap<>();
+        SubType subtype;
+        for (String name : coreAllowedSubtypes) {
+            if (ecmSubTypes.containsKey(name)) {
+                subtype = ecmSubTypes.get(name);
+            } else {
+                subtype = new SubType();
+                subtype.setName(name);
+            }
+            allowedSubTypes.put(name, subtype);
+        }
+
+        return allowedSubTypes;
+    }
+
+    /**
      * @since 8.4
      */
     protected void updateCoreContribution(String id, Type contrib) {
