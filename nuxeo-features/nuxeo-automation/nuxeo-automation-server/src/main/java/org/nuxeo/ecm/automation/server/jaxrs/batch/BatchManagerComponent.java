@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,9 +33,13 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
+import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.automation.server.RestBinding;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -172,6 +177,19 @@ public class BatchManagerComponent extends DefaultComponent implements
         }
 
         OperationContext ctx = new OperationContext(session);
+
+        AutomationServer server = Framework.getService(AutomationServer.class);
+        RestBinding binding = server.getOperationBinding(chainOrOperationId);
+
+        if (binding != null && binding.isAdministrator()) {
+            Principal principal = ctx.getPrincipal();
+            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
+                String message = "Not allowed. You must be administrator to use this operation";
+                log.error(message + ": " + chainOrOperationId);
+                throw new WebSecurityException(message);
+            }
+        }
+
         ctx.setInput(blobInput);
         ctx.putAll(contextParams);
 
