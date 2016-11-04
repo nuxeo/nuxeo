@@ -82,7 +82,6 @@ public class DefaultConsumer extends AbstractConsumer {
             }
 
             doc = session.createDocument(doc);
-            importStat.increaseStat(doc.getType(), 1);
         }
     }
 

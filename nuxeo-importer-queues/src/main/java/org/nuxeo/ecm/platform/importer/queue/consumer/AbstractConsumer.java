@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.consumer;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -24,6 +29,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.util.concurrent.BlockingQueue;
@@ -65,6 +71,17 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected String threadName;
 
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    protected final Timer processTimer;
+
+    protected final Timer commitTimer;
+
+    protected final Counter retryCount;
+
+    protected final Counter failCount;
+
+    protected final Counter consumerCount;
 
     public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue) {
         this.log = log;
@@ -73,6 +90,13 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         this.queue = queue;
         rootRef = root.getRef();
         importStat = new ImportStat();
+
+        processTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "import"));
+        commitTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "commit"));
+        retryCount = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "retry"));
+        failCount = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "fail"));
+        consumerCount = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "consumer"));
+
         log.info("Create consumer root:" + root.getPathAsString() + " batchSize: " + batchSize);
     }
 
@@ -82,6 +106,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         started = true;
         startTime = System.currentTimeMillis();
         lastCheckTime = startTime;
+        consumerCount.inc();
         try {
             runImport();
         } catch (Exception e) {
@@ -92,6 +117,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         } finally {
             completed = true;
             started = false;
+            consumerCount.dec();
         }
     }
 
@@ -144,6 +170,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                     }
                     incrementProcessed();
                     batch.add(src);
+                    Timer.Context stopWatch = processTimer.time();
                     try {
                         setThreadName(src);
                         process(session, src);
@@ -152,6 +179,8 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                         log.error("Exception while consuming node: " + src.getName(), e);
                         ExceptionUtils.checkInterrupt(e);
                         TransactionHelper.setTransactionRollbackOnly();
+                    } finally {
+                        stopWatch.stop();
                     }
                     commitIfNeededOrReplayBatch(src);
                 }
@@ -216,11 +245,17 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected void commit(CoreSession session) {
         if (batch.size() > 0) {
-            log.debug("Commit batch of " + batch.size() + " nodes");
-            session.save();
-            TransactionHelper.commitOrRollbackTransaction();
-            batch.clear();
-            startTransaction();
+            Timer.Context stopWatch = commitTimer.time();
+            try {
+                log.debug("Commit batch of " + batch.size() + " nodes");
+                session.save();
+                TransactionHelper.commitOrRollbackTransaction();
+                batch.clear();
+                startTransaction();
+            } finally {
+                stopWatch.stop();
+            }
+
         }
     }
 
@@ -249,12 +284,17 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         for (SourceNode node : batch.getNodes()) {
             boolean success = false;
             startTransaction();
+            retryCount.inc();
+            Timer.Context stopWatch = processTimer.time();
             try {
                 process(session, node);
             } catch (Exception e) { // deals with interrupt below
                 ExceptionUtils.checkInterrupt(e);
                 onSourceNodeException(node, e);
                 TransactionHelper.setTransactionRollbackOnly();
+                failCount.inc();
+            } finally {
+                stopWatch.stop();
             }
             session.save();
             if (TransactionHelper.isTransactionMarkedRollback()) {
@@ -288,6 +328,11 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
      */
     protected void onSourceNodeRollBack(SourceNode node) {
         log.error(String.format("Rollback while replaying consumer node [%s]", node.getName()));
+    }
+
+    @Override
+    public double getNbDocsCreated() {
+        return getNbProcessed();
     }
 
     @Override
