@@ -18,30 +18,6 @@
     <module>nuxeo-csv-operation</module>
   </modules>
 
-  <properties>
-    <nuxeo.csv.importer.version>8.10-SNAPSHOT</nuxeo.csv.importer.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.csv</groupId>
-        <artifactId>nuxeo-csv-core</artifactId>
-        <version>${nuxeo.csv.importer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.csv</groupId>
-        <artifactId>nuxeo-csv-jsf</artifactId>
-        <version>${nuxeo.csv.importer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.csv</groupId>
-        <artifactId>nuxeo-csv-operation</artifactId>
-        <version>${nuxeo.csv.importer.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>
