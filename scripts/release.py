@@ -73,14 +73,12 @@ from terminalsize import get_terminal_size
 
 PKG_RENAMINGS = {
     # Tomcat packages
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s.zip": "nuxeo-server-%s-tomcat",
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-nuxeo-cap.zip": "nuxeo-cap-%s-tomcat"
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s.zip": "nuxeo-server-%s-tomcat"
 }
 
 PKG_RENAMINGS_OPTIONALS = {
     # Tomcat packages
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-sdk.zip": "nuxeo-server-%s-tomcat-sdk",
-    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-nuxeo-cap-sdk.zip": "nuxeo-cap-%s-tomcat-sdk"
+    "nuxeo-distribution/nuxeo-distribution-tomcat/target/nuxeo-distribution-tomcat-%s-sdk.zip": "nuxeo-server-%s-tomcat-sdk"
 }
 
 PKG_MP = {

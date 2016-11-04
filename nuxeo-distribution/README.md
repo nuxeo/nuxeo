@@ -59,7 +59,6 @@ Ant usage: `ant package`
  * nuxeo-distribution-resources: Resources for packaging (doc, binaries, configuration templates)
  * nuxeo-distribution-tests: Convenient helper POM listing the Nuxeo test dependencies
  * nuxeo-distribution-server: Server NXR
- * nuxeo-distribution-cap: Content Application Platform NXR, **deprecated**
  * nuxeo-distribution-tomcat: Package Nuxeo Server with Tomcat
  * nuxeo-wizard-tests: WebDriver tests on Startup Wizard
  * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
@@ -108,14 +107,6 @@ Built NXR is in `nuxeo-distribution-server/target/`.
 
 This is the default application packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "server").
 
-
-### Nuxeo CAP
-
-Basic document management features. **The package has been deprecated; it is kept for helping in transition.**
-
-Built NXR is in `nuxeo-distribution-cap/target/`.
-
-It is packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "nuxeo-cap").
 
 ### Nuxeo Document Management
 
