@@ -33,7 +33,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-tomcat</artifactId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
       <type>zip</type>
       <scope>test</scope>
     </dependency>
