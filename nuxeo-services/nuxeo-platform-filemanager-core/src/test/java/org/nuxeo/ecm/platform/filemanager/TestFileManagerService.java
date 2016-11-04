@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -108,6 +109,47 @@ public class TestFileManagerService {
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
+        BinaryBlob blob = (BinaryBlob) doc.getProperty("file", "content");
+        assertEquals(blob.getMimeType(), "application/msword");
+
+        // let's make the same test but this time without mime-type checking
+        // because the blob already carries a mime-type that matches the file name
+        // using mime-type check on or off should yield the same result
+        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+            "test-data/hello2.doc", true);
+        assertNotNull(doc);
+        assertEquals("hello2.doc", doc.getProperty("dublincore", "title"));
+        assertEquals("hello2.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+        blob = (BinaryBlob) doc.getProperty("file", "content");
+        assertEquals(blob.getMimeType(), "application/msword");
+    }
+
+    @Test
+    public void testCreateFromBlobWithMimeTypeCheck() throws IOException {
+        // if we use a mime-type that does not match the file's name,
+        // we should still get a mime-type matching the file's name
+        // but only if we use mime-type check
+        File file = getTestFile("test-data/hello.doc");
+        Blob input = Blobs.createBlob(file, "application/sometype");
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+            "test-data/hello3.doc");
+        assertNotNull(doc);
+        assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
+        assertEquals("hello3.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+        BinaryBlob blob = (BinaryBlob) doc.getProperty("file", "content");
+        assertEquals(blob.getMimeType(), "application/msword");
+
+        input = Blobs.createBlob(file, "application/sometype");
+        doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
+            "test-data/hello3.doc", true);
+        assertNotNull(doc);
+        assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
+        assertEquals("hello3.doc", doc.getProperty("file", "filename"));
+        assertNotNull(doc.getProperty("file", "content"));
+        blob = (BinaryBlob) doc.getProperty("file", "content");
+        assertEquals(blob.getMimeType(), "application/sometype");
     }
 
     @Test

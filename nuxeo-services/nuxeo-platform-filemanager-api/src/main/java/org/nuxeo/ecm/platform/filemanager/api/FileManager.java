@@ -55,6 +55,21 @@ public interface FileManager {
             String fullName) throws IOException;
 
     /**
+     * Returns an initialized doc based on a given blob.
+     *
+     * @param input the blob containing the content and the mime type
+     * @param path the path were to create the document
+     * @param overwrite boolean how decide to overwrite or not
+     * @param fullName the fullname that contains the filename
+     * @param noMimeTypeCheck true if the blob's mime-type doesn't have to be checked against fullName
+     * @return the created Document
+     *
+     * @since 8.10
+     */
+    DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
+        String fullName, boolean noMimeTypeCheck) throws IOException;
+
+    /**
      * Just applies the same actions as creation but does not changes the doc type.
      *
      * @param input the blob containing the content and the mime type
