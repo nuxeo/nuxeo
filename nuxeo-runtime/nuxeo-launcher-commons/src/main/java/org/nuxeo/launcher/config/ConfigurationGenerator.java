@@ -915,10 +915,6 @@ public class ConfigurationGenerator {
         return includedTemplates;
     }
 
-    public static void main(String[] args) throws ConfigurationException {
-        new ConfigurationGenerator().run();
-    }
-
     /**
      * Save changed parameters in {@code nuxeo.conf}. This method does not check values in map. Use
      * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
