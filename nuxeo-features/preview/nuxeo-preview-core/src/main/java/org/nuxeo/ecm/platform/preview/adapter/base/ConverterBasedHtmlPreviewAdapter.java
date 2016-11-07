@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Base class for preview based on "on the fly" HTML transformers
@@ -51,6 +52,11 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     protected String defaultFieldXPath;
 
     protected MimetypeRegistry mimeTypeService;
+
+    /**
+     * @since 8.10
+     */
+    protected static final String ALLOW_ZIP_PREVIEW = "nuxeo.preview.zip.enabled";
 
     public ConversionService getConversionService() {
         return Framework.getService(ConversionService.class);
@@ -103,6 +109,10 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     @Override
     public boolean hasPreview(String xpath) {
         String srcMT = getMimeType(xpath);
+        if ("application/zip".equals(srcMT)
+                && !Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ALLOW_ZIP_PREVIEW)) {
+            return false;
+        }
         MimeTypePreviewer mtPreviewer = getPreviewManager().getPreviewer(srcMT);
         return mtPreviewer != null || getConversionService().getConverterName(srcMT, "text/html") != null;
     }
@@ -220,6 +230,11 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         try {
             blob2Preview = getBlob2preview(getBlobHolder2preview(xpath));
         } catch (NothingToPreviewException e) {
+            return false;
+        }
+        String srcMT = getMimeType(xpath);
+        if ("application/zip".equals(srcMT)
+                && !Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ALLOW_ZIP_PREVIEW)) {
             return false;
         }
         return blob2Preview != null;
