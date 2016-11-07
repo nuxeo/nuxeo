@@ -177,6 +177,7 @@
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.7.4</jackson.version>
+    <imageio.version>1.6.5</imageio.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -4791,6 +4792,11 @@
         <groupId>org.nuxeo.client</groupId>
         <artifactId>nuxeo-java-client</artifactId>
         <version>${nuxeo.java.client.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.levigo.jbig2</groupId>
+        <artifactId>levigo-jbig2-imageio</artifactId>
+        <version>${imageio.version}</version>
       </dependency>
 
       <!-- Kafka -->
