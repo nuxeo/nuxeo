@@ -76,7 +76,6 @@ h6 {
   margin: 0 0 5px;}
 
 p {
-  line-height: 150%;
   margin: 3px 0 10px;}
 
 a,a:link,a:active,a:visited {
@@ -185,7 +184,6 @@ input:focus, textarea:focus {
 .navItem a.checked,
 .navItem a:checked:hover {
   background: transparent url(../images/checked.png) 0 1px / 16px no-repeat;
-  font-family: "Ademi", Arial, sans-serif;
   font-weight: 200;
   padding: 0 0 0 1.8em;
   margin-left: -1.8em;}
@@ -212,7 +210,7 @@ input:focus, textarea:focus {
 .packageDescription {
   font-size: 90%;
   margin-left: 5%;
-  color: #797979;}
+  color: #95a5b1;}
 
 .screenExplanations,
 .warnBlock, .errBlock {
@@ -246,7 +244,6 @@ input:focus, textarea:focus {
 
 /* Tables & Forms */
 .labelCell {
-  font-family: "Ademi", Arial, sans-serif;
   font-weight: 200;
   width: 200px;
   vertical-align: middle;}
@@ -288,7 +285,6 @@ input:focus, textarea:focus {
   color: white;
   letter-spacing: .015em;
   font-size: 14px;
-  font-family: "Ademi", Arial, sans-serif;
   margin-bottom: 1em;
   padding: .7em 1em;
   transition: all 0.2s ease-in-out 0s;}
