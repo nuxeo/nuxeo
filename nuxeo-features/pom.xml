@@ -23,7 +23,6 @@
     <module>nuxeo-platform-domsync-core</module>
     <module>nuxeo-platform-io</module>
     <module>nuxeo-platform-tag-service</module>
-    <module>nuxeo-webengine-features</module>
     <module>annot</module>
     <module>nuxeo-platform-imaging-tiling</module>
     <module>nuxeo-platform-lang</module>

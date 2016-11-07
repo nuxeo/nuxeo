@@ -19,6 +19,7 @@
   <modules>
     <module>nuxeo-webengine-jaxrs</module>
     <module>nuxeo-webengine-core</module>
+    <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-gwt</module>
     <module>nuxeo-webengine-gwt-codeserver</module>
