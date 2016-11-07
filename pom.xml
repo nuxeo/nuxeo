@@ -431,6 +431,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-jsf</artifactId>
+        <version>${nuxeo.dam.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
         <artifactId>nuxeo-dam-web-ui</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
