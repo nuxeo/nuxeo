@@ -1,9 +1,0 @@
-<projectDescription>
-  <name>nuxeo-distribution-cap-gatling-tests</name>
-  <comment>Nuxeo CAP Gatling Bench</comment>
-  <projects/>
-  <buildSpec>
-  </buildSpec>
-  <natures>
-  </natures>
-</projectDescription>

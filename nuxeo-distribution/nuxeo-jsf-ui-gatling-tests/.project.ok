@@ -1,0 +1,9 @@
+<projectDescription>
+  <name>nuxeo-jsf-ui-gatling-tests</name>
+  <comment>Nuxeo JSF UI Gatling Bench</comment>
+  <projects/>
+  <buildSpec>
+  </buildSpec>
+  <natures>
+  </natures>
+</projectDescription>

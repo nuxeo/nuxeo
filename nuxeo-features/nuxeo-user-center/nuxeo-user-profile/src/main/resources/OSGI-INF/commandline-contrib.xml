@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.commandline">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+
+    <command name="resizeAvatar" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet #{sourceFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight}> #{targetFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet #{sourceFilePath}[0] -resize #{targetWidth}x#{targetHeight}> #{targetFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
+    </command>
+
+  </extension>
+
+</component>
