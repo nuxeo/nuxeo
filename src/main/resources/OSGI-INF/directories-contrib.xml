@@ -8,29 +8,21 @@
     <schema name="tenant" src="schemas/tenant.xsd" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="tenants">
+    <directory name="tenants" extends="template-directory">
       <schema>tenant</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
+      <idField>id</idField>
       <entryCacheName>tenants-cache</entryCacheName>
       <entryCacheWithoutReferencesName>tenants-cache-without-ref</entryCacheWithoutReferencesName>
-      <table>tenants</table>
-      <idField>id</idField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="topic">
+    <directory name="topic" extends="template-directory">
       <schema>multitenantvocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
+      <idField>id</idField>
+      <dataFile>directories/topic.csv</dataFile>
       <entryCacheName>topic-cache</entryCacheName>
       <entryCacheWithoutReferencesName>topic-cache-without-ref</entryCacheWithoutReferencesName>
-      <table>topic</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/topic.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">subtopic</property>
@@ -38,30 +30,22 @@
       </deleteConstraint>
     </directory>
 
-    <directory name="subtopic">
+    <directory name="subtopic" extends="template-directory">
       <schema>multitenantxvocabulary</schema>
+      <idField>id</idField>
       <parentDirectory>topic</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
+      <dataFile>directories/subtopic.csv</dataFile>
       <entryCacheName>subtopic-cache</entryCacheName>
       <entryCacheWithoutReferencesName>subtopic-cache-without-ref</entryCacheWithoutReferencesName>
-      <table>subtopic</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/subtopic.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="l10nsubjects">
+    <directory name="l10nsubjects" extends="template-directory">
       <schema>multitenantl10nxvocabulary</schema>
+      <idField>id</idField>
       <parentDirectory>l10nsubjects</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
+      <dataFile>directories/l10nsubjects.csv</dataFile>
       <entryCacheName>l10nsubjects-cache</entryCacheName>
       <entryCacheWithoutReferencesName>l10nsubjects-cache-without-ref</entryCacheWithoutReferencesName>
-      <table>l10nsubjects</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/l10nsubjects.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">l10nsubjects</property>
@@ -69,17 +53,13 @@
       </deleteConstraint>
     </directory>
 
-    <directory name="l10ncoverage">
+    <directory name="l10ncoverage" extends="template-directory">
       <schema>multitenantl10nxvocabulary</schema>
+      <idField>id</idField>
       <parentDirectory>l10ncoverage</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
+      <dataFile>directories/l10ncoverage.csv</dataFile>
       <entryCacheName>l10ncoverage-cache</entryCacheName>
       <entryCacheWithoutReferencesName>l10ncoverage-cache-without-ref</entryCacheWithoutReferencesName>
-      <table>l10ncoverage</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/l10ncoverage.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">l10ncoverage</property>
