@@ -24,6 +24,13 @@
       <facet name="Folderish"/>
     </doctype>
 
+    <doctype name="MyFolderRoot">
+      <subtypes>
+        <type>MyFolder</type>
+        <type>MyFolder2</type>
+      </subtypes>
+    </doctype>
+
     <doctype name="MyFolder" extends="Document">
       <facet name="Folderish"/>
       <subtypes>
@@ -34,6 +41,7 @@
     </doctype>
 
     <doctype name="MyFolder2" extends="MyFolder">
+      <facet name="HiddenInCreation"/>
       <subtypes>
         <type>DummyDoc</type>
       </subtypes>

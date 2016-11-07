@@ -11,6 +11,7 @@
 
     <doctype name="CommentRoot" extends="Folder">
       <facet name="HiddenInNavigation" />
+      <facet name="HiddenInCreation" />
     </doctype>
 
     <doctype name="Comment" extends="Document">

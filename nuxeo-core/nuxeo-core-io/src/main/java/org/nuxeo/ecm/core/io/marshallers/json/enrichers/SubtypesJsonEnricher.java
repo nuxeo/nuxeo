@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -46,12 +48,18 @@ public class SubtypesJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     @Override
     public void write(JsonGenerator jg, DocumentModel enriched) throws IOException {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Collection<String> subtypes = enriched.getDocumentType().getAllowedSubtypes();
         jg.writeFieldName(NAME);
         jg.writeStartArray();
         for (String subtype : subtypes) {
             jg.writeStartObject();
             jg.writeStringField("type", subtype);
+            jg.writeArrayFieldStart("facets");
+            for (String facet : schemaManager.getDocumentType(subtype).getFacets()) {
+                jg.writeString(facet);
+            }
+            jg.writeEndArray();
             jg.writeEndObject();
         }
         jg.writeEndArray();
