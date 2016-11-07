@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>nuxeo-distribution-tomcat</name>
-  <comment>Nuxeo Distribution Tomcat</comment>
+  <name>nuxeo-server-tomcat</name>
+  <comment>Nuxeo Server Tomcat</comment>
   <projects/>
   <buildSpec>
   </buildSpec>

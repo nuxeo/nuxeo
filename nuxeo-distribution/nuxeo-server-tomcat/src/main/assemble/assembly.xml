@@ -92,7 +92,7 @@ install nuxeo-jsf-ui
 
     <!-- Nuxeo Server NXR -->
     <unzip dest="${distribution.dir}/nxserver">
-      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-server:${nuxeo.distribution.version}:zip" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-nxr-server:${nuxeo.distribution.version}:zip" />
     </unzip>
     <!-- Move templates to their correct location -->
     <mkdir dir="${distribution.dir}/templates" />

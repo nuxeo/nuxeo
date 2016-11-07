@@ -33,6 +33,6 @@ if [ "x$1" = "xadd-dm" ]; then
     exit 0
 fi
 
-cp target/nuxeo-launcher-8.10-SNAPSHOT-jar-with-dependencies.jar "$NUXEO_HOME"/bin/nuxeo-launcher.jar
-cp ../nuxeo-distribution-resources/src/main/resources/bin/nuxeoctl "$NUXEO_HOME"/bin/
+cp target/nuxeo-launcher-8.4-SNAPSHOT-jar-with-dependencies.jar "$NUXEO_HOME"/bin/nuxeo-launcher.jar
+cp ../nuxeo-server-tomcat/src/main/resources/tomcat/bin/nuxeoctl "$NUXEO_HOME"/bin/
 "$NUXEO_HOME"/bin/nuxeoctl $@

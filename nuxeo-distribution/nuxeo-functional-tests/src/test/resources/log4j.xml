@@ -3,7 +3,7 @@
   Log4j Configuration - For more configuration information and examples see
   the Jakarta Log4j - website: http://jakarta.apache.org/log4j
 
-  Duplicated from nuxeo-distribution-tomcat/src/main/resources/common/lib/log4j.xml
+  Duplicated from nuxeo-server-tomcat/src/main/resources/tomcat/lib/log4j.xml
 -->
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"

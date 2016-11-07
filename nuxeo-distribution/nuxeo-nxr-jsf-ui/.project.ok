@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>nuxeo-distribution-jsf-ui</name>
+  <name>nuxeo-nxr-jsf-ui</name>
   <comment>Nuxeo JSF UI NXR</comment>
   <projects/>
   <buildSpec>

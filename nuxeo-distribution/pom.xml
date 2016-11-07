@@ -26,12 +26,12 @@
     <module>nuxeo-functional-tests</module>
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
-    <module>nuxeo-distribution-tests</module>
-    <module>nuxeo-distribution-server</module>
-    <module>nuxeo-distribution-jsf-ui</module>
+    <module>nuxeo-test-dependencies</module>
+    <module>nuxeo-nxr-server</module>
+    <module>nuxeo-nxr-jsf-ui</module>
     <module>nuxeo-marketplace-dm</module>
     <module>nuxeo-marketplace-jsf-ui</module>
-    <module>nuxeo-distribution-tomcat</module>
+    <module>nuxeo-server-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-server-tests</module>
     <module>nuxeo-wizard-tests</module>
@@ -141,25 +141,25 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-server</artifactId>
+        <artifactId>nuxeo-nxr-server</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-server</artifactId>
+        <artifactId>nuxeo-nxr-server</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-jsf-ui</artifactId>
+        <artifactId>nuxeo-nxr-jsf-ui</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-jsf-ui</artifactId>
+        <artifactId>nuxeo-nxr-jsf-ui</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
@@ -177,13 +177,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <artifactId>nuxeo-server-tomcat</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tomcat</artifactId>
+        <artifactId>nuxeo-server-tomcat</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
         <classifier>sdk</classifier>

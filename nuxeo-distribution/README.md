@@ -35,7 +35,7 @@ Maven usage: `mvn clean package [options]`
 
  * Build only the Tomcat distributions
 
-        mvn clean package -pl :nuxeo-distribution-tomcat
+        mvn clean package -pl :nuxeo-server-tomcat
 
  * Run JSF UI WebDriver Functional Tests after build of the needed resources:
 
@@ -56,10 +56,9 @@ Ant usage: `ant package`
  * nuxeo-functional-tests: Framework for testing Nuxeo distributions
  * nuxeo-startup-wizard: Startup Wizard WebApp
  * nuxeo-launcher: Control Panel and Launcher
- * nuxeo-distribution-resources: Resources for packaging (doc, binaries, configuration templates)
- * nuxeo-distribution-tests: Convenient helper POM listing the Nuxeo test dependencies
- * nuxeo-distribution-server: Server NXR
- * nuxeo-distribution-tomcat: Package Nuxeo Server with Tomcat
+ * nuxeo-test-dependencies: Convenient helper POM listing the Nuxeo test dependencies
+ * nuxeo-nxr-server: Server NXR
+ * nuxeo-server-tomcat: Package Nuxeo Server with Tomcat
  * nuxeo-wizard-tests: WebDriver tests on Startup Wizard
  * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
  * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo JSF UI
@@ -103,9 +102,9 @@ A minimal server NXR. An embedded repository will be started. No other  platform
 
 This application can be used to debug, test or develop nuxeo components that need a repository connection.
 
-Built NXR is in `nuxeo-distribution-server/target/`.
+Built NXR is in `nuxeo-nxr-server/target/`.
 
-This is the default application packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "server").
+This is the default application packaged within Tomcat in `nuxeo-server-tomcat/target/` (see "server").
 
 
 ### Nuxeo Document Management

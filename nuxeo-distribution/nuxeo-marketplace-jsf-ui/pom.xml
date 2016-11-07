@@ -16,7 +16,7 @@
     <!-- Base distribution -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-server</artifactId>
+      <artifactId>nuxeo-nxr-server</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
@@ -24,7 +24,7 @@
     <!-- Distribution that we're packaging -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-jsf-ui</artifactId>
+      <artifactId>nuxeo-nxr-jsf-ui</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
