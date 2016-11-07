@@ -47,16 +47,35 @@ public class SubtypesJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
 
     @Before
     public void setup() {
-        DocumentModel document = session.createDocumentModel("/", "doc1", "MyFolder");
+        DocumentModel document = session.createDocumentModel("/", "folder_root", "MyFolderRoot");
+        document = session.createDocument(document);
+        document = session.createDocumentModel("/", "doc1", "MyFolder");
         document = session.createDocument(document);
         document = session.createDocumentModel("/", "doc2", "MyFolder2");
         document = session.createDocument(document);
+
     }
 
     @Test
     public void test() throws Exception {
+        DocumentModel folderRoot = session.getDocument(new PathRef("/folder_root"));
+        JsonAssert json = jsonAssert(folderRoot, RenderingContext.CtxBuilder.enrichDoc("subtypes").get());
+        json = json.has("contextParameters").isObject();
+        json.properties(1);
+        json = json.has("subtypes").isArray();
+        json = json.length(2);
+        json.childrenContains("type", "MyFolder", "MyFolder2");
+        JsonAssert sub = json.has(0);
+        sub = sub.has("facets");
+        sub.length(1);
+        sub.contains("Folderish");
+        sub = json.has(1);
+        sub = sub.has("facets");
+        sub.length(2);
+        sub.contains("Folderish", "HiddenInCreation");
+
         DocumentModel doc1 = session.getDocument(new PathRef("/doc1"));
-        JsonAssert json = jsonAssert(doc1, RenderingContext.CtxBuilder.enrichDoc("subtypes").get());
+        json = jsonAssert(doc1, RenderingContext.CtxBuilder.enrichDoc("subtypes").get());
         json = json.has("contextParameters").isObject();
         json.properties(1);
         json = json.has("subtypes").isArray();

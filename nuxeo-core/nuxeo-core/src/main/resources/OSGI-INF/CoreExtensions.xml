@@ -58,6 +58,7 @@
     <facet name="SystemDocument" />
     <facet name="NotFulltextIndexable" />
     <facet name="BigFolder" />
+    <facet name="HiddenInCreation" perDocumentQuery="false"/>
 
     <!-- facet to be used for full-text indexing of related text content
       (e.g. comments, annotations, tags...) -->
@@ -69,11 +70,6 @@
       <schema name="common"/>
       <schema name="dublincore"/>
       <facet name="Folderish"/>
-      <subtypes>
-        <type>Folder</type>
-        <type>File</type>
-        <type>Note</type>
-      </subtypes>
     </doctype>
 
     <doctype name="OrderedFolder" extends="Folder">
@@ -85,9 +81,6 @@
     </doctype>
 
     <doctype name="Root" extends="Folder">
-      <subtypes>
-        <type>Domain</type>
-      </subtypes>
     </doctype>
 
     <doctype name="Relation"> <!-- no extends -->
@@ -98,18 +91,11 @@
     <doctype name="Domain" extends="Folder">
       <schema name="domain"/>
       <facet name="SuperSpace"/>
-      <subtypes>
-        <type>WorkspaceRoot</type>
-        <type>SectionRoot</type>
-        <type>TemplateRoot</type>
-      </subtypes>
     </doctype>
 
     <doctype name="WorkspaceRoot" extends="Folder">
       <facet name="SuperSpace"/>
-      <subtypes>
-        <type>Workspace</type>
-      </subtypes>
+      <facet name="HiddenInCreation" />
     </doctype>
 
     <doctype name="Workspace" extends="Folder">
@@ -120,27 +106,17 @@
       <!-- the content of webcontainer -->
       <schema name="files" />
       <facet name="SuperSpace"/>
-      <subtypes>
-        <type>Workspace</type>
-        <type>Folder</type>
-        <type>File</type>
-        <type>Note</type>
-      </subtypes>
     </doctype>
 
     <doctype name="TemplateRoot" extends="Folder">
       <facet name="SuperSpace"/>
-      <subtypes>
-        <type>Workspace</type>
-      </subtypes>
+      <facet name="HiddenInCreation" />
     </doctype>
 
     <doctype name="SectionRoot" extends="Folder">
       <facet name="SuperSpace"/>
+      <facet name="HiddenInCreation" />
       <facet name="MasterPublishSpace" />
-      <subtypes>
-        <type>Section</type>
-      </subtypes>
     </doctype>
 
     <doctype name="Section" extends="Folder">
@@ -148,9 +124,6 @@
       <schema name="file"/>
       <facet name="SuperSpace"/>
       <facet name="PublishSpace" />
-      <subtypes>
-        <type>Section</type>
-      </subtypes>
     </doctype>
 
     <doctype name="File" extends="Document">
