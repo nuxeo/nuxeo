@@ -26,12 +26,9 @@ function updateSmtpSettings() {
 
 <%@ include file="includes/form-start.jsp" %>
 
-<span class="screenDescription">
-<fmt:message key="label.smtpSettings.description" /> <br/>
-</span>
-
 <span class="screenExplanations">
-<fmt:message key="label.smtpSettings.explanations" /> <br/>
+  <fmt:message key="label.smtpSettings.description" /> <br/>
+  <fmt:message key="label.smtpSettings.explanations" />
 </span>
 
 

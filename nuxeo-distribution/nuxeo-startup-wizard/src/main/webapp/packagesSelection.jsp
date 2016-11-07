@@ -283,9 +283,10 @@ $(document).ready(function(){
 </script>
 
 <%@ include file="includes/form-start.jsp" %>
-<span class="screenDescription">
-<fmt:message key="label.packagesSelection.description" /> <br/>
+<span class="screenExplanations">
+  <fmt:message key="label.packagesSelection.description" />
 </span>
+
 <%
 String presetClass = "display:none";
 if ("true".equals(request.getParameter("showPresets"))) {

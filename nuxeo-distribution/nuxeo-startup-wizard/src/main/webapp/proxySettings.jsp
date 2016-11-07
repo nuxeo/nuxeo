@@ -39,12 +39,10 @@ function updateProxySettings() {
 </script>
 
 <%@ include file="includes/form-start.jsp" %>
-<span class="screenDescription">
-<fmt:message key="label.proxySettings.description" /> <br/>
-</span>
 
 <span class="screenExplanations">
-<fmt:message key="label.proxySettings.explanations" /> <br/>
+  <fmt:message key="label.proxySettings.description" /> <br/>
+  <fmt:message key="label.proxySettings.explanations" />
 </span>
 
 <%@ include file="includes/feedback.jsp" %>

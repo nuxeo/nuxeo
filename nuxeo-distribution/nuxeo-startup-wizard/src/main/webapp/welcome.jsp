@@ -5,13 +5,15 @@
 <h1><fmt:message key="label.welcome" /></h1>
 <form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
 <div class="formPadding">
-<p><fmt:message key="label.welcome.p1" /></p>
-<p><fmt:message key="label.welcome.p2" /></p>
-<p><b><fmt:message key="label.welcome.p3" /></b></p>
-<p><a href="https://doc.nuxeo.com/x/lYFH" target="doc"><fmt:message key="label.welcome.p4" /></a></p>
+  <div class="screenExplanations">
+    <p><fmt:message key="label.welcome.p1" /></p>
+    <p><fmt:message key="label.welcome.p2" /></p>
+    <p><b><fmt:message key="label.welcome.p3" /></b></p>
+    <p><a href="https://doc.nuxeo.com/x/lYFH" target="doc"><fmt:message key="label.welcome.p4" /></a></p>
 
-<input type="hidden" name="baseUrl" id="baseUrl" value=""/>
-<input type="hidden" name="browserInternetAccess" id="browserInternetAccess" value=""/>
+    <input type="hidden" name="baseUrl" id="baseUrl" value=""/>
+    <input type="hidden" name="browserInternetAccess" id="browserInternetAccess" value=""/>
+  </div>
 </div>
 <div class="buttonContainer">
  <input type="submit" class="glossyButton" id="btnNext" disabled="true" value="<fmt:message key="label.action.start"/>"/>

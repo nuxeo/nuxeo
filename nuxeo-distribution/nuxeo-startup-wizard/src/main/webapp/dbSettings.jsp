@@ -64,10 +64,11 @@
 
 
 <%@ include file="includes/form-start.jsp"%>
-<span class="screenDescription"> <fmt:message key="label.dbSettings.description" /> <br />
-</span>
 
-<span class="screenExplanations"> <fmt:message key="label.dbSettings.explanations" /> <br />
+
+<span class="screenExplanations">
+  <fmt:message key="label.dbSettings.description" /> <br />
+  <fmt:message key="label.dbSettings.explanations" />
 </span>
 
 

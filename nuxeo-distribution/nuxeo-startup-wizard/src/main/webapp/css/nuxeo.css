@@ -2,24 +2,19 @@
 
 /* Corporate fonts */
 @font-face {
-font-family: 'Aregular';
-src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot');
-src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot?#iefix') format('embedded-opentype'),
-   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.woff') format('woff'),
-   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.ttf') format('truetype'),
-   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.svg#Aregular') format('svg');
-font-weight: normal;
-font-style: normal;}
-
+  font-family: 'Aregular';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot');
+  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot?#iefix') format('embedded-opentype'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.woff') format('woff'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.ttf');
+}
 @font-face {
-font-family: 'Ademi';
-src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot');
-src: url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot?#iefix') format('embedded-opentype'),
-   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.woff') format('woff'),
-   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.ttf') format('truetype'),
-   url('//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.svg#Ademi') format('svg');
-font-weight: normal;
-font-style: normal;}
+  font-family: 'Ademi';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot');
+  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot?#iefix') format('embedded-opentype'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.woff') format('woff'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.ttf');
+}
 
 /* Global style + reset */
 body {
@@ -31,8 +26,8 @@ pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,
 s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,
 form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
   border: 0 none;
-  font: normal 13px "Aregular", Arial, sans-serif;
-  color: #404040;
+  font: normal 14px / 20px "Aregular", Arial, sans-serif;
+  color: #041f34;
   margin: 0;
   padding: 0;}
 
@@ -61,8 +56,10 @@ h2 {
 
 h3 {
   color: #2466a3;
-  font-size: 14px;
-  margin: 15px 0 7px;}
+  font-size: 1.1em;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  margin: 1em 0 .5em;}
 
 h4 {
   font-size: 14px;
@@ -122,7 +119,15 @@ textarea {
   padding: 2px 3px;}
 
 :focus {
-  outline-style: none;}
+  outline-style: none;
+  }
+
+input:focus, textarea:focus {
+  background-color: #fff;
+  border-color: #2e9cff;
+  box-shadow: 0 0 5px #c1e4ff;
+  color: #004881;
+}
 
 .centered-waiter {
  text-align: center;}
@@ -144,11 +149,11 @@ textarea {
 
 /* Main Container */
 .container {
-  width: 960px;
+  width: 1000px;
   margin: auto; }
 
 #wizardFrame {
-  margin-top: 10px;}
+  margin-top: .4em;}
 
 .mainBlock {
   background-color: #fff;
@@ -156,31 +161,33 @@ textarea {
 
 /* Left Column - steps */
 .leftCell {
-  width: 15%;
-  padding: 1.8em 0 2em;
-  background-color: #213f7d;}
+  width: 20%;
+  padding: 1em 0 2em;
+  background-color: #004881;}
 
 .navItem {
   margin: .2em 0;
   color: #7291a0;
-  padding: .4em 1.5em;
+  padding: .8em;
   padding-left: 3em;}
 
 .navItem a {
   display: block;
-  text-decoration: none;}
+  font-size: .95em;
+  letter-spacing: .015em;
+  text-decoration: none; }
 
 .navItemSelected {
   background-color: #fff;
-  color: #213f7d;}
+  color: #004881;}
 
 .navItemSelected a,
 .navItem a.checked,
 .navItem a:checked:hover {
-  background: transparent url(../images/checked.png) top left / 16px no-repeat;
+  background: transparent url(../images/checked.png) 0 1px / 16px no-repeat;
   font-family: "Ademi", Arial, sans-serif;
   font-weight: 200;
-  padding: .1em 0 0 1.8em;
+  padding: 0 0 0 1.8em;
   margin-left: -1.8em;}
 
 .navItem a.checked {
@@ -193,11 +200,14 @@ textarea {
 
 /* Main Column - content */
 .mainCell {
-  width: 65%;
+  width: 75%;
   padding: 2em 4em;}
 
 .screenDescription {
-  font-size: 120%;}
+  font-size: 120%;
+  margin-bottom: 1em;
+  display: block;
+  line-height: 1.4em; }
 
 .packageDescription {
   font-size: 90%;
@@ -208,10 +218,9 @@ textarea {
 .warnBlock, .errBlock {
   background-color: #f7f8f9;
   border-left: 1px solid #0af;
-  color: #1275a9;
   display: block;
-  margin: 1em 0;
-  padding: .5em 1em;}
+  margin: .5em 0 1.5em;
+  padding: 1em; }
 
 .warnBlock, .errBlock {
   border-left: 1px solid #fc0000;}
@@ -244,7 +253,7 @@ textarea {
 
 .helpCell,
 .detail {
-  color: #aaa;}
+  color: #95a5b1;}
 
 .helpCell {
   padding-bottom: 1em;}
@@ -269,31 +278,45 @@ textarea {
 
 /* Buttons */
 .buttonContainer {
-  margin: 1em 0;
+  margin: 2.5em 0;
   text-align: right;}
 
 .glossyButton,a.glossyButton {
   background-color: #00adff;
-  border-style: none;
+  border-radius: 2em;
+  border: 2px solid #00adff;
   color: white;
+  letter-spacing: .015em;
   font-size: 14px;
   font-family: "Ademi", Arial, sans-serif;
-  font-weight: 200;
   margin-bottom: 1em;
   padding: .7em 1em;
   transition: all 0.2s ease-in-out 0s;}
 
+.glossyButton.endButton {
+  background-color: #00bd43;
+  border-color: #00bd43;
+}
+
 #btnPrev {
-  background-color: #eee;
-  color: #333;
-  float: left;}
+  background-color: transparent;
+  border: 2px solid #788590;
+  font-weight: normal;
+  color: #788590;
+  float: left; }
 
 .glossyButton:hover,
 a.glossyButton:hover,
 #btnPrev:hover {
   background-color: #0075af;
+  border-color: #0075af;
   color: #fff;
-  cursor: pointer;}
+  cursor: pointer; }
+
+.glossyButton.endButton:hover {
+  background-color: #00d84c;
+  border-color: #00d84c;
+}
 
 /* Step: Proxy - Step: SMTP */
 #proxySettings table,
@@ -324,15 +347,12 @@ table.smtp,
   padding: 0 0 .5em;}
 
 /* Step: Modules selection */
-#tree {
-  border-left: 5px solid #00adff;
-  border-radius: 15px;
-  margin: 1em 0 2em;
-  padding: .7em 1em .4em;}
-
 #tree ul {
-  margin-left: 0;
-  font-size:1.1em;}
+  margin-left: 0;}
+
+#treeul label {
+  font-weight: bold;
+}
 
 #treeul input[type="checkbox"] {
   margin: 0 .8em .7em 0;}
@@ -340,7 +360,27 @@ table.smtp,
 ul#treeul li {
   font-size: 14px;
   list-style: none;
-  padding: 0;}
+  padding: 0;
+  /*padding: 1em;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+  border-bottom: 3px solid transparent;
+  margin: 1em;*/ }
+
+/*ul#treeul li:hover,
+ul#treeul li.selected {
+  cursor: pointer;
+  filter: brightness(102%);
+  -webkit-filter: brightness(102%);
+  z-index: 100;
+  border-bottom: 3px solid #00adff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+ul#treeul li.disabled {
+  opacity: .85;
+  background-color: #f9f9f9;
+}
+*/
 
 .hide, ul.hide,
 #treeul span,
@@ -411,12 +451,16 @@ ul#treeul li {
 
 .footer {
   padding: 1em;
-  background-color: #404040;
-  color: #aaa;
-  text-align: center;}
+  font-size: .85em;
+  text-align: center;
+  color: #b7cbda;}
 
-.footer a, .footer a:visited, .footer a:hover {
-  color: #fff;}
+.footer a, .footer a:visited {
+  font-size: .85em;
+  color: #788590; }
+
+.footer a:hover {
+  color: #0075af; }
 
 .footer span a {
   display: inline-block;

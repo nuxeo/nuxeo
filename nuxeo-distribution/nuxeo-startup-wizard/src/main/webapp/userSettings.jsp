@@ -89,15 +89,13 @@ $(document).ready(function() {
 
 
 <%@ include file="includes/form-start.jsp" %>
-<span class="screenDescription">
+
+<span class="screenExplanations">
   <fmt:message key="label.userSettings.description" />
   <a href="http://doc.nuxeo.com/x/K4AO" target="doc" href="#">
     <fmt:message key="label.userSettings.doc"/>
-  </a>
-</span>
-
-<span class="screenExplanations">
-<fmt:message key="label.userSettings.explanations" />
+  </a> <br />
+  <fmt:message key="label.userSettings.explanations" />
 </span>
 
 <%@ include file="includes/feedback.jsp" %>

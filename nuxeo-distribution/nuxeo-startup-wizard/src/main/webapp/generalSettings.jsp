@@ -3,12 +3,9 @@
 <h1><fmt:message key="label.generalSettings" /></h1>
 
 <%@ include file="includes/form-start.jsp" %>
-<span class="screenDescription">
-<fmt:message key="label.generalSettings.description" /> <br/>
-</span>
-
 <span class="screenExplanations">
-<fmt:message key="label.generalSettings.explanations" /> <br/>
+  <fmt:message key="label.generalSettings.description" />
+  <fmt:message key="label.generalSettings.explanations" />
 </span>
 
 <%@ include file="includes/feedback.jsp" %>
