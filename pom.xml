@@ -61,6 +61,7 @@
     <nuxeo.fsexporter.version>8.10-SNAPSHOT</nuxeo.fsexporter.version>
     <nuxeo.javaagent.version>8.10-SNAPSHOT</nuxeo.javaagent.version>
     <nuxeo.forum.version>8.10-SNAPSHOT</nuxeo.forum.version>
+    <nuxeo.pdfutils.version>8.10-SNAPSHOT</nuxeo.pdfutils.version>
 
     <!-- optional addons -->
     <nuxeo.sync.version>8.10-SNAPSHOT</nuxeo.sync.version>
@@ -130,6 +131,7 @@
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-forum</module>
+    <module>nuxeo-platform-pdf-utils</module>
   </modules>
 
   <dependencyManagement>
@@ -993,7 +995,7 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-	  <!-- Forum -->
+      <!-- Forum -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forum-parent</artifactId>
@@ -1018,6 +1020,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forum</artifactId>
         <version>${nuxeo.forum.version}</version>
+      </dependency>
+
+      <!-- PDF Utils -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-pdf-utils</artifactId>
+        <version>${nuxeo.pdfutils.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
