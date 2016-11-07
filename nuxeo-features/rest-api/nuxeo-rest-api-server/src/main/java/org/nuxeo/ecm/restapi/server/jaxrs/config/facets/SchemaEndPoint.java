@@ -18,13 +18,15 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.config.facets;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.restapi.jaxrs.io.types.Schemas;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -33,9 +35,9 @@ import org.nuxeo.runtime.api.Framework;
 public class SchemaEndPoint extends DefaultObject {
 
     @GET
-    public Schemas getAll() {
+    public List<Schema> getAll() {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
-        return new Schemas(sm.getSchemas());
+        return Arrays.asList(sm.getSchemas());
     }
 
     @GET
