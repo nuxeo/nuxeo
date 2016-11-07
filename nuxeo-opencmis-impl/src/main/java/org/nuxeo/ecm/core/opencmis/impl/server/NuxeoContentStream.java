@@ -24,8 +24,10 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -34,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Iterators;
 import org.apache.chemistry.opencmis.commons.data.CacheHeaderContentStream;
 import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.ContentLengthContentStream;
@@ -56,6 +59,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoContentStream
         implements CacheHeaderContentStream, LastModifiedContentStream, ContentLengthContentStream {
+
+    public static final String CONTENT_MD5_DIGEST_ALGORITHM = "contentMD5";
+
+    public static final String CONTENT_MD5_HEADER_NAME = "Content-MD5";
+
+    public static final String WANT_DIGEST_HEADER_NAME = "Want-Digest";
+
+    public static final String DIGEST_HEADER_NAME = "Digest";
 
     public static long LAST_MODIFIED;
 
@@ -112,6 +123,28 @@ public class NuxeoContentStream
             request = (HttpServletRequest) ((HttpServletRequestWrapper) request).getRequest();
         }
         return request.getMethod().equals("HEAD");
+    }
+
+    public static boolean hasWantDigestRequestHeader(HttpServletRequest request, String digestAlgorithm) {
+        if (request == null || digestAlgorithm == null) {
+            return false;
+        }
+        Enumeration<String> values = request.getHeaders(WANT_DIGEST_HEADER_NAME);
+        if (values == null) {
+            return false;
+        }
+        Iterator<String> it = Iterators.forEnumeration(values);
+        while (it.hasNext()) {
+            String value = it.next();
+            int semicolon = value.indexOf(';');
+            if (semicolon >= 0) {
+                value = value.substring(0, semicolon);
+            }
+            if (value.equalsIgnoreCase(digestAlgorithm)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
