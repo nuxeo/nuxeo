@@ -7,49 +7,60 @@
     <version>8.10-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-dam</artifactId>
-  <name>Nuxeo DAM</name>
-  <description>Nuxeo DAM</description>
+  <artifactId>nuxeo-dam-jsf</artifactId>
+  <name>Nuxeo DAM JSF</name>
+  <description>Nuxeo DAM JSF</description>
+  <packaging>pom</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-api</artifactId>
+      <artifactId>nuxeo-platform-imaging-jsf</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-core</artifactId>
+      <artifactId>nuxeo-platform-imaging-tiling-preview</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-convert</artifactId>
+      <artifactId>nuxeo-platform-audio-jsf</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-imaging-tiling</artifactId>
+      <artifactId>nuxeo-platform-video-jsf</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audio-core</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-api</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-video-api</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-core</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-video-convert</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-contrib</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-video-core</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-http</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-repo</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-gwt</artifactId>
       <scope>runtime</scope>
     </dependency>
 
