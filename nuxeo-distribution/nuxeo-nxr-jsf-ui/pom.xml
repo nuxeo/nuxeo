@@ -7,14 +7,14 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-jsf-ui</artifactId>
+  <artifactId>nuxeo-nxr-jsf-ui</artifactId>
   <packaging>zip</packaging>
   <name>Nuxeo JSF UI NXR</name>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-server</artifactId>
+      <artifactId>nuxeo-nxr-server</artifactId>
       <type>pom</type>
     </dependency>
 

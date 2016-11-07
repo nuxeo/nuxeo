@@ -8,7 +8,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-distribution-tomcat</artifactId>
+  <artifactId>nuxeo-server-tomcat</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Server Tomcat Build</name>
   <description>Package Nuxeo Server with Tomcat</description>
@@ -64,13 +64,13 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-server</artifactId>
+      <artifactId>nuxeo-nxr-server</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-jsf-ui</artifactId>
+      <artifactId>nuxeo-nxr-jsf-ui</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>

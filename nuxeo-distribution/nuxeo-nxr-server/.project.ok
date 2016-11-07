@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>nuxeo-distribution-server</name>
+  <name>nuxeo-nxr-server</name>
   <comment>Nuxeo Server NXR</comment>
   <projects/>
   <buildSpec>
