@@ -1,0 +1,22 @@
+<component name="org.nuxeo.ecm.platform.pdf.operations">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFAddPageNumbersOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFConvertToPicturesOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFEncryptReadOnlyOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractInfoOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractLinksOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractPagesOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFExtractTextOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFMergeBlobsOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFMergeDocumentsOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFRemoveEncryptionOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkImageOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkPDFOperation" />
+    <operation class="org.nuxeo.ecm.platform.pdf.operations.PDFWatermarkTextOperation" />
+
+  </extension>
+
+</component>
