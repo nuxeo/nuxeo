@@ -15,7 +15,6 @@
   </description>
 
   <modules>
-    <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-admin</module>
     <module>nuxeo-webengine-management</module>
     <module>nuxeo-webengine-samples-base</module>
