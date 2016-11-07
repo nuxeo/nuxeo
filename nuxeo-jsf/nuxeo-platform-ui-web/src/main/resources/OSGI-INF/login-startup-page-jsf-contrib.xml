@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="loginScreen">
     <loginScreenConfig>
       <startupPages>
-        <startupPage id="jsf" priority="10">
+        <startupPage id="jsf" priority="100">
           <path>nxstartup.faces</path>
         </startupPage>
       </startupPages>
