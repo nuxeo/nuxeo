@@ -4,54 +4,52 @@
 <%@page import="org.nuxeo.wizard.download.Preset"%><h1><fmt:message key="label.packagesSelection" /></h1>
 
 <%
-String baseUrl = ctx.getBaseUrl();
-if (baseUrl==null) {
-    baseUrl="/nuxeo/";
-}
-DownloadablePackageOptions options = PackageDownloader.instance().getPackageOptions();
-
+    String baseUrl = ctx.getBaseUrl();
+    if (baseUrl == null) {
+        baseUrl = "/nuxeo/";
+    }
+    DownloadablePackageOptions options = PackageDownloader.instance().getPackageOptions();
 %>
 <script type="text/javascript" src="<%=contextPath%>/scripts/jquery.collapsibleCheckboxTree.js"></script>
 <script language="javascript">
+  var jsonTree;
 
-var jsonTree;
-
-function getTree() {
-  $.get('<%=baseUrl%>PackageOptionsResource', function(data) {
-     jsonTree = data;
-     displayTree();
-     displayBlocs();
-  });
-}
-
-function createCheckBox(pkg) {
-  var checkBox = "<input type=\"checkbox\"";
-  checkBox += " name=\"" + pkg.id + "\" ";
-  checkBox += " implies=\"" + pkg.implies + "\" ";
-  checkBox += " id=\"pkg_" + pkg.id + "\" ";
-  checkBox += " pkg=\"" + pkg.package + "\" ";
-  checkBox += " exclusive=\"" + pkg.exclusive + "\" ";
-  checkBox += " title=\"" + pkg.label + "\" ";
-  checkBox += "/>";
-  checkBox += "<label for=";
-  checkBox += "\"pkg_" + pkg.id + "\">";
-  checkBox += pkg.label + " (" + pkg.shortlabel +")";
-  checkBox += "</label>";
-  if (pkg.description && pkg.description !== 'null') {
-    checkBox += "<p class=\"packageDescription\">";
-    checkBox += pkg.description;
-    checkBox += "</p>";
+  function getTree() {
+    $.get('<%=baseUrl%>PackageOptionsResource', function (data) {
+      jsonTree = data;
+      displayTree();
+      displayBlocs();
+    });
   }
 
-  checkBox = $(checkBox);
-  if (pkg.selected=='true') {
-    checkBox.attr('checked',true);
+  function createCheckBox(pkg) {
+    var checkBox = "<input type=\"checkbox\"";
+    checkBox += " name=\"" + pkg.id + "\" ";
+    checkBox += " implies=\"" + pkg.implies + "\" ";
+    checkBox += " id=\"pkg_" + pkg.id + "\" ";
+    checkBox += " pkg=\"" + pkg.package + "\" ";
+    checkBox += " exclusive=\"" + pkg.exclusive + "\" ";
+    checkBox += " title=\"" + pkg.label + "\" ";
+    checkBox += "/>";
+    checkBox += "<label for=";
+    checkBox += "\"pkg_" + pkg.id + "\">";
+    checkBox += pkg.label + " (" + pkg.shortlabel + ")";
+    checkBox += "</label>";
+    if (pkg.description && pkg.description !== 'null') {
+      checkBox += "<p class=\"packageDescription\">";
+      checkBox += pkg.description;
+      checkBox += "</p>";
+    }
+
+    checkBox = $(checkBox);
+    if (pkg.selected == 'true') {
+      checkBox.attr('checked', true);
+    }
+    if (pkg.virtual == 'true') {
+      checkBox.attr('disabled', true);
+    }
+    return checkBox;
   }
-  if (pkg.virtual=='true') {
-    checkBox.attr('disabled',true);
-  }
-  return checkBox;
-}
 
 function addNode(container, pkg, level) {
   var li = $("<li></li>");
@@ -286,7 +284,6 @@ $(document).ready(function(){
 <span class="screenExplanations">
   <fmt:message key="label.packagesSelection.description" />
 </span>
-
 <%
 String presetClass = "display:none";
 if ("true".equals(request.getParameter("showPresets"))) {
