@@ -7,6 +7,7 @@
    "changeToken" : null,
    "isCheckedOut" : true,
    "isVersion": false,
+   "isProxy": false,
    "versionLabel" : "0.0",
    "parentRef" : "the-parent-id",
    "state" : "project",

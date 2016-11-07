@@ -145,6 +145,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         jg.writeStringField("parentRef", doc.getParentRef() != null ? doc.getParentRef().toString() : null);
         jg.writeBooleanField("isCheckedOut", doc.isCheckedOut());
         jg.writeBooleanField("isVersion", doc.isVersion());
+        jg.writeBooleanField("isProxy", doc.isProxy());
         jg.writeStringField("changeToken", doc.getChangeToken());
         jg.writeStringField("title", doc.getTitle());
         if (mustFetch("versionLabel")) {
