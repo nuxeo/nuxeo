@@ -49,6 +49,7 @@
     <doctype name="DocumentRouteInstancesRoot" extends="Folder">
       <facet name="HiddenInNavigation" />
       <facet name="SystemDocument" />
+      <facet name="HiddenInCreation" />
       <subtypes>
         <type>HiddenFolder</type>
       </subtypes>
@@ -57,6 +58,7 @@
     <doctype name="DocumentRouteModelsRoot" extends="Folder">
       <facet name="HiddenInNavigation" />
       <facet name="SystemDocument" />
+      <facet name="HiddenInCreation" />
       <subtypes>
         <type>Folder</type>
       </subtypes>
