@@ -29,12 +29,18 @@ import org.junit.runners.Suite;
  * @since 6.0
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ ITSearchTabTest.class, ITArchivedVersionsTest.class, ITCollectionsTest.class,
+@Suite.SuiteClasses({ ITActivityDashboardsTest.class, ITAdminNavigationTest.class, ITArchivedVersionsTest.class,
+        ITBlobActionsTest.class, ITCollectionsTest.class, ITCommentTest.class, ITContentViewLocalConfigTest.class,
         ITContextualActionsTest.class, ITCopyPasteTest.class, ITDefaultWorkflowTest.class, ITDnDImportTest.class,
-        ITDocumentRelationTest.class, ITFileUploadTest.class, ITLoginLogoutTest.class, ITLogsViewerTest.class,
-        ITModifyWorkspaceDescriptionTest.class, ITNoteDocumentTest.class, ITRichfileUploadTest.class,
-        ITRSSAtomExportTest.class, ITSafeEditTest.class, ITSuggestBoxTest.class, ITSelect2Test.class,
-        ITSelectAndFilterTest.class, ITTaggingTest.class, ITUsersTest.class, ITVocabularyTest.class })
+        ITDocumentRelationTest.class, ITDomainTest.class, ITErrorTest.class, ITExportTest.class, ITFileUploadTest.class,
+        ITFolderTest.class, ITGroupsTest.class, ITLockTest.class, ITLoginLogoutTest.class, ITLogsViewerTest.class,
+        ITMainTabsTest.class, ITManageTest.class, ITMiscLittleThingsTest.class, ITModifyWorkspaceDescriptionTest.class,
+        ITNoteDocumentTest.class, ITPermissionsTest.class, ITPersonalWorkspaceTest.class, ITPublishDocumentTests.class,
+        ITRichfileUploadTest.class, ITRSSAtomExportTest.class, ITSafeEditTest.class, ITSearchTabTest.class,
+        ITSectionTest.class, ITSelect2Test.class, ITSelectAndFilterTest.class, ITSuggestBoxTest.class,
+        ITSelect2Test.class, ITSelectAndFilterTest.class, ITTaggingTest.class, ITUsersTest.class,
+        ITUserProfileTest.class, ITUsersGroupsTest.class, ITUsersTest.class, ITVerifyDeleteDocumentContentTest.class,
+        ITVocabularyTest.class, ITWorkListTest.class, ITWorkspaceTest.class })
 public abstract class AbstractCapITSuite {
 
 }
