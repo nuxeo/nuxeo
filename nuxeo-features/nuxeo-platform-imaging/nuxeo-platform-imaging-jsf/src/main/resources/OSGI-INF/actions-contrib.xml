@@ -31,6 +31,21 @@
       <filter-id>hasPictureFacet</filter-id>
     </action>
 
+    <action id="recomputePictureViews" enabled="false" order="-100"
+            link="#{imagingRecomputeActions.recomputePictureViews}"
+            label="label.imaging.recompute.picture.views" icon="/icons/generate.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>hasPictureFacet</filter-id>
+      <filter-id>canRecomputePictureViews</filter-id>
+    </action>
+
+    <action id="Imaging" link="/incl/imaging/imaging_admin_recompute_views.xhtml" label="adm.imaging"
+            type="admin_rest_document_link"
+            order="150">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -70,6 +85,12 @@
           contentView.currentResultLayout.showSlideshow,
           showSlideshow)}
         </condition>
+      </rule>
+    </filter>
+
+    <filter id="canRecomputePictureViews">
+      <rule grant="true">
+        <permission>Write</permission>
       </rule>
     </filter>
 
