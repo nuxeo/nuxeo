@@ -40,29 +40,29 @@ public class SchemaJsonWriterTest extends AbstractJsonWriterTest.Local<SchemaJso
     public void test() throws Exception {
         Schema schema = schemaManager.getSchema("dublincore");
         JsonAssert json = jsonAssert(schema);
-        json.properties(4);
+        json.properties(5);
         json.has("entity-type").isEquals("schema");
         json.has("name").isEquals("dublincore");
         json.has("prefix").isEquals("dc");
         json = json.has("fields").properties(schema.getFieldsCount());
-        json.has("contributors").has("type").isEquals("string[]");
-        json.has("coverage").has("type").isEquals("string");
-        json.has("created").has("type").isEquals("date");
-        json.has("creator").has("type").isEquals("string");
-        json.has("description").has("type").isEquals("string");
-        json.has("expired").has("type").isEquals("date");
-        json.has("format").has("type").isEquals("string");
-        json.has("issued").has("type").isEquals("date");
-        json.has("language").has("type").isEquals("string");
-        json.has("lastContributor").has("type").isEquals("string");
-        json.has("modified").has("type").isEquals("date");
-        json.has("nature").has("type").isEquals("string");
-        json.has("publisher").has("type").isEquals("string");
-        json.has("rights").has("type").isEquals("string");
-        json.has("source").has("type").isEquals("string");
-        json.has("subjects").has("type").isEquals("string[]");
-        json.has("title").has("type").isEquals("string");
-        json.has("valid").has("type").isEquals("date");
+        json.has("contributors").isEquals("string[]");
+        json.has("coverage").isEquals("string");
+        json.has("created").isEquals("date");
+        json.has("creator").isEquals("string");
+        json.has("description").isEquals("string");
+        json.has("expired").isEquals("date");
+        json.has("format").isEquals("string");
+        json.has("issued").isEquals("date");
+        json.has("language").isEquals("string");
+        json.has("lastContributor").isEquals("string");
+        json.has("modified").isEquals("date");
+        json.has("nature").isEquals("string");
+        json.has("publisher").isEquals("string");
+        json.has("rights").isEquals("string");
+        json.has("source").isEquals("string");
+        json.has("subjects").isEquals("string[]");
+        json.has("title").isEquals("string");
+        json.has("valid").isEquals("date");
     }
 
     @Test
