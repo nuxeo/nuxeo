@@ -31,14 +31,14 @@ h4, h5, h6 {
   font-weight: 200;}
 
 h1 {
-  font-size: 22px;
+  font-size: 1.3em;
   margin: 0 0 15px;
   color: #00adff;}
 
 h2 {
-  font-size: 16px;
-  margin: 0.75em 0 0.5em 0;
-  color: #c30000;}
+  font-size: 1.2em;
+  margin: 2em 0 1em;
+  color: #2466a3;}
 
 h3 {
   color: #2466a3;
@@ -147,7 +147,7 @@ input:focus, textarea:focus {
 
 /* Left Column - steps */
 .leftCell {
-  width: 25%;
+  width: 23%;
   padding: 1em 0 2em;
   background-color: #1166aa;}
 
@@ -199,7 +199,7 @@ input:focus, textarea:focus {
 
 /* Main Column - content */
 .mainCell {
-  width: 75%;
+  width: 77%;
   padding: 2em 4em;}
 
 .screenDescription {
@@ -355,37 +355,16 @@ table.smtp,
 #tree ul {
   margin-left: 0;}
 
+#tree h2:first-of-type {
+  margin-top: 0;
+}
+
 #treeul label {
   font-weight: bold;
 }
 
 #treeul input[type="checkbox"] {
   margin: 0 .8em .7em 0;}
-
-ul#treeul li {
-  font-size: 14px;
-  list-style: none;
-  padding: 0;
-  /*padding: 1em;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
-  border-bottom: 3px solid transparent;
-  margin: 1em;*/ }
-
-/*ul#treeul li:hover,
-ul#treeul li.selected {
-  cursor: pointer;
-  filter: brightness(102%);
-  -webkit-filter: brightness(102%);
-  z-index: 100;
-  border-bottom: 3px solid #00adff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-ul#treeul li.disabled {
-  opacity: .85;
-  background-color: #f9f9f9;
-}
-*/
 
 .hide, ul.hide,
 #treeul span,
@@ -447,6 +426,74 @@ ul#treeul li.disabled {
   background-color: green;
   height: 12px;
   border-radius: 2px;}
+
+/* Package Selection */
+.packageContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.package {
+  width: 31%;
+  border: 1px solid #ddd;
+  padding: 1em;
+  position: relative;
+  box-sizing: border-box;
+  margin: 0 .8em .8em 0;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+  border-bottom: 3px solid transparent;
+}
+
+.package:hover,
+.package.checked {
+  cursor: pointer;
+  z-index: 100;
+  border-bottom: 3px solid #00adff;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.package.checked {
+  border-bottom: 3px solid #00bd43;
+}
+
+.package:after {
+  content: '\002714';
+  position: absolute;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 3em;
+  width: 1.5em;
+  height: 1.5em;
+  color: #ddd;
+  text-align: center;
+  top: -7px;
+  right: -7px;
+}
+
+.package.checked:after {
+  border-color: #00bd43;
+  background-color: #00bd43;
+  color: #fff;
+}
+
+.package label {
+  font-weight: bold;
+}
+
+.package .packageDescription {
+  padding: .5em 0;
+  margin: 0;
+}
+
+.package input {
+  display: none;
+}
+
+body .package.disabled {
+  background-color: #f3f5f6;
+  border-bottom: 3px solid #00bd43;
+}
 
 /* Footer style */
 .rightCell {

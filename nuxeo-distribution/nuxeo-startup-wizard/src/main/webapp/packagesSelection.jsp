@@ -9,26 +9,6 @@
     DownloadablePackageOptions options = PackageDownloader.instance().getPackageOptions();
 %>
 
-<style>
-    .package {
-        width: 30%;
-        float: left;
-        border: 1px solid transparent;
-    }
-
-    .package input {
-        display: none;
-    }
-
-    body .package.disabled {
-        background-color: #e3e3e3;
-    }
-
-    .package.checked {
-        background-color: #e3e300;
-        border: 1px solid red;
-    }
-</style>
 <script language="javascript">
   var jsonTree;
 
@@ -42,9 +22,7 @@
   function buildList() {
     var $tree = $('#tree');
     jsonTree.children.forEach(function (child) {
-      $tree.append($('<div style="clear:both" />'));
       $tree.append($('<h2>' + child.label + '</h2>'));
-      $tree.append($('<div style="clear:both" />'));
       var $pkgContainer = $('<div class="packageContainer" />');
       child.children.forEach(function (pkg) {
         var $pkg = $('<div class="package" />');
@@ -128,7 +106,7 @@
     checkBox += "/>";
     checkBox += "<label for=";
     checkBox += "\"pkg_" + pkg.id + "\">";
-    checkBox += pkg.label + " (" + pkg.shortlabel + ")";
+    checkBox += pkg.label;
     checkBox += "</label>";
 
     checkBox = $(checkBox);
@@ -209,7 +187,6 @@
   </span>
 <br/>
 <div id="tree"></div>
-<div style="clear:both"></div>
 
 <span class="screenExplanations">
 <fmt:message key="label.packagesSelection.explanations"/> <br/>
