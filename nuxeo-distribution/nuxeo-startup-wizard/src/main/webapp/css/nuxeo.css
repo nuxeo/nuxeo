@@ -1,23 +1,9 @@
 /* Wizard Styles */
 
-/* Corporate fonts */
-@font-face {
-  font-family: 'Aregular';
-  font-style: normal;
-  font-weight: 400;
-  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot');
-  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.eot?#iefix') format('embedded-opentype'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.woff') format('woff'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Regular.ttf');
-}
-@font-face {
-  font-family: 'Ademi';
-  font-style: normal;
-  font-weight: 400;
-  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot');
-  src: url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot?#iefix') format('embedded-opentype'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.woff') format('woff'), url('//www.nuxeo.com/assets/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.ttf');
-}
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
 
 /* Global style + reset */
-body {
+html, body {
   height: 100%;
   width: 100%;}
 
@@ -26,13 +12,13 @@ pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,
 s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,
 form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
   border: 0 none;
-  font: normal 14px / 20px "Aregular", Arial, sans-serif;
+  font: normal 14px / 20px 'Open Sans', Arial, sans-serif;
   color: #041f34;
   margin: 0;
   padding: 0;}
 
 body {
-  background: url("../images/bg.png") no-repeat scroll right bottom #e2f6ff;}
+  background: url("../images/bg.png") no-repeat fixed right bottom #002543;}
 
 hr {
   color: #fff;
@@ -41,7 +27,7 @@ hr {
 
 h1, h2, h3,
 h4, h5, h6 {
-  font-family: "Ademi", Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif;
   font-weight: 200;}
 
 h1 {
@@ -56,19 +42,21 @@ h2 {
 
 h3 {
   color: #2466a3;
-  font-size: 1.1em;
-  border-bottom: 1px solid #eee;
+  font-size: 1.2em;
   font-weight: bold;
-  margin: 1em 0 .5em;}
+  margin: 1.5em 0 .3em;}
 
 h4 {
-  font-size: 14px;
+  font-size: 1.15em;
   color: #5290ca;}
 
 h5 {
   border-bottom: 1px solid #e8e8e8;
-  font-size: 15px;
-  margin: 10px 0;}
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 1em 0;
+  color: #2466a3 ;
+  padding: 1.5em 0 .5em; }
 
 h6 {
   font-size: 13px;
@@ -97,7 +85,7 @@ td {
   vertical-align: top;}
 
 b, strong, .bold {
-  font-family: "Ademi", Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif;
   font-weight: 200;}
 
 input[type="text"], input[type="password"], textarea {
@@ -114,7 +102,7 @@ input[type="text"], input[type="password"], textarea {
 
 textarea {
   border: 1px solid #dedede;
-  font: 12px "Aregular", Arial, sans-serif;
+  font: 12px 'Open Sans', Arial, sans-serif;
   padding: 2px 3px;}
 
 :focus {
@@ -125,7 +113,7 @@ input:focus, textarea:focus {
   background-color: #fff;
   border-color: #2e9cff;
   box-shadow: 0 0 5px #c1e4ff;
-  color: #004881;
+  color: #1166aa;
 }
 
 .centered-waiter {
@@ -136,12 +124,13 @@ input:focus, textarea:focus {
 /* Header */
 #topbar {
   background-color: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-  padding: .9em 0 .7em }
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  padding: 1.2em 0 .9em;
+  position: relative; }
 
 #topbar a {
   display: inline-block;
-  padding: 0 0 0 1.5em;}
+  padding: 0 0 0 2em;}
 
 .visibility {
   visibility: hidden;}
@@ -151,29 +140,28 @@ input:focus, textarea:focus {
   width: 1000px;
   margin: auto; }
 
-#wizardFrame {
-  margin-top: .4em;}
-
 .mainBlock {
   background-color: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   padding: 0;}
 
 /* Left Column - steps */
 .leftCell {
-  width: 20%;
+  width: 25%;
   padding: 1em 0 2em;
-  background-color: #004881;}
+  background-color: #1166aa;}
 
 .navItem {
   margin: .2em 0;
-  color: #7291a0;
+  color: #d8eeff;
   padding: .8em;
-  padding-left: 3em;}
+  font-size: .95em;
+  position: relative;
+  letter-spacing: .015em;
+  padding-left: 4em;}
 
 .navItem a {
   display: block;
-  font-size: .95em;
-  letter-spacing: .015em;
   text-decoration: none; }
 
 .navItemSelected {
@@ -189,7 +177,20 @@ input:focus, textarea:focus {
   margin-left: -1.8em;}
 
 .navItem a.checked {
-  color: #fff;}
+  color: #fff; }
+
+.navItem.navItemSelected:after {
+  display: block;
+  width: .9em;
+  background-color: #00adff;
+  height: .9em;
+  z-index: 10;
+  margin: 0 0 0 -1.8em;
+  content: '';
+  border-radius: 2em;
+  position: absolute;
+  top: 1.1em;
+  }
 
 .navItem:hover a,
 .navItemSelected a,
@@ -221,11 +222,11 @@ input:focus, textarea:focus {
   padding: 1em; }
 
 .warnBlock, .errBlock {
-  border-left: 1px solid #fc0000;}
+  border-left: 1px solid #dd4900;}
 
 .errItem,
 .warnBlock, .errBlock {
-  color: #d00;}
+  color: #dd6800;}
 
 .infoBlock {
   background-color: #f7f8f9;
@@ -237,10 +238,6 @@ input:focus, textarea:focus {
 
 .infoItem {
   color: #00B;}
-
-#wizardform h5 {
-  color: #213f7d ;
-  padding: 1.5em 0 .5em;}
 
 /* Tables & Forms */
 .labelCell {
@@ -278,7 +275,9 @@ input:focus, textarea:focus {
   margin: 2.5em 0;
   text-align: right;}
 
-.glossyButton,a.glossyButton {
+.glossyButton,a.glossyButton,
+#checkNetwork, #checkAuth,
+#testUserLdapParam, #testGroupLdapParam  {
   background-color: #00adff;
   border-radius: 2em;
   border: 2px solid #00adff;
@@ -289,6 +288,13 @@ input:focus, textarea:focus {
   padding: .7em 1em;
   transition: all 0.2s ease-in-out 0s;}
 
+#checkNetwork, #checkAuth, #testUserLdapParam, #testGroupLdapParam {
+  font-size: .8em;
+  margin: .5em .2em;
+  padding: 0 .5em;
+  border-radius: 0;
+}
+
 .glossyButton.endButton {
   background-color: #00bd43;
   border-color: #00bd43;
@@ -296,14 +302,16 @@ input:focus, textarea:focus {
 
 #btnPrev {
   background-color: transparent;
-  border: 2px solid #788590;
+  border: 2px solid #8a99a5;
   font-weight: normal;
   color: #788590;
   float: left; }
 
 .glossyButton:hover,
 a.glossyButton:hover,
-#btnPrev:hover {
+#btnPrev:hover,
+#checkNetwork:hover, #checkAuth:hover,
+#testUserLdapParam:hover, #testGroupLdapParam:hover  {
   background-color: #0075af;
   border-color: #0075af;
   color: #fff;
@@ -313,6 +321,7 @@ a.glossyButton:hover,
   background-color: #00d84c;
   border-color: #00d84c;
 }
+
 
 /* Step: Proxy - Step: SMTP */
 #proxySettings table,
@@ -338,7 +347,7 @@ table.smtp,
   margin: 0;}
 
 .formPadding li {
-  font-family: "Ademi",Arial,sans-serif;
+  font-family: 'Open Sans',Arial,sans-serif;
   font-weight: 200;
   padding: 0 0 .5em;}
 
@@ -389,7 +398,7 @@ ul#treeul li.disabled {
 
 .presetLabel {
   font-size: 133%;
-  font-family: "Ademi", Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif;
   font-weight: 200;}
 
 .presetBtn {
@@ -409,7 +418,7 @@ ul#treeul li.disabled {
   width: 100px;
   text-align: center;
   text-transform: uppercase;
-  font-family: "Ademi", Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif;
   font-weight: 200;
   border-radius: .5em;
   cursor: pointer;
@@ -441,7 +450,7 @@ ul#treeul li.disabled {
 
 /* Footer style */
 .rightCell {
-  width: 20%;
+  width: 0;
   padding: 0;
   display: none;}
 
@@ -475,19 +484,4 @@ ul#treeul li.disabled {
   padding-left:0.2em;
   color:red;
   font-size:133%;
-}
-
-#checkNetwork, #checkAuth, #testUserLdapParam, #testGroupLdapParam {
-  background-color: #5c99bd;
-  border-radius: 0.2em;
-  color: white;
-  display: inline-block;
-  font-size: 80%;
-  line-height: 2em;
-  margin: 0.5em 0.2em;
-  padding: 0.2em 0.7em 0;
-}
-
-#checkNetwork:hover, #checkAuth:hover, #testUserLdapParam:hover, #testGroupLdapParam:hover {
-  background-color: #1ca3c9;
 }
