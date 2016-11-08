@@ -26,7 +26,6 @@
             value="test_rest.py[testWriter:testReader],
                    test_pages.py,
                    test_nuxeo.py[testInit:testWriter:testReader],
-                   test_webengine.py,
                    test_multiconversation.py" />
 
 </project>

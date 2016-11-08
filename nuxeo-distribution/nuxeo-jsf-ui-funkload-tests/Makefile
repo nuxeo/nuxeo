@@ -38,9 +38,6 @@ rest:
 page:
 	fl-run-test -v --simple-fetch test_pages.py $(FLOPS)
 
-webengine:
-	fl-run-test -v --simple-fetch test_webengine.py $(FLOPS)
-
 dav:
 	fl-run-test -v --simple-fetch test_dav.py $(FLOPS)
 
