@@ -670,6 +670,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-core</artifactId>
         <version>${nuxeo.drive.version}</version>
         <type>test-jar</type>
