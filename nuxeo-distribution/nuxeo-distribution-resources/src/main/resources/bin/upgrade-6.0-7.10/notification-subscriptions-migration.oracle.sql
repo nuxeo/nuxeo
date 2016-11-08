@@ -174,7 +174,7 @@ BEGIN
          FOR username
             IN (SELECT DISTINCT userid
                   FROM usersubscription
-                 WHERE     docid = docid
+                 WHERE usersubscription.docid = subscription.docid
                        AND usersubscription.notification =
                               notification.notification)
          LOOP

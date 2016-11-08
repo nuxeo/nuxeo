@@ -64,7 +64,7 @@ BEGIN
         SELECT MAX(POS) INTO POS2 FROM subscribers WHERE id = notif_uuid;
         FOR username IN  SELECT DISTINCT us.userid
                            FROM usersubscription AS us
-                          WHERE docid= docid
+                          WHERE us.docid = subscription.docid
                             AND us.notification = notification.notification LOOP
 
           SELECT COUNT(*) INTO CNT
