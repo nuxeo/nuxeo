@@ -1,5 +1,10 @@
 <packages>
   <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.10-SNAPSHOT/mp/">
+    <!-- Virtual Packages -->
+    <package id="nuxeo-ui-virtual" label="User interface" color="#635959" textcolor="#FFF"
+      shortlabel="UI" virtual="true" />
+    <package id="nuxeo-addon-virtual" label="Additional addons" color="#635959" textcolor="#FFF"
+      shortlabel="ADDON" virtual="true" />
     <package id="nuxeo-server" label="Server" color="#635959" textcolor="#FFF"
       shortlabel="SERVER" virtual="true" />
     <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
