@@ -81,6 +81,8 @@ public class NotificationConstants {
 
     public static final String DOCUMENT_MAIN_FILE = "docMainFileUrl";
 
+    public static final String IS_JSF_UI = "isJSFUI";
+
     private NotificationConstants() {
     }
 

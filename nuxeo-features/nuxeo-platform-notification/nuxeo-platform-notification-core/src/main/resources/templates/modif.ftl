@@ -21,8 +21,14 @@
                           <tbody>
                             <tr>
                               <td style="border:1px solid #eee;color:#888;font-size:13px;white-space:nowrap;">Document</td>
-                              <td style="border:1px solid #eee;color:#000;font-size:13px;"><a href="${docUrl}" style="color:#22aee8;text-decoration:underline;word-wrap:break-word!important;">
-                              ${htmlEscape(docTitle)}</a>
+                              <td style="border:1px solid #eee;color:#000;font-size:13px;">
+                              <#if docUrl??>
+                                <a href="${docUrl}" style="color:#22aee8;text-decoration:underline;word-wrap:break-word!important;">
+                              </#if>
+                                  ${htmlEscape(docTitle)}
+                              <#if docUrl??>
+                                </a>
+                              </#if>
                               </td>
                             </tr>
                             <#assign description = document.dublincore.description />
@@ -34,11 +40,17 @@
                             </#if>
                             <tr>
                               <td style="border:1px solid #eee;color:#888;font-size:13px;white-space:nowrap;">Author</td>
-                              <td style="border:1px solid #eee;color:#000;font-size:13px;"><a style="color:#22aee8;text-decoration:underline;word-wrap:break-word!important;" href="${userUrl}">
-                              <#if principalAuthor?? && (principalAuthor.lastName!="" || principalAuthor.firstName!="")>
-                              ${htmlEscape(principalAuthor.firstName)} ${htmlEscape(principalAuthor.lastName)} 
+                              <td style="border:1px solid #eee;color:#000;font-size:13px;">
+                              <#if userUrl??>
+                                <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word!important;" href="${userUrl}">
                               </#if>
-                               (${author})</a>
+                                  <#if principalAuthor?? && (principalAuthor.lastName!="" || principalAuthor.firstName!="")>
+                                    ${htmlEscape(principalAuthor.firstName)} ${htmlEscape(principalAuthor.lastName)} 
+                                  </#if>
+                                 (${author})
+                              <#if userUrl??>
+                                </a>
+                              </#if>
                               </td>
                             </tr>
                             <tr>
@@ -70,12 +82,15 @@
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docMainFileUrl}">&#187; Download the main file</a>
                         </p>
                       </#if>
+                      <#if docUrl?? && isJSFUI>
                         <p style="margin:0;">
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}?tabIds=%3Aview_comments">&#187; See all the comments of the document</a>
                         </p>
                         <p style="margin:0;">
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}?tabIds=%3ATAB_CONTENT_HISTORY">&#187; Review history of the document</a>
-                        </p><br/>
+                        </p>
+                      </#if>
+                        <br/>
                       </td>
                     </tr>
                     <tr>

@@ -43,6 +43,13 @@ public interface DocumentViewCodecManager extends Serializable {
     String getDefaultCodecName();
 
     /**
+     * Returns the {@link DocumentViewCodec} with the given name or {@code null} if ot doesn't exist.
+     *
+     * @since 8.10
+     */
+    DocumentViewCodec getCodec(String name);
+
+    /**
      * Returns a DocumentView applying for given url, or null.
      * <p>
      * Iterates over registered codecs, starting from the default codec, and if

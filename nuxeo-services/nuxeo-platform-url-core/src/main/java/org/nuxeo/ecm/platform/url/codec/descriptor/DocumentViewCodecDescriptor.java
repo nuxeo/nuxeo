@@ -42,12 +42,19 @@ public class DocumentViewCodecDescriptor {
     @XNode("@enabled")
     protected boolean enabled;
 
+    @XNode("@priority")
+    protected int priority = 0;
+
     public String getClassName() {
         return className;
     }
 
     public boolean getEnabled() {
         return enabled;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public String getName() {

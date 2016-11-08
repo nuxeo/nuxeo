@@ -79,7 +79,6 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         if (CODECS_EXTENSION_POINT.equals(extensionPoint)) {
             DocumentViewCodecDescriptor desc = (DocumentViewCodecDescriptor) contribution;
             String codecName = desc.getName();
-            descriptors.put(codecName, desc);
             if (desc.getDefaultCodec()) {
                 defaultCodecName = codecName;
             }
@@ -102,7 +101,10 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
             if (prefix != null) {
                 codec.setPrefix(prefix);
             }
-            codecs.put(codecName, codec);
+            if (!descriptors.containsKey(codecName) || desc.getPriority() > descriptors.get(codecName).getPriority()) {
+                descriptors.put(codecName, desc);
+                codecs.put(codecName, codec);
+            }
             log.debug("Added URL codec: " + codecName);
         }
     }

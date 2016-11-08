@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.url.service.DocumentViewCodecService.contrib.tests">
+
+  <extension target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService" point="codecs">
+    <documentViewCodec name="docid" enabled="true" prefix="testNxdoc" priority="100"
+      class="org.nuxeo.url.codec.DocumentIdCodecTest" />
+  </extension>
+
+
+</component>
