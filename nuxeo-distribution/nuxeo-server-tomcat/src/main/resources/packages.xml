@@ -1,5 +1,5 @@
 <packages>
-  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.10-SNAPSHOT/mp/">
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.4-SNAPSHOT/mp/">
     <!-- Virtual Packages -->
     <package id="nuxeo-ui-virtual" label="User interface" color="#635959" textcolor="#FFF"
       shortlabel="UI" virtual="true" />
@@ -7,6 +7,13 @@
       shortlabel="ADDON" virtual="true" />
     <package id="nuxeo-server" label="Server" color="#635959" textcolor="#FFF"
       shortlabel="SERVER" virtual="true" />
+
+    <!-- virtual package to handle no-ui -->
+    <package id="nuxeo-no-ui" label="No-UI" color="#635959" textcolor="#FFF"
+      shortlabel="NOUI" virtual="true"
+      desc="Install Nuxeo without any UI; you'll still be able to use it as a standalone server; use clients to call the REST API, Automation API, ..."/>
+
+    <!-- Addon list -->
     <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
       desc="The Nuxeo DAM addon is a robust, extensible Digital Asset Management solution that helps marketing and brand managers catalog, process, store, retrieve and distribute rich media content, including images, audio and video." />
     <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE"
@@ -35,7 +42,12 @@
   <install>
     <packageOptions>
       <package ref="nuxeo-server" exclusive="false">
-        <package ref="nuxeo-jsf-ui" exclusive="false">
+        <package ref="nuxeo-ui-virtual" exclusive="false">
+          <package ref="nuxeo-no-ui" exclusive="true"/>
+          <package ref="nuxeo-jsf-ui" exclusive="false"/>
+          <package ref="nuxeo-web-ui" exclusive="false" />
+        </package>
+        <package ref="nuxeo-addon-virtual" exclusive="false">
           <package ref="nuxeo-dam" exclusive="false" />
           <package ref="nuxeo-drive" exclusive="false" />
           <package ref="nuxeo-diff" exclusive="false" />
@@ -45,7 +57,6 @@
           <package ref="nuxeo-liveconnect" exclusive="false" />
           <package ref="nuxeo-review-workflows-dashboards" exclusive="false" />
         </package>
-        <package ref="nuxeo-web-ui" exclusive="false" />
       </package>
     </packageOptions>
   </install>
