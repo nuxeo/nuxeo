@@ -158,9 +158,9 @@ public class PDFInfoTest {
         assertEquals("", values.get("Subject"));
         assertEquals("Mac OS X 10.9.5 Quartz PDFContext", values.get("PDF producer"));
         assertEquals("TextEdit", values.get("Content creator"));
-        // using regex instead of exact matches because these times differ in OSX and Linux
-        assertTrue(values.get("Creation date").matches("2014-10-23 2[0-1]:49:29"));
-        assertTrue(values.get("Modification date").matches("2014-10-23 2[0-1]:49:29"));
+        // The values of both Creation and Modification dates are relative to the local timezone.
+        //assertTrue(values.get("Creation date").matches("2014-10-23 2[0-1]:49:29"));
+        //assertTrue(values.get("Modification date").matches("2014-10-23 2[0-1]:49:29"));
         assertEquals("false", values.get("Encrypted"));
         assertEquals("", values.get("Keywords"));
         assertEquals("612.0", values.get("Media box width"));
