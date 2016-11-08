@@ -8,7 +8,7 @@
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
     "nuxeo-elements": "nuxeo/nuxeo-elements#0.2.7",
     "nuxeo-document-permissions": "nuxeo/nuxeo-document-permissions#0.2.7",
-    "nuxeo-ui-elements": "nuxeo/nuxeo-ui-elements#0.1.0",
+    "nuxeo-ui-elements": "nuxeo/nuxeo-ui-elements#0.1.2",
     "moment": "2.10.6",
     "marked-element": "PolymerElements/marked-element#~1.1.3"
   }
