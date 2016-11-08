@@ -85,13 +85,15 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
             // try to instantiate it
             String className = desc.getClassName();
             if (className == null) {
-                throw new IllegalArgumentException(String.format("Invalid class for codec '%s': check ERROR logs"
-                        + " at startup", codecName));
+                throw new IllegalArgumentException(
+                        String.format("Invalid class for codec '%s': check ERROR logs" + " at startup", codecName));
             }
             DocumentViewCodec codec;
             try {
                 // Thread context loader is not working in isolated EARs
-                codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader().loadClass(className).newInstance();
+                codec = (DocumentViewCodec) DocumentViewCodecManager.class.getClassLoader()
+                                                                          .loadClass(className)
+                                                                          .newInstance();
             } catch (ReflectiveOperationException e) {
                 String msg = String.format("Caught error when instantiating codec '%s' with " + "class '%s' ",
                         codecName, className);
@@ -130,6 +132,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         return lst;
     }
 
+    @Override
     public String getDefaultCodecName() {
         String name = defaultCodecName;
         if (name == null) {
@@ -147,6 +150,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         return getCodec(defaultCodecName);
     }
 
+    @Override
     public DocumentViewCodec getCodec(String codecName) {
         if (StringUtils.isBlank(codecName)) {
             return null;
@@ -154,6 +158,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         return codecs.get(codecName);
     }
 
+    @Override
     public String getUrlFromDocumentView(DocumentView docView, boolean needBaseUrl, String baseUrl) {
         String url = null;
         DocumentViewCodec codec = getCodec(getDefaultCodecName());
@@ -176,6 +181,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         return url;
     }
 
+    @Override
     public String getUrlFromDocumentView(String codecName, DocumentView docView, boolean needBaseUrl, String baseUrl) {
         DocumentViewCodec codec = getCodec(codecName);
         return getUrlFromDocumentView(codec, docView, needBaseUrl, baseUrl);
@@ -200,6 +206,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         return null;
     }
 
+    @Override
     public DocumentView getDocumentViewFromUrl(String url, boolean hasBaseUrl, String baseUrl) {
         DocumentView docView = null;
         String finalUrl = getUrlWithoutBase(url, hasBaseUrl, baseUrl);
@@ -223,6 +230,7 @@ public class DocumentViewCodecService extends DefaultComponent implements Docume
         return docView;
     }
 
+    @Override
     public DocumentView getDocumentViewFromUrl(String codecName, String url, boolean hasBaseUrl, String baseUrl) {
         DocumentViewCodec codec = getCodec(codecName);
         String finalUrl = getUrlWithoutBase(url, hasBaseUrl, baseUrl);

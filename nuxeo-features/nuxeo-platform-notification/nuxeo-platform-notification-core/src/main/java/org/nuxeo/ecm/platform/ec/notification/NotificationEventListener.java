@@ -106,7 +106,8 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             return;
         }
         for (Event event : events) {
-            Boolean block = (Boolean) event.getContext().getProperty(NotificationConstants.DISABLE_NOTIFICATION_SERVICE);
+            Boolean block = (Boolean) event.getContext()
+                                           .getProperty(NotificationConstants.DISABLE_NOTIFICATION_SERVICE);
             if (block != null && block) {
                 // ignore the event - we are blocked by the caller
                 continue;
@@ -130,7 +131,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             return;
         }
 
-        if(docCtx.getSourceDocument() instanceof ShallowDocumentModel) {
+        if (docCtx.getSourceDocument() instanceof ShallowDocumentModel) {
             log.trace("Can not handle notification on a event that is bound to a ShallowDocument");
             return;
         }
@@ -229,7 +230,8 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         }
 
         if (Boolean.parseBoolean(Framework.getProperty(CHECK_READ_PERMISSION_PROPERTY))) {
-            if (!ctx.getCoreSession().hasPermission(principal, ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
+            if (!ctx.getCoreSession().hasPermission(principal, ctx.getSourceDocument().getRef(),
+                    SecurityConstants.READ)) {
                 log.debug("Notification will not be sent: + '" + subscriptor
                         + "' do not have Read permission on document " + ctx.getSourceDocument().getId());
                 return;
