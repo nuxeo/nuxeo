@@ -31,13 +31,8 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public static final int QUERY_SIZE_LIMIT_DEFAULT = 0;
 
-    public static final boolean AUTO_INCREMENT_ID_FIELD_DEFAULT = false;
-
     @XNode("dataSource")
     public String dataSourceName;
-
-    @XNode("autoincrementIdField")
-    public Boolean autoincrementIdField;
 
     @XNode("querySizeLimit")
     private Integer querySizeLimit;
@@ -71,14 +66,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public Reference[] getTableReferences() {
         return tableReferences;
-    }
-
-    public boolean isAutoincrementIdField() {
-        return autoincrementIdField == null ? AUTO_INCREMENT_ID_FIELD_DEFAULT : autoincrementIdField.booleanValue();
-    }
-
-    public void setAutoincrementIdField(boolean autoincrementIdField) {
-        this.autoincrementIdField = Boolean.valueOf(autoincrementIdField);
     }
 
     public void setInverseReferences(InverseReference[] inverseReferences) {
@@ -125,9 +112,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     protected void merge(SQLDirectoryDescriptor other) {
         if (other.dataSourceName != null) {
             dataSourceName = other.dataSourceName;
-        }
-        if (other.autoincrementIdField != null) {
-            autoincrementIdField = other.autoincrementIdField;
         }
         if (other.querySizeLimit != null) {
             querySizeLimit = other.querySizeLimit;

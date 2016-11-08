@@ -2,7 +2,18 @@
 <component name="ds:nxdirectory-test">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/nxsqldirectory" driverClassName="${nuxeo.test.vcs.driver}"
-      url="${nuxeo.test.vcs.url}" username="${nuxeo.test.vcs.user}" password="${nuxeo.test.vcs.password}" 
+      url="${nuxeo.test.vcs.url}" username="${nuxeo.test.vcs.user}" password="${nuxeo.test.vcs.password}"
       maxPoolSize="20" minPoolSize="5"/>
   </extension>
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+    <directory name="template-directory" template="true">
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+  </extension>
+
 </component>

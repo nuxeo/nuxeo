@@ -57,6 +57,8 @@ public class BaseDirectoryDescriptor implements Cloneable {
         subany;
     }
 
+    public static final boolean AUTO_INCREMENT_ID_FIELD_DEFAULT = false;
+
     public static final int CACHE_TIMEOUT_DEFAULT = 0;
 
     public static final int CACHE_MAX_SIZE_DEFAULT = 0;
@@ -108,6 +110,17 @@ public class BaseDirectoryDescriptor implements Cloneable {
 
     @XNode("idField")
     public String idField;
+
+    @XNode("autoincrementIdField")
+    public Boolean autoincrementIdField;
+
+    public boolean isAutoincrementIdField() {
+        return autoincrementIdField == null ? AUTO_INCREMENT_ID_FIELD_DEFAULT : autoincrementIdField.booleanValue();
+    }
+
+    public void setAutoincrementIdField(boolean autoincrementIdField) {
+        this.autoincrementIdField = Boolean.valueOf(autoincrementIdField);
+    }
 
     @XNode("table")
     public String tableName;
@@ -258,6 +271,9 @@ public class BaseDirectoryDescriptor implements Cloneable {
         }
         if (other.idField != null) {
             idField = other.idField;
+        }
+        if (other.autoincrementIdField != null) {
+            autoincrementIdField = other.autoincrementIdField;
         }
         if (other.tableName != null) {
             tableName = other.tableName;

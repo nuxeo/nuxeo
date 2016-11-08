@@ -6,20 +6,14 @@
     <schema name="shibbolethGroup" src="schema/shibb-group.xsd" />
   </extension>
 
-  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
-
-    <directory name="shibbGroup">
+    <directory name="shibbGroup" extends="template-directory">
       <schema>shibbolethGroup</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>shibbGroup</table>
       <idField>groupName</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <types>
+        <type>system</type>
+      </types>
     </directory>
   </extension>
 

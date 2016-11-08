@@ -1,27 +1,23 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.login.token.directory.contrib">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="authTokens">
-      <dataSource>java:/nxsqldirectory</dataSource>
+    <directory name="authTokens" extends="template-directory">
       <schema>authtoken</schema>
+      <idField>token</idField>
+      <table>auth_tokens</table>
       <types>
         <type>system</type>
       </types>
-      <table>auth_tokens</table>
-      <idField>token</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
-      <!-- Set cache to 5 minutes -->
-      <cacheTimeout>300</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
       <permissions>
         <permission name="Read">
           <group>__Nobody__</group>
         </permission>
       </permissions>
+      <!-- Set cache to 5 minutes -->
+      <cacheTimeout>300</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
     </directory>
 
   </extension>

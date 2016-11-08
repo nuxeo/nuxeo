@@ -2,16 +2,16 @@
 
 <component name="org.nuxeo.ecm.deputy.management.directories">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="deputies">
+    <directory name="deputies" extends="template-directory">
       <schema>deputies</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>deputies</table>
       <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <types>
+        <type>system</type>
+      </types>
     </directory>
+
   </extension>
+
 </component>

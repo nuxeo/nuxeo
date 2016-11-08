@@ -2,9 +2,6 @@
 
 <component name="org.nuxeo.ecm.directory.sql.storage">
 
-  <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
-
-  <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
   <require>org.nuxeo.ecm.platform.digestauth.config</require>
 
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
@@ -60,13 +57,13 @@
 
       <references>
         <tableReference field="members" directory="userDirectory"
-          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group" 
+          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group"
           dataFile="user2group.csv" />
         <!-- Warning ! From Nuxeo 5.3.1, a wrong setting has been fixed. See
         http://jira.nuxeo.org/browse/NXP-4401 . Nuxeo upgrades would need a fix in the
         database (inverting parentGroupId and childGroupId in the group2group)  -->
         <tableReference field="subGroups" directory="groupDirectory"
-          table="group2group" sourceColumn="parentGroupId" 
+          table="group2group" sourceColumn="parentGroupId"
           targetColumn="childGroupId" schema="group2group" />
         <inverseReference field="parentGroups" directory="groupDirectory"
           dualReferenceField="subGroups" />
@@ -74,19 +71,19 @@
 
     </directory>
 
-    <directory name="digestauth">
+  </extension>
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="digestauth" extends="template-directory">
+      <schema>digestauth</schema>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
       <types>
         <type>system</type>
       </types>
       <cacheEntryName>sql-digestauth-entry-cache</cacheEntryName>
       <cacheEntryWithoutReferencesName>sql-digestauth-entry-cache-without-references</cacheEntryWithoutReferencesName>
-      <schema>digestauth</schema>
-      <table>digestauth</table>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <idField>username</idField>
-      <passwordField>password</passwordField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
   </extension>

@@ -1,189 +1,137 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.directories">
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
-    <directory name="country">
-      <schema>xvocabulary</schema>
-      <parentDirectory>continent</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
+  <!-- template defining the base storage -->
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+
+    <directory name="template-directory" template="true">
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
-      <table>country</table>
-      <idField>id</idField>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/country.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="continent">
+  </extension>
+
+  <!-- template definitions for vocabularies -->
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="template-vocabulary" template="true" extends="template-directory">
       <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>continent</table>
       <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/continent.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="template-xvocabulary" template="true" extends="template-directory">
+      <schema>xvocabulary</schema>
+      <idField>id</idField>
+    </directory>
+
+    <directory name="template-l10nxvocabulary" template="true" extends="template-directory">
+      <schema>l10nxvocabulary</schema>
+      <idField>id</idField>
+    </directory>
+
+    <directory name="template-documentsLists" template="true" extends="template-directory">
+      <schema>documentsLists</schema>
+      <idField>id</idField>
+    </directory>
+
+  </extension>
+
+  <!-- vocabulary definitions -->
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="country" extends="template-xvocabulary">
+      <parentDirectory>continent</parentDirectory>
+      <dataFile>directories/country.csv</dataFile>
+    </directory>
+
+    <directory name="continent" extends="template-vocabulary">
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">country</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
+      <dataFile>directories/continent.csv</dataFile>
     </directory>
 
-    <directory name="l10ncoverage">
-      <schema>l10nxvocabulary</schema>
+    <directory name="l10ncoverage" extends="template-l10nxvocabulary">
       <parentDirectory>l10ncoverage</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>l10ncoverage</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/l10ncoverage.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">l10ncoverage</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
+      <dataFile>directories/l10ncoverage.csv</dataFile>
     </directory>
 
-    <directory name="subtopic">
-      <schema>xvocabulary</schema>
+    <directory name="subtopic" extends="template-xvocabulary">
       <parentDirectory>topic</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>subtopic</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/subtopic.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="topic">
-      <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>topic</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/topic.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+    <directory name="topic" extends="template-vocabulary">
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">subtopic</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
+      <dataFile>directories/topic.csv</dataFile>
     </directory>
 
-    <directory name="l10nsubjects">
-      <schema>l10nxvocabulary</schema>
+    <directory name="l10nsubjects" extends="template-l10nxvocabulary">
       <parentDirectory>l10nsubjects</parentDirectory>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>l10nsubjects</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <dataFile>directories/l10nsubjects.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <deleteConstraint
         class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
         <property name="targetDirectory">l10nsubjects</property>
         <property name="targetDirectoryField">parent</property>
       </deleteConstraint>
+      <dataFile>directories/l10nsubjects.csv</dataFile>
     </directory>
 
-    <directory name="subject">
-      <schema>vocabulary</schema>
+    <directory name="subject" extends="template-vocabulary">
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>subject</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/subject.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="search_operators">
-      <schema>vocabulary</schema>
+    <directory name="search_operators" extends="template-vocabulary">
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>search_operators</table>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/search_operators.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="documentsLists">
-      <schema>documentsLists</schema>
+    <directory name="documentsLists" extends="template-documentsLists">
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <table>documentsLists</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <permissions>
-      	<permission name="Write">
-      		<group>Everyone</group>
-      	</permission>
+        <permission name="Write">
+          <group>Everyone</group>
+        </permission>
       </permissions>
     </directory>
 
-    <directory name="language">
-      <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>language</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
+    <directory name="language" extends="template-vocabulary">
       <dataFile>directories/language.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
-    <directory name="nature">
-      <schema>vocabulary</schema>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>nature</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
+    <directory name="nature" extends="template-vocabulary">
       <dataFile>directories/nature.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
     <!-- @since 5.6, deprecated since 8.1, see NXP-18728 -->
-    <directory name="locale">
-      <schema>vocabulary</schema>
+    <directory name="locale" extends="template-vocabulary">
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>locale</table>
-      <idField>id</idField>
-      <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/locale.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
   </extension>
 

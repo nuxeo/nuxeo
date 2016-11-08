@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,10 +54,6 @@ public class DirectoryRegistry {
     // used under synchronization
     protected Map<String, List<BaseDirectoryDescriptor>> allDescriptors = new HashMap<>();
 
-    /** What descriptor use what templates, to recompute them when templates change. */
-    // used under synchronization
-    protected Map<String, Set<String>> descriptorsForTemplates = new HashMap<>();
-
     /** Effective descriptors. */
     // used under synchronization
     protected Map<String, BaseDirectoryDescriptor> descriptors = new HashMap<>();
@@ -80,16 +77,27 @@ public class DirectoryRegistry {
     }
 
     protected void contributionChanged(BaseDirectoryDescriptor contrib) {
-        String id = contrib.name;
-        if (contrib.template) {
-            removeDirectory(id); // a template cannot have a directory (just in case)
-            recomputeDescriptor(id); // recompute effective template descriptor (templates may be overridden)
-            Set<String> ids = descriptorsForTemplates.getOrDefault(id, Collections.emptySet());
-            for (String did : ids) {
-                recomputeDescriptor(did); // recompute all directories using that template
+        LinkedList<String> todo = new LinkedList<>();
+        todo.add(contrib.name);
+        Set<String> done = new HashSet<String>();
+        while (!todo.isEmpty()) {
+            String id = todo.removeFirst();
+            if (!done.add(id)) {
+                // already done, avoid loops
+                continue;
             }
-        } else {
-            recomputeDescriptor(id);
+            BaseDirectoryDescriptor desc = recomputeDescriptor(id);
+            // recompute dependencies
+            if (desc != null) {
+                for (List<BaseDirectoryDescriptor> list : allDescriptors.values()) {
+                    for (BaseDirectoryDescriptor d : list) {
+                        if (id.equals(d.extendz)) {
+                            todo.add(d.name);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -101,15 +109,16 @@ public class DirectoryRegistry {
     }
 
     /** Recomputes the effective descriptor for a directory id. */
-    protected void recomputeDescriptor(String id) {
+    protected BaseDirectoryDescriptor recomputeDescriptor(String id) {
         removeDirectory(id);
         // compute effective descriptor
         List<BaseDirectoryDescriptor> list = allDescriptors.getOrDefault(id, Collections.emptyList());
         BaseDirectoryDescriptor contrib = null;
         for (BaseDirectoryDescriptor next : list) {
-            if (next.extendz != null) {
+            String extendz = next.extendz;
+            if (extendz != null) {
                 // merge from base
-                BaseDirectoryDescriptor base = descriptors.get(next.extendz);
+                BaseDirectoryDescriptor base = descriptors.get(extendz);
                 if (base != null && base.template) {
                     // merge generic base descriptor into specific one from the template
                     contrib = base.clone();
@@ -117,13 +126,9 @@ public class DirectoryRegistry {
                     contrib.name = next.name;
                     contrib.merge(next);
                 } else {
-                    log.debug("Directory " + id + " extends non-existing directory template: " + next.extendz);
+                    log.debug("Directory " + id + " extends non-existing directory template: " + extendz);
                     contrib = null;
                 }
-                // record template link
-                // we only add things to this, never remove (except for shutdown)
-                // but this is ok as the goal is to do invalidations, and doing a few more is harmless
-                descriptorsForTemplates.computeIfAbsent(next.extendz, k -> new HashSet<>()).add(id);
             } else if (next.remove) {
                 contrib = null;
             } else if (contrib == null) {
@@ -141,6 +146,7 @@ public class DirectoryRegistry {
         } else {
             descriptors.put(id, contrib);
         }
+        return contrib;
     }
 
     /**
@@ -211,7 +217,6 @@ public class DirectoryRegistry {
             shutdownDirectory(dir);
         }
         allDescriptors.clear();
-        descriptorsForTemplates.clear();
         descriptors.clear();
         directories.clear();
     }

@@ -10,6 +10,7 @@
     <schema name="xvocabulary" src="directoryschema/xvocabulary.xsd"/>
     <schema name="l10nvocabulary" src="directoryschema/l10nvocabulary.xsd"/>
     <schema name="l10nxvocabulary" src="directoryschema/l10nxvocabulary.xsd"/>
+    <schema name="documentsLists" src="directoryschema/documentsLists.xsd" />
   </extension>
 
 </component>

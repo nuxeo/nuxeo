@@ -8,7 +8,6 @@
       prefix="search" />
     <schema name="advanced_content" src="schemas/advanced_content.xsd"
       prefix="advanced_content" />
-    <schema name="documentsLists" src="schemas/documentsLists.xsd" />
     <schema name="content_view_display" src="schemas/content_view_display.xsd"
       prefix="cvd" />
     <schema name="expired_search" src="schemas/expired_search.xsd"

@@ -5,19 +5,14 @@
     <schema name="aceinfo" src="schemas/aceinfo.xsd" prefix="aceinfo" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
 
-    <directory name="aceinfo">
+    <directory name="aceinfo" extends="template-directory">
       <schema>aceinfo</schema>
+      <idField>id</idField>
       <types>
         <type>system</type>
       </types>
-      <dataSource>java:/nxsqldirectory</dataSource>
-      <cacheTimeout>3600</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
-      <table>aceinfo</table>
-      <idField>id</idField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
       <permissions>
         <permission name="Read">
           <group>__Nobody__</group>
