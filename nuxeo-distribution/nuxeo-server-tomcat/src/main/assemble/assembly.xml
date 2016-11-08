@@ -14,11 +14,10 @@
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="tomcat" value="${outdir}/tomcat" />
-    <property name="distribution.dir" value="${outdir}/nuxeo-server-${maven.project.version}-tomcat" />
-    <property name="distribution.zip.base" value="${outdir}/${maven.project.artifactId}-${maven.project.version}" />
-    <property name="distribution.zip" value="${distribution.zip.base}.zip" />
+    <property name="distribution.dir" value="${outdir}/${maven.project.artifactId}-${maven.project.version}" />
+    <property name="distribution.zip" value="${distribution.dir}.zip" />
     <property name="distribution.sdk.dir" value="${distribution.dir}-sdk" />
-    <property name="distribution.sdk.zip" value="${distribution.zip.base}-sdk.zip" />
+    <property name="distribution.sdk.zip" value="${distribution.sdk.dir}.zip" />
     <antcall target="expand" />
     <property name="init.done" value="true" />
   </target>
@@ -37,8 +36,7 @@
     <delete dir="${tomcat}" failonerror="false" /> <!-- cleanup -->
 
     <!-- cleanup -->
-    <!-- <delete dir="${outdir}/nuxeo-server-${maven.project.version}" failonerror="false" /> -->
-    <delete dir="${outdir}/nuxeo-server-${maven.project.version}-sdk" failonerror="false" />
+    <delete dir="${distribution.sdk.dir}" failonerror="false" />
   </target>
 
   <target name="prepare-tomcat">
@@ -116,7 +114,7 @@ install nuxeo-jsf-ui
 
   <target name="build-server">
     <zip destfile="${distribution.zip}" basedir="${outdir}"
-         includes="nuxeo-server-${maven.project.version}-tomcat/**" />
+         includes="${maven.project.artifactId}-${maven.project.version}/**" />
     <artifact:attach file="${distribution.zip}" type="zip" />
   </target>
 
@@ -243,7 +241,7 @@ org.nuxeo.distribution.package=zip</echo>
     </copy>
 
     <zip destfile="${distribution.sdk.zip}" basedir="${outdir}"
-         includes="nuxeo-server-${maven.project.version}-sdk/**" />
+         includes="${maven.project.artifactId}-${maven.project.version}-sdk/**" />
     <artifact:attach file="${distribution.sdk.zip}" classifier="sdk" type="zip" />
   </target>
 
