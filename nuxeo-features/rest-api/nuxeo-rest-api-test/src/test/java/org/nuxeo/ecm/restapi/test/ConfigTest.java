@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -83,8 +84,14 @@ public class ConfigTest extends BaseTest {
         assertEquals("string", creatorField.get("type").getTextValue());
         ArrayNode constraints = (ArrayNode) creatorField.get("constraints");
         assertEquals(2, constraints.size());
-        JsonNode userConstraint = constraints.get(0);
-        assertEquals("userManagerResolver", userConstraint.get("name").getTextValue());
+        JsonNode userConstraint = null;
+        for (JsonNode constraint : constraints) {
+            if ("userManagerResolver".equals(constraint.get("name").getTextValue())) {
+                userConstraint = constraint;
+                break;
+            }
+        }
+        assertNotNull(userConstraint);
         JsonNode userConstraintParams = userConstraint.get("parameters");
         assertEquals(2, userConstraintParams.size());
     }
