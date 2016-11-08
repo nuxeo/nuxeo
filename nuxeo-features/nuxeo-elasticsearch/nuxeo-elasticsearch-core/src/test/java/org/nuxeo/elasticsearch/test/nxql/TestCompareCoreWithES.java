@@ -1,5 +1,9 @@
 package org.nuxeo.elasticsearch.test.nxql;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -14,6 +18,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -59,6 +64,10 @@ public class TestCompareCoreWithES {
             doc.setPropertyValue("dc:title", "File" + i);
             doc.setPropertyValue("dc:nature", "Nature" + i);
             doc.setPropertyValue("dc:rights", "Rights" + i % 2);
+            doc.setPropertyValue("dc:subjects",
+                    (i % 2 == 0) ? new String[] { "Subjects1" } : new String[] { "Subjects1", "Subjects2" });
+            doc.setPropertyValue("relatedtext:relatedtextresources",
+                    (Serializable) Arrays.asList(Collections.singletonMap("relatedtextid", "123")));
             doc = session.createDocument(doc);
         }
         for (int i = 5; i < 10; i++) {
@@ -117,13 +126,43 @@ public class TestCompareCoreWithES {
                 nameOrTitle = doc.getTitle();
             }
             sb.append(nameOrTitle);
+            sb.append("[" + doc.getPropertyValue("dc:nature") + "]");
+            sb.append("[" + doc.getPropertyValue("dc:rights") + "]");
             sb.append(",");
         }
         return sb.toString();
     }
 
     protected void assertSameDocumentLists(DocumentModelList expected, DocumentModelList actual) throws Exception {
+        Assert.assertEquals(expected.size(), actual.size());
+        // quick check for some props for better failure messages
+        for (int i = 0; i < expected.size(); i++) {
+            DocumentModel expecteDdoc = expected.get(i);
+            DocumentModel actualDoc = actual.get(i);
+            for (String xpath : Arrays.asList("dc:title", "dc:nature", "dc:rights", "dc:subjects",
+                    "relatedtext:relatedtextresources")) {
+                Serializable expectedValue = getProperty(expecteDdoc, xpath);
+                Serializable actualValue = getProperty(actualDoc, xpath);
+                Assert.assertEquals(xpath, expectedValue, actualValue);
+            }
+        }
         Assert.assertEquals(getDigest(expected), getDigest(actual));
+    }
+
+    protected Serializable getProperty(DocumentModel doc, String xpath) {
+        Serializable value;
+        try {
+            value = doc.getPropertyValue(xpath);
+        } catch (PropertyNotFoundException e) {
+            value = "__NOTFOUND__";
+        }
+        if (value instanceof Object[]) {
+            value = (Serializable) Arrays.asList(((Object[]) value));
+        }
+        if (value instanceof List && ((List<?>) value).isEmpty()) {
+            value = null;
+        }
+        return value;
     }
 
     protected void dump(DocumentModelList docs) {
@@ -135,16 +174,23 @@ public class TestCompareCoreWithES {
     protected void compareESAndCore(String nxql) throws Exception {
 
         DocumentModelList coreResult = session.query(nxql);
-        DocumentModelList esResult = ess.query(new NxQueryBuilder(session).nxql(nxql).limit(20));
-        try {
-            assertSameDocumentLists(coreResult, esResult);
-        } catch (AssertionError e) {
-            System.out.println("Error while executing " + nxql);
-            System.out.println("Core result : ");
-            dump(coreResult);
-            System.out.println("elasticsearch result : ");
-            dump(esResult);
-            throw e;
+        NxQueryBuilder nxQueryBuilder = new NxQueryBuilder(session).nxql(nxql).limit(20);
+        for (int i = 0; i < 2; i++) {
+            if (i == 1) {
+                nxQueryBuilder = nxQueryBuilder.fetchFromElasticsearch();
+            }
+            DocumentModelList esResult = ess.query(nxQueryBuilder);
+            try {
+                assertSameDocumentLists(coreResult, esResult);
+            } catch (AssertionError e) {
+                // System.out.println("Error while executing " + nxql);
+                // System.out.println("Core result : ");
+                // dump(coreResult);
+                // System.out.println("elasticsearch result : ");
+                // dump(esResult);
+                // e.printStackTrace();
+                throw e;
+            }
         }
     }
 

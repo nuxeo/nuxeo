@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,11 +12,17 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bdelbosc
+ *     Benoit Delbosc
+ *     Florent Guillaume
  */
 package org.nuxeo.elasticsearch.io;
 
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,10 +32,12 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
@@ -67,57 +75,58 @@ public class JsonDocumentModelReader {
 
     public DocumentModel getDocumentModel() {
         assert (source != null);
-        String type = getType();
-        String name = getPropertyAsString("ecm:name");
-        String id = getPropertyAsString("ecm:uuid");
-        String path = getPropertyAsString("ecm:path");
-        String parentId = getPropertyAsString("ecm:parentId");
-        String repository = getPropertyAsString("ecm:repository");
+        String type = (String) getProperty("ecm:primaryType");
+        @SuppressWarnings("unchecked")
+        List<String> mixinTypes = (List<String>) getProperty("ecm:mixinType");
+        String id = (String) getProperty("ecm:uuid");
+        String path = (String) getProperty("ecm:path");
+        String parentId = (String) getProperty("ecm:parentId");
+        String repositoryName = (String) getProperty("ecm:repository");
+        boolean isProxy = Boolean.TRUE.equals(getProperty("ecm:isProxy"));
+        String sourceId = null; // TODO write this in JsonESDocumentWriter
 
-        DocumentModelImpl doc = new DocumentModelImpl(sid, getType(), id, new Path(path), new IdRef(id),
-                new IdRef(parentId), null, null, null, repository, false);
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        DocumentType docType = schemaManager.getDocumentType(type);
 
-        // pre load datamodel to prevent DB access
-        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
-        for (Schema schema : docType.getSchemas()) {
+        // fixup facets, keep only instance facets
+        Set<String> facets = new HashSet<>(mixinTypes == null ? Collections.emptyList() : mixinTypes);
+        facets.remove(FacetNames.IMMUTABLE); // system facet
+        facets.removeAll(docType.getFacets());
+
+        Path pathObj = path == null ? null : new Path(path);
+        DocumentRef docRef = new IdRef(id);
+        DocumentRef parentRef = parentId == null ? null : new IdRef(parentId);
+        DocumentModelImpl doc = new DocumentModelImpl(sid, type, id, pathObj, docRef, parentRef, null, facets, sourceId,
+                repositoryName, isProxy);
+
+        // preload DataModel to prevent DB access
+        for (String schemaName : doc.getSchemas()) { // all schemas including from facets
+            Schema schema = schemaManager.getSchema(schemaName);
             doc.addDataModel(DocumentModelFactory.createDataModel(null, schema));
         }
 
         for (String prop : source.keySet()) {
             String schema = prop.split(":")[0];
-            // schema = schema.replace("dc", "dublincore");
-            String key = prop.split(":")[1];
-            if (source.get(prop) == null) {
+            Serializable value = getProperty(prop);
+            if (value == null) {
                 continue;
             }
-            String value = getPropertyAsString(prop);
-            if (value.isEmpty() || "[]".equals(value)) {
-                continue;
-            }
-            // System.out.println( String.format("schema: %s, key %s = %s", schema, key, value));
             if ("ecm".equals(schema)) {
-                switch (key) {
-                case "isProxy":
-                    doc.setIsProxy(Boolean.valueOf(value));
-                    break;
-                case "currentLifeCycleState":
-                    doc.prefetchCurrentLifecycleState(value);
-                    break;
-                case "versionLabel":
-                case "mixinType":
-                    // Can not be done via API
+                switch (prop) {
+                case "ecm:currentLifeCycleState":
+                    doc.prefetchCurrentLifecycleState((String) value);
                     break;
                 default:
-                    // not taken in account
+                    // others not taken in account
                 }
-            } else {
-                try {
-                    doc.setPropertyValue(prop, value);
-                    // doc.setProperty(schema, key, value);
-                } catch (PropertyException e) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("fetchDocFromEs can not set property %s to %s", key, value));
-                    }
+                continue;
+            }
+            // regular property
+            try {
+                doc.setPropertyValue(prop, value);
+            } catch (PropertyException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("fetchDocFromEs can not set property %s to %s", prop, value));
                 }
             }
         }
@@ -125,12 +134,8 @@ public class JsonDocumentModelReader {
         return doc;
     }
 
-    private String getType() {
-        return getPropertyAsString("ecm:primaryType");
+    protected Serializable getProperty(String name) {
+        return (Serializable) source.get(name);
     }
 
-    private String getPropertyAsString(String name) {
-        Object prop = source.get(name);
-        return (prop == null) ? "" : prop.toString();
-    }
 }
