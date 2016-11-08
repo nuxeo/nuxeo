@@ -9,8 +9,8 @@
         <locale>en_US</locale>
       </supportedLocales>
       <videos loop="false">
-        <video src="//media.nuxeo.com/videos/login_8_4.webm" type="video/webm" />
-        <video src="//media.nuxeo.com/videos/login_8_4.mp4" type="video/mp4" />
+        <video src="//media.nuxeo.com/videos/login_8_10.webm" type="video/webm" />
+        <video src="//media.nuxeo.com/videos/login_8_10.mp4" type="video/mp4" />
       </videos>
     </loginScreenConfig>
   </extension>
