@@ -14,18 +14,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Adobe CMap resources are covered by their own copyright and license:
-http://sourceforge.net/adobe/cmap/wiki/License/
+Adobe CMap resources are covered by their own copyright but the same license:
+
+    Copyright 1990-2015 Adobe Systems Incorporated.
+
+See https://github.com/adobe-type-tools/cmap-resources
 -->
 <html dir="ltr" mozdisallowselectionprint moznomarginboxes>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>PDF.js viewer</title>
 
 
-    <link rel="stylesheet" href="viewer.css"/>
+    <link rel="stylesheet" href="viewer.css">
 
 
 
@@ -33,7 +37,7 @@ http://sourceforge.net/adobe/cmap/wiki/License/
 
 
 <!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="locale/locale.properties"/>
+<link rel="resource" type="application/l10n" href="locale/locale.properties">
 <script src="pdf.viewer.js"></script>
 
 
@@ -79,10 +83,11 @@ http://sourceforge.net/adobe/cmap/wiki/License/
               <span data-l10n-id="find_next_label">Next</span>
             </button>
           </div>
-          <input type="checkbox" id="findHighlightAll" class="toolbarField">
-          <label for="findHighlightAll" class="toolbarLabel" tabindex="94" data-l10n-id="find_highlight">Highlight all</label>
-          <input type="checkbox" id="findMatchCase" class="toolbarField">
-          <label for="findMatchCase" class="toolbarLabel" tabindex="95" data-l10n-id="find_match_case_label">Match case</label>
+          <input type="checkbox" id="findHighlightAll" class="toolbarField" tabindex="94">
+          <label for="findHighlightAll" class="toolbarLabel" data-l10n-id="find_highlight">Highlight all</label>
+          <input type="checkbox" id="findMatchCase" class="toolbarField" tabindex="95">
+          <label for="findMatchCase" class="toolbarLabel" data-l10n-id="find_match_case_label">Match case</label>
+          <span id="findResultsCount" class="toolbarLabel hidden"></span>
           <span id="findMsg" class="toolbarLabel"></span>
         </div>  <!-- findbar -->
 
@@ -272,7 +277,8 @@ http://sourceforge.net/adobe/cmap/wiki/License/
               <p id="passwordText" data-l10n-id="password_label">Enter the password to open this PDF file:</p>
             </div>
             <div class="row">
-              <input type="password" id="password" class="toolbarField" />
+              <!-- The type="password" attribute is set via script, to prevent warnings in Firefox for all http:// documents. -->
+              <input id="password" class="toolbarField">
             </div>
             <div class="buttonRow">
               <button id="passwordCancel" class="overlayButton"><span data-l10n-id="password_cancel">Cancel</span></button>
