@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,13 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
-@Deploy({ "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.login.default", "org.nuxeo.ecm.webengine.admin",
-        "org.nuxeo.ecm.webengine.jaxrs", "org.nuxeo.ecm.webengine.base", "org.nuxeo.ecm.webengine.ui",
-        "org.nuxeo.ecm.webengine.gwt", "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+@Deploy({ "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.login.default", "org.nuxeo.ecm.webengine.jaxrs",
+        "org.nuxeo.ecm.webengine.base", "org.nuxeo.ecm.webengine.ui", "org.nuxeo.ecm.webengine.gwt",
+        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.webengine.test:login-anonymous-config.xml", "org.nuxeo.ecm.webengine.test:login-config.xml",
         "org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml", "org.nuxeo.ecm.core.io" })
-@Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class, WebEngineFeatureCore.class })
+@Features({ PlatformFeature.class, WebDriverFeature.class, JettyTransactionalFeature.class,
+        WebEngineFeatureCore.class })
 public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryConfigurator {
 
     protected URL config;
@@ -64,8 +65,8 @@ public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryC
         dest.mkdirs();
 
         if (config == null) {
-            throw new java.lang.IllegalStateException("No custom web.xml was found. "
-                    + "Check your @WebXml annotation on the test class");
+            throw new java.lang.IllegalStateException(
+                    "No custom web.xml was found. " + "Check your @WebXml annotation on the test class");
         }
         InputStream in = config.openStream();
         dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
