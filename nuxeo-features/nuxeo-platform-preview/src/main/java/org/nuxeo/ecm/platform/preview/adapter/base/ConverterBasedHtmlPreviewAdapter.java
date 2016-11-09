@@ -54,6 +54,11 @@ public class ConverterBasedHtmlPreviewAdapter extends
 
     protected MimetypeRegistry mimeTypeService;
 
+    /**
+     * @since 8.10
+     */
+    protected static final String ALLOW_ZIP_PREVIEW = "nuxeo.preview.zip.enabled";
+
     public static ConversionService getConversionService() throws Exception {
         if (cs == null) {
             cs = Framework.getService(ConversionService.class);
@@ -250,7 +255,8 @@ public class ConverterBasedHtmlPreviewAdapter extends
         } catch (NothingToPreviewException e) {
             return false;
         }
-        if (blob2Preview == null) {
+        if (blob2Preview == null || ("application/zip".equals(getMimeType(blob2Preview))
+                && !Boolean.parseBoolean(Framework.getProperty(ALLOW_ZIP_PREVIEW, "false")))) {
             return false;
         }
         return true;
