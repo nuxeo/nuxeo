@@ -26,7 +26,6 @@ import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
 import org.nuxeo.drive.test.ESAuditFeature;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * Runs the {@link AuditChangeFinderTestSuite} using the {@link ESAuditChangeFinder}.
@@ -36,7 +35,6 @@ import org.nuxeo.runtime.test.runner.RandomBug;
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ ESAuditFeature.class })
 @SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class})
-@RandomBug.Repeat(issue = TestESAuditChangeFinder.NXP_20517)
 public class TestESAuditChangeFinder {
 
     protected static final String NXP_20517 = "InstanceNotFoundException";
