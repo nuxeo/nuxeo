@@ -53,10 +53,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm</groupId>
-      <artifactId>nuxeo-drive-jsf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-drive-operations</artifactId>
     </dependency>
     <dependency>
