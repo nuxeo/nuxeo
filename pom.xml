@@ -51,6 +51,7 @@
     <nuxeo.box.version>8.10-SNAPSHOT</nuxeo.box.version>
     <nuxeo.easyshare.version>8.10-SNAPSHOT</nuxeo.easyshare.version>
     <nuxeo.logs.viewer.version>8.10-SNAPSHOT</nuxeo.logs.viewer.version>
+    <nuxeo.spreadsheet.version>8.10-SNAPSHOT</nuxeo.spreadsheet.version>
     <nuxeo.datadog.reporter.version>8.10-SNAPSHOT</nuxeo.datadog.reporter.version>
     <nuxeo.review.workflows.dashboards.version>8.10-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
     <nuxeo.salesforce.version>8.10-SNAPSHOT</nuxeo.salesforce.version>
@@ -739,6 +740,13 @@
         <groupId>org.nuxeo.logs.viewer</groupId>
         <artifactId>nuxeo-logs-viewer</artifactId>
         <version>${nuxeo.logs.viewer.version}</version>
+      </dependency>
+
+      <!-- Spreadsheet -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-spreadsheet</artifactId>
+        <version>${nuxeo.spreadsheet.version}</version>
       </dependency>
 
       <!-- Github Segment IO -->
