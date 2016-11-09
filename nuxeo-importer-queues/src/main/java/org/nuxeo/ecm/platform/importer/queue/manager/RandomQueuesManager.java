@@ -39,5 +39,4 @@ public class RandomQueuesManager extends AbstractQueuesManager {
         return rand.nextInt(nbQueues);
     }
 
-
 }

@@ -52,7 +52,7 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     }
 
     @Override
-    public boolean isQueueEmpty(int queue) {
+    public boolean isEmpty(int queue) {
         return queues.get(queue).isEmpty();
     }
 
@@ -66,6 +66,11 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     protected abstract int getTargetQueue(SourceNode bh, int nbQueues);
 
     @Override
+    public int count() {
+        return queues.size();
+    }
+
+    @Override
     public int getNBConsumers() {
         return queues.size();
     }
@@ -76,13 +81,18 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     }
 
     @Override
-    public int getQueueSize(int queue) {
+    public int size(int queue) {
         return queues.get(queue).size();
     }
 
     @Override
     public SourceNode poll(int queue) {
         return queues.get(queue).poll();
+    }
+
+    @Override
+    public void put(int queue, SourceNode node) throws InterruptedException {
+        queues.get(queue).put(node);
     }
 
 }
