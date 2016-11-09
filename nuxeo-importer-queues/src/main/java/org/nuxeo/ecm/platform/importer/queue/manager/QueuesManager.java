@@ -27,30 +27,55 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 public interface QueuesManager {
 
     /**
+     * Returns the number of queues
+     */
+    int count();
+
+    /**
+     * Put a node into a queue
+     *
+     * @throws InterruptedException
+     */
+    void put(int queue, SourceNode node) throws InterruptedException;
+
+    /**
+     * Get a node from a queue.
+     *
+     */
+    SourceNode poll(int queue);
+
+    /**
+     * Get a node from a queue, with a timeout.
+     *
+     * @throws InterruptedException
+     */
+    SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException;
+
+    /**
+     * Returns true if there is no element in the queue.
+     */
+    boolean isEmpty(int queue);
+
+    /**
+     * Returns the number of elements in the queue.
+     */
+    int size(int queue);
+
+    /**
      * Dispatch the node to a queue
      * @param node
      * @return the queue number
      * @throws InterruptedException
      */
+    @Deprecated
     int dispatch(SourceNode node) throws InterruptedException;
 
     /**
-     * Get a SourceNode from a queue
-     * @param queue
-     * @param timeout
-     * @param unit
+     * use getQueueCount instead
      * @return
-     * @throws InterruptedException
      */
-    SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException;
-
-    SourceNode poll(int queue);
-
+    @Deprecated
     int getNBConsumers();
-
-    boolean isQueueEmpty(int idQueue);
-
-    int getQueueSize(int idQueue);
 
     @Deprecated
     BlockingQueue<SourceNode> xgetQueue(int idx);

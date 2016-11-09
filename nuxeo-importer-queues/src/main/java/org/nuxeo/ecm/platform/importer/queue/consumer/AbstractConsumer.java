@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.currentThread;
@@ -165,7 +164,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                         break;
                     }
                     if (src == null) {
-                        log.debug("Poll timeout, queue size:" + queuesManager.getQueueSize(queue));
+                        log.debug("Poll timeout, queue size:" + queuesManager.size(queue));
                         if (canStop) {
                             log.info("End of consumer, processed node: " + getNbProcessed());
                             break;
