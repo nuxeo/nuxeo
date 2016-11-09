@@ -36,6 +36,7 @@ import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * Tests the {@link FileSystemChangeFinder} on a repository with clustering enabled.
@@ -48,6 +49,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
     private static final Log log = LogFactory.getLog(AuditChangeFinderClusteringEnabledTestSuite.class);
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-20962", bypass = true)
     public void testClusteringEnabled() throws Exception {
         List<FileSystemItemChange> changes;
         DocumentModel file1;
