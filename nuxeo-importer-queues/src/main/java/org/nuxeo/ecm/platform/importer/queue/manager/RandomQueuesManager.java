@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -37,5 +38,6 @@ public class RandomQueuesManager extends AbstractQueuesManager {
     protected int getTargetQueue(SourceNode bh, int nbQueues) {
         return rand.nextInt(nbQueues);
     }
+
 
 }

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -25,12 +26,32 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public interface QueuesManager {
 
-    BlockingQueue<SourceNode> getQueue(int idx);
-
+    /**
+     * Dispatch the node to a queue
+     * @param node
+     * @return the queue number
+     * @throws InterruptedException
+     */
     int dispatch(SourceNode node) throws InterruptedException;
+
+    /**
+     * Get a SourceNode from a queue
+     * @param queue
+     * @param timeout
+     * @param unit
+     * @return
+     * @throws InterruptedException
+     */
+    SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException;
+
+    SourceNode poll(int queue);
 
     int getNBConsumers();
 
     boolean isQueueEmpty(int idQueue);
 
+    int getQueueSize(int idQueue);
+
+    @Deprecated
+    BlockingQueue<SourceNode> xgetQueue(int idx);
 }
