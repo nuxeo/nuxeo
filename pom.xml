@@ -210,13 +210,6 @@
         <version>${nuxeo.shell.version}</version>
       </dependency>
 
-      <!-- DEPRECATED Nuxeo Web Embedded -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.web</groupId>
-        <artifactId>nuxeo-web-embedded-servlet</artifactId>
-        <version>${nuxeo.webembedded.version}</version>
-      </dependency>
-
       <!-- User Registration -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
