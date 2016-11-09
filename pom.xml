@@ -116,7 +116,6 @@
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
-    <module>nuxeo-media-publishing</module>
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
@@ -849,28 +848,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
         <artifactId>nuxeo-liveconnect-onedrive-web-ui</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Media Publishing -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-web</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-wistia</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-youtube</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
