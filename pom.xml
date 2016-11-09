@@ -492,6 +492,13 @@
         <version>${nuxeo.rating.version}</version>
       </dependency>
 
+      <!-- Multi Tenant Management -->
+      <dependency>
+        <groupId>org.nuxeo.multi.tenant</groupId>
+        <artifactId>nuxeo-multi-tenant</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
       <!-- Binary Managers -->
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
