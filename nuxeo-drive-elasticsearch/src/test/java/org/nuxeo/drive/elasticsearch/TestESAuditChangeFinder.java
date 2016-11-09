@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.runner.Features;
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ ESAuditFeature.class })
-@SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class})
+@SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class })
 public class TestESAuditChangeFinder {
 
     protected static final String NXP_20517 = "InstanceNotFoundException";
