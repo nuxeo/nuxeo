@@ -43,13 +43,13 @@ import org.nuxeo.runtime.test.runner.RandomBug;
  *
  * @since 8.2
  */
+@RandomBug.Repeat(issue = "NXP-20962")
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
 public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderClusteringEnabledTestSuite.class);
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-20962", bypass = true)
     public void testClusteringEnabled() throws Exception {
         List<FileSystemItemChange> changes;
         DocumentModel file1;
