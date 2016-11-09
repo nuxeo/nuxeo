@@ -17,6 +17,10 @@
       <include>web/nuxeo.war/**</include>
     </unzip>
 
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en_US.properties"
             to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en_US.properties"
