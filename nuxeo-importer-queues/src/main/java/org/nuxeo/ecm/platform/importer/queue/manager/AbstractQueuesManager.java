@@ -20,9 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+
 
 /**
  * @since 8.3
@@ -45,19 +47,19 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     }
 
     @Override
-    public BlockingQueue<SourceNode> getQueue(int idx) {
+    public BlockingQueue<SourceNode> xgetQueue(int idx) {
         return queues.get(idx);
     }
 
     @Override
-    public boolean isQueueEmpty(int idQueue) {
-        return queues.get(idQueue).isEmpty();
+    public boolean isQueueEmpty(int queue) {
+        return queues.get(queue).isEmpty();
     }
 
     @Override
     public int dispatch(SourceNode bh) throws InterruptedException {
         int idx = getTargetQueue(bh, queues.size());
-        getQueue(idx).put(bh);
+        queues.get(idx).put(bh);
         return idx;
     }
 
@@ -67,4 +69,20 @@ public abstract class AbstractQueuesManager implements QueuesManager {
     public int getNBConsumers() {
         return queues.size();
     }
+
+    @Override
+    public SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException {
+        return queues.get(queue).poll(timeout, unit);
+    }
+
+    @Override
+    public int getQueueSize(int queue) {
+        return queues.get(queue).size();
+    }
+
+    @Override
+    public SourceNode poll(int queue) {
+        return queues.get(queue).poll();
+    }
+
 }

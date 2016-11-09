@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
+import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -47,7 +48,9 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected final String repositoryName;
 
-    protected final BlockingQueue<SourceNode> queue;
+    protected final QueuesManager queuesManager;
+
+    protected final int queue;
 
     protected final DocumentRef rootRef;
 
@@ -83,10 +86,11 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected final Counter consumerCount;
 
-    public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, BlockingQueue<SourceNode> queue) {
+    public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue) {
         this.log = log;
         repositoryName = root.getRepositoryName();
         this.batch = new Batch(batchSize);
+        this.queuesManager = queuesManager;
         this.queue = queue;
         rootRef = root.getRef();
         importStat = new ImportStat();
@@ -127,7 +131,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         log.error("Consumer is broken, draining the queue to rejected");
         do {
             try {
-                SourceNode src = queue.poll(1, TimeUnit.SECONDS);
+                SourceNode src = queuesManager.poll(queue, 1, TimeUnit.SECONDS);
                 if (src == null && canStop) {
                     log.info("End of broken consumer, processed node: " + getNbProcessed());
                     break;
@@ -155,13 +159,13 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 SourceNode src;
                 while (true) {
                     try {
-                        src = queue.poll(1, TimeUnit.SECONDS);
+                        src = queuesManager.poll(queue, 1, TimeUnit.SECONDS);
                     } catch (InterruptedException e) {
                         log.error("Interrupted exception received, stopping consumer");
                         break;
                     }
                     if (src == null) {
-                        log.debug("Poll timeout, queue size:" + queue.size());
+                        log.debug("Poll timeout, queue size:" + queuesManager.getQueueSize(queue));
                         if (canStop) {
                             log.info("End of consumer, processed node: " + getNbProcessed());
                             break;

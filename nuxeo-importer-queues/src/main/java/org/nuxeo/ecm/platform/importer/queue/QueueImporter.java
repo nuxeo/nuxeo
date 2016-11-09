@@ -36,6 +36,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -102,16 +103,15 @@ public class QueueImporter {
     protected void checkConsumerQueues(QueuesManager manager) {
         unprocessedNodesConsumer = 0;
         for (int i = 0; i < manager.getNBConsumers(); i++) {
-            BlockingQueue<SourceNode> queue = manager.getQueue(i);
-            if (! queue.isEmpty()) {
-                log.error("Queue of conusmer " + i + " not empty, draining " + queue.size()  + " nodes to errors");
-                unprocessedNodesConsumer += queue.size();
+            while (! manager.isQueueEmpty(i)) {
+                log.error("Queue of conusmer " + i + " not empty, draining " + manager.getQueueSize(i)  + " nodes to errors");
+                unprocessedNodesConsumer += manager.getQueueSize(i);
                 do {
-                    SourceNode node = queue.poll();
+                    SourceNode node = manager.poll(i);
                     if (node != null) {
                         log.error("Unable to import " + node.getName() + " by consumer " + i);
                     }
-                } while (!queue.isEmpty());
+                } while (manager.isQueueEmpty(i));
             }
         }
     }
@@ -215,7 +215,7 @@ public class QueueImporter {
         ArrayList<Consumer> ret = new ArrayList<>(manager.getNBConsumers());
         for (int i = 0; i < manager.getNBConsumers(); i++) {
             Consumer c;
-            c = factory.createConsumer(log, root, batchSize, manager.getQueue(i));
+            c = factory.createConsumer(log, root, batchSize, manager, i);
             ret.add(c);
             Thread ct = new Thread(c);
             ct.setName("import-Consumer" + i);

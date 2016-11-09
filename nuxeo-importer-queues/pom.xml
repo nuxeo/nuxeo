@@ -44,6 +44,11 @@
       <groupId>com.codahale.metrics</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.openhft</groupId>
+      <artifactId>chronicle-queue</artifactId>
+      <version>4.5.15</version>
+    </dependency>
   </dependencies>
 
 </project>
