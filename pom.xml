@@ -607,6 +607,13 @@
         <version>${nuxeo.csv.version}</version>
       </dependency>
 
+      <!-- Tree snapshot -->
+      <dependency>
+        <groupId>org.nuxeo.features</groupId>
+        <artifactId>nuxeo-tree-snapshot</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
       <!-- Groups Rights Audit -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
