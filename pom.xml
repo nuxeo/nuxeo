@@ -42,6 +42,7 @@
     <nuxeo.exalead.connector.version>8.10-SNAPSHOT</nuxeo.exalead.connector.version>
     <nuxeo.user.registration.version>8.10-SNAPSHOT</nuxeo.user.registration.version>
     <nuxeo.rating.version>8.10-SNAPSHOT</nuxeo.rating.version>
+    <nuxeo.agenda.version>8.10-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>8.10-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.csv.version>8.10-SNAPSHOT</nuxeo.csv.version>
     <nuxeo.drive.version>8.10-SNAPSHOT</nuxeo.drive.version>
@@ -490,6 +491,13 @@
         <groupId>org.nuxeo.rating</groupId>
         <artifactId>nuxeo-rating-web</artifactId>
         <version>${nuxeo.rating.version}</version>
+      </dependency>
+
+      <!-- Agenda -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-agenda</artifactId>
+        <version>${nuxeo.agenda.version}</version>
       </dependency>
 
       <!-- Multi Tenant Management -->
