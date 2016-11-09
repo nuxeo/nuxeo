@@ -30,7 +30,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.nuxeo.drive.fixtures.AbstractChangeFinderTestCase.SimpleFileSystemItemChange;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.DocumentModel;
