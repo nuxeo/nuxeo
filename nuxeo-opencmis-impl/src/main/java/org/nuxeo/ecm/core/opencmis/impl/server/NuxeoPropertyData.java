@@ -141,7 +141,8 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return (PropertyData<U>) new NuxeoPropertyDateTimeData((PropertyDefinition<GregorianCalendar>) pd, doc,
                     NuxeoTypeHelper.NX_DC_MODIFIED, true, callContext);
         } else if (PropertyIds.CHANGE_TOKEN.equals(name)) {
-            return (PropertyData<U>) new NuxeoPropertyStringDataFixed((PropertyDefinition<String>) pd, null);
+            return (PropertyData<U>) new NuxeoPropertyStringDataFixed((PropertyDefinition<String>) pd,
+                    doc.getChangeToken());
         } else if (PropertyIds.NAME.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataName((PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.IS_IMMUTABLE.equals(name)) {

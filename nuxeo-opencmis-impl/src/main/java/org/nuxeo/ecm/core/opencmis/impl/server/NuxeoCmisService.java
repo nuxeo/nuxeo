@@ -92,6 +92,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
 import org.apache.chemistry.opencmis.commons.impl.WSConverter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
@@ -607,7 +608,7 @@ public class NuxeoCmisService extends AbstractCmisService
         }
 
         NuxeoObjectData data = new NuxeoObjectData(this, doc);
-        updateProperties(data, null, properties, true);
+        updateProperties(data, properties, true);
         boolean setContentStream = !created && contentStream != null;
         if (setContentStream) {
             try {
@@ -637,10 +638,8 @@ public class NuxeoCmisService extends AbstractCmisService
         return data;
     }
 
-    protected <T> void updateProperties(NuxeoObjectData object, String changeToken, Properties properties,
-            boolean creation) {
+    protected <T> void updateProperties(NuxeoObjectData object, Properties properties, boolean creation) {
         List<TypeDefinition> types = object.getTypeDefinitions();
-        // TODO changeToken
         Map<String, PropertyData<?>> p;
         if (properties == null || (p = properties.getProperties()) == null) {
             return;
@@ -652,9 +651,8 @@ public class NuxeoCmisService extends AbstractCmisService
         }
     }
 
-    protected <T> void updateProperties(NuxeoObjectData object, String changeToken, Map<String, ?> properties,
-            TypeDefinition type, boolean creation) {
-        // TODO changeToken
+    protected <T> void updateProperties(NuxeoObjectData object, Map<String, ?> properties, TypeDefinition type,
+            boolean creation) {
         if (properties == null) {
             return;
         }
@@ -795,7 +793,7 @@ public class NuxeoCmisService extends AbstractCmisService
         DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
         NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc);
         if (properties != null && properties.getPropertyList() != null && !properties.getPropertyList().isEmpty()) {
-            updateProperties(copy, null, properties, false);
+            updateProperties(copy, properties, false);
             copy.doc = coreSession.saveDocument(copyDoc);
         }
         save();
@@ -810,7 +808,7 @@ public class NuxeoCmisService extends AbstractCmisService
         DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
         NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc, context);
         if (properties != null && !properties.isEmpty()) {
-            updateProperties(copy, null, properties, type, false);
+            updateProperties(copy, properties, type, false);
             copy.doc = coreSession.saveDocument(copyDoc);
         }
         save();
@@ -1132,6 +1130,9 @@ public class NuxeoCmisService extends AbstractCmisService
         }
 
         DocumentModel doc = getDocumentModel(objectId);
+        String operation = contentStream == null ? "deleteContentStream" : "setContentStream";
+        verifyChangeToken(doc, changeTokenHolder, operation);
+
         // TODO test doc checkout state
         try {
             NuxeoPropertyData.setContentStream(doc, contentStream, !Boolean.FALSE.equals(overwriteFlag));
@@ -1140,6 +1141,22 @@ public class NuxeoCmisService extends AbstractCmisService
             save();
         } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
+    protected void verifyChangeToken(DocumentModel doc, Holder<String> changeTokenHolder, String operation) {
+        if (doc == null) {
+            return;
+        }
+        String docChangeToken = doc.getChangeToken();
+        if (StringUtils.isBlank(docChangeToken)) {
+            return;
+        }
+        String reqChangeToken = changeTokenHolder == null ? null : changeTokenHolder.getValue();
+        if (!docChangeToken.equals(reqChangeToken)) {
+            throw new CmisUpdateConflictException(String.format(
+                    "Request %s failed because supplied changeToken: '%s' does not match existing changeToken: '%s'",
+                    operation, reqChangeToken, docChangeToken));
         }
     }
 
@@ -1158,9 +1175,9 @@ public class NuxeoCmisService extends AbstractCmisService
             throw new CmisInvalidArgumentException("Missing object ID");
         }
         DocumentModel doc = getDocumentModel(objectId);
+        verifyChangeToken(doc, changeTokenHolder, "updateProperties");
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
-        String changeToken = changeTokenHolder == null ? null : changeTokenHolder.getValue();
-        updateProperties(object, changeToken, properties, false);
+        updateProperties(object, properties, false);
         coreSession.saveDocument(doc);
     }
 
@@ -1941,7 +1958,7 @@ public class NuxeoCmisService extends AbstractCmisService
         DocumentModel doc = getDocumentModel(objectId);
 
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
-        updateProperties(object, null, properties, false);
+        updateProperties(object, properties, false);
         boolean setContentStream = contentStream != null;
         if (setContentStream) {
             try {

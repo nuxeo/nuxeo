@@ -126,7 +126,7 @@ public class Helper {
         blob1.setDigest(DigestUtils.md5Hex(content));
         blob1.setFilename(filename);
         file1.setPropertyValue("content", (Serializable) blob1);
-        Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
+        Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0, TimeZone.getDefault());
         file1.setPropertyValue("dc:created", cal1);
         file1.setPropertyValue("dc:modified", cal1);
         file1.setPropertyValue("dc:creator", "michael");

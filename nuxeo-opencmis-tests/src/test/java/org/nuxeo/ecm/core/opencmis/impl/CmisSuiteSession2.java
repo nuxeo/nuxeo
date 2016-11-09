@@ -218,12 +218,15 @@ public class CmisSuiteSession2 {
         return entity;
     }
 
-    protected HttpEntity getSetContentStreamHttpEntity(File file) {
+    protected HttpEntity getSetContentStreamHttpEntity(File file, String changeToken) {
         FormBodyPart cmisactionPart = FormBodyPartBuilder.create("cmisaction",
                 new StringBody("setContent", ContentType.TEXT_PLAIN)).build();
         FormBodyPart contentPart = FormBodyPartBuilder.create("content",
                 new FileBody(file, ContentType.TEXT_PLAIN, "testfile.txt")).build();
-        HttpEntity entity = MultipartEntityBuilder.create().addPart(cmisactionPart).addPart(contentPart).build();
+        HttpEntity entity = MultipartEntityBuilder.create()
+                .addPart(cmisactionPart)
+                .addTextBody("changeToken", changeToken)
+                .addPart(contentPart).build();
         return entity;
     }
 
@@ -341,7 +344,9 @@ public class CmisSuiteSession2 {
                 boolean okRequest = i == 0;
 
                 request.setHeader("Digest", "md5=" + (String) (okRequest ? contentMD5Base64 : "bogusMD5Sum"));
-                HttpEntity reqEntity = getSetContentStreamHttpEntity(files[i]);
+                session.clear();
+                String changeToken = session.getObjectByPath("/testfolder1/testfile1").getChangeToken();
+                HttpEntity reqEntity = getSetContentStreamHttpEntity(files[i], changeToken);
                 request.setEntity(reqEntity);
                 try (CloseableHttpResponse response = httpClient.execute(request)) {
                     if (okRequest) {
