@@ -11,6 +11,7 @@ Arabic: Taieb Felfel
 Basque: Jose Luis de la Rosa
 Catalan: Jose Luis de la Rosa, Jordi Mallach 
 Chinese:
+Dutch: Bauke Roo
 English: Nuxeo Team
 French: Nuxeo Team
 French (Canada) : Patrick Turcotte
