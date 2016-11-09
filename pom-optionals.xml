@@ -16,7 +16,6 @@
   <modules>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-web-embedded</module>
-    <module>nuxeo-platform-sync</module>
     <module>nuxeo-webengine-features</module>
   </modules>
 

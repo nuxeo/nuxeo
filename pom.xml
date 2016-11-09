@@ -314,23 +314,6 @@
         <version>${nuxeo.smartsearch.version}</version>
       </dependency>
 
-      <!-- DEPRECATED Synchronization -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-sync-common</artifactId>
-        <version>${nuxeo.sync.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-sync-client-api</artifactId>
-        <version>${nuxeo.sync.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-sync-client-core</artifactId>
-        <version>${nuxeo.sync.version}</version>
-      </dependency>
-
       <!-- Audio -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
