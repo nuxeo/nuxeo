@@ -119,7 +119,6 @@
     <module>nuxeo-salesforce</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-showcase-content-sample</module>
-    <module>nuxeo-travel-expenses</module>
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-forum</module>
@@ -882,13 +881,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-showcase-content-importer</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Travel Expenses Sample -->
-      <dependency>
-        <groupId>org.nuxeo.sample</groupId>
-        <artifactId>nuxeo-travel-expenses</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
