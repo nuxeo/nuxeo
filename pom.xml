@@ -20,28 +20,8 @@
     <module>nuxeo-quota-core</module>
     <module>nuxeo-quota-web</module>
     <module>nuxeo-quota-automation</module>
+    <module>nuxeo-quota-core-dependencies</module>
   </modules>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-quota-core</artifactId>
-        <version>${nuxeo.quota.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-quota-web</artifactId>
-        <version>${nuxeo.quota.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-quota-automation</artifactId>
-        <version>${nuxeo.quota.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
 
   <repositories>
     <repository>
