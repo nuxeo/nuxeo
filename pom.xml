@@ -846,6 +846,28 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
+      <!-- Media Publishing -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-wistia</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-youtube</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-error-web</artifactId>
