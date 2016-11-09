@@ -92,7 +92,6 @@
     <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
-    <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
@@ -495,13 +494,6 @@
         <groupId>org.nuxeo.rating</groupId>
         <artifactId>nuxeo-rating-web</artifactId>
         <version>${nuxeo.rating.version}</version>
-      </dependency>
-
-      <!-- Multi Tenant Management -->
-      <dependency>
-        <groupId>org.nuxeo.multi.tenant</groupId>
-        <artifactId>nuxeo-multi-tenant</artifactId>
-        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- Binary Managers -->
