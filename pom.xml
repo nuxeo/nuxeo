@@ -95,7 +95,6 @@
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-csv</module>
-    <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-drive-server</module>
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
@@ -606,13 +605,6 @@
         <groupId>org.nuxeo.ecm.csv</groupId>
         <artifactId>nuxeo-csv-operation</artifactId>
         <version>${nuxeo.csv.version}</version>
-      </dependency>
-
-      <!-- Groups Rights Audit -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-groups-rights-audit</artifactId>
-        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- Nuxeo Drive -->
