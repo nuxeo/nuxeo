@@ -15,7 +15,9 @@
 
   <modules>
     <module>nuxeo-liveconnect-core</module>
+    <module>nuxeo-liveconnect-core-dependencies</module>
     <module>nuxeo-liveconnect-jsf</module>
+    <module>nuxeo-liveconnect-jsf-dependencies</module>
     <module>nuxeo-liveconnect-web-ui</module>
     <module>nuxeo-liveconnect-google-drive-core</module>
     <module>nuxeo-liveconnect-google-drive-jsf</module>
