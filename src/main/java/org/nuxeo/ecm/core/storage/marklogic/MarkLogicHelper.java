@@ -75,28 +75,31 @@ final class MarkLogicHelper {
 
     public enum ElementType {
 
-        BOOLEAN("boolean"),
+        BOOLEAN("xs:boolean", "boolean"),
 
-        DOUBLE("double"),
+        DOUBLE("xs:double", "double"),
 
-        LONG("long"),
+        LONG("xs:long", "long"),
 
-        CALENDAR("dateTime"),
+        CALENDAR("xs:dateTime", "dateTime"),
 
-        STRING("string");
+        STRING("xs:string", "string");
 
-        private String key;
+        private final String key;
 
-        ElementType(String key) {
+        private final String keyWithoutNamespace;
+
+        ElementType(String key, String keyWithoutNamespace) {
             this.key = key;
+            this.keyWithoutNamespace = keyWithoutNamespace;
         }
 
         public String get() {
-            return "xs:" + key;
+            return key;
         }
 
         public String getWithoutNamespace() {
-            return key;
+            return keyWithoutNamespace;
         }
 
         public static ElementType of(String string) {

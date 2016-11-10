@@ -339,7 +339,7 @@ class MarkLogicQueryBuilder {
                 return getQueryBuilder(leftInfo,
                         name -> new LikeQueryBuilder(name, new StringLiteral(date), true, false));
             } else if (rangeElementIndexes.stream().anyMatch(
-                    new RangeElementIndexPredicate(leftInfo.getQueriedElement(), markLogicType))) {
+                    new RangeElementIndexPredicate(leftInfo.queriedElement, markLogicType))) {
                 RangeQueryBuilder.Operator operator = equals ? RangeQueryBuilder.Operator.EQ
                         : RangeQueryBuilder.Operator.NE;
                 return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, operator, convertedLiteral));
@@ -674,6 +674,18 @@ class MarkLogicQueryBuilder {
         protected final String fullField;
 
         /**
+         * Queried element used to know if there's a range element index on it (match against the MarkLogic repository
+         * configuration), for example:
+         * <ul>
+         * <li>foo/bar -> bar</li>
+         * <li>foo/bar/* -> bar</li>
+         * </ul>
+         *
+         * @since 8.10
+         */
+        protected final String queriedElement;
+
+        /**
          * MarkLogic field without widlcards (replaced by the corresponding name in MarkLogic)
          */
         protected final String queryField;
@@ -697,6 +709,7 @@ class MarkLogicQueryBuilder {
             this.fullField = fullField;
             List<String> fields = new ArrayList<>();
             String previous = null;
+            String queriedElement = null;
             for (String element : fullField.split("/")) {
                 if (element.startsWith("*")) {
                     if (previous == null) {
@@ -705,9 +718,11 @@ class MarkLogicQueryBuilder {
                     fields.add(previous + MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX);
                 } else {
                     fields.add(element);
+                    queriedElement = element;
                 }
                 previous = element;
             }
+            this.queriedElement = queriedElement;
             this.queryField = String.join("/", fields);
             this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
@@ -723,24 +738,6 @@ class MarkLogicQueryBuilder {
 
         public boolean hasWildcard() {
             return fullField.contains("*");
-        }
-
-        /**
-         * Queried element used to know if there's a range element index on it (match against the MarkLogic repository
-         * configuration), for example:
-         * <ul>
-         * <li>foo/bar -> bar</li>
-         * <li>foo/bar/* -> bar</li>
-         * </ul>
-         * 
-         * @since 8.10
-         */
-        public String getQueriedElement() {
-            String[] fields = fullField.split("/");
-            if (fields[fields.length - 1].startsWith("*")) {
-                return fields[fields.length - 2];
-            }
-            return fields[fields.length - 1];
         }
 
     }
