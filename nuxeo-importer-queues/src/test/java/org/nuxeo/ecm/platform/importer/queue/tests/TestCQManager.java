@@ -16,13 +16,15 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
-import static org.junit.Assert.assertTrue;
-
+import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -32,46 +34,36 @@ import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
-import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactoryImpl;
-import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
 import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
-import org.nuxeo.ecm.platform.importer.queue.producer.SourceNodeProducer;
-import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestImporter {
+public class TestCQManager {
 
-    protected static final Log log = LogFactory.getLog(TestImporter.class);
-
-    @Inject
-    CoreSession session;
+    protected static final Log log = LogFactory.getLog(TestCQManager.class);
 
     @Test
-    public void shouldImport() {
-
+    @Ignore("impl in progress")
+    public void readWrite() throws InterruptedException {
+        //ImporterLogger logger = mock(ImporterLogger.class);
+        // To get logs
         ImporterLogger logger = new BufferredLogger(log);
-        QueueImporter importer = new QueueImporter(logger);
+        CQManager qm = new CQManager(logger, 5);
+        SourceNode node = new BuggySourceNode(1, false, false);
+        qm.put(1, node);
+        qm.put(1, node);
 
-        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
-        importer.addFilter(filter);
-
-        BQManager qm = new BQManager(logger, 2, 100);
-
-        RandomTextSourceNode root = RandomTextSourceNode.init(1000, 1, true);
-
-        Producer producer = new SourceNodeProducer(root, logger);
-
-        ConsumerFactory fact = new ConsumerFactoryImpl();
-        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 5, fact);
-        assertTrue(importer.getCreatedDocsCounter() > 1000);
-
+        SourceNode node1 = qm.poll(1);
+        assertEquals(node, node1);
     }
 
 }
