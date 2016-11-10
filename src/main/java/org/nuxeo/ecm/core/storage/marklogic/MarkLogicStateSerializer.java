@@ -101,7 +101,7 @@ final class MarkLogicStateSerializer {
         } else {
             String nodeValue = serializeValue(value);
             Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
-            element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value.getClass()).getKey());
+            element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value).get());
             element.setText(nodeValue);
             result = Optional.of(element);
         }

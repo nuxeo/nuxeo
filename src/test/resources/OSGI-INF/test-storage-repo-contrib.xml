@@ -15,6 +15,21 @@
           <field>dc:title</field>
         </index>
       </fulltext>
+      <range-element-indexes>
+        <range-element-index type="string">ecm:uuid</range-element-index>
+        <range-element-index type="string">ecm:parentId</range-element-index>
+        <range-element-index type="string">ecm:ancestorId</range-element-index>
+        <range-element-index type="string">ecm:versionVersionableId</range-element-index>
+        <range-element-index type="string">ecm:proxyTargetId</range-element-index>
+        <range-element-index type="string">ecm:proxyVersionableId</range-element-index>
+        <range-element-index type="string">ecm:__read_acl</range-element-index> <!-- Technical element -->
+        <range-element-index type="string">ecm:name</range-element-index>
+        <range-element-index type="string">ecm:primaryType</range-element-index>
+        <range-element-index type="string">ecm:currentLifeCycleState</range-element-index>
+        <range-element-index type="dateTime">dc:modified</range-element-index>
+        <range-element-index type="string">rend:renditionName</range-element-index>
+        <range-element-index type="string">collectionMember:collectionIds</range-element-index>
+      </range-element-indexes>
     </repository>
   </extension>
 </component>

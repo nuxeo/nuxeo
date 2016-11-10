@@ -18,7 +18,12 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryDescriptor;
 
@@ -48,9 +53,15 @@ public class MarkLogicRepositoryDescriptor extends DBSRepositoryDescriptor {
     @XNode("dbname")
     public String dbname;
 
+    @XNodeList(value = "range-element-indexes/range-element-index", type = ArrayList.class, componentType = MarkLogicRangeElementIndexDescriptor.class)
+    public List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes = new ArrayList<>(0);
+
     @Override
     public MarkLogicRepositoryDescriptor clone() {
-        return (MarkLogicRepositoryDescriptor) super.clone();
+        MarkLogicRepositoryDescriptor clone = (MarkLogicRepositoryDescriptor) super.clone();
+        clone.rangeElementIndexes = rangeElementIndexes.stream().map(MarkLogicRangeElementIndexDescriptor::new).collect(
+                Collectors.toList());
+        return clone;
     }
 
     public void merge(MarkLogicRepositoryDescriptor other) {
@@ -66,6 +77,9 @@ public class MarkLogicRepositoryDescriptor extends DBSRepositoryDescriptor {
         }
         if (other.dbname != null) {
             dbname = other.dbname;
+        }
+        for (MarkLogicRangeElementIndexDescriptor regi : other.rangeElementIndexes) {
+            rangeElementIndexes.add(new MarkLogicRangeElementIndexDescriptor(regi));
         }
     }
 

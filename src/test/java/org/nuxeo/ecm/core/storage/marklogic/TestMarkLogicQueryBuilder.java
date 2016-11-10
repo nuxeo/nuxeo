@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
@@ -63,22 +62,18 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 new StringLiteral("/default-domain"));
 
         // Mock session
-        DBSSession session = mock(DBSSession.class, new Answer() {
-
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                if ("getDocumentIdByPath".equals(invocation.getMethod().getName())) {
-                    return "12345678-1234-1234-1234-123456789ABC";
-                }
-                return invocation.callRealMethod();
+        DBSSession session = mock(DBSSession.class, (Answer) invocation -> {
+            if ("getDocumentIdByPath".equals(invocation.getMethod().getName())) {
+                return "12345678-1234-1234-1234-123456789ABC";
             }
-
+            return invocation.callRealMethod();
         });
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(session, selectClause, expression, null, null,
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/eq-operator-on-ecm-path.txt", query);
     }
 
@@ -91,22 +86,18 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 new StringLiteral("/default-domain"));
 
         // Mock session
-        DBSSession session = mock(DBSSession.class, new Answer() {
-
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                if ("getDocumentIdByPath".equals(invocation.getMethod().getName())) {
-                    return "12345678-1234-1234-1234-123456789ABC";
-                }
-                return invocation.callRealMethod();
+        DBSSession session = mock(DBSSession.class, (Answer) invocation -> {
+            if ("getDocumentIdByPath".equals(invocation.getMethod().getName())) {
+                return "12345678-1234-1234-1234-123456789ABC";
             }
-
+            return invocation.callRealMethod();
         });
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(session, selectClause, expression, null, null,
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/starts-with-operator-on-ecm-path.txt", query);
     }
 
@@ -122,7 +113,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/starts-with-operator-on-path.txt", query);
     }
 
@@ -137,8 +129,64 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/eq-operator-on-boolean.txt", query);
+    }
+
+    @Test
+    public void testEqOperatorOnDate() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:created"), Operator.EQ,
+                new DateLiteral("2007-01-01", true));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/eq-operator-on-date.txt", query);
+    }
+
+    @Test
+    public void testEqOperatorOnRangeElementIndex() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
+        reid.element = NXQL.ECM_NAME;
+        reid.type = "string";
+        String query = new MarkLogicQueryBuilder(evaluator, null, false,
+                Collections.singletonList(reid)).buildQuery().getSearchQuery();
+        assertFileAgainstString("query-expression/eq-operator-on-range-element-index.txt", query);
+    }
+
+    @Test
+    public void testEqOperatorOnRangeElementIndexOnArray() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
+        reid.element = "dc:contributors";
+        reid.type = "string";
+        String query = new MarkLogicQueryBuilder(evaluator, null, false,
+                Collections.singletonList(reid)).buildQuery().getSearchQuery();
+        assertFileAgainstString("query-expression/eq-operator-on-range-element-index-on-array.txt", query);
     }
 
     @Test
@@ -152,7 +200,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/eq-operator-on-array.txt", query);
     }
 
@@ -168,7 +217,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/eq-operator-on-array.txt", query);
     }
 
@@ -184,7 +234,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/noteq-operator-on-array.txt", query);
     }
 
@@ -200,7 +251,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/noteq-operator-on-array.txt", query);
     }
 
@@ -215,7 +267,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/lt-operator.txt", query);
     }
 
@@ -233,7 +286,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/between-operator.txt", query);
     }
 
@@ -247,7 +301,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/like-operator.txt", query);
     }
 
@@ -261,7 +316,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/ilike-operator.txt", query);
     }
 
@@ -278,7 +334,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/in-operator.txt", query);
     }
 
@@ -295,7 +352,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/not-in-operator-on-array.txt", query);
     }
 
@@ -310,7 +368,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/is-null-operator.txt", query);
     }
 
@@ -327,7 +386,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/not-operator.txt", query);
     }
 
@@ -346,7 +406,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/not-operator-on-composition.txt", query);
     }
 
@@ -362,7 +423,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/wildcard-reference.txt", query);
     }
 
@@ -379,7 +441,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/correlated-wildcard-reference.txt", query);
     }
 
@@ -395,7 +458,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/correlated-wildcard-reference-on-array.txt", query);
     }
 
@@ -417,7 +481,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/acp-reference.txt", query);
     }
 
@@ -432,7 +497,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 new String[] { "Everyone", "bob" }, false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/query-with-principals.txt", query);
     }
 
@@ -457,7 +523,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                 false);
 
         // Test
-        String query = new MarkLogicQueryBuilder(evaluator, null, false).buildQuery().getSearchQuery();
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
         assertFileAgainstString("query-expression/core-feature.txt", query);
     }
 

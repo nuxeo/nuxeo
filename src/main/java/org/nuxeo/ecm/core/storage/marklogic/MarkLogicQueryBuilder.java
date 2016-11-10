@@ -108,10 +108,12 @@ class MarkLogicQueryBuilder {
 
     private final boolean distinctDocuments;
 
+    private final List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
+
     private Boolean projectionHasWildcard;
 
     public MarkLogicQueryBuilder(DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            boolean distinctDocuments) {
+            boolean distinctDocuments, List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes) {
         this.schemaManager = Framework.getLocalService(SchemaManager.class);
         this.expression = evaluator.getExpression();
         this.selectClause = evaluator.getSelectClause();
@@ -120,6 +122,7 @@ class MarkLogicQueryBuilder {
         this.pathResolver = evaluator.pathResolver;
         this.fulltextSearchDisabled = evaluator.fulltextSearchDisabled;
         this.distinctDocuments = distinctDocuments;
+        this.rangeElementIndexes = rangeElementIndexes;
     }
 
     public boolean doManualProjection() {
@@ -156,40 +159,7 @@ class MarkLogicQueryBuilder {
             // Build final AND expression
             expression = new Expression(expression, Operator.AND, principalsExpression);
         }
-        // TODO compute options
         return new MarkLogicQuery(walkExpression(expression).build());
-    }
-
-    private String buildOptions() {
-        StringBuilder options = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
-        options.append("<transform-results apply=\"empty-snippet\"/>");
-        if (!doManualProjection()) {
-            options.append(buildProjections());
-        }
-        options.append("</options>");
-        return options.toString();
-    }
-
-    private String buildProjections() {
-        if (doManualProjection()) {
-            return "";
-        }
-        StringBuilder extract = new StringBuilder("<extract-document-data selected=\"include-with-ancestors\">");
-        for (int i = 0; i < selectClause.elements.size(); i++) {
-            Operand op = selectClause.elements.get(i);
-            if (!(op instanceof Reference)) {
-                throw new QueryParseException("Projection not supported: " + op);
-            }
-            FieldInfo fieldInfo = walkReference((Reference) op);
-            extract.append("<extract-path>");
-            extract.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
-                   .append('/')
-                   .append(MarkLogicHelper.serializeKey(fieldInfo.queryField));
-            extract.append("</extract-path>");
-            // TODO check fulltext score case (from mongodb)
-        }
-        extract.append("</extract-document-data>");
-        return extract.toString();
     }
 
     private QueryBuilder walkExpression(Expression expression) {
@@ -360,11 +330,40 @@ class MarkLogicQueryBuilder {
         // - a platform issue
         if (convertedLiteral == null) {
             return walkNull(lvalue, equals);
-        } else if (convertedLiteral instanceof DateLiteral && ((DateLiteral) convertedLiteral).onlyDate) {
-            String date = convertedLiteral.asString() + "T__:__:__.___";
-            return getQueryBuilder(leftInfo, name -> new LikeQueryBuilder(name, new StringLiteral(date), true, false));
+        } else {
+            // Get MarkLogic type - not null as convertedLiteral is not null
+            String markLogicType = getMarkLogicType(convertedLiteral);
+            if (convertedLiteral instanceof DateLiteral && ((DateLiteral) convertedLiteral).onlyDate) {
+                // As it's a date we add a NXQL regexp as suffix in order to match days with a like query
+                String date = convertedLiteral.asString() + "T__:__:__.___";
+                return getQueryBuilder(leftInfo,
+                        name -> new LikeQueryBuilder(name, new StringLiteral(date), true, false));
+            } else if (rangeElementIndexes.stream().anyMatch(
+                    new RangeElementIndexPredicate(leftInfo.getQueriedElement(), markLogicType))) {
+                RangeQueryBuilder.Operator operator = equals ? RangeQueryBuilder.Operator.EQ
+                        : RangeQueryBuilder.Operator.NE;
+                return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, operator, convertedLiteral));
+            }
         }
         return getQueryBuilder(leftInfo, name -> new EqualQueryBuilder(name, convertedLiteral, equals));
+    }
+
+    private String getMarkLogicType(Literal literal) {
+        ElementType markLogicType;
+        if (literal instanceof BooleanLiteral) {
+            markLogicType = ElementType.BOOLEAN;
+        } else if (literal instanceof DateLiteral) {
+            markLogicType = ElementType.CALENDAR;
+        } else if (literal instanceof DoubleLiteral) {
+            markLogicType = ElementType.DOUBLE;
+        } else if (literal instanceof IntegerLiteral) {
+            markLogicType = ElementType.LONG;
+        } else if (literal instanceof StringLiteral) {
+            markLogicType = ElementType.STRING;
+        } else {
+            throw new QueryParseException("Unsupported literal type=" + literal.getClass());
+        }
+        return markLogicType.getWithoutNamespace();
     }
 
     private QueryBuilder walkLt(Operand lvalue, Operand rvalue) {
@@ -726,6 +725,24 @@ class MarkLogicQueryBuilder {
             return fullField.contains("*");
         }
 
+        /**
+         * Queried element used to know if there's a range element index on it (match against the MarkLogic repository
+         * configuration), for example:
+         * <ul>
+         * <li>foo/bar -> bar</li>
+         * <li>foo/bar/* -> bar</li>
+         * </ul>
+         * 
+         * @since 8.10
+         */
+        public String getQueriedElement() {
+            String[] fields = fullField.split("/");
+            if (fields[fields.length - 1].startsWith("*")) {
+                return fields[fields.length - 2];
+            }
+            return fields[fields.length - 1];
+        }
+
     }
 
     private static class CorrelatedContainerQueryBuilder extends AbstractNamedQueryBuilder {
@@ -901,7 +918,7 @@ class MarkLogicQueryBuilder {
 
         public enum Operator {
 
-            LT("<"), LE("<="), GE(">="), GT(">");
+            LT("<"), LE("<="), GE(">="), GT(">"), EQ("="), NE("!=");
 
             private final String markLogicOperator;
 
@@ -929,7 +946,7 @@ class MarkLogicQueryBuilder {
         protected String build(String name) {
             String serializedName = serializeName(name);
             Object value = getLiteralValue(literal);
-            String valueType = ElementType.getType(value.getClass()).getKey();
+            String valueType = ElementType.getType(value).get();
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
             return String.format("cts:element-range-query(fn:QName(\"\",\"%s\"),\"%s\",%s(\"%s\"))", serializedName,
                     operator.getMarkLogicOperator(), valueType, serializedValue);
@@ -945,6 +962,10 @@ class MarkLogicQueryBuilder {
                 operator = Operator.GT;
             } else if (operator == Operator.GE) {
                 operator = Operator.LT;
+            } else if (operator == Operator.EQ) {
+                operator = Operator.NE;
+            } else if (operator == Operator.NE) {
+                operator = Operator.EQ;
             }
         }
 

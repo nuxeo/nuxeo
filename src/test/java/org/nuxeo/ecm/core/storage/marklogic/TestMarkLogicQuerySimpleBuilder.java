@@ -36,28 +36,38 @@ public class TestMarkLogicQuerySimpleBuilder extends AbstractTest {
 
     @Test
     public void testEq() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.emptyList());
         String query = builder.eq(KEY_ID, "ID").build();
         assertFileAgainstString("query-simple/query-eq.txt", query);
     }
 
     @Test
     public void testEqWithList() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.emptyList());
         String query = builder.eq(KEY_ANCESTOR_IDS, "ID").build();
         assertFileAgainstString("query-simple/query-eq-with-key-list.txt", query);
     }
 
     @Test
+    public void testEqWithRangeElementIndex() throws Exception {
+        MarkLogicRangeElementIndexDescriptor desc = new MarkLogicRangeElementIndexDescriptor();
+        desc.element = KEY_ID;
+        desc.type = "string";
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.singletonList(desc));
+        String query = builder.eq(KEY_ID, "ID").build();
+        assertFileAgainstString("query-simple/query-eq-with-range-element-index.txt", query);
+    }
+
+    @Test
     public void testNotIn() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.emptyList());
         String query = builder.notIn(KEY_ID, Arrays.asList("ID1", "ID2")).build();
         assertFileAgainstString("query-simple/query-not-in.txt", query);
     }
 
     @Test
     public void testNotInOneElement() throws Exception {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.emptyList());
         String query = builder.notIn(KEY_ID, Collections.singleton("ID1")).build();
         assertFileAgainstString("query-simple/query-not-in-one-element.txt", query);
     }

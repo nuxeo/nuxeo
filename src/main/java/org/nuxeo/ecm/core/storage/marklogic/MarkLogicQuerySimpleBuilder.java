@@ -22,11 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
 /**
  * Simple query builder for a MarkLogic query.
@@ -37,8 +39,11 @@ class MarkLogicQuerySimpleBuilder {
 
     private final List<String> queries;
 
-    public MarkLogicQuerySimpleBuilder() {
+    private final List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
+
+    public MarkLogicQuerySimpleBuilder(List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes) {
         this.queries = new ArrayList<>();
+        this.rangeElementIndexes = rangeElementIndexes;
     }
 
     public MarkLogicQuerySimpleBuilder eq(String key, Object value) {
@@ -48,7 +53,13 @@ class MarkLogicQuerySimpleBuilder {
         if (type instanceof ListType) {
             k += MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX;
         }
-        queries.add(elementValueQuery(k, value));
+        ElementType markLogicType = ElementType.getType(value);
+        if (rangeElementIndexes.stream()
+                               .anyMatch(new RangeElementIndexPredicate(key, markLogicType.getWithoutNamespace()))) {
+            queries.add(elementRangeQuery(k, "=", markLogicType, value));
+        } else {
+            queries.add(elementValueQuery(k, value));
+        }
         return this;
     }
 
@@ -67,13 +78,28 @@ class MarkLogicQuerySimpleBuilder {
         return String.format("cts:element-value-query(fn:QName(\"\",\"%s\"),%s)", serializedKey, serializedValue);
     }
 
+    private String elementRangeQuery(String key, String operator, ElementType valueType, Object... values) {
+        String serializedKey = MarkLogicHelper.serializeKey(key);
+        String serializedValue = serializeValues(valueType, values);
+        return String.format("cts:element-range-query(fn:QName(\"\",\"%s\"),\"%s\",%s)", serializedKey,
+                operator, serializedValue);
+    }
+
     private String serializeValues(Object... values) {
+        return serializeValues(value -> "\"" + value + "\"", values);
+    }
+
+    private String serializeValues(ElementType type, Object... values) {
+        return serializeValues(value -> type.get() + "(\"" + value + "\")", values);
+    }
+
+    private String serializeValues(Function<String, String> format, Object... values) {
         if (values.length == 1) {
-            return "\"" + MarkLogicStateSerializer.serializeValue(values[0]) + "\"";
+            return format.apply(MarkLogicStateSerializer.serializeValue(values[0]));
         }
         return Arrays.stream(values)
                      .map(MarkLogicStateSerializer::serializeValue)
-                     .map(value -> "\"" + value + "\"")
+                     .map(format)
                      .collect(Collectors.joining(",", "(", ")"));
     }
 

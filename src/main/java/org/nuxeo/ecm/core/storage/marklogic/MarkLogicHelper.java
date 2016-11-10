@@ -75,15 +75,15 @@ final class MarkLogicHelper {
 
     public enum ElementType {
 
-        BOOLEAN("xs:boolean"),
+        BOOLEAN("boolean"),
 
-        DOUBLE("xs:double"),
+        DOUBLE("double"),
 
-        LONG("xs:long"),
+        LONG("long"),
 
-        CALENDAR("xs:dateTime"),
+        CALENDAR("dateTime"),
 
-        STRING("xs:string");
+        STRING("string");
 
         private String key;
 
@@ -91,18 +91,29 @@ final class MarkLogicHelper {
             this.key = key;
         }
 
-        public String getKey() {
+        public String get() {
+            return "xs:" + key;
+        }
+
+        public String getWithoutNamespace() {
             return key;
         }
 
         public static ElementType of(String string) {
             String type = string.toLowerCase();
             for (ElementType elementType : values()) {
-                if (elementType.getKey().equalsIgnoreCase(type)) {
+                if (elementType.get().equalsIgnoreCase(type)) {
                     return elementType;
                 }
             }
             return null;
+        }
+
+        /**
+         * @return the element type of simple type of input object.
+         */
+        public static ElementType getType(Object object) {
+            return getType(object == null ? null : object.getClass());
         }
 
         /**

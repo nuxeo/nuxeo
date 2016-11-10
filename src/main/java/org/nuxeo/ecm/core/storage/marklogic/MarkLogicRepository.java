@@ -92,9 +92,14 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     /** Last value used from the in-memory sequence. Used by unit tests. */
     protected long sequenceLastValue;
 
+    protected List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
+
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
         xccContentSource = newMarkLogicContentSource(descriptor);
+        rangeElementIndexes = descriptor.rangeElementIndexes.stream()
+                                                            .map(MarkLogicRangeElementIndexDescriptor::new)
+                                                            .collect(Collectors.toList());
         initRepository();
     }
 
@@ -259,15 +264,15 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     private String getChildQuery(String parentId, String name, Set<String> ignored) {
-        return new MarkLogicQuerySimpleBuilder().eq(KEY_PARENT_ID, parentId)
-                                                .eq(KEY_NAME, name)
-                                                .notIn(KEY_ID, ignored)
-                                                .build();
+        return new MarkLogicQuerySimpleBuilder(rangeElementIndexes).eq(KEY_PARENT_ID, parentId)
+                                                                   .eq(KEY_NAME, name)
+                                                                   .notIn(KEY_ID, ignored)
+                                                                   .build();
     }
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key, value);
         builder.notIn(KEY_ID, ignored);
         return findAll(builder.build());
@@ -275,7 +280,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key1, value1);
         builder.eq(key2, value2);
         builder.notIn(KEY_ID, ignored);
@@ -285,7 +290,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key, value);
         for (State state : findAll(builder.build(), KEY_ID, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS)) {
             String id = (String) state.get(KEY_ID);
@@ -305,7 +310,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
         builder.eq(key, value);
         builder.notIn(KEY_ID, ignored);
         return exist(builder.build());
@@ -314,7 +319,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, orderByClause, distinctDocuments);
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, orderByClause, distinctDocuments,
+                rangeElementIndexes);
         MarkLogicQuery query = builder.buildQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
@@ -384,7 +390,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
         // Not yet implemented, return all result in one shot for now
-        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, null, false);
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, null, false, rangeElementIndexes);
         String query = builder.buildQuery().getSearchQuery();
         // Run query
         try (Session session = xccContentSource.newSession()) {
