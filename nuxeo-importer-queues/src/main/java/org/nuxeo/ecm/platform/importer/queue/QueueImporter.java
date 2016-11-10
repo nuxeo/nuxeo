@@ -16,10 +16,13 @@
  */
 package org.nuxeo.ecm.platform.importer.queue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.Seconds;
-import org.mvel2.asm.tree.IntInsnNode;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,10 +36,6 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.ImportStat;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -224,8 +223,8 @@ public class QueueImporter {
     }
 
     private List<Consumer> startConsumerPool(QueuesManager manager, DocumentModel root, int batchSize, ConsumerFactory factory) {
-        ArrayList<Consumer> ret = new ArrayList<>(manager.getNBConsumers());
-        for (int i = 0; i < manager.getNBConsumers(); i++) {
+		ArrayList<Consumer> ret = new ArrayList<>(manager.count());
+		for (int i = 0; i < manager.count(); i++) {
             Consumer c;
             c = factory.createConsumer(log, root, batchSize, manager, i);
             ret.add(c);
