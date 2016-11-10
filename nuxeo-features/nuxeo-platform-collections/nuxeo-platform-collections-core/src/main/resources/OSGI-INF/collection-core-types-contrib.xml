@@ -40,6 +40,21 @@
 
     <doctype name="Collections" extends="Folder">
       <facet name="NotCollectionMember" />
+      <subtypes>
+        <type>Collection</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>Collection</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>Collection</type>
+      </subtypes>
     </doctype>
 
     <doctype name="WorkspaceRoot" append="true">

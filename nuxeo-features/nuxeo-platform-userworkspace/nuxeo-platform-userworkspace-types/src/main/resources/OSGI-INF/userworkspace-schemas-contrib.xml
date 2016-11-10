@@ -9,6 +9,9 @@
     <doctype name="UserWorkspacesRoot" extends="Folder">
       <facet name="SuperSpace"/>
       <facet name="HiddenInNavigation"/>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
     </doctype>
 
   </extension>

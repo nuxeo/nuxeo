@@ -23,6 +23,16 @@
 
     <doctype name="MailFolder" extends="Folder">
       <schema name="protocol"/>
+      <subtypes>
+        <type>MailMessage</type>
+      </subtypes>
+    </doctype>
+
+    <!-- allow mail folders within workspaces -->
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>MailFolder</type>
+      </subtypes>
     </doctype>
 
   </extension>

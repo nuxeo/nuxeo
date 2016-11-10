@@ -5,20 +5,11 @@
 <component name="org.nuxeo.ecm.platform.comment.types">
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
-    <type id="Domain">
-      <subtypes>
-        <type hidden="create">CommentRoot</type>
-      </subtypes>
-    </type>
 
     <type id="CommentRoot">
       <label>CommentRoot</label>
       <icon>/icons/folder.gif</icon>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type hidden="create">Folder</type>
-        <type hidden="create">HiddenFolder</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>

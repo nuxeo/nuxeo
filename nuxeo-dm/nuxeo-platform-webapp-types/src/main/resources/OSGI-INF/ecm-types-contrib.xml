@@ -11,9 +11,6 @@
       <description>serverRoot.description</description>
       <category>SuperDocument</category>
       <default-view>view_domains</default-view>
-      <subtypes>
-        <type hidden="create">Domain</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -43,11 +40,6 @@
         <view id="user_dashboard" value="user_dashboard" />
         <view id="opensocial_dashboard" value="opensocial_dashboard" />
       </views>
-      <subtypes>
-        <type hidden="create">WorkspaceRoot</type>
-        <type hidden="create">SectionRoot</type>
-        <type hidden="create">TemplateRoot</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -72,9 +64,6 @@
       <category>SuperDocument</category>
       <description>WorkspaceRoot.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Workspace</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -99,9 +88,6 @@
       <category>SuperDocument</category>
       <description>TemplateRoot.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Workspace</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -127,13 +113,6 @@
       <description>Workspace.description</description>
       <default-view>view_documents</default-view>
       <create-view>create_workspace</create-view>
-      <subtypes>
-        <type>Workspace</type>
-        <type>Folder</type>
-        <type>OrderedFolder</type>
-        <type>File</type>
-        <type>Note</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
         <!--<layout>file</layout> -->
@@ -160,9 +139,6 @@
       <category>SuperDocument</category>
       <description>SectionRoot.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Section</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -187,9 +163,6 @@
       <category>Collaborative</category>
       <description>Section.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Section</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -214,12 +187,6 @@
       <category>Collaborative</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Folder</type>
-        <type>OrderedFolder</type>
-        <type>File</type>
-        <type>Note</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
@@ -244,12 +211,6 @@
       <category>Collaborative</category>
       <description>OrderedFolder.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Folder</type>
-        <type>OrderedFolder</type>
-        <type>File</type>
-        <type>Note</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>

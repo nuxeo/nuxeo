@@ -12,12 +12,6 @@
       <schema name="files" />
       <facet name="SuperSpace"/>
       <facet name="UITypesLocalConfiguration"/>
-      <subtypes>
-        <type>Workspace</type>
-        <type>Folder</type>
-        <type>File</type>
-        <type>Note</type>
-      </subtypes>
     </doctype>
   </extension>
 

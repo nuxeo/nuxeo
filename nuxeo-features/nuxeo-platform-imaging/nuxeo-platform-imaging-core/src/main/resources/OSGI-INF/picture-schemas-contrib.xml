@@ -34,6 +34,27 @@
       <facet name="HasRelatedText"/>
     </doctype>
 
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>Picture</type>
+      </subtypes>
+    </doctype>
+    <doctype name="OrderedFolder" append="true">
+      <subtypes>
+        <type>Picture</type>
+      </subtypes>
+    </doctype>
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>Picture</type>
+      </subtypes>
+    </doctype>
+    <doctype name="PictureBook" append="true">
+      <subtypes>
+        <type>Picture</type>
+      </subtypes>
+    </doctype>
+
   </extension>
 
 </component>

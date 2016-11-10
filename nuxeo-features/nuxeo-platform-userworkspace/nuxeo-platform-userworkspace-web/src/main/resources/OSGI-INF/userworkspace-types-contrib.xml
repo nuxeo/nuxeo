@@ -11,9 +11,6 @@
       <category>SuperDocument</category>
       <description>UserWorkspacesRoot.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>Workspace</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>

@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo ECM Webapp types contributions
 Bundle-SymbolicName: org.nuxeo.ecm.platform.webapp.types;singleton=true
 Bundle-Vendor: Nuxeo
 Bundle-Category: core
-Nuxeo-Component: OSGI-INF/ecm-schemas-contrib.xml
+Nuxeo-Component: OSGI-INF/ecm-schemas-contrib.xml,
+ OSGI-INF/ecm-types-contrib.xml
 Require-Bundle: org.nuxeo.ecm.core.schema,
   org.nuxeo.ecm.core

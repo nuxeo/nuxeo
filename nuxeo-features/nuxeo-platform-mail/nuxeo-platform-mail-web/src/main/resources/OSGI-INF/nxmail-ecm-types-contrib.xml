@@ -41,16 +41,6 @@
           document_trash_content
         </contentView>
       </contentViews>
-      <subtypes>
-        <type>MailMessage</type>
-      </subtypes>
-    </type>
-
-    <!-- allow mail floders within workspaces -->
-    <type id="Workspace">
-      <subtypes>
-        <type>MailFolder</type>
-      </subtypes>
     </type>
 
   </extension>

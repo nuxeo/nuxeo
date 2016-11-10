@@ -46,27 +46,6 @@
       </layouts>
     </type>
 
-    <type id="Folder">
-      <subtypes>
-        <type>Picture</type>
-      </subtypes>
-    </type>
-    <type id="OrderedFolder">
-      <subtypes>
-        <type>Picture</type>
-      </subtypes>
-    </type>
-    <type id="Workspace">
-      <subtypes>
-        <type>Picture</type>
-      </subtypes>
-    </type>
-    <type id="PictureBook">
-      <subtypes>
-        <type>Picture</type>
-      </subtypes>
-    </type>
-
   </extension>
 
 </component>

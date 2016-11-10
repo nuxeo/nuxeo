@@ -12,6 +12,10 @@
     <doctype name="CommentRoot" extends="Folder">
       <facet name="HiddenInNavigation" />
       <facet name="HiddenInCreation" />
+      <subtypes>
+        <type>Folder</type>
+        <type>HiddenFolder</type>
+      </subtypes>
     </doctype>
 
     <doctype name="Comment" extends="Document">
@@ -25,6 +29,11 @@
       </prefetch>
     </doctype>
 
+    <doctype name="Domain" append="true">
+      <subtypes>
+        <type>CommentRoot</type>
+      </subtypes>
+    </doctype>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
