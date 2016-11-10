@@ -32,7 +32,7 @@ import java.util.Random;
  */
 public abstract class AbstractProducer extends AbstractTaskRunner implements Producer {
 
-    protected ImporterLogger log = null;
+    final protected ImporterLogger log;
 
     protected QueuesManager qm;
 
@@ -43,6 +43,7 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
     protected final Random rand;
 
     public AbstractProducer(ImporterLogger log) {
+        assert(log != null);
         this.log = log;
         producerCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "producer"));
         rand = new Random(System.currentTimeMillis());
