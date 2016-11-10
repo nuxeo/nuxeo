@@ -25,6 +25,8 @@ import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import java.util.Random;
+
 /**
  * @since 8.3
  */
@@ -38,10 +40,12 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
 
     protected final Counter producerCounter;
 
+    protected final Random rand;
+
     public AbstractProducer(ImporterLogger log) {
         this.log = log;
         producerCounter = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "producer"));
-
+        rand = new Random(System.currentTimeMillis());
     }
 
     @Override
@@ -50,9 +54,14 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
     }
 
     protected void dispatch(SourceNode node) throws InterruptedException {
-        qm.dispatch(node);
+        int idx = getTargetQueue(node, qm.count());
+        qm.put(idx, node);
         producerCounter.inc();
         incrementProcessed();
     }
 
+    @Override
+    public int getTargetQueue(SourceNode bh, int nbQueues) {
+        return rand.nextInt(nbQueues);
+    }
 }
