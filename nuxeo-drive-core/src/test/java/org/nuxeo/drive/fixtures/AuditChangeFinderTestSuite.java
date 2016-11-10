@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
@@ -53,14 +54,13 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * Tests the {@link FileSystemChangeFinder}.
  *
  * @since 8.2
  */
-@RandomBug.Repeat(issue = "NXP-20517")
+@Ignore(value = "NXP-20517")
 public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinderTestSuite.class);
