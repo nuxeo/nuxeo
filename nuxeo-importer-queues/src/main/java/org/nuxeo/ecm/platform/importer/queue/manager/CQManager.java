@@ -16,12 +16,12 @@ package org.nuxeo.ecm.platform.importer.queue.manager;/*
  */
 
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.MessageHandler;
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
-import net.openhft.chronicle.wire.DocumentContext;
+import org.jetbrains.annotations.Nullable;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static java.awt.SystemColor.text;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 /**
  * @since 8.10
@@ -52,11 +52,17 @@ public class CQManager extends AbstractQueuesManager {
         // Create a path for the queue
         File basePath = new File(System.getProperty("java.io.tmpdir"), "IQ");
         basePath.mkdirs();
-        System.out.println("QUEUE " + basePath);
+        logger.debug("Use chronicle queue base: " + basePath);
         for (int i = 0; i < queuesNb; i++) {
-            try (ChronicleQueue queue = SingleChronicleQueueBuilder.binary(new File(basePath, "Q" + i)).build()) {
+            File path = new File(basePath, "Q" + i);
+            try {
+                deleteDirectory(path);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+            try (ChronicleQueue queue = SingleChronicleQueueBuilder.binary(path).build()) {
                 appenders.add(queue.acquireAppender());
-                tailers.add(queue.createTailer());
+                tailers.add(queue.createTailer().toEnd());
             }
         }
     }
@@ -64,30 +70,42 @@ public class CQManager extends AbstractQueuesManager {
 
     @Override
     public void put(int queue, SourceNode node) throws InterruptedException {
-        try (final DocumentContext dc = appenders.get(queue).writingDocument()) {
-            dc.wire().write().object(node);
-        }
+        appenders.get(queue).writeDocument(w -> w.write("node").object(node));
     }
 
     @Override
     public SourceNode poll(int queue) {
-        try (DocumentContext dc = tailers.get(queue).readingDocument()) {
-            if (dc.isPresent()) {
-                try {
-                    return (SourceNode) dc.wire().objectInput().readObject();
-                } catch (ClassNotFoundException e) {
-                    log.error("Can not read object" + e.getMessage(), e);
-                } catch (IOException e) {
-                    log.error("Can not read object" + e.getMessage(), e);
-                }
-            }
+        try {
+            return poll(queue, 5, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            log.error("poll timeout", e);
+            ExceptionUtils.checkInterrupt(e);
+        }
+        return null;
+    }
+
+    @Nullable
+    private SourceNode get(int queue) {
+        final SourceNode[] ret = new SourceNode[1];
+        if (tailers.get(queue).readDocument(w -> {
+            ret[0] = (SourceNode) w.read("node").object();})) {
+            return ret[0];
         }
         return null;
     }
 
     @Override
     public SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException {
-        return poll(queue);
+        SourceNode ret = get(queue);
+        if (ret != null) {
+            return ret;
+        }
+        final long deadline = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeout, unit);
+        while(ret == null && System.currentTimeMillis() < deadline) {
+            Thread.sleep(100);
+            ret = get(queue);
+        }
+        return ret;
     }
 
     @Override

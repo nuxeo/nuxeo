@@ -52,7 +52,6 @@ public class TestCQManager {
     protected static final Log log = LogFactory.getLog(TestCQManager.class);
 
     @Test
-    @Ignore("impl in progress")
     public void readWrite() throws InterruptedException {
         //ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
@@ -63,7 +62,8 @@ public class TestCQManager {
         qm.put(1, node);
 
         SourceNode node1 = qm.poll(1);
-        assertEquals(node, node1);
+        System.out.println(node1.getName());
+        assertEquals(node.getName(), node1.getName());
     }
 
 }
