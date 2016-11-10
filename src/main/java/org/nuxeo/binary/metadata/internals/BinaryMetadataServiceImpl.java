@@ -39,6 +39,7 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.actions.ActionContext;
@@ -195,11 +196,19 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             // Write doc properties from outputs.
             for (String metadata : blobMetadataOutput.keySet()) {
                 Object metadataValue = blobMetadataOutput.get(metadata);
+                String property = metadataMapping.get(metadata);
                 if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection)
                         && !(metadataValue.getClass().isArray())) {
                     metadataValue = metadataValue.toString();
                 }
-                doc.setPropertyValue(metadataMapping.get(metadata), (Serializable) metadataValue);
+                try {
+                    doc.setPropertyValue(property, (Serializable) metadataValue);
+                } catch (PropertyException e) {
+                    log.warn(String.format(
+                            "Failed to set property '%s' to value %s from metadata '%s' in '%s' in document '%s' ('%s')",
+                            property, metadataValue, metadata, mappingDescriptor.getBlobXPath(), doc.getId(),
+                            doc.getPath()));
+                }
             }
 
             // document should exist if id != null
