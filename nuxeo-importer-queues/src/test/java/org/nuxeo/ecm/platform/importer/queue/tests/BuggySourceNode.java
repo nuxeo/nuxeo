@@ -1,13 +1,15 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
+import java.io.Externalizable;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
-public class BuggySourceNode implements SourceNode {
+public class BuggySourceNode implements SourceNode, Serializable {
 
     private final int index;
     private final boolean txBuggy;

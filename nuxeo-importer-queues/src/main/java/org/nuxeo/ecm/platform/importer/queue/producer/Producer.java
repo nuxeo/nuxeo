@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.importer.queue.producer;
 
 import org.nuxeo.ecm.platform.importer.queue.TaskRunner;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
  * @since 8.3
@@ -25,5 +26,7 @@ import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 public interface Producer extends TaskRunner {
 
     void init(QueuesManager qm);
+
+    int getTargetQueue(SourceNode bh, int nbQueues);
 
 }

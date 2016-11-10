@@ -78,5 +78,5 @@ public interface QueuesManager {
     int getNBConsumers();
 
     @Deprecated
-    BlockingQueue<SourceNode> xgetQueue(int idx);
+    BlockingQueue<SourceNode> getQueue(int idx);
 }
