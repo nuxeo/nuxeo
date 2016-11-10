@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.importer.queue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.joda.time.Seconds;
@@ -32,9 +36,6 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.ImportStat;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -66,23 +67,33 @@ public class QueueImporter {
 
     public void importDocuments(Producer producer, QueuesManager manager, String importPath, String repositoryName,
                                 int batchSize, ConsumerFactory factory) {
+        importDocuments(Collections.singletonList(producer), manager, importPath, repositoryName, batchSize, factory);
+    }
+
+    public void importDocuments(List<Producer> producers, QueuesManager manager, String importPath, String repositoryName,
+                                int batchSize, ConsumerFactory factory) {
         log.info("importer: Starting import process");
         isRunning = true;
         Exception finalException = null;
         DateTime importStarted = new DateTime();
-
+        long processed = 0;
         enableFilters();
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)){
-            producer.init(manager);
+            producers.get(0).init(manager);
             DocumentModel root = session.getDocument(new PathRef(importPath));
-            startProducerThread(producer);
+            startProducerThread(producers.get(0));
             List<Consumer> consumers = startConsumerPool(manager, root, batchSize, factory);
-            finalException = waitForProducer(producer);
+            finalException = waitForProducer(producers.get(0));
+            processed = producers.get(0).getNbProcessed();
+            for (int i = 1; i< producers.size(); i++) {
+                startProducerThread(producers.get(i));
+                finalException = waitForProducer(producers.get(i));
+                processed += producers.get(i).getNbProcessed();
+            }
             consumersCanStop(consumers);
             finalException = waitForConsumers(consumers);
             checkConsumerQueues(manager);
-            updateStats(consumers, producer);
-
+            updateStats(consumers, producers);
         } catch (Exception e) {
             log.error("Error while importing", e);
             finalException = e;
@@ -93,14 +104,14 @@ public class QueueImporter {
 
         DateTime importFinished = new DateTime();
         log.info(String.format("import: End of process: producer send %d docs, consumer receive %d docs, creating %d docs (include retries) in %s mn, rate %.2f doc/s.",
-                producer.getNbProcessed(), processedNodesConsumer, nbDocsCreated,
+                processed, processedNodesConsumer, nbDocsCreated,
                 Minutes.minutesBetween(importStarted, importFinished).getMinutes(),
                 processedNodesConsumer/(float) Seconds.secondsBetween(importStarted, importFinished).getSeconds()));
     }
 
     protected void checkConsumerQueues(QueuesManager manager) {
         unprocessedNodesConsumer = 0;
-        for (int i = 0; i < manager.count(); i++) {
+        for (int i = 0; i < manager.getNBConsumers(); i++) {
             while (! manager.isEmpty(i)) {
                 log.error("Queue of conusmer " + i + " not empty, draining " + manager.size(i)  + " nodes to errors");
                 unprocessedNodesConsumer += manager.size(i);
@@ -114,7 +125,7 @@ public class QueueImporter {
         }
     }
 
-    private void updateStats(List<Consumer> consumers, Producer producer) {
+    private void updateStats(List<Consumer> consumers, List<Producer> producers) {
         nbDocsCreated = 0;
         for (Consumer c : consumers) {
             processedNodesConsumer += c.getNbProcessed();
@@ -123,10 +134,12 @@ public class QueueImporter {
         if (unprocessedNodesConsumer > 0) {
             log.error("Total number of unprocessed doc because of consumers unexpected end: " + unprocessedNodesConsumer);
         }
-        if (producer.getNbProcessed() != processedNodesConsumer) {
-            log.error(
-                    String.format("Producer produced %s nodes, Consumers processed %s nodes, some nodes have been lost",
-                            producer.getNbProcessed(), processedNodesConsumer));
+        for (Producer producer: producers) {
+            if (producer.getNbProcessed() != processedNodesConsumer) {
+                log.error(
+                        String.format("Producer produced %s nodes, Consumers processed %s nodes, some nodes have been lost",
+                                producer.getNbProcessed(), processedNodesConsumer));
+            }
         }
 
     }
@@ -210,8 +223,8 @@ public class QueueImporter {
     }
 
     private List<Consumer> startConsumerPool(QueuesManager manager, DocumentModel root, int batchSize, ConsumerFactory factory) {
-        ArrayList<Consumer> ret = new ArrayList<>(manager.count());
-        for (int i = 0; i < manager.count(); i++) {
+		ArrayList<Consumer> ret = new ArrayList<>(manager.count());
+		for (int i = 0; i < manager.count(); i++) {
             Consumer c;
             c = factory.createConsumer(log, root, batchSize, manager, i);
             ret.add(c);
