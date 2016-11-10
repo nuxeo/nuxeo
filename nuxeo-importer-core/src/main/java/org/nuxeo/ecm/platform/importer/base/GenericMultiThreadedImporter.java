@@ -21,19 +21,6 @@
 
 package org.nuxeo.ecm.platform.importer.base;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -54,6 +41,20 @@ import org.nuxeo.ecm.platform.importer.log.PerfLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.DefaultMultiThreadingPolicy;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Generic importer
@@ -200,6 +201,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     public void run() {
         Exception finalException = null;
         try {
+            if (!TransactionHelper.isTransactionActive()) {
+                TransactionHelper.startTransaction();
+            }
             session = CoreInstance.openCoreSessionSystem(repositoryName);
             for (ImporterFilter filter : filters) {
                 log.debug(String.format(
