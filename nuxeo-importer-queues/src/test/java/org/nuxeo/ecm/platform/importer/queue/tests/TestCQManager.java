@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.importer.queue.tests;
 import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -29,12 +30,13 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
+import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
-import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
 import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -45,44 +47,23 @@ import static org.mockito.Mockito.mock;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestBuggyProducer {
+public class TestCQManager {
 
-    protected static final Log log = LogFactory.getLog(TestImporter.class);
-
-    @Inject
-    CoreSession session;
+    protected static final Log log = LogFactory.getLog(TestCQManager.class);
 
     @Test
-    public void shouldStopOnProducerError()  {
-        ImporterLogger logger = mock(ImporterLogger.class);
+    @Ignore("impl in progress")
+    public void readWrite() throws InterruptedException {
+        //ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
-        // ImporterLogger logger = new BufferredLogger(log);
-        QueueImporter importer = new QueueImporter(logger);
-        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, true);
-        importer.addFilter(filter);
-        BQManager qm = new BQManager(logger, 5, 42);
+        ImporterLogger logger = new BufferredLogger(log);
+        CQManager qm = new CQManager(logger, 5);
+        SourceNode node = new BuggySourceNode(1, false, false);
+        qm.put(1, node);
+        qm.put(1, node);
 
-        // Given a producer that fail at node 20
-        Producer producer = new BuggyNodeProducer(logger, 100, 0, 0, 0, 80);
-        ConsumerFactory fact = new BuggyConsumerFactory(100);
-
-        // When consumer are slow
-        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
-
-        // Commit for visibility with repeatable read isolation (mysql)
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-
-        // Then only buggy nodes should'nt be imported.
-        DocumentModelList docs = session.query("SELECT * FROM File");
-        int expected = 80;
-        if (expected != docs.size()) {
-            for (DocumentModel doc : docs) {
-                System.out.println(doc.getName());
-            }
-        }
-        assertEquals("Count of documents that should have been created after import", expected, docs.size());
-        // verify(logger, times(20)).error(anyString());
+        SourceNode node1 = qm.poll(1);
+        assertEquals(node, node1);
     }
 
 }

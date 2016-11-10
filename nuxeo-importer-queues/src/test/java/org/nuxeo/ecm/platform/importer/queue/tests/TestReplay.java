@@ -30,11 +30,10 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
-import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
-import org.nuxeo.ecm.platform.importer.queue.manager.RandomQueuesManager;
+import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -78,7 +77,7 @@ public class TestReplay {
         QueueImporter importer = new QueueImporter(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, true);
         importer.addFilter(filter);
-        RandomQueuesManager qm = new RandomQueuesManager(logger, 5, 42);
+        BQManager qm = new BQManager(logger, 5, 42);
 
         // Given a producer that generate some buggy nodes.
         // index-0, index-30, index-50, index-60 and index-90 should not be created
