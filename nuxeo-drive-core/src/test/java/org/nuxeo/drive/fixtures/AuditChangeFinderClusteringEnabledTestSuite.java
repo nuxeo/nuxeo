@@ -29,20 +29,20 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * Tests the {@link FileSystemChangeFinder} on a repository with clustering enabled.
  *
  * @since 8.2
  */
-@RandomBug.Repeat(issue = "NXP-20962")
+@Ignore(value = "NXP-20962")
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-clustering-enabled-repo-contrib.xml")
 public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeFinderTestCase {
 
