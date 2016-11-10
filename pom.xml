@@ -785,7 +785,19 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
         <artifactId>nuxeo-liveconnect-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-jsf-dependencies</artifactId>
+        <type>pom</type>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
