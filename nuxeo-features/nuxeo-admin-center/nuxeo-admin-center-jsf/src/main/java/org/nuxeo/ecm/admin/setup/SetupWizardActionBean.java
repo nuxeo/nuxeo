@@ -41,11 +41,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.TreeMap;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -255,6 +252,21 @@ public class SetupWizardActionBean implements Serializable {
 
     @SuppressWarnings("unchecked")
     protected void saveParameters() {
+
+        // Fix types (replace Long, BigDecimal and Boolean with String)
+        Iterator it = parameters.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            Object value = entry.getValue();
+            if (value instanceof Long) {
+                entry.setValue(value.toString());
+            } else if (value instanceof Boolean) {
+                entry.setValue(value.toString());
+            } else if (value instanceof BigDecimal) {
+                entry.setValue(value.toString());
+            }
+        }
+
         // manage httpProxy settings (setting null is not accepted)
         if (!PROXY_AUTHENTICATED.equals(proxyType)) {
             parameters.put("nuxeo.http.proxy.login", "");
