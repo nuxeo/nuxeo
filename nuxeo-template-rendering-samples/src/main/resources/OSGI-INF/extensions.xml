@@ -12,6 +12,12 @@
     <doctype name="InterventionStatement" extends="File">
       <schema name="InterventionStatement"/>
     </doctype>
+    <doctype name="Document" append="true">
+      <subtypes>
+        <type>CustomerReference</type>
+        <type>InterventionStatement</type>
+      </subtypes>
+    </doctype>
   </extension>
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
     <types>
@@ -36,11 +42,6 @@
         <layout>layout@CustomerReference-view</layout>
       </layouts>
     </type>
-    <type id="Document">
-      <subtypes>
-        <type>CustomerReference</type>
-      </subtypes>
-    </type>
     <type id="InterventionStatement">
       <label>Intervention Statement</label>
       <description>Statement that consultants have to bring back signed after an intervention at client's site</description>
@@ -54,11 +55,6 @@
       <layouts mode="view">
         <layout>layout@InterventionStatement-view</layout>
       </layouts>
-    </type>
-    <type id="Document">
-      <subtypes>
-        <type>InterventionStatement</type>
-      </subtypes>
     </type>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions"/>
