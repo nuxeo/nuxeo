@@ -9,18 +9,12 @@
       <default-view>view_documents</default-view>
       <label>DocumentRouteInstancesRoot</label>
       <icon>/icons/folder.gif</icon>
-      <subtypes>
-        <type>Folder</type>
-      </subtypes>
     </type>
 
     <type id="DocumentRouteModelsRoot">
       <default-view>view_documents</default-view>
       <label>DocumentRouteModelsRoot</label>
       <icon>/icons/folder.gif</icon>
-      <subtypes>
-        <type>Folder</type>
-      </subtypes>
     </type>
 
 
@@ -31,11 +25,6 @@
       <category>Collaborative</category>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
-      <subtypes>
-        <type>StepFolder</type>
-        <type>DocumentRouteStep</type>
-        <type>ConditionalStepFolder</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>step_folder</layout>
@@ -67,11 +56,6 @@
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <edit-view>edit_route_element</edit-view>
-      <subtypes>
-        <type>StepFolder</type>
-        <type>DocumentRouteStep</type>
-        <type>ConditionalStepFolder</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>step_folder</layout>
@@ -114,10 +98,6 @@
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <edit-view>edit_route_element</edit-view>
-      <subtypes>
-        <type>StepFolder</type>
-        <type>DocumentRouteStep</type>
-      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>

@@ -51,6 +51,7 @@
       <facet name="SystemDocument" />
       <facet name="HiddenInCreation" />
       <subtypes>
+        <type>Folder</type>
         <type>HiddenFolder</type>
       </subtypes>
     </doctype>
