@@ -25,25 +25,6 @@
         <layout>dublincore</layout>
       </layouts>
     </type>
-
-    <type id="Workspace">
-      <subtypes>
-        <type>Video</type>
-      </subtypes>
-    </type>
-
-    <type id="Folder">
-      <subtypes>
-        <type>Video</type>
-      </subtypes>
-    </type>
-
-    <type id="OrderedFolder">
-      <subtypes>
-        <type>Video</type>
-      </subtypes>
-    </type>
-
   </extension>
 
 </component>

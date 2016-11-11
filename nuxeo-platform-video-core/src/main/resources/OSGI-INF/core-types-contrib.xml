@@ -29,5 +29,23 @@
       <facet name="HasStoryboard" />
       <facet name="HasVideoPreview" />
     </doctype>
+
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>Video</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>Video</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="OrderedFolder" append="true">
+      <subtypes>
+        <type>Video</type>
+      </subtypes>
+    </doctype>
   </extension>
 </component>
