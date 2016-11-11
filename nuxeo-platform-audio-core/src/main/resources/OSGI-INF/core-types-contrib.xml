@@ -22,6 +22,24 @@
       <facet name="Versionable" />
       <facet name="Publishable" />
     </doctype>
+
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="OrderedFolder" append="true">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </doctype>
   </extension>
 
 </component>

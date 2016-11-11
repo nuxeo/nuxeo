@@ -27,23 +27,6 @@
       </layouts>
     </type>
 
-    <type id="Workspace">
-      <subtypes>
-        <type>Audio</type>
-      </subtypes>
-    </type>
-
-    <type id="Folder">
-      <subtypes>
-        <type>Audio</type>
-      </subtypes>
-    </type>
-
-    <type id="OrderedFolder">
-      <subtypes>
-        <type>Audio</type>
-      </subtypes>
-    </type>
   </extension>
 
 </component>
