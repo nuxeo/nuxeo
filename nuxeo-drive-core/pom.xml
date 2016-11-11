@@ -124,7 +124,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-base</artifactId>
+      <artifactId>nuxeo-platform-webapp-types</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
