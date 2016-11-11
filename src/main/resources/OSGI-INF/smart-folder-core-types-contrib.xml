@@ -16,6 +16,26 @@
       <schema name="smart_folder" />
     </doctype>
 
+    <!-- add it to existing containers -->
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>SmartFolder</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>SmartFolder</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="OrderedFolder" append="true">
+      <subtypes>
+        <type>SmartFolder</type>
+      </subtypes>
+    </doctype>
+
   </extension>
 
 </component>
