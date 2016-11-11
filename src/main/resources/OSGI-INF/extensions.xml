@@ -14,6 +14,16 @@
       <schema name="easysharefolder"/>
       <schema name="uid"/>
     </doctype>
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>EasyShareFolder</type>
+      </subtypes>
+    </doctype>
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>EasyShareFolder</type>
+      </subtypes>
+    </doctype>
   </extension>
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
     <types>
@@ -46,16 +56,6 @@
       <contentViews category="trash_content">
         <contentView showInExportView="false">document_trash_content</contentView>
       </contentViews>
-    </type>
-    <type id="Folder">
-      <subtypes>
-        <type>EasyShareFolder</type>
-      </subtypes>
-    </type>
-    <type id="Workspace">
-      <subtypes>
-        <type>EasyShareFolder</type>
-      </subtypes>
     </type>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
