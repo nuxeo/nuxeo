@@ -15,6 +15,26 @@
       <facet name="ComplexTest" />
     </doctype>
 
+    <doctype name="Root" append="true">
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>ComplexFile</type>
+      </subtypes>
+      <subtypes-forbidden>
+        <type>Domain</type>
+      </subtypes-forbidden>
+    </doctype>
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>ComplexFile</type>
+      </subtypes>
+    </doctype>
   </extension>
 
 </component>
