@@ -59,7 +59,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.platform.query.api", //
         "org.nuxeo.ecm.platform.types.api", //
         "org.nuxeo.ecm.platform.types.core", //
-        "org.nuxeo.ecm.webapp.base", //
+        "org.nuxeo.ecm.platform.webapp.types", //
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.usermanager", //
         "org.nuxeo.ecm.directory", //
