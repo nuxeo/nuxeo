@@ -108,6 +108,33 @@
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
+    <converter class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter" name="ps2pdf">
+      <sourceMimeType>application/postscript</sourceMimeType>
+      <sourceMimeType>application/eps</sourceMimeType>
+      <sourceMimeType>application/x-eps</sourceMimeType>
+      <sourceMimeType>image/eps</sourceMimeType>
+      <sourceMimeType>image/x-eps</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <destinationMimeType>application/pdf</destinationMimeType>
+      <parameters>
+        <parameter name="CommandLineName">ps2pdf</parameter>
+      </parameters>
+    </converter>
+
+    <converter name="ps2pdf2text">
+      <sourceMimeType>application/postscript</sourceMimeType>
+      <sourceMimeType>application/eps</sourceMimeType>
+      <sourceMimeType>application/x-eps</sourceMimeType>
+      <sourceMimeType>image/eps</sourceMimeType>
+      <sourceMimeType>image/x-eps</sourceMimeType>
+      <sourceMimeType>application/illustrator</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+      <conversionSteps>
+        <subconverter>ps2pdf</subconverter>
+        <subconverter>pdf2text</subconverter>
+      </conversionSteps>
+    </converter>
+
   </extension>
 
 </component>

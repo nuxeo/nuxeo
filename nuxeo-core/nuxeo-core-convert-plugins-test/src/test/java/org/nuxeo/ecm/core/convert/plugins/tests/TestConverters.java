@@ -129,6 +129,18 @@ public class TestConverters extends SimpleConverterTest {
         assertTrue(textContent.contains("d\u00e9j\u00e0"));
     }
 
+    @Test
+    public void testAiConverter() throws Exception {
+        String textContent = doTestTextConverter("application/illustrator", "ps2pdf2text", "hello.ai");
+        assertTrue(textContent.contains("Hello from a .ai document!"));
+    }
+
+    @Test
+    public void testEpsConverter() throws Exception {
+        String textContent = doTestTextConverter("application/eps", "ps2pdf2text", "hello.eps");
+        assertTrue(textContent.contains("Hello from a .eps document!"));
+    }
+
     // fails since upgrade from pdfbox 1.6.0 to 1.8.5
     // but deemed lower priority than NXP-11676
     @Ignore
