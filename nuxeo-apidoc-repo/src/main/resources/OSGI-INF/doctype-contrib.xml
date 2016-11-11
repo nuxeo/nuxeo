@@ -12,6 +12,14 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Folderish" />
+
+      <subtypes>
+        <type>NXBundleGroup</type>
+        <type>NXBundle</type>
+        <type>NXOperation</type>
+        <type>NXSeamComponent</type>
+        <type>Workspace</type>
+      </subtypes>
     </doctype>
 
 
@@ -24,6 +32,10 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Folderish" />
+
+      <subtypes>
+        <type>NXBundleGroup</type>
+      </subtypes>
     </doctype>
 
 
@@ -35,6 +47,12 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Folderish" />
+      <subtypes>
+        <type>NXComponent</type>
+        <type>NXService</type>
+        <type>NXExtensionPoint</type>
+        <type>NXContribution</type>
+      </subtypes>
     </doctype>
 
     <doctype name="NXComponent" extends="Folder">
@@ -45,6 +63,11 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Folderish" />
+      <subtypes>
+        <type>NXService</type>
+        <type>NXExtensionPoint</type>
+        <type>NXContribution</type>
+      </subtypes>
     </doctype>
 
     <doctype name="NXExtensionPoint" extends="Folder">
