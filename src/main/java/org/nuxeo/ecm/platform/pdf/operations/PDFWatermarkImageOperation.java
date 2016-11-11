@@ -19,75 +19,67 @@
  */
 package org.nuxeo.ecm.platform.pdf.operations;
 
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.pdf.PDFUtils;
-import org.nuxeo.ecm.platform.pdf.PDFWatermarking;
+import org.nuxeo.ecm.platform.pdf.service.PDFTransformationService;
+import org.nuxeo.ecm.platform.pdf.service.watermark.WatermarkProperties;
 
 /**
- * Returns a <i>new</i> blob combining the input PDF and the image (stored in a blob) referenced either by
- * <code>imageContextVarName</code> (name of a Context variable holding the blob) or by <code>imageDocRef</code> (path
- * or ID of a document whose <code>file:content</code> is the image to use). If the value of <code>scale</code> is <= 0
- * it is set to 1.0.
- * <p>
- * If <code>imageDocRef</code> is used, an UnrestrictedSession fetches its blob, so the PDF can be watermarked even if
- * current user has not enough rights to read the watermark itself.
- *
+ * Return a new blob combining the input PDF and the watermark image blob given as a parameter.
  * @since 8.10
  */
-@Operation(id = PDFWatermarkImageOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Watermark with Image",
-    description = "Returns a <i>new</i> blob combining the input PDF and the image (stored in a blob) referenced " +
-        "either by <code>imageContextVarName</code> (name of a Context variable holding the blob) or by " +
-        "<code>imageDoc</code> (path or ID of a document whose <code>file:content</code> is the image to use). If " +
-        "<code>scale</code> is <= 0 it is set to 1.0. If <code>imageDocRef</code> is used, an UnrestrictedSession " +
-        "fetches its blob, so the PDF can be watermarked even if current user has not enough rights to read the " +
-        "watermark itself.")
+@Operation(
+        id = PDFWatermarkImageOperation.ID,
+        category = Constants.CAT_CONVERSION,
+        label = "PDF: Watermark with Image",
+        description = PDFWatermarkImageOperation.DESCRIPTION)
 public class PDFWatermarkImageOperation {
 
     public static final String ID = "PDF.WatermarkWithImage";
+
+    public static final String DESCRIPTION =
+        "<p>Return a <em>new</em> blob combining the input PDF and the<code> image </code>blob.</p>" +
+        "<p>Properties must be one or more of the following (the default if the property is not set):</p>" +
+        "<ul>" +
+        "<li><code>scale </code>(1.0) --&gt; 1.0 is the original size of the picture</li>" +
+        "<li><code>alphaColor</code> (0.5)-&gt; 0 is full transparency, 1 is solid</li>" +
+        "<li><code>xPosition </code>(0) --&gt; in pixels from left or between 0 (left) and 1 (right) if relativeCoordinates is set to true</li>" +
+        "<li><code>yPosition</code> (0) --&gt; in pixels from bottom or between 0 (bottom) and 1 (top) if relativeCoordinates is set to true</li>" +
+        "<li><code>invertX</code> (false) --&gt; xPosition starts from the right going left</li>" +
+        "<li><code>invertY</code> (false) --&gt; yPosition starts from the top going down</li>" +
+        "<li><code>relativeCoordinates</code> (false)</li>" +
+        "</ul>" +
+        "<p>If <code>watermark</code> is empty, the input blob is returned.</p>";
+
+    @Param(name = "image", required = true)
+    Blob image;
+
+    @Param(name = "properties", required = false)
+    protected Properties properties = new Properties();
 
     @Context
     protected CoreSession session;
 
     @Context
-    protected OperationContext context;
-
-    @Param(name = "imageContextVarName", required = false)
-    protected String imageContextVarName = "";
-
-    @Param(name = "imageDocRef", required = false)
-    protected String imageDocRef = "";
-
-    @Param(name = "x", required = false, values = { "0" })
-    protected long x = 0;
-
-    @Param(name = "y", required = false, values = { "0" })
-    protected long y = 0;
-
-    @Param(name = "scale", required = false, values = { "1.0" })
-    protected String scale = "1.0";
+    protected PDFTransformationService pdfTransformationService;
 
     @OperationMethod(collector = BlobCollector.class)
-    public Blob run(Blob inBlob) throws NuxeoException {
-        Blob blobImage = null;
-        if (imageContextVarName != null && !imageContextVarName.isEmpty()) {
-            blobImage = (Blob) context.get(imageContextVarName);
-        } else if (imageDocRef != null && !imageDocRef.isEmpty()) {
-            PDFUtils.UnrestrictedGetBlobForDocumentIdOrPath r = new PDFUtils.UnrestrictedGetBlobForDocumentIdOrPath(
-                session, imageDocRef);
-            r.runUnrestricted();
-            blobImage = r.getBlob();
-        }
-        PDFWatermarking pdfw = new PDFWatermarking(inBlob);
-        return pdfw.watermarkWithImage(blobImage, (int) x, (int) y, Float.parseFloat(scale));
+    public Blob run(Blob inBlob) {
+        return pdfTransformationService.
+                applyImageWatermark(inBlob, image, convertProperties());
     }
 
+    private WatermarkProperties convertProperties() {
+        WatermarkProperties watermarkProperties = pdfTransformationService.getDefaultProperties();
+        watermarkProperties.updateFromMap(properties);
+        return watermarkProperties;
+    }
 }
+

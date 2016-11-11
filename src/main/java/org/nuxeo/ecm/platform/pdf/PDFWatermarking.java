@@ -19,13 +19,6 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.imageio.ImageIO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.Overlay;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -40,10 +33,18 @@ import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class adds a watermark to a Blob holding a PDF. It never changes the original Blob. Insteda, tt returns a
@@ -257,7 +258,7 @@ public class PDFWatermarking {
     public PDFWatermarking setProperties(HashMap<String, String> inProps) {
         setFontFamily(inProps.get("fontFamily"));
         setFontSize(stringToFloat(inProps.get("fontSize")));
-        setTextRotation(stringToInt(inProps.get("textRotation")));
+        setTextRotation(stringToInt(inProps.get("rotation")));
         setTextColor(inProps.get("hex255Color"));
         setAlphaColor(stringToFloat(inProps.get("alphaColor")));
         setXPosition(stringToInt(inProps.get("xPosition")));

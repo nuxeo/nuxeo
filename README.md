@@ -139,7 +139,7 @@ _A quick reminder: To get the JSON definition of an operation, you can install t
   * `properties` is a `key=value` set where `key` can be one of the following. When not used, a default value applies:
     * `fontFamily` (default: "Helvetica")
     * `fontSize` (default: 36.0)
-    * `textRotation` (default: 0)
+    * `rotation` (default: 0)
     * `hex255Color` (default: "#000000")
     * `alphaColor` (default: 0.5)
     * `xPosition` (default: 0)

@@ -7,4 +7,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/pdf-utils-operations.xml
+Nuxeo-Component: OSGI-INF/pdf-utils-operations.xml,OSGI-INF/service-contrib.xml

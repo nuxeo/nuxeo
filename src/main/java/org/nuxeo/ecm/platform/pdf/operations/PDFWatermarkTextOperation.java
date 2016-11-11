@@ -20,49 +20,67 @@
 package org.nuxeo.ecm.platform.pdf.operations;
 
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.pdf.PDFWatermarking;
+import org.nuxeo.ecm.platform.pdf.service.PDFTransformationService;
+import org.nuxeo.ecm.platform.pdf.service.watermark.WatermarkProperties;
 
 /**
- * Returns a <i>new</i> blob combining the input PDF and the <code>watermark</code> text, using the different
- * <code>properties</code> (default values apply). Notice that <code>xPosition</code> and <code>yPosition</code> start
- * at the bottom-left corner. If <code>watermark</code> is empty, a simple copy of the input blob is returned.
- * <p>
- * Properties must be one or more of the following (in parenthesis is the default value if the property is not used):
- * <code>fontFamily</code> (Helvetica), <code>fontSize</code> (36), <code>textRotation</code> (0),
- * <code>hex255Color</code> (#000000), <code>alphaColor</code> (0.5), <code>xPosition</code> (0),
- * <code>yPosition</code> (0), <code>invertY</code> (false).
- *
+ * Return a new blob combining the input PDF and the watermark text given as a parameter.
  * @since 8.10
  */
-@Operation(id = PDFWatermarkTextOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Watermark with Text",
-    description = "Returns a <i>new</i> blob combining the input PDF and the <code>watermark</code> text, using the " +
-        "different properties. Properties must be one or more of the following (in parenthesis is the default value " +
-        "if the property is not used): <code>fontFamily</code> (Helvetica), <code>fontSize</code> (36), " +
-        "<code>textRotation</code> (0), <code>hex255Color</code> (#000000), <code>alphaColor</code> (0.5), " +
-        "<code>xPosition</code> (0), <code>yPosition</code> (0), <code>invertY</code> (false). " +
-        "<code>xPosition</code> and <code>yPosition</code> start at the <i>bottom-left</i> corner of the page. " +
-        "If <code>watermark</code> is empty, a simple copy of the input blob is returned.")
+@Operation(
+        id = PDFWatermarkTextOperation.ID,
+        category = Constants.CAT_CONVERSION,
+        label = "PDF: Watermark with Text",
+        description = PDFWatermarkTextOperation.DESCRIPTION)
 public class PDFWatermarkTextOperation {
 
     public static final String ID = "PDF.WatermarkWithText";
 
-    @Param(name = "watermark")
-    protected String watermark = "";
+    public static final String DESCRIPTION =
+        "<p>Return a <em>new</em> blob combining the input PDF and the <code>watermark</code> text.</p>" +
+        "<p>Properties must be one or more of the following (the default if the property is not set):</p>" +
+        "<ul>" +
+        "<li><code>fontFamily</code> (Helvetica)&nbsp;</li>" +
+        "<li><code>fontSize</code> (72),</li>" +
+        "<li><code>rotation</code> (0)-&gt; in&nbsp;counterclockwise degrees</li>" +
+        "<li><code>hex255Color</code> (#000000)</li>" +
+        "<li><code>alphaColor</code> (0.5)-&gt; 0 is full transparency, 1 is solid</li>" +
+        "<li><code>xPosition(0)</code> --&gt; in pixels from left or between 0 (left) and 1 (right) if relativeCoordinates is set to true</li>" +
+        "<li><code>yPosition(0)</code> --&gt; in pixels from bottom or between 0 (bottom) and 1 (top) if relativeCoordinates is set to true</li>" +
+        "<li><code>invertX</code> (false) --&gt; xPosition starts from the right going left</li>" +
+        "<li><code>invertY</code> (false) --&gt; yPosition starts from the top going down</li>" +
+        "<li><code>relativeCoordinates</code> (false)</li>" +
+        "</ul>" +
+        "<p>If <code>watermark</code> is empty, the input blob is returned</p>";
+
+    @Param(name = "watermark", required = true)
+    protected String watermark = "watermark";
 
     @Param(name = "properties", required = false)
-    protected Properties properties;
+    protected Properties properties = new Properties();
+
+    @Context
+    protected PDFTransformationService pdfTransformationService;
+
 
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob inBlob) {
-        PDFWatermarking pdfw = new PDFWatermarking(inBlob);
-        pdfw.setText(watermark).setProperties(properties);
-        return pdfw.watermark();
+        return pdfTransformationService.
+                applyTextWatermark(inBlob, watermark, convertProperties());
+    }
+
+    private WatermarkProperties convertProperties() {
+        WatermarkProperties watermarkProperties = pdfTransformationService.getDefaultProperties();
+        watermarkProperties.updateFromMap(properties);
+        return watermarkProperties;
     }
 
 }
+

@@ -16,6 +16,7 @@
  * Contributors:
  *     Thibaud Arguillere
  *     Miguel Nixo
+ *     Michael Vachette
  */
 package org.nuxeo.ecm.platform.pdf.operations;
 
@@ -27,56 +28,40 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.pdf.PDFUtils;
-import org.nuxeo.ecm.platform.pdf.PDFWatermarking;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.pdf.service.PDFTransformationService;
 
 /**
- * Returns a <i>new</i> blob combining the input PDF and an overlayed PDF on every page. The PDF to use for the
- * watermark can be either the <code>pdfContextVarName</code> Context variable name holding a blob of the PDF, of it can
- * be either the path or the ID of a document whose <code>file:content</code> field holds the PDF to use as overlay.
- * <p>
- * If <code>pdfDocRef</code> is used, an UnrestrictedSession fetches its blob, so the PDF can be watermarked even if
- * current user has not enough rights to read the watermark itself.
- *
+ * Returns a new blob combining the input PDF and an overlayed PDF on every page.
  * @since 8.10
  */
-@Operation(id = PDFWatermarkPDFOperation.ID, category = Constants.CAT_CONVERSION, label = "PDF: Watermark with PDF",
-    description = "Returns a <i>new</i> blob combining the input PDF and an overlayed PDF on every page. The PDF to " +
-        "use for the watermark can be either the <code>pdfContextVarName</code> Context variable name holding a blob " +
-        "of the PDF, of it can be either the path or the ID of a document whose <code>file:content</code> field " +
-        "holds the PDF to use as overlay. If <code>pdfDocRef</code> is used, an UnrestrictedSession fetches its " +
-        "blob, so the PDF can be watermarked even if current user has not enough rights to read the watermark itself.")
+@Operation(
+        id = PDFWatermarkPDFOperation.ID,
+        category = Constants.CAT_CONVERSION,
+        label = "PDF: Watermark with PDF",
+        description = PDFWatermarkPDFOperation.DESCRIPTION)
 public class PDFWatermarkPDFOperation {
 
     public static final String ID = "PDF.WatermarkWithPDF";
 
+    public static final String DESCRIPTION =
+            "Returns a new blob combining the input PDF and an overlaid PDF on every page.";
     @Context
     protected CoreSession session;
 
     @Context
     protected OperationContext context;
 
-    @Param(name = "pdfContextVarName")
-    protected String pdfContextVarName = "";
+    @Context
+    protected PDFTransformationService pdfTransformationService;
 
-    @Param(name = "pdfDocRef", required = false)
-    protected String pdfDocRef = "";
+    @Param(name = "overlayPdf", description="The PDF Blob to overlay on top of the input")
+    protected Blob overlayPdf;
 
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob inBlob) throws NuxeoException {
-        Blob blobPdf = null;
-        if (pdfContextVarName != null && !pdfContextVarName.isEmpty()) {
-            blobPdf = (Blob) context.get(pdfContextVarName);
-        } else if (pdfDocRef != null && !pdfDocRef.isEmpty()) {
-            PDFUtils.UnrestrictedGetBlobForDocumentIdOrPath r = new PDFUtils.UnrestrictedGetBlobForDocumentIdOrPath(
-                session, pdfDocRef);
-            r.runUnrestricted();
-            blobPdf = r.getBlob();
-        }
-        PDFWatermarking pdfw = new PDFWatermarking(inBlob);
-        return pdfw.watermarkWithPdf(blobPdf);
+        return pdfTransformationService.overlayPDF(inBlob,overlayPdf);
     }
 
 }

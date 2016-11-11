@@ -19,12 +19,19 @@
  */
 package org.nuxeo.ecm.platform.pdf.tests;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.util.PDFTextStripper;
+import org.nuxeo.ecm.core.api.Blob;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import java.util.Map;
 
 class TestUtils {
 
@@ -58,18 +65,6 @@ class TestUtils {
 
     static final String PDF_CONTRACT_PATH = "files/contract.pdf";
 
-    static final String PDF_IMAGES_PATH = "files/pictures.pdf";
-
-    static final String PDF_WATERMARK_PATH = "files/logo.pdf";
-
-    static final String PNG_WATERMARK_PATH = "files/logo.png";
-
-    static final int PNG_WATERMARK_WIDTH = 201;
-
-    static final int PNG_WATERMARK_HEIGHT = 78;
-
-    static final String JPG_WATERMARK_PATH = "files/logo.jpg";
-
     static final String JPG_PATH = "files/picture.jpg";
 
     static String extractText(PDDocument inDoc, int startPage, int endPage) throws IOException {
@@ -85,6 +80,44 @@ class TestUtils {
         String md5 = DigestUtils.md5Hex(fis);
         fis.close();
         return md5;
+    }
+
+    static boolean hasTextOnAllPages(Blob blob, String watermark) {
+        try (PDDocument doc = PDDocument.load(blob.getStream())) {
+            for (int i = 1; i <= doc.getNumberOfPages(); i++) {
+                if (!TestUtils.extractText(doc, i, i).replace("\n", "").contains(watermark)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    static boolean hasImageOnAllPages(Blob inBlob) {
+        try (PDDocument doc = PDDocument.load(inBlob.getStream())) {
+            for (Object o : doc.getDocumentCatalog().getAllPages()) {
+                PDPage page = (PDPage) o;
+                PDResources pdResources = page.getResources();
+                Map<String, PDXObject> allXObjects = pdResources.getXObjects();
+                if(allXObjects==null) return false;
+                boolean gotIt = false;
+                for (Map.Entry<String, PDXObject> entry : allXObjects.entrySet()) {
+                    PDXObject xobject = entry.getValue();
+                    if (xobject instanceof PDXObjectImage) {
+                        gotIt = true;
+                        break;
+                    }
+                }
+                if (!gotIt) return false;
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }
