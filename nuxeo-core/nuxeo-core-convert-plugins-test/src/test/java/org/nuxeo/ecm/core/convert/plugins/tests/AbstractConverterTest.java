@@ -66,6 +66,7 @@ public abstract class AbstractConverterTest {
         } else {
             hg = getBlobFromPath("test-docs/" + fileName);
         }
+        hg.getBlob().setMimeType(srcMT);
 
         Map<String, Serializable> parameters = new HashMap<>();
         BlobHolder result = cs.convert(converterName, hg, parameters);
