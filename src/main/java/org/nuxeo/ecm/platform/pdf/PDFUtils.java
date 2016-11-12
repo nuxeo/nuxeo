@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
-import java.io.File;
-import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -30,14 +28,11 @@ import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Grouping miscellaneous utilities in this class.
@@ -160,34 +155,6 @@ public class PDFUtils {
                     // Ignore
                 }
             }
-        }
-    }
-
-    public static class UnrestrictedGetBlobForDocumentIdOrPath extends UnrestrictedSessionRunner {
-
-        private String idOrPath;
-
-        private DocumentModel doc;
-
-        private Blob blob;
-
-        private CoreSession session;
-
-        public UnrestrictedGetBlobForDocumentIdOrPath(CoreSession inSession, String inIdOrPath) {
-            super(inSession);
-            session = inSession;
-            idOrPath = inIdOrPath;
-        }
-
-        @Override
-        public void run() throws NuxeoException {
-            DocumentRef ref = (idOrPath.startsWith("/")) ? new PathRef(idOrPath) : new IdRef(idOrPath);
-            doc = session.getDocument(ref);
-            blob = (Blob) doc.getPropertyValue("file:content");
-        }
-
-        public Blob getBlob() {
-            return blob;
         }
     }
 
