@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="rg.nuxeo.pdf.utils.service">
+<component name="org.nuxeo.pdf.utils.service">
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.pdf.service.PDFTransformationService" />
