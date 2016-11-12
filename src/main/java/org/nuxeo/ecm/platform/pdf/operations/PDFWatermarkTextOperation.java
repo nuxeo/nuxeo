@@ -16,6 +16,7 @@
  * Contributors:
  *     Thibaud Arguillere
  *     Miguel Nixo
+ *     Michael Vachette
  */
 package org.nuxeo.ecm.platform.pdf.operations;
 
@@ -44,36 +45,34 @@ public class PDFWatermarkTextOperation {
     public static final String ID = "PDF.WatermarkWithText";
 
     public static final String DESCRIPTION =
-        "<p>Return a <em>new</em> blob combining the input PDF and the <code>watermark</code> text.</p>" +
+        "<p>Return a <em>new</em> blob combining the input PDF and the <code>text</code> text.</p>" +
         "<p>Properties must be one or more of the following (the default if the property is not set):</p>" +
         "<ul>" +
-        "<li><code>fontFamily</code> (Helvetica)&nbsp;</li>" +
-        "<li><code>fontSize</code> (72),</li>" +
-        "<li><code>rotation</code> (0)-&gt; in&nbsp;counterclockwise degrees</li>" +
+        "<li><code>fontFamily</code> (Helvetica) </li>" +
+        "<li><code>fontSize</code> (72)</li>" +
+        "<li><code>rotation</code> (0): in&nbsp;counterclockwise degrees</li>" +
         "<li><code>hex255Color</code> (#000000)</li>" +
-        "<li><code>alphaColor</code> (0.5)-&gt; 0 is full transparency, 1 is solid</li>" +
-        "<li><code>xPosition(0)</code> --&gt; in pixels from left or between 0 (left) and 1 (right) if relativeCoordinates is set to true</li>" +
-        "<li><code>yPosition(0)</code> --&gt; in pixels from bottom or between 0 (bottom) and 1 (top) if relativeCoordinates is set to true</li>" +
-        "<li><code>invertX</code> (false) --&gt; xPosition starts from the right going left</li>" +
-        "<li><code>invertY</code> (false) --&gt; yPosition starts from the top going down</li>" +
+        "<li><code>alphaColor</code> (0.5) : 0 is full transparency, 1 is solid</li>" +
+        "<li><code>xPosition</code> (0) : in pixels from left or between 0 (left) and 1 (right) if relativeCoordinates is set to true</li>" +
+        "<li><code>yPosition</code> (0) : in pixels from bottom or between 0 (bottom) and 1 (top) if relativeCoordinates is set to true</li>" +
+        "<li><code>invertX</code> (false) : xPosition starts from the right going left</li>" +
+        "<li><code>invertY</code> (false) : yPosition starts from the top going down</li>" +
         "<li><code>relativeCoordinates</code> (false)</li>" +
-        "</ul>" +
-        "<p>If <code>watermark</code> is empty, the input blob is returned</p>";
+        "</ul>";
 
-    @Param(name = "watermark", required = true)
-    protected String watermark = "watermark";
+    @Param(name = "text", description="The text to use for the watermark")
+    protected String text;
 
-    @Param(name = "properties", required = false)
+    @Param(name = "properties", description="The watermark properties", required = false)
     protected Properties properties = new Properties();
 
     @Context
     protected PDFTransformationService pdfTransformationService;
 
-
     @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob inBlob) {
         return pdfTransformationService.
-                applyTextWatermark(inBlob, watermark, convertProperties());
+                applyTextWatermark(inBlob, text, convertProperties());
     }
 
     private WatermarkProperties convertProperties() {

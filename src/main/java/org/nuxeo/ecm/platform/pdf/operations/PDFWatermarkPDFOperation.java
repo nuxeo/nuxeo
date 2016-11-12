@@ -20,7 +20,6 @@
  */
 package org.nuxeo.ecm.platform.pdf.operations;
 
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -28,12 +27,11 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.pdf.service.PDFTransformationService;
 
 /**
- * Returns a new blob combining the input PDF and an overlayed PDF on every page.
+ * Returns a new blob combining the input PDF and an overlaid PDF on every page.
  * @since 8.10
  */
 @Operation(
@@ -47,11 +45,6 @@ public class PDFWatermarkPDFOperation {
 
     public static final String DESCRIPTION =
             "Returns a new blob combining the input PDF and an overlaid PDF on every page.";
-    @Context
-    protected CoreSession session;
-
-    @Context
-    protected OperationContext context;
 
     @Context
     protected PDFTransformationService pdfTransformationService;
