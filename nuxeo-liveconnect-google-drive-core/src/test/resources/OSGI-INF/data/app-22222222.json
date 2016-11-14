@@ -26,37 +26,5 @@
     "jpeg",
     "bmp",
     "gif"
-  ],
-  "icons": [
-    {
-      "category": "application",
-      "size": 10,
-      "iconUrl": "editor_16.png"
-    },
-    {
-      "category": "application",
-      "size": 16,
-      "iconUrl": "editor_16.png"
-    },
-    {
-      "category": "application",
-      "size": 32,
-      "iconUrl": "editor_32.png"
-    },
-    {
-      "category": "document",
-      "size": 10,
-      "iconUrl": "document_10.png"
-    },
-    {
-      "category": "document",
-      "size": 16,
-      "iconUrl": "document_16.png"
-    },
-    {
-      "category": "document",
-      "size": 32,
-      "iconUrl": "document_32.png"
-    }
   ]
 }

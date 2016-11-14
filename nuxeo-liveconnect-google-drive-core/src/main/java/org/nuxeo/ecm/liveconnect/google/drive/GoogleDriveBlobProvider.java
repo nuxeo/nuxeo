@@ -337,12 +337,15 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
             appLink.setLink(entry.getValue());
 
             // pick an application icon
-            for (App.Icons icon : app.getIcons()) {
-                if ("application".equals(icon.getCategory())) {
-                    appLink.setIcon(icon.getIconUrl());
-                    // break if we've got one with our preferred size
-                    if (icon.getSize() == PREFERRED_ICON_SIZE) {
-                        break;
+            List<App.Icons> icons = app.getIcons();
+            if (icons != null) {
+                for (App.Icons icon : icons) {
+                    if ("application".equals(icon.getCategory())) {
+                        appLink.setIcon(icon.getIconUrl());
+                        // break if we've got one with our preferred size
+                        if (icon.getSize() == PREFERRED_ICON_SIZE) {
+                            break;
+                        }
                     }
                 }
             }
