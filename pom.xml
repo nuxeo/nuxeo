@@ -475,6 +475,12 @@
         <artifactId>nuxeo-platform-signature-config</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-signature-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
 
       <!-- Rating -->
       <dependency>
