@@ -35,11 +35,10 @@ import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.pdf.PDFUtils;
 import org.nuxeo.ecm.platform.pdf.service.watermark.WatermarkProperties;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import javax.imageio.ImageIO;
@@ -48,9 +47,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -84,23 +83,17 @@ public class PDFTransformationServiceImpl extends DefaultComponent
                                 / 1000f);
             int[] rgb = PDFUtils.hex255ToRGB(properties.getHex255Color());
 
-            for (Object o : pdfDoc.getDocumentCatalog().getAllPages()) {
-                PDPage page = (PDPage) o;
+            for (PDPage page : (List<PDPage>)pdfDoc.getDocumentCatalog().getAllPages()) {
                 PDRectangle pageSize = page.findMediaBox();
                 PDResources resources = page.findResources();
 
                 // Get the defined graphic states.
-                HashMap<String, PDExtendedGraphicsState> graphicsStateDictionary =
-                        (HashMap<String, PDExtendedGraphicsState>) resources.getGraphicsStates();
-                if (graphicsStateDictionary != null) {
-                    graphicsStateDictionary.put("TransparentState",
-                            extendedGraphicsState);
-                    resources.setGraphicsStates(graphicsStateDictionary);
-                } else {
-                    Map<String, PDExtendedGraphicsState> m = new HashMap<>();
-                    m.put("TransparentState", extendedGraphicsState);
-                    resources.setGraphicsStates(m);
+                Map<String, PDExtendedGraphicsState> graphicsStates = resources.getGraphicsStates();
+                if (graphicsStates == null) {
+                    graphicsStates = new HashMap<>();
                 }
+                graphicsStates.put("TransparentState", extendedGraphicsState);
+                resources.setGraphicsStates(graphicsStates);
 
                 try (PDPageContentStream contentStream =
                              new PDPageContentStream(pdfDoc, page, true, true, true)) {
@@ -121,7 +114,7 @@ public class PDFTransformationServiceImpl extends DefaultComponent
             }
             return saveInTempFile(pdfDoc);
 
-        } catch (Exception e) {
+        } catch (IOException | COSVisitorException e) {
             throw new NuxeoException(e);
         }
     }
@@ -139,23 +132,18 @@ public class PDFTransformationServiceImpl extends DefaultComponent
             BufferedImage image = ImageIO.read(watermark.getStream());
             PDXObjectImage ximage = new PDPixelMap(pdfDoc, image);
 
-            for (Object o : pdfDoc.getDocumentCatalog().getAllPages()) {
-                PDPage page = (PDPage) o;
+            for (PDPage page : (List<PDPage>)pdfDoc.getDocumentCatalog().getAllPages()) {
                 PDRectangle pageSize = page.findMediaBox();
                 PDResources resources = page.findResources();
 
                 // Get the defined graphic states.
-                HashMap<String, PDExtendedGraphicsState> graphicsStateDictionary =
-                        (HashMap<String, PDExtendedGraphicsState>) resources.getGraphicsStates();
-                if (graphicsStateDictionary != null) {
-                    graphicsStateDictionary.put("TransparentState",
-                            extendedGraphicsState);
-                    resources.setGraphicsStates(graphicsStateDictionary);
-                } else {
-                    Map<String, PDExtendedGraphicsState> m = new HashMap<>();
-                    m.put("TransparentState", extendedGraphicsState);
-                    resources.setGraphicsStates(m);
+                // Get the defined graphic states.
+                Map<String, PDExtendedGraphicsState> graphicsStates = resources.getGraphicsStates();
+                if (graphicsStates == null) {
+                    graphicsStates = new HashMap<>();
                 }
+                graphicsStates.put("TransparentState", extendedGraphicsState);
+                resources.setGraphicsStates(graphicsStates);
 
                 try (PDPageContentStream contentStream = new PDPageContentStream(pdfDoc, page, true, true)) {
                     contentStream.appendRawCommands("/TransparentState gs\n");
@@ -197,8 +185,6 @@ public class PDFTransformationServiceImpl extends DefaultComponent
     public  Point2D computeTranslationVector(double pageWidth, double watermarkWidth,
                                                double pageHeight, double watermarkHeight,
                                                WatermarkProperties properties) {
-        double xTranslation;
-        double yTranslation;
         double xRotationOffset = 0;
         double yRotationOffset = 0;
 
@@ -226,22 +212,30 @@ public class PDFTransformationServiceImpl extends DefaultComponent
             }
         }
 
+        double xTranslation;
+        double yTranslation;
+
         if (properties.isRelativeCoordinates()) {
             xTranslation = (pageWidth - watermarkWidth ) * properties.getxPosition() + xRotationOffset;
             yTranslation = (pageHeight - watermarkHeight ) * properties.getyPosition() + yRotationOffset;
         } else {
             xTranslation = properties.getxPosition() + xRotationOffset;
             yTranslation = properties.getyPosition() + yRotationOffset;
-            if (properties.isInvertX()) xTranslation = pageWidth - watermarkWidth - xTranslation;
-            if (properties.isInvertY()) yTranslation = pageHeight - watermarkHeight - yTranslation;
+            if (properties.isInvertX()) {
+                xTranslation = pageWidth - watermarkWidth - xTranslation;
+            }
+            if (properties.isInvertY()) {
+                yTranslation = pageHeight - watermarkHeight - yTranslation;
+            }
         }
         return new Point2D.Double(xTranslation, yTranslation);
     }
 
-    protected FileBlob saveInTempFile(PDDocument PdfDoc) throws IOException, COSVisitorException {
-        File tempFile = Framework.createTempFile("nuxeo-pdfutils-", ".pdf");
-        PdfDoc.save(tempFile);
-        return new FileBlob(tempFile,MIME_TYPE,tempFile.getName());
+    protected Blob saveInTempFile(PDDocument PdfDoc) throws IOException, COSVisitorException {
+        Blob blob = Blobs.createBlobWithExtension(".pdf"); // creates a tracked temporary file
+        blob.setMimeType(MIME_TYPE);
+        PdfDoc.save(blob.getFile());
+        return blob;
     }
 
 }

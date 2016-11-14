@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -91,8 +92,7 @@ class TestUtils {
             }
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            throw new NuxeoException("Could not check all pages",e);
         }
     }
 
@@ -102,7 +102,9 @@ class TestUtils {
                 PDPage page = (PDPage) o;
                 PDResources pdResources = page.getResources();
                 Map<String, PDXObject> allXObjects = pdResources.getXObjects();
-                if(allXObjects==null) return false;
+                if(allXObjects==null) {
+                    return false;
+                }
                 boolean gotIt = false;
                 for (Map.Entry<String, PDXObject> entry : allXObjects.entrySet()) {
                     PDXObject xobject = entry.getValue();
@@ -111,12 +113,13 @@ class TestUtils {
                         break;
                     }
                 }
-                if (!gotIt) return false;
+                if (!gotIt) {
+                    return false;
+                }
             }
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+            throw new NuxeoException("Could not check all pages",e);
         }
     }
 
