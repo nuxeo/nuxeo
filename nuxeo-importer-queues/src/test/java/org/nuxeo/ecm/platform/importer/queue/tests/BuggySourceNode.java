@@ -1,6 +1,5 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;

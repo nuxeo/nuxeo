@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
+ * This interface should be renamed into CompoundQueues or simply MultiQueues
+ *
  * @since 8.3
  */
 public interface QueuesManager {
