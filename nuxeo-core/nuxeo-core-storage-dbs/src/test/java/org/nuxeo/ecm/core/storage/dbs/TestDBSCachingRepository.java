@@ -37,12 +37,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 
 public class TestDBSCachingRepository {
+
+    private DBSCachingRepository repository;
 
     private DBSRepository subRepository;
 
@@ -65,13 +68,17 @@ public class TestDBSCachingRepository {
             state.setSingle(KEY_NAME, name);
             return state;
         });
+        repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
+    }
+
+    @After
+    public void after() {
+        // Used to remove metrics
+        repository.shutdown();
     }
 
     @Test
     public void testReadState() {
-        // For cache unicity
-        when(subRepository.getName()).thenReturn("testReadState");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         String id = "ID";
 
         // First read - call sub repository
@@ -87,9 +94,6 @@ public class TestDBSCachingRepository {
 
     @Test
     public void testReadStates() {
-        // For cache unicity
-        when(subRepository.getName()).thenReturn("testReadStates");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         String id1 = "ID1";
         String id2 = "ID2";
 
@@ -111,9 +115,6 @@ public class TestDBSCachingRepository {
 
     @Test
     public void testCreateState() {
-        // For unique cache name
-        when(subRepository.getName()).thenReturn("testCreateState");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         State state = new State();
         String id = "ID";
         String parentId = "PARENT-ID";
@@ -139,9 +140,6 @@ public class TestDBSCachingRepository {
 
     @Test
     public void testCreateStates() {
-        // For unique cache name
-        when(subRepository.getName()).thenReturn("testCreateStates");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         State state = new State();
         String id = "ID";
         String parentId = "PARENT-ID";
@@ -167,9 +165,6 @@ public class TestDBSCachingRepository {
 
     @Test
     public void testUpdateState() {
-        // For unique cache name
-        when(subRepository.getName()).thenReturn("testUpdateState");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         String id = "ID";
 
         // First add a state in cache
@@ -188,9 +183,6 @@ public class TestDBSCachingRepository {
 
     @Test
     public void testDeleteStates() {
-        // For unique cache name
-        when(subRepository.getName()).thenReturn("testDeleteStates");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         String id = "ID";
 
         // First add a state in cache
@@ -209,9 +201,6 @@ public class TestDBSCachingRepository {
 
     @Test
     public void testReadChildState() {
-        // For unique cache name
-        when(subRepository.getName()).thenReturn("testReadChildState");
-        DBSCachingRepository repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
         String parentId = "PARENT-ID";
         String name = "NAME";
         String id = parentId + "_" + name;

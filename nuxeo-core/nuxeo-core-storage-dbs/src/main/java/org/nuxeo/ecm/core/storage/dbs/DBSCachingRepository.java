@@ -155,8 +155,16 @@ public class DBSCachingRepository implements DBSRepository {
     @Override
     public void shutdown() {
         repository.shutdown();
+        // Clear caches
         cache.invalidateAll();
         childCache.invalidateAll();
+        // Remove metrics
+        String cacheName = MetricRegistry.name("nuxeo", "repositories", repository.getName(), "cache");
+        String childCacheName = MetricRegistry.name("nuxeo", "repositories", repository.getName(), "childCache");
+        registry.removeMatching((name, metric) -> name.startsWith(cacheName) || name.startsWith(childCacheName));
+        if (log.isInfoEnabled()) {
+            log.info(String.format("DBS cache deactivated on '%s' repository", repository.getName()));
+        }
         // Send invalidations
         if (clusterInvalidator != null) {
             clusterInvalidator.sendInvalidations(new DBSInvalidations(true));
