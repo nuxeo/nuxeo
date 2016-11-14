@@ -18,20 +18,22 @@
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>
-    <c:forEach var="username" items="#{field}" varStatus="status">
-      <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
+    <nxu:repeat var="username" items="#{field}" varStatus="status"
+      renderTime="#{useRepeatRenderTime}">
+      <h:outputText rendered="#{!status.first}" value="#{status.last ? andLabel : ', '}" />
       <h:outputText value="#{nxu:userFullName(username)}" title="#{username}" />
-    </c:forEach>
+    </nxu:repeat>
   </nxp:html>
 </c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode) || widget.mode == 'edit'}">
   <div>
-    <c:forEach var="username" items="#{field}" varStatus="status">
-      <c:if test="#{!status.first}">#{status.last ? andLabel : ', '}</c:if>
+    <nxu:repeat var="username" items="#{field}" varStatus="status"
+      renderTime="#{useRepeatRenderTime}">
+      <h:outputText rendered="#{!status.first}" value="#{status.last ? andLabel : ', '}" />
       <h:outputText value="#{nxu:userFullName(username)}"
         title="#{username}"
         styleClass="tipsyShow #{widget.id}_#{status.index}" />
-    </c:forEach>
+    </nxu:repeat>
   </div>
 </c:if>
 </f:subview>
