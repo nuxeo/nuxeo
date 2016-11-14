@@ -16,6 +16,7 @@
   <module>nuxeo-platform-signature-core</module>
   <module>nuxeo-platform-signature-web</module>
   <module>nuxeo-platform-signature-config</module>
+  <module>nuxeo-platform-signature-core-dependencies</module>
  </modules>
  
   <repositories>
