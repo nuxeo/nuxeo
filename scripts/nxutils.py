@@ -30,15 +30,17 @@ import time
 import urllib2
 from zipfile import ZIP_DEFLATED, ZipFile
 from distutils.version import LooseVersion
+import warnings
 
 
 REQUIRED_GIT_VERSION = "1.8.4"
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
-DEFAULT_MP_CONF_URL = ("https://raw.github.com/nuxeo/integration-scripts/master/marketplace.ini")
+DEFAULT_MP_CONF_URL = "https://raw.github.com/nuxeo/integration-scripts/master/marketplace.ini"
 
 
 class ExitException(Exception):
     def __init__(self, return_code, message=None):
+        super(ExitException, self).__init__(message)
         self.return_code = return_code
         self.message = message
 
@@ -121,12 +123,13 @@ class Repository(object):
                 if not self.is_online:
                     self.url_pattern = self.url_pattern.replace("module", "%s/module" % module)
                 os.chdir(module)
-                if not module in self.sub_modules and self.is_nuxeoecm:
+                if module not in self.sub_modules and self.is_nuxeoecm:
                     module_dir = os.path.join(self.basedir, module)
                     self.sub_modules[module] = self.retrieve_modules(module_dir)
                     # Handle optionals
                     if with_optionals:
-                        self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir, "pom-optionals.xml")
+                        self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir,
+                                                                                                    "pom-optionals.xml")
                 for sub_module in self.sub_modules[module]:
                     function(sub_module)
                 os.chdir(self.basedir)
@@ -138,7 +141,8 @@ class Repository(object):
         """Retrieve all modules of input Maven project and return it."""
         modules = []
         if os.path.exists(os.path.join(project_dir, pom_name)):
-            log("Using Maven introspection of the POM file %s/%s to find the list of modules..." % (project_dir, pom_name))
+            log("Using Maven introspection of the POM file %s/%s to find the list of modules..." % (project_dir,
+                                                                                                    pom_name))
             cwd = os.getcwd()
             os.chdir(project_dir)
             output = check_output("mvn -N help:effective-pom -f " + pom_name)
@@ -303,9 +307,9 @@ class Repository(object):
         return mp_config
 
     def clone_mp(self, marketplace_conf):
-        """Clone or update Nuxeo Marketplace package repositories.
+        """Clone or update Nuxeo Package repositories.
 
-        Returns the Marketplace packages configuration."""
+        Returns the Nuxeo Packages configuration."""
         if marketplace_conf == '':
             marketplace_conf = DEFAULT_MP_CONF_URL
         if not marketplace_conf:
@@ -341,7 +345,7 @@ class Repository(object):
 
     def clone_module(self, module, version, fallback_branch):
         # Ignore modules which are not Git sub-repositories
-        if (not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git"))):
+        if not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git")):
             self.git_pull(module, version, fallback_branch)
 
     def get_current_version(self):
@@ -376,7 +380,7 @@ class Repository(object):
             profiles_param = ""
         system("mvn %s %s%s -Dnuxeo.tests.random.mode=BYPASS" % (
                commands, skip_tests_param, profiles_param), delay_stdout=False,
-               run=(not dryrun))
+               run=not dryrun)
 
 
 def log(message, out=sys.stdout):

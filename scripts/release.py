@@ -775,18 +775,17 @@ def main():
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
 \nCommands:
-  branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
-'prepare' or 'perform' commmands must use option '--next=done'. If kept, that branch will become the maintenance \
+       branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
+'prepare' or 'perform' commands must use option '--next=done'. If kept, that branch will become the maintenance \
 branch after release.
-  prepare: Prepare the release (build, change versions, tag and package \
-source and distributions). The release parameters are stored in a \
-release-*.log file.
-  perform: Perform the release (push sources, deploy artifacts and upload \
+       prepare: Prepare the release (build, change versions, tag and package source and distributions). The release \
+parameters are stored in a release-nuxeo.log file.
+       perform: Perform the release (push sources, deploy artifacts and upload \
 packages, tests are always skipped). If no parameter is given, they are read \
 from the release-*.log file.
-  package: Package distributions and source code in the archives directory.
-  maintenance: Create a maintenance branch from an existing tag.
-  onestep: Prepare and perform the release in one unique step. No stagging is \
+       package: Package distributions and source code in the archives directory.
+       maintenance: Create a maintenance branch from an existing tag.
+       onestep: Prepare and perform the release in one unique step. No stagging is \
 possible. The release-*.log file is not read.""")
         description = """Release Nuxeo from a given branch, tag the release, \
 then set the next SNAPSHOT version. If a maintenance version was provided, \
