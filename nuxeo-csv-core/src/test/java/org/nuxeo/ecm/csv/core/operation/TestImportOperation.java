@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.csv.operation;/*
+package org.nuxeo.ecm.csv.core.operation;/*
  * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,11 +46,11 @@ public class TestImportOperation {
     @Inject
     private CoreSession mSession;
 
-    private CSVImport mOperation;
+    private CSVImportOperation mOperation;
 
     @Before
     public void setup() {
-        mOperation = new CSVImport();
+        mOperation = new CSVImportOperation();
         mOperation.mPath = mSession.getRootDocument().getPathAsString();
         mOperation.mSession = mSession;
     }

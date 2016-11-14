@@ -16,27 +16,27 @@
  * Contributors:
  *     Andrei Nechaev
  */
-package org.nuxeo.ecm.csv.operation;
+package org.nuxeo.ecm.csv.core.operation;
 
-import org.nuxeo.ecm.csv.core.CSVImporter;
-import org.nuxeo.ecm.csv.core.CSVImporterOptions;
-import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.csv.core.CSVImporter;
+import org.nuxeo.ecm.csv.core.CSVImporterOptions;
+import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.File;
 
 @Operation(
-        id = CSVImport.ID,
+        id = CSVImportOperation.ID,
         category = Constants.CAT_DOCUMENT,
         label = "Import"
 )
-public class CSVImport {
+public class CSVImportOperation {
     public static final String ID = "CSV.Import";
 
     @Context
@@ -53,7 +53,7 @@ public class CSVImport {
 
     @OperationMethod
     public String importCSV(File file) {
-        ImportMode importMode = mDocumentMode ? CSVImporterOptions.ImportMode.IMPORT : ImportMode.CREATE;
+        ImportMode importMode = mDocumentMode ? ImportMode.IMPORT : ImportMode.CREATE;
         CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(mSendReport)
                 .importMode(importMode)
                 .build();

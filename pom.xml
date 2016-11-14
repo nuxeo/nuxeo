@@ -15,7 +15,6 @@
   <modules>
     <module>nuxeo-csv-core</module>
     <module>nuxeo-csv-jsf</module>
-    <module>nuxeo-csv-operation</module>
   </modules>
 
   <properties>
@@ -32,11 +31,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.csv</groupId>
         <artifactId>nuxeo-csv-jsf</artifactId>
-        <version>${nuxeo.csv.importer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.csv</groupId>
-        <artifactId>nuxeo-csv-operation</artifactId>
         <version>${nuxeo.csv.importer.version}</version>
       </dependency>
     </dependencies>
