@@ -1,5 +1,5 @@
 <packages>
-  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.4-SNAPSHOT/mp/">
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.10-SNAPSHOT/mp/">
     <!-- Virtual Packages -->
     <package id="nuxeo-ui-virtual" label="User interface" color="#635959" textcolor="#FFF"
       shortlabel="UI" virtual="true" />
@@ -11,7 +11,7 @@
     <!-- virtual package to handle no-ui -->
     <package id="nuxeo-no-ui" label="No-UI" color="#635959" textcolor="#FFF"
       shortlabel="NOUI" virtual="true"
-      desc="Install Nuxeo without any UI; you'll still be able to use it as a standalone server; use clients to call the REST API, Automation API, ..."/>
+      desc="Install Nuxeo without any UI; you will still be able to use it as a standalone server; use clients to call the REST API, Automation API, ..."/>
 
     <!-- Addon list -->
     <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"

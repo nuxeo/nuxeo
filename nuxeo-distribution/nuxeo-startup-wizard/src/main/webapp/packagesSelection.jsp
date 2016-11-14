@@ -86,10 +86,10 @@
       }
 
       if (isExclu) {
-        // If exclu, uncheck all brother
+        // If $chk is exclusive, uncheck all sibling nodes
         $input.attr('checked', false);
       } else if ($input.attr('exclusive') === 'true') {
-        // If not, disable exclusive's
+        // If $chk is not exclusive, disable sibling exclusive nodes
         $input.attr('checked', false);
       }
     });
