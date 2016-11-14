@@ -67,6 +67,76 @@
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="document_trash_content">
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="BETWEEN">
+          <field schema="advanced_search" name="modified_min" />
+          <field schema="advanced_search" name="modified_max" />
+        </predicate>
+        <fixedPart>
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState =
+          'deleted'
+        </fixedPart>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="section_content">
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="BETWEEN">
+          <field schema="advanced_search" name="modified_min" />
+          <field schema="advanced_search" name="modified_max" />
+        </predicate>
+        <fixedPart>
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState
+          != 'deleted'
+        </fixedPart>
+      </whereClause>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="orderable_document_content">
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="BETWEEN">
+          <field schema="advanced_search" name="modified_min" />
+          <field schema="advanced_search" name="modified_max" />
+        </predicate>
+        <fixedPart>
+          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:currentLifeCycleState
+          != 'deleted'
+        </fixedPart>
+      </whereClause>
+      <sort column="ecm:pos" ascending="true" />
+      <sortable>false</sortable>
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>
