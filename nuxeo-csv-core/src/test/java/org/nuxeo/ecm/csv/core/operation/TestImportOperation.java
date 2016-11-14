@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.csv.core.operation;/*
+/*
  * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,11 @@ package org.nuxeo.ecm.csv.core.operation;/*
  * Contributors:
  *     anechaev
  */
+package org.nuxeo.ecm.csv.core.operation;
 
-import com.google.inject.Inject;
+import static junit.framework.TestCase.assertNotNull;
+
+import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,13 +34,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
-import java.io.File;
-
-import static junit.framework.TestCase.assertNotNull;
+import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, TransientStoreFeature.class})
-@Deploy({"org.nuxeo.ecm.csv.core"})
+@Features({ CoreFeature.class, TransientStoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.csv.core" })
 
 public class TestImportOperation {
 

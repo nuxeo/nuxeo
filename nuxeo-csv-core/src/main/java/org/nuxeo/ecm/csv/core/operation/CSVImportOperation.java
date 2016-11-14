@@ -55,12 +55,11 @@ public class CSVImportOperation {
     public String importCSV(File file) {
         ImportMode importMode = mDocumentMode ? ImportMode.IMPORT : ImportMode.CREATE;
         CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(mSendReport)
-                .importMode(importMode)
-                .build();
+                                                                     .importMode(importMode)
+                                                                     .build();
 
         CSVImporter csvImporter = Framework.getService(CSVImporter.class);
-        return csvImporter.launchImport(mSession,
-                mPath, file, file.getName(), options);
+        return csvImporter.launchImport(mSession, mPath, file, file.getName(), options);
     }
 
     @OperationMethod

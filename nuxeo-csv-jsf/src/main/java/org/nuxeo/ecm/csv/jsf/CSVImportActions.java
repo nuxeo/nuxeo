@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.List;
 
 ;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7

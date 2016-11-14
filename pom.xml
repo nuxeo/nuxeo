@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>8.4-SNAPSHOT</version>
+    <version>8.10-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.csv</groupId>
@@ -15,26 +15,8 @@
   <modules>
     <module>nuxeo-csv-core</module>
     <module>nuxeo-csv-jsf</module>
+    <module>nuxeo-csv-core-dependencies</module>
   </modules>
-
-  <properties>
-    <nuxeo.csv.importer.version>8.4-SNAPSHOT</nuxeo.csv.importer.version>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.csv</groupId>
-        <artifactId>nuxeo-csv-core</artifactId>
-        <version>${nuxeo.csv.importer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.csv</groupId>
-        <artifactId>nuxeo-csv-jsf</artifactId>
-        <version>${nuxeo.csv.importer.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <repositories>
     <repository>

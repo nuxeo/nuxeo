@@ -223,8 +223,8 @@ public class CSVImporterWork extends TransientStoreWork {
         store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.RUNNING));
         setStatus("Importing");
         openUserSession();
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader()
-                .withEscape(options.getEscapeCharacter()).withCommentMarker(options.getCommentMarker());
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withEscape(options.getEscapeCharacter()).withCommentMarker(
+                options.getCommentMarker());
         try (Reader in = newReader(csvFile); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
@@ -248,7 +248,7 @@ public class CSVImporterWork extends TransientStoreWork {
         }
     }
 
-    static final Serializable EMPTY_LOGS =new ArrayList<CSVImportLog>();
+    static final Serializable EMPTY_LOGS = new ArrayList<CSVImportLog>();
 
     String launch() {
         WorkManager works = Framework.getLocalService(WorkManager.class);
@@ -256,7 +256,8 @@ public class CSVImporterWork extends TransientStoreWork {
 
         TransientStore store = getStore();
         store.putParameter(id, "logs", EMPTY_LOGS);
-        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0, works.getMetrics(queueId).scheduled.intValue()));
+        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0,
+                works.getMetrics(queueId).scheduled.intValue()));
         works.schedule(this, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         return id;
     }
@@ -266,7 +267,7 @@ public class CSVImporterWork extends TransientStoreWork {
         if (!store.exists(id)) {
             return null;
         }
-        return  (CSVImportStatus) store.getParameter(id, "status");
+        return (CSVImportStatus) store.getParameter(id, "status");
     }
 
     @SuppressWarnings("unchecked")
@@ -275,7 +276,7 @@ public class CSVImporterWork extends TransientStoreWork {
         if (!store.exists(id)) {
             return Collections.emptyList();
         }
-        return (ArrayList<CSVImportLog>)store.getParameter(id, "logs");
+        return (ArrayList<CSVImportLog>) store.getParameter(id, "logs");
     }
 
     /**
