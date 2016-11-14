@@ -37,6 +37,12 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-functional-tests</artifactId>
       <scope>test</scope>
     </dependency>
@@ -128,6 +134,7 @@
             <configuration>
               <targets>
                 <target>prepare-environment</target>
+                <target>copy-packages</target>
                 <target>start</target>
               </targets>
             </configuration>

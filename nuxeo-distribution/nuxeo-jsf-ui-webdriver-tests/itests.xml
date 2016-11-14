@@ -11,10 +11,17 @@
   <property name="nuxeo.wizard.done" value="true" />
   <property name="mail.transport.port" value="2525" />
   <property name="mail.transport.host" value="127.0.0.1" />
-  <property name="mp.install" value="nuxeo-jsf-ui" />
+  <property name="mp.install" value="${out.dir}/nuxeo-marketplace-jsf-ui-${maven.project.version}.zip" />
 
   <unzip dest="${out.dir}/" overwrite="false">
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <target name="copy-packages">
+    <copy todir="${out.dir}">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
+    </copy>
+  </target>
+
 </project>
