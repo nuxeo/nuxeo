@@ -605,6 +605,12 @@
         <artifactId>nuxeo-template-rendering-deckjs</artifactId>
         <version>${nuxeo.templates.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
 
       <!-- CSV -->
       <dependency>
