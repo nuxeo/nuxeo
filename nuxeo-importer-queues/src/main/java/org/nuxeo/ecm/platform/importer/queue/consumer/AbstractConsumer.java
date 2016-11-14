@@ -85,6 +85,10 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected final Counter consumerCount;
 
+    protected long lastCommitTime;
+
+    protected static final long TRANSACTION_THRESOLD_MS = 3 * 60 * 1000; // 3 min
+
     public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue) {
         this.log = log;
         repositoryName = root.getRepositoryName();
@@ -94,6 +98,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
         rootRef = root.getRef();
         importStat = new ImportStat();
 
+        lastCommitTime = System.currentTimeMillis();
         processTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "import"));
         commitTimer = registry.timer(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "commit"));
         retryCount = registry.counter(MetricRegistry.name("nuxeo", "importer", "queue", "consumer", "retry"));
@@ -234,10 +239,16 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
 
     protected abstract void process(CoreSession session, SourceNode bh) throws Exception;
 
+    /**
+     * commit if batch is full or if transaction is running for more than 5 min.
+     */
     protected void commitIfNeeded(CoreSession session) {
-        if (batch.isFull()) {
+        long t = System.currentTimeMillis();
+        if (batch.isFull() || (t - lastCommitTime > TRANSACTION_THRESOLD_MS)) {
+            if (! batch.isFull()) {
+                log.warn("Force batch commit because transaction time is too long, current batch size: " + batch.size());
+            }
             commit(session);
-            long t = System.currentTimeMillis();
             if (t - lastCheckTime > CHECK_INTERVAL) {
                 lastImediatThroughput = 1000 * (nbProcessed.get() - lastCount + 0.0) / (t - lastCheckTime);
                 lastCount = nbProcessed.get();
@@ -257,6 +268,7 @@ public abstract class AbstractConsumer extends AbstractTaskRunner implements Con
                 startTransaction();
             } finally {
                 stopWatch.stop();
+                lastCommitTime = System.currentTimeMillis();
             }
 
         }
