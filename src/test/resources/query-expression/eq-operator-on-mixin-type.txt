@@ -1,0 +1,17 @@
+import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';
+let $paths :=("/document/ecm__id")
+let $namespaces :=()
+for $i in cts:search(
+            fn:doc(),
+            cts:or-query((
+              cts:element-value-query(fn:QName("","ecm__primaryType"),("DocWithAge")),
+              cts:element-query(
+                fn:QName("","ecm__mixinTypes"),
+                cts:element-value-query(
+                  fn:QName("","ecm__mixinTypes__item"),
+                  ("Aged")
+                )
+              )
+            ))
+          )
+    return extract:extract-nodes($i, $paths, $namespaces)

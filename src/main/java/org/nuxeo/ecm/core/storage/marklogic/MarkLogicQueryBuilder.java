@@ -21,10 +21,13 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -35,6 +38,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +59,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -65,7 +70,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
-import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
@@ -85,6 +89,8 @@ class MarkLogicQueryBuilder {
     private static final String DATE_CAST = "DATE";
 
     protected final SchemaManager schemaManager;
+
+    protected List<String> documentTypes;
 
     // non-canonical index syntax, for replaceAll
     private final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
@@ -322,7 +328,7 @@ class MarkLogicQueryBuilder {
             if (!(rvalue instanceof StringLiteral)) {
                 throw new QueryParseException("Invalid EQ rhs: " + rvalue);
             }
-            // TODO walk mixin types.
+            return walkMixinTypes(Collections.singletonList((StringLiteral) rvalue), equals);
         }
         Literal convertedLiteral = convertIfBoolean(leftInfo, (Literal) rvalue);
         // If the literal is null it could be :
@@ -364,6 +370,102 @@ class MarkLogicQueryBuilder {
             throw new QueryParseException("Unsupported literal type=" + literal.getClass());
         }
         return markLogicType.getWithoutNamespace();
+    }
+
+    /**
+     * Matches the mixin types against a list of values.
+     * <p>
+     * Used for:
+     * <ul>
+     * <li>ecm:mixinTypes = 'Foo'
+     * <li>ecm:mixinTypes != 'Foo'
+     * <li>ecm:mixinTypes IN ('Foo', 'Bar')
+     * <li>ecm:mixinTypes NOT IN ('Foo', 'Bar')
+     * </ul>
+     * <p>
+     * ecm:mixinTypes IN ('Foo', 'Bar')
+     *
+     * <pre>
+     * { "$or" : [ { "ecm:primaryType" : { "$in" : [ ... types with Foo or Bar ...]}} ,
+     *             { "ecm:mixinTypes" : { "$in" : [ "Foo" , "Bar]}}]}
+     * </pre>
+     *
+     * ecm:mixinTypes NOT IN ('Foo', 'Bar')
+     * <p>
+     *
+     * <pre>
+     * { "$and" : [ { "ecm:primaryType" : { "$in" : [ ... types without Foo nor Bar ...]}} ,
+     *              { "ecm:mixinTypes" : { "$nin" : [ "Foo" , "Bar]}}]}
+     * </pre>
+     */
+    private QueryBuilder walkMixinTypes(List<Literal> mixins, boolean include) {
+        Set<String> mixinDocumentTypes = mixins.stream()
+                                               .map(Literal::asString)
+                                               .flatMap(mixin -> getMixinDocumentTypes(mixin).stream())
+                                               .collect(Collectors.toSet());
+
+        Collector<Literal, LiteralList, LiteralList> literalListCollector = Collector.of(LiteralList::new,
+                LiteralList::add, (l1, l2) -> {
+                    l1.addAll(l2);
+                    return l1;
+                });
+        /*
+         * Primary types that match.
+         */
+        Set<String> primaryTypes;
+        if (include) {
+            primaryTypes = new HashSet<>(mixinDocumentTypes);
+        } else {
+            primaryTypes = new HashSet<>(getDocumentTypes());
+            primaryTypes.removeAll(mixinDocumentTypes);
+        }
+        LiteralList matchPrimaryTypes = primaryTypes.stream().map(StringLiteral::new).collect(literalListCollector);
+        /*
+         * Instance mixins that match.
+         */
+        LiteralList matchMixinTypes = mixins.stream()
+                                            .filter(mixin -> !isNeverPerInstanceMixin(mixin))
+                                            .distinct()
+                                            .collect(literalListCollector);
+        /*
+         * MarkLogic query generation.
+         */
+        // match on primary type
+        QueryBuilder primaryQuery;
+        FieldInfo primaryTypeInfo = walkReference(NXQL.ECM_PRIMARYTYPE);
+        if (primaryTypes.size() == 1 && rangeElementIndexes.stream().anyMatch(
+                new RangeElementIndexPredicate(NXQL.ECM_PRIMARYTYPE, "string"))) {
+            primaryQuery = getQueryBuilder(primaryTypeInfo,
+                    name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.EQ, matchPrimaryTypes.get(0)));
+        } else {
+            primaryQuery = getQueryBuilder(primaryTypeInfo, name -> new InQueryBuilder(name, matchPrimaryTypes, true));
+        }
+        // match on mixin types
+        // $in/$nin with an array matches if any/no element of the array matches
+        QueryBuilder mixinQuery = getQueryBuilder(walkReference(NXQL.ECM_MIXINTYPE),
+                name -> new InQueryBuilder(name, matchMixinTypes, include));
+        // and/or between those
+        return new CompositionQueryBuilder(Arrays.asList(primaryQuery, mixinQuery), !include);
+    }
+
+    private Set<String> getMixinDocumentTypes(String mixin) {
+        Set<String> types = schemaManager.getDocumentTypeNamesForFacet(mixin);
+        return types == null ? Collections.emptySet() : types;
+    }
+
+    private List<String> getDocumentTypes() {
+        // TODO precompute in SchemaManager
+        if (documentTypes == null) {
+            documentTypes = new ArrayList<>();
+            for (DocumentType docType : schemaManager.getDocumentTypes()) {
+                documentTypes.add(docType.getName());
+            }
+        }
+        return documentTypes;
+    }
+
+    private boolean isNeverPerInstanceMixin(Literal mixin) {
+        return schemaManager.getNoPerDocumentQueryFacets().contains(mixin.asString());
     }
 
     private QueryBuilder walkLt(Operand lvalue, Operand rvalue) {
@@ -476,6 +578,9 @@ class MarkLogicQueryBuilder {
             throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
         }
         FieldInfo leftInfo = walkReference(lvalue);
+        if (leftInfo.isMixinTypes()) {
+            return walkMixinTypes((LiteralList) rvalue, positive);
+        }
         return getQueryBuilder(leftInfo, name -> new InQueryBuilder(name, (LiteralList) rvalue, positive));
     }
 
@@ -733,7 +838,7 @@ class MarkLogicQueryBuilder {
         }
 
         public boolean isMixinTypes() {
-            return fullField.equals(DBSDocument.KEY_MIXIN_TYPES);
+            return fullField.equals(KEY_MIXIN_TYPES);
         }
 
         public boolean hasWildcard() {

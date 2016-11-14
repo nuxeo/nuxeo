@@ -152,6 +152,23 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testEqOperatorOnMixinType() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
+                new StringLiteral("Aged"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/eq-operator-on-mixin-type.txt", query);
+    }
+
+    @Test
     public void testEqOperatorOnRangeElementIndex() throws Exception {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference(NXQL.ECM_UUID));
@@ -220,6 +237,23 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
                                                                                                  .getSearchQuery();
         assertFileAgainstString("query-expression/eq-operator-on-array.txt", query);
+    }
+
+    @Test
+    public void testNoteqOperatorOnMixinType() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTEQ,
+                new StringLiteral("Aged"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/noteq-operator-on-mixin-type.txt", query);
     }
 
     @Test
