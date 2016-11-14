@@ -96,7 +96,7 @@ public class PDFWatermarkingTextTest {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(input);
         chain = new OperationChain("testWithDefault");
-        chain.add(PDFWatermarkTextOperation.ID).set("watermark",TEXT_WATERMARK);
+        chain.add(PDFWatermarkTextOperation.ID).set("text",TEXT_WATERMARK);
         Blob result = (Blob) automationService.run(ctx, chain);
         Assert.assertNotNull(result);
         TestUtils.hasTextOnAllPages(result,TEXT_WATERMARK);
@@ -110,7 +110,7 @@ public class PDFWatermarkingTextTest {
         ctx.setInput(input);
         chain = new OperationChain("testWithDefault");
         chain.add(PDFWatermarkTextOperation.ID).
-                set("watermark",TEXT_WATERMARK).
+                set("text",TEXT_WATERMARK).
                 set("properties","alphaColor=1.0");
         Blob result = (Blob) automationService.run(ctx, chain);
         Assert.assertNotNull(result);
