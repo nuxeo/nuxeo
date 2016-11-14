@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
-import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

@@ -50,7 +50,7 @@ public class CQManager extends AbstractQueuesManager {
         tailers = new ArrayList<>(queuesNb);
 
         // Create a path for the queue
-        File basePath = new File(System.getProperty("java.io.tmpdir"), "IQ");
+        File basePath = new File(System.getProperty("java.io.tmpdir"), "CQ");
         basePath.mkdirs();
         logger.debug("Use chronicle queue base: " + basePath);
         for (int i = 0; i < queuesNb; i++) {

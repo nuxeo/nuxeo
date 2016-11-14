@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.importer.queue.consumer;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
