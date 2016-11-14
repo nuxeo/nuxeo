@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
