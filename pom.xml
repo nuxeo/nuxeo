@@ -30,7 +30,6 @@
     <nuxeo.smartsearch.version>8.10-SNAPSHOT</nuxeo.smartsearch.version>
     <nuxeo.audio.version>8.10-SNAPSHOT</nuxeo.audio.version>
     <nuxeo.video.version>8.10-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.categorization.version>8.10-SNAPSHOT</nuxeo.categorization.version>
     <nuxeo.replication.version>8.10-SNAPSHOT</nuxeo.replication.version>
     <nuxeo.activity.version>8.10-SNAPSHOT</nuxeo.activity.version>
     <nuxeo.suggestbox.version>8.10-SNAPSHOT</nuxeo.suggestbox.version>
@@ -79,7 +78,6 @@
     <module>nuxeo-platform-forms-layout-demo</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
-    <module>nuxeo-platform-categorization</module>
     <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
@@ -332,28 +330,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-video-jsf</artifactId>
         <version>${nuxeo.video.version}</version>
-      </dependency>
-
-      <!-- Document Categorization -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-categorization-service</artifactId>
-        <version>${nuxeo.categorization.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-categorization-language</artifactId>
-        <version>${nuxeo.categorization.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-categorization-coverage</artifactId>
-        <version>${nuxeo.categorization.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-categorization-subjects</artifactId>
-        <version>${nuxeo.categorization.version}</version>
       </dependency>
 
       <!-- Documentation server -->
