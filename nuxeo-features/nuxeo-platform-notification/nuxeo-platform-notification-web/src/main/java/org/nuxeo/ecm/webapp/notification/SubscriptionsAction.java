@@ -23,6 +23,7 @@ package org.nuxeo.ecm.webapp.notification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -196,6 +197,9 @@ public class SubscriptionsAction extends InputController implements Serializable
     private List<String> getSubscriptionsForCurrentUser() {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (currentDoc == null) {
+            return Collections.emptyList();
+        }
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
                 "user:" + principal.getName(), currentDoc);

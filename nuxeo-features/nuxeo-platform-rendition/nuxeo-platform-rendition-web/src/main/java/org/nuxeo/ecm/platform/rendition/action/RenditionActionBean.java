@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.rendition.action;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -88,6 +89,9 @@ public class RenditionActionBean implements Serializable {
      */
     public List<Rendition> getVisibleRenditions(String excludedKinds) {
         DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc == null) {
+            return Collections.emptyList();
+        }
         RenditionService rs = Framework.getLocalService(RenditionService.class);
         List<Rendition> availableRenditions = rs.getAvailableRenditions(doc, true);
 

@@ -172,6 +172,9 @@ public class CollectionActionsBean implements Serializable {
     public boolean canAddToDocsToCurrentCollection() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         return collectionManager.canAddToCollection(currentDocument, session);
@@ -192,6 +195,9 @@ public class CollectionActionsBean implements Serializable {
     public boolean canCurrentDocumentBeCollected() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         return collectionManager.isCollectable(currentDocument);
     }
