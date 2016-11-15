@@ -1511,7 +1511,10 @@ public class NXQLQueryMaker implements QueryMaker {
         protected int arraySubQueryJoinCount = 0;
 
         // additional collection pos columns on which to ORDER BY
-        protected Map<String, Column> orderByPosColumns = new LinkedHashMap<>(0);
+        protected Map<String, Column> posColumns = new LinkedHashMap<>(0);
+
+        // collection pos columns for which we already did an ORDER BY
+        protected List<Column> posColumnsInOrderBy = new ArrayList<>();
 
         public WhereBuilder(boolean isProxies) {
             this.isProxies = isProxies;
@@ -1777,7 +1780,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         if (star) {
                             // we'll have to do an ORDER BY on the pos column as well
                             posColumn = table.getColumn(Model.COLL_TABLE_POS_KEY);
-                            orderByPosColumns.put(keyForPos(xpath), posColumn);
+                            posColumns.put(keyForPos(xpath), posColumn);
                         }
                     }
                     return new ColumnInfo(column, posColumn, column.isArray() ? index : -1, isArrayElement,
@@ -2358,6 +2361,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (inOrderBy && info.posColumn != null) {
                     buf.append(", ");
                     visitReference(info.posColumn);
+                    posColumnsInOrderBy.add(info.posColumn);
                 }
             }
         }
@@ -2532,12 +2536,16 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public void visitOrderByPosColumns() {
             inOrderBy = true;
-            for (Entry<String, Column> es : orderByPosColumns.entrySet()) {
+            for (Entry<String, Column> es : posColumns.entrySet()) {
+                Column col = es.getValue();
+                if (posColumnsInOrderBy.contains(col)) {
+                    continue;
+                }
                 if (buf.length() != 0) {
                     buf.append(", ");
                 }
                 int length = buf.length();
-                visitReference(es.getValue());
+                visitReference(col);
                 if (aliasOrderByColumns) {
                     // but don't use generated values
                     // make the ORDER BY clause uses the aliases instead

@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Rule;
 import org.junit.Test;
@@ -3192,35 +3193,52 @@ public class TestSQLRepositoryQuery {
         doc1 = session.createDocument(doc1);
 
         DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        doc2.setPropertyValue("dc:source", doc1.getId());
         doc2 = session.createDocument(doc2);
-
-        DocumentModel doc3 = new DocumentModelImpl("/", "doc3", "File");
-        doc3.setPropertyValue("dc:source", doc1.getId());
-        doc3.setPropertyValue("dc:subjects",
-                new String[] { "not-a-valid-id", doc1.getId(), doc1.getId(), doc2.getId() });
-        doc3 = session.createDocument(doc3);
         session.save();
 
-        DocumentModelList dml;
-        DocumentModel doc;
-
-        dml = session.query("SELECT dc:source FROM File WHERE ecm:name = 'doc3'");
+        DocumentModelList dml = session.query("SELECT dc:source FROM File WHERE ecm:name = 'doc2'");
         assertEquals(1, dml.size());
-        doc = dml.get(0);
+        DocumentModel doc = dml.get(0);
         assertEquals(doc1.getId(), doc.getId());
+    }
 
-        dml = session.query("SELECT dc:subjects/* FROM File WHERE ecm:name = 'doc3'");
-        assertEquals(3, dml.size());
-        // expect a specific order (NXP-19484)
-        List<String> expectedList = new ArrayList<>(Arrays.asList(doc1.getId(), doc1.getId(), doc2.getId()));
-        List<String> list = new ArrayList<>(Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId()));
-        assertEquals(expectedList, list);
+    @Test
+    public void testQueryIdListNotFromUuid() throws Exception {
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        DocumentModel doc3 = new DocumentModelImpl("/", "doc3", "File");
+        doc3 = session.createDocument(doc3);
 
-        // same without proxies
-        dml = session.query("SELECT dc:subjects/* FROM File WHERE ecm:isProxy = 0 AND ecm:name = 'doc3'");
-        assertEquals(3, dml.size());
-        list = new ArrayList<>(Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId()));
-        assertEquals(expectedList, list);
+        // test both orders
+        for (Pair<DocumentModel, DocumentModel> pair : Arrays.asList(Pair.of(doc1, doc2), Pair.of(doc2, doc1))) {
+            DocumentModel doca = pair.getLeft();
+            DocumentModel docb = pair.getRight();
+            String[] prop = new String[] { "not-a-valid-id", doca.getId(), doca.getId(), docb.getId() };
+            List<String> expected = Arrays.asList(prop[1], prop[2], prop[3]);
+            doc3.setPropertyValue("dc:subjects", prop);
+            doc3 = session.saveDocument(doc3);
+            session.save();
+
+            DocumentModelList dml;
+            List<String> actual;
+            String query = "SELECT dc:subjects/* FROM File WHERE ecm:name = 'doc3'";
+
+            // expect a specific order (NXP-19484)
+            // test with proxies
+            dml = session.query(query);
+            assertEquals(3, dml.size());
+            actual = Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId());
+            assertEquals(expected, actual);
+
+            // same without proxies
+            dml = session.query(query + " AND ecm:isProxy = 0");
+            assertEquals(3, dml.size());
+            actual = Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId());
+            assertEquals(expected, actual);
+        }
     }
 
     @Test
