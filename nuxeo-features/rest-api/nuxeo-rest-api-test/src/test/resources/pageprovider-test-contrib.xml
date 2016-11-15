@@ -20,6 +20,16 @@
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="TEST_NOTE_PP_WITH_TITLE_ORDER">
+      <pattern>
+        SELECT * FROM Note WHERE ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted'
+      </pattern>
+      <sort ascending="false" column="dc:title" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="TEST_PP_PARAM">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = :parentIdVar AND

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -223,7 +224,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
                 getErrorMessage(node));
     }
 
@@ -253,7 +254,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
                 getErrorMessage(node));
     }
 
@@ -410,6 +411,26 @@ public class DocumentListTest extends BaseTest {
         for (int i : new int[] { 1, 2 }) {
             note1 = RestServerInit.getNote(i, session);
             assertEquals("bulk description", note1.getPropertyValue("dc:description"));
+        }
+
+    }
+
+    /**
+     * @since 8.10
+     */
+    @Test
+    public void iCanPerformPageProviderWithDefinitionDefaultSorting() throws IOException {
+        // Given a repository, when I perform a pageprovider on it with
+        // default sorting in its definition on dc:title desc
+        ClientResponse response = getResponse(RequestType.GET, QueryObject.PATH + "/TEST_NOTE_PP_WITH_TITLE_ORDER");
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        List<JsonNode> noteNodes = getLogEntries(node);
+        assertEquals(RestServerInit.MAX_NOTE, noteNodes.size());
+        for (int i = 0; i < noteNodes.size(); i++) {
+            assertEquals("Note " + (RestServerInit.MAX_NOTE - (i + 1)), noteNodes.get(i).get("title").getTextValue());
         }
 
     }
