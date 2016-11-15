@@ -35,7 +35,7 @@ public class TestMessages extends TranslationMultiTestCase {
     @Override
     protected String[] getOtherTranslationsPath() {
         return new String[] { "i18n/messages_en.properties", "i18n/messages_fr.properties",
-                "i18n/messages_de.properties", "i18n/messages_jp.properties" };
+                "i18n/messages_de.properties", "i18n/messages_ja.properties" };
     }
 
 }
