@@ -137,7 +137,8 @@ class Repository(object):
                     self.url_pattern = self.url_pattern.replace("%s/module" % module, "module")
         os.chdir(cwd)
 
-    def retrieve_modules(self, project_dir, pom_name = "pom.xml"):
+    @staticmethod
+    def retrieve_modules(project_dir, pom_name = "pom.xml"):
         """Retrieve all modules of input Maven project and return it."""
         modules = []
         if os.path.exists(os.path.join(project_dir, pom_name)):
@@ -188,7 +189,8 @@ class Repository(object):
         self.execute_on_modules(lambda module: self.system_module(command, module), with_optionals)
         os.chdir(cwd)
 
-    def system_module(self, command, module):
+    @staticmethod
+    def system_module(command, module):
         """Execute the given command on given module.
 
         'command': the command to execute.
@@ -212,7 +214,12 @@ class Repository(object):
         self.execute_on_modules(lambda module: self.git_module(command, module), with_optionals)
         os.chdir(cwd)
 
-    def git_module(self, command, module):
+    @staticmethod
+    def git_module(command, module):
+        """Execute the given Shell command on the given module. It ignores non Git repositories.
+
+        'command': the command to execute.
+        'module': the Git sub-directory where to execute the command."""
         cwd = os.getcwd()
         os.chdir(module)
         if os.path.isdir(".git"):
@@ -243,7 +250,13 @@ class Repository(object):
         shutil.rmtree(archive_dir)
         os.chdir(cwd)
 
-    def archive_module(self, archive_dir, version, module):
+    @staticmethod
+    def archive_module(archive_dir, version, module):
+        """Archive the sources of a the given Git sub-directory.
+
+        'archive_dir': full path of archive to generate.
+        'version': version to archive, defaults to current version.
+        'module': the Git sub-directory to archive."""
         cwd = os.getcwd()
         os.chdir(module)
         log("[%s]" % module)
@@ -348,7 +361,8 @@ class Repository(object):
         if not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git")):
             self.git_pull(module, version, fallback_branch)
 
-    def get_current_version(self):
+    @staticmethod
+    def get_current_version():
         """Return branch or tag version of current Git workspace."""
         t = check_output("git describe --all").split("/")
         return t[-1]

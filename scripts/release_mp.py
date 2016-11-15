@@ -28,7 +28,7 @@ import traceback
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 from nxutils import ExitException, Repository, assert_git_config, log, system, DEFAULT_MP_CONF_URL
-from release import Release
+from release import Release, ReleaseInfo
 from terminalsize import get_terminal_size
 
 
@@ -42,9 +42,10 @@ class ReleaseMP(object):
 
     See 'self.perpare()', 'self.perform()'."""
     # pylint: disable=R0913
-    def __init__(self, alias, restart_from, marketplace_conf=None):
+    def __init__(self, alias, restart_from, default_conf=None, marketplace_conf=None):
         self.alias = alias
         self.restart_from = restart_from
+        self.default_conf = default_conf
         if marketplace_conf == '':
             marketplace_conf = DEFAULT_MP_CONF_URL
         self.marketplace_conf = marketplace_conf
@@ -311,6 +312,9 @@ Failed uploads are not retried and must be manually done."""
         parser = optparse.OptionParser(usage=usage, description=description, formatter=help_formatter)
         parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin',
                           help="""The Git alias of remote URL. Default: '%default'""")
+        parser.add_option('-d', "--default", action="store", type="string", dest='default_conf',
+                          default=None, help="""The default configuration URL (usually 'release-nuxeo.log').
+You can use a local file URL ('file://'). Default: '%default'""")
         parser.add_option('-m', "--marketplace-conf", action="store", type="string", dest='marketplace_conf',
                           default=None, help="""The Nuxeo Packages configuration URL (usually named 'marketplace.ini').
 You can use a local file URL ('file://').\n
@@ -326,7 +330,8 @@ If set to '' (empty string), then it will default to '""" + DEFAULT_MP_CONF_URL 
             command = args[0]
         elif len(args) > 1:
             raise ExitException(1, "'command' must be a single argument. See usage with '-h'.")
-        full_release = ReleaseMP(options.remote_alias, options.restart_from, options.marketplace_conf)
+        full_release = ReleaseMP(options.remote_alias, options.restart_from, options.default_conf,
+                                 options.marketplace_conf)
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "clone":
