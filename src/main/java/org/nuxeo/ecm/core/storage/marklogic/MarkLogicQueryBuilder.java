@@ -21,7 +21,9 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +58,7 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
@@ -433,8 +436,8 @@ class MarkLogicQueryBuilder {
         // match on primary type
         QueryBuilder primaryQuery;
         FieldInfo primaryTypeInfo = walkReference(NXQL.ECM_PRIMARYTYPE);
-        if (primaryTypes.size() == 1 && rangeElementIndexes.stream().anyMatch(
-                new RangeElementIndexPredicate(NXQL.ECM_PRIMARYTYPE, "string"))) {
+        if (primaryTypes.size() == 1
+                && rangeElementIndexes.stream().anyMatch(new RangeElementIndexPredicate(KEY_PRIMARY_TYPE, "string"))) {
             primaryQuery = getQueryBuilder(primaryTypeInfo,
                     name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.EQ, matchPrimaryTypes.get(0)));
         } else {
@@ -1262,34 +1265,74 @@ class MarkLogicQueryBuilder {
         }
 
         private String createSearchQuery() {
-            return String.format("cts:search(fn:doc(),%s)", ctsQuery);
+            if (orderByClause == null) {
+                return "cts:search(fn:doc()," + ctsQuery + ')';
+            }
+            return "cts:search(fn:doc()," + ctsQuery + ",(" + getOrderBy() + "))";
+        }
+
+        private String getOrderBy() {
+            Map<String, String> rangeElementTypes = rangeElementIndexes.stream().collect(
+                    Collectors.toMap(d -> d.element, d -> d.type));
+            Set<String> elements = new HashSet<>(orderByClause.elements.size());
+            StringBuilder orderBy = new StringBuilder();
+            for (OrderByExpr ob : orderByClause.elements) {
+                String element = walkReference(ob.reference).queriedElement;
+                boolean desc = ob.isDescending;
+                if (!elements.contains(element)) {
+                    if (!elements.isEmpty()) {
+                        orderBy.append(',');
+                    }
+                    orderBy.append("cts:index-order(cts:element-reference(fn:QName(\"\", \"");
+                    orderBy.append(MarkLogicHelper.serializeKey(element)).append("\"),");
+                    orderBy.append("(\"type=").append(rangeElementTypes.get(element)).append("\")),\"");
+                    orderBy.append(desc ? "descending" : "ascending");
+                    orderBy.append("\")");
+                }
+                elements.add(element);
+            }
+            return orderBy.toString();
         }
 
         private String addProjections(String searchQuery) {
             String query = searchQuery;
             if (!doManualProjection()) {
-                StringBuilder fields = new StringBuilder("let $paths := (");
+                StringBuilder fields = new StringBuilder();
+                appendProjection(fields, NXQL.ECM_UUID); // always useful
+                appendProjection(fields, NXQL.ECM_NAME); // used in ORDER BY ecm:path
+                appendProjection(fields, NXQL.ECM_PARENTID); // used in ORDER BY ecm:path
+                Set<String> elements = new HashSet<>(Arrays.asList(NXQL.ECM_UUID, NXQL.ECM_NAME, NXQL.ECM_PARENTID));
                 for (int i = 0; i < selectClause.elements.size(); i++) {
                     Operand op = selectClause.elements.get(i);
                     if (!(op instanceof Reference)) {
                         throw new QueryParseException("Projection not supported: " + op);
                     }
-                    if (i > 0) {
-                        fields.append(',').append('\n');
+                    String name = ((Reference) op).name;
+                    if (!elements.contains(name)) {
+                        appendProjection(fields, name);
+                        elements.add(name);
                     }
-                    FieldInfo fieldInfo = walkReference((Reference) op);
-                    fields.append('"')
-                          .append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
-                          .append('/')
-                          .append(MarkLogicHelper.serializeKey(fieldInfo.queryField))
-                          .append('"');
                 }
-                fields.append(')');
                 query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
-                        + fields.toString() + "let $namespaces := ()\n" + "for $i in " + query
+                        + "let $paths := (" + fields.toString() + ")let $namespaces := ()\n" + "for $i in " + query
                         + " return extract:extract-nodes($i, $paths, $namespaces)";
             }
             return query;
+        }
+
+        private void appendProjection(StringBuilder fields, String name) {
+            FieldInfo fieldInfo = walkReference(name);
+            if (KEY_ID.equals(fieldInfo.prop)) {
+                return;
+            }
+            if (fields.length() > 0) {
+                fields.append(',').append('\n');
+            }
+            fields.append('"')
+                  .append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
+                  .append('/')
+                  .append(MarkLogicHelper.serializeKey(fieldInfo.queryField))
+                  .append('"');
         }
 
     }
