@@ -125,7 +125,6 @@ public interface ComponentManager {
      */
     Collection<ComponentName> getActivatingRegistrations();
 
-
     /**
      * Gets the components that fail on applicationStarted notification
      *
