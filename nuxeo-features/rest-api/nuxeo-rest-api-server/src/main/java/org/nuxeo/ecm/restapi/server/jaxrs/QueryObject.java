@@ -193,8 +193,9 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                 providerName, namedParameters);
 
         // Sort Info Management
-        List<SortInfo> sortInfoList = new ArrayList<>();
+        List<SortInfo> sortInfoList = null;
         if (!StringUtils.isBlank(sortBy)) {
+            sortInfoList = new ArrayList<>();
             String[] sorts = sortBy.split(",");
             String[] orders = null;
             if (!StringUtils.isBlank(sortOrder)) {
