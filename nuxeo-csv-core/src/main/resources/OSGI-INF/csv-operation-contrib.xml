@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
-        <operation class="org.nuxeo.ecm.csv.operation.CSVImportOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportOperation"/>
   </extension>
 
 </component>
