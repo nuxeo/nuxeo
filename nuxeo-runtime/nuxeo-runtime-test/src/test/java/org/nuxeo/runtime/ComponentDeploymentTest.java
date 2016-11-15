@@ -21,10 +21,8 @@
 
 package org.nuxeo.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +30,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,6 +49,8 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "CompA.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "CompB.xml");
     }
 
     @Test
@@ -66,6 +72,27 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
         assertNull(co);
         co = runtime.getComponentInstance("service:my.comp1");
         assertNotNull(co);
+
+        // check pending registrations too
+        Map<ComponentName, Set<ComponentName>> pending = mgr.getPendingRegistrations();
+        assertEquals(1, pending.size());
+        assertTrue(pending.containsKey(new ComponentName("CompA")));
+        assertEquals("[service:CompC]", pending.get(new ComponentName("CompA")).toString());
+        // check missing registrations too
+        Map<ComponentName, Set<Extension>> missing = mgr.getMissingRegistrations();
+        assertEquals(1, missing.size());
+        assertTrue(missing.containsKey(new ComponentName("CompB")));
+        assertEquals(
+                "[ExtensionImpl {target: service:my.comp3, point:xp, contributor:RegistrationInfo: service:CompB}, "
+                        + "ExtensionImpl {target: service:my.comp4, point:xp, contributor:RegistrationInfo: service:CompB}]",
+                missing.get(new ComponentName("CompB")).toString());
+        StringBuilder builder = new StringBuilder();
+        runtime.getStatusMessage(builder);
+        assertEquals("======================================================================\n"
+                + "= Component Loading Status: Pending: 1 / Missing: 1 / Unstarted: 0 / Total: 10\n"
+                + "  * service:CompA requires [service:CompC]\n"
+                + "  * service:CompB references missing [target=my.comp3;point=xp, target=my.comp4;point=xp]\n"
+                + "======================================================================", builder.toString());
     }
 
 }

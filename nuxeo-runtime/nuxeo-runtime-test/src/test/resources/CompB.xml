@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
 <component name="CompB">
 
+  <extension target="my.comp3" point="xp">
+  </extension>
+
+  <extension target="my.comp4" point="xp">
+  </extension>
+
 </component>

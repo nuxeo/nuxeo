@@ -78,8 +78,23 @@ public class ComponentManagerImpl implements ComponentManager {
 
     @Override
     public synchronized Map<ComponentName, Set<ComponentName>> getPendingRegistrations() {
-        // TODO the set value is not cloned
-        return new HashMap<ComponentName, Set<ComponentName>>(reg.getPendingComponents());
+        Map<ComponentName, Set<ComponentName>> pending = new HashMap<>();
+        for (Map.Entry<ComponentName, Set<ComponentName>> p : reg.getPendingComponents().entrySet()) {
+            pending.put(p.getKey(), new LinkedHashSet<>(p.getValue()));
+        }
+        return pending;
+    }
+
+    @Override
+    public synchronized Map<ComponentName, Set<Extension>> getMissingRegistrations() {
+        Map<ComponentName, Set<Extension>> missing = new HashMap<>();
+        // also add pending extensions, not resolved because of missing target extension point
+        for (Set<Extension> p : pendingExtensions.values()) {
+            for (Extension e : p) {
+                missing.computeIfAbsent(e.getComponent().getName(), k -> new LinkedHashSet<>()).add(e);
+            }
+        }
+        return missing;
     }
 
     public synchronized Collection<ComponentName> getNeededRegistrations() {
@@ -261,7 +276,8 @@ public class ComponentManagerImpl implements ComponentManager {
             ri.component.registerExtension(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                     ((ComponentInstanceImpl) extension.getComponent()).ri, extension));
-        } else { // put the extension in the pending queue
+        } else {
+            // put the extension in the pending queue
             if (log.isDebugEnabled()) {
                 log.debug("Enqueue contributed extension to pending queue: " + extension);
             }

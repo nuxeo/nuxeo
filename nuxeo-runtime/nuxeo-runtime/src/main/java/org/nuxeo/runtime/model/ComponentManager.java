@@ -119,6 +119,13 @@ public interface ComponentManager {
     Map<ComponentName, Set<ComponentName>> getPendingRegistrations();
 
     /**
+     * Returns the missing registrations, linked to missing target extension points.
+     *
+     * @since 8.10
+     */
+    Map<ComponentName, Set<Extension>> getMissingRegistrations();
+
+    /**
      * Gets the pending extensions by component.
      *
      * @return the pending extensions

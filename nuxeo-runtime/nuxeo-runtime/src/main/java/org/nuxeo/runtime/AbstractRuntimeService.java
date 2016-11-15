@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +43,7 @@ import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
@@ -321,11 +323,14 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             }
         }
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
+        Map<ComponentName, Set<Extension>> missingRegistrations = manager.getMissingRegistrations();
         Collection<ComponentName> unstartedRegistrations = manager.getActivatingRegistrations();
         unstartedRegistrations.addAll(manager.getStartFailureRegistrations());
         msg.append(hr)
            .append("\n= Component Loading Status: Pending: ")
            .append(pendingRegistrations.size())
+           .append(" / Missing: ")
+           .append(missingRegistrations.size())
            .append(" / Unstarted: ")
            .append(unstartedRegistrations.size())
            .append(" / Total: ")
@@ -334,11 +339,23 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
             msg.append("  * ").append(e.getKey()).append(" requires ").append(e.getValue()).append('\n');
         }
+        for (Entry<ComponentName, Set<Extension>> e : missingRegistrations.entrySet()) {
+            msg.append("  * ")
+               .append(e.getKey())
+               .append(" references missing ")
+               .append(e.getValue()
+                        .stream()
+                        .map(ext -> "target=" + ext.getTargetComponent().getName() + ";point="
+                                + ext.getExtensionPoint())
+                        .collect(Collectors.toList()))
+               .append('\n');
+        }
         for (ComponentName componentName : unstartedRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
         }
         msg.append(hr);
-        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && unstartedRegistrations.isEmpty());
+        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && missingRegistrations.isEmpty()
+                && unstartedRegistrations.isEmpty());
     }
 
 }
