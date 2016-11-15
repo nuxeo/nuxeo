@@ -23,20 +23,13 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.impl.CompoundFilter;
-import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
  * @since 8.10
@@ -57,13 +50,12 @@ public class HasFolderishChildJsonEnricher extends AbstractJsonEnricher<Document
             return;
         }
         try (SessionWrapper wrapper = ctx.getSession(document)) {
-            FacetFilter facetFilter = new FacetFilter(Arrays.asList(FacetNames.FOLDERISH),
-                    Arrays.asList(FacetNames.HIDDEN_IN_NAVIGATION));
-            LifeCycleFilter lfFilter = new LifeCycleFilter(LifeCycleConstants.DELETED_STATE, false);
-            Filter filters = new CompoundFilter(facetFilter, lfFilter);
+
+            String fetchFolderishChildQuery = "SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'"
+                    + " AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'"
+                    + " AND ecm:parentId = " + NXQL.escapeString(document.getId());
             // Limit result set to 1 as we just want to know if there's at least one Folderish child
-            DocumentModelList children = wrapper.getSession().query(
-                    "SELECT * FROM Document WHERE ecm:parentId = " + NXQL.escapeString(document.getId()), filters, 1);
+            DocumentModelList children = wrapper.getSession().query(fetchFolderishChildQuery, 1);
             jg.writeBooleanField(NAME, !children.isEmpty());
         }
     }
