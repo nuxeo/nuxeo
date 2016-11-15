@@ -959,7 +959,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 throw new NuxeoException("Scroll should be done inside a transaction");
             }
             PreparedStatement ps = connection.prepareStatement(q.selectInfo.sql, ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_READ_ONLY);
+                    ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
             ps.setFetchSize(batchSize);
             int i = 1;
             for (Serializable object : q.selectParams) {
