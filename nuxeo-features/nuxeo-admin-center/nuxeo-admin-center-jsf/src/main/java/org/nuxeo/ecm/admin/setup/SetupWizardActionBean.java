@@ -258,11 +258,7 @@ public class SetupWizardActionBean implements Serializable {
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
             Object value = entry.getValue();
-            if (value instanceof Long) {
-                entry.setValue(value.toString());
-            } else if (value instanceof Boolean) {
-                entry.setValue(value.toString());
-            } else if (value instanceof BigDecimal) {
+            if (value instanceof Long || value instanceof Boolean || value instanceof BigDecimal) {
                 entry.setValue(value.toString());
             }
         }
