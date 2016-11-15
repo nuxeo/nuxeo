@@ -16,16 +16,17 @@
         </index>
       </fulltext>
       <range-element-indexes>
-        <range-element-index type="string">ecm:uuid</range-element-index>
+        <!-- Basic elements -->
+        <range-element-index type="string">ecm:id</range-element-index>
         <range-element-index type="string">ecm:parentId</range-element-index>
-        <range-element-index type="string">ecm:ancestorId</range-element-index>
-        <range-element-index type="string">ecm:versionVersionableId</range-element-index>
+        <range-element-index type="string">ecm:ancestorIds</range-element-index>
+        <range-element-index type="string">ecm:versionSeriesId</range-element-index>
         <range-element-index type="string">ecm:proxyTargetId</range-element-index>
-        <range-element-index type="string">ecm:proxyVersionableId</range-element-index>
-        <range-element-index type="string">ecm:__read_acl</range-element-index> <!-- Technical element -->
+        <range-element-index type="string">ecm:proxySeriesId</range-element-index>
+        <range-element-index type="string">ecm:racl</range-element-index> <!-- Technical element -->
         <range-element-index type="string">ecm:name</range-element-index>
         <range-element-index type="string">ecm:primaryType</range-element-index>
-        <range-element-index type="string">ecm:currentLifeCycleState</range-element-index>
+        <range-element-index type="string">ecm:lifeCycleState</range-element-index>
         <range-element-index type="dateTime">dc:modified</range-element-index>
         <range-element-index type="string">rend:renditionName</range-element-index>
         <range-element-index type="string">collectionMember:collectionIds</range-element-index>
