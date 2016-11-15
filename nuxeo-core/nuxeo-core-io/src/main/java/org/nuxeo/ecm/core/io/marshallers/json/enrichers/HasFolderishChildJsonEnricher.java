@@ -50,7 +50,6 @@ public class HasFolderishChildJsonEnricher extends AbstractJsonEnricher<Document
             return;
         }
         try (SessionWrapper wrapper = ctx.getSession(document)) {
-
             String fetchFolderishChildQuery = "SELECT * FROM Document WHERE ecm:mixinType = 'Folderish'"
                     + " AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'"
                     + " AND ecm:parentId = " + NXQL.escapeString(document.getId());
