@@ -292,6 +292,7 @@ public class TypeRegistry extends ContributionFragmentRegistry<Type> {
         // if there's already a core contribution, unregiser it and register a new one
         if (dtds.containsKey(id)) {
             schemaManager.unregisterDocumentType(dtds.get(id));
+            dtds.remove(id);
         }
 
         DocumentTypeDescriptor dtd = new DocumentTypeDescriptor();
