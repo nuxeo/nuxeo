@@ -11,6 +11,7 @@ package org.nuxeo.ecm.core.redis;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import redis.clients.jedis.Client;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisMonitor;
@@ -21,7 +22,7 @@ import redis.clients.util.Pool;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class RedisPoolExecutor implements RedisExecutor {
+public class RedisPoolExecutor extends RedisAbstractExecutor {
 
     private static final Log log = LogFactory.getLog(RedisPoolExecutor.class);
     private Thread monitorThread;

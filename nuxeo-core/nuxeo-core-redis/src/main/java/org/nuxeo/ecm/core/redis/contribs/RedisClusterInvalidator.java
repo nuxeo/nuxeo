@@ -162,11 +162,10 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
                 Integer.valueOf(TIMEOUT_REGISTER_SECOND).toString());
         log.debug("Registering node: " + nodeId);
 
-        redisExecutor.execute(jedis -> {
-            jedis.evalsha(registerSha, keys, args);
+        redisExecutor.evalsha(registerSha, keys, args);
+        if (log.isInfoEnabled()) {
             log.info("Node registered: " + nodeId);
-            return null;
-        });
+        }
     }
 
     protected String getNodeKey() {
@@ -213,13 +212,8 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
             throw new NuxeoException(e);
         }
 
-        redisExecutor.execute(jedis -> {
-            jedis.evalsha(sendSha, keys, args);
-            if (log.isTraceEnabled()) {
-                log.trace("invals sent");
-            }
-            return null;
-        });
+        redisExecutor.evalsha(sendSha, keys, args);
+        log.trace("invals sent");
     }
 
     protected String getCurrentDateTime() {
