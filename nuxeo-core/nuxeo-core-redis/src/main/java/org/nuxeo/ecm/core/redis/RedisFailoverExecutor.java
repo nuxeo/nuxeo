@@ -24,7 +24,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.Pool;
 
-public class RedisFailoverExecutor implements RedisExecutor {
+public class RedisFailoverExecutor extends RedisAbstractExecutor {
 
     protected final int timeout;
 

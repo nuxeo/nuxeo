@@ -19,8 +19,9 @@
 package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -115,30 +116,22 @@ public class RedisLockManager implements LockManager {
 
     @Override
     public Lock setLock(final String id, final Lock lock) {
-        return redisExecutor.execute(new RedisCallable<Lock>() {
-            @Override
-            public Lock call(Jedis jedis) {
-                String lockString = (String) jedis.evalsha(scriptSetSha, Arrays.asList(redisNamespace + id),
-                        Arrays.asList(stringFromLock(lock)));
-                return lockFromString(lockString); // existing lock
-            }
-        });
+        List<String> keys = Collections.singletonList(redisNamespace + id);
+        List<String> args = Collections.singletonList(stringFromLock(lock));
+        String lockString = (String) redisExecutor.evalsha(scriptSetSha, keys, args);
+        return lockFromString(lockString); // existing lock
     }
 
     @Override
     public Lock removeLock(final String id, final String owner) {
-        return redisExecutor.execute(new RedisCallable<Lock>() {
-            @Override
-            public Lock call(Jedis jedis) {
-                String lockString = (String) jedis.evalsha(scriptRemoveSha, Arrays.asList(redisNamespace + id),
-                        Arrays.asList(owner == null ? "" : owner));
-                Lock lock = lockFromString(lockString);
-                if (lock != null && owner != null && !owner.equals(lock.getOwner())) {
-                    lock = new Lock(lock, true); // failed removal
-                }
-                return lock;
-            }
-        });
+        List<String> keys = Collections.singletonList(redisNamespace + id);
+        List<String> args = Collections.singletonList(owner == null ? "" : owner);
+        String lockString = (String) redisExecutor.evalsha(scriptRemoveSha, keys, args);
+        Lock lock = lockFromString(lockString);
+        if (lock != null && owner != null && !owner.equals(lock.getOwner())) {
+            lock = new Lock(lock, true); // failed removal
+        }
+        return lock;
     }
 
     @Override
