@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
@@ -1164,7 +1165,8 @@ public class TestSQLRepositoryQuery {
     // new-style date comparisons (casting to native DATE type)
     @Test
     public void testDateNew() throws Exception {
-        assumeTrue("MongoDB does not support NXQL DATE casts", !isDBSMongoDB());
+        assumeFalse("MongoDB does not support NXQL DATE casts", isDBSMongoDB());
+        assumeFalse("MarkLogic does not support NXQL DATE casts", isDBSMarkLogic());
 
         String sql;
         DocumentModelList dml;
