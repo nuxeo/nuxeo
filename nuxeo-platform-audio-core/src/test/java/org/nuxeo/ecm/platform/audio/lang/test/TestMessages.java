@@ -16,7 +16,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.audio.lang.test;
+package org.nuxeo.ecm.platform.audio.lang.test;
 
 import org.nuxeo.ecm.platform.test.TranslationTestCase;
 
