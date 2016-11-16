@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo Video Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.video.core;singleton=true
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
+ OSGI-INF/ui-types-contrib.xml,
  OSGI-INF/lifecycle-contrib.xml,
  OSGI-INF/adapters-contrib.xml,
  OSGI-INF/filemanager-importer-contrib.xml,
