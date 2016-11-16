@@ -7,5 +7,6 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: core, statefull
 Nuxeo-Component: OSGI-INF/userworkspace-schemas-contrib.xml,
-  OSGI-INF/userworkspace-life-cycle-contrib.xml
+ OSGI-INF/userworkspace-types-contrib.xml,
+ OSGI-INF/userworkspace-life-cycle-contrib.xml
 

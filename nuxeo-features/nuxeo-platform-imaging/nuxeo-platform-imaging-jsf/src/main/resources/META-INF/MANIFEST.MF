@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.picture.jsf;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
-Nuxeo-Component: OSGI-INF/imaging-types-contrib.xml,
- OSGI-INF/imaging-layouts-contrib.xml,
+Nuxeo-Component: OSGI-INF/imaging-layouts-contrib.xml,
  OSGI-INF/imaging-codec-contrib.xml,
  OSGI-INF/actions-contrib.xml,
  OSGI-INF/imaging-urlservice-contrib.xml,

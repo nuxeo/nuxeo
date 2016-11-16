@@ -6,6 +6,7 @@ Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-Name: Nuxeo ECM Collections
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/collection-core-types-contrib.xml,
+ OSGI-INF/collection-ui-types-contrib.xml,
  OSGI-INF/collection-lifecycle-contrib.xml,
  OSGI-INF/collection-pageprovider-contrib.xml,
  OSGI-INF/collection-service.xml,
@@ -16,6 +17,7 @@ Nuxeo-Component: OSGI-INF/collection-core-types-contrib.xml,
  OSGI-INF/collection-workmanager-contrib.xml,
  OSGI-INF/collection-audit-contrib.xml,
  OSGI-INF/favorites-core-types-contrib.xml,
+ OSGI-INF/favorites-ui-types-contrib.xml,
  OSGI-INF/favorites-service.xml,
  OSGI-INF/favorites-lifecycle-contrib.xml,
  OSGI-INF/json-enrichers-contrib.xml

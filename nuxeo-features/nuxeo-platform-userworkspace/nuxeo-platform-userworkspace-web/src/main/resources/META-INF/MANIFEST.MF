@@ -6,5 +6,4 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Bundle-Category: stateless
 Eclipse-LazyStart: false
-Nuxeo-Component: OSGI-INF/userworkspace-actions-contrib.xml,
- OSGI-INF/userworkspace-types-contrib.xml
+Nuxeo-Component: OSGI-INF/userworkspace-actions-contrib.xml

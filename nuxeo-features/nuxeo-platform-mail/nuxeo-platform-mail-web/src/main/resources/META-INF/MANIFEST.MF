@@ -11,6 +11,5 @@ Require-Bundle:  org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.webapp.core,
  org.nuxeo.ecm.platform.mail
 Nuxeo-Component: OSGI-INF/nxmail-actions-contrib.xml,
- OSGI-INF/nxmail-ecm-types-contrib.xml,
  OSGI-INF/nxmail-layouts-contrib.xml,
  OSGI-INF/nxmail-contentview-contrib.xml
