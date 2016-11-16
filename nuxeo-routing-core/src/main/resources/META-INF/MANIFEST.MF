@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.routing.core;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/document-routing-core-types-contrib.xml,
+ OSGI-INF/document-routing-ecm-types-contrib.xml,
  OSGI-INF/document-routing-life-cycle-contrib.xml,
  OSGI-INF/document-routing-engine-service.xml,
  OSGI-INF/document-routing-service.xml,
