@@ -764,21 +764,19 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @return the work, or {@code null} if the scheduled queue is empty
      */
     protected Work getWorkFromQueue(final String queueId) throws IOException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Work>() {
-
-            @Override
-            public Work call(Jedis jedis) {
-                Object id = jedis.evalsha(popWorkSha, keys(queueId), Collections.singletonList(bytes(State.RUNNING)));
-                if (id == null) {
-                    return null;
-                }
-                if (id instanceof String) {
-                    id = bytes((String)id);
-                }
-                return deserializeWork(jedis.hget(dataKey(),(byte[])id));
-            }
-
-        });
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        List<byte[]> keys = keys(queueId);
+        List<byte[]> args = Collections.singletonList(STATE_RUNNING);
+        Object id = redisExecutor.evalsha(popWorkSha, keys, args);
+        if (id == null) {
+            return null;
+        }
+        if (id instanceof String) {
+            id = bytes((String) id);
+        }
+        byte[] workIdBytes = (byte[]) id;
+        byte[] workBytes = redisExecutor.execute(jedis -> jedis.hget(dataKey(), workIdBytes));
+        return deserializeWork(workBytes);
     }
 
     /**
@@ -839,28 +837,24 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     Number[] evalSha(byte[] sha, List<byte[]> keys, List<byte[]> args) throws JedisException {
-        return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Number[]>() {
+        RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
+        List<Number> numbers = (List<Number>) redisExecutor.evalsha(sha, keys, args);
+        return coerceNullToZero(numbers);
+    }
 
-            @Override
-            public Number[] call(Jedis jedis) {
-                return coerce((List<Number>) jedis.evalsha(sha, keys, args));
+    protected static Number[] coerceNullToZero(List<Number> numbers) {
+        Number[] counters = numbers.toArray(new Number[numbers.size()]);
+        for (int i = 0; i < counters.length; ++i) {
+            if (counters[i] == null) {
+                counters[i] = 0;
             }
-
-            Number[] coerce(List<Number> numbers) {
-                Number[] counter = numbers.toArray(new Number[numbers.size()]);
-                for (int i = 0; i < counter.length; ++i) {
-                    if (counter[i] == null) {
-                        counter[i] = 0;
-                    }
-                }
-                return counter;
-            }
-        });
+        }
+        return counters;
     }
 
     @Override
     public void listen(Listener listener) {
-        this.listener =listener;
+        this.listener = listener;
 
     }
 
