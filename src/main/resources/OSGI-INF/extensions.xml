@@ -69,12 +69,6 @@
       <filter-id>denyForEasyShareFolder</filter-id>
     </action>
   </extension>
-  <extension target="org.nuxeo.ecm.platform.jbpm.core.JbpmService" point="typeFilter">
-    <type name="EasyShareFolder">
-      <processDefinition>review_parallel</processDefinition>
-      <processDefinition>review_approbation</processDefinition>
-    </type>
-  </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
     <layout name="layout@EasyShareFolder-edit">
       <templates>
