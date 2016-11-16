@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="perf-nopicturemigration-config">
-  <require>org.nuxeo.ecm.platform.imaging.base.properties</require>
-  <extension target="org.nuxeo.runtime.ConfigurationService"
-    point="configuration">
-    <property name="nuxeo.picture.migration.enabled">false</property>
-  </extension>
-</component>
