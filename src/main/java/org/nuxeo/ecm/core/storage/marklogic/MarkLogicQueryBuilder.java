@@ -907,7 +907,7 @@ class MarkLogicQueryBuilder {
         protected String build(String name) {
             String serializedName = serializeName(name);
             String serializedValue = MarkLogicStateSerializer.serializeValue(getLiteralValue(literal));
-            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), \"%s\")", serializedName,
+            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), \"%s\", (\"exact\"))", serializedName,
                     serializedValue);
         }
 
