@@ -493,10 +493,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.routing</groupId>
-      <artifactId>nuxeo-routing-default</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.routing</groupId>
       <artifactId>nuxeo-routing-rest-api</artifactId>
     </dependency>
     <dependency>
