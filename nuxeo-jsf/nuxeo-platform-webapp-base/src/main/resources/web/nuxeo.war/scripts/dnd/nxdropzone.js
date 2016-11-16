@@ -456,7 +456,6 @@ DropZoneUIHandler.prototype.executeBatch = function (operationId, params) {
       log("refresh-done");
     },
     function (xhr, status, errorMessage) {
-      cancelHandler.cancelUpload();
       if (status == "timeout") {
         alert(jQuery("#dndTimeoutMessage").html());
       } else if (xhr.readyState != 4) {
@@ -476,7 +475,7 @@ DropZoneUIHandler.prototype.executeBatch = function (operationId, params) {
       }
       window.location.reload(true);
     },
-    true
+    false
   );
 };
 
