@@ -10,6 +10,7 @@ package org.nuxeo.ecm.core.redis.embedded;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.redis.RedisAbstractExecutor;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 
@@ -17,7 +18,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.util.Pool;
 
-public class RedisEmbeddedTraceExecutor implements RedisExecutor {
+public class RedisEmbeddedTraceExecutor extends RedisAbstractExecutor {
 
     protected final RedisExecutor delegate;
 

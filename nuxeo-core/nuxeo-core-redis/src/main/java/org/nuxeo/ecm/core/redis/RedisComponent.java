@@ -19,8 +19,7 @@ package org.nuxeo.ecm.core.redis;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +33,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.osgi.framework.Bundle;
-import redis.clients.jedis.Jedis;
 
 /**
  * Implementation of the Redis Service holding the configured Jedis pool.
@@ -154,14 +152,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public Long clear(final String pattern) {
-        return executor.execute(new RedisCallable<Long>() {
-            @Override
-            public Long call(Jedis jedis) {
-                List<String> keys = Arrays.asList(pattern);
-                List<String> args = Arrays.asList();
-                return (Long) jedis.evalsha(delsha, keys, args);
-            }
-        });
+        return (Long) executor.evalsha(delsha, Collections.singletonList(pattern), Collections.emptyList());
     }
 
     @Override
@@ -183,12 +174,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
             throw new RuntimeException("Fail to load lua script: " + scriptName, e);
         }
 
-        return executor.execute(new RedisCallable<String>() {
-            @Override
-            public String call(Jedis jedis) {
-                return jedis.scriptLoad(builder.toString());
-            }
-        });
+        return executor.scriptLoad(builder.toString());
     }
 
     @Override
