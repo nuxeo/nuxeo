@@ -6,7 +6,8 @@ for $i in cts:search(
             cts:not-query(
               cts:element-value-query(
                 fn:QName("","dc__title"),
-                "Document 1"
+                "Document 1",
+                ("exact")
               )
             )
           )

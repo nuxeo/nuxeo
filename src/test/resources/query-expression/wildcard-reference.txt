@@ -9,7 +9,8 @@ for $i in cts:search(
                   fn:QName("","info__views__item"),
                   cts:element-value-query(
                     fn:QName("","title"),
-                    "Original"
+                    "Original",
+                    ("exact")
                   )
                 )
               )

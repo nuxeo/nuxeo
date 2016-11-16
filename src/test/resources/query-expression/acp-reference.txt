@@ -11,11 +11,13 @@ cts:search(
           cts:and-query((
             cts:element-value-query(
               fn:QName("","perm"),
-              ("Read","Browse")
+              ("Read","Browse"),
+              ("exact")
             ),
             cts:element-value-query(
               fn:QName("","grant"),
-              "true"
+              "true",
+              ("exact")
             )
           ))
         )

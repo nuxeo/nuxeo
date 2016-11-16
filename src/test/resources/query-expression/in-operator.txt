@@ -5,7 +5,8 @@ for $i in cts:search(
             fn:doc(),
             cts:element-value-query(
               fn:QName("","ecm__primaryType"),
-              ("Document","Folder")
+              ("Document","Folder"),
+              ("exact")
             )
           )
     return extract:extract-nodes($i, $paths, $namespaces)

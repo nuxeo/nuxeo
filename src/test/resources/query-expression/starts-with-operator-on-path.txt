@@ -6,7 +6,8 @@ for $i in cts:search(
             cts:or-query((
               cts:element-value-query(
                 fn:QName("","dc__title"),
-                "/default-domain"
+                "/default-domain",
+                ("exact")
               ),
               cts:element-value-query(
                 fn:QName("","dc__title"),

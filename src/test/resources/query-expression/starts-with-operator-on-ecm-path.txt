@@ -7,7 +7,8 @@ for $i in cts:search(
               fn:QName("","ecm__ancestorIds"),
               cts:element-value-query(
                 fn:QName("","ecm__ancestorIds__item"),
-                "12345678-1234-1234-1234-123456789ABC"
+                "12345678-1234-1234-1234-123456789ABC",
+                ("exact")
               )
             )
           )

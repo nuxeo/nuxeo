@@ -10,11 +10,13 @@ for $i in cts:search(
                 cts:and-query((
                   cts:element-value-query(
                     fn:QName("","width"),
-                    "640"
+                    "640",
+                    ("exact")
                   ),
                   cts:element-value-query(
                     fn:QName("","height"),
-                    "480"
+                    "480",
+                    ("exact")
                   )
                 ))
               )
