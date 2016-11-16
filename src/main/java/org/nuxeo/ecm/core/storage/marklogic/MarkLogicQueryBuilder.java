@@ -1102,7 +1102,7 @@ class MarkLogicQueryBuilder {
                                               .map(MarkLogicStateSerializer::serializeValue)
                                               .map(s -> "\"" + s + "\"")
                                               .collect(Collectors.joining(",", "(", ")"));
-            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), %s)", serializedName,
+            return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), %s, (\"exact\"))", serializedName,
                     serializedValues);
         }
 
