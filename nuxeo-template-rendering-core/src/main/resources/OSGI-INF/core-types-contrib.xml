@@ -35,6 +35,22 @@
       <facet name="TemplateBased" />
     </doctype>
 
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </doctype>
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </doctype>
+    <doctype name="TemplateRoot" append="true">
+      <subtypes>
+        <type>TemplateSource</type>
+      </subtypes>
+    </doctype>
+
   </extension>
 
 </component>
