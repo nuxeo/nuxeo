@@ -681,7 +681,10 @@ public class DBSSession implements Session {
         }
         // pos fixup
         copyState.put(KEY_POS, pos);
+
         // update read acls
+        // the save also makes copy results visible in searches, like in VCS
+        transaction.save(); // read acls update needs full tree
         transaction.updateTreeReadAcls(copyId);
 
         return getDocument(copyState);
@@ -806,6 +809,7 @@ public class DBSSession implements Session {
         transaction.updateAncestors(sourceId, ndel, ancestorIds);
 
         // update read acls
+        transaction.save(); // read acls update needs full tree
         transaction.updateTreeReadAcls(sourceId);
 
         return source;
@@ -1258,6 +1262,8 @@ public class DBSSession implements Session {
         String id = doc.getUUID();
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         docState.put(KEY_ACP, acpToMem(acp));
+
+        // update read acls
         transaction.save(); // read acls update needs full tree
         transaction.updateTreeReadAcls(id);
     }
