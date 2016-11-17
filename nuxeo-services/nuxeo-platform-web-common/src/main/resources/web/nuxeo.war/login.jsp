@@ -370,7 +370,11 @@ input:-webkit-autofill:focus {
 
   .header {
     background-color: #fff;
+    margin: -1em -1em 2em;
+    width: calc(100% + 2em);
+    padding: .8em 1em .3em;
   }
+
   .news {
     display: none;
   }
