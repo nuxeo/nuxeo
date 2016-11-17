@@ -351,7 +351,8 @@ public class TestFileManagerService {
 
     @Test
     public void testCreateBlobWithBlobMimetypeFallback() throws Exception {
-        File file = getTestFile("test-data/hello.doc");
+        // don't use a binary file, we store it in a text field and PostgreSQL doesn't accept 0x00 bytes
+        File file = getTestFile("test-data/hello.xml");
         Blob blob = Blobs.createBlob(file);
         blob.setFilename("hello.plouf");
         blob.setMimeType("text/plain");
