@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.management.jtajca;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -47,7 +48,7 @@ import com.google.inject.name.Names;
 @LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml" })
 public class JtajcaManagementFeature extends SimpleFeature {
 
-    protected ObjectName nameOf(Class<?> itf) {
+    protected static ObjectName nameOf(Class<?> itf) {
         try {
             return new ObjectName(Defaults.instance.name(itf, "*"));
         } catch (MalformedObjectNameException cause) {
@@ -61,6 +62,19 @@ public class JtajcaManagementFeature extends SimpleFeature {
             T instance = type.cast(JMX.newMXBeanProxy(mbs, name, type));
             binder.bind(type).annotatedWith(Names.named(name.getKeyProperty("name"))).toInstance(instance);
         }
+    }
+
+    public static <T> T getInstanceNamedWithPrefix(Class<T> type, String prefix) {
+        MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
+        Set<String> names = new HashSet<>();
+        for (ObjectName objectName : mbs.queryNames(nameOf(type), null)) {
+            String name = objectName.getKeyProperty("name");
+            names.add(name); // for error case
+            if (name.startsWith(prefix)) {
+                return JMX.newMXBeanProxy(mbs, objectName, type);
+            }
+        }
+        throw new RuntimeException("Found no bean with name prefix: " + prefix + " in available names: " + names);
     }
 
     CoreFeature core;

@@ -56,12 +56,10 @@ public class IndexerDoesNotLeakTest {
     @Named("repository/test")
     ConnectionPoolMonitor repoMonitor;
 
-    @Inject
-    @Named("jdbc/nuxeojunittests")
-    ConnectionPoolMonitor dbMonitor;
-
     @Test
     public void indexerWorkDoesNotLeak() throws InterruptedException {
+        ConnectionPoolMonitor dbMonitor = JtajcaManagementFeature.getInstanceNamedWithPrefix(
+                ConnectionPoolMonitor.class, "jdbc/");
         int repoCount = repoMonitor.getConnectionCount();
         int dbCount = dbMonitor.getConnectionCount();
         DocumentModel doc = repo.createDocumentModel("/", "note", "Note");
