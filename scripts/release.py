@@ -107,9 +107,13 @@ class ReleaseInfo(object):
 
     # pylint: disable-msg=too-many-arguments, too-many-locals
     def __init__(self, module=None, remote_alias=None, branch=None, snapshot=None, tag=None,
-                 next_snapshot=None, maintenance_version="auto", is_final=False, skip_tests=False,
+                 next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
                  skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
                  msg_commit='', msg_tag='', auto_increment_policy='auto_patch'):
+
+        """Backward compat for maintenance_version = auto"""
+        maintenance_version = "discard" if maintenance_version == "auto" else maintenance_version
+
         self.module = module
         self.remote_alias = remote_alias
         self.branch = branch
@@ -341,7 +345,7 @@ class Release(object):
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
-        if self.maintenance_version == "auto":
+        if self.maintenance_version == "discard":
             log("Maintenance branch deleted".ljust(25))
         else:
             log("Maintenance branch:".ljust(25) + self.maintenance_branch)
@@ -603,7 +607,7 @@ class Release(object):
             self.repo.git_recurse("tag -a release-%s -m'%s'" % (self.tag, self.get_tag_message(msg_tag)))
 
             # TODO NXP-8569 Optionally merge maintenance branch on source
-            if self.maintenance_version != "auto":
+            if self.maintenance_version != "discard":
                 # Maintenance branches are kept, so update their versions
                 log("\n[INFO] Maintenance branch...")
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
@@ -766,7 +770,7 @@ class Release(object):
             self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias, self.branch),
                                   with_optionals=True)
         if not upgrade_only:
-            if self.maintenance_version != "auto":
+            if self.maintenance_version != "discard":
                 self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias,
                                                                      self.maintenance_branch), with_optionals=True)
             elif self.next_snapshot == 'done':
@@ -897,10 +901,10 @@ In mode 'auto', if final option is True, then the next snapshot is the current
 one increased, else it is equal to the current.""")
         versioning_options.add_option(
             '-m', '--maintenance', action="store", dest='maintenance_version',
-            default="auto", help="""Maintenance version. Default: '%default'\n
+            default="discard", help="""Maintenance version. Default: '%default'\n
 The maintenance branch is always named like the tag without the 'release-'
 prefix. If set, the version will be used on the maintenance branch, else, in
-mode 'auto', the maintenance branch is deleted after release.""")
+mode 'discard', the maintenance branch is deleted after release.""")
         versioning_options.add_option(
             '--arv', '--also-replace-version', action="store",
             dest='other_versions', default=None,
@@ -978,7 +982,7 @@ Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being 
                     release_info.branch = release_info.tag
                 repo.git_update("release-%s" % release_info.tag)
                 release_info.is_final = True
-                if release_info.maintenance_version == "auto":
+                if release_info.maintenance_version == "discard":
                     release_info.maintenance_version = release_info.tag + ".1-SNAPSHOT"
                 release_info.next_snapshot = None
             if command == "package" and release_info.tag != "auto":
