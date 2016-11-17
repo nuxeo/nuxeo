@@ -91,6 +91,9 @@ class MarkLogicQueryBuilder {
 
     private static final String DATE_CAST = "DATE";
 
+    public static final RangeElementIndexPredicate PRIMARY_TYPE_RANGE_INDEX_PREDICATE = new RangeElementIndexPredicate(
+            KEY_PRIMARY_TYPE, "string");
+
     protected final SchemaManager schemaManager;
 
     protected List<String> documentTypes;
@@ -436,8 +439,7 @@ class MarkLogicQueryBuilder {
         // match on primary type
         QueryBuilder primaryQuery;
         FieldInfo primaryTypeInfo = walkReference(NXQL.ECM_PRIMARYTYPE);
-        if (primaryTypes.size() == 1
-                && rangeElementIndexes.stream().anyMatch(new RangeElementIndexPredicate(KEY_PRIMARY_TYPE, "string"))) {
+        if (primaryTypes.size() == 1 && rangeElementIndexes.stream().anyMatch(PRIMARY_TYPE_RANGE_INDEX_PREDICATE)) {
             primaryQuery = getQueryBuilder(primaryTypeInfo,
                     name -> new RangeQueryBuilder(name, RangeQueryBuilder.Operator.EQ, matchPrimaryTypes.get(0)));
         } else {
