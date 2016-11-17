@@ -990,6 +990,29 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testStartsWithCopy() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        // copy folder2 into folder1
+        session.copy(new PathRef("/testfolder2"), new PathRef("/testfolder1"), null);
+        // session.save() not needed, implicit in DBS to follow VCS behavior
+
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1'";
+        dml = session.query(sql);
+        assertEquals(6, dml.size());
+
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder1/testfolder2'";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+
+        sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/testfolder2'";
+        dml = session.query(sql);
+        assertEquals(2, dml.size());
+    }
+
+    @Test
     public void testAncestorId() throws Exception {
         DocumentModelList dml;
         createDocs();
