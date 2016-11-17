@@ -110,17 +110,14 @@ class ReleaseInfo(object):
                  next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
                  skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
                  msg_commit='', msg_tag='', auto_increment_policy='auto_patch'):
-
-        """Backward compat for maintenance_version = auto"""
-        maintenance_version = "discard" if maintenance_version == "auto" else maintenance_version
-
         self.module = module
         self.remote_alias = remote_alias
         self.branch = branch
         self.snapshot = snapshot
         self.tag = tag
         self.next_snapshot = next_snapshot
-        self.maintenance_version = maintenance_version
+        """Backward compat for maintenance_version = auto"""
+        self.maintenance_version = "discard" if maintenance_version == "auto" else maintenance_version
         self.is_final = is_final
         self.skip_tests = skip_tests
         self.skip_its = skip_its
@@ -209,7 +206,6 @@ class Release(object):
         # TODO NXP-21007: Use release_info field instead of copy?
         self.branch = release_info.branch
         self.is_final = release_info.is_final
-        self.maintenance_version = release_info.maintenance_version
         self.skip_tests = release_info.skip_tests
         self.skip_its = release_info.skip_its
         self.auto_increment_policy = release_info.auto_increment_policy
@@ -223,7 +219,8 @@ class Release(object):
         self.set_other_versions_and_patterns()
         self.set_snapshot()
         self.set_tag()
-        self.set_next_snapshot()
+        self.set_maintenance_version(release_info)
+        self.set_next_snapshot(release_info)
         self.maintenance_branch = self.params.tag
         if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
             self.maintenance_branch += ".0"
@@ -304,39 +301,54 @@ class Release(object):
             date = datetime.now().strftime("%Y%m%d_%H%M")
             self.tag = self.snapshot.replace("-SNAPSHOT", "-I" + date)
 
-    def set_next_snapshot(self, next_snapshot="auto"):
-        """Return calculated next snapshot. Requires 'self.snapshot' being set.
-        """
-        if next_snapshot != "auto":
-            self.next_snapshot = next_snapshot
-        elif self.is_final:
-            semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
-                                '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
-                                '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
-            verinfo = semver.match(self.snapshot).groupdict()
-            for key in ['patch', 'minor', 'major']:
-                if ((verinfo[key] and self.auto_increment_policy == 'auto_last')
-                    or self.auto_increment_policy == 'auto_%s' % key):
-                    verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
-                    break
-            if verinfo['patch']:
-                if self.auto_increment_policy in ['auto_minor', 'auto_major']:
-                    verinfo['patch'] = 0
-                self.next_snapshot = '%d.%d.%d-SNAPSHOT' % (
-                    int(verinfo['major']),
-                    int(verinfo['minor'] if verinfo['minor'] else 0),
-                    int(verinfo['patch']))
-            elif verinfo['minor']:
-                if self.auto_increment_policy == 'auto_major':
-                    verinfo['minor'] = 0
-                self.next_snapshot = '%d.%d-SNAPSHOT' % (
-                    int(verinfo['major']),
-                    int(verinfo['minor']))
-            elif verinfo['major']:
-                self.next_snapshot = '%d-SNAPSHOT' % (
-                    int(verinfo['major']))
+    @staticmethod
+    def auto_increment(current_version, policy):
+        next_version = current_version
+        semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
+                            '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
+                            '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
+
+        verinfo = semver.match(current_version).groupdict()
+        for key in ['patch', 'minor', 'major']:
+            if (verinfo[key] and policy == 'auto_last') or policy == 'auto_%s' % key:
+                verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
+                break
+        if verinfo['patch']:
+            if policy in ['auto_minor', 'auto_major']:
+                verinfo['patch'] = 0
+            next_version = '%d.%d.%d-SNAPSHOT' % (
+                int(verinfo['major']),
+                int(verinfo['minor'] if verinfo['minor'] else 0),
+                int(verinfo['patch']))
+        elif verinfo['minor']:
+            if policy == 'auto_major':
+                verinfo['minor'] = 0
+            next_version = '%d.%d-SNAPSHOT' % (
+                int(verinfo['major']),
+                int(verinfo['minor']))
+        elif verinfo['major']:
+            next_version = '%d-SNAPSHOT' % (
+                int(verinfo['major']))
+
+        return next_version
+
+    def set_maintenance_version(self, release_info):
+        matches = re.match('^auto_(patch|minor|major)$', release_info.maintenance_version)
+        if matches:
+            self.maintenance_version = self.auto_increment(release_info.snapshot, release_info.maintenance_version)
         else:
-            self.next_snapshot = self.snapshot
+            self.maintenance_version = release_info.maintenance_version
+
+    def set_next_snapshot(self, release_info):
+        """
+        Return calculated next snapshot. Requires 'release_info.snapshot' being set.
+        """
+        if release_info.next_snapshot != "auto":
+            self.next_snapshot = release_info.next_snapshot
+        elif release_info.is_final:
+            self.next_snapshot = self.auto_increment(release_info.snapshot, release_info.auto_increment_policy)
+        else:
+            self.next_snapshot = release_info.snapshot
 
     # TODO NXP-21007: Use release_info field instead of copy?
     def log_summary(self, store_params=True):
@@ -345,7 +357,7 @@ class Release(object):
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
-        if self.maintenance_version == "discard":
+        if self.params.maintenance_version == "discard":
             log("Maintenance branch deleted".ljust(25))
         else:
             log("Maintenance branch:".ljust(25) + self.maintenance_branch)
@@ -607,7 +619,7 @@ class Release(object):
             self.repo.git_recurse("tag -a release-%s -m'%s'" % (self.tag, self.get_tag_message(msg_tag)))
 
             # TODO NXP-8569 Optionally merge maintenance branch on source
-            if self.maintenance_version != "discard":
+            if self.params.maintenance_version != "discard":
                 # Maintenance branches are kept, so update their versions
                 log("\n[INFO] Maintenance branch...")
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
@@ -770,7 +782,7 @@ class Release(object):
             self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias, self.branch),
                                   with_optionals=True)
         if not upgrade_only:
-            if self.maintenance_version != "discard":
+            if self.params.maintenance_version != "discard":
                 self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias,
                                                                      self.maintenance_branch), with_optionals=True)
             elif self.next_snapshot == 'done':
