@@ -33,6 +33,7 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -93,6 +94,7 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
                             + "ExtensionImpl {target: service:my.comp4, point:xp, contributor:RegistrationInfo: service:CompB}]",
                     missing.get(new ComponentName("CompB")).toString());
             StringBuilder builder = new StringBuilder();
+            assertFalse(runtime.getStatusMessage(builder));
             assertEquals(
                     "======================================================================\n"
                             + "= Component Loading Status: Pending: 1 / Missing: 1 / Unstarted: 0 / Total: 9\n"
