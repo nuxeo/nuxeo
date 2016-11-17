@@ -63,6 +63,10 @@
       <artifactId>nuxeo-annot-gwt</artifactId>
       <scope>runtime</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-imaging-tiling</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 </project>
