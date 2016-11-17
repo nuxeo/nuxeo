@@ -208,7 +208,7 @@ AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureC
       },
       success: function(data, status,xhr) {
         this.log("Executed OK : " + status);
-        if (status=="success") {
+        if (status === "success" || status === "nocontent") {
           successCB(data,status,xhr);
         } else {
           if (failureCB) {
