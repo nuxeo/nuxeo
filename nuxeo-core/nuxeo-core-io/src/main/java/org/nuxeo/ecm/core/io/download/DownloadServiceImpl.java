@@ -172,7 +172,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason) throws IOException {
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, null);
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, Collections.emptyMap());
     }
 
     @Override
