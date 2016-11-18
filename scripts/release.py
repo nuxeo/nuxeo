@@ -106,14 +106,14 @@ class ReleaseInfo(object):
     """Release information. This object is used to construct a Release as well as to (de)serialize it."""
 
     # pylint: disable-msg=too-many-arguments, too-many-locals
-    def __init__(self, module=None, remote_alias=None, branch=None, snapshot=None, tag=None,
+    def __init__(self, module=None, remote_alias=None, branch=None, tag=None,
                  next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
                  skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
-                 msg_commit='', msg_tag='', auto_increment_policy='auto_patch'):
+                 msg_commit='', msg_tag='', auto_increment_policy='auto_patch', deploy = False, dryrun = False,
+                 interactive = False):
         self.module = module
         self.remote_alias = remote_alias
         self.branch = branch
-        self.snapshot = snapshot
         self.tag = tag
         self.next_snapshot = next_snapshot
         """Backward compat for maintenance_version = auto"""
@@ -128,6 +128,8 @@ class ReleaseInfo(object):
         self.msg_commit = msg_commit
         self.msg_tag = msg_tag
         self.auto_increment_policy = auto_increment_policy
+        self.deploy = deploy
+        self.dryrun = dryrun
 
     def compute_other_versions(self):
         self.other_versions = ':'.join((self.files_pattern, self.props_pattern, self.other_versions))
@@ -346,9 +348,9 @@ class Release(object):
         if release_info.next_snapshot != "auto":
             self.next_snapshot = release_info.next_snapshot
         elif release_info.is_final:
-            self.next_snapshot = self.auto_increment(release_info.snapshot, release_info.auto_increment_policy)
+            self.next_snapshot = self.auto_increment(self.snapshot, release_info.auto_increment_policy)
         else:
-            self.next_snapshot = release_info.snapshot
+            self.next_snapshot = self.snapshot
 
     # TODO NXP-21007: Use release_info field instead of copy?
     def log_summary(self, store_params=True):
@@ -358,7 +360,7 @@ class Release(object):
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
         if self.params.maintenance_version == "discard":
-            log("Maintenance branch deleted".ljust(25))
+            log("Maintenance branch %s deleted".ljust(25) % self.tag)
         else:
             log("Maintenance branch:".ljust(25) + self.maintenance_branch)
             log("Maintenance version:".ljust(25) + self.maintenance_version)
@@ -973,7 +975,9 @@ Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being 
                 1, "'command' must be a single argument: '%s'." % (args)
                 + " See usage with '-h'.")
 
-        release_info = ReleaseInfo(**options)
+        for key, value in vars(options).iteritems():
+            print "DEBUG: %s=%s" % (key, value)
+        release_info = ReleaseInfo(**vars(options))
         if ("command" in locals() and command == "perform" and os.path.isfile(ReleaseInfo.get_release_log(os.getcwd()))
             and options == parser.get_default_values()):
             release_info.read_release_log(os.getcwd())
