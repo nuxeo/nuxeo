@@ -132,7 +132,9 @@ public class VCSLockManager implements LockManager {
     public void closeLockManager() {
         serializationLock.lock();
         try {
-            getMapper().close();
+            if (mapper != null) {
+                getMapper().close();
+            }
         } finally {
             serializationLock.unlock();
         }
