@@ -31,11 +31,11 @@ String selectedPackageIds="";
 <ul>
 <%for (DownloadPackage pkg : packages) {
     selectedPackageIds+=pkg.getId() + "|";
+    // Skip virtual packages
+    if (pkg.isVirtual()) { continue; }
 %>
   <li><%=pkg.getLabel()%> <div class="detail"><%=pkg.getId()%> &nbsp;
-  <%if (pkg.isVirtual()) {%>
-    <fmt:message key="label.packagesDownload.alreadyInLocal" />
-  <%} else if (pkg.isLaterDownload()) {%>
+  <%if (pkg.isLaterDownload()) {%>
     <fmt:message key="label.packagesDownload.laterDownload" />
   <%} else if (pkg.isAlreadyInLocal()) {%>
     <fmt:message key="label.packagesDownload.alreadyInLocal" />
