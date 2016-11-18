@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -172,6 +173,7 @@ public class SendMail {
             map.put("Runtime", Framework.getRuntime());
             Mailer.Message msg = createMessage(doc, getContent(), map);
             msg.setSubject(subject, "UTF-8");
+            msg.setSentDate(new Date());
 
             addMailBoxInfo(msg);
 
