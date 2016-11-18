@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
@@ -37,6 +38,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -94,5 +96,39 @@ public class ConfigTest extends BaseTest {
         assertNotNull(userConstraint);
         JsonNode userConstraintParams = userConstraint.get("parameters");
         assertEquals(2, userConstraintParams.size());
+    }
+
+    /**
+     * @since 8.10
+     */
+    @Test
+    public void itCanRetrieveAllSchemas() throws IOException {
+        ClientResponse response = getResponse(RequestType.GET, "/schema");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.isArray());
+    }
+
+    /**
+     * @since 8.10
+     */
+    @Test
+    public void itCanRetrieveAllFacets() throws IOException {
+        ClientResponse response = getResponse(RequestType.GET, "/facet");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.isArray());
+    }
+
+    /**
+     * @since 8.10
+     */
+    @Test
+    public void itCanRetrieveAllDocTypes() throws IOException {
+        ClientResponse response = getResponse(RequestType.GET, "/docType");
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.isObject());
+        assertTrue(node.has("doctypes"));
     }
 }
