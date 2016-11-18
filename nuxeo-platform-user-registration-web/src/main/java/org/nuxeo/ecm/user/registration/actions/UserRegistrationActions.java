@@ -192,7 +192,7 @@ public class UserRegistrationActions implements Serializable {
             String docId = (String) request.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
             DocumentRef docRef = new IdRef(docId);
             DocumentModel doc = documentManager.getDocument(docRef);
-            String docUrl = DocumentModelFunctions.documentUrl(doc);
+            String docUrl = DocumentModelFunctions.documentUrl("id", doc, null, null, false, BaseURL.getBaseURL());
             additionalInfo.put("docUrl", docUrl);
             request.setPropertyValue("docinfo:creator", documentManager.getPrincipal().getName());
             documentManager.saveDocument(request);
