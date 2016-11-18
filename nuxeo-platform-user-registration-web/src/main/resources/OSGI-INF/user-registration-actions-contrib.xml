@@ -59,6 +59,7 @@
       order="20" label="tab.userregistration.delete">
       <category>CURRENT_USER_REQUESTS_GLOBAL</category>
       <category>CURRENT_USER_REQUESTS_LOCAL</category>
+      <filter-id>only_for_manager</filter-id>
       <filter id="canDeleteRegistration">
         <rule grant="true">
           <condition>#{userRegistrationActions.canDelete}</condition>
@@ -70,6 +71,7 @@
       order="30" label="tab.userregistration.revive">
       <category>CURRENT_USER_REQUESTS_GLOBAL</category>
       <category>CURRENT_USER_REQUESTS_LOCAL</category>
+      <filter-id>only_for_manager</filter-id>
       <filter id="canReviveRegistration">
         <rule grant="true">
           <condition>#{userRegistrationActions.canRevive}</condition>
