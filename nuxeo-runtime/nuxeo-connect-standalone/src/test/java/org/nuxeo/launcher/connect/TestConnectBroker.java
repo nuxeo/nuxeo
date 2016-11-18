@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -41,7 +42,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -65,7 +65,6 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, JettyFeature.class })
 @Jetty(port = ConnectUrlConfig.CONNECT_TEST_MODE_PORT)
-@Ignore
 public class TestConnectBroker {
 
     final String TEST_STORE_PATH = "src/test/resources/packages/store";
