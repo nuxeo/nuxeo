@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -118,7 +119,12 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
         // Perform batch conversion
         setStatus("Batch conversion");
         ThreeDService service = Framework.getLocalService(ThreeDService.class);
-        BlobHolder batch = service.batchConvert(originalThreeD);
+        BlobHolder batch;
+        try {
+            batch = service.batchConvert(originalThreeD);
+        } catch (ConverterNotRegistered e) {
+            return;
+        }
 
         if (isWorkInstanceSuspended()) {
             return;
