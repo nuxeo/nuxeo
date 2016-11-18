@@ -144,7 +144,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
             registry.addContribution(descriptor);
         } else if (REDIRECT_RESOLVER.equals(extensionPoint)) {
-            this.redirectResolver = ((RedirectResolverDescriptor) contribution).getObject();
+            redirectResolver = ((RedirectResolverDescriptor) contribution).getObject();
             // Save contribution
             redirectResolverContributions.add((RedirectResolverDescriptor) contribution);
         } else {
@@ -199,7 +199,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason) throws IOException {
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, null);
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, Collections.emptyMap());
     }
 
     @Override
@@ -238,7 +238,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             return;
         }
 
-        // check Blob Manager download link
+        // check Blob Manager external download link
         URI uri = redirectResolver.getURI(blob, UsageHint.DOWNLOAD, request);
         if (uri != null) {
             try {

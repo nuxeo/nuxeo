@@ -130,13 +130,16 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     private transient Map<String, List<Action>> actionCache;
 
+    @Override
     public void releaseClipboardableDocuments() {
     }
 
+    @Override
     public boolean isInitialized() {
         return documentManager != null;
     }
 
+    @Override
     public void putSelectionInWorkList(Boolean forceAppend) {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -149,10 +152,12 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     public void putSelectionInWorkList() {
         putSelectionInWorkList(false);
     }
 
+    @Override
     public void putSelectionInDefaultWorkList() {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -170,6 +175,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     @WebRemote
     public void putInClipboard(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
@@ -180,6 +186,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         autoSelectCurrentList(DocumentsListsManager.CLIPBOARD);
     }
 
+    @Override
     public void putSelectionInClipboard() {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -198,10 +205,12 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     public void putSelectionInWorkList(List<DocumentModel> docsList) {
         putSelectionInWorkList(docsList, false);
     }
 
+    @Override
     public void putSelectionInWorkList(List<DocumentModel> docsList, Boolean forceAppend) {
         canEditSelectedDocs = null;
         if (null != docsList) {
@@ -219,6 +228,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     @Deprecated
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
@@ -246,6 +256,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return ref != null && documentManager.exists(ref);
     }
 
+    @Override
     public String removeWorkListItem(DocumentRef ref) {
         DocumentModel doc = null;
         if (exists(ref)) {
@@ -262,19 +273,23 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String clearWorkingList() {
         documentsListsManager.resetWorkingList(getCurrentSelectedListName());
         return null;
     }
 
+    @Override
     public String pasteDocumentList(String listName) {
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
+    @Override
     public String pasteDocumentListInside(String listName, String docId) {
         return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
     }
 
+    @Override
     public String pasteDocumentList(List<DocumentModel> docPaste) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (null != docPaste) {
@@ -294,6 +309,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) {
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         if (null != docPaste) {
@@ -383,6 +399,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return moveDocumentList(listName, currentDocument.getId());
     }
 
+    @Override
     public String moveWorkingList() {
         try {
             moveDocumentList(getCurrentSelectedListName());
@@ -393,6 +410,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String pasteWorkingList() {
         try {
             pasteDocumentList(getCurrentSelectedList());
@@ -403,6 +421,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String pasteClipboard() {
         try {
             pasteDocumentList(DocumentsListsManager.CLIPBOARD);
@@ -415,12 +434,14 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     @WebRemote
     public String pasteClipboardInside(String docId) {
         pasteDocumentListInside(DocumentsListsManager.CLIPBOARD, docId);
         return null;
     }
 
+    @Override
     @WebRemote
     public String moveClipboardInside(String docId) {
         moveDocumentList(DocumentsListsManager.CLIPBOARD, docId);
@@ -548,27 +569,33 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     @Factory(value = "isCurrentWorkListEmpty", scope = EVENT)
     public boolean factoryForIsCurrentWorkListEmpty() {
         return isWorkListEmpty();
     }
 
+    @Override
     public boolean isWorkListEmpty() {
         return documentsListsManager.isWorkingListEmpty(getCurrentSelectedListName());
     }
 
+    @Override
     public String exportWorklistAsZip() {
         return exportWorklistAsZip(documentsListsManager.getWorkingList(getCurrentSelectedListName()));
     }
 
+    @Override
     public String exportAllBlobsFromWorkingListAsZip() {
         return exportWorklistAsZip();
     }
 
+    @Override
     public String exportMainBlobFromWorkingListAsZip() {
         return exportWorklistAsZip();
     }
 
+    @Override
     public String exportWorklistAsZip(List<DocumentModel> documents) {
         return exportWorklistAsZip(documents, true);
     }
@@ -582,6 +609,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <p>
      * Condition: the list of selected documents is not empty.
      */
+    @Override
     public boolean getCanCopy() {
         if (navigationContext.getCurrentDocument() == null) {
             return false;
@@ -598,6 +626,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>the content of the list can be added as children of the current document
      * </ul>
      */
+    @Override
     public boolean getCanPaste(String listName) {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -628,6 +657,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         }
     }
 
+    @Override
     public boolean getCanPasteInside(String listName, DocumentModel document) {
         if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
@@ -659,6 +689,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>an element in the list can be removed from its folder and added as child of the current document
      * </ul>
      */
+    @Override
     public boolean getCanMoveInside(String listName, DocumentModel document) {
         if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
@@ -703,26 +734,32 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return getCanMoveInside(listName, currentDocument);
     }
 
+    @Override
     public boolean getCanPasteWorkList() {
         return getCanPaste(getCurrentSelectedListName());
     }
 
+    @Override
     public boolean getCanMoveWorkingList() {
         return getCanMove(getCurrentSelectedListName());
     }
 
+    @Override
     public boolean getCanPasteFromClipboard() {
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
     }
 
+    @Override
     public boolean getCanPasteFromClipboardInside(DocumentModel document) {
         return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
+    @Override
     public boolean getCanMoveFromClipboardInside(DocumentModel document) {
         return getCanMoveInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
+    @Override
     public void setCurrentSelectedList(String listId) {
         if (listId != null && !listId.equals(currentSelectedList)) {
             currentSelectedList = listId;
@@ -733,16 +770,19 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     @RequestParameter()
     String listIdToSelect;
 
+    @Override
     public void selectList() {
         if (listIdToSelect != null) {
             setCurrentSelectedList(listIdToSelect);
         }
     }
 
+    @Override
     public List<DocumentModel> getCurrentSelectedList() {
         return documentsListsManager.getWorkingList(getCurrentSelectedListName());
     }
 
+    @Override
     public String getCurrentSelectedListName() {
         if (currentSelectedList == null) {
             if (!getAvailableLists().isEmpty()) {
@@ -752,6 +792,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return currentSelectedList;
     }
 
+    @Override
     public String getCurrentSelectedListTitle() {
         String title = null;
         String listName = getCurrentSelectedListName();
@@ -764,6 +805,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return title;
     }
 
+    @Override
     public List<String> getAvailableLists() {
         if (availableLists == null) {
             availableLists = documentsListsManager.getWorkingListNamesForCategory("CLIPBOARD");
@@ -771,6 +813,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return availableLists;
     }
 
+    @Override
     public List<DocumentsListDescriptor> getDescriptorsForAvailableLists() {
         if (descriptorsForAvailableLists == null) {
             List<String> availableLists = getAvailableLists();
@@ -782,6 +825,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return descriptorsForAvailableLists;
     }
 
+    @Override
     public List<Action> getActionsForCurrentList() {
         String lstName = getCurrentSelectedListName();
         if (isWorkListEmpty()) {
@@ -798,6 +842,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         }
     }
 
+    @Override
     public List<Action> getActionsForSelection() {
         return webActions.getActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST", false);
     }
@@ -811,6 +856,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         setCurrentSelectedList(previouslySelectedList);
     }
 
+    @Override
     public boolean getCanEditSelectedDocs() {
         if (canEditSelectedDocs == null) {
             if (getCurrentSelectedList().isEmpty()) {
@@ -825,6 +871,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return canEditSelectedDocs;
     }
 
+    @Override
     @Deprecated
     // no longer used by the user_clipboard.xhtml template
     public boolean getCanEditListDocs(String listName) {
@@ -850,6 +897,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return true;
     }
 
+    @Override
     public boolean isCacheEnabled() {
         if (!SeamCacheHelper.canUseSeamCache()) {
             return false;
@@ -857,10 +905,12 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return isWorkListEmpty();
     }
 
+    @Override
     public String getCacheKey() {
         return getCurrentSelectedListName() + "::" + localeSelector.getLocaleString();
     }
 
+    @Override
     public boolean isCacheEnabledForSelection() {
         if (!SeamCacheHelper.canUseSeamCache()) {
             return false;
