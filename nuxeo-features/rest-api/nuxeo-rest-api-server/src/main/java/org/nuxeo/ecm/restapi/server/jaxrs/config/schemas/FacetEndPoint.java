@@ -18,15 +18,13 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.config.schemas;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.Facets;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -35,9 +33,9 @@ import org.nuxeo.runtime.api.Framework;
 public class FacetEndPoint extends DefaultObject {
 
     @GET
-    public List<CompositeType> getAll() {
+    public Facets getAll() {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
-        return Arrays.asList(sm.getFacets());
+        return new Facets(sm.getFacets());
     }
 
     @GET

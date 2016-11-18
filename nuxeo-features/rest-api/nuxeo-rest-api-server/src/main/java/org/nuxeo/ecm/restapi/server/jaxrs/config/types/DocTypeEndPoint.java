@@ -19,15 +19,13 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.config.types;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypes;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -36,9 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 public class DocTypeEndPoint extends DefaultObject {
 
     @GET
-    public List<DocumentType> getAll() {
+    public DocumentTypes getAll() {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
-        return Arrays.asList(sm.getDocumentTypes());
+        return new DocumentTypes(sm.getDocumentTypes());
     }
 
     @GET
