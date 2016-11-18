@@ -763,13 +763,4 @@ public class JsonAssert {
         return "is equals to expected : " + expected;
     }
 
-    /**
-     * @deprecated do not confound with isEquals - to check equality, use toString() to compare json
-     */
-    @Override
-    @Deprecated
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
 }

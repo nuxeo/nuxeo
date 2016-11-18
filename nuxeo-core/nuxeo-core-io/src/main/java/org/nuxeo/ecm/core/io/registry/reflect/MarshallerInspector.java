@@ -519,23 +519,32 @@ public class MarshallerInspector implements Comparable<MarshallerInspector> {
                 || TypeUtils.isAssignable(type, TypeUtils.parameterize(List.class, DocumentModel.class));
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+        return result;
+    }
+
     /**
      * Two {@link MarshallerInspector} are equals if their managed clazz are the same.
      */
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
         if (!(obj instanceof MarshallerInspector)) {
             return false;
         }
-        MarshallerInspector inspector = (MarshallerInspector) obj;
-        if (clazz != null) {
-            return clazz.equals(inspector.clazz);
-        } else {
-            if (inspector.clazz == null) {
-                return true;
-            }
-        }
-        return false;
+        MarshallerInspector other = (MarshallerInspector) obj;
+        return clazz.equals(other.clazz);
     }
+
+
 
 }
