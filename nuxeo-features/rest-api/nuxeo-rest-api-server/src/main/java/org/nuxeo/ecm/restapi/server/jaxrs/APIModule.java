@@ -27,6 +27,9 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartRequestReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionScheduledWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionStatusWithResultWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypesWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.FacetsWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.SchemasWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
@@ -52,6 +55,9 @@ public class APIModule extends WebEngineModule {
         // writers
         result.add(new JsonESDocumentWriter());
         result.add(new BusinessAdapterListWriter());
+        result.add(new SchemasWriter());
+        result.add(new DocumentTypesWriter());
+        result.add(new FacetsWriter());
         result.add(new ConversionScheduledWriter());
         result.add(new ConversionStatusWithResultWriter());
 
