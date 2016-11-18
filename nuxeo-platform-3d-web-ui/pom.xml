@@ -7,11 +7,12 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-3d-parent</artifactId>
-    <version>8.4-SNAPSHOT</version>
+    <version>8.10-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-platform-3d-web-ui</artifactId>
-  <description>Nuxeo Platform 3D Web UI</description>
+  <name>Nuxeo Platform 3D Web UI</name>
+  <description>Nuxeo Platform 3D Web UI.</description>
 
   <build>
     <plugins>
