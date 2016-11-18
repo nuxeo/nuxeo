@@ -210,10 +210,8 @@ public class DBSTransactionState {
 
     // XXX TODO for update or for read?
     public DBSDocumentState getChildState(String parentId, String name) {
-        Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
-            seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
@@ -223,15 +221,13 @@ public class DBSTransactionState {
             return docState;
         }
         // fetch from repository
-        State state = repository.readChildState(parentId, name, seen);
+        State state = repository.readChildState(parentId, name, Collections.emptySet());
         return newTransientState(state);
     }
 
     public boolean hasChild(String parentId, String name) {
-        Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
-            seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
@@ -241,7 +237,7 @@ public class DBSTransactionState {
             return true;
         }
         // check repository
-        return repository.hasChild(parentId, name, seen);
+        return repository.hasChild(parentId, name, Collections.emptySet());
     }
 
     public List<DBSDocumentState> getChildrenStates(String parentId) {
@@ -249,11 +245,11 @@ public class DBSTransactionState {
         Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
-            seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
             docStates.add(docState);
+            seen.add(docState.getId());
         }
         // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
@@ -269,10 +265,10 @@ public class DBSTransactionState {
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             String id = docState.getId();
-            seen.add(id);
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
+            seen.add(id);
             children.add(id);
         }
         // fetch from repository
@@ -284,17 +280,15 @@ public class DBSTransactionState {
     }
 
     public boolean hasChildren(String parentId) {
-        Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
-            seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
             return true;
         }
         // check repository
-        return repository.queryKeyValuePresence(KEY_PARENT_ID, parentId, seen);
+        return repository.queryKeyValuePresence(KEY_PARENT_ID, parentId, Collections.emptySet());
     }
 
     public DBSDocumentState createChild(String id, String parentId, String name, Long pos, String typeName) {
@@ -462,11 +456,11 @@ public class DBSTransactionState {
         Set<String> seen = new HashSet<String>();
         // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
-            seen.add(docState.getId());
             if (!value.equals(docState.get(key))) {
                 continue;
             }
             docStates.add(docState);
+            seen.add(docState.getId());
         }
         // fetch from repository
         List<State> states = repository.queryKeyValue(key, value, seen);
