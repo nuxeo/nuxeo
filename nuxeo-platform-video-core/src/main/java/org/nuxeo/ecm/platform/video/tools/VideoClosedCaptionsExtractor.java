@@ -91,7 +91,6 @@ public class VideoClosedCaptionsExtractor extends VideoTool {
         try {
             File outputFile = Framework.createTempFile(FilenameUtils.removeExtension(video.getFilename()),
                     "-CC." + outputFormat);
-            Framework.trackFile(outputFile, this);
 
             cmdParameters.put(OUTPUT_FILE_PATH_PARAM, outputFile.getAbsolutePath());
         } catch (IOException e) {

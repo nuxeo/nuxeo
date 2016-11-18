@@ -64,7 +64,6 @@ public class VideoWatermarker extends VideoTool {
             String overlay = "overlay=" + x + ":" + y;
             File outputFile = Framework.createTempFile(FilenameUtils.removeExtension(video.getFilename()),
                     "-WM." + FilenameUtils.getExtension(video.getFilename()));
-            Framework.trackFile(outputFile, this);
 
             cmdParameters.put(WATERMARK_PARAM, watermark.getFile().getAbsolutePath());
             cmdParameters.put(FILTER_COMPLEX_PARAM, overlay);

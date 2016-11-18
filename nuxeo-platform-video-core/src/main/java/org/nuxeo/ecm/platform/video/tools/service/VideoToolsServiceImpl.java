@@ -127,6 +127,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
 
             CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             ExecResult clResult = cles.execCommand(commandLineName, cmdParams);
+            tool.cleanupInputs(params);
             // Get the result, and first, handle errors.
             if (clResult.getError() != null) {
                 throw new NuxeoException("Failed to execute the command <" + commandLineName + ">",
@@ -137,7 +138,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
                 throw new NuxeoException("Failed to execute the command <" + commandLineName + ">. Final command [ "
                         + clResult.getCommandLine() + " ] returned with error " + clResult.getReturnCode());
             }
-            result = tool.buildResult(blobHolder, params);
+            result = tool.buildResult(blobHolder.getBlob().getMimeType(), params);
         } catch (CommandNotAvailable e) {
             throw new NuxeoException("The video tool command is not available.", e);
         } catch (InstantiationException e) {

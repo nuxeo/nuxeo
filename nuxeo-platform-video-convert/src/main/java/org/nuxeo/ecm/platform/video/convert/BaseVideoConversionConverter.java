@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +36,13 @@ import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.convert.plugins.CommandLineBasedConverter;
 import org.nuxeo.ecm.platform.video.VideoInfo;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.video.tools.VideoTool;
 
 /**
  * Base class for converters doing video conversions.
@@ -82,7 +82,6 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
         }
         // delete the file as we need only the path for ffmpeg
         outFile.delete();
-        Framework.trackFile(outFile, this);
         cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
         String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
         cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
@@ -109,22 +108,12 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) throws ConversionException {
         String outputPath = cmdParameters.getParameter(OUTPUT_FILE_PATH_PARAMETER);
-        File outputFile = new File(outputPath);
-        List<Blob> blobs = new ArrayList<>();
+        Blob blob = VideoTool.getTemporaryBlob(outputPath, getVideoMimeType());
         String outFileName = cmdParameters.getParameter(OUTPUT_FILE_NAME_PARAMETER);
-        if (outFileName == null) {
-            outFileName = outputFile.getName();
-        } else {
-            outFileName = unquoteValue(outFileName);
+        if (outFileName != null) {
+            blob.setFilename(unquoteValue(outFileName));
         }
-
-        try {
-            Blob blob = Blobs.createBlob(outputFile, getVideoMimeType(), null, outFileName);
-            blobs.add(blob);
-        } catch (IOException e) {
-            throw new ConversionException("Cannot create blob", e);
-        }
-
+        List<Blob> blobs = new ArrayList<>(Collections.singletonList(blob));
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
         return new SimpleBlobHolderWithProperties(blobs, properties);

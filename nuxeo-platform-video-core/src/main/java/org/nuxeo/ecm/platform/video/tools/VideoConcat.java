@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.video.tools;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -65,7 +66,6 @@ public class VideoConcat extends VideoTool {
                 lines.add("file '" + blobFile.getAbsolutePath());
             }
             tempFile = Framework.createTempFile("NxVTcv-", ".txt");
-            Framework.trackFile(tempFile, this);
             Files.write(tempFile.toPath(), lines, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 
             if (blobHolder.getBlobs().size() < 2) {
@@ -76,7 +76,6 @@ public class VideoConcat extends VideoTool {
             String outputFilename = firstVideo.getFilename();
             File outputFile = Framework.createTempFile(FilenameUtils.removeExtension(outputFilename),
                     "-concat." + FilenameUtils.getExtension(outputFilename));
-            Framework.trackFile(outputFile, this);
 
             // Run the command line
             Map<String, String> params = new HashMap<>();
@@ -87,4 +86,11 @@ public class VideoConcat extends VideoTool {
             throw new NuxeoException("VideoConcat could not prepare the parameters.", e);
         }
     }
+
+    @Override
+    public void cleanupInputs(Map<String, String> parameters) {
+        String path = parameters.get(VIDEOS_FILE_PATH_PARAM);
+        FileUtils.deleteQuietly(new File(path));
+    }
+
 }

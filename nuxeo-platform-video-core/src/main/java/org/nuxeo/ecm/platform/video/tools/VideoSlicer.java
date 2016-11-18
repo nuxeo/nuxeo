@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.video.tools;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.util.BlobList;
@@ -25,7 +26,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.File;
@@ -83,7 +83,6 @@ public class VideoSlicer extends VideoTool {
             } catch (IOException e) {
                 throw new NuxeoException("VideoSlicer could not set up temporary output file.", e);
             }
-            Framework.trackFile(outputFile, this);
             cmdParameters.put(OUTPUT_FILE_PATH_PARAM, outputFile.getAbsolutePath());
 
             // check if the slicer should use the duration
@@ -113,24 +112,21 @@ public class VideoSlicer extends VideoTool {
     }
 
     @Override
-    public BlobHolder buildResult(BlobHolder input, Map<String, String> cmdParams) {
-        if (commandLineName.equals(COMMAND_SLICER_SEGMENTS)) {
-            BlobList parts = new BlobList();
-            File segments = new File(cmdParams.get(SEGMENTS_PATH));
-            for (File segmentFile : segments.listFiles()) {
-                FileBlob fb = new FileBlob(segmentFile);
-                fb.setFilename(segmentFile.getName());
-                fb.setMimeType(input.getBlob().getMimeType());
-                Framework.trackFile(segmentFile, parts);
-                parts.add(fb);
-            }
-            return new SimpleBlobHolder(parts);
-        } else {
-            Blob result = new FileBlob(new File(cmdParams.get(OUTPUT_FILE_PATH_PARAM)));
-            result.setMimeType(input.getBlob().getMimeType());
-            result.setFilename(cmdParams.get(OUTPUT_FILE_PATH_PARAM));
-            return new SimpleBlobHolder(result);
+    public BlobHolder buildResult(String mimeType, Map<String, String> cmdParams) {
+        if (!commandLineName.equals(COMMAND_SLICER_SEGMENTS)) {
+            return super.buildResult(mimeType, cmdParams);
         }
+        // we have several blobs to build and track
+        BlobList parts = new BlobList();
+        File segments = new File(cmdParams.get(SEGMENTS_PATH));
+        mimeType = cmdParams.getOrDefault(OUTPUT_MIMETYPE_PARAM, mimeType);
+        for (File segmentFile : segments.listFiles()) {
+            Blob blob = getTemporaryBlob(segmentFile.getAbsolutePath(), mimeType);
+            parts.add(blob);
+        }
+        // now remove the temporary directory as the temporary FileBlobs were moved somewhere else
+        FileUtils.deleteQuietly(segments);
+        return new SimpleBlobHolder(parts);
     }
 
     private String setupFilename(String filename, String startAt, String duration) {

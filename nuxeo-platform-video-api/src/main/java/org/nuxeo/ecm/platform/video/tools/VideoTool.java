@@ -18,14 +18,20 @@
  */
 package org.nuxeo.ecm.platform.video.tools;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Common interface to setup the video tools.
@@ -65,11 +71,47 @@ public abstract class VideoTool {
         return cmdParameters;
     }
 
-    public BlobHolder buildResult(BlobHolder input, Map<String, String> cmdParams) {
-        String outputFilename = cmdParams.get(OUTPUT_FILE_PATH_PARAM);
-        Blob result = new FileBlob(new File(outputFilename));
-        result.setMimeType(cmdParams.getOrDefault(OUTPUT_MIMETYPE_PARAM, input.getBlob().getMimeType()));
-        result.setFilename(outputFilename);
-        return new SimpleBlobHolder(result);
+    /**
+     * Removes any temporary input files that were used for command execution.
+     */
+    public void cleanupInputs(Map<String, String> parameters) {
     }
+
+    /**
+     * Returns a {@link BlobHolder} containing the result of the command.
+     *
+     * @param mimeType the MIME type
+     * @param parameters the parameters
+     * @return the blob holder
+     */
+    public BlobHolder buildResult(String mimeType, Map<String, String> parameters) {
+        String path = parameters.get(OUTPUT_FILE_PATH_PARAM);
+        mimeType = parameters.getOrDefault(OUTPUT_MIMETYPE_PARAM, mimeType);
+        Blob blob = getTemporaryBlob(path, mimeType);
+        return new SimpleBlobHolder(blob);
+    }
+
+    /**
+     * Gets a temporary blob for the given temporary path.
+     * <p>
+     * The temporary blob is backed by a temporary file in a new location. The old file is removed.
+     *
+     * @param path the path to a temporary file
+     * @param mimeType the blob MIME type
+     * @return a temporary {@link Blob}
+     */
+    public static Blob getTemporaryBlob(String path, String mimeType) {
+        String ext = "." + FilenameUtils.getExtension(path);
+        Blob blob;
+        try {
+            blob = new FileBlob(ext); // automatically tracked for removal
+            Files.move(Paths.get(path), blob.getFile().toPath(), REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        blob.setMimeType(mimeType);
+        blob.setFilename(FilenameUtils.getName(path));
+        return blob;
+    }
+
 }
