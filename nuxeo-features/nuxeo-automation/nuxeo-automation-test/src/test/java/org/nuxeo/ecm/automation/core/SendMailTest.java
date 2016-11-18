@@ -12,9 +12,12 @@
 package org.nuxeo.ecm.automation.core;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 import javax.inject.Inject;
 
+import com.dumbster.smtp.SmtpMessage;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -88,5 +91,9 @@ public class SendMailTest {
                 "<h3>Current doc: ${Document.path}</h3> title: ${Document['dc:title']}<p>Doc link: <a href=\"${docUrl}\">${Document.title}</a>");
         service.run(ctx, chain);
         assertTrue(FakeSmtpMailServerFeature.server.getReceivedEmailSize() == 1);
+        // Check that mandatory headers are present
+        SmtpMessage message = (SmtpMessage) FakeSmtpMailServerFeature.server.getReceivedEmail().next();
+        assertNotNull(message.getHeaderValue("Date"));
+        assertEquals(message.getHeaderValue("From"), "test@nuxeo.org");
     }
 }
