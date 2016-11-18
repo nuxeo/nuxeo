@@ -61,6 +61,14 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 // fetch Login Screen config and manage default
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
+// Add a size (=small) query param to handle news while the viewport is too small.
+String smallIframeUrl = iframeUrl;
+if (smallIframeUrl.lastIndexOf("?") >= 0) {
+  smallIframeUrl += "&";
+} else {
+  smallIframeUrl += "?";
+}
+smallIframeUrl += "size=small";
 
 String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login_bg.jpg");
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #006ead");
@@ -337,6 +345,13 @@ input:-webkit-autofill:focus {
   background-color: rgba(255,255,255,0);
 }
 
+.news-container.small {
+  height: 100px;
+}
+.news.small {
+  display: none;
+}
+
 /* Mobile devices */
 @media all and (max-width: 850px) {
   body {
@@ -355,6 +370,10 @@ input:-webkit-autofill:focus {
 @media all and (max-height: 880px) and (max-width: 850px) {
   .news {
     display: none;
+  }
+
+  .news.small {
+    display: block;
   }
 
   form {
@@ -481,6 +500,11 @@ input:-webkit-autofill:focus {
         <%}%>
       </form>
     </div>
+    <% if (showNews && !isTesting) { %>
+    <div class="news small">
+      <iframe id="smallnews" class="news-container small" src="<%=smallIframeUrl%>"></iframe>
+    </div>
+    <% } %>
     <% if (showNews && !isTesting) { %>
     <div class="news">
       <iframe id="news" class="news-container" style="visibility:hidden"
