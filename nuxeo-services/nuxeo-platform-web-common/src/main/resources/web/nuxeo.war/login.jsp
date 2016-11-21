@@ -346,8 +346,10 @@ input:-webkit-autofill:focus {
 }
 
 .news-container.small {
-  height: 100px;
+  margin-top: 2em;
+  height: 200px;
 }
+
 .news.small {
   display: none;
 }
