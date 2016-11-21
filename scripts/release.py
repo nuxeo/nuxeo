@@ -306,6 +306,7 @@ class Release(object):
     @staticmethod
     def auto_increment(current_version, policy):
         next_version = current_version
+        policy = re.sub('_(no_zero)', '', policy_in)
         semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
                             '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
                             '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
@@ -324,7 +325,7 @@ class Release(object):
                 int(verinfo['patch']))
         elif verinfo['minor']:
             if policy == 'auto_major':
-                verinfo['minor'] = 0
+                verinfo['minor'] = 0 if policy_in != 'auto_major_no_zero' else 1
             next_version = '%d.%d-SNAPSHOT' % (
                 int(verinfo['major']),
                 int(verinfo['minor']))
@@ -359,7 +360,7 @@ class Release(object):
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
-        if self.params.maintenance_version == "discard":
+        if self.maintenance_version == "discard":
             log("Maintenance branch %s deleted".ljust(25) % self.tag)
         else:
             log("Maintenance branch:".ljust(25) + self.maintenance_branch)
@@ -621,7 +622,7 @@ class Release(object):
             self.repo.git_recurse("tag -a release-%s -m'%s'" % (self.tag, self.get_tag_message(msg_tag)))
 
             # TODO NXP-8569 Optionally merge maintenance branch on source
-            if self.params.maintenance_version != "discard":
+            if self.maintenance_version != "discard":
                 # Maintenance branches are kept, so update their versions
                 log("\n[INFO] Maintenance branch...")
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
@@ -784,7 +785,7 @@ class Release(object):
             self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias, self.branch),
                                   with_optionals=True)
         if not upgrade_only:
-            if self.params.maintenance_version != "discard":
+            if self.maintenance_version != "discard":
                 self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias,
                                                                      self.maintenance_branch), with_optionals=True)
             elif self.next_snapshot == 'done':
