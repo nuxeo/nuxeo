@@ -722,8 +722,11 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         // avoid redirect if not useful
-        if (requestPage.startsWith(LoginScreenHelper.getStartupPagePath())) {
-            return true;
+        for (String startupPagePath : LoginScreenHelper.getStartupPagePaths()) {
+            if (requestPage.startsWith(startupPagePath)
+                    && LoginScreenHelper.getStartupPagePath().equals(startupPagePath)) {
+                return true;
+            }
         }
 
         // avoid saving to session is start page is not valid or if it's

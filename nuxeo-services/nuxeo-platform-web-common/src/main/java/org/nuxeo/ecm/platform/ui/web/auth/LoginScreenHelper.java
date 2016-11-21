@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -111,6 +113,25 @@ public class LoginScreenHelper {
         }
         log.debug("Startup page path = " + startupPagePath);
         return startupPagePath;
+    }
+
+    /**
+     * Returns the paths of the startup pages coming from the {@link LoginScreenConfig}/{@link LoginStartupPage}
+     * contributions to the {@code loginScreen} extension point.
+     *
+     * @since 8.10
+     */
+    public static List<String> getStartupPagePaths() {
+        LoginScreenConfig config = getConfig();
+        if (config == null) {
+            return Collections.emptyList();
+        }
+        return config.getStartupPages()
+                     .values()
+                     .stream()
+                     .sorted((p1, p2) -> p2.compareTo(p1))
+                     .map(startupPage -> startupPage.getPath())
+                     .collect(Collectors.toList());
     }
 
     /**

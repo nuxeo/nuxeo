@@ -524,6 +524,13 @@ input:-webkit-autofill:focus {
 </div>
 
 <script type="text/javascript">
+  // Since the #! part of an URL is not sent to the server, ensure it is part of the requested URL
+  // Typically required for the Web UI
+  var indexOfHash = window.location.href.indexOf('#!');
+  if (indexOfHash > -1) {
+    document.getElementById('requestedUrl').value += window.location.href.substring(indexOfHash);
+  }
+
   document.getElementById('username').focus();
   <% if (showNews && !isTesting) { %>
   // Don't load iframe on mobile devices
