@@ -142,19 +142,14 @@ class Repository(object):
         """Retrieve all modules of input Maven project and return it."""
         modules = []
         if os.path.exists(os.path.join(project_dir, pom_name)):
-            log("Using Maven introspection of the POM file %s/%s to find the list of modules..." % (project_dir,
-                                                                                                    pom_name))
+            log("Modules list calculated from the POM file %s/%s" % (project_dir, pom_name))
             cwd = os.getcwd()
             os.chdir(project_dir)
-            output = check_output("mvn -N help:effective-pom -f " + pom_name)
+            f = open(pom_name, "r")
+            pom_content = f.read()
+            modules = re.findall("<module>(.*?)</module>", pom_content)
+            f.close()
             os.chdir(cwd)
-            modules = []
-            for line in output.split("\n"):
-                line = line.strip()
-                m = re.match("<module>(.*?)</module>", line)
-                if not m:
-                    continue
-                modules.append(m.group(1))
             modules = sorted(set(modules))
         return modules
 
