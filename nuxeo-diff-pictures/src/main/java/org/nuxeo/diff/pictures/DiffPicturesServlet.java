@@ -37,10 +37,12 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * /nuxeo/diffPictures?&repo=therepo&leftDocId=123456&rightDocId= 456789012
@@ -70,8 +72,6 @@ public class DiffPicturesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        DocumentModel leftDoc, rightDoc;
-
         String leftDocId = req.getParameter("leftDocId");
         String rightDocId = req.getParameter("rightDocId");
 
@@ -84,88 +84,99 @@ public class DiffPicturesServlet extends HttpServlet {
             return;
         }
 
-        // WARNING: If you change the name of a parameter, also change it in nuxeo-diff-pictures.js
-        String repo = req.getParameter("repo");
-        String xpath = req.getParameter("xpath");
-        String commandLine = req.getParameter("commandLine");
-        String fuzz = req.getParameter("fuzz");
-        String highlightColor = req.getParameter("highlightColor");
-        String lowlightColor = req.getParameter("lowlightColor");
-        String altExtension = req.getParameter("altExtension");
+        TransactionHelper.runInTransaction(() -> {
 
-        if (StringUtils.isBlank(repo)) {
-            repo = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
-        }
+            // WARNING: If you change the name of a parameter, also change it in nuxeo-diff-pictures.js
+            String repo = req.getParameter("repo");
+            String xpath = req.getParameter("xpath");
+            String commandLine = req.getParameter("commandLine");
+            String fuzz = req.getParameter("fuzz");
+            String highlightColor = req.getParameter("highlightColor");
+            String lowlightColor = req.getParameter("lowlightColor");
+            String altExtension = req.getParameter("altExtension");
 
-        // This try-with-resources does an implicit close() at the end
-        try (CoreSession coreSession = CoreInstance.openCoreSession(repo)) {
-
-            leftDoc = coreSession.getDocument(new IdRef(leftDocId));
-            rightDoc = coreSession.getDocument(new IdRef(rightDocId));
-
-            DiffPictures dp = new DiffPictures(leftDoc, rightDoc, xpath);
-
-            HashMap<String, Serializable> params = new HashMap<String, Serializable>();
-            if (StringUtils.isNotBlank(fuzz)) {
-                params.put("fuzz", fuzz);
-            }
-            if (StringUtils.isNotBlank(highlightColor)) {
-                params.put("highlightColor", highlightColor);
-            }
-            if (StringUtils.isNotBlank(lowlightColor)) {
-                params.put("lowlightColor", lowlightColor);
+            if (StringUtils.isBlank(repo)) {
+                repo = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
             }
 
-            if (StringUtils.isNotBlank(altExtension)) {
-                // Using the leftDoc only
-                Blob leftB;
-                if (StringUtils.isBlank(xpath) || "null".equals(xpath)) {
-                    leftB = (Blob) leftDoc.getPropertyValue(DiffPictures.DEFAULT_XPATH);
-                } else {
-                    leftB = (Blob) leftDoc.getPropertyValue(xpath);
+            // This try-with-resources does an implicit close() at the end
+            try (CoreSession coreSession = CoreInstance.openCoreSession(repo)) {
+
+                DocumentModel leftDoc = coreSession.getDocument(new IdRef(leftDocId));
+                DocumentModel rightDoc = coreSession.getDocument(new IdRef(rightDocId));
+
+                DiffPictures dp = new DiffPictures(leftDoc, rightDoc, xpath);
+
+                HashMap<String, Serializable> params = new HashMap<String, Serializable>();
+                if (StringUtils.isNotBlank(fuzz)) {
+                    params.put("fuzz", fuzz);
                 }
-                String fileName = leftB.getFilename();
-                int dotPos = fileName.lastIndexOf(".");
-                String ext = fileName.substring(dotPos + 1);
-                ext = ext.toLowerCase();
-                switch (ext) {
-                case "jpg":
-                case "jpeg":
-                case "png":
-                case "gif":
-                    // No need to change anything
-                    break;
+                if (StringUtils.isNotBlank(highlightColor)) {
+                    params.put("highlightColor", highlightColor);
+                }
+                if (StringUtils.isNotBlank(lowlightColor)) {
+                    params.put("lowlightColor", lowlightColor);
+                }
 
-                default:
-                    if (altExtension.indexOf(".") != 0) {
-                        altExtension = "." + altExtension;
+                if (StringUtils.isNotBlank(altExtension)) {
+                    // Using the leftDoc only
+                    Blob leftB;
+                    if (StringUtils.isBlank(xpath) || "null".equals(xpath)) {
+                        leftB = (Blob) leftDoc.getPropertyValue(DiffPictures.DEFAULT_XPATH);
+                    } else {
+                        leftB = (Blob) leftDoc.getPropertyValue(xpath);
                     }
-                    fileName = "comp-" + fileName + altExtension;
-                    params.put("targetFileName", fileName);
-                    break;
+                    String fileName = leftB.getFilename();
+                    int dotPos = fileName.lastIndexOf(".");
+                    String ext = fileName.substring(dotPos + 1);
+                    ext = ext.toLowerCase();
+                    switch (ext) {
+                    case "jpg":
+                    case "jpeg":
+                    case "png":
+                    case "gif":
+                        // No need to change anything
+                        break;
 
+                    default:
+                        if (altExtension.indexOf(".") != 0) {
+                            altExtension = "." + altExtension;
+                        }
+                        fileName = "comp-" + fileName + altExtension;
+                        params.put("targetFileName", fileName);
+                        break;
+
+                    }
+                }
+
+                Blob bResult;
+                try {
+                    bResult = dp.compare(commandLine, params);
+                } catch (CommandNotAvailable | IOException e) {
+                    log.error("Unable to compare the pictures", e);
+                    try {
+                        sendTextResponse(resp, "Unable to compare the pictures");
+                    } catch (IOException e1) {
+                        throw new NuxeoException(e1);
+                    }
+                    return;
+                }
+
+                resp.setHeader("Cache-Control", "no-cache");
+                resp.setHeader("Pragma", "no-cache");
+                try {
+                    sendBlobResult(req, resp, bResult);
+                } catch (IOException e) {
+                    log.error("Unable to handleCompareResult", e);
+                    try {
+                        sendTextResponse(resp, "Unable to return the result");
+                    } catch (IOException e1) {
+                        throw new NuxeoException(e1);
+                    }
+                    return;
                 }
             }
-
-            Blob bResult;
-            try {
-                bResult = dp.compare(commandLine, params);
-            } catch (CommandNotAvailable | IOException e) {
-                log.error("Unable to compare the pictures", e);
-                sendTextResponse(resp, "Unable to compare the pictures");
-                return;
-            }
-
-            resp.setHeader("Cache-Control", "no-cache");
-            resp.setHeader("Pragma", "no-cache");
-            try {
-                sendBlobResult(req, resp, bResult);
-            } catch (IOException e) {
-                log.error("Unable to handleCompareResult", e);
-                sendTextResponse(resp, "Unable to return the result");
-                return;
-            }
-        }
+        });
     }
 
     protected void sendTextResponse(HttpServletResponse resp, String response) throws IOException {
