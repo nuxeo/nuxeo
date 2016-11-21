@@ -87,6 +87,8 @@ String currentYear = new DateTime().toString("Y");
 boolean hasVideos = screenConfig.hasVideos();
 String muted = screenConfig.getVideoMuted() ? "muted " : "";
 String loop = screenConfig.getVideoLoop() ? "loop " : "";
+
+String mobileApplicationURL = LoginScreenHelper.getURLForMobileApplication(request);
 %>
 
 <html>
@@ -108,7 +110,7 @@ if (selectedLanguage != null) { %>
 </script>
 
 <meta name="apple-itunes-app"
-  content="app-id=<%=itunesId%>, app-argument=<%=baseURL%>" />
+  content="app-id=<%=itunesId%>, app-argument=<%=mobileApplicationURL%>" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style type="text/css">
