@@ -106,7 +106,7 @@ class ReleaseInfo(object):
     """Release information. This object is used to construct a Release as well as to (de)serialize it."""
 
     # pylint: disable-msg=too-many-arguments, too-many-locals
-    def __init__(self, module=None, remote_alias=None, branch=None, tag=None,
+    def __init__(self, module=None, remote_alias=None, branch=None, tag="auto",
                  next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
                  skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
                  msg_commit='', msg_tag='', auto_increment_policy='auto_patch', deploy = False, dryrun = False,
@@ -220,10 +220,10 @@ class Release(object):
         # Evaluate default values, if not provided
         self.set_other_versions_and_patterns()
         self.set_snapshot()
-        self.set_tag()
+        self.set_tag(release_info)
         self.set_maintenance_version(release_info)
         self.set_next_snapshot(release_info)
-        self.maintenance_branch = self.params.tag
+        self.maintenance_branch = release_info.tag
         if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
             self.maintenance_branch += ".0"
         # Detect if working on Nuxeo main sources
@@ -293,10 +293,10 @@ class Release(object):
                                                NAMESPACES)
         self.snapshot = version_elem.text
 
-    def set_tag(self, tag="auto"):
-        """Return calculated tag. Requires 'self.snapshot' being set."""
-        if tag != "auto":
-            self.tag = tag
+    def set_tag(self, release_info):
+        """Set evaluated tag based on 'self.snapshot'."""
+        if release_info.tag != "auto":
+            self.tag = release_info.tag
         elif self.is_final:
             self.tag = self.snapshot.partition("-SNAPSHOT")[0]
         else:
@@ -304,13 +304,13 @@ class Release(object):
             self.tag = self.snapshot.replace("-SNAPSHOT", "-I" + date)
 
     @staticmethod
-    def auto_increment(current_version, policy):
+    def auto_increment(current_version, policy_in):
+        """Returns the next version following 'current_version' with 'policy_in' apply"""
         next_version = current_version
         policy = re.sub('_(no_zero)', '', policy_in)
         semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
                             '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
                             '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
-
         verinfo = semver.match(current_version).groupdict()
         for key in ['patch', 'minor', 'major']:
             if (verinfo[key] and policy == 'auto_last') or policy == 'auto_%s' % key:
@@ -332,10 +332,12 @@ class Release(object):
         elif verinfo['major']:
             next_version = '%d-SNAPSHOT' % (
                 int(verinfo['major']))
-
         return next_version
 
     def set_maintenance_version(self, release_info):
+        """Set evaluated next maintenance snapshot version based on:
+        - 'release_info.maintenance_version'
+        - 'release_info.is_final' (TODO: not yet but it should)"""
         matches = re.match('^auto_(patch|minor|major)$', release_info.maintenance_version)
         if matches:
             self.maintenance_version = self.auto_increment(release_info.snapshot, release_info.maintenance_version)
@@ -343,9 +345,10 @@ class Release(object):
             self.maintenance_version = release_info.maintenance_version
 
     def set_next_snapshot(self, release_info):
-        """
-        Return calculated next snapshot. Requires 'release_info.snapshot' being set.
-        """
+        """Set evaluated next snapshot version based on:
+        - 'release_info.next_snapshot'
+        - 'release_info.is_final'
+        - 'release_info.auto_increment_policy'"""
         if release_info.next_snapshot != "auto":
             self.next_snapshot = release_info.next_snapshot
         elif release_info.is_final:
@@ -847,7 +850,7 @@ packages, tests are always skipped). If no parameter is given, they are read \
 from the release-*.log file.
        package: Package distributions and source code in the archives directory.
        maintenance: Create a maintenance branch from an existing tag.
-       onestep: Prepare and perform the release in one unique step. No stagging is \
+       onestep: Prepare and perform the release in one unique step. No staging is \
 possible. The release-*.log file is not read.""")
         description = """Release Nuxeo from a given branch, tag the release, \
 then set the next SNAPSHOT version. If a maintenance version was provided, \
