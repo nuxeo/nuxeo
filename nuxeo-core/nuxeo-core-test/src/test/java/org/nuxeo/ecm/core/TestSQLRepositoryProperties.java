@@ -65,6 +65,7 @@ import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Repository;
@@ -389,6 +390,47 @@ public class TestSQLRepositoryProperties {
     }
 
     @Test
+    public void testComplexListPropertyRemove() throws Exception {
+        List<Map<String, Serializable>> values = Arrays.asList( //
+                Collections.singletonMap("string", "foo"), //
+                Collections.singletonMap("string", "bar"), //
+                Collections.singletonMap("string", "gee"));
+        doc.setPropertyValue("tp:complexList", (Serializable) values);
+        doc = session.saveDocument(doc);
+
+        doc = session.getDocument(new PathRef("/doc"));
+        List<?> actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(3, actual.size());
+        assertComplexListElements(actual, 0, "foo", -1);
+        assertComplexListElements(actual, 1, "bar", -1);
+        assertComplexListElements(actual, 2, "gee", -1);
+
+        // change ListProperty by removing non-final element
+
+        // remove using index
+        ListProperty prop = (ListProperty) doc.getProperty("tp:complexList");
+        prop.remove(1);
+        doc = session.saveDocument(doc);
+
+        doc = session.getDocument(new PathRef("/doc"));
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(2, actual.size());
+        assertComplexListElements(actual, 0, "foo", -1);
+        assertComplexListElements(actual, 1, "gee", -1);
+
+        // remove using property
+        prop = (ListProperty) doc.getProperty("tp:complexList");
+        prop.remove(prop.get(0));
+        doc = session.saveDocument(doc);
+
+        doc = session.getDocument(new PathRef("/doc"));
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(1, actual.size());
+        assertComplexListElements(actual, 0, "gee", -1);
+
+    }
+
+    @Test
     public void testComplexListPartialUpdate() throws Exception {
         List<Map<String, Serializable>> list = Arrays.asList(Collections.singletonMap("string", "foo"));
         doc.setPropertyValue("tp:complexList", (Serializable) list);
@@ -411,7 +453,7 @@ public class TestSQLRepositoryProperties {
     protected static void assertComplexListElements(List<?> list, int i, String string, int theint) {
         Map<String, Serializable> map = (Map<String, Serializable>) list.get(i);
         assertEquals(string, map.get("string"));
-        assertEquals(Long.valueOf(theint), map.get("int"));
+        assertEquals(theint == -1 ? null : Long.valueOf(theint), map.get("int"));
     }
 
     // NXP-912
