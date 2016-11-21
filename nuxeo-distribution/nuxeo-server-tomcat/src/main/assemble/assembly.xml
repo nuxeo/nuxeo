@@ -47,7 +47,7 @@
       <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />
     </move>
     <copy tofile="${tomcat}/bin/nuxeo-launcher.jar">
-      <artifact:resolveFile key="org.nuxeo:nuxeo-launcher:${nuxeo.distribution.version}:jar:jar-with-dependencies" />
+    	<artifact:file key="org.nuxeo:nuxeo-launcher:::jar-with-dependencies" />
     </copy>
     <copy tofile="${tomcat}/bin/tomcat-juli.jar">
       <artifact:resolveFile key="org.apache.tomcat.extras:tomcat-extras-juli" />
