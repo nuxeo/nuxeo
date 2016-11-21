@@ -53,9 +53,11 @@ class ReleaseTestCase(unittest.TestCase):
 
     def assertNextSnapshot(self, current, expected, policy='auto_last'):
         self.mocks.etree_parse.return_value.getroot.return_value.find.return_value.text = current
+
+        release_info = ReleaseInfo(branch='some_branch', tag='auto', maintenance_version='auto', is_final=True,
+                                   auto_increment_policy=policy)
         self.assertEqual(expected,
-                         Release(Repository(os.getcwd(), 'nuxeo_scripts'), 'some_branch', 'auto', 'auto',
-                                 is_final=True, auto_increment_policy=policy).next_snapshot)
+                         Release(Repository(os.getcwd(), 'nuxeo_scripts'), release_info).next_snapshot)
 
     def testSetNextSnapshot(self):
         self.assertNextSnapshot('1.0.19-SNAPSHOT', '1.0.20-SNAPSHOT')

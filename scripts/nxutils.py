@@ -284,10 +284,12 @@ class Repository(object):
             log("Branch %s not found" % version)
         log("")
 
-    def get_mp_config(self, marketplace_conf):
+    def get_mp_config(self, marketplace_conf, user_defaults = {}):
         """Return the Marketplace packages configuration."""
-        mp_config = ConfigParser.SafeConfigParser(
-            defaults={'other_versions': None, 'prepared': 'False', 'performed': 'False', 'branched': 'False'})
+        defaults = {'other_versions': None, 'prepared': 'False', 'performed': 'False', 'branched': 'False',
+                    "profiles": '', "auto_increment_policy": "auto_patch"}
+        defaults.update(user_defaults)
+        mp_config = ConfigParser.SafeConfigParser(defaults=defaults)
         if marketplace_conf is None:
             no_remote = True
         else:

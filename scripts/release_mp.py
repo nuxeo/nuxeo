@@ -45,7 +45,6 @@ class ReleaseMP(object):
     def __init__(self, alias, restart_from, default_conf=None, marketplace_conf=None):
         self.alias = alias
         self.restart_from = restart_from
-        self.default_conf = default_conf
         if marketplace_conf == '':
             marketplace_conf = DEFAULT_MP_CONF_URL
         self.marketplace_conf = marketplace_conf
@@ -61,7 +60,14 @@ class ReleaseMP(object):
             cwd = os.path.abspath(os.path.join(cwd, os.pardir))
         log("Nuxeo source location: %s" % cwd)
         self.repo = Repository(cwd, self.alias)
-        self.mp_config = self.repo.get_mp_config(self.marketplace_conf)
+        self.defaults = {}
+        if default_conf:
+            default_info = ReleaseInfo()
+            default_info.read_release_log(default_conf)
+            prefix = default_info.module
+            for key, value in vars(default_info).iteritems():
+                self.defaults[prefix + "-" + key] = str(value)
+        self.mp_config = self.repo.get_mp_config(self.marketplace_conf, self.defaults)
 
     def clone(self):
         cwd = os.getcwd()
@@ -111,18 +117,33 @@ class ReleaseMP(object):
                     log("Upgrade skipped %s..." % marketplace)
                 else:
                     log("Prepare release of %s..." % marketplace)
-                mp_release = Release(mp_repo,
-                                     self.mp_config.get(marketplace, "branch"),
-                                     self.mp_config.get(marketplace, "tag"),
-                                     self.mp_config.get(marketplace, "next_snapshot"),
-                                     self.mp_config.get(marketplace, "maintenance_version"),
-                                     is_final=True,
-                                     skipTests=self.mp_config.getboolean(marketplace, "skipTests"),
-                                     skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
-                                     other_versions=self.mp_config.get(marketplace, "other_versions", None),
-                                     auto_increment_policy=self.mp_config.get(marketplace, "auto_increment_policy",
-                                                                              "auto_patch"))
-                mp_release.log_summary()
+
+                release_info = ReleaseInfo(module=marketplace, remote_alias=self.alias,
+                                           branch=self.mp_config.get(marketplace, "branch"),
+                                           tag=self.mp_config.get(marketplace, "tag"),
+                                           next_snapshot=self.mp_config.get(marketplace, "next_snapshot"),
+                                           maintenance_version=self.mp_config.get(marketplace, "maintenance_version"),
+                                           is_final=self.mp_config.getboolean(marketplace, "is_final"),
+                                           skip_tests=self.mp_config.getboolean(marketplace, "skipTests"),
+                                           skip_its=self.mp_config.getboolean(marketplace, "skipITs"),
+                                           profiles=self.mp_config.get(marketplace, "profiles"),
+                                           other_versions=self.mp_config.get(marketplace, "other_versions"),
+                                           #files_pattern, props_pattern, msg_commit, msg_tag,
+                                           auto_increment_policy=self.mp_config.get(marketplace,
+                                                                                    "auto_increment_policy"),
+                                           dryrun=dryrun)
+                mp_release = Release(mp_repo, release_info)
+                release_log = mp_release.log_summary()
+                release_info.read_release_log(release_log)
+                if dryrun:
+                    print "DEBUG -- init %s with:" % marketplace
+                for key, value in vars(release_info).iteritems():
+                    if dryrun:
+                        print "DEBUG: %s-%s=%s" % (marketplace, key, value)
+                    self.mp_config.set("DEFAULT", marketplace + "-" + key, str(value))
+                if dryrun:
+                    print
+
                 mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only, dodeploy=True)
                 prepared = True
             except Exception, e:
@@ -172,17 +193,21 @@ class ReleaseMP(object):
                     log("Upgrade skipped %s..." % marketplace)
                 else:
                     log("Prepare release of %s..." % marketplace)
-                mp_release = Release(mp_repo,
-                                     self.mp_config.get(marketplace, "branch"),
-                                     self.mp_config.get(marketplace, "tag"),
-                                     self.mp_config.get(marketplace, "next_snapshot"),
-                                     self.mp_config.get(marketplace, "maintenance_version"),
-                                     is_final=True,
-                                     skipTests=self.mp_config.getboolean(marketplace, "skipTests"),
-                                     skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
-                                     other_versions=self.mp_config.get(marketplace, "other_versions", None),
-                                     auto_increment_policy=self.mp_config.get(marketplace, "auto_increment_policy",
-                                                                              "auto_patch"))
+                release_info = ReleaseInfo(module=marketplace, remote_alias=self.alias,
+                                           branch=self.mp_config.get(marketplace, "branch"),
+                                           tag=self.mp_config.get(marketplace, "tag"),
+                                           next_snapshot=self.mp_config.get(marketplace, "next_snapshot"),
+                                           maintenance_version=self.mp_config.get(marketplace, "maintenance_version"),
+                                           is_final=self.mp_config.getboolean(marketplace, "is_final"),
+                                           skip_tests=self.mp_config.getboolean(marketplace, "skipTests"),
+                                           skip_its=self.mp_config.getboolean(marketplace, "skipITs"),
+                                           profiles=self.mp_config.get(marketplace, "profiles"),
+                                           other_versions=self.mp_config.get(marketplace, "other_versions"),
+                                           #files_pattern, props_pattern, msg_commit, msg_tag,
+                                           auto_increment_policy=self.mp_config.get(marketplace,
+                                                                                    "auto_increment_policy"),
+                                           dryrun=dryrun)
+                mp_release = Release(mp_repo, release_info)
                 mp_release.log_summary()
                 mp_release.release_branch(dryrun=dryrun, upgrade_only=upgrade_only)
                 self.mp_config.set(marketplace, "next_snapshot", "done")
@@ -227,17 +252,9 @@ class ReleaseMP(object):
                 os.chdir(os.path.join(self.repo.mp_dir, marketplace))
                 mp_repo = Repository(os.getcwd(), self.alias)
                 # Perform release
-                (_, branch, tag, next_snapshot, maintenance_version, is_final, skipTests, skipITs, _, other_versions,
-                 _, _, _) = Release.read_release_log(mp_repo.basedir)
-                mp_release = Release(mp_repo,
-                                     branch,
-                                     tag,
-                                     next_snapshot,
-                                     maintenance_version,
-                                     is_final=is_final,
-                                     skipTests=skipTests,
-                                     skipITs=skipITs,
-                                     other_versions=other_versions)
+                release_info = ReleaseInfo()
+                release_info.read_release_log(ReleaseInfo.get_release_log(mp_repo.basedir))
+                mp_release = Release(mp_repo, release_info)
                 mp_release.perform(dryrun=dryrun, upgrade_only=upgrade_only)
                 performed = True
             except Exception, e:
@@ -283,10 +300,10 @@ def main():
 
     try:
         usage = ("""usage: %prog <command> [options]
-       %prog clone [-r alias] [-m URL] [-d URL]
-       %prog branch [-r alias] [-m URL] [-d URL] [--rf package] [--dryrun]
-       %prog prepare [-r alias] [-m URL] [-d URL] [--rf package] [--dryrun]
-       %prog perform [-r alias] [-m URL] [-d URL] [--rf package] [--dryrun]
+       %prog clone [-r alias] [-m URL] [-d PATH]
+       %prog branch [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
+       %prog prepare [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
+       %prog perform [-r alias] [-m URL] [-d PATH] [--rf package] [--dryrun]
 \nCommands:
        clone: Clone or update Nuxeo Package repositories.
        branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
@@ -313,8 +330,8 @@ Failed uploads are not retried and must be manually done."""
         parser.add_option('-r', action="store", type="string", dest='remote_alias', default='origin',
                           help="""The Git alias of remote URL. Default: '%default'""")
         parser.add_option('-d', "--default", action="store", type="string", dest='default_conf',
-                          default=None, help="""The default configuration URL (usually 'release-nuxeo.log').
-You can use a local file URL ('file://'). Default: '%default'""")
+                          default=None, help="""The default configuration file (usually '/path/to/release-nuxeo.log').
+Default: '%default'""")
         parser.add_option('-m', "--marketplace-conf", action="store", type="string", dest='marketplace_conf',
                           default=None, help="""The Nuxeo Packages configuration URL (usually named 'marketplace.ini').
 You can use a local file URL ('file://').\n

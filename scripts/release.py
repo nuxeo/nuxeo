@@ -146,11 +146,10 @@ given the path parameter.
                                "release-%s.log" % os.path.basename(path)))
 
     # pylint: disable=R0914
-    def read_release_log(self, path=os.getcwd()):
+    def read_release_log(self, release_log):
         """Read release parameters generated for the given path.
 
-        'path': root path of the repository being released."""
-        release_log = self.get_release_log(path)
+        'release_log': path to a release log file."""
         log("Reading parameters from %s ..." % release_log)
         with open(release_log, "rb") as f:
             for line in f:
@@ -191,6 +190,8 @@ given the path parameter.
                     self.msg_tag = value
                 elif key == "AUTO_INCREMENT_POLICY":
                     self.auto_increment_policy = value
+                elif key == "DRY_RUN":
+                    self.dryrun = value == "True"
                 else:
                     log("[WARN] Release info parsing failure for file %s on line: %s" % (release_log, line), sys.stderr)
         self.compute_other_versions()
@@ -203,6 +204,12 @@ class Release(object):
 
     # pylint: disable=R0913
     def __init__(self, repo, release_info):
+        if release_info.dryrun:
+            print "DEBUG -- init Release with:"
+            for key, value in vars(release_info).iteritems():
+                print "DEBUG: %s=%s" % (key, value)
+            print
+
         self.repo = repo
         self.params = release_info
         # TODO NXP-21007: Use release_info field instead of copy?
@@ -218,14 +225,12 @@ class Release(object):
         self.msg_commit = release_info.msg_commit
         self.msg_tag = release_info.msg_tag
         # Evaluate default values, if not provided
-        self.set_other_versions_and_patterns()
+        self.set_other_versions_and_patterns(release_info)
         self.set_snapshot()
         self.set_tag(release_info)
-        self.set_maintenance_version(release_info)
         self.set_next_snapshot(release_info)
-        self.maintenance_branch = release_info.tag
-        if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
-            self.maintenance_branch += ".0"
+        self.set_maintenance_version(release_info)
+
         # Detect if working on Nuxeo main sources
         tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
         artifact_id = tree.getroot().find("pom:artifactId", NAMESPACES)
@@ -235,7 +240,13 @@ class Release(object):
         else:
             log("Working on custom repository...")
 
-    def set_other_versions_and_patterns(self, other_versions=None):
+        if release_info.dryrun:
+            print "\nDEBUG -- Release initialized with:"
+            for key, value in vars(self).iteritems():
+                print "DEBUG: %s=%s" % (key, value)
+            print
+
+    def set_other_versions_and_patterns(self, release_info):
         """Set other versions and replacement patterns"""
         Patterns = namedtuple('Patterns', ['files', 'props'])
         self.default_patterns = Patterns(
@@ -243,6 +254,7 @@ class Release(object):
             "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
             # Properties like nuxeo.*.version
             "{%s}(nuxeo|marketplace)\\..*version" % NAMESPACES.get("pom"))
+        other_versions = release_info.other_versions
         custom_files_pattern = ""
         custom_props_pattern = ""
         other_versions_split = []
@@ -297,7 +309,7 @@ class Release(object):
         """Set evaluated tag based on 'self.snapshot'."""
         if release_info.tag != "auto":
             self.tag = release_info.tag
-        elif self.is_final:
+        elif self.is_final is True:
             self.tag = self.snapshot.partition("-SNAPSHOT")[0]
         else:
             date = datetime.now().strftime("%Y%m%d_%H%M")
@@ -337,12 +349,20 @@ class Release(object):
     def set_maintenance_version(self, release_info):
         """Set evaluated next maintenance snapshot version based on:
         - 'release_info.maintenance_version'
-        - 'release_info.is_final' (TODO: not yet but it should)"""
+        - 'release_info.is_final' (TODO: not yet but it should)
+        and the maintenance branch name based on:
+        - 'self.tag'
+        - 'self.next_snapshot'
+        - 'self.branch'"""
         matches = re.match('^auto_(patch|minor|major)$', release_info.maintenance_version)
         if matches:
             self.maintenance_version = self.auto_increment(release_info.snapshot, release_info.maintenance_version)
         else:
             self.maintenance_version = release_info.maintenance_version
+
+        self.maintenance_branch = self.tag
+        if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
+            self.maintenance_branch += ".0"
 
     def set_next_snapshot(self, release_info):
         """Set evaluated next snapshot version based on:
@@ -358,7 +378,7 @@ class Release(object):
 
     # TODO NXP-21007: Use release_info field instead of copy?
     def log_summary(self, store_params=True):
-        """Log summary of configuration for current release."""
+        """Log summary of configuration for current release. Returns the log filename"""
         log("Releasing from branch:".ljust(25) + self.branch)
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + "release-" + self.tag)
@@ -404,9 +424,11 @@ class Release(object):
                         "PROPS_PATTERN=%s\n" % self.custom_patterns.props[35:] +
                         "MSG_COMMIT=%s\n" % self.msg_commit +
                         "MSG_TAG=%s\n" % self.msg_tag +
-                        "AUTO_INCREMENT_POLICY=%s\n" % self.auto_increment_policy)
+                        "AUTO_INCREMENT_POLICY=%s\n" % self.auto_increment_policy +
+                        "DRY_RUN=%s\n" % self.params.dryrun)
             log("Parameters stored in %s" % release_log)
         log("")
+        return release_log
 
     # pylint: disable=R0912,R0914
     def update_versions(self, old_version, new_version):
@@ -964,11 +986,12 @@ Default tag message:\n
             default='auto_patch',
             help="""Version increment policy when in 'auto' mode. Default: 'auto_patch'\n
 Available options:\n
- - 'auto_last': increment last explicitly defined number (1.0.0 => 1.0.1, 1.0 => 1.1, 1 => 2)\n
- - 'auto_major': 1.0.0 => 2.0.0\n
- - 'auto_minor': 1.0.0 => 1.1.0\n
- - 'auto_patch': 1.0.0 => 1.0.1\n
-Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should be optional.
+ - 'auto_last':\tincrement last explicitly defined number (1.2.3 => 1.2.4, 1.2 => 1.3, 1 => 2)\n
+ - 'auto_major':\t1.2.3 => 2.0.0\n
+ - 'auto_major_no_zero':\t1.2.3 => 2.0.1\n
+ - 'auto_minor':\t1.2.3 => 1.3.0\n
+ - 'auto_patch':\t1.2.3 => 1.2.4\n
+Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should not intervene.
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
@@ -979,12 +1002,10 @@ Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being 
                 1, "'command' must be a single argument: '%s'." % (args)
                 + " See usage with '-h'.")
 
-        for key, value in vars(options).iteritems():
-            print "DEBUG: %s=%s" % (key, value)
         release_info = ReleaseInfo(**vars(options))
         if ("command" in locals() and command == "perform" and os.path.isfile(ReleaseInfo.get_release_log(os.getcwd()))
             and options == parser.get_default_values()):
-            release_info.read_release_log(os.getcwd())
+            release_info.read_release_log(ReleaseInfo.get_release_log(os.getcwd()))
 
         repo = Repository(os.getcwd(), release_info.remote_alias)
         system("git fetch %s" % (release_info.remote_alias))
