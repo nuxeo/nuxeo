@@ -548,6 +548,12 @@
       <artifactId>nuxeo-webdav</artifactId>
     </dependency>
 
+    <!-- PDF Utils -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-pdf-utils</artifactId>
+    </dependency>
+
     <!-- Rest API -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
