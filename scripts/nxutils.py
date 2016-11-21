@@ -30,15 +30,17 @@ import time
 import urllib2
 from zipfile import ZIP_DEFLATED, ZipFile
 from distutils.version import LooseVersion
+import warnings
 
 
 REQUIRED_GIT_VERSION = "1.8.4"
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
-DEFAULT_MP_CONF_URL = ("https://raw.github.com/nuxeo/integration-scripts/master/marketplace.ini")
+DEFAULT_MP_CONF_URL = "https://raw.github.com/nuxeo/integration-scripts/master/marketplace.ini"
 
 
 class ExitException(Exception):
     def __init__(self, return_code, message=None):
+        super(ExitException, self).__init__(message)
         self.return_code = return_code
         self.message = message
 
@@ -121,12 +123,13 @@ class Repository(object):
                 if not self.is_online:
                     self.url_pattern = self.url_pattern.replace("module", "%s/module" % module)
                 os.chdir(module)
-                if not module in self.sub_modules and self.is_nuxeoecm:
+                if module not in self.sub_modules and self.is_nuxeoecm:
                     module_dir = os.path.join(self.basedir, module)
                     self.sub_modules[module] = self.retrieve_modules(module_dir)
                     # Handle optionals
                     if with_optionals:
-                        self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir, "pom-optionals.xml")
+                        self.sub_modules[module] = self.sub_modules[module] + self.retrieve_modules(module_dir,
+                                                                                                    "pom-optionals.xml")
                 for sub_module in self.sub_modules[module]:
                     function(sub_module)
                 os.chdir(self.basedir)
@@ -134,22 +137,19 @@ class Repository(object):
                     self.url_pattern = self.url_pattern.replace("%s/module" % module, "module")
         os.chdir(cwd)
 
-    def retrieve_modules(self, project_dir, pom_name = "pom.xml"):
+    @staticmethod
+    def retrieve_modules(project_dir, pom_name = "pom.xml"):
         """Retrieve all modules of input Maven project and return it."""
         modules = []
         if os.path.exists(os.path.join(project_dir, pom_name)):
-            log("Using Maven introspection of the POM file %s/%s to find the list of modules..." % (project_dir, pom_name))
+            log("Modules list calculated from the POM file %s/%s" % (project_dir, pom_name))
             cwd = os.getcwd()
             os.chdir(project_dir)
-            output = check_output("mvn -N help:effective-pom -f " + pom_name)
+            f = open(pom_name, "r")
+            pom_content = f.read()
+            modules = re.findall("<module>(.*?)</module>", pom_content)
+            f.close()
             os.chdir(cwd)
-            modules = []
-            for line in output.split("\n"):
-                line = line.strip()
-                m = re.match("<module>(.*?)</module>", line)
-                if not m:
-                    continue
-                modules.append(m.group(1))
             modules = sorted(set(modules))
         return modules
 
@@ -184,7 +184,8 @@ class Repository(object):
         self.execute_on_modules(lambda module: self.system_module(command, module), with_optionals)
         os.chdir(cwd)
 
-    def system_module(self, command, module):
+    @staticmethod
+    def system_module(command, module):
         """Execute the given command on given module.
 
         'command': the command to execute.
@@ -208,7 +209,12 @@ class Repository(object):
         self.execute_on_modules(lambda module: self.git_module(command, module), with_optionals)
         os.chdir(cwd)
 
-    def git_module(self, command, module):
+    @staticmethod
+    def git_module(command, module):
+        """Execute the given Shell command on the given module. It ignores non Git repositories.
+
+        'command': the command to execute.
+        'module': the Git sub-directory where to execute the command."""
         cwd = os.getcwd()
         os.chdir(module)
         if os.path.isdir(".git"):
@@ -239,7 +245,13 @@ class Repository(object):
         shutil.rmtree(archive_dir)
         os.chdir(cwd)
 
-    def archive_module(self, archive_dir, version, module):
+    @staticmethod
+    def archive_module(archive_dir, version, module):
+        """Archive the sources of a the given Git sub-directory.
+
+        'archive_dir': full path of archive to generate.
+        'version': version to archive, defaults to current version.
+        'module': the Git sub-directory to archive."""
         cwd = os.getcwd()
         os.chdir(module)
         log("[%s]" % module)
@@ -272,10 +284,12 @@ class Repository(object):
             log("Branch %s not found" % version)
         log("")
 
-    def get_mp_config(self, marketplace_conf):
+    def get_mp_config(self, marketplace_conf, user_defaults = {}):
         """Return the Marketplace packages configuration."""
-        mp_config = ConfigParser.SafeConfigParser(
-            defaults={'other_versions': None, 'prepared': 'False', 'performed': 'False', 'branched': 'False'})
+        defaults = {'other_versions': None, 'prepared': 'False', 'performed': 'False', 'branched': 'False',
+                    "profiles": '', "auto_increment_policy": "auto_patch"}
+        defaults.update(user_defaults)
+        mp_config = ConfigParser.SafeConfigParser(defaults=defaults)
         if marketplace_conf is None:
             no_remote = True
         else:
@@ -303,9 +317,9 @@ class Repository(object):
         return mp_config
 
     def clone_mp(self, marketplace_conf):
-        """Clone or update Nuxeo Marketplace package repositories.
+        """Clone or update Nuxeo Package repositories.
 
-        Returns the Marketplace packages configuration."""
+        Returns the Nuxeo Packages configuration."""
         if marketplace_conf == '':
             marketplace_conf = DEFAULT_MP_CONF_URL
         if not marketplace_conf:
@@ -341,10 +355,11 @@ class Repository(object):
 
     def clone_module(self, module, version, fallback_branch):
         # Ignore modules which are not Git sub-repositories
-        if (not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git"))):
+        if not os.path.isdir(module) or os.path.isdir(os.path.join(module, ".git")):
             self.git_pull(module, version, fallback_branch)
 
-    def get_current_version(self):
+    @staticmethod
+    def get_current_version():
         """Return branch or tag version of current Git workspace."""
         t = check_output("git describe --all").split("/")
         return t[-1]
@@ -376,7 +391,7 @@ class Repository(object):
             profiles_param = ""
         system("mvn %s %s%s -Dnuxeo.tests.random.mode=BYPASS" % (
                commands, skip_tests_param, profiles_param), delay_stdout=False,
-               run=(not dryrun))
+               run=not dryrun)
 
 
 def log(message, out=sys.stdout):

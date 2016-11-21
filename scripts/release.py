@@ -57,14 +57,13 @@ No maintenance branch"""
 from collections import namedtuple
 from datetime import datetime
 import fnmatch
-from lxml import etree
 import optparse
 import os
 import re
 import shutil
 import sys
 import tempfile
-
+from lxml import etree
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 from nxutils import ExitException, Repository, assert_git_config, extract_zip, \
     log, make_zip, system
@@ -102,12 +101,41 @@ def etree_parse(xmlfile):
                             (xmlfile, e.message))
     return tree
 
+# pylint: disable-msg=too-many-instance-attributes, too-few-public-methods
+class ReleaseInfo(object):
+    """Release information. This object is used to construct a Release as well as to (de)serialize it."""
 
-# pylint: disable=R0902
-class Release(object):
-    """Nuxeo release manager.
+    # pylint: disable-msg=too-many-arguments, too-many-locals
+    def __init__(self, module=None, remote_alias=None, branch=None, tag="auto",
+                 next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
+                 skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
+                 msg_commit='', msg_tag='', auto_increment_policy='auto_patch', deploy = False, dryrun = False,
+                 interactive = False):
+        self.module = module
+        self.remote_alias = remote_alias
+        self.branch = branch
+        self.tag = tag
+        self.next_snapshot = next_snapshot
+        """Backward compat for maintenance_version = auto"""
+        self.maintenance_version = "discard" if maintenance_version == "auto" else maintenance_version
+        self.is_final = is_final
+        self.skip_tests = skip_tests
+        self.skip_its = skip_its
+        self.profiles = profiles
+        self.other_versions = other_versions
+        self.files_pattern = files_pattern
+        self.props_pattern = props_pattern
+        self.msg_commit = msg_commit
+        self.msg_tag = msg_tag
+        self.auto_increment_policy = auto_increment_policy
+        self.deploy = deploy
+        self.dryrun = dryrun
 
-    See 'self.perpare()', 'self.perform()'."""
+    def compute_other_versions(self):
+        self.other_versions = ':'.join((self.files_pattern, self.props_pattern, self.other_versions))
+        if self.other_versions == "::":
+            self.other_versions = None
+
     @staticmethod
     def get_release_log(path=os.getcwd()):
         """Return the path for the file containing the release parameters
@@ -118,69 +146,91 @@ given the path parameter.
                                "release-%s.log" % os.path.basename(path)))
 
     # pylint: disable=R0914
-    @staticmethod
-    def read_release_log(path=os.getcwd()):
+    def read_release_log(self, release_log):
         """Read release parameters generated for the given path.
 
-        'path': root path of the repository being released."""
-        release_log = Release.get_release_log(path)
+        'release_log': path to a release log file."""
         log("Reading parameters from %s ..." % release_log)
         with open(release_log, "rb") as f:
-            remote_alias = f.readline().split("=")[1].strip()
-            branch = f.readline().split("=")[1].strip()
-            tag = f.readline().split("=")[1].strip()
-            next_snapshot = f.readline().split("=")[1].strip()
-            maintenance_version = f.readline().split("=")[1].strip()
-            is_final = f.readline().split("=")[1].strip() == "True"
-            skipTests = f.readline().split("=")[1].strip() == "True"
-            skipITs = f.readline().split("=")[1].strip() == "True"
-            profiles = f.readline().split("=")[1].strip()
-            other_versions = f.readline().split("=")[1].strip()
-            files_pattern = f.readline().split("=")[1].strip()
-            props_pattern = f.readline().split("=")[1].strip()
-            other_versions = ':'.join((files_pattern, props_pattern,
-                                       other_versions))
-            msg_commit = f.readline().split("=")[1].strip()
-            msg_tag = f.readline().split("=")[1].strip()
-            auto_increment_policy = f.readline().split("=")[1].strip()
-        if other_versions == "::":
-            other_versions = None
-        return (remote_alias, branch, tag, next_snapshot,
-                maintenance_version, is_final, skipTests, skipITs, profiles,
-                other_versions, msg_commit, msg_tag, auto_increment_policy)
+            for line in f:
+                (key, value) = line.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                if key == "MODULE":
+                    self.module = value
+                elif key == "REMOTE":
+                    self.remote_alias = value
+                elif key == "BRANCH":
+                    self.branch = value
+                elif key == "SNAPSHOT":
+                    self.snapshot = value
+                elif key == "TAG":
+                    self.tag = value
+                elif key == "NEXT_SNAPSHOT":
+                    self.next_snapshot = value
+                elif key == "MAINTENANCE":
+                    self.maintenance_version = value
+                elif key == "FINAL":
+                    self.is_final = value == "True"
+                elif key == "SKIP_TESTS":
+                    self.skip_tests = value == "True"
+                elif key == "SKIP_ITS":
+                    self.skip_its = value == "True"
+                elif key == "PROFILES":
+                    self.profiles = value
+                elif key == "OTHER_VERSIONS":
+                    self.other_versions = value
+                elif key == "FILES_PATTERN":
+                    self.files_pattern = value
+                elif key == "PROPS_PATTERN":
+                    self.props_pattern = value
+                elif key == "MSG_COMMIT":
+                    self.msg_commit = value
+                elif key == "MSG_TAG":
+                    self.msg_tag = value
+                elif key == "AUTO_INCREMENT_POLICY":
+                    self.auto_increment_policy = value
+                elif key == "DRY_RUN":
+                    self.dryrun = value == "True"
+                else:
+                    log("[WARN] Release info parsing failure for file %s on line: %s" % (release_log, line), sys.stderr)
+        self.compute_other_versions()
+
+# pylint: disable=R0902
+class Release(object):
+    """Nuxeo release manager.
+
+    See 'self.perpare()', 'self.perform()'."""
 
     # pylint: disable=R0913
-    def __init__(self, repo, branch, tag, next_snapshot,
-                 maintenance_version="auto",
-                 is_final=False,
-                 skipTests=False,
-                 skipITs=False,
-                 other_versions=None,
-                 profiles='',
-                 msg_commit='',
-                 msg_tag='',
-                 auto_increment_policy='auto_patch'):
+    def __init__(self, repo, release_info):
+        if release_info.dryrun:
+            print "DEBUG -- init Release with:"
+            for key, value in vars(release_info).iteritems():
+                print "DEBUG: %s=%s" % (key, value)
+            print
+
         self.repo = repo
-        self.branch = branch
-        self.is_final = is_final
-        self.maintenance_version = maintenance_version
-        self.skipTests = skipTests
-        self.skipITs = skipITs
-        self.auto_increment_policy = auto_increment_policy
-        if profiles:
-            self.profiles = ',' + profiles
+        self.params = release_info
+        # TODO NXP-21007: Use release_info field instead of copy?
+        self.branch = release_info.branch
+        self.is_final = release_info.is_final
+        self.skip_tests = release_info.skip_tests
+        self.skip_its = release_info.skip_its
+        self.auto_increment_policy = release_info.auto_increment_policy
+        if release_info.profiles:
+            self.profiles = ',' + release_info.profiles
         else:
-            self.profiles = profiles
-        self.msg_commit = msg_commit
-        self.msg_tag = msg_tag
+            self.profiles = release_info.profiles
+        self.msg_commit = release_info.msg_commit
+        self.msg_tag = release_info.msg_tag
         # Evaluate default values, if not provided
-        self.set_other_versions_and_patterns(other_versions)
+        self.set_other_versions_and_patterns(release_info)
         self.set_snapshot()
-        self.set_tag(tag)
-        self.set_next_snapshot(next_snapshot)
-        self.maintenance_branch = self.tag
-        if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
-            self.maintenance_branch += ".0"
+        self.set_tag(release_info)
+        self.set_next_snapshot(release_info)
+        self.set_maintenance_version(release_info)
+
         # Detect if working on Nuxeo main sources
         tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
         artifact_id = tree.getroot().find("pom:artifactId", NAMESPACES)
@@ -190,7 +240,13 @@ given the path parameter.
         else:
             log("Working on custom repository...")
 
-    def set_other_versions_and_patterns(self, other_versions=None):
+        if release_info.dryrun:
+            print "\nDEBUG -- Release initialized with:"
+            for key, value in vars(self).iteritems():
+                print "DEBUG: %s=%s" % (key, value)
+            print
+
+    def set_other_versions_and_patterns(self, release_info):
         """Set other versions and replacement patterns"""
         Patterns = namedtuple('Patterns', ['files', 'props'])
         self.default_patterns = Patterns(
@@ -198,6 +254,7 @@ given the path parameter.
             "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
             # Properties like nuxeo.*.version
             "{%s}(nuxeo|marketplace)\\..*version" % NAMESPACES.get("pom"))
+        other_versions = release_info.other_versions
         custom_files_pattern = ""
         custom_props_pattern = ""
         other_versions_split = []
@@ -215,7 +272,7 @@ given the path parameter.
                     try:
                         re.compile(other_versions_split[1])
                     except re.error, e:
-                        raise ExitException(e, 1, "Bad pattern: '%s'\n%s" % (other_versions_split[1], e.message))
+                        raise ExitException(1, message = "Bad pattern: '%s'\n%s" % (other_versions_split[1], e.message))
                     custom_props_pattern = "{%s}%s" % (NAMESPACES.get("pom"), other_versions_split[1])
                 other_versions = other_versions_split[2]
             elif len(other_versions_split) == 1:
@@ -248,64 +305,92 @@ given the path parameter.
                                                NAMESPACES)
         self.snapshot = version_elem.text
 
-    def set_tag(self, tag="auto"):
-        """Return calculated tag. Requires 'self.snapshot' being set."""
-        if tag != "auto":
-            self.tag = tag
-        elif self.is_final:
+    def set_tag(self, release_info):
+        """Set evaluated tag based on 'self.snapshot'."""
+        if release_info.tag != "auto":
+            self.tag = release_info.tag
+        elif self.is_final is True:
             self.tag = self.snapshot.partition("-SNAPSHOT")[0]
         else:
             date = datetime.now().strftime("%Y%m%d_%H%M")
             self.tag = self.snapshot.replace("-SNAPSHOT", "-I" + date)
 
-    def set_next_snapshot(self, next_snapshot="auto"):
-        """Return calculated next snapshot. Requires 'self.snapshot' being set.
-        """
-        if next_snapshot != "auto":
-            self.next_snapshot = next_snapshot
-        elif self.is_final:
-            semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
-                                '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
-                                '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
-            verinfo = semver.match(self.snapshot).groupdict()
-            for key in ['patch', 'minor', 'major']:
-                if ((verinfo[key] and self.auto_increment_policy == 'auto_last')
-                    or self.auto_increment_policy == 'auto_%s' % key):
-                    verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
-                    break
-            if verinfo['patch']:
-                if self.auto_increment_policy in ['auto_minor', 'auto_major']:
-                    verinfo['patch'] = 0
-                self.next_snapshot = '%d.%d.%d-SNAPSHOT' % (
-                    int(verinfo['major']),
-                    int(verinfo['minor'] if verinfo['minor'] else 0),
-                    int(verinfo['patch']))
-            elif verinfo['minor']:
-                if self.auto_increment_policy == 'auto_major':
-                    verinfo['minor'] = 0
-                self.next_snapshot = '%d.%d-SNAPSHOT' % (
-                    int(verinfo['major']),
-                    int(verinfo['minor']))
-            elif verinfo['major']:
-                self.next_snapshot = '%d-SNAPSHOT' % (
-                    int(verinfo['major']))
+    @staticmethod
+    def auto_increment(current_version, policy_in):
+        """Returns the next version following 'current_version' with 'policy_in' apply"""
+        next_version = current_version
+        policy = re.sub('_(no_zero)', '', policy_in)
+        semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
+                            '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
+                            '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
+        verinfo = semver.match(current_version).groupdict()
+        for key in ['patch', 'minor', 'major']:
+            if (verinfo[key] and policy == 'auto_last') or policy == 'auto_%s' % key:
+                verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
+                break
+        if verinfo['patch']:
+            if policy in ['auto_minor', 'auto_major']:
+                verinfo['patch'] = 0
+            next_version = '%d.%d.%d-SNAPSHOT' % (
+                int(verinfo['major']),
+                int(verinfo['minor'] if verinfo['minor'] else 0),
+                int(verinfo['patch']))
+        elif verinfo['minor']:
+            if policy == 'auto_major':
+                verinfo['minor'] = 0 if policy_in != 'auto_major_no_zero' else 1
+            next_version = '%d.%d-SNAPSHOT' % (
+                int(verinfo['major']),
+                int(verinfo['minor']))
+        elif verinfo['major']:
+            next_version = '%d-SNAPSHOT' % (
+                int(verinfo['major']))
+        return next_version
+
+    def set_maintenance_version(self, release_info):
+        """Set evaluated next maintenance snapshot version based on:
+        - 'release_info.maintenance_version'
+        - 'release_info.is_final' (TODO: not yet but it should)
+        and the maintenance branch name based on:
+        - 'self.tag'
+        - 'self.next_snapshot'
+        - 'self.branch'"""
+        matches = re.match('^auto_(patch|minor|major)$', release_info.maintenance_version)
+        if matches:
+            self.maintenance_version = self.auto_increment(release_info.snapshot, release_info.maintenance_version)
+        else:
+            self.maintenance_version = release_info.maintenance_version
+
+        self.maintenance_branch = self.tag
+        if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
+            self.maintenance_branch += ".0"
+
+    def set_next_snapshot(self, release_info):
+        """Set evaluated next snapshot version based on:
+        - 'release_info.next_snapshot'
+        - 'release_info.is_final'
+        - 'release_info.auto_increment_policy'"""
+        if release_info.next_snapshot != "auto":
+            self.next_snapshot = release_info.next_snapshot
+        elif release_info.is_final:
+            self.next_snapshot = self.auto_increment(self.snapshot, release_info.auto_increment_policy)
         else:
             self.next_snapshot = self.snapshot
 
+    # TODO NXP-21007: Use release_info field instead of copy?
     def log_summary(self, store_params=True):
-        """Log summary of configuration for current release."""
+        """Log summary of configuration for current release. Returns the log filename"""
         log("Releasing from branch:".ljust(25) + self.branch)
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
-        if self.maintenance_version == "auto":
-            log("Maintenance branch deleted".ljust(25))
+        if self.maintenance_version == "discard":
+            log("Maintenance branch %s deleted".ljust(25) % self.tag)
         else:
             log("Maintenance branch:".ljust(25) + self.maintenance_branch)
             log("Maintenance version:".ljust(25) + self.maintenance_version)
-        if self.skipTests:
+        if self.skip_tests:
             log("Tests execution is skipped")
-        elif self.skipITs:
+        elif self.skip_its:
             log("Integration Tests execution is skipped")
         if self.custom_patterns.files:
             log("Custom files pattern: ".ljust(25) +
@@ -322,24 +407,28 @@ given the path parameter.
                 self.repo.basedir, os.pardir,
                 "release-%s.log" % os.path.basename(self.repo.basedir)))
             with open(release_log, "wb") as f:
-                f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
-                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
-                        "SKIP_ITS=%s\nPROFILES=%s\nOTHER_VERSIONS=%s\n"
-                        "FILES_PATTERN=%s\nPROPS_PATTERN=%s\nMSG_COMMIT=%s\n"
-                        "MSG_TAG=%s\nAUTO_INCREMENT_POLICY=%s\n" %
-                        (self.repo.alias, self.branch, self.tag,
-                         self.next_snapshot, self.maintenance_version,
-                         self.is_final, self.skipTests, self.skipITs,
-                         self.profiles,
-                         (','.join('/'.join(other_version)
-                                   for other_version in self.other_versions)),
-                         self.custom_patterns.files,
-                         self.custom_patterns.props[35:],
-                         self.msg_commit,
-                         self.msg_tag,
-                         self.auto_increment_policy))
+                f.write("MODULE=%s\n" % os.path.basename(self.repo.basedir) +
+                        "REMOTE=%s\n" % self.repo.alias +
+                        "BRANCH=%s\n" % self.branch +
+                        "SNAPSHOT=%s\n" % self.snapshot +
+                        "TAG=%s\n" % self.tag +
+                        "NEXT_SNAPSHOT=%s\n" % self.next_snapshot +
+                        "MAINTENANCE=%s\n" % self.maintenance_version +
+                        "FINAL=%s\n" % self.is_final +
+                        "SKIP_TESTS=%s\n" % self.skip_tests +
+                        "SKIP_ITS=%s\n" % self.skip_its +
+                        "PROFILES=%s\n" % self.profiles +
+                        "OTHER_VERSIONS=%s\n" % (','.join('/'.join(other_version)
+                                                          for other_version in self.other_versions)) +
+                        "FILES_PATTERN=%s\n" % self.custom_patterns.files +
+                        "PROPS_PATTERN=%s\n" % self.custom_patterns.props[35:] +
+                        "MSG_COMMIT=%s\n" % self.msg_commit +
+                        "MSG_TAG=%s\n" % self.msg_tag +
+                        "AUTO_INCREMENT_POLICY=%s\n" % self.auto_increment_policy +
+                        "DRY_RUN=%s\n" % self.params.dryrun)
             log("Parameters stored in %s" % release_log)
         log("")
+        return release_log
 
     # pylint: disable=R0912,R0914
     def update_versions(self, old_version, new_version):
@@ -493,7 +582,8 @@ given the path parameter.
                 return
         shutil.copy(old_archive, os.path.join(self.archive_dir, new_name))
 
-    def get_message(self, message, additional_message):
+    @staticmethod
+    def get_message(message, additional_message):
         """Returns a message prefixing the additional message by ': ' if both
         parameters are filled."""
         if message and message.strip():
@@ -557,7 +647,7 @@ given the path parameter.
             self.repo.git_recurse("tag -a release-%s -m'%s'" % (self.tag, self.get_tag_message(msg_tag)))
 
             # TODO NXP-8569 Optionally merge maintenance branch on source
-            if self.maintenance_version != "auto":
+            if self.maintenance_version != "discard":
                 # Maintenance branches are kept, so update their versions
                 log("\n[INFO] Maintenance branch...")
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
@@ -585,7 +675,7 @@ given the path parameter.
                 self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
 
         if upgrade_only and doperform:
-            self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs, dryrun=dryrun, upgrade_only=True)
+            self.perform(skip_tests=self.skip_tests, skip_ITs=self.skip_its, dryrun=dryrun, upgrade_only=True)
 
         if not upgrade_only:
             log("\n[INFO] Build and package release-%s..." % self.tag)
@@ -598,9 +688,9 @@ given the path parameter.
                 commands = "clean install"
                 profiles = "release,-qa" + self.profiles
             if doperform:
-                self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs, dryrun=dryrun)
+                self.perform(skip_tests=self.skip_tests, skip_ITs=self.skip_its, dryrun=dryrun)
             else:
-                self.repo.mvn(commands, skip_tests=self.skipTests, skip_ITs=self.skipITs, profiles=profiles,
+                self.repo.mvn(commands, skip_tests=self.skip_tests, skip_ITs=self.skip_its, profiles=profiles,
                               dryrun=dryrun)
             if not dryrun:
                 self.package_all()
@@ -720,7 +810,7 @@ given the path parameter.
             self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias, self.branch),
                                   with_optionals=True)
         if not upgrade_only:
-            if self.maintenance_version != "auto":
+            if self.maintenance_version != "discard":
                 self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias,
                                                                      self.maintenance_branch), with_optionals=True)
             elif self.next_snapshot == 'done':
@@ -750,10 +840,7 @@ given the path parameter.
 
 # pylint: disable=R0912,R0914,R0915
 def main():
-    # global namespaces
     assert_git_config()
-    # namespaces = {"pom": "http://maven.apache.org/POM/4.0.0"}
-    # etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
 
     try:
         if not os.path.isdir(".git"):
@@ -775,18 +862,17 @@ def main():
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
 \nCommands:
-  branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
-'prepare' or 'perform' commmands must use option '--next=done'. If kept, that branch will become the maintenance \
+       branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
+'prepare' or 'perform' commands must use option '--next=done'. If kept, that branch will become the maintenance \
 branch after release.
-  prepare: Prepare the release (build, change versions, tag and package \
-source and distributions). The release parameters are stored in a \
-release-*.log file.
-  perform: Perform the release (push sources, deploy artifacts and upload \
+       prepare: Prepare the release (build, change versions, tag and package source and distributions). The release \
+parameters are stored in a release-nuxeo.log file.
+       perform: Perform the release (push sources, deploy artifacts and upload \
 packages, tests are always skipped). If no parameter is given, they are read \
 from the release-*.log file.
-  package: Package distributions and source code in the archives directory.
-  maintenance: Create a maintenance branch from an existing tag.
-  onestep: Prepare and perform the release in one unique step. No stagging is \
+       package: Package distributions and source code in the archives directory.
+       maintenance: Create a maintenance branch from an existing tag.
+       onestep: Prepare and perform the release in one unique step. No staging is \
 possible. The release-*.log file is not read.""")
         description = """Release Nuxeo from a given branch, tag the release, \
 then set the next SNAPSHOT version. If a maintenance version was provided, \
@@ -814,11 +900,11 @@ Default: '%default'""")
                           dest='dryrun', default=False,
                           help="""Dry run mode. Default: '%default'""")
         parser.add_option('--skipTests', action="store_true",
-                          dest='skipTests', default=False,
+                          dest='skip_tests', default=False,
                           help="""Skip tests execution (but compile them).
 Default: '%default'""")
         parser.add_option('--skipITs', action="store_true",
-                          dest='skipITs', default=False,
+                          dest='skip_its', default=False,
                           help="""Skip Integration Tests execution (but compile
 them). Default: '%default'""")
         parser.add_option('-p', '--profiles', action="store", type="string",
@@ -855,10 +941,10 @@ In mode 'auto', if final option is True, then the next snapshot is the current
 one increased, else it is equal to the current.""")
         versioning_options.add_option(
             '-m', '--maintenance', action="store", dest='maintenance_version',
-            default="auto", help="""Maintenance version. Default: '%default'\n
+            default="discard", help="""Maintenance version. Default: '%default'\n
 The maintenance branch is always named like the tag without the 'release-'
 prefix. If set, the version will be used on the maintenance branch, else, in
-mode 'auto', the maintenance branch is deleted after release.""")
+mode 'discard', the maintenance branch is deleted after release.""")
         versioning_options.add_option(
             '--arv', '--also-replace-version', action="store",
             dest='other_versions', default=None,
@@ -900,11 +986,12 @@ Default tag message:\n
             default='auto_patch',
             help="""Version increment policy when in 'auto' mode. Default: 'auto_patch'\n
 Available options:\n
- - 'auto_last': increment last explicitly defined number (1.0.0 => 1.0.1, 1.0 => 1.1, 1 => 2)\n
- - 'auto_major': 1.0.0 => 2.0.0\n
- - 'auto_minor': 1.0.0 => 1.1.0\n
- - 'auto_patch': 1.0.0 => 1.0.1\n
-Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should be optional.
+ - 'auto_last':\tincrement last explicitly defined number (1.2.3 => 1.2.4, 1.2 => 1.3, 1 => 2)\n
+ - 'auto_major':\t1.2.3 => 2.0.0\n
+ - 'auto_major_no_zero':\t1.2.3 => 2.0.1\n
+ - 'auto_minor':\t1.2.3 => 1.3.0\n
+ - 'auto_patch':\t1.2.3 => 1.2.4\n
+Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being explicit or not should not intervene.
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
@@ -914,41 +1001,38 @@ Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being 
             raise ExitException(
                 1, "'command' must be a single argument: '%s'." % (args)
                 + " See usage with '-h'.")
-        if ("command" in locals() and command == "perform"
-            and os.path.isfile(Release.get_release_log(os.getcwd()))
-                and options == parser.get_default_values()):
-            (options.remote_alias, options.branch, options.tag, options.next_snapshot, options.maintenance_version,
-             options.is_final, options.skipTests, options.skipITs, options.profiles, options.other_versions,
-             options.msg_commit, options.msg_tag,
-             options.auto_increment_policy) = Release.read_release_log(os.getcwd())
-        repo = Repository(os.getcwd(), options.remote_alias)
-        system("git fetch %s" % (options.remote_alias))
+
+        release_info = ReleaseInfo(**vars(options))
+        if ("command" in locals() and command == "perform" and os.path.isfile(ReleaseInfo.get_release_log(os.getcwd()))
+            and options == parser.get_default_values()):
+            release_info.read_release_log(ReleaseInfo.get_release_log(os.getcwd()))
+
+        repo = Repository(os.getcwd(), release_info.remote_alias)
+        system("git fetch %s" % (release_info.remote_alias))
         if "command" in locals():
             if command == "onestep" and options.deploy:
                 parser.error("command 'onestep' and option 'deploy' are"
                              " mutually exclusive")
             if command == "maintenance":
-                if options.tag == "auto":
-                    options.tag = repo.get_current_version()[8:]
-                if options.tag == "":
+                if release_info.tag == "auto":
+                    release_info.tag = repo.get_current_version()[8:]
+                if release_info.tag == "":
                     raise ExitException(1, "Couldn't guess tag name from %s" %
                                         repo.get_current_version())
-                if options.branch == "auto":
-                    options.branch = options.tag
-                repo.git_update("release-%s" % options.tag)
-                options.is_final = True
-                if options.maintenance_version == "auto":
-                    options.maintenance_version = options.tag + ".1-SNAPSHOT"
-                options.next_snapshot = None
-            if command == "package" and options.tag != "auto":
-                options.branch = options.tag
+                if release_info.branch == "auto":
+                    release_info.branch = release_info.tag
+                repo.git_update("release-%s" % release_info.tag)
+                release_info.is_final = True
+                if release_info.maintenance_version == "discard":
+                    release_info.maintenance_version = release_info.tag + ".1-SNAPSHOT"
+                release_info.next_snapshot = None
+            if command == "package" and release_info.tag != "auto":
+                release_info.branch = release_info.tag
             if command != "maintenance":
-                if options.branch == "auto":
-                    options.branch = repo.get_current_version()
-                repo.git_update(options.branch)
-        release = Release(repo, options.branch, options.tag, options.next_snapshot, options.maintenance_version,
-                          options.is_final, options.skipTests, options.skipITs, options.other_versions,
-                          options.profiles, options.msg_commit, options.msg_tag, options.auto_increment_policy)
+                if release_info.branch == "auto":
+                    release_info.branch = repo.get_current_version()
+                repo.git_update(release_info.branch)
+        release = Release(repo, release_info)
         if ("command" not in locals() or
                 command != "maintenance" and command != "package"):
             release.log_summary("command" in locals() and command != "perform")
@@ -967,14 +1051,15 @@ Note: 'auto_last' is not recommended since 1 = 1.0 = 1.0.0, then the zero being 
         elif command == "package":
             log("Packaging %s from %s" % (release.snapshot, release.branch))
             repo.clone(release.branch)
-            # workaround for NXBT-121: use install instead of package
-            if options.profiles:
-                profiles = "qa," + options.profiles
+            if release_info.profiles:
+                profiles = "qa," + release_info.profiles
             else:
                 profiles = "qa"
+            # TODO NXP-21007: NXBT-121 resolved as "won't fix", remove that workaround?
+            # workaround for NXBT-121: use install instead of package
             repo.mvn("clean install", profiles=profiles,
-                     skip_tests=options.skipTests,
-                     skip_ITs=options.skipITs)
+                     skip_tests=release_info.skip_tests,
+                     skip_ITs=release_info.skip_its)
             release.package_all(release.snapshot)
         elif command == "test":
             release.test()

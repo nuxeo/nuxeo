@@ -1,23 +1,23 @@
 #!/usr/bin/env python
-##
-## (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
-##
-## All rights reserved. This program and the accompanying materials
-## are made available under the terms of the GNU Lesser General Public License
-## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl-2.1.html
-##
-## This library is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-## Lesser General Public License for more details.
-##
-## Contributors:
-##     Stefane Fermigier
-##     Julien Carsique
-##
-## This script clones or updates Nuxeo source code from Git repositories.
-##
+"""
+(C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the GNU Lesser General Public License
+(LGPL) version 2.1 which accompanies this distribution, and is available at
+http://www.gnu.org/licenses/lgpl-2.1.html
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
+
+Contributors:
+    Stefane Fermigier
+    Julien Carsique
+
+This script clones or updates Nuxeo source code from Git repositories."""
+
 import optparse
 import os
 import sys
@@ -28,12 +28,16 @@ from scripts.terminalsize import get_terminal_size
 
 
 def main():
+    """See './clone.py -h'"""
     try:
-        usage = "usage: %prog [options] [version|branch|tag]"
+        usage = """usage: %prog [options] [version|branch|tag]
+\nSynopsis: ./clone.py master -a -m \"\"
+          Clone or update the Nuxeo Platform source code to the master branch, including all addons and Nuxeo \
+Packages"""
         help_formatter = IndentedHelpFormatterWithNL(
                                                 width=get_terminal_size()[0])
         parser = optparse.OptionParser(usage=usage, description="""Clone or
-update Nuxeo source code.""", formatter=help_formatter)
+update Nuxeo Platform source code.""", formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
                           dest='remote_alias', default='origin', help="""the
 Git alias of remote URL (default: %default)""")
