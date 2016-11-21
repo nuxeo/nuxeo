@@ -21,11 +21,17 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.Environment.DISTRIBUTION_PACKAGE;
 import static org.nuxeo.common.Environment.DISTRIBUTION_VERSION;
 import static org.nuxeo.common.Environment.PRODUCT_VERSION;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 
@@ -41,12 +47,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.sun.jersey.api.uri.UriComponent;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
@@ -110,6 +110,9 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         // Highest priority wins
         assertEquals("nxstartup.faces", LoginScreenHelper.getStartupPagePath());
+
+        // Get all the startup page paths
+        assertEquals(Arrays.asList("nxstartup.faces", "other.html"), LoginScreenHelper.getStartupPagePaths());
 
         assertEquals("es_ES", config.getDefaultLocale());
         assertEquals(2, config.getSupportedLocales().size());
@@ -185,6 +188,9 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         // Highest priority wins
         assertEquals("ui/", LoginScreenHelper.getStartupPagePath());
+
+        // Get all the startup page paths
+        assertEquals(Arrays.asList("ui/", "nxstartup.faces", "merged.html"), LoginScreenHelper.getStartupPagePaths());
 
         assertEquals("fr", config.getDefaultLocale());
         assertEquals(3, config.getSupportedLocales().size());
