@@ -15,7 +15,8 @@ form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td {
   font: normal 14px / 20px 'Open Sans', Arial, sans-serif;
   color: #041f34;
   margin: 0;
-  padding: 0;}
+  padding: 0;
+  box-sizing: border-box;}
 
 body {
   background: url("../images/bg.png") no-repeat fixed right bottom #002543;}
@@ -200,7 +201,7 @@ input:focus, textarea:focus {
 /* Main Column - content */
 .mainCell {
   width: 77%;
-  padding: 2em 4em;}
+  padding: 2em 3em;}
 
 .screenDescription {
   font-size: 120%;
@@ -432,17 +433,25 @@ table.smtp,
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .package {
-  width: 31%;
+  flex-basis: 30%;
   border: 1px solid #ddd;
   padding: 1em;
   position: relative;
   box-sizing: border-box;
-  margin: 0 .8em .8em 0;
+  margin: 0 .7em .8em 0;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
   border-bottom: 3px solid transparent;
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+/* IE11+ only */
+  .package {
+    flex-basis: 27%;
+  }
 }
 
 .package:hover,
