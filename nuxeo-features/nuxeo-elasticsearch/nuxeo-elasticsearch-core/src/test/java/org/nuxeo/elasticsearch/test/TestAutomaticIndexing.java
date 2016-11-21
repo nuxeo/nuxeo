@@ -378,7 +378,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(4);
+        assertNumberOfCommandProcessed(5);
 
         startTransaction();
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -696,8 +696,8 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        // 3 docs (2 files + 1 folder checkout) + 2 versions of folder
-        assertNumberOfCommandProcessed(5);
+        // 3 docs (2 files + 1 folder checkout) + 2 versions of folder + 2 versions (because of isLastVersions)
+        assertNumberOfCommandProcessed(7);
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(5, ret.totalSize());
@@ -711,6 +711,41 @@ public class TestAutomaticIndexing {
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(4, ret.totalSize());
+    }
+
+    @Test
+    public void shoulIndexLatestVersions() throws Exception {
+        startTransaction();
+        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        file1 = session.createDocument(file1);
+        file1.setPropertyValue("dc:title", "v1");
+        file1 = session.saveDocument(file1);
+        DocumentRef v1 = file1.checkIn(VersioningOption.MAJOR, "init v1");
+        TransactionHelper.commitOrRollbackTransaction();
+        startTransaction();
+
+        file1.setPropertyValue("dc:title", "v2");
+        file1 = session.saveDocument(file1);
+        DocumentRef v2 = file1.checkIn(VersioningOption.MAJOR, "update v2");
+        TransactionHelper.commitOrRollbackTransaction();
+        startTransaction();
+
+        file1.setPropertyValue("dc:title", "v3");
+        file1 = session.saveDocument(file1);
+        DocumentRef v3 = file1.checkIn(VersioningOption.MAJOR, "update v3");
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(4, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("v3", ret.get(0).getTitle());
     }
 
     @Test

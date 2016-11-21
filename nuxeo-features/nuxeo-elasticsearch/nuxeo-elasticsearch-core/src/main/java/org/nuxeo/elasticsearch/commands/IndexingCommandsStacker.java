@@ -22,6 +22,7 @@ package org.nuxeo.elasticsearch.commands;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -104,11 +105,21 @@ public abstract class IndexingCommandsStacker {
                 break;
             case BEFORE_DOC_UPDATE:
             case DOCUMENT_CHECKEDOUT:
-            case DOCUMENT_CHECKEDIN:
             case BINARYTEXT_UPDATED:
             case DOCUMENT_TAG_UPDATED:
             case DOCUMENT_PROXY_UPDATED:
             case LifeCycleConstants.TRANSITION_EVENT:
+                type = Type.UPDATE;
+                break;
+            case DOCUMENT_CHECKEDIN:
+                CoreSession session = doc.getCoreSession();
+                if (session != null) {
+                    // The previous doc version with isLastestVersion and isLatestMajorVersion need to be updated
+                    // Here we have no way to get this exact doc version so we reindex all versions
+                    for (DocumentModel version : doc.getCoreSession().getVersions(doc.getRef())) {
+                        stackCommand(version, BEFORE_DOC_UPDATE, false);
+                    }
+                }
                 type = Type.UPDATE;
                 break;
             case DOCUMENT_MOVED:
