@@ -73,7 +73,6 @@ smallIframeUrl += "size=small";
 String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login_bg.jpg");
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #006ead");
 String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#ff452a");
-String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
@@ -164,7 +163,6 @@ video {
 }
 
 .header {
-  <%=headerStyle%>;
   text-align: center;
   margin-bottom: 1.5em;
 }
@@ -176,7 +174,7 @@ footer {
   text-transform: uppercase;
   letter-spacing: .03em;
   text-align: center;
-  <%=footerStyle%>;
+  <%=footerStyle%>
 }
 
 section {
