@@ -71,6 +71,9 @@
              "analyzer" : "fulltext"
           },
           "properties" : {
+            "id" : {
+              "type" : "long"
+            },
             "comment" : {
               "type" : "multi_field",
               "fields" : {
