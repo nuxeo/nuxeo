@@ -133,8 +133,7 @@ public class DefaultFileSystemItemFactoryFixture {
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     /**
-     * For databases that don't have sub-second resolution, sleep a bit to get
-     * to the next second.
+     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
      */
     protected void maybeSleepToNextSecond() {
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -190,9 +189,8 @@ public class DefaultFileSystemItemFactoryFixture {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory =
-                (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                        "defaultFileSystemItemFactory");
+        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultFileSystemItemFactory");
         assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
@@ -871,9 +869,8 @@ public class DefaultFileSystemItemFactoryFixture {
         // defaultSyncRootFolderItemFactory
         DocumentModel section = session.createDocument(session.createDocumentModel("/", "sectionSyncRoot", "Section"));
         nuxeoDriveManager.registerSynchronizationRoot(principal, section, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory =
-                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                        "defaultSyncRootFolderItemFactory");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
         FolderItem sectionItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(section);
         assertNotNull(sectionItem);
         assertFalse(sectionItem.getCanCreateChild());
@@ -922,9 +919,8 @@ public class DefaultFileSystemItemFactoryFixture {
             // Check that the lock info is not fetched for FileSystemItem
             // adaptation when calling getChildren or
             // scrollDescendants
-            FileSystemItemFactory defaultSyncRootFolderItemFactory =
-                    ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                            "defaultSyncRootFolderItemFactory");
+            FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                    "defaultSyncRootFolderItemFactory");
             FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
                     syncRootFolder);
             List<FileSystemItem> children = syncRootFolderItem.getChildren();
@@ -980,9 +976,8 @@ public class DefaultFileSystemItemFactoryFixture {
     @Test
     public void testFolderItemChildrenPageProviderOverride() throws Exception {
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), syncRootFolder, session);
-        FileSystemItemFactory defaultSyncRootFolderItemFactory =
-                ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                        "defaultSyncRootFolderItemFactory");
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "defaultSyncRootFolderItemFactory");
         FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
         assertEquals(5, syncRootFolderItem.getChildren().size());
 
