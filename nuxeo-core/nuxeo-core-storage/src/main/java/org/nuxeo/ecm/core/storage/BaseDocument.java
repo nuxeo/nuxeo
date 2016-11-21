@@ -745,18 +745,18 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, WriteContext writeContext)
             throws PropertyException {
-        return writeComplexProperty(state, complexProperty, null, writeContext);
+        return writeComplexProperty(state, complexProperty, null, false, writeContext);
     }
 
     /**
      * Writes state from a complex property.
      * <p>
-     * Writes only properties that are dirty.
+     * Writes only properties that are dirty, unless skipDirtyCheck is true in which case everything is written.
      *
      * @return {@code true} if something changed
      */
-    protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, String xpath, WriteContext wc)
-            throws PropertyException {
+    protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, String xpath,
+            boolean skipDirtyCheck, WriteContext wc) throws PropertyException {
         @SuppressWarnings("unchecked")
         BlobWriteContext<T> writeContext = (BlobWriteContext<T>) wc;
         if (complexProperty instanceof BlobProperty) {
@@ -771,7 +771,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         for (Property property : complexProperty) {
             // write dirty properties, but also phantoms with non-null default values
             // this is critical for DeltaLong updates to work, they need a non-null initial value
-            if (property.isDirty() || (property.isPhantom() && property.getField().getDefaultValue() != null)) {
+            if (skipDirtyCheck || property.isDirty()
+                    || (property.isPhantom() && property.getField().getDefaultValue() != null)) {
                 // do the write
             } else {
                 continue;
@@ -797,7 +798,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             } else if (type.isComplexType()) {
                 // complex property
                 T childState = getChildForWrite(state, name, type);
-                writeComplexProperty(childState, (ComplexProperty) property, xp, writeContext);
+                writeComplexProperty(childState, (ComplexProperty) property, xp, skipDirtyCheck, writeContext);
             } else {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
@@ -850,8 +851,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     for (Property childProperty : property.getChildren()) {
                         T childState = childStates.get(i);
                         String xpi = xp + '/' + i;
+                        boolean moved = childProperty.isMoved();
                         boolean c = writeComplexProperty(childState, (ComplexProperty) childProperty, xpi,
-                                writeContext);
+                                skipDirtyCheck || moved , writeContext);
                         if (c) {
                             writeContext.recordChange(xpi);
                         }

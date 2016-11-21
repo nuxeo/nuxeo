@@ -207,21 +207,25 @@ public class BlobOperationsTest {
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
         chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob1"));
         chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob2"));
+        chain.add(SetDocumentBlob.ID).set("xpath", "files:files").set("file", Blobs.createBlob("blob3"));
         chain.add(GetDocumentBlobs.ID);
 
         BlobList out = (BlobList) service.run(ctx, chain);
-        assertEquals(2, out.size());
+        assertEquals(3, out.size());
         assertEquals("blob1", out.get(0).getString());
         assertEquals("blob2", out.get(1).getString());
+        assertEquals("blob3", out.get(2).getString());
 
-        // chain 2 is removing the blobs we constructed earlier.
+        // chain 2 is removing blob2.
         chain = new OperationChain("testRemoveChain");
         chain.add(FetchDocument.ID).set("value", new PathRef("/src/file"));
-        chain.add(RemoveDocumentBlob.ID).set("xpath", "files:files/file[0]");
+        chain.add(RemoveDocumentBlob.ID).set("xpath", "files:files/file[1]");
         chain.add(GetDocumentBlobs.ID);
 
         out = (BlobList) service.run(ctx, chain);
-        assertEquals(1, out.size());
+        assertEquals(2, out.size());
+        assertEquals("blob1", out.get(0).getString());
+        assertEquals("blob3", out.get(1).getString());
     }
 
     @Test
