@@ -23,13 +23,12 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.csv.core.CSVImporter;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.File;
 
 @Operation(
         id = CSVImportOperation.ID,
@@ -52,14 +51,14 @@ public class CSVImportOperation {
     protected boolean mDocumentMode;
 
     @OperationMethod
-    public String importCSV(File file) {
+    public String importCSV(Blob blob) {
         ImportMode importMode = mDocumentMode ? ImportMode.IMPORT : ImportMode.CREATE;
         CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(mSendReport)
                                                                      .importMode(importMode)
                                                                      .build();
 
         CSVImporter csvImporter = Framework.getService(CSVImporter.class);
-        return csvImporter.launchImport(mSession, mPath, file, file.getName(), options);
+        return csvImporter.launchImport(mSession, mPath, blob.getFile(), blob.getFilename(), options);
     }
 
     @OperationMethod
@@ -67,7 +66,7 @@ public class CSVImportOperation {
         if (importID == null || importID.isEmpty()) {
             return null;
         }
-        CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+        CSVImporter csvImporter = Framework.getService(CSVImporter.class);
         return csvImporter.getImportStatus(importID).toString();
     }
 }
