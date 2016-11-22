@@ -428,7 +428,7 @@ class Release(object):
                         "DRY_RUN=%s\n" % self.params.dryrun)
             log("Parameters stored in %s" % release_log)
         log("")
-        return release_log
+        return release_log if store_params else None
 
     # pylint: disable=R0912,R0914
     def update_versions(self, old_version, new_version):
