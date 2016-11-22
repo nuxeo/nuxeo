@@ -11,7 +11,7 @@
     <!-- virtual package to handle no-ui -->
     <package id="nuxeo-no-ui" label="Headless Server" color="#635959" textcolor="#FFF"
       shortlabel="NOUI" virtual="true"
-      desc="Install Nuxeo as a lightweight hyper-scalable content repository and start building your own UI or integrating with it using our Clients SDKs (Java, JavaScript, C#, Python, PHP, DART, Objective-C)." />
+      desc="Install Nuxeo as a headless hyperscale content repository and start building your own UIs or integrations using the REST API and our Clients SDKs (Java, JavaScript, C#, Python, PHP, DART, Objective-C)." />
     <!-- Addon list -->
     <package id="nuxeo-dam" label="Digital Asset Management" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
       desc="The Nuxeo DAM addon adds robust, extensible, Digital Asset Management capabilities for building solutions that help marketing and brand managers catalog, process, store, retrieve, and distribute rich media content, including images, audio and video." />
