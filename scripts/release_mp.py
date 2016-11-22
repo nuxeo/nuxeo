@@ -208,7 +208,17 @@ class ReleaseMP(object):
                                                                                     "auto_increment_policy"),
                                            dryrun=dryrun)
                 mp_release = Release(mp_repo, release_info)
-                mp_release.log_summary()
+                release_log = mp_release.log_summary()
+                release_info.read_release_log(release_log)
+                if dryrun:
+                    print "DEBUG -- init %s with:" % marketplace
+                for key, value in vars(release_info).iteritems():
+                    if dryrun:
+                        print "DEBUG: %s-%s=%s" % (marketplace, key, value)
+                    self.mp_config.set("DEFAULT", marketplace + "-" + key, str(value))
+                if dryrun:
+                    print
+
                 mp_release.release_branch(dryrun=dryrun, upgrade_only=upgrade_only)
                 self.mp_config.set(marketplace, "next_snapshot", "done")
                 branched = True
