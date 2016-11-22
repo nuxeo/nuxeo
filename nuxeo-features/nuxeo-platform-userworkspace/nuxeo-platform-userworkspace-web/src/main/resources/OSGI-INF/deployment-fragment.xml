@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <require>org.nuxeo.ecm.platform.lang</require>
   <require>org.nuxeo.ecm.webapp.core</require>
 
   <install>
