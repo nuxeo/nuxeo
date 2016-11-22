@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
@@ -73,6 +74,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
@@ -115,6 +119,8 @@ class MarkLogicQueryBuilder {
     private final Set<String> principals;
 
     private final PathResolver pathResolver;
+
+    public boolean hasFulltext;
 
     private final boolean fulltextSearchDisabled;
 
@@ -189,8 +195,8 @@ class MarkLogicQueryBuilder {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
             return walkEcmPath(op, rvalue);
-            // } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
-            // walkEcmFulltext(name, op, rvalue);
+        } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+            return walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
             throw new UnsupportedOperationException("SUM");
         } else if (op == Operator.SUB) {
@@ -320,6 +326,69 @@ class MarkLogicQueryBuilder {
             return walkNull(new Reference(NXQL.ECM_UUID), true);
         }
         return walkEq(new Reference(NXQL.ECM_UUID), new StringLiteral(id), op == Operator.EQ);
+    }
+
+    protected QueryBuilder walkEcmFulltext(String lvalue, Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.LIKE) {
+            throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires = or LIKE operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
+        }
+        if (fulltextSearchDisabled) {
+            throw new QueryParseException("Fulltext search disabled by configuration");
+        }
+        if (lvalue.equals(NXQL.ECM_FULLTEXT)) {
+            hasFulltext = true;
+            return getMarkLogicFulltextQuery((StringLiteral) rvalue);
+        }
+        // TODO implement fulltext on explicit field
+        return null;
+    }
+
+    protected QueryBuilder getMarkLogicFulltextQuery(StringLiteral rvalue) {
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(rvalue.value);
+        if (ft == null) {
+            // TODO handle when fulltext query is null
+            return null;
+        }
+        return translateFulltext(ft);
+    }
+
+    /**
+     * Transforms the NXQL fulltext syntax into MarkLogic queries.
+     */
+    protected QueryBuilder translateFulltext(FulltextQuery ft) {
+        QueryBuilder query;
+        if (ft.op == Op.OR) {
+            List<String> words = new ArrayList<>(ft.terms.size());
+            List<QueryBuilder> queries = new ArrayList<>(ft.terms.size());
+            for (FulltextQuery term : ft.terms) {
+                if (term.op == Op.WORD) {
+                    words.add(term.word.toLowerCase());
+                } else {
+                    queries.add(translateFulltext(term));
+                }
+            }
+            if (!words.isEmpty()) {
+                queries.add(0, new FulltextQueryBuilder(words.toArray(new String[0])));
+            }
+            if (queries.size() > 1) {
+                query = new CompositionQueryBuilder(queries, false);
+            } else {
+                query = queries.get(0);
+            }
+        } else if (ft.op == Op.AND) {
+            List<QueryBuilder> queries = ft.terms.stream().map(this::translateFulltext).collect(
+                    Collectors.toList());
+            query = new CompositionQueryBuilder(queries, true);
+        } else {
+            query = new FulltextQueryBuilder(ft.word.toLowerCase());
+            if (ft.op == Op.NOTWORD) {
+                query.not();
+            }
+        }
+        return query;
     }
 
     private QueryBuilder walkNot(Operand lvalue) {
@@ -1021,6 +1090,40 @@ class MarkLogicQueryBuilder {
 
     }
 
+    private static class FulltextQueryBuilder implements QueryBuilder {
+
+        private final String[] values;
+
+        private boolean not;
+
+        public FulltextQueryBuilder(String value) {
+            this.values = new String[] { value };
+        }
+
+        public FulltextQueryBuilder(String[] values) {
+            this.values = values;
+        }
+
+        @Override
+        public String build() {
+            String text = Arrays.stream(values)
+                                .map(value -> '"' + value + '"')
+                                .collect(Collectors.joining(",", "(", ")"));
+            String query = "cts:word-query(" + text + ", (\"case-insensitive\",\"diacritic-sensitive\","
+                    + "\"punctuation-sensitive\",\"whitespace-sensitive\",\"stemmed\"))";
+            if (not) {
+                return "cts:not-query(" + query + ")";
+            }
+            return query;
+        }
+
+        @Override
+        public void not() {
+            not = !not;
+        }
+
+    }
+
     private static class RangeQueryBuilder extends AbstractNamedQueryBuilder {
 
         public enum Operator {
@@ -1241,6 +1344,8 @@ class MarkLogicQueryBuilder {
 
         private final String ctsQuery;
 
+        public boolean sortOnFulltextScore;
+
         public MarkLogicQuery(String ctsQuery) {
             this.ctsQuery = ctsQuery;
         }
@@ -1274,6 +1379,7 @@ class MarkLogicQueryBuilder {
         }
 
         private String getOrderBy() {
+            sortOnFulltextScore = false;
             Map<String, String> rangeElementTypes = rangeElementIndexes.stream().collect(
                     Collectors.toMap(d -> d.element, d -> d.type));
             Set<String> elements = new HashSet<>(orderByClause.elements.size());
@@ -1285,11 +1391,18 @@ class MarkLogicQueryBuilder {
                     if (!elements.isEmpty()) {
                         orderBy.append(',');
                     }
-                    orderBy.append("cts:index-order(cts:element-reference(fn:QName(\"\", \"");
-                    orderBy.append(MarkLogicHelper.serializeKey(element)).append("\"),");
-                    orderBy.append("(\"type=").append(rangeElementTypes.get(element)).append("\")),\"");
-                    orderBy.append(desc ? "descending" : "ascending");
-                    orderBy.append("\")");
+                    if (KEY_FULLTEXT_SCORE.equals(ob.reference.name)) {
+                        sortOnFulltextScore = true;
+                        orderBy.append("cts:score-order(\"");
+                        orderBy.append(desc ? "descending" : "ascending");
+                        orderBy.append("\")");
+                    } else {
+                        orderBy.append("cts:index-order(cts:element-reference(fn:QName(\"\", \"");
+                        orderBy.append(MarkLogicHelper.serializeKey(element)).append("\"),");
+                        orderBy.append("(\"type=").append(rangeElementTypes.get(element)).append("\")),\"");
+                        orderBy.append(desc ? "descending" : "ascending");
+                        orderBy.append("\")");
+                    }
                 }
                 elements.add(element);
             }
@@ -1297,6 +1410,7 @@ class MarkLogicQueryBuilder {
         }
 
         private String addProjections(String searchQuery) {
+            boolean projectionOnFulltextScore = false;
             String query = searchQuery;
             if (!doManualProjection()) {
                 StringBuilder fields = new StringBuilder();
@@ -1310,9 +1424,15 @@ class MarkLogicQueryBuilder {
                         throw new QueryParseException("Projection not supported: " + op);
                     }
                     String name = ((Reference) op).name;
+                    projectionOnFulltextScore = projectionOnFulltextScore || KEY_FULLTEXT_SCORE.equals(name);
                     if (!elements.contains(name)) {
                         appendProjection(fields, name);
                         elements.add(name);
+                    }
+                }
+                if (projectionOnFulltextScore || sortOnFulltextScore) {
+                    if (!hasFulltext) {
+                        throw new QueryParseException(NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
                     }
                 }
                 query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"

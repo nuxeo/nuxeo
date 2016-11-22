@@ -569,6 +569,108 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testQueryFulltext() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+                new StringLiteral("NAME"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/query-fulltext.txt", query);
+    }
+
+    @Test
+    public void testQueryFulltextOr() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+                new StringLiteral("pete OR world"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/query-fulltext-or.txt", query);
+    }
+
+    @Test
+    public void testQueryFulltextAnd() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+                new StringLiteral("world Oyster"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/query-fulltext-and.txt", query);
+    }
+
+    @Test
+    public void testQueryFulltextNot() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+                new StringLiteral("Kangaroo -oyster"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/query-fulltext-not.txt", query);
+    }
+
+    @Test
+    public void testQueryFulltextPhrase() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+                new StringLiteral("\"Learn commerce\""));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/query-fulltext-phrase.txt", query);
+    }
+
+    @Test
+    public void testQueryFulltextNotPhrase() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
+                new StringLiteral("Bobby -\"commerce easily\""));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/query-fulltext-not-phrase.txt", query);
+    }
+
+    @Test
     public void testCoreFeatureQuery() throws Exception {
         // Init parameters
         SelectClause selectClause = new SelectClause();

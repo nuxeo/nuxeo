@@ -92,7 +92,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     /** Last value used from the in-memory sequence. Used by unit tests. */
     protected long sequenceLastValue;
 
-    protected List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
+    protected final List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
