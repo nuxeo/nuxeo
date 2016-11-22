@@ -30,10 +30,10 @@
       desc="The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full text search and edit metadata as if they were stored in the Nuxeo repository." />
     <package id="nuxeo-web-ui" label="Nuxeo Web UI - Beta Edition" color="#00adff" textcolor="#FFF"
       shortlabel="WEBUI"
-      desc="Web UI is the main UI for Nuxeo Server. It is the ideal start for any Digital Asset Management, Case Managent and Document Management project. You will be able to implement your process, file your content and provide to your users meaningfull ways of accessing it. Customize it with Nuxeo Studio to make it the perfect content application for your business." />
+      desc="Web UI is the new UI for Nuxeo Server. Thanks to its great flexibility, it is the ideal start for any Digital Asset Management, Case Managent and Document Management project. Web UI is made with great client side web technology and adopts most recent standards of the Web." />
     <package id="nuxeo-jsf-ui" label="Nuxeo JSF UI" color="#0000ff" textcolor="#FFF"
       shortlabel="JSFUI" virtual="false"
-      desc="JSF UI is a complete UI for Nuxeo server, fully extensible and configurable: forms, process, user actions. It is very easy to implement your business process on top of it with Nuxeo Studio. Starting from LTS 2016, it is recommended to start new projects on Web UI addon, as JSF UI developments will be stopped on 9.X cycle." /> <!-- keep this formatting for assembly.xml replacement -->
+      desc="JSF UI addon offers a complete user interface for Nuxeo server, fully extensible and configurable: forms, process, user actions. It is very easy to implement your business process on top of Nuxe JSF UI with Nuxeo Studio." /> <!-- keep this formatting for assembly.xml replacement -->
   </packageDefinitions>
   <install>
     <packageOptions>
