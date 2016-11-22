@@ -942,9 +942,10 @@ one increased, else it is equal to the current.""")
         versioning_options.add_option(
             '-m', '--maintenance', action="store", dest='maintenance_version',
             default="discard", help="""Maintenance version. Default: '%default'\n
-The maintenance branch is always named like the tag without the 'release-'
-prefix. If set, the version will be used on the maintenance branch, else, in
-mode 'discard', the maintenance branch is deleted after release.""")
+If set, the version will be used on the maintenance branch, else, in 'discard' mode, the maintenance branch is deleted
+after release. Instead of an explicit version, an auto increment policy can be used (see '--aip' option).\n
+Note that the maintenance branch is always named like the tag without the 'release-'
+prefix.""")
         versioning_options.add_option(
             '--arv', '--also-replace-version', action="store",
             dest='other_versions', default=None,
