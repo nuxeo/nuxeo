@@ -356,7 +356,7 @@ class Release(object):
         - 'self.branch'"""
         matches = re.match('^auto_(patch|minor|major)$', release_info.maintenance_version)
         if matches:
-            self.maintenance_version = self.auto_increment(release_info.snapshot, release_info.maintenance_version)
+            self.maintenance_version = self.auto_increment(self.snapshot, release_info.maintenance_version)
         else:
             self.maintenance_version = release_info.maintenance_version
 
