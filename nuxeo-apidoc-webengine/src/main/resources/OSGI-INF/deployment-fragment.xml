@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
+  <require>org.nuxeo.ecm.platform.lang</require>
+
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
