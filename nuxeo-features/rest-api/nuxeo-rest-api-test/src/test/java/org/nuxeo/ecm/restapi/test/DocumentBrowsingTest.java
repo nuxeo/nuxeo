@@ -45,9 +45,12 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.collections.core.io.CollectionsJsonEnricher;
 import org.nuxeo.ecm.collections.core.io.FavoritesJsonEnricher;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
@@ -153,6 +156,46 @@ public class DocumentBrowsingTest extends BaseTest {
         fetchInvalidations();
         note = RestServerInit.getNote(0, session);
         assertEquals("New title", note.getTitle());
+
+    }
+
+    @Test
+    public void iCanUpdateAFileDocument() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        Blob blob = new StringBlob("test");
+        blob.setFilename("test.txt");
+        doc.setProperty("file", "content", blob);
+        doc.setPropertyValue("dc:title", "my Title");
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        ClientResponse response = getResponse(RequestType.GET, "id/" + doc.getId());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        String payload = "{  " +
+                "         \"entity-type\": \"document\"," +
+                "         \"name\": \"myFile\"," +
+                "         \"type\": \"File\"," +
+                "         \"state\": \"project\"," +
+                "         \"title\": \"New title\"," +
+                "         \"properties\": {" +
+                "             \"dc:description\":\"blabla\"," +
+                "             \"dc:title\":\"New title\"" +
+                "         }" +
+                "     }";
+
+
+
+        response = getResponse(RequestType.PUT, "id/" + doc.getId(), payload);
+
+        // Then the document is updated
+        fetchInvalidations();
+
+        doc = session.getDocument(new IdRef(doc.getId()));
+        assertEquals("New title", doc.getTitle());
+        Blob value = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(value);
+        assertEquals("test.txt", value.getFilename());
 
     }
 
