@@ -20,12 +20,7 @@ package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-
 import javax.management.JMException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
@@ -44,10 +39,6 @@ import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class NuxeoLauncher implements LifecycleListener {
-
-    public static final String DEV_BUNDLES_NAME = "org.nuxeo:type=sdk,name=dev-bundles";
-
-    public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
 
     static final Log log = LogFactory.getLog(NuxeoLauncher.class);
 
@@ -111,17 +102,9 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.setHostVersion(ServerInfo.getServerNumber());
                 bootstrap.initialize();
             } else if (type == Lifecycle.START_EVENT) {
-                if (devMode) {
-                    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
-                    server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
-                }
+                bootstrap.start(cl);
             } else if (type == Lifecycle.STOP_EVENT) {
-                if (devMode) {
-                    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
-                    server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
-                }
+                bootstrap.stop(cl);
             }
         } catch (IOException | JMException | ReflectiveOperationException e) {
             log.error("Failed to handle event: " + type, e);

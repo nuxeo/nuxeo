@@ -21,6 +21,7 @@ package org.nuxeo.runtime.tomcat.dev;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +44,10 @@ import org.nuxeo.osgi.application.MutableClassLoader;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBundlesManager {
+
+    public static final String DEV_BUNDLES_NAME = "org.nuxeo:type=sdk,name=dev-bundles";
+
+    public static final String WEB_RESOURCES_NAME = "org.nuxeo:type=sdk,name=web-resources";
 
     protected final Log log = LogFactory.getLog(DevFrameworkBootstrap.class);
 
@@ -64,12 +73,12 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     @Override
-    public void start() throws ReflectiveOperationException, IOException {
+    public void start(MutableClassLoader cl) throws ReflectiveOperationException, IOException, JMException {
         // check if we have dev. bundles or libs to deploy and add them to the
         // classpath
         preloadDevBundles();
         // start the framework
-        super.start();
+        super.start(cl);
         reloadServiceInvoker = new ReloadServiceInvoker((ClassLoader) loader);
         writeComponentIndex();
         postloadDevBundles(); // start dev bundles if any
@@ -77,6 +86,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         if (installReloadTimerOption != null && Boolean.parseBoolean(installReloadTimerOption) == Boolean.TRUE) {
             toggleTimer();
         }
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        server.registerMBean(this, new ObjectName(DEV_BUNDLES_NAME));
+        server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
     }
 
     @Override
@@ -102,12 +114,18 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
     }
 
     @Override
-    public void stop() throws ReflectiveOperationException {
+    public void stop(MutableClassLoader cl) throws ReflectiveOperationException, JMException {
         if (bundlesCheck != null) {
             bundlesCheck.cancel();
             bundlesCheck = null;
         }
-        super.stop();
+        try {
+            MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+            server.unregisterMBean(new ObjectName(DEV_BUNDLES_NAME));
+            server.unregisterMBean(new ObjectName(WEB_RESOURCES_NAME));
+        } finally {
+            super.stop(cl);
+        }
     }
 
     @Override
@@ -236,8 +254,8 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements DevBund
         // return;
         // }
         try {
-            Method m = getClassLoader().loadClass("org.nuxeo.runtime.model.impl.ComponentRegistrySerializer").getMethod(
-                    "writeIndex", File.class);
+            Method m = getClassLoader().loadClass("org.nuxeo.runtime.model.impl.ComponentRegistrySerializer")
+                    .getMethod("writeIndex", File.class);
             m.invoke(null, file);
         } catch (ReflectiveOperationException t) {
             // ignore
