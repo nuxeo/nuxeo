@@ -316,7 +316,7 @@ class Repository(object):
         log("Configuration saved: " + configfile_path)
         return mp_config
 
-    def clone_mp(self, marketplace_conf):
+    def clone_mp(self, marketplace_conf, fallback_branch=None):
         """Clone or update Nuxeo Package repositories.
 
         Returns the Nuxeo Packages configuration."""
@@ -325,9 +325,12 @@ class Repository(object):
         if not marketplace_conf:
             return
         os.chdir(self.mp_dir)
-        mp_config = self.get_mp_config(marketplace_conf)
+        user_defaults={}
+        if self.is_nuxeoecm:
+            user_defaults["nuxeo-branch"] = self.get_current_version()
+        mp_config = self.get_mp_config(marketplace_conf, user_defaults)
         for marketplace in mp_config.sections():
-            self.git_pull(marketplace, mp_config.get(marketplace, "branch"))
+            self.git_pull(marketplace, mp_config.get(marketplace, "branch"), fallback_branch=fallback_branch)
         return mp_config
 
     def clone(self, version=None, fallback_branch=None, with_optionals=False,
@@ -349,8 +352,7 @@ class Repository(object):
         self.git_update(version, fallback_branch)
         if self.is_nuxeoecm:
             self.execute_on_modules(lambda module: self.clone_module(module, version, fallback_branch), with_optionals)
-            # Marketplace packages
-            self.clone_mp(marketplace_conf)
+            self.clone_mp(marketplace_conf, fallback_branch)
         os.chdir(cwd)
 
     def clone_module(self, module, version, fallback_branch):

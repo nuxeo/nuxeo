@@ -72,7 +72,7 @@ If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
             raise ExitException(1, "'version' must be a single argument. "
                                 "See usage with '-h'.")
         if options.mp_only:
-            repo.clone_mp(options.marketplace_conf if options.marketplace_conf else '')
+            repo.clone_mp(options.marketplace_conf if options.marketplace_conf else '', options.fallback_branch)
         else:
             repo.clone(version, options.fallback_branch, options.with_optionals, options.marketplace_conf)
     #pylint: disable=C0103
