@@ -35,6 +35,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import javax.management.JMException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -121,21 +123,13 @@ public class FrameworkBootstrap implements LoaderConstants {
         init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
     }
 
-    public void start() throws ReflectiveOperationException, IOException {
-        if (frameworkLoaderClass == null) {
-            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
-        }
-        Method start = frameworkLoaderClass.getMethod("start");
-        start.invoke(null);
-        printStartedMessage();
+
+    public void start(MutableClassLoader cl) throws ReflectiveOperationException, IOException, JMException {
+
     }
 
-    public void stop() throws ReflectiveOperationException {
-        if (frameworkLoaderClass == null) {
-            throw new IllegalStateException("Framework Loader was not initialized. Call initialize() method first");
-        }
-        Method stop = frameworkLoaderClass.getMethod("stop");
-        stop.invoke(null);
+    public void stop(MutableClassLoader cl) throws ReflectiveOperationException, JMException {
+
     }
 
     public String installBundle(File f) throws ReflectiveOperationException {
