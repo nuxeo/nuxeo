@@ -25,12 +25,13 @@
 function _retrieve_modules {
   local __resultvar=$1
   local _list=LIST_$(echo $(basename $PWD)|tr '-' '_'|tr '[:lower:]' '[:upper:]')
-  if [ -z "${!_list}" ]; then
+  local _listval=$(eval "echo \$$_list")
+  if [ -z "$_listval" ]; then
     [ "$quiet" != true ] && echo "Modules list calculated from POM"
     local _result="$(grep '<module>' pom.xml |cut -d ">" -f 2 |cut -d "<" -f 1|sort|uniq|tr '\n' ' ')"
   else
     [ "$quiet" != true ] && echo "Modules list set from environment variable: $_list"
-    local _result="${!_list}"
+    local _result="$_listval"
   fi
   eval "$__resultvar='$_result'"
 }
