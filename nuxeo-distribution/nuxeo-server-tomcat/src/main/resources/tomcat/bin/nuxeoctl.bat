@@ -160,15 +160,6 @@ for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\Wow643
 for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\Wow6432Node\JavaSoft\Java Development Kit\%CurVer%" /v JavaHome 2^>nul') do set JAVA_HOME=%%B
 if not "%JAVA_HOME%" == "" goto HAS_JAVA_HOME
 
-REM ***** Look for JRE in registry *****
-for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Runtime Environment" /v CurrentVersion 2^>nul') do set CurVer=%%B
-for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\JavaSoft\Java Runtime Environment\%CurVer%" /v JavaHome 2^>nul') do set JAVA_HOME=%%B
-if not "%JAVA_HOME%" == "" goto HAS_JAVA_HOME
-
-for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\Wow6432Node\JavaSoft\Java Runtime Environment" /v CurrentVersion 2^>nul') do set CurVer=%%B
-for /F "skip=2 tokens=2*" %%A in ('REG QUERY "HKEY_LOCAL_MACHINE\Software\Wow6432Node\JavaSoft\Java Runtime Environment\%CurVer%" /v JavaHome 2^>nul') do set JAVA_HOME=%%B
-if not "%JAVA_HOME%" == "" goto HAS_JAVA_HOME
-
 REM ***** All checks failed *****
 echo Could not find java.exe in the path, the environment or the registry
 goto END
@@ -203,7 +194,7 @@ for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
 )
 set JAVA_VERSION=%JAVA_VERSION:"=%
 if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
-  echo Nuxeo requires Java %REQUIRED_JAVA_VERSION%+ ^(detected %JAVA_VERSION%^)
+  echo Nuxeo requires Java JDK %REQUIRED_JAVA_VERSION%+ ^(detected %JAVA_VERSION%^)
   goto END
 )
 
