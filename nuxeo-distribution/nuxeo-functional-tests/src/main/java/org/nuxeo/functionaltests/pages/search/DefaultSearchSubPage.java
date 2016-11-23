@@ -215,11 +215,10 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
         assert(path != null && !path.isEmpty());
         int lastPartIndex = path.lastIndexOf('/');
         String folderName = path.substring(lastPartIndex + 1);
-        WebElement e = selectPathDiv.findElement(By.xpath(
-                "descendant::label[contains(text(),'" + folderName + "')]/ancestor::span[@class='sticker']/a"));
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
-        e.click();
+        findElementWaitUntilEnabledAndClick(selectPathDiv, By.xpath(
+                "descendant::label[contains(text(),'" + folderName + "')]/ancestor::span[@class='sticker']/a"));
         a.waitForAjaxRequests();
     }
 
