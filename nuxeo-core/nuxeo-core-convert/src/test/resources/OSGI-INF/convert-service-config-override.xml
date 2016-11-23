@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.convert.tests.override.config">
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+      point="configuration">
+
+    <configuration>
+      <gcInterval>34</gcInterval>
+      <diskCacheSize>10</diskCacheSize>
+      <cachingDirectory>/tmp/nosuchdirforcache</cachingDirectory>
+      <enableCache>true</enableCache>
+    </configuration>
+
+  </extension>
+
+</component>

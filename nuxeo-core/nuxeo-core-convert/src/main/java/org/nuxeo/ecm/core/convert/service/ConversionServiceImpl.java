@@ -110,6 +110,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         converterDescriptors.clear();
         translationHelper.clear();
         self = this;
+        config.clearCachingDirectory();
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
@@ -148,6 +149,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         } else if (CONFIG_EP.equals(extensionPoint)) {
             GlobalConfigDescriptor desc = (GlobalConfigDescriptor) contribution;
             config.update(desc);
+            config.clearCachingDirectory();
         } else {
             log.error("Unable to handle unknown extensionPoint " + extensionPoint);
         }
