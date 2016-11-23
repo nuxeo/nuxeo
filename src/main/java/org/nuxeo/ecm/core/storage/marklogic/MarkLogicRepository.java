@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
@@ -36,6 +37,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -52,14 +54,20 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.schema.TypeConstants;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicQueryBuilder.MarkLogicQuery;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.base.Strings;
 import com.marklogic.xcc.AdhocQuery;
@@ -118,18 +126,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         String dbname = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
         String user = descriptor.user;
         String password = descriptor.password;
-        return ContentSourceFactory.newContentSource(host, port, user, password, dbname);
+        return ContentSourceFactory.newContentSource(host, port.intValue(), user, password, dbname);
     }
 
     protected void initRepository() {
         if (readState(getRootId()) == null) {
             initRoot();
         }
-    }
-
-    @Override
-    protected void initBlobsPaths() {
-        // throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
@@ -499,9 +502,93 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     public void clearLockManagerCaches() {
     }
 
+    protected List<String> binaryPaths;
+
+    @Override
+    protected void initBlobsPaths() {
+        MarkLogicBlobFinder finder = new MarkLogicBlobFinder();
+        finder.visit();
+        binaryPaths = finder.binaryPaths;
+    }
+
+    protected static class MarkLogicBlobFinder extends BlobFinder {
+        protected List<String> binaryPaths = new ArrayList<>();
+
+        @Override
+        protected void recordBlobPath() {
+            path.addLast(KEY_BLOB_DATA);
+            StringBuilder binaryPath = new StringBuilder();
+            MarkLogicSchemaManager schemaManager = new MarkLogicSchemaManager();
+            Type previousType = null;
+            for (String element : path) {
+                if (binaryPath.length() > 0) {
+                    binaryPath.append('/');
+                }
+                // Append current element to path
+                binaryPath.append(element);
+                if (previousType == null) {
+                    // No previous type - it's the first element
+                    previousType = schemaManager.computeField(String.join(".", path), element).getType();
+                } else if (previousType.isComplexType()) {
+                    // Previous type is a complex type - retrieve the type of current element
+                    if (TypeConstants.isContentType(previousType)) {
+                        // The complex type hold the binary data, it's the last element, so break the loop
+                        break;
+                    }
+                    previousType = ((ComplexType) previousType).getField(element).getType();
+                }
+                // Add the item array element if type is a list (here previousType is the type of current element)
+                // Here we re allocate previousType to item array type as there's no element in this.path to select item
+                if (previousType.isListType()) {
+                    binaryPath.append('/').append(element).append(MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX);
+                    previousType = ((ListType) previousType).getFieldType();
+                }
+            }
+            binaryPaths.add(binaryPath.toString());
+            path.removeLast();
+        }
+    }
+
     @Override
     public void markReferencedBinaries() {
-        throw new IllegalStateException("Not implemented yet");
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        // TODO add a query to not scan all documents
+        String query = new MarkLogicQuerySimpleBuilder(rangeElementIndexes).build();
+        for (State state : findAll(query, binaryPaths.toArray(new String[0]))) {
+            markReferencedBinaries(state, blobManager);
+        }
+    }
+
+    protected void markReferencedBinaries(State state, BlobManager blobManager) {
+        for (Entry<String, Serializable> entry: state.entrySet()) {
+            Serializable value = entry.getValue();
+            if (value instanceof List) {
+                List<?> list = (List<?>) value;
+                for (Object v : list) {
+                    if (v instanceof State) {
+                        markReferencedBinaries((State) v, blobManager);
+                    } else {
+                        markReferencedBinary(v, blobManager);
+                    }
+                }
+            } else if (value instanceof Object[]) {
+                for (Object v : (Object[]) value) {
+                    markReferencedBinary(v, blobManager);
+                }
+            } else if (value instanceof State) {
+                markReferencedBinaries((State) value, blobManager);
+            } else {
+                markReferencedBinary(value, blobManager);
+            }
+        }
+    }
+
+    protected void markReferencedBinary(Object value, BlobManager blobManager) {
+        if (!(value instanceof String)) {
+            return;
+        }
+        String key = (String) value;
+        blobManager.markReferencedBinary(key, repositoryName);
     }
 
     private void logQuery(String query) {
@@ -548,13 +635,14 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     private List<State> findAll(String ctsQuery, String... selects) {
         String query = ctsQuery;
         if (selects.length > 0) {
-            query = "for $i in " + query
-                    + " return document {element document{$i/document/@*,$i/document/*[ fn:local-name(.) = ("
-                    + Arrays.stream(selects)
-                            .map(MarkLogicHelper::serializeKey)
-                            .map(select -> "\"" + select + "\"")
-                            .collect(Collectors.joining(","))
-                    + ")]}}";
+            query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
+                    + "let $paths := (" + Arrays.stream(selects)
+                                                .map(MarkLogicHelper::serializeKey)
+                                                .map(select -> "\"" + MarkLogicHelper.DOCUMENT_ROOT_PATH + "/" + select
+                                                        + "\"")
+                                                .collect(Collectors.joining(",\n"))
+                    + ")let $namespaces := ()\n" + "for $i in " + query
+                    + " return extract:extract-nodes($i, $paths, $namespaces)";
         }
         if (log.isTraceEnabled()) {
             logQuery(query);
