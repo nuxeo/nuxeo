@@ -22,7 +22,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 
@@ -44,7 +43,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -63,12 +61,9 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
-import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -80,7 +75,6 @@ import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Query builder for a MarkLogic query from an {@link Expression}.
@@ -98,7 +92,7 @@ class MarkLogicQueryBuilder {
     public static final RangeElementIndexPredicate PRIMARY_TYPE_RANGE_INDEX_PREDICATE = new RangeElementIndexPredicate(
             KEY_PRIMARY_TYPE, "string");
 
-    protected final SchemaManager schemaManager;
+    protected final MarkLogicSchemaManager schemaManager;
 
     protected List<String> documentTypes;
 
@@ -132,7 +126,7 @@ class MarkLogicQueryBuilder {
 
     public MarkLogicQueryBuilder(DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
             boolean distinctDocuments, List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes) {
-        this.schemaManager = Framework.getLocalService(SchemaManager.class);
+        this.schemaManager = new MarkLogicSchemaManager();
         this.expression = evaluator.getExpression();
         this.selectClause = evaluator.getSelectClause();
         this.orderByClause = orderByClause;
@@ -379,8 +373,7 @@ class MarkLogicQueryBuilder {
                 query = queries.get(0);
             }
         } else if (ft.op == Op.AND) {
-            List<QueryBuilder> queries = ft.terms.stream().map(this::translateFulltext).collect(
-                    Collectors.toList());
+            List<QueryBuilder> queries = ft.terms.stream().map(this::translateFulltext).collect(Collectors.toList());
             query = new CompositionQueryBuilder(queries, true);
         } else {
             query = new FulltextQueryBuilder(ft.word.toLowerCase());
@@ -476,7 +469,7 @@ class MarkLogicQueryBuilder {
     private QueryBuilder walkMixinTypes(List<Literal> mixins, boolean include) {
         Set<String> mixinDocumentTypes = mixins.stream()
                                                .map(Literal::asString)
-                                               .flatMap(mixin -> getMixinDocumentTypes(mixin).stream())
+                                               .flatMap(mixin -> schemaManager.getMixinDocumentTypes(mixin).stream())
                                                .collect(Collectors.toSet());
 
         Collector<Literal, LiteralList, LiteralList> literalListCollector = Collector.of(LiteralList::new,
@@ -522,18 +515,9 @@ class MarkLogicQueryBuilder {
         return new CompositionQueryBuilder(Arrays.asList(primaryQuery, mixinQuery), !include);
     }
 
-    private Set<String> getMixinDocumentTypes(String mixin) {
-        Set<String> types = schemaManager.getDocumentTypeNamesForFacet(mixin);
-        return types == null ? Collections.emptySet() : types;
-    }
-
     private List<String> getDocumentTypes() {
-        // TODO precompute in SchemaManager
         if (documentTypes == null) {
-            documentTypes = new ArrayList<>();
-            for (DocumentType docType : schemaManager.getDocumentTypes()) {
-                documentTypes.add(docType.getName());
-            }
+            documentTypes = schemaManager.getDocumentTypes();
         }
         return documentTypes;
     }
@@ -713,29 +697,7 @@ class MarkLogicQueryBuilder {
         // Copied from Mongo
 
         String first = parts[0];
-        Field field = schemaManager.getField(first);
-        if (field == null) {
-            if (first.indexOf(':') > -1) {
-                throw new QueryParseException("No such property: " + name);
-            }
-            // check without prefix
-            // TODO precompute this in SchemaManagerImpl
-            for (Schema schema : schemaManager.getSchemas()) {
-                if (!StringUtils.isBlank(schema.getNamespace().prefix)) {
-                    // schema with prefix, do not consider as candidate
-                    continue;
-                }
-                if (schema != null) {
-                    field = schema.getField(first);
-                    if (field != null) {
-                        break;
-                    }
-                }
-            }
-            if (field == null) {
-                throw new QueryParseException("No such property: " + name);
-            }
-        }
+        Field field = schemaManager.computeField(name, first);
         Type type = field.getType();
         // canonical name
         parts[0] = field.getName().getPrefixedName();
@@ -1432,7 +1394,8 @@ class MarkLogicQueryBuilder {
                 }
                 if (projectionOnFulltextScore || sortOnFulltextScore) {
                     if (!hasFulltext) {
-                        throw new QueryParseException(NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
+                        throw new QueryParseException(
+                                NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
                     }
                 }
                 query = "import module namespace extract = 'http://nuxeo.com/extract' at '/ext/nuxeo/extract.xqy';\n"
@@ -1444,9 +1407,6 @@ class MarkLogicQueryBuilder {
 
         private void appendProjection(StringBuilder fields, String name) {
             FieldInfo fieldInfo = walkReference(name);
-            if (KEY_ID.equals(fieldInfo.prop)) {
-                return;
-            }
             if (fields.length() > 0) {
                 fields.append(',').append('\n');
             }
