@@ -337,6 +337,20 @@ public abstract class AbstractPage {
     }
 
     /**
+     * Finds the first {@link WebElement} using the given method, with the default timeout, inside an optional
+     * {@code parentElement}. Then waits until the element is enabled, with the default timeout. Then clicks on the
+     * element.
+     *
+     * @param parentElement the parent element (can be null)
+     * @param by the locating mechanism
+     * @throws NotFoundException if the element is not found or not enabled
+     * @since 9.1
+     */
+    public static void findElementWaitUntilEnabledAndClick(WebElement parentElement, By by) throws NotFoundException {
+        Locator.findElementWaitUntilEnabledAndClick(parentElement, by);
+    }
+
+    /**
      * Waits until the URL is different from the one given in parameter, with a timeout.
      *
      * @param url the URL to compare to
