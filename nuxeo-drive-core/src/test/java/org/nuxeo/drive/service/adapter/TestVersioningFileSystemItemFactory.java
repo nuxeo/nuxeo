@@ -56,15 +56,13 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * The purpose of this class is to test the {@link DefaultFileSystemItemFactory}
- * with various versioning options.
+ * The purpose of this class is to test the {@link DefaultFileSystemItemFactory} with various versioning options.
  * <ul>
  * <li>default configuration (DF)</li>
  * <li>automatic minor versioning (AMV)</li>
  * <li>disable drive version forced (DVF)</li>
  * <li>automatic minor versioning + drive version forced (AM+DV)</li>
  * </ul>
- *
  * The tested scenario is
  * <ul>
  * <li>1. change without delay by same user</li>
@@ -74,11 +72,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <li>5. change without delay by another user</li>
  * <li>6. change with delay by another user</li>
  * </ul>
- *
  * The expected version label is
  * <table>
- * <caption>Matrix of the expected version label for each step for the give
- * scenario</caption>
+ * <caption>Matrix of the expected version label for each step for the give scenario</caption>
  * <tr>
  * <th>STEP</th>
  * <th>DF</th>
@@ -160,8 +156,7 @@ public class TestVersioningFileSystemItemFactory {
     protected VersioningFileSystemItemFactory customFileSystemItemFactory;
 
     /**
-     * For databases that don't have sub-second resolution, sleep a bit to get
-     * to the next second.
+     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
      */
     protected void maybeSleepToNextSecond() {
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
