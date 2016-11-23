@@ -33,6 +33,7 @@ set NUXEO_LAUNCHER=%NUXEO_HOME%\bin\nuxeo-launcher.jar
 if exist "%NUXEO_LAUNCHER%" goto FOUND_NUXEO_LAUNCHER
 echo Could not locate %NUXEO_LAUNCHER%.
 echo Please check that you are in the bin directory when running this script.
+timeout /t 30
 goto END
 :FOUND_NUXEO_LAUNCHER
 
@@ -63,12 +64,14 @@ if exist "%NUXEO_CONF%" goto FOUND_NUXEO_CONF
 
 REM ***** All checks failed *****
 echo Could not find nuxeo.conf in the path, the environment or the registry
+timeout /t 30
 goto END
 
 :FOUND_NUXEO_CONF
 echo Found NUXEO_CONF = %NUXEO_CONF%
 echo. >> "%NUXEO_CONF%" || (
   echo ERROR: "%NUXEO_CONF%" must be writable. Run as the right user or set NUXEO_CONF point to another nuxeo.conf file.
+  timeout /t 30
   goto END
 )
 
@@ -162,6 +165,7 @@ if not "%JAVA_HOME%" == "" goto HAS_JAVA_HOME
 
 REM ***** All checks failed *****
 echo Could not find java.exe in the path, the environment or the registry
+timeout /t 30
 goto END
 
 :FIND_JAVA_HOME
@@ -176,10 +180,12 @@ set JAVA=%JAVA_HOME%\bin\java.exe
 set JAVA_TOOLS=%JAVA_HOME%\lib\tools.jar
 if not exist "%JAVA_TOOLS%" (
 echo Could not find tools.jar in JAVA_HOME\lib. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
+timeout /t 30
 goto END
 )
 if not exist "%JAVA%" (
 echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
+timeout /t 30
 goto END
 )
 goto HAS_JAVA
@@ -195,6 +201,7 @@ for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
 set JAVA_VERSION=%JAVA_VERSION:"=%
 if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
   echo Nuxeo requires Java JDK %REQUIRED_JAVA_VERSION%+ ^(detected %JAVA_VERSION%^)
+  timeout /t 30
   goto END
 )
 
