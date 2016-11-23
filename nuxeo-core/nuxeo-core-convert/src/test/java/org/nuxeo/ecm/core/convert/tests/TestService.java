@@ -256,6 +256,13 @@ public class TestService {
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
         assertEquals(132, ConversionServiceImpl.getMaxCacheSizeInKB());
         assertFalse(ConversionServiceImpl.isCacheEnabled());
+
+        // override
+        deploy("OSGI-INF/convert-service-config-override.xml");
+        assertEquals(34, ConversionServiceImpl.getGCIntervalInMinutes());
+        assertEquals(10, ConversionServiceImpl.getMaxCacheSizeInKB());
+        assertTrue(ConversionServiceImpl.isCacheEnabled());
+        assertEquals("/tmp/nosuchdirforcache", ConversionServiceImpl.getCacheBasePath());
     }
 
     @Test
