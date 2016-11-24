@@ -8,6 +8,9 @@
       <supportedLocales append="true">
         <locale>de</locale><!-- German - Germany -->
         <locale>de_DE</locale><!-- German - Germany -->
+        <locale>es</locale><!-- Spanish - Spain -->
+        <locale>es_ES</locale><!-- Spanish - Spain -->
+        <locale>eu_ES</locale><!-- Basque -->
         <locale>fr</locale><!-- French - France -->
         <locale>fr_FR</locale><!-- French - France -->
         <locale>fr_CA</locale><!-- French - Canada -->

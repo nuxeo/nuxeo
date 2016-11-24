@@ -9,6 +9,9 @@
     <locale-config>
       <supported-locale>de</supported-locale><!-- German - Germany -->
       <supported-locale>de_DE</supported-locale><!-- German - Germany -->
+      <supported-locale>es</supported-locale><!-- Spanish - Spain -->
+      <supported-locale>es_ES</supported-locale><!-- Spanish - Spain -->
+      <supported-locale>eu_ES</supported-locale><!-- Basque -->
       <supported-locale>fr</supported-locale><!-- French - France -->
       <supported-locale>fr_FR</supported-locale><!-- French - France -->
       <supported-locale>fr_CA</supported-locale><!-- French - Canada -->
