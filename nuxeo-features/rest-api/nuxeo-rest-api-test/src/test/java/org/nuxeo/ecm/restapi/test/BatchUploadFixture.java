@@ -41,7 +41,6 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -329,7 +328,8 @@ public class BatchUploadFixture extends BaseTest {
         if (noDrop) {
             headers = new HashMap<>();
             headers.put("X-Batch-No-Drop", "true");
-            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json, headers);
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json,
+                    headers);
         } else {
             response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
         }
@@ -587,7 +587,7 @@ public class BatchUploadFixture extends BaseTest {
     }
 
     /**
-     * Tests the use of /upload using file chunks + /upload/{batchId}/{fileIdx}/execute  with the "X-Batch-No-Drop"
+     * Tests the use of /upload using file chunks + /upload/{batchId}/{fileIdx}/execute with the "X-Batch-No-Drop"
      * header set to true.
      *
      * @since 8.4
@@ -667,7 +667,8 @@ public class BatchUploadFixture extends BaseTest {
         if (noDrop) {
             headers = new HashMap<>();
             headers.put("X-Batch-No-Drop", "true");
-            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json, headers);
+            response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json,
+                    headers);
         } else {
             response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
         }
@@ -720,7 +721,8 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals(Status.NO_CONTENT.getStatusCode(), getResponse(RequestType.GET, "upload/" + batchId).getStatus());
 
         // Get file info
-        assertEquals(Status.NOT_FOUND.getStatusCode(), getResponse(RequestType.GET, "upload/fakeBatchId/0").getStatus());
+        assertEquals(Status.NOT_FOUND.getStatusCode(),
+                getResponse(RequestType.GET, "upload/fakeBatchId/0").getStatus());
         assertEquals(Status.NOT_FOUND.getStatusCode(),
                 getResponse(RequestType.GET, "upload/" + batchId + "/0").getStatus());
 
@@ -785,13 +787,11 @@ public class BatchUploadFixture extends BaseTest {
         int numfiles = 5;
 
         // Upload test files
-        String fileName, data,
-               fileSize = null,
-               mimeType = "text/plain";
+        String fileName, data, fileSize = null, mimeType = "text/plain";
         Map<String, String> headers = new HashMap<String, String>();
         for (int i = 0; i < numfiles; i++) {
-            fileName = URLEncoder.encode("Test File " + Integer.toString(i+1) + ".txt", "UTF-8");
-            data = "Test Content " + Integer.toString(i+1);
+            fileName = URLEncoder.encode("Test File " + Integer.toString(i + 1) + ".txt", "UTF-8");
+            data = "Test Content " + Integer.toString(i + 1);
             if (fileSize == null) {
                 fileSize = String.valueOf(data.getBytes().length);
                 headers.put("Content-Type", "application/octet-stream");
@@ -812,7 +812,7 @@ public class BatchUploadFixture extends BaseTest {
 
         for (int i = 0; i < numfiles; i++) {
             node = nodes.get(i);
-            assertEquals("Test File " + Integer.toString(i+1) + ".txt", node.get("name").getValueAsText());
+            assertEquals("Test File " + Integer.toString(i + 1) + ".txt", node.get("name").getValueAsText());
             assertEquals(fileSize, node.get("size").getValueAsText());
             assertEquals("normal", node.get("uploadType").getValueAsText());
         }
@@ -827,7 +827,7 @@ public class BatchUploadFixture extends BaseTest {
         response = getResponse(RequestType.GET, "upload/" + batchId);
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
         nodes = (ArrayNode) mapper.readTree(response.getEntityInputStream());
-        assertEquals(numfiles-2, nodes.size());
+        assertEquals(numfiles - 2, nodes.size());
         node = nodes.get(0);
         assertEquals("Test File 1.txt", node.get("name").getValueAsText());
         assertEquals(fileSize, node.get("size").getValueAsText());
