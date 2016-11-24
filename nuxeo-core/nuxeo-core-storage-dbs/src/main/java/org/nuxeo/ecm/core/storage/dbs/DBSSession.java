@@ -1150,42 +1150,36 @@ public class DBSSession implements Session {
         return latestState == null ? null : getDocument(latestState);
     }
 
-    private static final Comparator<DBSDocumentState> VERSION_CREATED_COMPARATOR = new Comparator<DBSDocumentState>() {
-        @Override
-        public int compare(DBSDocumentState s1, DBSDocumentState s2) {
-            Calendar c1 = (Calendar) s1.get(KEY_VERSION_CREATED);
-            Calendar c2 = (Calendar) s2.get(KEY_VERSION_CREATED);
-            if (c1 == null && c2 == null) {
-                // coherent sort
-                return s1.hashCode() - s2.hashCode();
-            }
-            if (c1 == null) {
-                return 1;
-            }
-            if (c2 == null) {
-                return -1;
-            }
-            return c1.compareTo(c2);
+    private static final Comparator<DBSDocumentState> VERSION_CREATED_COMPARATOR = (s1, s2) -> {
+        Calendar c1 = (Calendar) s1.get(KEY_VERSION_CREATED);
+        Calendar c2 = (Calendar) s2.get(KEY_VERSION_CREATED);
+        if (c1 == null && c2 == null) {
+            // coherent sort
+            return s1.hashCode() - s2.hashCode();
         }
+        if (c1 == null) {
+            return 1;
+        }
+        if (c2 == null) {
+            return -1;
+        }
+        return c1.compareTo(c2);
     };
 
-    private static final Comparator<DBSDocumentState> POS_COMPARATOR = new Comparator<DBSDocumentState>() {
-        @Override
-        public int compare(DBSDocumentState s1, DBSDocumentState s2) {
-            Long p1 = (Long) s1.get(KEY_POS);
-            Long p2 = (Long) s2.get(KEY_POS);
-            if (p1 == null && p2 == null) {
-                // coherent sort
-                return s1.hashCode() - s2.hashCode();
-            }
-            if (p1 == null) {
-                return 1;
-            }
-            if (p2 == null) {
-                return -1;
-            }
-            return p1.compareTo(p2);
+    private static final Comparator<DBSDocumentState> POS_COMPARATOR = (s1, s2) -> {
+        Long p1 = (Long) s1.get(KEY_POS);
+        Long p2 = (Long) s2.get(KEY_POS);
+        if (p1 == null && p2 == null) {
+            // coherent sort
+            return s1.hashCode() - s2.hashCode();
         }
+        if (p1 == null) {
+            return 1;
+        }
+        if (p2 == null) {
+            return -1;
+        }
+        return p1.compareTo(p2);
     };
 
     @Override
@@ -1488,7 +1482,6 @@ public class DBSSession implements Session {
         } else if (selectClause.isDistinct()) {
             throw new QueryParseException("SELECT DISTINCT not supported on DBS");
         }
-        OrderByClause orderByClause = sqlQuery.orderBy;
         if (idKeyHolder != null) {
             Operand operand = selectClause.operands().iterator().next();
             String idKey = operand instanceof Reference ? ((Reference) operand).name : NXQL.ECM_UUID;
@@ -1497,6 +1490,7 @@ public class DBSSession implements Session {
 
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
+        OrderByClause orderByClause = sqlQuery.orderBy;
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, orderByClause,
                 queryFilter.getPrincipals(), fulltextSearchDisabled);
 
