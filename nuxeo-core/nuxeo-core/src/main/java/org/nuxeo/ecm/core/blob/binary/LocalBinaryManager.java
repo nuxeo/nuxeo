@@ -147,7 +147,8 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             return null;
         }
         if (!file.exists()) {
-            log.warn("cannot fetch content at " + file.getPath() + " (file does not exist), check your configuration");
+            log.warn("cannot fetch content at " + file.getPath() + " (file does not exist), check your configuration",
+                    new Exception("DEBUG STACK TRACE"));
             return null;
         }
         return new Binary(file, digest, blobProviderId);
@@ -198,6 +199,9 @@ public class LocalBinaryManager extends AbstractBinaryManager {
              */
             File file = getFileForDigest(digest, true);
             atomicMove(tmp, file);
+            if ("43425893fbec77e60688a8b7c963482b".equals(digest)) {
+                log.warn("Digest " + digest + " computed from stack trace", new Exception("DEBUG STACK TRACE"));
+            }
             return digest;
         } finally {
             tmp.delete();
