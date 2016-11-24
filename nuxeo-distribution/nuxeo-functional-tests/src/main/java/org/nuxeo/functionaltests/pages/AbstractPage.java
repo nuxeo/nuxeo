@@ -276,6 +276,7 @@ public abstract class AbstractPage {
      * @param timeout the timeout in milliseconds
      * @since 8.3
      */
+
     public static void waitUntilEnabledAndClick(WebElement element, int waitUntilEnabledTimeout)
             throws NotFoundException {
         Locator.waitUntilEnabledAndClick(element, waitUntilEnabledTimeout);
