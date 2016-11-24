@@ -42,7 +42,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mortbay.jetty.Server;
@@ -66,7 +65,6 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, JettyFeature.class })
 @Jetty(port = ConnectUrlConfig.CONNECT_TEST_MODE_PORT)
-@Ignore("NXP-21151")
 public class TestConnectBroker {
 
     final String TEST_STORE_PATH = "src/test/resources/packages/store";
@@ -391,9 +389,8 @@ public class TestConnectBroker {
                 "Added D-1.0.2-SNAPSHOT", "Download of 'B-1.0.1-SNAPSHOT' will replace the one already in local cache.",
                 "Downloading [B-1.0.1-SNAPSHOT]...", "Replacement of B-1.0.1-SNAPSHOT in local cache...",
                 "Added B-1.0.1-SNAPSHOT",
-                "As package 'C-1.0.0' has an optional dependency on package 'D-1.0.2-SNAPSHOT' currently being installed, it will be reinstalled.",
-
-                "\nDependency resolution:\n"
+                "\nAs package 'C-1.0.0' has an optional dependency on package(s) [D-1.0.2-SNAPSHOT] currently being installed, it will be reinstalled."
+                        + "\nDependency resolution:\n"
                         + "  Installation order (3):        B-1.0.1-SNAPSHOT/D-1.0.2-SNAPSHOT/C-1.0.0\n"
                         + "  Uninstallation order (1):      C-1.0.0\n"
                         + "  Unchanged packages (6):        A:1.0.0, hfA:1.0.0, studioA:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n"
@@ -759,7 +756,7 @@ public class TestConnectBroker {
                 PackageState.DOWNLOADED);
 
         // G-1.0.1-SNAPSHOT and H-1.0.1-SNAPSHOT are snapshots and must be replaced
-        // J-1.0.1 has optional dependencies on G and H and must reinstalled in last position
+        // J-1.0.1 has optional dependencies on G and H and must be reinstalled in last position
         assertThat(connectBrocker.pkgRequest(null, Arrays.asList("H", "G"), null, null, true, false)).isTrue();
 
         // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
@@ -782,15 +779,60 @@ public class TestConnectBroker {
                 "Added G-1.0.1-SNAPSHOT", "Download of 'H-1.0.1-SNAPSHOT' will replace the one already in local cache.",
                 "Downloading [H-1.0.1-SNAPSHOT]...", "Replacement of H-1.0.1-SNAPSHOT in local cache...",
                 "Added H-1.0.1-SNAPSHOT",
-                "As package 'J-1.0.1' has an optional dependency on package 'G-1.0.1-SNAPSHOT' currently being installed, it will be reinstalled.",
-                "As package 'J-1.0.1' has an optional dependency on package 'H-1.0.1-SNAPSHOT' currently being installed, it will be reinstalled.",
-                "\nDependency resolution:\n"
+                "\nAs package 'J-1.0.1' has an optional dependency on package(s) [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT] currently being installed, it will be reinstalled."
+                        + "\nDependency resolution:\n"
                         + "  Installation order (3):        G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/J-1.0.1\n"
                         + "  Uninstallation order (1):      J-1.0.1\n"
                         + "  Unchanged packages (6):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n"
                         + "  Local packages to install (3): G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n"
                         + "  Local packages to remove (1):  J:1.0.1\n",
                 "Uninstalling J-1.0.1", "Installing G-1.0.1-SNAPSHOT", "Installing H-1.0.1-SNAPSHOT",
+                "Installing J-1.0.1");
+        checkLogEvents(expectedLogs, logCaptureResult.getCaughtEvents());
+    }
+
+    @Test
+    @LogCaptureFeature.FilterWith(PkgRequestLogFilter.class)
+    public void testUninstallPackageRequestWithOptionalDependencies() throws Exception {
+        Environment.getDefault().setProperty(Environment.DISTRIBUTION_NAME, "server");
+        Environment.getDefault().setProperty(Environment.DISTRIBUTION_VERSION, "8.3");
+        ConnectBroker connectBrocker = new ConnectBroker(Environment.getDefault());
+        ((StandaloneCallbackHolder) NuxeoConnectClient.getCallBackHolder()).setTestMode(true);
+        connectBrocker.setAllowSNAPSHOT(false);
+
+        // Before: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, G-1.0.1-SNAPSHOT,
+        // H-1.0.1-SNAPSHOT, J-1.0.1]
+        checkPackagesState(connectBrocker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT", "J-1.0.1"),
+                PackageState.STARTED);
+        checkPackagesState(connectBrocker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // J-1.0.1 has optional dependencies on G and H and must be reinstalled after uninstalling G and H
+        assertThat(connectBrocker.pkgRequest(null, null, Arrays.asList("H", "G"), null, true, false)).isTrue();
+
+        // After: [studioA-1.0.0, hfA-1.0.0, A-1.0.0, B-1.0.1-SNAPSHOT, C-1.0.0, D-1.0.2-SNAPSHOT, J-1.0.1]
+        checkPackagesState(connectBrocker, Arrays.asList("studioA-1.0.0", "hfA-1.0.0", "A-1.0.0", "B-1.0.1-SNAPSHOT",
+                "C-1.0.0", "D-1.0.2-SNAPSHOT", "J-1.0.1"), PackageState.STARTED);
+        checkPackagesState(connectBrocker,
+                Arrays.asList("studioA-1.0.1", "studioA-1.0.2-SNAPSHOT", "hfB-1.0.0", "hfC-1.0.0-SNAPSHOT", "A-1.2.0",
+                        "A-1.2.1-SNAPSHOT", "A-1.2.2-SNAPSHOT", "A-1.2.2", "A-1.2.3-SNAPSHOT", "B-1.0.1", "B-1.0.2",
+                        "C-1.0.1-SNAPSHOT", "C-1.0.2-SNAPSHOT", "D-1.0.3-SNAPSHOT", "D-1.0.4-SNAPSHOT",
+                        "G-1.0.1-SNAPSHOT", "H-1.0.1-SNAPSHOT"),
+                PackageState.DOWNLOADED);
+
+        // check logs
+        List<String> expectedLogs = Arrays.asList(
+                "\nAs package 'J-1.0.1' has an optional dependency on package(s) [G-1.0.1-SNAPSHOT, H-1.0.1-SNAPSHOT] currently being uninstalled, it will be reinstalled."
+                        + "\nDependency resolution:\n" + "  Installation order (1):        J-1.0.1\n"
+                        + "  Uninstallation order (3):      J-1.0.1/H-1.0.1-SNAPSHOT/G-1.0.1-SNAPSHOT\n"
+                        + "  Unchanged packages (6):        A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, C:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n"
+                        + "  Local packages to install (1): J:1.0.1\n"
+                        + "  Local packages to remove (3):  G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n",
+                "Uninstalling J-1.0.1", "Uninstalling H-1.0.1-SNAPSHOT", "Uninstalling G-1.0.1-SNAPSHOT",
                 "Installing J-1.0.1");
         checkLogEvents(expectedLogs, logCaptureResult.getCaughtEvents());
     }
@@ -804,7 +846,7 @@ public class TestConnectBroker {
     }
 
     private void checkLogEvents(List<String> expectedLogs, List<LoggingEvent> caughtEvents) {
-        //assertEquals(expectedLogs.size(), caughtEvents.size());
+        assertEquals(expectedLogs.size(), caughtEvents.size());
         for (int i = 0; i < caughtEvents.size(); i++) {
             assertEquals(expectedLogs.get(i), caughtEvents.get(i).getRenderedMessage());
         }

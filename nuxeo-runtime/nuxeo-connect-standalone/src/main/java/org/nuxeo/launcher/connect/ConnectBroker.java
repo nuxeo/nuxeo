@@ -1388,7 +1388,7 @@ public class ConnectBroker {
                     // Don't use IDs to avoid downgrade instead of uninstall
                     packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                     DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(null,
-                            packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, keepExisting);
+                            packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, keepExisting, true);
                     log.debug("Sub-resolution (uninstall) " + uninstallResolution);
                     if (uninstallResolution.isFailed()) {
                         return false;
@@ -1407,7 +1407,7 @@ public class ConnectBroker {
                     // Add list of packages uninstalled because of upgrade
                     packageIdsToInstall.addAll(packagesIdsToReInstall);
                     DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, keepExisting);
+                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, keepExisting, true);
                     log.debug("Sub-resolution (install) " + installResolution);
                     if (installResolution.isFailed()) {
                         return false;
