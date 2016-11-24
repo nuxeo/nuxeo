@@ -296,6 +296,47 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testNoteqOperatorOnRangeElementIndex() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.NOTEQ, new StringLiteral("NAME"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
+        reid.element = NXQL.ECM_NAME;
+        reid.type = "string";
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false,
+                Collections.singletonList(reid)).buildQuery().getSearchQuery();
+        assertFileAgainstString("query-expression/noteq-operator-on-range-element-index.txt", query);
+    }
+
+    @Test
+    public void testNoteqOperatorOnRangeElementIndexOnArray() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTEQ,
+                new StringLiteral("bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        MarkLogicRangeElementIndexDescriptor reid = new MarkLogicRangeElementIndexDescriptor();
+        reid.element = "dc:contributors";
+        reid.type = "string";
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false,
+                Collections.singletonList(reid)).buildQuery().getSearchQuery();
+        assertFileAgainstString("query-expression/noteq-operator-on-range-element-index-on-array.txt", query);
+    }
+
+    @Test
     public void testLtOperator() throws Exception {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference(NXQL.ECM_UUID));

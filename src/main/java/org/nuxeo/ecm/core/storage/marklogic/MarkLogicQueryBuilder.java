@@ -414,9 +414,15 @@ class MarkLogicQueryBuilder {
                         name -> new LikeQueryBuilder(name, new StringLiteral(date), true, false));
             } else if (rangeElementIndexes.stream().anyMatch(
                     new RangeElementIndexPredicate(leftInfo.queriedElement, markLogicType))) {
-                RangeQueryBuilder.Operator operator = equals ? RangeQueryBuilder.Operator.EQ
+                // For NOT EQ we need a different semantic for arrays as Operator.NE will match documents having any
+                // item not equal to literal which is different than matching documents having all items not equal to
+                // literal
+                // So, if we query an array, we want to keep the EQ operator and rely on a not-query
+                boolean isList = leftInfo.type != null && leftInfo.type.isListType();
+                RangeQueryBuilder.Operator operator = equals || isList ? RangeQueryBuilder.Operator.EQ
                         : RangeQueryBuilder.Operator.NE;
-                return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, operator, convertedLiteral));
+                return getQueryBuilder(leftInfo,
+                        name -> new RangeQueryBuilder(name, operator, convertedLiteral, !equals && isList));
             }
         }
         return getQueryBuilder(leftInfo, name -> new EqualQueryBuilder(name, convertedLiteral, equals));
@@ -1106,12 +1112,28 @@ class MarkLogicQueryBuilder {
 
         private Operator operator;
 
+        private boolean notList;
+
         private final Literal literal;
 
         public RangeQueryBuilder(String path, Operator operator, Literal literal) {
             super(path);
             this.operator = operator;
             this.literal = literal;
+        }
+
+        public RangeQueryBuilder(String path, Operator operator, Literal literal, boolean notList) {
+            this(path, operator, literal);
+            this.notList = notList;
+        }
+
+        @Override
+        public String build() {
+            String query = super.build();
+            if (notList) {
+                return "cts:not-query(" + query + ")";
+            }
+            return query;
         }
 
         @Override
@@ -1126,18 +1148,23 @@ class MarkLogicQueryBuilder {
 
         @Override
         public void not() {
-            if (operator == Operator.LT) {
-                operator = Operator.GE;
-            } else if (operator == Operator.GT) {
-                operator = Operator.LE;
-            } else if (operator == Operator.LE) {
-                operator = Operator.GT;
-            } else if (operator == Operator.GE) {
-                operator = Operator.LT;
-            } else if (operator == Operator.EQ) {
-                operator = Operator.NE;
-            } else if (operator == Operator.NE) {
-                operator = Operator.EQ;
+            // Handle array semantic, for example ecm:ancestorIds <> "..."
+            if (path.endsWith(MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX)) {
+                notList = !notList;
+            } else {
+                if (operator == Operator.LT) {
+                    operator = Operator.GE;
+                } else if (operator == Operator.GT) {
+                    operator = Operator.LE;
+                } else if (operator == Operator.LE) {
+                    operator = Operator.GT;
+                } else if (operator == Operator.GE) {
+                    operator = Operator.LT;
+                } else if (operator == Operator.EQ) {
+                    operator = Operator.NE;
+                } else if (operator == Operator.NE) {
+                    operator = Operator.EQ;
+                }
             }
         }
 
