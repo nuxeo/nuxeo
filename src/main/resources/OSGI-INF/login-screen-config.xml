@@ -11,9 +11,6 @@
         <locale>ca_ES</locale><!-- Catalan - Spain -->
         <locale>cs_CZ</locale><!-- Czech - Czech Republic -->
         <locale>el_GR</locale><!-- Greek - Greece -->
-        <locale>es</locale><!-- Spanish - Spain -->
-        <locale>es_ES</locale><!-- Spanish - Spain -->
-        <locale>eu_ES</locale><!-- Basque -->
         <locale>gl_ES</locale><!-- Galician -->
         <locale>it_IT</locale><!-- Italian - Italy -->
         <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
