@@ -221,6 +221,7 @@ class ReleaseMP(object):
 
                 mp_release.release_branch(dryrun=dryrun, upgrade_only=upgrade_only)
                 self.mp_config.set(marketplace, "next_snapshot", "done")
+                self.mp_config.set(marketplace, "branch", release_info.branch)
                 branched = True
             except Exception, e:
                 stack = traceback.format_exc()
