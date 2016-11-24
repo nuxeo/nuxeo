@@ -44,25 +44,8 @@ public class BQManager extends AbstractQueuesManager {
     }
 
     @Override
-    public BlockingQueue<SourceNode> getQueue(int idx) {
-        return queues.get(idx);
-    }
-
-    @Override
     public boolean isEmpty(int queue) {
         return queues.get(queue).isEmpty();
-    }
-
-    @Override
-    public int dispatch(SourceNode bh) throws InterruptedException {
-        int idx = getTargetQueue(bh, queues.size());
-        queues.get(idx).put(bh);
-        return idx;
-    }
-
-    @Override
-    public int getNBConsumers() {
-        return queues.size();
     }
 
     @Override

@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
@@ -117,22 +116,5 @@ public class CQManager extends AbstractQueuesManager {
     public int size(int queue) {
         return 0;
     }
-
-    @Override
-    public int dispatch(SourceNode node) throws InterruptedException {
-        return 0;
-    }
-
-    @Override
-    public int getNBConsumers() {
-        return 0;
-    }
-
-    @Override
-    public BlockingQueue<SourceNode> getQueue(int idx) {
-        return null;
-    }
-
-
 
 }

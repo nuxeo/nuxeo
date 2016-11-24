@@ -16,10 +16,7 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
-import java.util.Random;
-
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 
 /**
@@ -29,17 +26,10 @@ public abstract class AbstractQueuesManager implements QueuesManager {
 
     protected final int queuesNb;
     protected final ImporterLogger log;
-    private final Random rand;
 
     public AbstractQueuesManager(ImporterLogger logger, int queuesNb) {
         this.queuesNb = queuesNb;
         log = logger;
-        rand = new Random(System.currentTimeMillis());
-    }
-
-    @Deprecated
-    protected int getTargetQueue(SourceNode bh, int nbQueues) {
-        return rand.nextInt(nbQueues);
     }
 
     @Override
