@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * This servlet is bound to /api and dispatch calls to /site/api in oder to have better looking URLs.
@@ -35,16 +35,18 @@ import org.nuxeo.common.utils.URIUtils;
  */
 public class APIServlet extends HttpServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-        RequestDispatcher rd = req.getRequestDispatcher("/site/api"
-                + URIUtils.quoteURIPathComponent(req.getPathInfo(), false, false));
+        String toReplace = req.getContextPath() + "/api";
+        String newPath = req.getRequestURI();
+        if (newPath.startsWith(toReplace)) {
+            newPath = "/site/api" + newPath.substring(toReplace.length());
+        } else {
+            throw new NuxeoException("Cannot forward " + newPath);
+        }
+        RequestDispatcher rd = req.getRequestDispatcher(newPath);
         rd.forward(req, resp);
     }
 
