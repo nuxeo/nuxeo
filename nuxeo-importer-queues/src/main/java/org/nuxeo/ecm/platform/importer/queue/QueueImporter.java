@@ -111,7 +111,7 @@ public class QueueImporter {
 
     protected void checkConsumerQueues(QueuesManager manager) {
         unprocessedNodesConsumer = 0;
-        for (int i = 0; i < manager.getNBConsumers(); i++) {
+        for (int i = 0; i < manager.count(); i++) {
             while (! manager.isEmpty(i)) {
                 log.error("Queue of conusmer " + i + " not empty, draining " + manager.size(i)  + " nodes to errors");
                 unprocessedNodesConsumer += manager.size(i);

@@ -63,22 +63,4 @@ public interface QueuesManager {
      */
     int size(int queue);
 
-    /**
-     * Dispatch the node to a queue
-     * @param node
-     * @return the queue number
-     * @throws InterruptedException
-     */
-    @Deprecated
-    int dispatch(SourceNode node) throws InterruptedException;
-
-    /**
-     * use getQueueCount instead
-     * @return
-     */
-    @Deprecated
-    int getNBConsumers();
-
-    @Deprecated
-    BlockingQueue<SourceNode> getQueue(int idx);
 }
