@@ -720,12 +720,14 @@ public class TestAutomaticIndexing {
         file1 = session.saveDocument(file1);
         DocumentRef v1 = file1.checkIn(VersioningOption.MAJOR, "init v1");
         TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
         startTransaction();
 
         file1.setPropertyValue("dc:title", "v2");
         file1 = session.saveDocument(file1);
         DocumentRef v2 = file1.checkIn(VersioningOption.MAJOR, "update v2");
         TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
         startTransaction();
 
         file1.setPropertyValue("dc:title", "v3");
