@@ -35,7 +35,7 @@ Contributors:
       }
     </style>
 
-    <nuxeo-resource auto path="/token" params='{"application": "Nuxeo Drive"}' on-response="_handleTokens"></nuxeo-resource>
+    <nuxeo-resource id="token" path="/token" params='{"application": "Nuxeo Drive"}'></nuxeo-resource>
 
     <template is="dom-if" if="[[_isAvailable(blob)]]">
       <paper-icon-button icon="editor:mode-edit" id="driveBtn" on-tap="_go"></paper-icon-button>
@@ -55,8 +55,7 @@ Contributors:
       is: 'nuxeo-drive-edit-button',
       properties: {
         document: Object,
-        blob: Object,
-        tokens: Array
+        blob: Object
       },
       behaviors: [Nuxeo.I18nBehavior],
 
@@ -70,11 +69,17 @@ Contributors:
       },
 
       _go: function() {
-        if (!this.tokens || !this.tokens.length) {
-          this.$.dialog.toggle();
-          return;
-        }
-        location.href = this.driveEditURL;
+        this.$.token.get().then(function(response) {
+          var tokens = response.entries.map(function(token) {
+            return token.id;
+          });
+          if (!tokens || !tokens.length) {
+            this.$.dialog.toggle();
+            return;
+          }
+          location.href = this.driveEditURL;
+        }.bind(this));
+
       },
 
       get driveEditURL() {
@@ -94,12 +99,6 @@ Contributors:
           'nxdocid', this.document.uid,
           'filename', this.blob.name,
           'downloadUrl', downloadUrl].join('/');
-      },
-
-      _handleTokens: function(e) {
-        this.tokens = e.detail.response.entries.map(function(token) {
-          return token.id;
-        });
       }
 
     });
