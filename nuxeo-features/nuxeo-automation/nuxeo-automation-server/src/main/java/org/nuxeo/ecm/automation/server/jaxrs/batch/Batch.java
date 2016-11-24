@@ -232,11 +232,7 @@ public class Batch {
                 List<Blob> chunkBlobs = ts.getBlobs(chunkEntryKey);
                 if (chunkBlobs != null) {
                     for (Blob blob : chunkBlobs) {
-                        try {
-                            FileUtils.deleteDirectory(blob.getFile().getParentFile());
-                        } catch (IOException e) {
-                            log.error("Error while deleting chunk parent directory", e);
-                        }
+                        FileUtils.deleteQuietly(blob.getFile().getParentFile());
                     }
                 }
                 ts.remove(chunkEntryKey);
@@ -248,11 +244,7 @@ public class Batch {
         List<Blob> fileBlobs = ts.getBlobs(fileEntryKey);
         if (fileBlobs != null) {
             for (Blob blob : fileBlobs) {
-                try {
-                    FileUtils.deleteDirectory(blob.getFile().getParentFile());
-                } catch (IOException e) {
-                    log.error("Error while deleting file parent directory", e);
-                }
+                FileUtils.deleteQuietly(blob.getFile().getParentFile());
             }
         }
         ts.remove(fileEntryKey);

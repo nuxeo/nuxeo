@@ -248,15 +248,11 @@ public abstract class AbstractTransientStore implements TransientStore {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(cacheDir.getAbsolutePath()))) {
                 for (Path entry : stream) {
                     String key = getKeyCachingDirName(entry.getFileName().toString());
-                    try {
-                        if (exists(key)) {
-                            newSize += getFilePathSize(entry);
-                            continue;
-                        }
-                        FileUtils.deleteDirectory(entry.toFile());
-                    } catch (IOException e) {
-                        log.error("Error while performing GC", e);
+                    if (exists(key)) {
+                        newSize += getFilePathSize(entry);
+                        continue;
                     }
+                    FileUtils.deleteQuietly(entry.toFile());
                 }
             }
         } catch (IOException e) {
