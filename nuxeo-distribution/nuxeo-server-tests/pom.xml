@@ -76,6 +76,11 @@
       <artifactId>nuxeo-functional-tests</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-functional-tests</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
