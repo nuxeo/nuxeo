@@ -148,7 +148,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     /**
      * Avoid the blob updates. It's managed by custom ways.
      */
-    private void avoidBlobUpdate(DocumentModel docToClean, DocumentModel docRef) {
+    private static void avoidBlobUpdate(DocumentModel docToClean, DocumentModel docRef) {
         for (String schema : docToClean.getSchemas()) {
             for (String field : docToClean.getDataModel(schema).getDirtyFields()) {
                 avoidBlobUpdate(docToClean.getProperty(field), docRef);
@@ -156,7 +156,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
         }
     }
 
-    private void avoidBlobUpdate(Property propToClean, DocumentModel docRef) {
+    private static void avoidBlobUpdate(Property propToClean, DocumentModel docRef) {
         if (propToClean instanceof BlobProperty) {
             // if the blob used to exist
             if (propToClean.getValue() == null) {
@@ -179,6 +179,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     public static void applyPropertyValues(DocumentModel src, DocumentModel dst) {
+        avoidBlobUpdate(src, dst);
         applyPropertyValues(src, dst, true);
     }
 
