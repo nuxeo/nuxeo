@@ -38,7 +38,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
@@ -580,7 +579,6 @@ public class BatchUploadFixture extends BaseTest {
      *
      * @since 7.4
      */
-    @Ignore("NXP-21119")
     @Test
     public void testBatchExecuteWithChunkedUpload() throws IOException {
         testBatchExecuteWithChunkedUpload(false);
