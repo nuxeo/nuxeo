@@ -43,7 +43,7 @@ function _execute_on_modules {
   local _modules=""
   _retrieve_modules _modules
   [ "$quiet" != true ] && echo -e "Execute on modules: $_modules\n"
-  for dir in $_modules; do
+  for dir in $(echo $_modules|tr '\n' ' '); do
     if [ -d $dir ]; then
       ( cd $dir
         $f $dir
