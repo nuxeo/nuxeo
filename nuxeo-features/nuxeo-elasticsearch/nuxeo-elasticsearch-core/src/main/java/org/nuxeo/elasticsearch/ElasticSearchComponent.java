@@ -50,12 +50,14 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.api.ESClientInitializationService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.api.EsScrollResult;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.config.ESClientInitializationDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
@@ -92,6 +94,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     private static final String EP_DOC_WRITER = "elasticSearchDocWriter";
 
+    private static final String EP_CLIENT_INIT = "elasticSearchClientInitialization";
+
     private static final long REINDEX_TIMEOUT = 20;
 
     // Indexing commands that where received before the index initialization
@@ -110,6 +114,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     private ElasticSearchServiceImpl ess;
 
     protected JsonESDocumentWriter jsonESDocumentWriter;
+
+    protected ESClientInitializationService clientInitService;
 
     private ListeningExecutorService waiterExecutorService;
 
@@ -163,6 +169,15 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
                 throw new RuntimeException(e);
             }
             break;
+        case EP_CLIENT_INIT:
+            ESClientInitializationDescriptor clientInitDescriptor = (ESClientInitializationDescriptor) contribution;
+            try {
+                clientInitService = clientInitDescriptor.getKlass().newInstance();
+            } catch (IllegalAccessException | InstantiationException e) {
+                log.error("Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());
+                throw new RuntimeException(e);
+            }
+            break;
         default:
             throw new IllegalStateException("Invalid EP: " + extensionPoint);
         }
@@ -174,7 +189,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             log.info("Elasticsearch service is disabled");
             return;
         }
-        esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig);
+        esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig, clientInitService);
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
         ess = new ElasticSearchServiceImpl(esa);
         initListenerThreadPool();

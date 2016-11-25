@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.ElasticSearchComponent" version="1.0">
   <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
-  <implementation class="org.nuxeo.elasticsearch.ElasticSearchComponent" />
+  <implementation class="org.nuxeo.elasticsearch.ElasticSearchComponent"/>
 
   <service>
-      <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchService" />
-      <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchIndexing" />
-      <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchAdmin" />
+    <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchService"/>
+    <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchIndexing"/>
+    <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchAdmin"/>
   </service>
 
   <extension-point name="elasticSearchLocal">
@@ -18,31 +18,31 @@
       This is a test configuration and must not be used in production,
       it is limited to one shard and no replica.
 
-     <code>
+      <code>
         <elasticSearchLocal
-          clusterName="MyCluster"
-          nodeName="MyNuxeo"
-          pathData="/var/lib/nuxeo/elasticsearch/"
-          indexStoreType="mmapfs"
-          httpEnabled="true"
+            clusterName="MyCluster"
+            nodeName="MyNuxeo"
+            pathData="/var/lib/nuxeo/elasticsearch/"
+            indexStoreType="mmapfs"
+            httpEnabled="true"
         />
-     </code>
+      </code>
 
-     Please refer to the Elasticsearch node configuration
+      Please refer to the Elasticsearch node configuration
 
-     clusterName is the cluster.name
+      clusterName is the cluster.name
 
-     nodeName is the node.name, default to nuxeoNode
+      nodeName is the node.name, default to nuxeoNode
 
-     pathData is the path.data
+      pathData is the path.data
 
-     indexStoreType is the index.store_type
+      indexStoreType is the index.store_type
 
-     httpEnabled is the node.enable_http
+      httpEnabled is the node.enable_http
 
     </documentation>
 
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig"/>
   </extension-point>
 
   <extension-point name="elasticSearchRemote">
@@ -51,36 +51,36 @@
 
       This setup a TransportClient, clusterName and addressList are mandatory.
 
-     <code>
+      <code>
         <elasticSearchRemote
-          clusterName="elasticsearch"
-          addressList="127.0.0.1:9300,myelasticsearch:9300"
-          clientTransportSniff="false"
-          clientTransportIgnoreClusterName="false"
-          clientTransportPingTimeout="5s"
-          clientTransportNodesSamplerInterval="5s"
+            clusterName="elasticsearch"
+            addressList="127.0.0.1:9300,myelasticsearch:9300"
+            clientTransportSniff="false"
+            clientTransportIgnoreClusterName="false"
+            clientTransportPingTimeout="5s"
+            clientTransportNodesSamplerInterval="5s"
         />
-     </code>
+      </code>
 
-     Please refer to the Elasticsearch documentation for the following options:
+      Please refer to the Elasticsearch documentation for the following options:
 
-     clusterName the cluster name to join
+      clusterName the cluster name to join
 
-     addressList a list of comma separated transport address, note that the default
-     elasticsearch TCP port is 9300 and not 9200 (which is the HTTP port).
+      addressList a list of comma separated transport address, note that the default
+      elasticsearch TCP port is 9300 and not 9200 (which is the HTTP port).
 
-     clientTransportSniff see client.transport.sniff option
+      clientTransportSniff see client.transport.sniff option
 
-     clientTransportIgnoreClusterName see client.transport.ignore_cluster_name
+      clientTransportIgnoreClusterName see client.transport.ignore_cluster_name
 
-     clientTransportPingTimeout see client.transport.ping_timeout
+      clientTransportPingTimeout see client.transport.ping_timeout
 
-     clientTransportNodesSamplerInterval see client.transport.nodes_sampler_interval
+      clientTransportNodesSamplerInterval see client.transport.nodes_sampler_interval
 
-     @see http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html
+      @see http://www.elasticsearch.org/guide/en/elasticsearch/client/java-api/current/client.html
     </documentation>
 
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig"/>
   </extension-point>
 
   <extension-point name="elasticSearchIndex">
@@ -90,53 +90,65 @@
       The one used to index Nuxeo documents must be of type "doc".
 
       <code>
-       <elasticSearchIndex name="nuxeo" type="doc" create="true">
-         <settings></settings>
-         <mapping></mapping>
-         <fetchFromSources>
-           <include>ecm:*</include>
-           <include>dc:*</include>
-           <exclude>ecm:binaryFulltext</exclude>
-         </fetchFromSources>
-       </elasticSearchIndex>
+        <elasticSearchIndex name="nuxeo" type="doc" create="true">
+          <settings></settings>
+          <mapping></mapping>
+          <fetchFromSources>
+            <include>ecm:*</include>
+            <include>dc:*</include>
+            <exclude>ecm:binaryFulltext</exclude>
+          </fetchFromSources>
+        </elasticSearchIndex>
       </code>
 
-    @Since 5.9.3
-    name is the Elasticsearch index name.
+      @Since 5.9.3
+      name is the Elasticsearch index name.
 
-    type is the Elasticsearch type that hold a mapping, "doc" is the mapping
-    for Nuxeo documents
+      type is the Elasticsearch type that hold a mapping, "doc" is the mapping
+      for Nuxeo documents
 
-    create can be set to false if you don't want Nuxeo to initialize the index
-    and mapping.
+      create can be set to false if you don't want Nuxeo to initialize the index
+      and mapping.
 
-    settings the Elasticsearch settings
-    @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules.html
+      settings the Elasticsearch settings
+      @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules.html
 
-    mapping the Elasticsearch mapping for the type
-    @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
+      mapping the Elasticsearch mapping for the type
+      @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
 
-    @Since 5.9.5
-    fetchFromSources, include a list of field name pattern that will be included
+      @Since 5.9.5
+      fetchFromSources, include a list of field name pattern that will be included
       when fetching document from Elasticsearch (@see NxQueryBuilder.fetchFromElasticsearch)
       use the exclude list to prevent returning fulltext or long fields.
 
     </documentation>
 
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig"/>
   </extension-point>
 
   <extension-point name="elasticSearchDocWriter">
     <documentation>
-       Extension point used to setup the writer used when a document is indexed.
-       Must extend the JsonESDocumentWriter class. 
-       
-       <code>
-         <writer class="org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter" />
-       </code>
-       
+      Extension point used to setup the writer used when a document is indexed.
+      Must extend the JsonESDocumentWriter class.
+
+      <code>
+        <writer class="org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter"/>
+      </code>
+
     </documentation>
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor"/>
   </extension-point>
-   
+
+  <extension-point name="elasticSearchClientInitialization">
+    <documentation>
+      Extension point to define which class should be used for Elasticsearch client initialization.
+
+      <code>
+        <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl"/>
+      </code>
+
+    </documentation>
+    <object class="org.nuxeo.elasticsearch.config.ESClientInitializationDescriptor"/>
+  </extension-point>
+
 </component>
