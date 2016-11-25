@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.webapp.clipboard;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
 
 public class DocumentListZipExporter {
@@ -51,49 +51,46 @@ public class DocumentListZipExporter {
 
     private static final String SUMMARY_FILENAME = "INDEX.txt";
 
-    public File exportWorklistAsZip(List<DocumentModel> documents, CoreSession documentManager, boolean exportAllBlobs)
+    public Blob exportWorklistAsZip(List<DocumentModel> documents, CoreSession documentManager, boolean exportAllBlobs)
             throws IOException {
         StringBuilder blobList = new StringBuilder();
 
-        File tmpFile = Framework.createTempFile("NX-BigZipFile-", ".zip");
-        tmpFile.deleteOnExit(); // file is deleted after being downloaded in
-                                // DownloadServlet
-        FileOutputStream fout = new FileOutputStream(tmpFile);
-        ZipOutputStream out = new ZipOutputStream(fout);
-        out.setMethod(ZipOutputStream.DEFLATED);
-        out.setLevel(9);
-        byte[] data = new byte[BUFFER];
+        FileBlob blob = new FileBlob("zip");
 
-        for (DocumentModel doc : documents) {
+        try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(blob.getFile()))) {
+            out.setMethod(ZipOutputStream.DEFLATED);
+            out.setLevel(9);
+            byte[] data = new byte[BUFFER];
 
-            // first check if DM is attached to the core
-            if (doc.getSessionId() == null) {
-                // refetch the doc from the core
-                doc = documentManager.getDocument(doc.getRef());
+            for (DocumentModel doc : documents) {
+
+                // first check if DM is attached to the core
+                if (doc.getSessionId() == null) {
+                    // refetch the doc from the core
+                    doc = documentManager.getDocument(doc.getRef());
+                }
+
+                // NXP-2334 : skip deleted docs
+                if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                    continue;
+                }
+
+                BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
+                    addFolderToZip("", out, doc, data, documentManager, blobList, exportAllBlobs);
+                } else if (bh != null) {
+                    addBlobHolderToZip("", out, doc, data, blobList, bh, exportAllBlobs);
+                }
             }
-
-            // NXP-2334 : skip deleted docs
-            if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                continue;
+            if (blobList.length() > 1) {
+                addSummaryToZip(out, data, blobList);
             }
+        } catch (IOException cause) {
+            blob.getFile().delete();
+            throw cause;
+        }
 
-            BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
-                addFolderToZip("", out, doc, data, documentManager, blobList, exportAllBlobs);
-            } else if (bh != null) {
-                addBlobHolderToZip("", out, doc, data, blobList, bh, exportAllBlobs);
-            }
-        }
-        if (blobList.length() > 1) {
-            addSummaryToZip(out, data, blobList);
-        }
-        try {
-            out.close();
-            fout.close();
-        } catch (ZipException e) {
-            return null;
-        }
-        return tmpFile;
+        return blob;
     }
 
     private void addFolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
