@@ -20,7 +20,6 @@ package org.nuxeo.ecm.webapp.clipboard;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,16 +94,18 @@ public class ZipUtilsTest {
         documents.add(folder);
 
         DocumentListZipExporter zipExporter = new DocumentListZipExporter();
-        File file = zipExporter.exportWorklistAsZip(documents, session, true);
-        assertNotNull(file);
-        ZipFile zipFile = new ZipFile(file);
-        assertNotNull(zipFile.getEntry("Parent/éèà"));
-        Framework.getProperties().setProperty(DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
-                DocumentListZipExporter.ZIP_ENTRY_ENCODING_OPTIONS.ascii.name());
-        file = zipExporter.exportWorklistAsZip(documents, session, true);
-        assertNotNull(file);
-        zipFile = new ZipFile(file);
-        assertNotNull(zipFile.getEntry("Parent/eea"));
+        Blob blob = zipExporter.exportWorklistAsZip(documents, session, true);
+        assertNotNull(blob);
+        try (ZipFile zipFile = new ZipFile(blob.getFile())) {
+            assertNotNull(zipFile.getEntry("Parent/éèà"));
+            Framework.getProperties().setProperty(DocumentListZipExporter.ZIP_ENTRY_ENCODING_PROPERTY,
+                    DocumentListZipExporter.ZIP_ENTRY_ENCODING_OPTIONS.ascii.name());
+            blob = zipExporter.exportWorklistAsZip(documents, session, true);
+            assertNotNull(blob);
+        }
+        try (ZipFile zipFile = new ZipFile(blob.getFile())) {
+            assertNotNull(zipFile.getEntry("Parent/eea"));
+        }
     }
 
     @Test
@@ -114,10 +115,11 @@ public class ZipUtilsTest {
         documents.add(heavyFile);
 
         DocumentListZipExporter zipExporter = new DocumentListZipExporter();
-        File file = zipExporter.exportWorklistAsZip(documents, session, true);
-        assertNotNull(file);
-        ZipFile zipFile = new ZipFile(file);
-        assertNotNull(zipFile.getEntry("blob2.raw"));
-        assertNotNull(zipFile.getEntry("blob1.raw"));
+        Blob blob = zipExporter.exportWorklistAsZip(documents, session, true);
+        assertNotNull(blob);
+        try (ZipFile zipFile = new ZipFile(blob.getFile())) {
+            assertNotNull(zipFile.getEntry("blob2.raw"));
+            assertNotNull(zipFile.getEntry("blob1.raw"));
+        }
     }
 }

@@ -5,6 +5,8 @@
     Manages repositories.
   </documentation>
 
+  <require>org.nuxeo.ecm.core.transientstore.TransientStorageComponent</require>
+  
   <implementation class="org.nuxeo.ecm.core.io.download.DownloadServiceImpl" />
 
   <service>
