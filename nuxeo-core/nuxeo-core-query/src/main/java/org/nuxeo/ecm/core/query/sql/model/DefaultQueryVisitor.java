@@ -47,10 +47,7 @@ public class DefaultQueryVisitor implements IVisitor {
 
     @Override
     public void visitSelectClause(SelectClause node) {
-        SelectList elements = node.elements;
-        for (int i = 0; i < elements.size(); i++) {
-            elements.get(i).accept(this);
-        }
+        node.elements.forEach((alias, operand) -> operand.accept(this));
     }
 
     @Override

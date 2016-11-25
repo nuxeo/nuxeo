@@ -1083,8 +1083,7 @@ public class NXQLQueryMaker implements QueryMaker {
             onlyRelations = true;
             Set<String> fromTypes = new HashSet<>();
             FromList elements = node.elements;
-            for (int i = 0; i < elements.size(); i++) {
-                String typeName = elements.get(i);
+            for (String typeName : elements.values()) {
                 if (TYPE_DOCUMENT.equalsIgnoreCase(typeName)) {
                     typeName = TYPE_DOCUMENT;
                 }
