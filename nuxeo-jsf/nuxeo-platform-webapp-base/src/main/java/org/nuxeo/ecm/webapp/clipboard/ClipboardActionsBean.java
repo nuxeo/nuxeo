@@ -26,6 +26,8 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,8 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +52,7 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -58,6 +61,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -66,11 +70,8 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -921,34 +922,29 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     @Override
     public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) {
         try {
-            FacesContext context = FacesContext.getCurrentInstance();
+            DownloadService dnd = Framework.getService(DownloadService.class);
             DocumentListZipExporter zipExporter = new DocumentListZipExporter();
             File tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
             if (tmpFile == null) {
                 // empty zip file, do nothing
                 facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.clipboard.emptyDocuments"));
                 return null;
-            } else {
-                if (tmpFile.length() > Functions.getBigFileSizeLimit()) {
-                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                    request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                    String zipDownloadURL = BaseURL.getBaseURL(request);
-                    zipDownloadURL += DownloadService.NXBIGZIPFILE + "/";
-                    zipDownloadURL += tmpFile.getName();
-                    try {
-                        context.getExternalContext().redirect(zipDownloadURL);
-                    } catch (IOException e) {
-                        log.error("Error while redirecting for big file downloader", e);
-                    }
-                } else {
-                    ComponentUtils.downloadFile(tmpFile, "clipboard.zip", "clipboardZip");
-                    tmpFile.delete();
-                }
-
+            }
+            try {
+                Blob blob = new FileBlob("zip");
+                blob.setMimeType("application/zip");
+                blob.setFilename("clipboard.zip");
+                Files.move(tmpFile.toPath(), blob.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+                String key = dnd.store(Collections.singletonList(new FileBlob(tmpFile)));
+                String url = BaseURL.getBaseURL() + "/" + dnd.getDownloadUrl(key);
+                ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+                context.redirect(url);
                 return "";
+            } finally {
+                tmpFile.delete();
             }
         } catch (IOException io) {
-            throw new NuxeoException(io);
+            throw new NuxeoException("Error while redirecting for clipboard content", io);
         }
     }
 }

@@ -77,6 +77,7 @@ import com.google.inject.Provider;
         "org.nuxeo.ecm.core.api", //
         "org.nuxeo.ecm.core.event", //
         "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.cache",
         "org.nuxeo.ecm.core.test", //
         "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.core.convert", //

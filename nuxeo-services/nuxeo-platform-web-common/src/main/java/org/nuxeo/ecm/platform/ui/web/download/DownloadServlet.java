@@ -30,17 +30,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -68,7 +64,7 @@ public class DownloadServlet extends HttpServlet {
 
     /** @deprecated since 7.4, use nxfile instead */
     @Deprecated
-    public static final String NXBIGFILE = "nxbigfile";
+    public static final String NXBIGFILE = DownloadService.NXBIGFILE;
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -104,27 +100,22 @@ public class DownloadServlet extends HttpServlet {
         switch (what) {
         case NXFILE:
         case NXBIGFILE:
-            downloadBlob(req, resp, path, false);
+            handleDownload(req, resp, path, false);
             break;
         case NXDOWNLOADINFO:
             // used by nxdropout.js
-            downloadBlob(req, resp, path, true);
+            handleDownload(req, resp, path, true);
             break;
         case NXBIGZIPFILE:
-            // handle the download for a big zip created in the tmp directory;
-            // the name of this zip is sent in the request
-            handleDownloadTemporaryZip(req, resp, path);
-            break;
         case NXBIGBLOB:
-            // handle the download of a Blob referenced in HTTP Request or Session
-            handleDownloadSessionBlob(req, resp, path);
+            Framework.getService(DownloadService.class).downloadBlob(req, resp, path, "download");
             break;
         default:
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
         }
     }
 
-    protected void downloadBlob(HttpServletRequest req, HttpServletResponse resp, String urlPath, boolean info)
+    protected void handleDownload(HttpServletRequest req, HttpServletResponse resp, String urlPath, boolean info)
             throws IOException {
         String[] parts = urlPath.split("/");
         if (parts.length < 2) {
@@ -199,28 +190,6 @@ public class DownloadServlet extends HttpServlet {
             filename = parts[length - 1];
         }
         return Pair.of(xpath, filename);
-    }
-
-    // used by DownloadFile operation
-    protected void handleDownloadSessionBlob(HttpServletRequest req, HttpServletResponse resp, String blobId)
-            throws IOException {
-        Blob blob = (Blob) req.getAttribute(blobId);
-        if (blob != null) {
-            req.removeAttribute(blobId);
-        } else {
-            HttpSession session = req.getSession(false);
-            if (session == null) {
-                log.error("Unable to download blob " + blobId + " since the holding http session does not exist");
-                return;
-            }
-            blob = (Blob) session.getAttribute(blobId);
-            if (blob == null) {
-                return;
-            }
-            session.removeAttribute(blobId);
-        }
-        DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.downloadBlob(req, resp, null, null, blob, null, "operation");
     }
 
     // used by ClipboardActionsBean
