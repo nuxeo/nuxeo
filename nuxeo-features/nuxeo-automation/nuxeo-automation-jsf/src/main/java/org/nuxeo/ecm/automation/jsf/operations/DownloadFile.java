@@ -58,9 +58,9 @@ public class DownloadFile {
         if (blob == null) {
             throw new OperationException("there is no file content available");
         }
-        final DownloadService downloads = Framework.getService(DownloadService.class);
-        String key = downloads.store(Collections.singletonList(blob));
-        String url = BaseURL.getBaseURL() + "/" + downloads.getDownloadUrl(key);
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        String key = downloadService.storeBlobs(Collections.singletonList(blob));
+        String url = BaseURL.getBaseURL() + "/" + downloadService.getDownloadUrl(key);
 
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();

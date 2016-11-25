@@ -244,7 +244,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
         if (blob.getLength() > Functions.getBigFileSizeLimit()) {
             FacesContext context = FacesContext.getCurrentInstance();
-            String bigDownloadURL = BaseURL.getBaseURL()+ "/" + downloadService.getDownloadUrl(doc, xpath, filename);
+            String bigDownloadURL = BaseURL.getBaseURL() + "/" + downloadService.getDownloadUrl(doc, xpath, filename);
             try {
                 context.getExternalContext().redirect(bigDownloadURL);
             } catch (IOException e) {
