@@ -27,6 +27,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,7 +35,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.Map;
 
@@ -251,10 +251,10 @@ public class TestDownloadService {
         // transfert temporary file into a blob
         Path path = Files.createTempFile("pfouh","pfouh");
         FileBlob blob = new FileBlob("pfouh");
-        Files.move(path, blob.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.move(path, blob.getFile().toPath(), REPLACE_EXISTING);
 
         // store the blob for downloading
-        String key = downloadService.store(Collections.singletonList(blob));
+        String key = downloadService.storeBlobs(Collections.singletonList(blob));
 
         // mock request
         ByteArrayOutputStream out = new ByteArrayOutputStream();

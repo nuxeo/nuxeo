@@ -23,11 +23,8 @@ package org.nuxeo.ecm.webapp.clipboard;
 import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.ScopeType.SESSION;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,7 +58,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -921,29 +917,28 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     @Override
     public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) {
+        Blob blob = null;
         try {
-            DownloadService dnd = Framework.getService(DownloadService.class);
+            DownloadService downloadService = Framework.getService(DownloadService.class);
             DocumentListZipExporter zipExporter = new DocumentListZipExporter();
-            File tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
-            if (tmpFile == null) {
+            blob = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
+            if (blob == null) {
                 // empty zip file, do nothing
                 facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.clipboard.emptyDocuments"));
                 return null;
             }
-            try {
-                Blob blob = new FileBlob("zip");
-                blob.setMimeType("application/zip");
-                blob.setFilename("clipboard.zip");
-                Files.move(tmpFile.toPath(), blob.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
-                String key = dnd.store(Collections.singletonList(new FileBlob(tmpFile)));
-                String url = BaseURL.getBaseURL() + "/" + dnd.getDownloadUrl(key);
-                ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-                context.redirect(url);
-                return "";
-            } finally {
-                tmpFile.delete();
-            }
+            blob.setMimeType("application/zip");
+            blob.setFilename("clipboard.zip");
+
+            String key = downloadService.storeBlobs(Collections.singletonList(blob));
+            String url = BaseURL.getBaseURL() + "/" + downloadService.getDownloadUrl(key);
+            ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+            context.redirect(url);
+            return "";
         } catch (IOException io) {
+            if (blob != null) {
+                blob.getFile().delete();
+            }
             throw new NuxeoException("Error while redirecting for clipboard content", io);
         }
     }

@@ -175,15 +175,21 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Multipart download are not yet supported. You can only provide
+     * a blob singleton at this time.
+     */
     @Override
-    public String store(List<Blob> blobs) {
+    public String storeBlobs(List<Blob> blobs) {
         if (blobs.size() > 1) {
             throw new IllegalArgumentException("multipart download not yet implemented");
         }
         TransientStore ts = Framework.getService(TransientStoreService.class).getStore("download");
-        String key = UUID.randomUUID().toString();
-        ts.putBlobs(key, blobs);
-        return key;
+        String storeKey = UUID.randomUUID().toString();
+        ts.putBlobs(storeKey, blobs);
+        return storeKey;
     }
 
 
@@ -209,8 +215,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     @Override
-    public String getDownloadUrl(String key) {
-        return DownloadService.NXBIGBLOB + "/" + key;
+    public String getDownloadUrl(String storeKey) {
+        return DownloadService.NXBIGBLOB + "/" + storeKey;
     }
 
     @Override
