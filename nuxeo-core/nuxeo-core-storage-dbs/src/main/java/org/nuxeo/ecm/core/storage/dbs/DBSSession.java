@@ -96,7 +96,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -1483,8 +1482,7 @@ public class DBSSession implements Session {
             // turned into SELECT ecm:uuid
             selectClause.add(new Reference(NXQL.ECM_UUID));
         }
-        boolean selectStar = selectClause.getSelectList().size() == 1
-                && (selectClause.get(0).equals(new Reference(NXQL.ECM_UUID)));
+        boolean selectStar = selectClause.count() == 1 && (selectClause.containsOperand(new Reference(NXQL.ECM_UUID)));
         if (selectStar) {
             distinctDocuments = true;
         } else if (selectClause.isDistinct()) {
@@ -1492,7 +1490,7 @@ public class DBSSession implements Session {
         }
         OrderByClause orderByClause = sqlQuery.orderBy;
         if (idKeyHolder != null) {
-            Operand operand = selectClause.get(0);
+            Operand operand = selectClause.operands().iterator().next();
             String idKey = operand instanceof Reference ? ((Reference) operand).name : NXQL.ECM_UUID;
             idKeyHolder.setValue(idKey);
         }

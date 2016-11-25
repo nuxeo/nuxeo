@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ArrayMap;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
@@ -184,7 +183,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     protected transient boolean isACPLoaded = false;
 
     // the adapters registered for this document - only valid on client
-    protected transient ArrayMap<Class<?>, Object> adapters;
+    protected transient HashMap<Class<?>, Object> adapters;
 
     /**
      * Flags: bitwise combination of {@link #F_VERSION}, {@link #F_PROXY}, {@link #F_IMMUTABLE}.
@@ -935,9 +934,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /**
      * Lazy initialization for adapters because they don't survive the serialization.
      */
-    private ArrayMap<Class<?>, Object> getAdapters() {
+    private Map<Class<?>, Object> getAdapters() {
         if (adapters == null) {
-            adapters = new ArrayMap<Class<?>, Object>();
+            adapters = new HashMap<>();
         }
 
         return adapters;

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.query.sql;
 
 import static org.junit.Assert.assertEquals;
@@ -55,7 +52,8 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
  */
 public class TestQueryParser {
 
-    static final String[] GOOD_QUERIES = { "SELECT name, title, description FROM folder WHERE state = 2 AND created > \"20060523\"" };
+    static final String[] GOOD_QUERIES = {
+            "SELECT name, title, description FROM folder WHERE state = 2 AND created > \"20060523\"" };
 
     static final String[] BAD_QUERIES = {
             "SELECT name WHERE title, description FROM folder WHERE state = 2 AND created > \"20060523\"", "name, ",
@@ -131,7 +129,7 @@ public class TestQueryParser {
     public void testNamespace() {
         SQLQuery query = SQLQueryParser.parse("SELECT dc:title FROM Document WHERE dc:description = 'test'");
         SelectClause select = query.getSelectClause();
-        String v = select.getVariable(0).name;
+        String v = ((Reference) select.operands().iterator().next()).name;
         assertEquals("dc:title", v);
     }
 
@@ -140,7 +138,7 @@ public class TestQueryParser {
         SQLQuery query = SQLQueryParser.parse("SELECT dc:foo/bar/baz FROM Document"
                 + " WHERE dc:foo/3/ho = dc:bar/*/bobby" + " OR dc:foo/bar[5]/gee = dc:foo/*6/hop");
         SelectClause select = query.getSelectClause();
-        String v = select.getVariable(0).name;
+        String v = ((Reference) select.operands().iterator().next()).name;
         assertEquals("dc:foo/bar/baz", v);
         Predicate where = query.getWhereClause().predicate;
         Predicate p1 = (Predicate) where.lvalue;
@@ -358,28 +356,30 @@ public class TestQueryParser {
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
         assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
-        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram"), null,
-                null)), lvalue);
+        assertEquals(new Reference(new Reference("dc:title"),
+                new EsHint(new EsIdentifierList("dc:title.ngram"), null, null)), lvalue);
     }
 
     @Test
     public void testEsHintIndexBoost() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+es: INDEX(dc:title.ngram^3) */ dc:title = 'foo'");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+es: INDEX(dc:title.ngram^3) */ dc:title = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
         assertEquals(1, ((Reference) lvalue).esHint.getIndex().length);
-        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram^3"),
-                null, null)), lvalue);
+        assertEquals(new Reference(new Reference("dc:title"),
+                new EsHint(new EsIdentifierList("dc:title.ngram^3"), null, null)), lvalue);
     }
 
     @Test
     public void testEsHintMultiIndex() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title,dc:description) */ ecm:fulltext = 'foo'");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: INDEX(dc:title,dc:description) */ ecm:fulltext = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
         assertEquals(2, ((Reference) lvalue).esHint.getIndex().length);
-        assertEquals(new Reference(new Reference("ecm:fulltext"), new EsHint(new EsIdentifierList(
-                "dc:title,dc:description"), null, null)), lvalue);
+        assertEquals(new Reference(new Reference("ecm:fulltext"),
+                new EsHint(new EsIdentifierList("dc:title,dc:description"), null, null)), lvalue);
     }
 
     @Test
@@ -392,7 +392,8 @@ public class TestQueryParser {
 
     @Test
     public void testEsHintOperator() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: OPERATOR(regex) */ dc:title = 'foo|bar|ba*'");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: OPERATOR(regex) */ dc:title = 'foo|bar|ba*'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
         assertEquals(new Reference(new Reference("dc:title"), new EsHint(null, null, "regex")), lvalue);
@@ -400,26 +401,28 @@ public class TestQueryParser {
 
     @Test
     public void testEsHintIndexAndAnalyzer() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) */ dc:title = 'foo'");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) */ dc:title = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram"),
-                "fulltext", null)), lvalue);
+        assertEquals(new Reference(new Reference("dc:title"),
+                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", null)), lvalue);
     }
 
     @Test
     public void testEsHintIndexAnalyzerAndOperator() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) operator(fuzzy)*/ dc:title = 'foo'");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p FROM t WHERE /*+ES: Index(dc:title.ngram) analyzer(fulltext) operator(fuzzy)*/ dc:title = 'foo'");
         Operand lvalue = query.getWhereClause().predicate.lvalue;
         assertTrue(lvalue instanceof Reference);
-        assertEquals(new Reference(new Reference("dc:title"), new EsHint(new EsIdentifierList("dc:title.ngram"),
-                "fulltext", "fuzzy")), lvalue);
+        assertEquals(new Reference(new Reference("dc:title"),
+                new EsHint(new EsIdentifierList("dc:title.ngram"), "fulltext", "fuzzy")), lvalue);
     }
 
     @Test
     public void testEsHintMultiClauses() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title.ngram) */ dc:title = 'foo' " +
-                "AND /*+ES: ANALYZER(fulltext2) */ dc:description LIKE 'bar'");
+        SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE /*+ES: INDEX(dc:title.ngram) */ dc:title = 'foo' "
+                + "AND /*+ES: ANALYZER(fulltext2) */ dc:description LIKE 'bar'");
         Operand pred = query.getWhereClause().predicate.rvalue;
         assertTrue(pred instanceof Predicate);
         Operand lvalue = ((Predicate) pred).lvalue;
@@ -595,7 +598,8 @@ public class TestQueryParser {
      */
     @Test
     public void testWhereClause() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p1, p2 FROM t WHERE title = \"test\" OR p2 >= 10.2 AND p1 + p2 < 5");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p1, p2 FROM t WHERE title = \"test\" OR p2 >= 10.2 AND p1 + p2 < 5");
 
         Expression expr1 = new Expression(new Reference("p1"), Operator.SUM, new Reference("p2"));
         expr1 = new Expression(expr1, Operator.LT, new IntegerLiteral(5));
@@ -628,7 +632,8 @@ public class TestQueryParser {
      */
     @Test
     public void testWhereClauseWithParenthesis() {
-        SQLQuery query = SQLQueryParser.parse("SELECT p1, p2 FROM t WHERE (title = \"test\" OR p2 >= 10.2) AND p1 + p2 < 5");
+        SQLQuery query = SQLQueryParser.parse(
+                "SELECT p1, p2 FROM t WHERE (title = \"test\" OR p2 >= 10.2) AND p1 + p2 < 5");
 
         // create the query by hand
         Predicate expr1 = new Predicate(new Reference("title"), Operator.EQ, new StringLiteral("test"));
@@ -755,7 +760,7 @@ public class TestQueryParser {
     }
 
     @Test
-    @SuppressWarnings( "deprecation" )
+    @SuppressWarnings("deprecation")
     public void testPrepareStringLiteral() {
         assertEquals("'foo'", SQLQueryParser.prepareStringLiteral("foo"));
         assertEquals("'can\\'t'", SQLQueryParser.prepareStringLiteral("can't"));

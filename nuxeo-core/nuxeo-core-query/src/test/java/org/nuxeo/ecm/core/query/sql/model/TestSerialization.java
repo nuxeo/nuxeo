@@ -21,10 +21,13 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.nuxeo.common.collections.SerializableArrayMap;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
 import org.nuxeo.common.utils.SerializableHelper;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
@@ -55,12 +58,12 @@ public class TestSerialization {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSerializableArrayMap() throws Exception {
-        SerializableArrayMap<String, Operand> elements = new SerializableArrayMap<String, Operand>();
+    public void testSerializableHashMap() throws Exception {
+        Map<String, Operand> elements = new HashMap<>();
         elements.put("abc", new StringLiteral("table"));
         assertEquals(1, elements.size());
 
-        SerializableArrayMap<String, Operand> elements2 = (SerializableArrayMap<String, Operand>) SerializableHelper.serializeUnserialize(elements);
+        Map<String, Operand> elements2 = (Map<String, Operand>) SerializableHelper.serializeUnserialize(elements);
         assertEquals(1, elements2.size());
     }
 

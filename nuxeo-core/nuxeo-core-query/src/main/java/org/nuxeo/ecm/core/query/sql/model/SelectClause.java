@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.query.sql.model;
+
+import java.util.Collection;
+
+import com.google.common.collect.Iterables;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,11 +52,11 @@ public class SelectClause extends Clause {
     }
 
     public void add(String alias, Operand element) {
-        elements.add(alias, element);
+        elements.put(alias, element);
     }
 
     public void add(Operand element) {
-        elements.add(element.toString(), element);
+        elements.put(element.toString(), element);
     }
 
     public Operand get(String alias) {
@@ -79,27 +80,27 @@ public class SelectClause extends Clause {
     }
 
     public Operand get(int i) {
-        return elements.get(i);
+        return Iterables.get(elements.values(), i);
     }
 
     public String getAlias(int i) {
-        return elements.getKey(i);
+        return Iterables.get(elements.keySet(), i);
     }
 
     public Reference getVariable(int i) {
-        return (Reference) elements.get(i);
+        return (Reference) get(i);
     }
 
     public Literal getLiteral(int i) {
-        return (Literal) elements.get(i);
+        return (Literal) get(i);
     }
 
     public Function getFunction(int i) {
-        return (Function) elements.get(i);
+        return (Function) get(i);
     }
 
     public Expression getExpression(int i) {
-        return (Expression) elements.get(i);
+        return (Expression) get(i);
     }
 
     public boolean isDistinct() {
@@ -116,6 +117,20 @@ public class SelectClause extends Clause {
 
     public boolean isEmpty() {
         return elements.isEmpty();
+    }
+
+    /**
+     * @since 9.1
+     */
+    public Collection<Operand> operands() {
+        return elements.values();
+    }
+
+    /**
+     * @since 9.1
+     */
+    public boolean containsOperand(Object operand) {
+        return elements.containsValue(operand);
     }
 
     @Override
