@@ -18,7 +18,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-3d-api</artifactId>
-      <version>9.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
