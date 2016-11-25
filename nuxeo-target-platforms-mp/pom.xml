@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.utils</groupId>
     <artifactId>nuxeo-target-platforms-parent</artifactId>
-    <version>1.10.6033-SNAPSHOT</version>
+    <version>1.11.6033-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
