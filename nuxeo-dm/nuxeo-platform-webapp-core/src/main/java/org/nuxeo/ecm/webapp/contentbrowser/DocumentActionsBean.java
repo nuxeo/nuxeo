@@ -25,15 +25,11 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
@@ -59,7 +55,6 @@ import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
@@ -246,26 +241,12 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         }
         // get properties from document view
         String filename = DocumentFileCodec.getFilename(doc, docView);
-        // download
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-
-        BlobManager blobManager = Framework.getService(BlobManager.class);
-        try {
-            URI uri = blobManager.getURI(blob, UsageHint.DOWNLOAD, request);
-            if (uri != null) {
-                response.sendRedirect(uri.toString());
-                return;
-            }
-        } catch (IOException e) {
-            log.error("Error while redirecting to blob provider's uri", e);
-        }
 
         if (blob.getLength() > Functions.getBigFileSizeLimit()) {
-            String bigDownloadURL = BaseURL.getBaseURL(request) + downloadService.getDownloadUrl(doc, xpath, filename);
+            FacesContext context = FacesContext.getCurrentInstance();
+            String bigDownloadURL = BaseURL.getBaseURL()+ "/" + downloadService.getDownloadUrl(doc, xpath, filename);
             try {
-                response.sendRedirect(bigDownloadURL);
+                context.getExternalContext().redirect(bigDownloadURL);
             } catch (IOException e) {
                 log.error("Error while redirecting for big file downloader", e);
             }

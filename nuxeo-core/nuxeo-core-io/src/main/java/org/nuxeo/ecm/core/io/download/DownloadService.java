@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.io.download;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -46,7 +47,13 @@ public interface DownloadService {
 
     String NXBIGBLOB = "nxbigblob";
 
+    /** @deprecated since 8.10, use nxtransient instead */
+    @Deprecated
     String NXBIGZIPFILE = "nxbigzipfile";
+
+    /** @deprecated since 7.4, use nxfile instead */
+    @Deprecated
+    String NXBIGFILE = "nxbigfile";
 
     String BLOBHOLDER_PREFIX = "blobholder:";
 
@@ -77,6 +84,14 @@ public interface DownloadService {
     }
 
     /**
+     * Stores the blobs for downloading it later
+     *
+     * @param the list of blobs to store
+     * @since 8.10
+     */
+    String store(List<Blob> blobs);
+
+    /**
      * Gets the URL to use to download the blob at the given xpath in the given document.
      * <p>
      * The URL is relative to the Nuxeo Web Application context.
@@ -104,6 +119,28 @@ public interface DownloadService {
      * @return the download URL
      */
     String getDownloadUrl(String repositoryName, String docId, String xpath, String filename);
+
+    /**
+     * Gets the URL to use to download the blobs identified by a storage key.
+     *
+     * <p>
+     * The URL is relative to the Nuxeo Web Application context.
+     * <p>
+     *
+     * @param blobs The key of stored blobs to download
+     * @return The download URL, something like {@code nxbigblobs/uuid}
+     * @since 8.10
+     */
+    String getDownloadUrl(String key);
+
+    /**
+     * Triggers a blob download.
+     *
+     * @param key the stored blobs key
+     * @param reason the download reason
+     * @since 8.10
+     */
+    void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason) throws IOException;
 
     /**
      * Triggers a blob download.
