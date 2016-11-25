@@ -232,6 +232,10 @@
          "format": "dateOptionalTime",
          "type": "date"
       },
+      "dc:expired": {
+         "format": "dateOptionalTime",
+         "type": "date"
+      },
       "dc:modified": {
          "format": "dateOptionalTime",
          "type": "date"
