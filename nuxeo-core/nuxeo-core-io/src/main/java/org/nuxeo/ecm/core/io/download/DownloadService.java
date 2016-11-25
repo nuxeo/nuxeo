@@ -45,7 +45,7 @@ public interface DownloadService {
 
     String NXBIGBLOB = "nxbigblob";
 
-    /** @deprecated since 8.10, use nxtransient instead */
+    /** @deprecated since 9.1, use nxbigblob instead */
     @Deprecated
     String NXBIGZIPFILE = "nxbigzipfile";
 
@@ -82,12 +82,13 @@ public interface DownloadService {
     }
 
     /**
-     * Stores the blobs for downloading it later
+     * Stores the blobs for later download.
      *
      * @param the list of blobs to store
-     * @since 8.10
+     * @return the store key used for retrieving the blobs (@see {@link DownloadService#getDownloadUrl(String)}
+     * @since 9.1
      */
-    String store(List<Blob> blobs);
+    String storeBlobs(List<Blob> blobs);
 
     /**
      * Gets the URL to use to download the blob at the given xpath in the given document.
@@ -120,25 +121,26 @@ public interface DownloadService {
 
     /**
      * Gets the URL to use to download the blobs identified by a storage key.
-     *
      * <p>
      * The URL is relative to the Nuxeo Web Application context.
      * <p>
+     * Returns something like {@code nxbigblob/key}
      *
-     * @param blobs The key of stored blobs to download
-     * @return The download URL, something like {@code nxbigblobs/uuid}
-     * @since 8.10
+     * @param key The key of stored blobs to download
+     * @return the download URL
+     * @since 9.1
      */
-    String getDownloadUrl(String key);
+    String getDownloadUrl(String storeKey);
 
     /**
-     * Triggers a blob download.
+     * Triggers a blobs download. Once the temporary blobs are transfered from the store, they are
+     * automatically deleted.
      *
-     * @param key the stored blobs key
+     * @param storeKey the stored blobs key
      * @param reason the download reason
-     * @since 8.10
+     * @since 9.1
      */
-    void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason) throws IOException;
+    void downloadBlob(HttpServletRequest request, HttpServletResponse response, String storeKey, String reason) throws IOException;
 
     /**
      * Triggers a blob download.
