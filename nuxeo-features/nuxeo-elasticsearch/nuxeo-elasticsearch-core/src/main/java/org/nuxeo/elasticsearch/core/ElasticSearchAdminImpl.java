@@ -49,6 +49,7 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.nuxeo.elasticsearch.api.ESClientInitializationService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
@@ -83,6 +84,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private final ElasticSearchRemoteConfig remoteConfig;
 
+    private final ESClientInitializationService clientInitService;
+
     private String[] includeSourceFields;
 
     private String[] excludeSourceFields;
@@ -93,12 +96,28 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     /**
      * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
+     * 
+     * @deprecated since 9.1, use {@link #ElasticSearchAdminImpl(ElasticSearchLocalConfig, ElasticSearchRemoteConfig,
+     *             Map<String, ElasticSearchIndexConfig>, ESClientInitializationService)} instead.
      */
+    @Deprecated
     public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig, ElasticSearchRemoteConfig remoteConfig,
             Map<String, ElasticSearchIndexConfig> indexConfig) {
+        this(localConfig, remoteConfig, indexConfig, null);
+    }
+
+    /**
+     * Init the admin service, remote configuration if not null will take precedence over local embedded configuration.
+     * The transport client initialization can be customized.
+     * 
+     * @since 9.1
+     */
+    public ElasticSearchAdminImpl(ElasticSearchLocalConfig localConfig, ElasticSearchRemoteConfig remoteConfig,
+            Map<String, ElasticSearchIndexConfig> indexConfig, ESClientInitializationService clientInitService) {
         this.remoteConfig = remoteConfig;
         this.localConfig = localConfig;
         this.indexConfig = indexConfig;
+        this.clientInitService = clientInitService;
         connect();
         initializeIndexes();
     }
@@ -174,17 +193,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private Client connectToRemote(ElasticSearchRemoteConfig config) {
         log.info("Connecting to remote ES cluster: " + config);
-        Builder builder = Settings.settingsBuilder()
-                                  .put("cluster.name", config.getClusterName())
-                                  .put("client.transport.nodes_sampler_interval", config.getSamplerInterval())
-                                  .put("client.transport.ping_timeout", config.getPingTimeout())
-                                  .put("client.transport.ignore_cluster_name", config.isIgnoreClusterName())
-                                  .put("client.transport.sniff", config.isClusterSniff());
-        Settings settings = builder.build();
+
+        Settings settings = clientInitService.initializeSettings(config);
         if (log.isDebugEnabled()) {
             log.debug("Using settings: " + settings.toDelimitedString(','));
         }
-        TransportClient ret = TransportClient.builder().settings(settings).build();
+
+        TransportClient ret = clientInitService.initializeClient(settings);
+
         String[] addresses = config.getAddresses();
         if (addresses == null) {
             log.error("You need to provide an addressList to join a cluster");
