@@ -139,12 +139,12 @@ select_list ::= select_list:list COMMA operand:o
               | operand:o
                   {:
                   RESULT = new SelectList();
-                  RESULT.add(o.toString(), o);
+                  RESULT.put(o.toString(), o);
                   :}
               | operand:o AS IDENTIFIER:alias
                   {:
                   RESULT = new SelectList();
-                  RESULT.add(alias, o);
+                  RESULT.put(alias, o);
                   :}
               | MUL
                   {: RESULT = new SelectList(); :}
@@ -177,12 +177,12 @@ from_list ::= from_list:list COMMA from_key:name
             | from_key:name
                 {:
                 RESULT = new FromList();
-                RESULT.add(name, name);
+                RESULT.put(name, name);
                 :}
             | from_key:name AS IDENTIFIER:alias
                 {:
                 RESULT = new FromList();
-                RESULT.add(alias, name);
+                RESULT.put(alias, name);
                 :}
             ;
 

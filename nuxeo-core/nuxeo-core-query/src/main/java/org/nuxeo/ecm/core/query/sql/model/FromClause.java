@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.query.sql.model;
+
+import com.google.common.collect.Iterables;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,15 +50,15 @@ public class FromClause extends Clause {
     }
 
     public void add(String alias, String element) {
-        elements.add(alias, element);
+        elements.put(alias, element);
     }
 
     public void add(String element) {
-        elements.add(element, element);
+        elements.put(element, element);
     }
 
     public String get(int i) {
-        return elements.get(i);
+        return Iterables.get(elements.values(), i);
     }
 
     public String get(String alias) {
@@ -67,7 +66,7 @@ public class FromClause extends Clause {
     }
 
     public String getAlias(int i) {
-        return elements.getKey(i);
+        return Iterables.get(elements.keySet(), i);
     }
 
     public int count() {
