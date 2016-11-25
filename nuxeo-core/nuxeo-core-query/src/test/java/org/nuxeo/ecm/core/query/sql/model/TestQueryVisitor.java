@@ -19,15 +19,16 @@
 
 package org.nuxeo.ecm.core.query.sql.model;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
 /**
@@ -169,17 +170,19 @@ class PrintVisitor extends DefaultQueryVisitor {
         if (elements.isEmpty()) {
             buf.append("*");
         } else {
-            for (int i = 0; i < elements.size(); i++) {
-                if (i != 0) {
+            boolean first = true;
+            for (Entry<String, Operand> entry : elements.entrySet()) {
+                if (!first) {
                     buf.append(", ");
                 }
-                Operand op = elements.get(i);
-                String alias = elements.getKey(i);
-                elements.get(i).accept(this);
+                String alias = entry.getKey();
+                Operand op = entry.getValue();
+                op.accept(PrintVisitor.this);
                 if (!alias.equals(op.toString())) {
                     buf.append(" AS ");
                     buf.append(alias);
                 }
+                first = false;
             }
         }
     }
@@ -188,11 +191,13 @@ class PrintVisitor extends DefaultQueryVisitor {
     public void visitFromClause(FromClause node) {
         buf.append(" FROM ");
         FromList elements = node.elements;
-        for (int i = 0; i < elements.size(); i++) {
-            if (i != 0) {
+        boolean first = true;
+        for (String element : elements.values()) {
+            if (!first) {
                 buf.append(", ");
             }
-            buf.append(elements.get(i));
+            buf.append(element);
+            first = false;
         }
     }
 

@@ -206,8 +206,7 @@ public class MongoDBQueryBuilder {
         projection.put(KEY_NAME, ONE); // used in ORDER BY ecm:path
         projection.put(KEY_PARENT_ID, ONE); // used in ORDER BY ecm:path
         boolean projectionOnFulltextScore = false;
-        for (int i = 0; i < selectClause.elements.size(); i++) {
-            Operand op = selectClause.elements.get(i);
+        for (Operand op : selectClause.getSelectList().values()) {
             if (!(op instanceof Reference)) {
                 throw new QueryParseException("Projection not supported: " + op);
             }

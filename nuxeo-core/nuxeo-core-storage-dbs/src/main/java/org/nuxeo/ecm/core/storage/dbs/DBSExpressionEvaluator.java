@@ -413,8 +413,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         boolean projectionOnFulltextScore = false;
         boolean sortOnFulltextScore = false;
         SelectList elements = selectClause.getSelectList();
-        for (int i = 0; i < elements.size(); i++) {
-            Operand op = elements.get(i);
+        for (Operand op : elements.values()) {
             if (op instanceof Reference) {
                 Reference ref = (Reference) op;
                 if (ref.name.equals(NXQL.ECM_FULLTEXT_SCORE)) {
@@ -463,16 +462,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     }
 
     public boolean hasWildcardProjection() {
-        SelectList elements = selectClause.getSelectList();
-        for (int i = 0; i < elements.size(); i++) {
-            Operand op = elements.get(i);
-            if (op instanceof Reference) {
-                if (((Reference) op).name.contains("*")) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return selectClause.getSelectList().values().stream().anyMatch(
+                operand -> operand instanceof Reference && ((Reference) operand).name.contains("*"));
     }
 
     @Override

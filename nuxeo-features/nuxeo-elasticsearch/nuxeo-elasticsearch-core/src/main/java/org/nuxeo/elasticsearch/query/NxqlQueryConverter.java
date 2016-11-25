@@ -116,8 +116,7 @@ final public class NxqlQueryConverter {
                 FromList elements = node.elements;
                 SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
 
-                for (int i = 0; i < elements.size(); i++) {
-                    String type = elements.get(i);
+                for (String type : elements.values()) {
                     if (NXQLQueryMaker.TYPE_DOCUMENT.equalsIgnoreCase(type)) {
                         // From Document means all doc types
                         fromList.clear();

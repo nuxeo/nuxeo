@@ -20,12 +20,29 @@ package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.LinkedHashMap;
 
+import com.google.common.collect.Iterables;
+
 /**
+ * Here, key is holding the alias and value the document type.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FromList extends LinkedHashMap<String, String> {
 
     private static final long serialVersionUID = -1931385427413643944L;
+
+    /**
+     * Don't use this method anymore. Now we can easily iterate over {@link FromList} with {@link #keySet()},
+     * {@link #values()} or {@link #entrySet()}.
+     * <p />
+     * We kept this method because removing it could lead to regressions as ({@link #get(Object)} is a candidate.
+     *
+     * @deprecated since 9.1
+     */
+    @Deprecated
+    public String get(int i) {
+        return Iterables.get(values(), i);
+    }
 
     @Override
     public String toString() {

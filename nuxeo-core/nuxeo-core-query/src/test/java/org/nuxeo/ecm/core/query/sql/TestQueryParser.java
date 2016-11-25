@@ -332,8 +332,8 @@ public class TestQueryParser {
     @Test
     public void testFunctions() {
         SQLQuery query = SQLQueryParser.parse("SELECT COUNT(p), AVG(p) FROM t");
-        SelectList select = query.getSelectClause().elements;
-        assertEquals(2, select.size());
+        SelectClause select = query.getSelectClause();
+        assertEquals(2, select.count());
 
         OperandList ops = new OperandList();
         ops.add(new Reference("p"));
@@ -724,12 +724,12 @@ public class TestQueryParser {
     public void testFromTypeClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE t1");
         assertEquals(FromClause.DOCTYPE, query.getFromClause().getType());
-        assertEquals("t1", query.getFromClause().elements.get(0));
+        assertEquals("t1", query.getFromClause().get(0));
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE t1,t2,t3");
-        assertEquals("t1", query.getFromClause().elements.get(0));
-        assertEquals("t2", query.getFromClause().elements.get(1));
-        assertEquals("t3", query.getFromClause().elements.get(2));
+        assertEquals("t1", query.getFromClause().get(0));
+        assertEquals("t2", query.getFromClause().get(1));
+        assertEquals("t3", query.getFromClause().get(2));
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM t1,t2,t3");
         assertEquals(FromClause.DOCTYPE, query.getFromClause().getType());
@@ -739,12 +739,12 @@ public class TestQueryParser {
     public void testFromLocationClause() {
         SQLQuery query = SQLQueryParser.parse("SELECT p, q, r FROM LOCATION l1");
         assertEquals(FromClause.LOCATION, query.getFromClause().getType());
-        assertEquals("l1", query.getFromClause().elements.get(0));
+        assertEquals("l1", query.getFromClause().get(0));
 
         query = SQLQueryParser.parse("SELECT p, q, r FROM TYPE l1, l2,l3");
-        assertEquals("l1", query.getFromClause().elements.get(0));
-        assertEquals("l2", query.getFromClause().elements.get(1));
-        assertEquals("l3", query.getFromClause().elements.get(2));
+        assertEquals("l1", query.getFromClause().get(0));
+        assertEquals("l2", query.getFromClause().get(1));
+        assertEquals("l3", query.getFromClause().get(2));
     }
 
     @Test
