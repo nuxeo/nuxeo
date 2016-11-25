@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
@@ -67,7 +66,6 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
-import org.nuxeo.ecm.core.query.sql.model.SelectList;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -80,11 +78,11 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
-import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
-import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
+import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
+import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -787,7 +785,7 @@ public class MongoDBQueryBuilder {
     }
 
     public List<Object> walkLiteralList(LiteralList litList) {
-        List<Object> list = new ArrayList<Object>(litList.size());
+        List<Object> list = new ArrayList<>(litList.size());
         for (Literal lit : litList) {
             list.add(walkLiteral(lit));
         }
@@ -1128,12 +1126,12 @@ public class MongoDBQueryBuilder {
          */
         Set<String> matchPrimaryTypes;
         if (include) {
-            matchPrimaryTypes = new HashSet<String>();
+            matchPrimaryTypes = new HashSet<>();
             for (String mixin : mixins) {
                 matchPrimaryTypes.addAll(getMixinDocumentTypes(mixin));
             }
         } else {
-            matchPrimaryTypes = new HashSet<String>(getDocumentTypes());
+            matchPrimaryTypes = new HashSet<>(getDocumentTypes());
             for (String mixin : mixins) {
                 matchPrimaryTypes.removeAll(getMixinDocumentTypes(mixin));
             }
@@ -1141,7 +1139,7 @@ public class MongoDBQueryBuilder {
         /*
          * Instance mixins that match.
          */
-        Set<String> matchMixinTypes = new HashSet<String>();
+        Set<String> matchMixinTypes = new HashSet<>();
         for (String mixin : mixins) {
             if (!isNeverPerInstanceMixin(mixin)) {
                 matchMixinTypes.add(mixin);

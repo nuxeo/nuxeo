@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.query.sql.model.SelectClause;
-import org.nuxeo.ecm.core.query.sql.model.SelectList;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -67,8 +65,8 @@ public class QueryOptimizer {
 
     public QueryOptimizer() {
         schemaManager = Framework.getLocalService(SchemaManager.class);
-        neverPerInstanceMixins = new HashSet<String>(schemaManager.getNoPerDocumentQueryFacets());
-        toplevelOperands = new LinkedList<Operand>();
+        neverPerInstanceMixins = new HashSet<>(schemaManager.getNoPerDocumentQueryFacets());
+        toplevelOperands = new LinkedList<>();
     }
 
     public MultiExpression getOptimizedQuery(SQLQuery query, FacetFilter facetFilter) {
@@ -108,7 +106,7 @@ public class QueryOptimizer {
      */
     protected void visitFromClause(FromClause node) {
         onlyRelations = true;
-        Set<String> fromTypes = new HashSet<String>();
+        Set<String> fromTypes = new HashSet<>();
         FromList elements = node.elements;
         for (int i = 0; i < elements.size(); i++) {
             String typeName = elements.get(i);
@@ -188,7 +186,7 @@ public class QueryOptimizer {
                         continue;
                     }
                     String primaryType = ((StringLiteral) rvalue).value;
-                    set = new HashSet<String>(Collections.singleton(primaryType));
+                    set = new HashSet<>(Collections.singleton(primaryType));
                 } else { // Operator.IN
                     if (!(rvalue instanceof LiteralList)) {
                         continue;
@@ -220,7 +218,7 @@ public class QueryOptimizer {
                 }
                 if (primaryTypes == null) {
                     if (op == Operator.EQ) {
-                        primaryTypes = new HashSet<String>(set); // copy
+                        primaryTypes = new HashSet<>(set); // copy
                     } else {
                         continue; // unknown positive, no optimization
                     }
@@ -256,7 +254,7 @@ public class QueryOptimizer {
     }
 
     protected static Set<String> getStringLiterals(LiteralList list) {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (Literal literal : list) {
             if (!(literal instanceof StringLiteral)) {
                 throw new RuntimeException("requires string literals");
