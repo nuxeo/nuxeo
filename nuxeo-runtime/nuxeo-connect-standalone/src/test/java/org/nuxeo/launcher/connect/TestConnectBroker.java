@@ -605,18 +605,17 @@ public class TestConnectBroker {
         // check logs
         List<String> expectedLogs = Arrays.asList("Optional dependencies [B:1.0.2] will be ignored for 'A-1.2.0'.",
                 "\nDependency resolution:\n"
-                        + "  Installation order (7):        B-1.0.1/D-1.0.3-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT/A-1.2.0\n"
+                        + "  Installation order (7):        A-1.2.0/B-1.0.1/D-1.0.3-SNAPSHOT/G-1.0.1-SNAPSHOT/H-1.0.1-SNAPSHOT/hfA-1.0.8/studioA-1.0.2-SNAPSHOT\n"
                         + "  Unchanged packages (4):        C:1.0.0, G:1.0.1-SNAPSHOT, H:1.0.1-SNAPSHOT, J:1.0.1\n"
                         + "  Packages to upgrade (5):       A:1.0.0, B:1.0.1-SNAPSHOT, hfA:1.0.0, D:1.0.2-SNAPSHOT, studioA:1.0.0\n"
                         + "  Local packages to install (5): A:1.2.0, B:1.0.1, hfA:1.0.8, D:1.0.3-SNAPSHOT, studioA:1.0.2-SNAPSHOT\n",
                 "Uninstalling studioA-1.0.0", "Uninstalling hfA-1.0.0", "Uninstalling D-1.0.2-SNAPSHOT",
-                "Uninstalling B-1.0.1-SNAPSHOT", "Uninstalling A-1.0.0", "Installing B-1.0.1",
+                "Uninstalling B-1.0.1-SNAPSHOT", "Uninstalling A-1.0.0", "Installing A-1.2.0", "Installing B-1.0.1",
                 "Installing D-1.0.3-SNAPSHOT", "Updating package G-1.0.1-SNAPSHOT...", "Uninstalling G-1.0.1-SNAPSHOT",
                 "Removed G-1.0.1-SNAPSHOT", "Downloading [G-1.0.1-SNAPSHOT]...", "Added G-1.0.1-SNAPSHOT",
                 "Installing G-1.0.1-SNAPSHOT", "Updating package H-1.0.1-SNAPSHOT...", "Uninstalling H-1.0.1-SNAPSHOT",
                 "Removed H-1.0.1-SNAPSHOT", "Downloading [H-1.0.1-SNAPSHOT]...", "Added H-1.0.1-SNAPSHOT",
-                "Installing H-1.0.1-SNAPSHOT", "Installing hfA-1.0.8", "Installing studioA-1.0.2-SNAPSHOT",
-                "Installing A-1.2.0");
+                "Installing H-1.0.1-SNAPSHOT", "Installing hfA-1.0.8", "Installing studioA-1.0.2-SNAPSHOT");
         checkLogEvents(expectedLogs, logCaptureResult.getCaughtEvents());
     }
 
