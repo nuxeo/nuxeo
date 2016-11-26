@@ -146,8 +146,7 @@ class MarkLogicQueryBuilder {
     private boolean hasProjectionWildcard() {
         if (projectionHasWildcard == null) {
             projectionHasWildcard = false;
-            for (int i = 0; i < selectClause.elements.size(); i++) {
-                Operand op = selectClause.elements.get(i);
+            for (Operand op : selectClause.getSelectList().values()) {
                 if (!(op instanceof Reference)) {
                     throw new QueryParseException("Projection not supported: " + op);
                 }
@@ -1407,8 +1406,7 @@ class MarkLogicQueryBuilder {
                 appendProjection(fields, NXQL.ECM_NAME); // used in ORDER BY ecm:path
                 appendProjection(fields, NXQL.ECM_PARENTID); // used in ORDER BY ecm:path
                 Set<String> elements = new HashSet<>(Arrays.asList(NXQL.ECM_UUID, NXQL.ECM_NAME, NXQL.ECM_PARENTID));
-                for (int i = 0; i < selectClause.elements.size(); i++) {
-                    Operand op = selectClause.elements.get(i);
+                for (Operand op : selectClause.getSelectList().values()) {
                     if (!(op instanceof Reference)) {
                         throw new QueryParseException("Projection not supported: " + op);
                     }
