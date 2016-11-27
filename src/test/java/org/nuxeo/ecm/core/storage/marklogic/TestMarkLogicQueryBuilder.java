@@ -58,8 +58,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnEcmPath() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_PATH), Operator.EQ,
                 new StringLiteral("/default-domain"));
@@ -82,8 +81,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testStartsWithOperatorOnEcmPath() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_PATH), Operator.STARTSWITH,
                 new StringLiteral("/default-domain"));
@@ -106,8 +104,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testStartsWithOperatorOnPath() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:title"), Operator.STARTSWITH,
                 new StringLiteral("/default-domain"));
@@ -123,8 +120,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnBoolean() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_ISPROXY), Operator.EQ, new IntegerLiteral(0));
 
@@ -139,8 +135,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnDate() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:created"), Operator.EQ,
                 new DateLiteral("2007-01-01", true));
@@ -156,8 +151,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnMixinType() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
                 new StringLiteral("Aged"));
@@ -173,8 +167,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnRangeElementIndex() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
 
@@ -193,8 +186,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnRangeElementIndexOnArray() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
 
@@ -213,8 +205,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnArray() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
 
@@ -229,8 +220,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testEqOperatorOnArrayWildcard() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.EQ,
                 new StringLiteral("bob"));
@@ -246,8 +236,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNoteqOperatorOnMixinType() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.NOTEQ,
                 new StringLiteral("Aged"));
@@ -263,8 +252,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNoteqOperatorOnArray() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTEQ,
                 new StringLiteral("bob"));
@@ -280,8 +268,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNoteqOperatorOnArrayWildcard() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.NOTEQ,
                 new StringLiteral("bob"));
@@ -297,8 +284,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNoteqOperatorOnRangeElementIndex() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.NOTEQ, new StringLiteral("NAME"));
 
@@ -317,8 +303,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNoteqOperatorOnRangeElementIndexOnArray() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTEQ,
                 new StringLiteral("bob"));
@@ -338,8 +323,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testLtOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.LT, new IntegerLiteral(10L));
 
@@ -354,8 +338,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testBetweenOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         LiteralList literals = new LiteralList();
         literals.add(new DateLiteral("2007-01-01", true));
@@ -373,8 +356,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testLikeOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:title"), Operator.LIKE, new StringLiteral("Docu%_"));
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
@@ -388,8 +370,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testIlikeOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:title"), Operator.ILIKE, new StringLiteral("Docu%_"));
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
@@ -403,8 +384,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testInOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         LiteralList inPrimaryTypes = new LiteralList();
         inPrimaryTypes.add(new StringLiteral("Document"));
@@ -421,8 +401,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNotInOperatorOnArray() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         LiteralList inContributors = new LiteralList();
         inContributors.add(new StringLiteral("bob"));
@@ -439,8 +418,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testIsNullOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_LOCK_CREATED), Operator.ISNULL, null);
 
@@ -455,8 +433,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNotOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(
                 new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), Operator.NOT,
@@ -473,8 +450,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testNotOperatorOnComposition() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression orExpression = new Expression( //
                 new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), //
@@ -493,8 +469,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testWildcardReference() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("picture:views/*/title"), Operator.EQ,
                 new StringLiteral("Original"));
@@ -510,8 +485,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testCorrelatedWildcardReference() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new MultiExpression(Operator.AND, Arrays.asList( //
                 new Expression(new Reference("picture:views/*1/width"), Operator.EQ, new IntegerLiteral(640)), //
@@ -545,8 +519,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testACPReference() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
         selectClause.add(new Reference("ecm:acl/*1/name"));
 
         LiteralList inPermissions = new LiteralList();
@@ -568,8 +541,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryWithPrincipals() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("title"));
 
@@ -584,8 +556,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryWithSort() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_NAME), Operator.EQ, new StringLiteral("NAME"));
 
@@ -611,8 +582,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryFulltext() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("NAME"));
@@ -628,8 +598,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryFulltextOr() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("pete OR world"));
@@ -645,8 +614,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryFulltextAnd() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("world Oyster"));
@@ -662,8 +630,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryFulltextNot() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("Kangaroo -oyster"));
@@ -679,8 +646,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryFulltextPhrase() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("\"Learn commerce\""));
@@ -696,8 +662,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testQueryFulltextNotPhrase() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         Expression expression = new Expression(new Reference(NXQL.ECM_FULLTEXT), Operator.EQ,
                 new StringLiteral("Bobby -\"commerce easily\""));
@@ -714,8 +679,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     @Test
     public void testCoreFeatureQuery() throws Exception {
         // Init parameters
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = newSelectClause();
 
         LiteralList inPrimaryTypes = new LiteralList();
         inPrimaryTypes.addAll(Stream.of("OrderedFolder", "HiddenFile", "DocWithAge", "TemplateRoot", "TestDocument2",
@@ -735,6 +699,14 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
                                                                                                  .getSearchQuery();
         assertFileAgainstString("query-expression/core-feature.txt", query);
+    }
+
+    private SelectClause newSelectClause() {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+        selectClause.add(new Reference(NXQL.ECM_NAME));
+        selectClause.add(new Reference(NXQL.ECM_PARENTID));
+        return selectClause;
     }
 
 }

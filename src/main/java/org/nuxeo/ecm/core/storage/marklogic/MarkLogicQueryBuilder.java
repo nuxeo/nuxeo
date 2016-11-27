@@ -1402,10 +1402,7 @@ class MarkLogicQueryBuilder {
             String query = searchQuery;
             if (!doManualProjection()) {
                 StringBuilder fields = new StringBuilder();
-                appendProjection(fields, NXQL.ECM_UUID); // always useful
-                appendProjection(fields, NXQL.ECM_NAME); // used in ORDER BY ecm:path
-                appendProjection(fields, NXQL.ECM_PARENTID); // used in ORDER BY ecm:path
-                Set<String> elements = new HashSet<>(Arrays.asList(NXQL.ECM_UUID, NXQL.ECM_NAME, NXQL.ECM_PARENTID));
+                Set<String> elements = new HashSet<>();
                 for (Operand op : selectClause.getSelectList().values()) {
                     if (!(op instanceof Reference)) {
                         throw new QueryParseException("Projection not supported: " + op);
