@@ -24,8 +24,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_META;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_TEXT_SCORE;
@@ -202,9 +200,6 @@ public class MongoDBQueryBuilder {
 
     protected void walkProjection() {
         projection = new BasicDBObject();
-        projection.put(idKey, ONE); // always useful
-        projection.put(KEY_NAME, ONE); // used in ORDER BY ecm:path
-        projection.put(KEY_PARENT_ID, ONE); // used in ORDER BY ecm:path
         boolean projectionOnFulltextScore = false;
         for (Operand op : selectClause.getSelectList().values()) {
             if (!(op instanceof Reference)) {
