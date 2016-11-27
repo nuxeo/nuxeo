@@ -1487,6 +1487,10 @@ public class DBSSession implements Session {
             String idKey = operand instanceof Reference ? ((Reference) operand).name : NXQL.ECM_UUID;
             idKeyHolder.setValue(idKey);
         }
+        // Add useful select clauses, used for order by path
+        selectClause.elements.putIfAbsent(NXQL.ECM_UUID, new Reference(NXQL.ECM_UUID));
+        selectClause.elements.putIfAbsent(NXQL.ECM_PARENTID, new Reference(NXQL.ECM_PARENTID));
+        selectClause.elements.putIfAbsent(NXQL.ECM_NAME, new Reference(NXQL.ECM_NAME));
 
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
