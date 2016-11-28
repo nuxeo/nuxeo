@@ -124,7 +124,10 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
         String modificationDatePropertyName = def.getSourceDocumentModificationDatePropertyName();
         Calendar modif = (Calendar) doc.getPropertyValue(modificationDatePropertyName);
         if (modif != null) {
-            sb.append(modif.getTimeInMillis());
+            long millis = modif.getTimeInMillis();
+            // the date may have been rounded by the storage layer, normalize it to the second
+            millis -= millis % 1000;
+            sb.append(millis);
             sb.append("::");
         }
         String variant = getVariant(doc, def);
