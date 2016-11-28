@@ -69,6 +69,8 @@ public class TestPageProviderTracking {
 
     @Before
     public void setupIndex() throws Exception {
+        // make sure that the audit bulker don't drain pending log entries while we reset the index
+        LogEntryGen.flushAndSync();
         esa.initIndexes(true);
     }
 
