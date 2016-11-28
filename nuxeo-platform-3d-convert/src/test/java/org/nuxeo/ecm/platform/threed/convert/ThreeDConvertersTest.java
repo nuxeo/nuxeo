@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -37,11 +38,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -53,7 +52,14 @@ import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_FILMBOX;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STANFORD;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_STEREOLITHOGRAPHY;
 import static org.nuxeo.ecm.platform.threed.ThreeDConstants.EXTENSION_WAVEFRONT;
-import static org.nuxeo.ecm.platform.threed.convert.Constants.*;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_IDS_PARAMETER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.BLENDER_PIPELINE_COMMAND;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_COMMAND;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.RENDER_3D_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.COLLADA2GLTF_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.LOD_CONVERTER;
+import static org.nuxeo.ecm.platform.threed.convert.Constants.BATCH_CONVERTER;
 
 /**
  * Test 3D converters
@@ -126,18 +132,21 @@ public class ThreeDConvertersTest {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBlenderPipelineCommand() throws Exception {
         CommandAvailability ca = commandLES.getCommandAvailability(BLENDER_PIPELINE_COMMAND);
         assertTrue("blender_pipeline is not available, skipping test", ca.isAvailable());
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testDae2GltfCommand() throws Exception {
         CommandAvailability ca = commandLES.getCommandAvailability(COLLADA2GLTF_COMMAND);
         assertTrue("dae2gltf is not available, skipping test", ca.isAvailable());
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testRenderConverter() throws Exception {
         BlobHolder result = applyConverter(RENDER_3D_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
@@ -146,6 +155,7 @@ public class ThreeDConvertersTest {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testCollada2glTFConverter() throws Exception {
         BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, getTestBlob(EXTENSION_COLLADA));
         List<Blob> blobs = result.getBlobs();
@@ -154,36 +164,43 @@ public class ThreeDConvertersTest {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverter3ds() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_3DSTUDIO));
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterFbx() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_FILMBOX));
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterPly() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_STANFORD));
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterX3d() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_EXTENSIBLE_3D_GRAPHICS));
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterStl() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_STEREOLITHOGRAPHY));
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterObj() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_WAVEFRONT));
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterObjMtl() throws Exception {
         BlobHolder blobHolder = getTestBlob(EXTENSION_WAVEFRONT);
         blobHolder.getBlobs().add(getTestBlob("mtl").getBlob());
@@ -191,6 +208,7 @@ public class ThreeDConvertersTest {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testLODConverter() throws Exception {
         BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();
@@ -203,6 +221,7 @@ public class ThreeDConvertersTest {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
         List<Blob> blobs = result.getBlobs();

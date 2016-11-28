@@ -32,8 +32,12 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.threed.*;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
+import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
 import org.nuxeo.ecm.platform.threed.service.ThreeDService;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -155,6 +159,7 @@ public class TestThreeDRenditions {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void shouldExposeOnlyExposedAsRenditions() throws Exception {
         ThreeD threeD = getTestThreeD();
         DocumentModel doc = session.createDocumentModel("/", "threed", "ThreeD");
@@ -183,6 +188,7 @@ public class TestThreeDRenditions {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();
         runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
