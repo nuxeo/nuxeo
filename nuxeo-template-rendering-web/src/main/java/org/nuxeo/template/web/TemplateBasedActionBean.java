@@ -18,6 +18,7 @@
  */
 package org.nuxeo.template.web;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,7 +172,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         this.newInput = newInput;
     }
 
-    public String render(String templateName) {
+    public String render(String templateName) throws IOException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (doc == null) {
