@@ -71,20 +71,9 @@ public class TestAuditPageProviderWithElasticSearch {
 
     @Before
     public void setupIndex() throws Exception {
+        // make sure that the audit bulker don't drain pending log entries while we reset the index
+        LogEntryGen.flushAndSync();
         esa.initIndexes(true);
-    }
-
-    protected void flushAndSync() throws Exception {
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-
-        esa.getClient().admin().indices().prepareFlush(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
-
-        TransactionHelper.startTransaction();
-
     }
 
     protected Map<String, ExtendedInfo> createExtendedInfos() {
