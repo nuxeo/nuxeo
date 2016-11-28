@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.login;
 
 import java.util.HashMap;
@@ -101,13 +98,10 @@ public class LoginPluginRegistry extends DefaultComponent {
                 oldLoginPluginDescriptor.setEnabled(enabled);
             }
         } else {
-            LoginPlugin newLoginPlugin = null;
+            LoginPlugin newLoginPlugin;
             try {
                 newLoginPlugin = className.newInstance();
-            } catch (InstantiationException e) {
-                log.error("Unable to create LoginPlugin for class " + className.getName() + ":" + e.getMessage(), e);
-                return;
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 log.error("Unable to create LoginPlugin for class " + className.getName() + ":" + e.getMessage(), e);
                 return;
             }
@@ -132,8 +126,8 @@ public class LoginPluginRegistry extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        loginPluginStack = new HashMap<String, LoginPlugin>();
-        pluginDescriptorStack = new HashMap<String, LoginPluginDescriptor>();
+        loginPluginStack = new HashMap<>();
+        pluginDescriptorStack = new HashMap<>();
     }
 
     @Deprecated

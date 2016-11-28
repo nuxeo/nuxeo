@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,8 @@ public class DisabledPropertyRefDescriptor implements Serializable {
         this.enabled = enabled;
     }
 
-    public boolean matches(String name, String widgetType, String widgetTypeCategory, String widgetMode, String template) {
+    public boolean matches(String name, String widgetType, String widgetTypeCategory, String widgetMode,
+            String template) {
         if (name != null && name.equals(this.name)) {
             if (matches(this.widgetType, widgetType)) {
                 if (matches(this.widgetTypeCategory, widgetTypeCategory)) {

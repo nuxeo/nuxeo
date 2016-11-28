@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
@@ -63,10 +60,6 @@ public interface ACP extends Serializable, Cloneable {
      * This differs for an iterative check using getAccess(String principal, String permission) in the order of checks -
      * so that in this case each ACE is fully checked against the given users and permissions before passing to the next
      * ACE.
-     *
-     * @param principals
-     * @param permissions
-     * @return
      */
     Access getAccess(String[] principals, String[] permissions);
 
@@ -75,8 +68,6 @@ public interface ACP extends Serializable, Cloneable {
      * <p>
      * Considers that all the passed entries are modifiable and attempts to set them as local entries related to the
      * current document.
-     *
-     * @param userEntries
      */
     void setRules(UserEntry[] userEntries);
 
@@ -88,7 +79,6 @@ public interface ACP extends Serializable, Cloneable {
      * <p>
      * The current behavior reset <strong>completely</strong> the current ACL.
      *
-     * @param userEntries
      * @param overwrite if true, will overwrite the whole current ACL
      */
     void setRules(UserEntry[] userEntries, boolean overwrite);
@@ -98,9 +88,6 @@ public interface ACP extends Serializable, Cloneable {
      * <p>
      * Considers that all the passed entries are modifiable and attempts to set them as entries related to the current
      * document.
-     *
-     * @param aclName
-     * @param userEntries
      */
     void setRules(String aclName, UserEntry[] userEntries);
 
@@ -110,16 +97,10 @@ public interface ACP extends Serializable, Cloneable {
      * Considers that all the passed entries are modifiable and attempts to set them as entries related to the current
      * document.
      *
-     * @param aclName
-     * @param userEntries
      * @param overwrite if true, will overwrite the whole ACL
      */
     void setRules(String aclName, UserEntry[] userEntries, boolean overwrite);
 
-    /**
-     *
-     * @param acl
-     */
     void addACL(ACL acl);
 
     void addACL(int pos, ACL acl);
@@ -146,7 +127,7 @@ public interface ACP extends Serializable, Cloneable {
     /**
      * Returns the usernames granted to perform an operation based on a list of permissions.
      *
-     * @deprecated Use the method from UserManager service getUsersForPermission instead
+     * @deprecated since 5.4.2 Use the method from UserManager service getUsersForPermission instead
      * @param perms the list of permissions.
      * @return a list of usernames
      */

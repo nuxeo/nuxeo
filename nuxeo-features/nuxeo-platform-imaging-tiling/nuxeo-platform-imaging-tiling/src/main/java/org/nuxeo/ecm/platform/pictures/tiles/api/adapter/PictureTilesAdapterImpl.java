@@ -46,7 +46,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
 
     protected String fileName;
 
-    protected Map<String, PictureTiles> tiles = new ConcurrentHashMap<String, PictureTiles>();
+    protected Map<String, PictureTiles> tiles = new ConcurrentHashMap<>();
 
     protected static PictureTilingService pts;
 
@@ -94,7 +94,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         for (String k : tiles.keySet()) {
             tiles.get(k).release();
         }
-        tiles = new ConcurrentHashMap<String, PictureTiles>();
+        tiles = new ConcurrentHashMap<>();
     }
 
     public String getXPath() {
@@ -113,6 +113,10 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         this.doc = doc;
     }
 
+    /**
+     * @deprecated since 9.1 as filename is now hold by blob
+     */
+    @Deprecated
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }

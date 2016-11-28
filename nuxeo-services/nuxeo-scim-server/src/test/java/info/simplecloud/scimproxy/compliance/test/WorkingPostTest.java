@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,10 @@ import info.simplecloud.scimproxy.compliance.enteties.TestResult;
  * Overriding the default test just to solve resource resolution issue !
  *
  * @author tiry
- *
  */
 public class WorkingPostTest extends PostTest {
 
-    public WorkingPostTest(CSP csp, ResourceCache<User> userCache,
-            ResourceCache<Group> groupCache) {
+    public WorkingPostTest(CSP csp, ResourceCache<User> userCache, ResourceCache<Group> groupCache) {
         super(csp, userCache, groupCache);
     }
 
@@ -45,7 +43,7 @@ public class WorkingPostTest extends PostTest {
         try {
             InputStream in = this.getClass().getResourceAsStream("/user_full.json");
             String fullUser = org.nuxeo.common.utils.FileUtils.read(in);
-            //String fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
+            // String fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
             return new User(fullUser, Resource.ENCODING_JSON);
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +53,7 @@ public class WorkingPostTest extends PostTest {
 
     @Override
     public List<TestResult> run() {
-        List<TestResult> results = new ArrayList<TestResult>();
+        List<TestResult> results = new ArrayList<>();
 
         // simple user
         User scimUser = new User();

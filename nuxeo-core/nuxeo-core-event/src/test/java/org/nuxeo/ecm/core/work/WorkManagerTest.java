@@ -99,7 +99,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     protected boolean dontClearCompletedWork;
 
     void assertSetEquals(List<String> expected, List<String> actual) {
-        assertEquals(new HashSet<String>(expected), new HashSet<String>(actual));
+        assertEquals(new HashSet<>(expected), new HashSet<>(actual));
     }
 
     void assertMetrics(long scheduled, long running, long completed, long cancelled) {
@@ -121,9 +121,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     protected void deployAndStart() throws Exception {
         doDeploy();
         fireFrameworkStarted();
-        assertMetrics(0,0,0,0);
+        assertMetrics(0, 0, 0, 0);
     }
-
 
     // overridden for persistence
     public boolean persistent() {
@@ -175,7 +174,6 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         // assertTrue(work.getCompletionTime() - work.getStartTime() > 0);
     }
 
-
     @Test
     public void testWorkManagerScheduling() throws Exception {
         deployAndStart();
@@ -193,7 +191,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(RUNNING, service.getWorkState("1"));
         assertEquals(RUNNING, service.getWorkState("2"));
         assertEquals(SCHEDULED, service.getWorkState("3"));
-        assertEquals(Arrays.asList("3"), service.listWorkIds(QUEUE, SCHEDULED));
+        assertEquals(Collections.singletonList("3"), service.listWorkIds(QUEUE, SCHEDULED));
         assertSetEquals(Arrays.asList("1", "2"), service.listWorkIds(QUEUE, RUNNING));
         assertSetEquals(Arrays.asList("1", "2", "3"), service.listWorkIds(QUEUE, null));
 
@@ -215,14 +213,14 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         SleepWork work7 = new SleepWork(duration, false, "3"); // id=3
         service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
         assertEquals(SCHEDULED, work7.getWorkInstanceState());
-        assertMetrics(1,2,0,1);
+        assertMetrics(1, 2, 0, 1);
 
         SleepAndFailWork work8 = new SleepAndFailWork(0, false, "4");
         service.schedule(work8);
-        assertMetrics(2,2,0,1);
+        assertMetrics(2, 2, 0, 1);
 
         assertTrue(service.awaitCompletion(duration * 3, TimeUnit.MILLISECONDS));
-        assertMetrics(0,0,4,1);
+        assertMetrics(0, 0, 4, 1);
 
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, SCHEDULED));
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, RUNNING));
@@ -240,12 +238,12 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         service.schedule(work1);
         service.schedule(work2);
 
-        assertMetrics(1,0,0,0);
+        assertMetrics(1, 0, 0, 0);
 
         service.enableProcessing("SleepWork", true);
 
-        assertTrue(service.awaitCompletion("SleepWork", duration*10, TimeUnit.MILLISECONDS));
-        assertMetrics(0,0,1,0);
+        assertTrue(service.awaitCompletion("SleepWork", duration * 10, TimeUnit.MILLISECONDS));
+        assertMetrics(0, 0, 1, 0);
     }
 
     @Test

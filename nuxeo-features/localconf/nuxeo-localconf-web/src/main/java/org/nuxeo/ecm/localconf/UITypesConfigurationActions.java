@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.ecm.localconf;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants
+        .UI_TYPES_CONFIGURATION_FACET;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants
+        .UI_TYPES_DEFAULT_NEEDED_SCHEMA;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,10 +47,6 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_DEFAULT_NEEDED_SCHEMA;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -122,7 +124,7 @@ public class UITypesConfigurationActions implements Serializable {
 
         List<String> allowedTypes = getAllowedTypes(document);
 
-        List<Type> notSelectedTypes = new ArrayList<Type>(typeManager.findAllAllowedSubTypesFrom(document.getType()));
+        List<Type> notSelectedTypes = new ArrayList<>(typeManager.findAllAllowedSubTypesFrom(document.getType()));
 
         for (Iterator<Type> it = notSelectedTypes.iterator(); it.hasNext();) {
             Type type = it.next();
@@ -141,7 +143,7 @@ public class UITypesConfigurationActions implements Serializable {
         if (uiTypesConfiguration == null) {
             return Collections.emptyList();
         }
-        List<String> allowedTypes = new ArrayList<String>(uiTypesConfiguration.getAllowedTypes());
+        List<String> allowedTypes = new ArrayList<>(uiTypesConfiguration.getAllowedTypes());
         if (allowedTypes.isEmpty()) {
             allowedTypes = computeAllowedTypes(doc);
         }
@@ -167,7 +169,7 @@ public class UITypesConfigurationActions implements Serializable {
 
         List<String> allowedTypes = getAllowedTypes(document);
 
-        List<Type> selectedTypes = new ArrayList<Type>();
+        List<Type> selectedTypes = new ArrayList<>();
         for (String type : allowedTypes) {
             Type existingType = typeManager.getType(type);
             if (existingType != null) {
@@ -180,7 +182,7 @@ public class UITypesConfigurationActions implements Serializable {
     }
 
     protected List<String> computeAllowedTypes(DocumentModel currentDoc) {
-        List<String> types = new ArrayList<String>();
+        List<String> types = new ArrayList<>();
 
         DocumentModel parent = documentManager.getRootDocument();
 
@@ -210,7 +212,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @Since 5.5
      */
     public List<Type> getTypesWithSchemaFile(DocumentModel document) {
-        List<Type> types = new ArrayList<Type>();
+        List<Type> types = new ArrayList<>();
         for (String type : getAllowedTypes(document)) {
             DocumentType documentType = getSchemaManager().getDocumentType(type);
             if (documentType != null && documentType.hasSchema(UI_TYPES_DEFAULT_NEEDED_SCHEMA)) {

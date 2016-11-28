@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,10 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,17 +46,17 @@ public interface PictureResourceAdapter {
      *
      * @since 5.7
      */
-    boolean fillPictureViews(Blob blob, String filename, String title, ArrayList<Map<String, Object>> pictureConversions)
+    boolean fillPictureViews(Blob blob, String filename, String title, List<Map<String, Object>> pictureConversions)
             throws IOException;
 
     /**
      * This method just delegate the job to
-     * {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)} by passing null instead of
+     * {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, List)} by passing null instead of
      * statics picture templates. <br/>
      * <br/>
      * This will fill the picture views by using the registered picture templates.
      *
-     * @see {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)}
+     * @see {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, List)}
      * @since 6.9.6
      */
     boolean fillPictureViews(Blob blob, String filename, String title) throws IOException;

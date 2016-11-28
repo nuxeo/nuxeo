@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
@@ -74,9 +72,8 @@ public class DialectMySQL extends Dialect {
     public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKeys, String referencedTable,
             String[] primaryKeys, boolean referencesPrimaryKey) {
         String cols = StringUtils.join(foreignKeys, ", ");
-        String sql = String.format(" ADD INDEX %s (%s), ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
+        return String.format(" ADD INDEX %s (%s), ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
                 constraintName, cols, constraintName, cols, referencedTable, StringUtils.join(primaryKeys, ", "));
-        return sql;
     }
 
     @Override
@@ -114,7 +111,7 @@ public class DialectMySQL extends Dialect {
             return jdbcInfo("DATETIME(3)", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("VARCHAR(250) BINARY", Types.VARCHAR);
-            // -----
+        // -----
         case NODEID:
         case NODEIDFK:
         case NODEIDFKNP:
@@ -218,9 +215,9 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
-            List<Column> columns, Model model) {
-        List<String> columnNames = new ArrayList<String>(columns.size());
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
+        List<String> columnNames = new ArrayList<>(columns.size());
         for (Column col : columns) {
             columnNames.add(col.getQuotedName());
         }
@@ -254,7 +251,6 @@ public class DialectMySQL extends Dialect {
                 translateForMySQL(term, ft.op, buf);
             }
             buf.append(')');
-            return;
         } else {
             if (ft.op == Op.NOTWORD) {
                 buf.append('-');
@@ -285,10 +281,10 @@ public class DialectMySQL extends Dialect {
             Column mainColumn, Model model, Database database) {
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String indexSuffix = model.getFulltextIndexSuffix(indexName);
-        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-        Column ftMain = ft.getColumn(model.MAIN_KEY);
-        Column stColumn = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY + indexSuffix);
-        Column btColumn = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY + indexSuffix);
+        Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(Model.MAIN_KEY);
+        Column stColumn = ft.getColumn(Model.FULLTEXT_SIMPLETEXT_KEY + indexSuffix);
+        Column btColumn = ft.getColumn(Model.FULLTEXT_BINARYTEXT_KEY + indexSuffix);
         String match = String.format("MATCH (%s, %s)", stColumn.getFullQuotedName(), btColumn.getFullQuotedName());
         FulltextMatchInfo info = new FulltextMatchInfo();
         if (nthMatch == 1) {
@@ -371,7 +367,7 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("idType", "varchar(36)");
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));

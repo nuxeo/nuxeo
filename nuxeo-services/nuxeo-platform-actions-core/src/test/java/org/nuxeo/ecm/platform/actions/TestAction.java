@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: TestAction.java 20218 2007-06-07 19:19:46Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -70,7 +67,7 @@ public class TestAction extends NXRuntimeTestCase {
         String[] categories = newDocument.getCategories();
         assertEquals(1, categories.length);
         assertEquals("folder", categories[0]);
-        List<String> filterIds = new ArrayList<String>();
+        List<String> filterIds = new ArrayList<>();
         filterIds.add("createChild");
         assertEquals(filterIds, newDocument.getFilterIds());
 
@@ -315,8 +312,8 @@ public class TestAction extends NXRuntimeTestCase {
         List<String> previewFilterIds = previewAction.getFilterIds();
         assertEquals(1, previewFilterIds.size());
         assertTrue(previewFilterIds.contains("filter_defined_globally"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter(
-                "filter_defined_globally");
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry()
+                                                                    .getFilter("filter_defined_globally");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
         assertEquals(1, previewRules.length);
@@ -333,8 +330,8 @@ public class TestAction extends NXRuntimeTestCase {
         assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
         assertEquals(1, opreviewAction.getFilterIds().size());
         assertTrue(opreviewAction.getFilterIds().contains("filter_defined_globally"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter(
-                "filter_defined_globally");
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry()
+                                                                     .getFilter("filter_defined_globally");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);
@@ -350,12 +347,12 @@ public class TestAction extends NXRuntimeTestCase {
         List<Action> actions;
         Action a1 = new Action("id1", null);
         Action a2 = new Action("id2", null);
-        actions = new ArrayList<Action>(Arrays.asList(a1, a2));
+        actions = new ArrayList<>(Arrays.asList(a1, a2));
         Collections.sort(actions);
         assertEquals("id1", actions.get(0).getId());
         assertEquals("id2", actions.get(1).getId());
         // now start with opposite order
-        actions = new ArrayList<Action>(Arrays.asList(a2, a1));
+        actions = new ArrayList<>(Arrays.asList(a2, a1));
         Collections.sort(actions);
         assertEquals("id1", actions.get(0).getId());
         assertEquals("id2", actions.get(1).getId());

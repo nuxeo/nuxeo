@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_INFO_PROPERTY;
@@ -32,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -48,7 +43,6 @@ import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.runtime.api.Framework;
 
 public class DefaultPictureAdapter extends AbstractPictureAdapter {
-    private static final Log log = LogFactory.getLog(DefaultPictureAdapter.class);
 
     // needs trailing slash
     private static final String VIEW_XPATH = "picture:views/item[%d]/";
@@ -65,7 +59,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException {
+            List<Map<String, Object>> pictureConversions) throws IOException {
         if (blob == null) {
             clearViews();
             return true;
@@ -119,7 +113,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         List<PictureView> pictureViews;
 
         if (pictureConversions != null) {
-            List<PictureConversion> conversions = new ArrayList<PictureConversion>(pictureConversions.size());
+            List<PictureConversion> conversions = new ArrayList<>(pictureConversions.size());
             for (Map<String, Object> template : pictureConversions) {
                 conversions.add(new PictureConversion((String) template.get("title"),
                         (String) template.get("description"), (String) template.get("tag"), 0));
@@ -140,8 +134,8 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
             String xpath = "picture:views/view[" + i + "]/";
             BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(Blob.class));
             String type = blob.getBlob().getMimeType();
-            if (type != "image/png") {
-                Map<String, Serializable> options = new HashMap<String, Serializable>();
+            if (!"image/png".equals(type)) {
+                Map<String, Serializable> options = new HashMap<>();
                 options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
                 blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE, blob, options);
                 doc.getProperty(xpath + "content").setValue(blob.getBlob());

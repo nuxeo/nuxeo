@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,18 +162,18 @@ public interface RuntimeHarness {
     /**
      * @since 5.5
      */
-    public boolean isRestart();
+    boolean isRestart();
 
     /**
      * @since 5.5
      * @throws Exception
      */
-    public void restart() throws Exception;
+    void restart() throws Exception;
 
     /**
      * @throws URISyntaxException
      * @since 5.7
      */
-    public List<String> getClassLoaderFiles() throws URISyntaxException;
+    List<String> getClassLoaderFiles() throws URISyntaxException;
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.event.impl;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
@@ -42,11 +44,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.schema.DocumentType;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Light weight {@link DocumentModel} implementation Only holds {@link DocumentRef}, RepositoryName, name, path and
@@ -256,16 +253,19 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    @Deprecated
     public DataModel getDataModel(String schema) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Deprecated
     public Map<String, DataModel> getDataModels() {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Deprecated
     public Collection<DataModel> getDataModelsCollection() {
         throw new UnsupportedOperationException();
     }
@@ -306,11 +306,13 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
+    @Deprecated
     public DocumentPart getPart(String schema) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Deprecated
     public DocumentPart[] getParts() {
         throw new UnsupportedOperationException();
     }

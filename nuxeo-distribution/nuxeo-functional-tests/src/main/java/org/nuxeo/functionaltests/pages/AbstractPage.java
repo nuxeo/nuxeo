@@ -21,6 +21,8 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,8 +40,6 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Base functions for all pages.
@@ -212,7 +212,6 @@ public abstract class AbstractPage {
      * Finds the first {@link WebElement} using the given method, with a timeout.
      *
      * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
@@ -252,7 +251,7 @@ public abstract class AbstractPage {
      * Waits until an element is enabled, with a timeout.
      *
      * @param element the element
-     * @param timeout the timeout in milliseconds
+     * @param waitUntilEnabledTimeout the timeout in milliseconds
      * @since 8.3
      */
     public static void waitUntilEnabled(WebElement element, int waitUntilEnabledTimeout) throws NotFoundException {
@@ -273,7 +272,7 @@ public abstract class AbstractPage {
      * Waits until an element is enabled, with a timeout. Then clicks on the element.
      *
      * @param element the element
-     * @param timeout the timeout in milliseconds
+     * @param waitUntilEnabledTimeout the timeout in milliseconds
      * @since 8.3
      */
 

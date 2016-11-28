@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: ActionService.java 28460 2008-01-03 15:34:05Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.actions;
 
 import java.util.ArrayList;
@@ -171,7 +168,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 applyFilters(context, actions);
                 return actions;
             } else {
-                List<Action> allActions = new ArrayList<Action>();
+                List<Action> allActions = new ArrayList<>();
                 allActions.addAll(actions);
                 applyFilters(context, actions);
 
@@ -274,10 +271,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         try {
             ActionFilterRegistry filterReg = getFilterRegistry();
             ActionFilter filter = filterReg.getFilter(filterId);
-            if (filter == null) {
-                return false;
-            }
-            return filter.accept(null, context);
+            return filter != null && filter.accept(null, context);
         } finally {
             long duration = timerContext.stop();
             if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {

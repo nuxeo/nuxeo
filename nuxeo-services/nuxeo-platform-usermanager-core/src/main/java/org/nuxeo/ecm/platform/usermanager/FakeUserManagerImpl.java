@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,13 @@
  *
  * Contributors:
  *     Florent Guillaume
- *
- * $Id: FakeUserManagerImpl.java 28010 2007-12-07 19:23:44Z fguillaume $
  */
-
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,7 +82,7 @@ public class FakeUserManagerImpl implements UserManager {
     final Map<String, VirtualUserDescriptor> virtualUsers;
 
     public FakeUserManagerImpl() {
-        virtualUsers = new HashMap<String, VirtualUserDescriptor>();
+        virtualUsers = new HashMap<>();
     }
 
     @Override
@@ -146,7 +144,7 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     public void setUserSearchFields(Set<String> userSearchFields) {
-        this.userSearchFields = new LinkedHashMap<String, MatchType>();
+        this.userSearchFields = new LinkedHashMap<>();
         for (String searchField : userSearchFields) {
             this.userSearchFields.put(searchField, MatchType.SUBSTRING);
         }
@@ -235,7 +233,7 @@ public class FakeUserManagerImpl implements UserManager {
     @Override
     public NuxeoPrincipal getPrincipal(String username) {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR, false, true);
-        principal.setGroups(Arrays.asList(SecurityConstants.ADMINISTRATORS));
+        principal.setGroups(Collections.singletonList(SecurityConstants.ADMINISTRATORS));
         principal.setEmail("admin@example.com");
         return principal;
     }
@@ -512,4 +510,5 @@ public class FakeUserManagerImpl implements UserManager {
     @Override
     public void handleEvent(Event event) {
     }
+
 }

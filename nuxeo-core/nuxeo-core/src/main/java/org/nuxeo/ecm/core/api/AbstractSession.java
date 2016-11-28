@@ -18,7 +18,6 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-
 package org.nuxeo.ecm.core.api;
 
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.CHANGED_ACL_NAME;
@@ -267,7 +266,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // compat code: set isLocal on event if JMS is blocked
         if (source != null) {
             Boolean blockJms = (Boolean) source.getContextData("BLOCK_JMS_PRODUCING");
-            if (blockJms != null && blockJms) {
+            if (blockJms != null && blockJms.booleanValue()) {
                 event.setLocal(true);
                 event.setInline(true);
             }
@@ -2374,9 +2373,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         // send event on container passing the reordered child as parameter
         DocumentModel docModel = readModel(doc);
-        String comment = src;
         options.put(CoreEventConstants.REORDERED_CHILD, src);
-        notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED, docModel, options, null, comment, true, false);
+        notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED, docModel, options, null, src, true, false);
     }
 
     @Override

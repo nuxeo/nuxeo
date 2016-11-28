@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestCo
  * Adding http cache header (Cache-Control : max-age AND Expire) to the response.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
- * @deprecated: caching handled by {@link NuxeoRequestControllerFilter}
+ * @deprecated since 7.10 caching handled by {@link NuxeoRequestControllerFilter}
  */
 @Deprecated
 public class SimpleCacheFilter implements Filter {
@@ -78,7 +78,7 @@ public class SimpleCacheFilter implements Filter {
         // Generating expires using current date and adding cache time.
         // we are using the format Expires: Thu, 01 Dec 1994 16:00:00 GMT
         Date date = new Date();
-        long newDate = date.getTime() + new Long(cacheTime) * 1000;
+        long newDate = date.getTime() + Long.parseLong(cacheTime) * 1000;
         date.setTime(newDate);
 
         httpResponse.setHeader("Expires", HTTP_EXPIRES_DATE_FORMAT.format(date));

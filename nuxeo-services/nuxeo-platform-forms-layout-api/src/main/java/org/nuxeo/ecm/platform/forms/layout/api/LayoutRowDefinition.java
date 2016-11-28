@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: LayoutRowDefinition.java 26053 2007-10-16 01:45:43Z atchertchian $
  */
-
 package org.nuxeo.ecm.platform.forms.layout.api;
 
 import java.io.Serializable;

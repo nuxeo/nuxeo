@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.io.impl;
 
 import java.lang.reflect.Array;
@@ -31,13 +28,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.codec.binary.Base64;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -71,8 +66,6 @@ import org.nuxeo.runtime.api.Framework;
 // TODO: improve it ->
 // modify core session to add a batch create method and use it
 public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter {
-
-    private static final Log log = LogFactory.getLog(AbstractDocumentModelWriter.class);
 
     protected CoreSession session;
 
@@ -244,8 +237,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                     ACP acp = new ACPImpl();
                     ACL acl = new ACLImpl(ACL.LOCAL_ACL);
                     acp.addACL(acl);
-                    for (int i = 0; i < size; i++) {
-                        Element el = entries.get(i);
+                    for (Element el : entries) {
                         String username = el.attributeValue(ExportConstants.PRINCIPAL_ATTR);
                         String permission = el.attributeValue(ExportConstants.PERMISSION_ATTR);
                         String grant = el.attributeValue(ExportConstants.GRANT_ATTR);
@@ -297,15 +289,15 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     @SuppressWarnings("unchecked")
     protected static void loadSchema(ExportedDocument xdoc, Schema schema, DocumentModel doc, Element schemaElement) {
         String schemaName = schemaElement.attributeValue(ExportConstants.NAME_ATTR);
-        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<>();
         Iterator<Element> it = schemaElement.elementIterator();
         while (it.hasNext()) {
             Element element = it.next();
             String name = element.getName();
             Field field = schema.getField(name);
             if (field == null) {
-                throw new NuxeoException("Invalid input document. No such property was found " + name + " in schema "
-                        + schemaName);
+                throw new NuxeoException(
+                        "Invalid input document. No such property was found " + name + " in schema " + schemaName);
             }
             Object value = getElementData(xdoc, element, field.getType());
             data.put(name, value);
@@ -333,7 +325,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             return type.decode(element.getText());
         } else if (type.isListType()) {
             ListType ltype = (ListType) type;
-            List<Object> list = new ArrayList<Object>();
+            List<Object> list = new ArrayList<>();
             Iterator<Element> it = element.elementIterator();
             while (it.hasNext()) {
                 Element el = it.next();
@@ -365,7 +357,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 }
                 if (blob == null) { // maybe the blob is embedded in Base64
                     // encoded data
-                    byte[] bytes = Base64.decode(content);
+                    byte[] bytes = Base64.decodeBase64(content);
                     blob = Blobs.createBlob(bytes);
                 }
                 blob.setMimeType(mimeType);
@@ -373,7 +365,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 blob.setFilename(filename);
                 return blob;
             } else { // a complex type
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 Iterator<Element> it = element.elementIterator();
                 while (it.hasNext()) {
                     Element el = it.next();

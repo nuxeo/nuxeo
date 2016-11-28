@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,9 +83,9 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     @SuppressWarnings({ "unchecked" })
     public WidgetTypeConfigurationImpl() {
-        this(null, null, null, null, false, Collections.EMPTY_MAP, Collections.EMPTY_LIST, false, false, false, false,
-                Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
-                Collections.EMPTY_MAP);
+        this(null, null, null, null, false, Collections.emptyMap(), Collections.emptyList(), false, false, false, false,
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyMap());
     }
 
     /**
@@ -217,7 +217,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     public List<LayoutDefinition> getLayouts(Map<String, List<LayoutDefinition>> allLayouts, String mode,
             String additionalMode) {
         if (allLayouts != null) {
-            List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
+            List<LayoutDefinition> res = new ArrayList<>();
             if (additionalMode != null) {
                 List<LayoutDefinition> defaultLayouts = allLayouts.get(additionalMode);
                 if (defaultLayouts != null) {
@@ -382,7 +382,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
      */
     public Map<String, Serializable> getDefaultPropertyValues(String mode) {
         if (defaultPropertyValues != null) {
-            Map<String, Serializable> res = new HashMap<String, Serializable>();
+            Map<String, Serializable> res = new HashMap<>();
             Map<String, Serializable> anyProps = defaultPropertyValues.get(BuiltinModes.ANY);
             if (anyProps != null) {
                 res.putAll(anyProps);
@@ -415,7 +415,7 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
      */
     public Map<String, Serializable> getDefaultControlValues(String mode) {
         if (defaultControlValues != null) {
-            Map<String, Serializable> res = new HashMap<String, Serializable>();
+            Map<String, Serializable> res = new HashMap<>();
             Map<String, Serializable> anyProps = defaultControlValues.get(BuiltinModes.ANY);
             if (anyProps != null) {
                 res.putAll(anyProps);
@@ -480,16 +480,29 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
             return true;
         }
         WidgetTypeConfigurationImpl wc = (WidgetTypeConfigurationImpl) obj;
-        return new EqualsBuilder().append(sinceVersion, wc.sinceVersion).append(deprecatedVersion, wc.deprecatedVersion).append(
-                title, wc.title).append(description, wc.description).append(demoId, wc.demoId).append(
-                demoPreviewEnabled, wc.demoPreviewEnabled).append(properties, wc.properties).append(supportedModes,
-                wc.supportedModes).append(acceptingSubWidgets, wc.acceptingSubWidgets).append(handlingLabels,
-                wc.handlingLabels).append(supportedControls, wc.supportedControls).append(list, wc.list).append(
-                complex, wc.complex).append(containingForm, wc.containingForm).append(supportedFieldTypes,
-                wc.supportedFieldTypes).append(defaultFieldTypes, wc.defaultFieldTypes).append(defaultFieldDefinitions,
-                wc.defaultFieldDefinitions).append(categories, wc.categories).append(propertyLayouts,
-                wc.propertyLayouts).append(defaultPropertyValues, wc.defaultPropertyValues).append(
-                defaultControlValues, wc.defaultControlValues).append(fieldLayouts, wc.fieldLayouts).isEquals();
+        return new EqualsBuilder().append(sinceVersion, wc.sinceVersion)
+                                  .append(deprecatedVersion, wc.deprecatedVersion)
+                                  .append(title, wc.title)
+                                  .append(description, wc.description)
+                                  .append(demoId, wc.demoId)
+                                  .append(demoPreviewEnabled, wc.demoPreviewEnabled)
+                                  .append(properties, wc.properties)
+                                  .append(supportedModes, wc.supportedModes)
+                                  .append(acceptingSubWidgets, wc.acceptingSubWidgets)
+                                  .append(handlingLabels, wc.handlingLabels)
+                                  .append(supportedControls, wc.supportedControls)
+                                  .append(list, wc.list)
+                                  .append(complex, wc.complex)
+                                  .append(containingForm, wc.containingForm)
+                                  .append(supportedFieldTypes, wc.supportedFieldTypes)
+                                  .append(defaultFieldTypes, wc.defaultFieldTypes)
+                                  .append(defaultFieldDefinitions, wc.defaultFieldDefinitions)
+                                  .append(categories, wc.categories)
+                                  .append(propertyLayouts, wc.propertyLayouts)
+                                  .append(defaultPropertyValues, wc.defaultPropertyValues)
+                                  .append(defaultControlValues, wc.defaultControlValues)
+                                  .append(fieldLayouts, wc.fieldLayouts)
+                                  .isEquals();
     }
 
 }

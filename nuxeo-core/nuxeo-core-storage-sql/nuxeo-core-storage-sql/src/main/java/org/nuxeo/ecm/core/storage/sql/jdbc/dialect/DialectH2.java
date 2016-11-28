@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
@@ -99,7 +98,7 @@ public class DialectH2 extends Dialect {
             return jdbcInfo("TIMESTAMP", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("VARCHAR(250)", Types.VARCHAR);
-            // -----
+        // -----
         case NODEID:
         case NODEIDFK:
         case NODEIDFKNP:
@@ -197,9 +196,9 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
-            List<Column> columns, Model model) {
-        List<String> columnNames = new ArrayList<String>(columns.size());
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
+        List<String> columnNames = new ArrayList<>(columns.size());
         for (Column col : columns) {
             columnNames.add("'" + col.getPhysicalName() + "'");
         }
@@ -233,11 +232,11 @@ public class DialectH2 extends Dialect {
         String quotedTableAlias = openQuote() + tableAlias + closeQuote();
         FulltextMatchInfo info = new FulltextMatchInfo();
         info.joins = Collections.singletonList( //
-        new Join(Join.LEFT, //
-                String.format("NXFT_SEARCH('%s', ?)", fullIndexName), tableAlias, // alias
-                fulltextQuery, // param
-                String.format("%s.KEY", quotedTableAlias), // on1
-                mainColumn.getFullQuotedName() // on2
+                new Join(Join.LEFT, //
+                        String.format("NXFT_SEARCH('%s', ?)", fullIndexName), tableAlias, // alias
+                        fulltextQuery, // param
+                        String.format("%s.KEY", quotedTableAlias), // on1
+                        mainColumn.getFullQuotedName() // on2
         ));
         info.whereExpr = String.format("%s.KEY IS NOT NULL", quotedTableAlias);
         info.scoreExpr = "1";
@@ -337,10 +336,10 @@ public class DialectH2 extends Dialect {
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("idType", "VARCHAR(36)");
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
-        List<String> permsList = new LinkedList<String>();
+        List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.webapp.documentsLists;
 
 import java.io.Serializable;
@@ -29,9 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -106,7 +103,7 @@ public class DocumentsListsPersistenceManager {
             // should never append
             return sb.toString();
         }
-        return Base64.encodeBytes(idDigest);
+        return Base64.encodeBase64String(idDigest);
     }
 
     private boolean initPersistentService() {
@@ -167,24 +164,22 @@ public class DocumentsListsPersistenceManager {
             return null;
         }
 
-        DocumentModel doc = null;
         try {
-            doc = session.getDocument(docRef);
+            return session.getDocument(docRef);
         } catch (DocumentSecurityException | DocumentNotFoundException e) {
             log.warn("document with ref " + ref + " was not found : " + e.getMessage());
             return null;
         }
-
-        return doc;
     }
 
-    public List<DocumentModel> loadPersistentDocumentsLists(CoreSession currentSession, String userName, String listName) {
-        List<DocumentModel> docList = new ArrayList<DocumentModel>();
+    public List<DocumentModel> loadPersistentDocumentsLists(CoreSession currentSession, String userName,
+            String listName) {
+        List<DocumentModel> docList = new ArrayList<>();
         if (!initPersistentService()) {
             return docList;
         }
         try {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put(DIR_COL_LISTID, listName);
             filter.put(DIR_COL_USERID, userName);
 
@@ -241,7 +236,7 @@ public class DocumentsListsPersistenceManager {
             return false;
         }
         try {
-            Map<String, Object> fields = new HashMap<String, Object>();
+            Map<String, Object> fields = new HashMap<>();
             fields.put(DIR_COL_LISTID, listName);
             fields.put(DIR_COL_USERID, userName);
             fields.put(DIR_COL_REF, doc.getRef().toString());
@@ -293,7 +288,7 @@ public class DocumentsListsPersistenceManager {
             return false;
         }
         try {
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             filter.put(DIR_COL_LISTID, listName);
             filter.put(DIR_COL_USERID, userName);
             try {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.types.adapter;
 
 import java.util.LinkedHashMap;
@@ -54,18 +51,6 @@ public class TypeInfoAdapter implements TypeInfo {
     public Map<String, SubType> getAllowedSubTypes() {
         if (type != null) {
             return type.getAllowedSubTypes();
-        }
-
-        return null;
-    }
-
-    /**
-     * @deprecated Use {@link #getId} instead.
-     */
-    @Deprecated
-    public String getCoreType() {
-        if (type != null) {
-            return type.getId();
         }
 
         return null;
@@ -191,7 +176,7 @@ public class TypeInfoAdapter implements TypeInfo {
     @Override
     public Map<String, String[]> getContentViews() {
         if (type != null) {
-            Map<String, String[]> res = new LinkedHashMap<String, String[]>();
+            Map<String, String[]> res = new LinkedHashMap<>();
             Map<String, DocumentContentViews> defs = type.getContentViews();
             if (defs != null) {
                 for (Map.Entry<String, DocumentContentViews> def : defs.entrySet()) {
@@ -206,7 +191,7 @@ public class TypeInfoAdapter implements TypeInfo {
     @Override
     public Map<String, String[]> getContentViewsForExport() {
         if (type != null) {
-            Map<String, String[]> res = new LinkedHashMap<String, String[]>();
+            Map<String, String[]> res = new LinkedHashMap<>();
             Map<String, DocumentContentViews> defs = type.getContentViews();
             if (defs != null) {
                 for (Map.Entry<String, DocumentContentViews> def : defs.entrySet()) {

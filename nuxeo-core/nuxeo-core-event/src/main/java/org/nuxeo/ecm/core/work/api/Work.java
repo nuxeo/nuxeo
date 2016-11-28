@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ public interface Work extends Serializable {
      *
      * @since 5.6
      */
-    public static class Progress implements Serializable {
+    class Progress implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -167,7 +167,8 @@ public interface Work extends Serializable {
     /**
      * Runs the work instance and does all the transaction management and retry.
      * <p>
-     * Usually only implemented by {@link AbstractWork}, which should be subclassed instead of implementing {@link #run}.
+     * Usually only implemented by {@link AbstractWork}, which should be subclassed instead of implementing {@link #run}
+     * .
      */
     void run();
 

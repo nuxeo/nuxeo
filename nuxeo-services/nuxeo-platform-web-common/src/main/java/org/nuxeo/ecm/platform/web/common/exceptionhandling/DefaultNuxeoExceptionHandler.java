@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,6 @@ import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
-
-
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -152,8 +150,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 if (requestDispatcher != null) {
                     requestDispatcher.forward(request, response);
                 } else {
-                    log.error("Cannot forward to error page, " + "no RequestDispatcher found for errorPage="
-                            + errorPage + " handler=" + handler);
+                    log.error("Cannot forward to error page, " + "no RequestDispatcher found for errorPage=" + errorPage
+                            + " handler=" + handler);
                 }
                 parameters.getListener().responseComplete();
             } else {
@@ -173,8 +171,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     @Override
     public boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
+        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                                               .getComponent(
+                                                                                                       PluggableAuthenticationService.NAME);
         if (authService == null) {
             return false;
         }
@@ -195,9 +194,10 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     @Override
     public String getLoginURL(HttpServletRequest request) {
-        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
-        Map<String, String> urlParameters = new HashMap<String, String>();
+        PluggableAuthenticationService authService = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                                               .getComponent(
+                                                                                                       PluggableAuthenticationService.NAME);
+        Map<String, String> urlParameters = new HashMap<>();
         urlParameters.put(SECURITY_ERROR, "true");
         urlParameters.put(FORCE_ANONYMOUS_LOGIN, "true");
         if (request.getAttribute(REQUESTED_URL) != null) {

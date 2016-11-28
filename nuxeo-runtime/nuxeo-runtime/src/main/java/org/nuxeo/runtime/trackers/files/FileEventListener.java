@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@ package org.nuxeo.runtime.trackers.files;
 
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
+import org.nuxeo.runtime.services.event.EventService;
 
-/*
- * Wrap a {@link FileEventHandler} for being enlisted in the
- * {@link EventService}.
+/**
+ * Wrap a {@link FileEventHandler} for being enlisted in the {@link EventService}.
  *
  * @since 6.0
  */

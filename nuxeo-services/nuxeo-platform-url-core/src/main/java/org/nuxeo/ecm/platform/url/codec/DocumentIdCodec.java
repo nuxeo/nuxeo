@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: DocumentIdCodec.java 22535 2007-07-13 14:57:58Z atchertchian $
  */
-
 package org.nuxeo.ecm.platform.url.codec;
 
 import java.util.ArrayList;
@@ -63,10 +60,11 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
         return PREFIX;
     }
 
+    @Override
     public String getUrlFromDocumentView(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             items.add(docLoc.getServerName());
             IdRef docRef = docLoc.getIdRef();
@@ -87,6 +85,7 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
     /**
      * Extracts document location from a Zope-like URL ie: server/path_or_docId/view_id/tab_id .
      */
+    @Override
     public DocumentView getDocumentViewFromUrl(String url) {
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
         Matcher m = pattern.matcher(url);

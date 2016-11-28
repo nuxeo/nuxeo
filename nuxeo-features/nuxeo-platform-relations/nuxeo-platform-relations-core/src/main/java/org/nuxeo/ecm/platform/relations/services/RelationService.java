@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,11 +85,11 @@ public class RelationService extends DefaultComponent implements RelationManager
 
     public RelationService() {
         // Hashtable to get implicit synchronization
-        graphTypes = new Hashtable<String, Class<?>>();
-        graphDescriptions = new Hashtable<String, GraphDescription>();
-        graphRegistry = new Hashtable<String, Graph>();
-        graphFactories = new Hashtable<String, GraphFactory>();
-        resourceAdapterRegistry = new Hashtable<String, String>();
+        graphTypes = new Hashtable<>();
+        graphDescriptions = new Hashtable<>();
+        graphRegistry = new Hashtable<>();
+        graphFactories = new Hashtable<>();
+        resourceAdapterRegistry = new Hashtable<>();
     }
 
     @Override
@@ -149,8 +149,8 @@ public class RelationService extends DefaultComponent implements RelationManager
         try {
             klass = getClass().getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(String.format("Cannot register unknown class for graph type %s: %s", graphType,
-                    className), e);
+            throw new RuntimeException(
+                    String.format("Cannot register unknown class for graph type %s: %s", graphType, className), e);
         }
         if (!Graph.class.isAssignableFrom(klass) && !GraphFactory.class.isAssignableFrom(klass)) {
             throw new RuntimeException("Invalid graph class/factory type: " + className);
@@ -165,7 +165,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     private void unregisterGraphType(Object contrib) {
         GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contrib;
         String graphType = graphTypeExtension.getName();
-        List<GraphDescription> list = new ArrayList<GraphDescription>(graphDescriptions.values()); // copy
+        List<GraphDescription> list = new ArrayList<>(graphDescriptions.values()); // copy
         for (GraphDescription graphDescription : list) {
             if (graphType.equals(graphDescription.getGraphType())) {
                 String name = graphDescription.getName();
@@ -180,11 +180,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     }
 
     public List<String> getGraphTypes() {
-        List<String> res = new ArrayList<String>();
-        for (String type : graphTypes.keySet()) {
-            res.add(type);
-        }
-        return res;
+        return new ArrayList<>(graphTypes.keySet());
     }
 
     /**
@@ -256,8 +252,9 @@ public class RelationService extends DefaultComponent implements RelationManager
         } else {
             try {
                 // Thread context loader is not working in isolated EARs
-                ResourceAdapter adapter = (ResourceAdapter) RelationService.class.getClassLoader().loadClass(
-                        adapterClassName).newInstance();
+                ResourceAdapter adapter = (ResourceAdapter) RelationService.class.getClassLoader()
+                                                                                 .loadClass(adapterClassName)
+                                                                                 .newInstance();
                 adapter.setNamespace(namespace);
                 return adapter;
             } catch (ReflectiveOperationException e) {
@@ -353,8 +350,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     }
 
     @Override
-    public Resource getResource(String namespace, Serializable object, Map<String, Object> context)
-            {
+    public Resource getResource(String namespace, Serializable object, Map<String, Object> context) {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
             log.error("Cannot find adapter for namespace: " + namespace);
@@ -367,7 +363,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     @Override
     public Set<Resource> getAllResources(Serializable object, Map<String, Object> context) {
         // TODO OPTIM implement reverse map in registerContribution
-        Set<Resource> res = new HashSet<Resource>();
+        Set<Resource> res = new HashSet<>();
         for (String ns : resourceAdapterRegistry.keySet()) {
             ResourceAdapter adapter = getResourceAdapterForNamespace(ns);
             if (adapter == null) {
@@ -385,8 +381,7 @@ public class RelationService extends DefaultComponent implements RelationManager
     }
 
     @Override
-    public Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context)
-            {
+    public Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context) {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
             log.error("Cannot find adapter for namespace: " + namespace);
@@ -452,8 +447,7 @@ public class RelationService extends DefaultComponent implements RelationManager
 
     @Override
     @Deprecated
-    public QueryResult query(String graphName, String queryString, String language, String baseURI)
-            {
+    public QueryResult query(String graphName, String queryString, String language, String baseURI) {
         return getGraphByName(graphName).query(queryString, language, baseURI);
     }
 
@@ -483,7 +477,7 @@ public class RelationService extends DefaultComponent implements RelationManager
 
     @Override
     public List<String> getGraphNames() {
-        return new ArrayList<String>(graphDescriptions.keySet());
+        return new ArrayList<>(graphDescriptions.keySet());
     }
 
     @Override
@@ -500,8 +494,7 @@ public class RelationService extends DefaultComponent implements RelationManager
             // init jena Graph outside of Tx
             for (String graphName : graphDescriptions.keySet()) {
                 GraphDescription desc = graphDescriptions.get(graphName);
-                if (desc.getGraphType()
-                        .equalsIgnoreCase("jena")) {
+                if (desc.getGraphType().equalsIgnoreCase("jena")) {
                     log.info("create RDF Graph " + graphName);
                     Graph graph = getGraphByName(graphName);
                     graph.size();
@@ -519,8 +512,7 @@ public class RelationService extends DefaultComponent implements RelationManager
         try {
             for (String graphName : graphDescriptions.keySet()) {
                 GraphDescription desc = graphDescriptions.get(graphName);
-                if (!desc.getGraphType()
-                        .equalsIgnoreCase("jena")) {
+                if (!desc.getGraphType().equalsIgnoreCase("jena")) {
                     log.info("create RDF Graph " + graphName);
                     Graph graph = getGraphByName(graphName);
                     graph.size();

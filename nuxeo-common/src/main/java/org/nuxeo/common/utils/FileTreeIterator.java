@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  * 
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.common.utils;
 
 import java.io.File;
@@ -33,7 +30,7 @@ import java.util.Queue;
  */
 public class FileTreeIterator implements Iterator<File> {
 
-    private final Queue<Iterator<File>> queue = new LinkedList<Iterator<File>>();
+    private final Queue<Iterator<File>> queue = new LinkedList<>();
 
     private File file; // last iterated file
 

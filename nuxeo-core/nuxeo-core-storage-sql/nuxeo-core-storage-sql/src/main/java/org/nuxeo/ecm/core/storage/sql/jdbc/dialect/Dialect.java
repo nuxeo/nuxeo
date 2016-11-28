@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
@@ -78,7 +77,7 @@ public abstract class Dialect {
      * Property used to disable NULLS LAST usage when sorting DESC. This increase performance for some dialects because
      * they can use an index for sorting when there are no NULL value.
      *
-     * @Since 5.9
+     * @since 5.9
      */
     public static final String NULLS_LAST_ON_DESC_PROP = "nuxeo.vcs.use-nulls-last-on-desc";
 
@@ -98,7 +97,8 @@ public abstract class Dialect {
      */
     public static final String DIALECT_CLASS = "nuxeo.vcs.dialect";
 
-    public static final Map<String, Class<? extends Dialect>> DIALECTS = new HashMap<String, Class<? extends Dialect>>();
+    public static final Map<String, Class<? extends Dialect>> DIALECTS = new HashMap<>();
+
     static {
         DIALECTS.put("H2", DialectH2.class);
         DIALECTS.put("MySQL", DialectMySQL.class);
@@ -112,6 +112,7 @@ public abstract class Dialect {
 
     /**
      * Does the dialect support an scroll API
+     *
      * @since 8.4
      */
     public boolean supportsScroll() {
@@ -161,9 +162,10 @@ public abstract class Dialect {
         return new JDBCInfo(string, jdbcType, jdbcBaseTypeString, jdbcBaseType);
     }
 
-    public static JDBCInfo jdbcInfo(String string, int length, int jdbcType, String jdbcBaseTypeString, int jdbcBaseType) {
-        return new JDBCInfo(String.format(string, Integer.valueOf(length)), jdbcType, String.format(jdbcBaseTypeString,
-                Integer.valueOf(length)), jdbcBaseType);
+    public static JDBCInfo jdbcInfo(String string, int length, int jdbcType, String jdbcBaseTypeString,
+            int jdbcBaseType) {
+        return new JDBCInfo(String.format(string, Integer.valueOf(length)), jdbcType,
+                String.format(jdbcBaseTypeString, Integer.valueOf(length)), jdbcBaseType);
     }
 
     protected final boolean storesUpperCaseIdentifiers;
@@ -557,8 +559,8 @@ public abstract class Dialect {
      */
     public String getCreateIndexSql(String indexName, Table.IndexType indexType, Table table, List<Column> columns,
             Model model) {
-        List<String> qcols = new ArrayList<String>(columns.size());
-        List<String> pcols = new ArrayList<String>(columns.size());
+        List<String> qcols = new ArrayList<>(columns.size());
+        List<String> pcols = new ArrayList<>(columns.size());
         for (Column col : columns) {
             qcols.add(col.getQuotedName());
             pcols.add(col.getPhysicalName());
@@ -857,7 +859,8 @@ public abstract class Dialect {
     }
 
     /**
-     * Checks whether {@link #getInTreeSQL} is optimized for fast results (using an ancestors or descendants table).
+     * Checks whether {@link #getInTreeSql(String, String)} is optimized for fast results (using an ancestors or
+     * descendants table).
      *
      * @since 7.10, 6.0-HF21
      */
@@ -1133,8 +1136,6 @@ public abstract class Dialect {
     /**
      * Let the dialect processes additional statements after tables creation and conditional statements. Can be used for
      * specific upgrade procedure.
-     *
-     * @param connection
      */
     public void performAdditionalStatements(Connection connection) throws SQLException {
     }
@@ -1262,7 +1263,6 @@ public abstract class Dialect {
     /**
      * Return the SQL to get the columns fulltext fields
      *
-     * @param columns
      * @since 5.9.3
      */
     public String getBinaryFulltextSql(List<String> columns) {

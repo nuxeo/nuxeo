@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,7 +208,7 @@ public class CoreInstance {
             if (SYSTEM_USERNAME.equals(username)) {
                 return new SystemPrincipal(null);
             } else {
-                return new UserPrincipal(username, new ArrayList<String>(), false, false);
+                return new UserPrincipal(username, new ArrayList<>(), false, false);
             }
         } else {
             LoginStack.Entry entry = ClientLoginModule.getCurrentLogin();
@@ -225,8 +225,8 @@ public class CoreInstance {
                 if (Framework.isTestModeSet()) {
                     return new SystemPrincipal(null);
                 } else {
-                    throw new NuxeoException("Cannot create a CoreSession outside a security context, "
-                            + " login() missing.");
+                    throw new NuxeoException(
+                            "Cannot create a CoreSession outside a security context, " + " login() missing.");
                 }
             }
         }
@@ -244,8 +244,9 @@ public class CoreInstance {
      * Gets the number of open sessions.
      *
      * @since 5.4.2
-     * @deprecated since 8.4, use {@link CoreSessionService#getNumberOfOpenSessions} directly
+     * @deprecated since 8.4, use {@link CoreSessionService#getNumberOfOpenCoreSessions()} directly
      */
+    @Deprecated
     public int getNumberOfSessions() {
         return Framework.getService(CoreSessionService.class).getNumberOfOpenCoreSessions();
     }
@@ -254,8 +255,9 @@ public class CoreInstance {
      * Gets the number of open sessions.
      *
      * @since 5.4.2
-     * @deprecated since 8.4, use {@link CoreSessionService#getRegistrationInfos} directly
+     * @deprecated since 8.4, use {@link CoreSessionService#getCoreSessionRegistrationInfos()} directly
      */
+    @Deprecated
     public Collection<CoreSessionRegistrationInfo> getRegistrationInfos() {
         return Framework.getService(CoreSessionService.class).getCoreSessionRegistrationInfos();
     }
@@ -281,7 +283,7 @@ public class CoreInstance {
      * @since 8.4
      */
     public static <R> R doPrivileged(String repositoryName, Function<CoreSession, R> function) {
-        MutableObject<R> result = new MutableObject<R>();
+        MutableObject<R> result = new MutableObject<>();
         new UnrestrictedSessionRunner(repositoryName, getCurrentPrincipalName()) {
             @Override
             public void run() {
@@ -301,7 +303,7 @@ public class CoreInstance {
      * @since 8.4
      */
     public static <R> R doPrivileged(CoreSession session, Function<CoreSession, R> function) {
-        MutableObject<R> result = new MutableObject<R>();
+        MutableObject<R> result = new MutableObject<>();
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() {

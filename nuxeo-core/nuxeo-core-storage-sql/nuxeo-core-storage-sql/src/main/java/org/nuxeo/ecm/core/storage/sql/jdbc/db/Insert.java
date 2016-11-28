@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.db;
 
 import java.io.Serializable;
@@ -48,7 +47,7 @@ public class Insert implements Serializable {
     public Insert(Table table) {
         this.table = table;
         dialect = table.getDialect();
-        columns = new LinkedList<Column>();
+        columns = new LinkedList<>();
     }
 
     public void addColumn(Column column) {
@@ -77,8 +76,8 @@ public class Insert implements Serializable {
         buf.append(table.getQuotedName());
         buf.append(' ');
 
-        List<String> columnNames = new LinkedList<String>();
-        List<String> values = new LinkedList<String>();
+        List<String> columnNames = new LinkedList<>();
+        List<String> values = new LinkedList<>();
         for (Column column : columns) {
             columnNames.add(column.getQuotedName());
             values.add(column.getFreeVariableSetter());

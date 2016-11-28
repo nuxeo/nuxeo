@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: FaceletHandlerHelper.java 30553 2008-02-24 15:51:31Z atchertchian $
  */
-
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.Serializable;
@@ -185,7 +182,7 @@ public final class FaceletHandlerHelper {
      */
     protected static String generateValidIdString(String base) {
         if (base == null) {
-            throw new IllegalArgumentException(base);
+            throw new IllegalArgumentException("Parameter base is null");
         }
         int n = base.length();
         if (n < 1) {
@@ -234,10 +231,7 @@ public final class FaceletHandlerHelper {
      * The attribute namespace is assumed to be empty.
      */
     public TagAttribute createAttribute(String name, String value) {
-        if (value == null || value instanceof String) {
-            return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name, name, value);
-        }
-        return null;
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name, name, value);
     }
 
     /**
@@ -255,15 +249,14 @@ public final class FaceletHandlerHelper {
     public boolean shouldCreateReferenceAttribute(String key, Serializable value) {
         // FIXME: NXP-7004: make this configurable per widget type and mode or
         // JSF component
-        if ((value instanceof String)
-                && (ComponentTagUtils.isValueReference((String) value) || "converter".equals(key)
-                        || "validator".equals(key)
-                        // size is mistaken for the properties map size because
-                        // of jboss el resolvers
-                        || "size".equals(key)
-                        // richfaces calendar does not resolve EL expressions
-                        // correctly
-                        || "showApplyButton".equals(key) || "defaultTime".equals(key))) {
+        if ((value instanceof String) && (ComponentTagUtils.isValueReference((String) value) || "converter".equals(key)
+                || "validator".equals(key)
+                // size is mistaken for the properties map size because
+                // of jboss el resolvers
+                || "size".equals(key)
+                // richfaces calendar does not resolve EL expressions
+                // correctly
+                || "showApplyButton".equals(key) || "defaultTime".equals(key))) {
             return false;
         }
         return true;
@@ -284,7 +277,7 @@ public final class FaceletHandlerHelper {
         if (orig == null) {
             return new TagAttributesImpl(new TagAttribute[] { newAttr });
         }
-        List<TagAttribute> allAttrs = new ArrayList<TagAttribute>(Arrays.asList(orig.getAll()));
+        List<TagAttribute> allAttrs = new ArrayList<>(Arrays.asList(orig.getAll()));
         allAttrs.add(newAttr);
         return getTagAttributes(allAttrs);
     }
@@ -293,7 +286,7 @@ public final class FaceletHandlerHelper {
      * Copies tag attributes with given names from the tag config, using given id as base for the id attribute.
      */
     public TagAttributes copyTagAttributes(FaceletContext context, String id, String... names) {
-        List<TagAttribute> list = new ArrayList<TagAttribute>();
+        List<TagAttribute> list = new ArrayList<>();
         list.add(createIdAttribute(context, id));
         for (String name : names) {
             if ("id".equals(name)) {
@@ -347,7 +340,7 @@ public final class FaceletHandlerHelper {
      */
     public TagAttributes getTagAttributes(Widget widget, List<String> excludedProperties,
             boolean bindFirstFieldDefinition, boolean defaultToValue) {
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         if (bindFirstFieldDefinition) {
             FieldDefinition field = null;
             FieldDefinition[] fields = widget.getFieldDefinitions();
@@ -376,7 +369,7 @@ public final class FaceletHandlerHelper {
     public List<TagAttribute> getTagAttributes(Map<String, Serializable> properties, List<String> excludedProperties,
             boolean useReferenceProperties, String widgetType, String widgetTypeCategory, String widgetMode) {
         WebLayoutManager service = Framework.getService(WebLayoutManager.class);
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
+        List<TagAttribute> attrs = new ArrayList<>();
         if (properties != null) {
             for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
                 TagAttribute attr;
@@ -385,9 +378,8 @@ public final class FaceletHandlerHelper {
                     continue;
                 }
                 Serializable valueInstance = prop.getValue();
-                if (!useReferenceProperties
-                        || !service.referencePropertyAsExpression(key, valueInstance, widgetType, widgetTypeCategory,
-                                widgetMode, null)) {
+                if (!useReferenceProperties || !service.referencePropertyAsExpression(key, valueInstance, widgetType,
+                        widgetTypeCategory, widgetMode, null)) {
                     if (valueInstance == null || valueInstance instanceof String) {
                         // FIXME: this will not be updated correctly using ajax
                         attr = createAttribute(key, (String) valueInstance);
@@ -427,7 +419,7 @@ public final class FaceletHandlerHelper {
     }
 
     public Map<String, Serializable> getSelectOptionProperties(WidgetSelectOption selectOption) {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         if (selectOption != null) {
             Serializable value = selectOption.getValue();
             if (value != null) {
@@ -487,8 +479,8 @@ public final class FaceletHandlerHelper {
      */
     public ComponentHandler getHtmlComponentHandler(String tagConfigId, TagAttributes attributes,
             FaceletHandler nextHandler, String componentType, String rendererType) {
-        ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, tagConfigId, attributes,
-                nextHandler, componentType, rendererType);
+        ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, tagConfigId, attributes, nextHandler,
+                componentType, rendererType);
         return new GenericHtmlComponentHandler(config);
     }
 
@@ -509,7 +501,8 @@ public final class FaceletHandlerHelper {
                 "<span style=\"color:red;font-weight:bold;\">ERROR: " + errorMessage + "</span><br />");
         TagAttribute escapeAttr = createAttribute("escape", "false");
         ComponentHandler output = getHtmlComponentHandler(tagConfigId,
-                FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr), leaf, HtmlOutputText.COMPONENT_TYPE, null);
+                FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr), leaf, HtmlOutputText.COMPONENT_TYPE,
+                null);
         return output;
     }
 
@@ -519,7 +512,8 @@ public final class FaceletHandlerHelper {
      *             instead.
      */
     @Deprecated
-    public ConverterHandler getConvertHandler(TagAttributes attributes, FaceletHandler nextHandler, String converterId) {
+    public ConverterHandler getConvertHandler(TagAttributes attributes, FaceletHandler nextHandler,
+            String converterId) {
         return getConvertHandler(null, attributes, nextHandler, converterId);
     }
 
@@ -531,8 +525,8 @@ public final class FaceletHandlerHelper {
      */
     public ConverterHandler getConvertHandler(String tagConfigId, TagAttributes attributes, FaceletHandler nextHandler,
             String converterId) {
-        ConverterConfig config = TagConfigFactory.createConverterConfig(tagConfig, tagConfigId, attributes,
-                nextHandler, converterId);
+        ConverterConfig config = TagConfigFactory.createConverterConfig(tagConfig, tagConfigId, attributes, nextHandler,
+                converterId);
         return new ConverterHandler(config);
     }
 
@@ -542,7 +536,8 @@ public final class FaceletHandlerHelper {
      *             instead.
      */
     @Deprecated
-    public ValidatorHandler getValidateHandler(TagAttributes attributes, FaceletHandler nextHandler, String validatorId) {
+    public ValidatorHandler getValidateHandler(TagAttributes attributes, FaceletHandler nextHandler,
+            String validatorId) {
         return getValidateHandler(null, attributes, nextHandler, validatorId);
     }
 
@@ -552,10 +547,10 @@ public final class FaceletHandlerHelper {
      * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
      * handler is needed.
      */
-    public ValidatorHandler getValidateHandler(String tagConfigId, TagAttributes attributes,
-            FaceletHandler nextHandler, String validatorId) {
-        ValidatorConfig config = TagConfigFactory.createValidatorConfig(tagConfig, tagConfigId, attributes,
-                nextHandler, validatorId);
+    public ValidatorHandler getValidateHandler(String tagConfigId, TagAttributes attributes, FaceletHandler nextHandler,
+            String validatorId) {
+        ValidatorConfig config = TagConfigFactory.createValidatorConfig(tagConfig, tagConfigId, attributes, nextHandler,
+                validatorId);
         return new ValidatorHandler(config);
     }
 
@@ -665,8 +660,7 @@ public final class FaceletHandlerHelper {
         attrs[2] = createAttribute("cache", "true");
         attrs[3] = createAttribute("blockMerge", "true");
         TagAttributes attributes = new TagAttributesImpl(attrs);
-        ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId,
-                attributes, nextHandler);
+        ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId, attributes, nextHandler);
         return new SetTagHandler(config);
     }
 

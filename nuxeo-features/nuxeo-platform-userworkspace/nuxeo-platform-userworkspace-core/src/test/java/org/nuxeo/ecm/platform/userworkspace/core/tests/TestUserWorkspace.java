@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.userworkspace.core.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -54,8 +51,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({
-        "org.nuxeo.ecm.platform.userworkspace.api", //
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api", //
         "org.nuxeo.ecm.platform.userworkspace.types", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
 })
@@ -75,7 +71,6 @@ public class TestUserWorkspace {
 
     @Inject
     protected PathSegmentService pathSegments;
-
 
     @Test
     public void testRestrictedAccess() throws Exception {
@@ -146,14 +141,14 @@ public class TestUserWorkspace {
     }
 
     @Test
-    // @LocalDeploy("org.nuxeo.ecm.platform.userworkspace.core:OSGI-INF/compatUserWorkspaceImpl.xml")
     public void testMultiDomainsCompat() throws Exception {
         harness.deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/compatUserWorkspaceImpl.xml");
         uwm = Framework.getService(UserWorkspaceService.class); // re-compute
         try {
             doTestMultiDomainsCompat();
         } finally {
-            harness.undeployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/compatUserWorkspaceImpl.xml");
+            harness.undeployContrib("org.nuxeo.ecm.platform.userworkspace.core",
+                    "OSGI-INF/compatUserWorkspaceImpl.xml");
             uwm = Framework.getService(UserWorkspaceService.class); // re-compute
         }
     }
@@ -266,9 +261,7 @@ public class TestUserWorkspace {
     }
 
     String alongname(String name) {
-        return StringUtils
-                .repeat("a", pathSegments.getMaxSize())
-                .concat(name);
+        return StringUtils.repeat("a", pathSegments.getMaxSize()).concat(name);
     }
 
     @Test
@@ -318,6 +311,5 @@ public class TestUserWorkspace {
             assertEquals(user1WorkspacePath, uw.getPathAsString());
         }
     }
-
 
 }

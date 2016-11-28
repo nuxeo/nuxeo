@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *   Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.theme.localconfiguration;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +49,8 @@ public class LocalThemeConfigAdapter extends AbstractLocalConfiguration<LocalThe
         try {
             theme = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_THEME_PROPERTY);
             page = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_PAGE_PROPERTY);
-            perspective = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_PERSPECTIVE_PROPERTY);
+            perspective = (String) doc.getPropertyValue(
+                    LocalThemeConfigConstants.THEME_CONFIGURATION_PERSPECTIVE_PROPERTY);
             engine = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_ENGINE_PROPERTY);
             mode = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_MODE_PROPERTY);
             flavor = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_FLAVOR_PROPERTY);

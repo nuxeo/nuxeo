@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
- *
  */
-
 package org.nuxeo.launcher.config;
 
 import java.io.File;
@@ -84,14 +82,9 @@ public class TomcatConfigurator extends ServerConfigurator {
         checkPath(oldPath, message);
 
         oldPath = new File(getRuntimeHome(), "data" + File.separator + "derby" + File.separator + "nxsqldirectory");
-        message = "NXP-5370, NXP-5460. "
-                + "It is not possible to migrate Derby data."
-                + System.getProperty("line.separator")
-                + "Please remove 'nx*' directories from "
-                + oldPath.getParent()
-                + System.getProperty("line.separator")
-                + "or edit templates/default/"
-                + getTomcatConfig()
+        message = "NXP-5370, NXP-5460. " + "It is not possible to migrate Derby data."
+                + System.getProperty("line.separator") + "Please remove 'nx*' directories from " + oldPath.getParent()
+                + System.getProperty("line.separator") + "or edit templates/default/" + getTomcatConfig()
                 + System.getProperty("line.separator")
                 + "following https://github.com/nuxeo/nuxeo-distribution/blob/release-5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml";
         checkPath(oldPath, message);
@@ -124,8 +117,9 @@ public class TomcatConfigurator extends ServerConfigurator {
         if (contextName == null) {
             Properties userConfig = generator.getUserConfig();
             if (userConfig != null) {
-                contextName = generator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH,
-                        DEFAULT_CONTEXT_NAME).substring(1);
+                contextName = generator.getUserConfig()
+                                       .getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME)
+                                       .substring(1);
             } else {
                 contextName = DEFAULT_CONTEXT_NAME.substring(1);
             }

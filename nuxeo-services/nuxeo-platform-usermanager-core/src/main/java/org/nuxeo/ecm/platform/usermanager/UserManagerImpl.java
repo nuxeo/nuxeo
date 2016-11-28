@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,7 +185,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
         cacheService = Framework.getLocalService(CacheService.class);
-        virtualUsers = new HashMap<String, VirtualUserDescriptor>();
+        virtualUsers = new HashMap<>();
         userConfig = new UserConfig();
     }
 
@@ -197,7 +197,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (descriptor.disableDefaultAdministratorsGroup != null) {
             disableDefaultAdministratorsGroup = descriptor.disableDefaultAdministratorsGroup;
         }
-        administratorGroups = new ArrayList<String>();
+        administratorGroups = new ArrayList<>();
         if (!disableDefaultAdministratorsGroup) {
             administratorGroups.add(SecurityConstants.ADMINISTRATORS);
         }
@@ -492,8 +492,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(), prop.getValue());
             } catch (PropertyNotFoundException ce) {
-                log.error(
-                        "Property: " + prop.getKey() + " does not exists. Check your " + "UserService configuration.",
+                log.error("Property: " + prop.getKey() + " does not exists. Check your " + "UserService configuration.",
                         ce);
             }
         }
@@ -513,7 +512,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         boolean admin = false;
         String username = userEntry.getId();
 
-        List<String> virtualGroups = new LinkedList<String>();
+        List<String> virtualGroups = new LinkedList<>();
         // Add preconfigured groups: useful for LDAP, not for anonymous users
         if (defaultGroup != null && !anonymous && !isTransient) {
             virtualGroups.add(defaultGroup);
@@ -539,7 +538,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         // TODO: reenable roles initialization once we have a use case for
         // a role directory. In the mean time we only set the JBOSS role
         // that is required to login
-        List<String> roles = Arrays.asList("regular");
+        List<String> roles = Collections.singletonList("regular");
         principal.setRoles(roles);
 
         return principal;
@@ -712,7 +711,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public List<NuxeoPrincipal> searchPrincipals(String pattern) {
         DocumentModelList entries = searchUsers(pattern);
-        List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(entries.size());
+        List<NuxeoPrincipal> principals = new ArrayList<>(entries.size());
         for (DocumentModel entry : entries) {
             principals.add(makePrincipal(entry));
         }
@@ -739,7 +738,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     protected Map<String, String> getDirectorySortMap(String descriptorSortField, String fallBackField) {
         String sortField = descriptorSortField != null ? descriptorSortField : fallBackField;
-        Map<String, String> orderBy = new HashMap<String, String>();
+        Map<String, String> orderBy = new HashMap<>();
         orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
         return orderBy;
     }
@@ -900,7 +899,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (filter == null) {
             return;
         }
-        List<String> keys = new ArrayList<String>(filter.keySet());
+        List<String> keys = new ArrayList<>(filter.keySet());
         for (String key : keys) {
             if (key.startsWith(VIRTUAL_FIELD_FILTER_PREFIX)) {
                 filter.remove(key);
@@ -967,7 +966,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public List<NuxeoGroup> getAvailableGroups() {
         DocumentModelList groupModels = searchGroups(Collections.<String, Serializable> emptyMap(), null);
-        List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(groupModels.size());
+        List<NuxeoGroup> groups = new ArrayList<>(groupModels.size());
         for (DocumentModel groupModel : groupModels) {
             groups.add(makeGroup(groupModel));
         }
@@ -977,7 +976,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public List<NuxeoPrincipal> getAvailablePrincipals() {
         DocumentModelList userModels = searchUsers(Collections.<String, Serializable> emptyMap(), null);
-        List<NuxeoPrincipal> users = new ArrayList<NuxeoPrincipal>(userModels.size());
+        List<NuxeoPrincipal> users = new ArrayList<>(userModels.size());
         for (DocumentModel userModel : userModels) {
             users.add(makePrincipal(userModel));
         }
@@ -995,7 +994,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             removeVirtualFilters(filter);
 
             DocumentModelList entries = userDir.query(filter, pattern);
-            List<NuxeoPrincipal> principals = new ArrayList<NuxeoPrincipal>(entries.size());
+            List<NuxeoPrincipal> principals = new ArrayList<>(entries.size());
             for (DocumentModel entry : entries) {
                 principals.add(makePrincipal(entry));
             }
@@ -1029,7 +1028,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected List<String> getLeafPermissions(String perm) {
-        ArrayList<String> permissions = new ArrayList<String>();
+        ArrayList<String> permissions = new ArrayList<>();
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         String[] subpermissions = permissionProvider.getSubPermissions(perm);
         if (subpermissions == null || subpermissions.length <= 0) {
@@ -1090,10 +1089,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             entries = searchUsers(Collections.<String, Serializable> emptyMap(), null);
         } else {
             pattern = pattern.trim();
-            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
+            Map<String, DocumentModel> uniqueEntries = new HashMap<>();
 
             for (Entry<String, MatchType> fieldEntry : userSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;
                 if (fieldEntry.getValue() == MatchType.SUBSTRING) {
@@ -1115,7 +1114,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
-    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context) {
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext,
+            DocumentModel context) {
         throw new UnsupportedOperationException();
     }
 
@@ -1125,9 +1125,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context) {
-        filter = filter != null ? cloneMap(filter) : new HashMap<String, Serializable>();
-        HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<String>();
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext,
+            DocumentModel context) {
+        filter = filter != null ? cloneMap(filter) : new HashMap<>();
+        HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<>();
         multiTenantManagement.queryTransformer(this, filter, fulltextClone, context);
 
         try (Session groupDir = dirService.open(groupDirectoryName, context)) {
@@ -1188,7 +1189,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected Map<String, Serializable> cloneMap(Map<String, Serializable> map) {
-        Map<String, Serializable> result = new HashMap<String, Serializable>();
+        Map<String, Serializable> result = new HashMap<>();
         for (String key : map.keySet()) {
             result.put(key, map.get(key));
         }
@@ -1196,7 +1197,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected HashSet<String> cloneSet(Set<String> set) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         for (String key : set) {
             result.add(key);
         }
@@ -1232,10 +1233,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             entries = searchGroups(Collections.<String, Serializable> emptyMap(), null);
         } else {
             pattern = pattern.trim();
-            Map<String, DocumentModel> uniqueEntries = new HashMap<String, DocumentModel>();
+            Map<String, DocumentModel> uniqueEntries = new HashMap<>();
 
             for (Entry<String, MatchType> fieldEntry : groupSearchFields.entrySet()) {
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
                 filter.put(fieldEntry.getKey(), pattern);
                 DocumentModelList fetchedEntries;
                 if (fieldEntry.getValue() == MatchType.SUBSTRING) {
@@ -1399,7 +1400,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public List<String> getTopLevelGroups(DocumentModel context) {
         try (Session groupDir = dirService.open(groupDirectoryName, context)) {
-            List<String> topLevelGroups = new LinkedList<String>();
+            List<String> topLevelGroups = new LinkedList<>();
             // XXX retrieve all entries with references, can be costly.
             DocumentModelList groups = groupDir.query(Collections.<String, Serializable> emptyMap(), null, null, true);
             for (DocumentModel group : groups) {
@@ -1416,28 +1417,28 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public List<String> getUsersInGroupAndSubGroups(String groupId, DocumentModel context) {
-        Set<String> groups = new HashSet<String>();
+        Set<String> groups = new HashSet<>();
         groups.add(groupId);
         appendSubgroups(groupId, groups, context);
 
-        Set<String> users = new HashSet<String>();
+        Set<String> users = new HashSet<>();
         for (String groupid : groups) {
             users.addAll(getGroup(groupid, context).getMemberUsers());
         }
 
-        return new ArrayList<String>(users);
+        return new ArrayList<>(users);
     }
 
     @Override
     public String[] getUsersForPermission(String perm, ACP acp, DocumentModel context) {
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
         // using a hashset to avoid duplicates
-        HashSet<String> usernames = new HashSet<String>();
+        HashSet<String> usernames = new HashSet<>();
 
         ACL merged = acp.getMergedACLs("merged");
         // The list of permission that is has "perm" as its (compound)
         // permission
-        ArrayList<ACE> filteredACEbyPerm = new ArrayList<ACE>();
+        ArrayList<ACE> filteredACEbyPerm = new ArrayList<>();
 
         List<String> currentPermissions = getLeafPermissions(perm);
 
@@ -1481,7 +1482,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             }
             // otherwise, add the user
             if (users == null) {
-                users = new ArrayList<String>();
+                users = new ArrayList<>();
                 users.add(aceUsername);
             }
             if (ace.isGranted()) {

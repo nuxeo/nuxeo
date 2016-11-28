@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.ec.notification.service;
 
 import java.io.Serializable;
@@ -92,7 +89,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     protected static final String NOTIFICATION_VETO_EP = "notificationListenerVeto";
 
     // FIXME: performance issue when putting URLs in a Map.
-    protected static final Map<String, URL> TEMPLATES_MAP = new HashMap<String, URL>();
+    protected static final Map<String, URL> TEMPLATES_MAP = new HashMap<>();
 
     protected EmailHelper emailHelper = new EmailHelper();
 
@@ -102,7 +99,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     protected DocumentViewCodecManager docLocator;
 
-    protected final Map<String, NotificationListenerHook> hookListeners = new HashMap<String, NotificationListenerHook>();
+    protected final Map<String, NotificationListenerHook> hookListeners = new HashMap<>();
 
     protected NotificationListenerVetoRegistry notificationVetoRegistry;
 
@@ -194,7 +191,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     private static List<String> getNames(List<NotificationEventDescriptor> events) {
-        List<String> eventNames = new ArrayList<String>();
+        List<String> eventNames = new ArrayList<>();
         for (NotificationEventDescriptor descriptor : events) {
             eventNames.add(descriptor.name);
         }
@@ -352,7 +349,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     private void raiseConfirmationEvent(NuxeoPrincipal principal, DocumentModel doc, String username,
             String notification) {
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         // Name of the current repository
         options.put(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
@@ -379,14 +376,11 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public void removeSubscription(String username, String notification, DocumentModel doc) {
-        removeSubscriptions(username, Arrays.asList(new String[] { notification }), doc);
+        removeSubscriptions(username, Arrays.asList(notification), doc);
     }
 
     /**
-     * @param notification
-     * @param docId
-     * @return
-     * @deprecated
+     * @deprecated since 7.3 use {@link #getUsersSubscribedToNotificationOnDocument(String, DocumentModel)}
      * @see NotificationService#getSubscribers(String, DocumentModel)
      */
     @Deprecated
@@ -475,7 +469,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     @Override
     public void sendDocumentByMail(DocumentModel doc, String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendTo) {
-        Map<String, Object> infoMap = new HashMap<String, Object>();
+        Map<String, Object> infoMap = new HashMap<>();
         infoMap.put("document", doc);
         infoMap.put("subject", subject);
         infoMap.put("comment", comment);

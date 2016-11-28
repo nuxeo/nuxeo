@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
@@ -108,15 +105,6 @@ public class UserManagerDescriptor implements Serializable {
         }
     }
 
-    /**
-     * @deprecated use setSubstringMatchUserSearchFields instead
-     */
-    @Deprecated
-    @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
-    public void setUserSearchFields(String[] fields) {
-        setSubstringMatchUserSearchFields(fields);
-    }
-
     public Pattern userPasswordPattern;
 
     @XNode("userPasswordPattern")
@@ -204,13 +192,13 @@ public class UserManagerDescriptor implements Serializable {
         }
         if (other.defaultAdministratorIds != null) {
             if (defaultAdministratorIds == null) {
-                defaultAdministratorIds = new ArrayList<String>();
+                defaultAdministratorIds = new ArrayList<>();
             }
             defaultAdministratorIds.addAll(other.defaultAdministratorIds);
         }
         if (other.administratorsGroups != null) {
             if (administratorsGroups == null) {
-                administratorsGroups = new ArrayList<String>();
+                administratorsGroups = new ArrayList<>();
             }
             administratorsGroups.addAll(other.administratorsGroups);
         }

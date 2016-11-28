@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import org.nuxeo.common.utils.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Helper to check passwords and generated hashed salted ones.
@@ -54,7 +54,6 @@ public class PasswordHelper {
     /**
      * Checks if a password is already hashed.
      *
-     * @param password
      * @return {@code true} if the password is hashed
      */
     public static boolean isHashed(String password) {
@@ -92,7 +91,7 @@ public class PasswordHelper {
         byte[] bytes = new byte[hash.length + salt.length];
         System.arraycopy(hash, 0, bytes, 0, hash.length);
         System.arraycopy(salt, 0, bytes, hash.length, salt.length);
-        return prefix + Base64.encodeBytes(bytes);
+        return prefix + Base64.encodeBase64String(bytes);
     }
 
     /**
@@ -116,7 +115,7 @@ public class PasswordHelper {
         }
         String digest = hashedPassword.substring(6);
 
-        byte[] bytes = Base64.decode(digest);
+        byte[] bytes = Base64.decodeBase64(digest);
         if (bytes == null) {
             // invalid base64
             return false;

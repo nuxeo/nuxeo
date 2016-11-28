@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *     Academie de Rennes - proxy CAS support
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
 import java.util.Collections;
@@ -31,10 +28,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 
+import org.apache.commons.codec.binary.Base64;
 import org.jboss.seam.mock.MockFilterConfig;
 import org.jboss.seam.mock.MockHttpSession;
 import org.jboss.seam.mock.MockServletContext;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -93,7 +90,7 @@ public abstract class AbstractAuthenticator extends NXRuntimeTestCase {
     }
 
     protected void setLoginPasswordInHeader(String login, String password, MockHttpRequest request) {
-        String b64userpassword = Base64.encodeBytes((login + ":" + password).getBytes());
+        String b64userpassword = Base64.encodeBase64String((login + ":" + password).getBytes());
         request.setHeaderParam("authorization", new String[] { "basic " + b64userpassword, });
     }
 

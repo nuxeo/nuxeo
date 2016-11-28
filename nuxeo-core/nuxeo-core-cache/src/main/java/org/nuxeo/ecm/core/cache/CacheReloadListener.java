@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  * tmartins
- *
  */
-
 package org.nuxeo.ecm.core.cache;
 
 import org.apache.commons.logging.Log;

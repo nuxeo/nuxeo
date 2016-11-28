@@ -16,7 +16,6 @@
  * Contributors:
  *     bstefanescu, jcarsique
  */
-
 package org.nuxeo.common;
 
 import java.io.File;
@@ -383,7 +382,6 @@ public class Environment {
     /**
      * Resolve the path against {@link Environment#serverHome} if not absolute.
      *
-     * @param temp
      * @since 8.1
      */
     public void setTemp(String temp) {
@@ -406,7 +404,6 @@ public class Environment {
     /**
      * Resolve the path against {@link Environment#runtimeHome} if not absolute.
      *
-     * @param config
      * @since 8.1
      */
     public void setConfig(String config) {
@@ -430,7 +427,6 @@ public class Environment {
     /**
      * Resolve the path against {@link Environment#serverHome} if not absolute.
      *
-     * @param log
      * @since 8.1
      */
     public void setLog(String log) {
@@ -453,7 +449,6 @@ public class Environment {
     /**
      * Resolve the path against {@link Environment#runtimeHome} if not absolute.
      *
-     * @param data
      * @since 8.1
      */
     public void setData(String data) {
@@ -476,7 +471,6 @@ public class Environment {
     /**
      * Resolve the path against {@link Environment#runtimeHome} if not absolute.
      *
-     * @param web
      * @since 8.1
      */
     public void setWeb(String web) {
@@ -700,7 +694,6 @@ public class Environment {
     }
 
     /**
-     * @param key
      * @return the file which path is associated with the given key. The file is guaranteed to be absolute if it has
      *         been set with {@link #setPath(String, File)}
      * @since 8.1

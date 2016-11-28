@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class MockActionManager implements ActionManager {
 
     public MockActionManager(List<Action> actions) {
         super();
-        this.actions = new HashMap<String, Action>();
+        this.actions = new HashMap<>();
         if (actions != null) {
             for (Action action : actions) {
                 this.actions.put(action.getId(), action);

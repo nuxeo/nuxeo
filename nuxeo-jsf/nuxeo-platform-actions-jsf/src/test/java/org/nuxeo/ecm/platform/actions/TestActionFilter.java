@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: TestActionFilter.java 28610 2008-01-09 17:13:52Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.actions;
 
 import static org.junit.Assert.assertEquals;

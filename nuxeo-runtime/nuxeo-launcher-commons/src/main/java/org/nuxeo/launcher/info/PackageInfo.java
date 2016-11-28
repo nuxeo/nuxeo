@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     mguillaume
  */
-
 package org.nuxeo.launcher.info;
 
 import java.io.File;
@@ -52,8 +51,8 @@ import org.xml.sax.SAXException;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "package")
 @XmlType(propOrder = { "id", "state", "version", "name", "type", "visibility", "targetPlatforms", "vendor",
-        "supportsHotReload", "supported", "productionState", "validationState", "provides", "dependencies",
-        "conflicts", "title", "description", "homePage", "licenseType", "licenseUrl", "templates" })
+        "supportsHotReload", "supported", "productionState", "validationState", "provides", "dependencies", "conflicts",
+        "title", "description", "homePage", "licenseType", "licenseUrl", "templates" })
 public class PackageInfo {
 
     public String name;

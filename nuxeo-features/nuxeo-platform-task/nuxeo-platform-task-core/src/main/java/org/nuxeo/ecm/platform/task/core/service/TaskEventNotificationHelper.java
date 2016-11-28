@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,10 +62,10 @@ public final class TaskEventNotificationHelper {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
         }
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
 
-        EventContext eventContext = null;
+        EventContext eventContext;
         if (document != null) {
             properties.put(CoreEventConstants.REPOSITORY_NAME, document.getRepositoryName());
             properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());
@@ -94,9 +94,9 @@ public final class TaskEventNotificationHelper {
             String eventName, Map<String, Serializable> extraEventProperties) {
 
         // try to resolve document when notifying
-        DocumentModel document = null;
+        DocumentModel document;
 
-        List<String> docIds = new ArrayList<String>();
+        List<String> docIds = new ArrayList<>();
         docIds.addAll(task.getTargetDocumentsIds());
         // handle compatibility with tasks created before 5.8
         String docId = task.getTargetDocumentId();
@@ -109,7 +109,7 @@ public final class TaskEventNotificationHelper {
             docIds.add(docIdVar);
         }
         String docRepo = task.getVariable(TaskService.VariableName.documentRepositoryName.name());
-        List<DocumentModel> documents = new ArrayList<DocumentModel>();
+        List<DocumentModel> documents = new ArrayList<>();
         if (coreSession.getRepositoryName().equals(docRepo)) {
             try {
                 for (String id : docIds) {
@@ -125,8 +125,8 @@ public final class TaskEventNotificationHelper {
                     coreSession.getRepositoryName()));
         }
 
-        final Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-        ArrayList<String> notificationRecipients = new ArrayList<String>();
+        final Map<String, Serializable> eventProperties = new HashMap<>();
+        ArrayList<String> notificationRecipients = new ArrayList<>();
         notificationRecipients.add(task.getInitiator());
         notificationRecipients.addAll(task.getActors());
         eventProperties.put(NotificationConstants.RECIPIENTS_KEY, notificationRecipients);

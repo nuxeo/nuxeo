@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- *
- * $$Id$$
  */
-
 package org.nuxeo.common.utils;
 
 import java.io.BufferedInputStream;
@@ -149,50 +145,26 @@ public final class ZipUtils {
     }
 
     public static void zip(File file, File zip) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(zip));
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(zip))) {
             zip(file, out, null);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
 
     public static void zip(File[] files, File zip) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(zip));
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(zip))) {
             zip(files, out, null);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
 
     public static void zip(File file, File zip, String prefix) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(zip));
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(zip))) {
             zip(file, out, prefix);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
 
     public static void zip(File[] files, File zip, String prefix) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(zip));
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(zip))) {
             zip(files, out, prefix);
-        } finally {
-            if (out != null) {
-                out.close();
-            }
         }
     }
 
@@ -225,81 +197,45 @@ public final class ZipUtils {
     // _____________________________ UNZIP ________________________________
 
     public static void unzip(String prefix, InputStream zipStream, File dir) throws IOException {
-        ZipInputStream in = null;
-        try {
-            in = new ZipInputStream(new BufferedInputStream(zipStream));
+        try (ZipInputStream in = new ZipInputStream(new BufferedInputStream(zipStream))) {
             unzip(prefix, in, dir);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static void unzip(InputStream zipStream, File dir) throws IOException {
-        ZipInputStream in = null;
-        try {
-            in = new ZipInputStream(new BufferedInputStream(zipStream));
+        try (ZipInputStream in = new ZipInputStream(new BufferedInputStream(zipStream))) {
             unzip(in, dir);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static void unzip(String prefix, URL zip, File dir) throws IOException {
-        ZipInputStream in = null;
-        try {
-            in = new ZipInputStream(new BufferedInputStream(zip.openStream()));
+        try (ZipInputStream in = new ZipInputStream(new BufferedInputStream(zip.openStream()))) {
             unzip(prefix, in, dir);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static void unzip(URL zip, File dir) throws IOException {
-        ZipInputStream in = null;
-        try {
-            in = new ZipInputStream(new BufferedInputStream(zip.openStream()));
+        try (ZipInputStream in = new ZipInputStream(new BufferedInputStream(zip.openStream()))) {
             unzip(in, dir);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static void unzip(String prefix, File zip, File dir) throws IOException {
-        ZipInputStream in = null;
-        try {
-            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
+        try (ZipInputStream in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)))) {
             unzip(prefix, in, dir);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static void unzip(File zip, File dir) throws IOException {
-        ZipInputStream in = null;
-        try {
-            in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)));
+        try (ZipInputStream in = new ZipInputStream(new BufferedInputStream(new FileInputStream(zip)))) {
             unzip(in, dir);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static void unzip(String prefix, ZipInputStream in, File dir) throws IOException {
         dir.mkdirs();
         ZipEntry entry;
-        while ((entry  = in.getNextEntry()) != null) {
+        while ((entry = in.getNextEntry()) != null) {
             String entryName = entry.getName();
             if (!entryName.startsWith(prefix) || entryName.contains("..")) {
                 continue;
@@ -338,8 +274,7 @@ public final class ZipUtils {
         ZipEntry entry = in.getNextEntry();
         while (entry != null) {
             String entryName = entry.getName();
-            if (entry.isDirectory()) {
-            } else {
+            if (!entry.isDirectory()) {
                 int p = entryName.lastIndexOf('/');
                 if (p > -1) {
                     entryName = entryName.substring(p + 1);

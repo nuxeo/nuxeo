@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -40,8 +38,6 @@ public class TypeService extends DefaultComponent {
      */
     @Deprecated
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.schema.TypeService");
-
-    private static final Log log = LogFactory.getLog(TypeService.class);
 
     private static final String XP_SCHEMA = "schema";
 

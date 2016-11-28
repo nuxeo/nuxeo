@@ -31,9 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,6 +67,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparat
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * JSON exporter for layout objects

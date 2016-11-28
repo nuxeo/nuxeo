@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      *
      * @since 7.4
      */
-    protected static final List<String> SKIPPED_SCHEMAS_FOR_SEARCHFIELD = Arrays.asList(new String[] { "cvd" });
+    protected static final List<String> SKIPPED_SCHEMAS_FOR_SEARCHFIELD = Collections.singletonList("cvd");
 
     protected String name;
 
@@ -273,7 +273,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public List<Long> getPageSizeOptions() {
-        List<Long> res = new ArrayList<Long>();
+        List<Long> res = new ArrayList<>();
         if (pageSizeOptions != null) {
             res.addAll(pageSizeOptions);
         }
@@ -294,7 +294,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     @Override
     public List<SortInfo> getSortInfos() {
         // break reference
-        List<SortInfo> res = new ArrayList<SortInfo>();
+        List<SortInfo> res = new ArrayList<>();
         if (sortInfos != null) {
             res.addAll(sortInfos);
         }
@@ -368,7 +368,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public void setSortInfo(SortInfo sortInfo) {
-        List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> newSortInfos = new ArrayList<>();
         if (sortInfo != null) {
             newSortInfos.add(sortInfo);
         }
@@ -385,7 +385,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 // do nothing: sort on this column is not set
             } else if (getSortInfoIndex(sortColumn, !sortAscending) != -1) {
                 // change direction
-                List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
+                List<SortInfo> newSortInfos = new ArrayList<>();
                 for (SortInfo sortInfo : getSortInfos()) {
                     if (sortColumn.equals(sortInfo.getSortColumn())) {
                         newSortInfos.add(new SortInfo(sortColumn, sortAscending));
@@ -688,7 +688,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     @Override
     public Map<String, Serializable> getProperties() {
         // break reference
-        return new HashMap<String, Serializable>(properties);
+        return new HashMap<>(properties);
     }
 
     @Override
@@ -731,25 +731,24 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     @Override
     public PageSelections<T> getCurrentSelectPage() {
         if (currentSelectPage == null) {
-            List<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
+            List<PageSelection<T>> entries = new ArrayList<>();
             List<T> currentPage = getCurrentPage();
-            currentSelectPage = new PageSelections<T>();
+            currentSelectPage = new PageSelections<>();
             currentSelectPage.setName(name);
             if (currentPage != null && !currentPage.isEmpty()) {
                 if (selectedEntries == null || selectedEntries.isEmpty()) {
                     // no selection at all
-                    for (int i = 0; i < currentPage.size(); i++) {
-                        entries.add(new PageSelection<T>(currentPage.get(i), false));
+                    for (T entry : currentPage) {
+                        entries.add(new PageSelection<>(entry, false));
                     }
                 } else {
                     boolean allSelected = true;
-                    for (int i = 0; i < currentPage.size(); i++) {
-                        T entry = currentPage.get(i);
+                    for (T entry : currentPage) {
                         Boolean selected = Boolean.valueOf(selectedEntries.contains(entry));
                         if (!Boolean.TRUE.equals(selected)) {
                             allSelected = false;
                         }
-                        entries.add(new PageSelection<T>(entry, selected.booleanValue()));
+                        entries.add(new PageSelection<>(entry, selected.booleanValue()));
                     }
                     if (allSelected) {
                         currentSelectPage.setSelected(true);
@@ -1013,9 +1012,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * Send a search event so that PageProvider calls can be tracked by Audit or other statistic gathering process
      *
-     * @param principal
-     * @param query
-     * @param entries
      * @since 7.4
      */
     protected void fireSearchEvent(Principal principal, String query, List<T> entries, Long executionTimeMs) {
@@ -1024,7 +1020,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             return;
         }
 
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
 
         props.put("pageProviderName", getDefinition().getName());
 
@@ -1053,7 +1049,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 log.error("Unable to Marshall SearchDocumentModel as JSON", e);
             }
 
-            ArrayList<String> searchFields = new ArrayList<String>();
+            ArrayList<String> searchFields = new ArrayList<>();
             // searchFields collects the non- null fields inside the SearchDocumentModel
             // some schemas are skipped because they contains ContentView related info
             for (String schema : searchDocumentModel.getSchemas()) {
@@ -1095,30 +1091,29 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * Default (dummy) implementation that should be overridden by PageProvider actually dealing with Aggregates
      *
-     * @param eventProps
      * @since 7.4
      */
     protected void incorporateAggregates(Map<String, Serializable> eventProps) {
 
         List<AggregateDefinition> ags = getDefinition().getAggregates();
         if (ags != null) {
-            ArrayList<HashMap<String, Serializable>> aggregates = new ArrayList<HashMap<String, Serializable>>();
+            ArrayList<HashMap<String, Serializable>> aggregates = new ArrayList<>();
             for (AggregateDefinition ag : ags) {
-                HashMap<String, Serializable> agData = new HashMap<String, Serializable>();
+                HashMap<String, Serializable> agData = new HashMap<>();
                 agData.put("type", ag.getType());
                 agData.put("id", ag.getId());
                 agData.put("field", ag.getDocumentField());
                 agData.putAll(ag.getProperties());
-                ArrayList<HashMap<String, Serializable>> rangesData = new ArrayList<HashMap<String, Serializable>>();
+                ArrayList<HashMap<String, Serializable>> rangesData = new ArrayList<>();
                 if (ag.getDateRanges() != null) {
                     for (AggregateRangeDateDefinition range : ag.getDateRanges()) {
-                        HashMap<String, Serializable> rangeData = new HashMap<String, Serializable>();
+                        HashMap<String, Serializable> rangeData = new HashMap<>();
                         rangeData.put("from", range.getFromAsString());
                         rangeData.put("to", range.getToAsString());
                         rangesData.add(rangeData);
                     }
                     for (AggregateRangeDefinition range : ag.getRanges()) {
-                        HashMap<String, Serializable> rangeData = new HashMap<String, Serializable>();
+                        HashMap<String, Serializable> rangeData = new HashMap<>();
                         rangeData.put("from-dbl", range.getFrom());
                         rangeData.put("to-dbl", range.getTo());
                         rangesData.add(rangeData);

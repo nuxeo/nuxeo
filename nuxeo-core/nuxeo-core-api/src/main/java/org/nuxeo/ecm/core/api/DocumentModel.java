@@ -43,9 +43,6 @@ import org.nuxeo.ecm.core.schema.Prefetch;
  * <p>
  * Data models are lazily loaded as they are needed. At document model creation only data models corresponding to the
  * default schemas are loaded. The default schemas are configured in the type manager through extension points.
- * <p>
- * The user may overwrite the default schemas by passing the schemas to be used at model creation via
- * {@link CoreSession#getDocument(DocumentRef, String[])}
  *
  * @see CoreSession
  */
@@ -309,9 +306,6 @@ public interface DocumentModel extends Serializable {
      * Sets path info.
      * <p>
      * path and ref attributes will be set according to info
-     *
-     * @param parentPath
-     * @param name
      */
     void setPathInfo(String parentPath, String name);
 
@@ -814,6 +808,7 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Gets this document's parts.
+     *
      * @deprecated since 8.4, use direct {@link Property} getters instead
      * @see #getSchemas
      * @see #getPropertyObject
@@ -888,17 +883,17 @@ public interface DocumentModel extends Serializable {
      * </ul>
      * The refresh flags are:
      * <ul>
-     * <li> {@link DocumentModel#REFRESH_STATE}
-     * <li> {@link DocumentModel#REFRESH_PREFETCH}
-     * <li> {@link DocumentModel#REFRESH_ACP_IF_LOADED}
-     * <li> {@link DocumentModel#REFRESH_ACP_LAZY}
-     * <li> {@link DocumentModel#REFRESH_ACP}
-     * <li> {@link DocumentModel#REFRESH_CONTENT_IF_LOADED}
-     * <li> {@link DocumentModel#REFRESH_CONTENT_LAZY}
-     * <li> {@link DocumentModel#REFRESH_CONTENT}
-     * <li> {@link DocumentModel#REFRESH_DEFAULT} same as REFRESH_STATE | REFRESH_DEFAULT | REFRESH_ACP_IF_LOADED |
+     * <li>{@link DocumentModel#REFRESH_STATE}
+     * <li>{@link DocumentModel#REFRESH_PREFETCH}
+     * <li>{@link DocumentModel#REFRESH_ACP_IF_LOADED}
+     * <li>{@link DocumentModel#REFRESH_ACP_LAZY}
+     * <li>{@link DocumentModel#REFRESH_ACP}
+     * <li>{@link DocumentModel#REFRESH_CONTENT_IF_LOADED}
+     * <li>{@link DocumentModel#REFRESH_CONTENT_LAZY}
+     * <li>{@link DocumentModel#REFRESH_CONTENT}
+     * <li>{@link DocumentModel#REFRESH_DEFAULT} same as REFRESH_STATE | REFRESH_DEFAULT | REFRESH_ACP_IF_LOADED |
      * REFRESH_CONTENT_IF_LOADED
-     * <li> {@link DocumentModel#REFRESH_ALL} same as REFRESH_STATE | REFRESH_PREFTECH | REFRESH_ACP | REFRESH_CONTENT
+     * <li>{@link DocumentModel#REFRESH_ALL} same as REFRESH_STATE | REFRESH_PREFTECH | REFRESH_ACP | REFRESH_CONTENT
      * </ul>
      * If XX_IF_LOADED is used then XX will be refreshed only if already loaded in the document - otherwise a lazy
      * refresh will be done
@@ -909,7 +904,7 @@ public interface DocumentModel extends Serializable {
     void refresh(int refreshFlags, String[] schemas);
 
     /** Info fetched internally during a refresh. */
-    public static class DocumentModelRefresh {
+    class DocumentModelRefresh {
 
         public String lifeCycleState;
 

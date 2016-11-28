@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.common.utils.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.webengine.jaxrs.HttpFilter;
@@ -104,7 +104,7 @@ public class AuthenticationFilter extends HttpFilter {
         if (auth != null && auth.toLowerCase().startsWith("basic")) {
             int idx = auth.indexOf(' ');
             String b64userpassword = auth.substring(idx + 1);
-            byte[] clearUp = Base64.decode(b64userpassword);
+            byte[] clearUp = Base64.decodeBase64(b64userpassword);
             String userpassword = new String(clearUp);
             String[] up = StringUtils.split(userpassword, ':', false);
             if (up.length != 2) {

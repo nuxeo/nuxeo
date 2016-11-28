@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,21 @@
  *     Andrei Nechaev
  */
 package org.nuxeo.ecm.core.event.impl;
+
+import java.rmi.dgc.VMID;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,20 +59,6 @@ import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import java.rmi.dgc.VMID;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-
 /**
  * Implementation of the event service.
  */
@@ -78,7 +79,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
         boolean registeredSynchronization;
 
-        final Map<String, EventBundle> byRepository = new HashMap<String, EventBundle>();
+        final Map<String, EventBundle> byRepository = new HashMap<>();
 
         void push(Event event) {
             String repositoryName = event.getContext().getRepositoryName();
@@ -96,7 +97,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected volatile AsyncEventExecutor asyncExec;
 
-    protected final List<AsyncWaitHook> asyncWaitHooks = new CopyOnWriteArrayList<AsyncWaitHook>();
+    protected final List<AsyncWaitHook> asyncWaitHooks = new CopyOnWriteArrayList<>();
 
     protected boolean blockAsyncProcessing = false;
 
@@ -135,14 +136,13 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
         postCommitExec.shutdown(timeoutMillis);
-        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream()
-                .filter(hook -> hook.shutdown() == false)
-                .collect(Collectors.toSet());
+        Set<AsyncWaitHook> notTerminated = asyncWaitHooks.stream().filter(hook -> !hook.shutdown()).collect(
+                Collectors.toSet());
         if (!notTerminated.isEmpty()) {
             throw new RuntimeException("Asynch services are still running : " + notTerminated);
         }
 
-        if (asyncExec.shutdown(timeoutMillis) == false) {
+        if (!asyncExec.shutdown(timeoutMillis)) {
             throw new RuntimeException("Async executor is still running, timeout expired");
         }
         if (pipeDispatcher != null) {
@@ -174,8 +174,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     @Override
     public void waitForAsyncCompletion(long timeout) {
         Set<AsyncWaitHook> notCompleted = asyncWaitHooks.stream()
-                .filter(hook -> !hook.waitForAsyncCompletion())
-                .collect(Collectors.toSet());
+                                                        .filter(hook -> !hook.waitForAsyncCompletion())
+                                                        .collect(Collectors.toSet());
         if (!notCompleted.isEmpty()) {
             throw new RuntimeException("Async tasks are still running : " + notCompleted);
         }
@@ -325,7 +325,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
         if (bulkModeEnabled) {
             // run all listeners synchronously in one transaction
-            List<EventListenerDescriptor> listeners = new ArrayList<EventListenerDescriptor>();
+            List<EventListenerDescriptor> listeners = new ArrayList<>();
             if (!blockSyncPostCommitProcessing) {
                 listeners = postCommitSync;
             }
@@ -387,7 +387,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     @Override
     public List<PostCommitEventListener> getPostCommitEventListeners() {
-        List<PostCommitEventListener> result = new ArrayList<PostCommitEventListener>();
+        List<PostCommitEventListener> result = new ArrayList<>();
 
         result.addAll(listenerDescriptors.getSyncPostCommitListeners());
         result.addAll(listenerDescriptors.getAsyncPostCommitListeners());

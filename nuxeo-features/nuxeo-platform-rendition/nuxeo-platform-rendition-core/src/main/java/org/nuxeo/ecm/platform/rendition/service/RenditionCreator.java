@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,8 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *   Nuxeo - initial API and implementation
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
@@ -171,7 +172,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         DocumentModelList existingRenditions = session.query(query.toString());
         String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
         Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
-        DocumentModel rendition = null;
+        DocumentModel rendition;
         if (existingRenditions.size() > 0) {
             rendition = session.getDocument(existingRenditions.get(0).getRef());
             if (!isVersionable) {

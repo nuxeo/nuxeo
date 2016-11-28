@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: Action.java 28512 2008-01-06 11:52:28Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.actions;
 
 import java.io.Serializable;
@@ -417,7 +414,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      */
     public Map<String, Serializable> getProperties() {
         if (propertiesCache == null) {
-            propertiesCache = new HashMap<String, Serializable>();
+            propertiesCache = new HashMap<>();
             if (properties != null) {
                 propertiesCache.putAll(properties.getAllProperties());
             }
@@ -491,7 +488,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
             clone.categories = categories.clone();
         }
         if (filterIds != null) {
-            clone.filterIds = new ArrayList<String>(filterIds);
+            clone.filterIds = new ArrayList<>(filterIds);
         }
         if (filters != null) {
             clone.filters = new ActionFilter[filters.length];

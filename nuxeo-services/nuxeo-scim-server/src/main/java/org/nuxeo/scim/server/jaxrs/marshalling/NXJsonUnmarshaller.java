@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,42 +38,31 @@ import com.unboundid.scim.schema.ResourceDescriptor;
 import com.unboundid.scim.sdk.InvalidResourceException;
 
 /**
- * Copy of the original scimsdk class just to change some org.json constructors
- *
- * scimsdk uses a custom version of org.json with a different artifactId and
- * some code differences but with the same namespace
+ * Copy of the original scimsdk class just to change some org.json constructors scimsdk uses a custom version of
+ * org.json with a different artifactId and some code differences but with the same namespace
  *
  * @author tiry
  * @since 7.4
- *
  */
 public class NXJsonUnmarshaller extends JsonUnmarshaller {
 
     @Override
     public <R extends BaseResource> R unmarshal(final InputStream inputStream,
-            final ResourceDescriptor resourceDescriptor,
-            final ResourceFactory<R> resourceFactory)
-            throws InvalidResourceException {
+            final ResourceDescriptor resourceDescriptor, final ResourceFactory<R> resourceFactory)
+                    throws InvalidResourceException {
         try {
 
             String json = FileUtils.read(inputStream);
-            final JSONObject jsonObject = makeCaseInsensitive(new JSONObject(
-                    new JSONTokener(json)));
+            final JSONObject jsonObject = makeCaseInsensitive(new JSONObject(new JSONTokener(json)));
 
             final NXJsonParser parser = new NXJsonParser();
-            return parser.doUnmarshal(jsonObject, resourceDescriptor,
-                    resourceFactory, null);
-        } catch (JSONException e) {
-            throw new InvalidResourceException("Error while reading JSON: "
-                    + e.getMessage(), e);
-        } catch (IOException e) {
-            throw new InvalidResourceException("Error while reading JSON: "
-                    + e.getMessage(), e);
+            return parser.doUnmarshal(jsonObject, resourceDescriptor, resourceFactory, null);
+        } catch (JSONException | IOException  e) {
+            throw new InvalidResourceException("Error while reading JSON: " + e.getMessage(), e);
         }
     }
 
-    protected JSONObject makeCaseInsensitive(final JSONObject jsonObject)
-            throws JSONException {
+    protected JSONObject makeCaseInsensitive(final JSONObject jsonObject) throws JSONException {
         if (jsonObject == null) {
             return null;
         }

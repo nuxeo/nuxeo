@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: EJBPlacefulService.java 13110 2007-03-01 17:25:47Z rspivak $
  */
 package org.nuxeo.ecm.platform.notification.api;
 
@@ -150,8 +148,7 @@ public interface NotificationManager {
 
     /**
      * Returns the list of live docs the user is subscribed to.
-     * @param prefixedPrincipalName
-     * @return
+     *
      * @since 7.3
      */
     List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName);

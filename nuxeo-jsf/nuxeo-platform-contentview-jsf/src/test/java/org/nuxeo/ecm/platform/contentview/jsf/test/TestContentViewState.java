@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,19 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,13 +68,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 /**
  * @since 5.4.2
  */
@@ -93,7 +94,7 @@ public class TestContentViewState {
 
     Boolean booleanParam = Boolean.FALSE;
 
-    List<String> listParam = Arrays.asList(new String[] { "deleted", "validated" });
+    List<String> listParam = Arrays.asList("deleted", "validated");
 
     String ENC_CURRENT_DOC_CHILDREN = "H4sIAAAAAAAAAI2Qu27DMAxF%2F4Wz4LQdtRVOgAZIUyOvJQgMVWJiAbLk6pFHjfx7KTtdOnXSFXF4eckepLMRbdxpvCxFi8Ch3K5Ws%2BWmnn6U2%2Fcsyrf5YkolYNCJE1benbVC%2F098rb8Je2Egk%2Fc0qaIa8CcGXwn9rRKebCL6AHwPEUOsO5GxWitgR2ECMpuMYXtQaAikKpyF0UpkfTgwCCi8bKZOppb6gA84BOfj3B5d9u2HX%2BlMai0lVpJHHQ3CSL0GiVZpewIefcI7WXoMycSFuLlEhj3YcVX1mFEbHWJuYDAacTDiE03xFyjMaEGcFzYYyrwZG%2FIkBpquX4nYkMEk6zBpb%2FktusE8NO5Srneza0cxH%2Bl%2Bw43bDFeTg6yfgZLjFWXKl%2BHD7e4%2FF8rF5OEBAAA%3D";
 
@@ -167,7 +168,7 @@ public class TestContentViewState {
 
         // init provider, result columns and test save again
         contentView.getPageProviderWithParams("test_parent_id", booleanParam, null, listParam);
-        contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
+        contentView.setCurrentResultLayoutColumns(Collections.singletonList("column_1"));
         state = service.saveContentView(contentView);
         checkContentViewState(state, true);
     }
@@ -234,7 +235,7 @@ public class TestContentViewState {
         state.setPageSize(new Long(2));
         Object[] queryParams = new Object[] { "test_parent_id", booleanParam, null, listParam };
         state.setQueryParameters(queryParams);
-        state.setResultColumns(Arrays.asList(new String[] { "column_1" }));
+        state.setResultColumns(Collections.singletonList("column_1"));
         state.setResultLayout(new ContentViewLayoutImpl("document_listing", "label.document_listing.layout", true,
                 "/icons/myicon.png", true));
         List<SortInfo> sortInfos = new ArrayList<>();
@@ -290,7 +291,7 @@ public class TestContentViewState {
 
         // init provider, result columns and save
         contentView.getPageProviderWithParams("test_parent_id", booleanParam, null, listParam);
-        contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
+        contentView.setCurrentResultLayoutColumns(Collections.singletonList("column_1"));
         ContentViewState state = service.saveContentView(contentView);
 
         String json = JSONContentViewState.toJSON(state, false);
@@ -352,7 +353,7 @@ public class TestContentViewState {
         // init provider with search doc, result columns and test save again
         contentView.setSearchDocumentModel(searchDocument);
         contentView.getPageProvider();
-        contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
+        contentView.setCurrentResultLayoutColumns(Collections.singletonList("column_1"));
         state = service.saveContentView(contentView);
         checkContentViewStateWithSearchDoc(state, true, true);
     }
@@ -408,7 +409,7 @@ public class TestContentViewState {
         state.setContentViewName("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         state.setCurrentPage(new Long(0));
         state.setPageSize(new Long(2));
-        state.setResultColumns(Arrays.asList(new String[] { "column_1" }));
+        state.setResultColumns(Collections.singletonList("column_1"));
         state.setResultLayout(new ContentViewLayoutImpl("document_listing", "label.document_listing.layout", true,
                 "/icons/myicon.png", true));
         List<SortInfo> sortInfos = new ArrayList<>();
@@ -471,7 +472,7 @@ public class TestContentViewState {
         // set current page to the first one
         state.setCurrentPage(new Long(1));
         state.setPageSize(new Long(2));
-        state.setResultColumns(Arrays.asList(new String[] { "column_1" }));
+        state.setResultColumns(Collections.singletonList("column_1"));
         state.setResultLayout(new ContentViewLayoutImpl("document_listing", "label.document_listing.layout", true,
                 "/icons/myicon.png", true));
         List<SortInfo> sortInfos = new ArrayList<>();
@@ -520,7 +521,7 @@ public class TestContentViewState {
         // init provider with search doc, result columns and save
         contentView.setSearchDocumentModel(searchDocument);
         contentView.getPageProvider();
-        contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
+        contentView.setCurrentResultLayoutColumns(Collections.singletonList("column_1"));
         ContentViewState state = service.saveContentView(contentView);
 
         String json = JSONContentViewState.toJSON(state, false);

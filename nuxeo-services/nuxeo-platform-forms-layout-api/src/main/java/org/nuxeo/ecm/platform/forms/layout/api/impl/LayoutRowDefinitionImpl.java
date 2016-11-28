@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     protected boolean selectedByDefault = true;
 
     // needed by GWT serialization
+    @SuppressWarnings("unused")
     protected LayoutRowDefinitionImpl() {
         super();
     }
@@ -87,10 +88,6 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
         if (widgets == null) {
             this.widgets = new WidgetReferenceImpl[0];
         } else {
-            WidgetReference[] refs = new WidgetReference[widgets.size()];
-            for (int i = 0; i < widgets.size(); i++) {
-                refs[i] = widgets.get(i);
-            }
             this.widgets = widgets.toArray(new WidgetReference[0]);
         }
         this.alwaysSelected = alwaysSelected;
@@ -160,12 +157,12 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     public LayoutRowDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
         if (properties != null) {
-            cprops = new HashMap<String, Map<String, Serializable>>();
+            cprops = new HashMap<>();
             for (Map.Entry<String, Map<String, Serializable>> entry : properties.entrySet()) {
                 Map<String, Serializable> subProps = entry.getValue();
                 Map<String, Serializable> csubProps = null;
                 if (subProps != null) {
-                    csubProps = new HashMap<String, Serializable>();
+                    csubProps = new HashMap<>();
                     csubProps.putAll(subProps);
                 }
                 cprops.put(entry.getKey(), csubProps);
@@ -178,9 +175,7 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
                 cwidgets[i] = widgets[i].clone();
             }
         }
-        LayoutRowDefinition clone = new LayoutRowDefinitionImpl(name, cprops, cwidgets, alwaysSelected,
-                selectedByDefault);
-        return clone;
+        return new LayoutRowDefinitionImpl(name, cprops, cwidgets, alwaysSelected, selectedByDefault);
     }
 
     /**
@@ -195,8 +190,12 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
             return true;
         }
         LayoutRowDefinitionImpl ld = (LayoutRowDefinitionImpl) obj;
-        return new EqualsBuilder().append(name, ld.name).append(properties, ld.properties).append(widgets, ld.widgets).append(
-                alwaysSelected, ld.alwaysSelected).append(selectedByDefault, ld.selectedByDefault).isEquals();
+        return new EqualsBuilder().append(name, ld.name)
+                                  .append(properties, ld.properties)
+                                  .append(widgets, ld.widgets)
+                                  .append(alwaysSelected, ld.alwaysSelected)
+                                  .append(selectedByDefault, ld.selectedByDefault)
+                                  .isEquals();
     }
 
 }

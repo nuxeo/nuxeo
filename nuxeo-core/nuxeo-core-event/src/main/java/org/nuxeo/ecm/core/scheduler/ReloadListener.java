@@ -36,9 +36,9 @@ public class ReloadListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        if (event.getId() == ReloadEventNames.BEFORE_RELOAD_EVENT_ID) {
-            lookup().ifPresent(scheduler -> scheduler.shutdownScheduler());
-        } else if (event.getId() == ReloadEventNames.AFTER_RELOAD_EVENT_ID) {
+        if (ReloadEventNames.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
+            lookup().ifPresent(SchedulerServiceImpl::shutdownScheduler);
+        } else if (ReloadEventNames.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
             lookup().ifPresent(scheduler -> {
                 try {
                     scheduler.setupScheduler();

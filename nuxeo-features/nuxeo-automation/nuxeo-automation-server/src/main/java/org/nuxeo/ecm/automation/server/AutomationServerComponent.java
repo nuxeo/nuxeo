@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
 
     @Override
     public void activate(ComponentContext context) {
-        bindings = new HashMap<String, RestBinding>();
+        bindings = new HashMap<>();
         writers = new ArrayList<>();
         readers = new ArrayList<>();
         me = this;
@@ -206,7 +206,7 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
         Map<String, RestBinding> _lookup = lookup;
         if (_lookup == null) {
             synchronized (this) {
-                lookup = new HashMap<String, RestBinding>(bindings);
+                lookup = new HashMap<>(bindings);
                 _lookup = lookup;
             }
         }

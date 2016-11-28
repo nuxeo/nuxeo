@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public interface PageProviderService extends Serializable {
      *
      * @since 7.1
      */
-    public static final String NAMED_PARAMETERS = "namedParameters";
+    String NAMED_PARAMETERS = "namedParameters";
 
     /**
      * Returns a named page provider definition.
