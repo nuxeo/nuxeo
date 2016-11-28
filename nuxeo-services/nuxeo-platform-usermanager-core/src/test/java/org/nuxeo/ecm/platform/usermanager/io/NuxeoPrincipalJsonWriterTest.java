@@ -53,13 +53,12 @@ public class NuxeoPrincipalJsonWriterTest extends
         json.has("id").isEquals("Administrator");
         json.has("isAdministrator").isTrue();
         json.has("isAnonymous").isFalse();
-        JsonAssert model = json.has("properties").properties(8);
+        JsonAssert model = json.has("properties").properties(7);
         model.has("lastName").isEmptyStringOrNull();
         model.has("username").isEquals("Administrator");
         model.has("email").isEquals("devnull@nuxeo.com");
         model.has("company").isEmptyStringOrNull();
         model.has("firstName").isEmptyStringOrNull();
-        model.has("password").isEmptyStringOrNull();
         model.has("groups").contains("administrators");
         JsonAssert exGroup = json.has("extendedGroups").length(1).has(0);
         exGroup.properties(3);
