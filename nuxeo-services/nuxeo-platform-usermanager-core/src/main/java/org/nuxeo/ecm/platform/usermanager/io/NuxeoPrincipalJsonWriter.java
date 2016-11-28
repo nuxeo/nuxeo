@@ -131,10 +131,8 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
         jg.writeObjectFieldStart("properties");
         for (Property property : userPart.getChildren()) {
             String localName = property.getField().getName().getLocalName();
-            jg.writeFieldName(localName);
-            if (localName.equals(getPasswordField())) {
-                jg.writeString("");
-            } else {
+            if (!localName.equals(getPasswordField())) {
+                jg.writeFieldName(localName);
                 OutputStream out = new OutputStreamWithJsonWriter(jg);
                 propertyWriter.write(property, Property.class, Property.class, APPLICATION_JSON_TYPE, out);
             }

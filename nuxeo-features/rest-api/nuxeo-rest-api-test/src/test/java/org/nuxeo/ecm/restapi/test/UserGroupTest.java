@@ -360,8 +360,8 @@ public class UserGroupTest extends BaseUserTest {
         // When I call JSON for user1
         JsonNode node = getResponseAsJson(RequestType.GET, "/user/user1");
 
-        // Then it doesn't contain the password
-        assertEquals("", node.get("properties").get("password").getValueAsText());
+        // Then it doesn't contain the password at all
+        assertNull(node.get("properties").get("password"));
 
     }
 
