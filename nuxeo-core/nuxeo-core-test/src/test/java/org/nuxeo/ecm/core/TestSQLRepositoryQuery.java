@@ -2300,6 +2300,9 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testEqualsTimeWithMilliseconds() throws Exception {
+        assumeTrue("SQL Server does not have millisecond DATETIME accuracy",
+                !coreFeature.getStorageConfiguration().isVCSSQLServer());
+
         Date currentDate = setupDocTest();
         String testQuery = String.format(
                 "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s" + " AND ecm:isProxy = 0",
