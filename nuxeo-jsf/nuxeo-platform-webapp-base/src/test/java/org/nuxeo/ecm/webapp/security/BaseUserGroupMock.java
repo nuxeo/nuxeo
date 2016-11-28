@@ -28,6 +28,7 @@ import java.util.List;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -103,6 +104,8 @@ public class BaseUserGroupMock {
         when(um.areGroupsReadOnly()).thenReturn(false);
         when(um.getAdministratorsGroups()).thenReturn(singleGroup("administrators"));
         when(um.getGroupsInGroup("administrators")).thenReturn(singleGroup("subadmin"));
+        when(um.getGroup("administrators")).thenReturn(new NuxeoGroupImpl("administrators"));
+        when(um.getGroup("")).thenReturn(new NuxeoGroupImpl("default"));
         return um;
     }
 
