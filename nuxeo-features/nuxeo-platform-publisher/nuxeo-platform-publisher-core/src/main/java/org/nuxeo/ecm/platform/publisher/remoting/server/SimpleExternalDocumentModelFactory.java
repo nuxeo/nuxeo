@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
  * Contributors:
  *     Nuxeo
  */
-
 package org.nuxeo.ecm.platform.publisher.remoting.server;
+
+import java.util.Map;
 
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
@@ -31,18 +32,16 @@ import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.Map;
-
 /**
  * {@link PublishedDocumentFactory} implementation that creates {@link DocumentModel} instead of simple proxies.
  *
  * @author tiry
  */
-public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDocumentFactory implements
-        PublishedDocumentFactory {
+public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDocumentFactory
+        implements PublishedDocumentFactory {
 
-    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode,
+            Map<String, String> params) {
 
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         doc.setPathInfo(targetNode.getPath(), "remote_doc_" + pss.generatePathSegment(doc));

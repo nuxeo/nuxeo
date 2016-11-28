@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 package org.nuxeo.ecm.platform.web.common.admin;
+
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.ACTIVATED_EVENT;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.PASSIVATED_EVENT;
 
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
@@ -27,10 +29,6 @@ import org.nuxeo.ecm.platform.api.login.RestrictedLoginHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
-
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.ACTIVATED_EVENT;
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.GLOBAL_INSTANCE_AVAILABILITY;
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatusManager.PASSIVATED_EVENT;
 
 /**
  * Listen for {@link AdministrativeStatus} changes and set the necessary flag in {@link AdminStatusHelper} so that web

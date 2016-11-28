@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,6 @@
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
-
-/*
- import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
- import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
-
- import java.util.Arrays;
- import java.util.Collections;
- import java.util.List;
- import java.util.Locale;
- import java.util.Map;
- import java.util.Set;
- import java.util.TreeSet;
- import java.util.concurrent.ConcurrentHashMap;
- import java.util.concurrent.CopyOnWriteArrayList;
-
- import org.nuxeo.common.utils.StringUtils;
- import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
- */
-
 package org.nuxeo.ecm.core.io.registry.context;
 
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
@@ -79,7 +60,7 @@ public class RenderingContextImpl implements RenderingContext {
 
     private CoreSession session = null;
 
-    private final Map<String, List<Object>> parameters = new ConcurrentHashMap<String, List<Object>>();
+    private final Map<String, List<Object>> parameters = new ConcurrentHashMap<>();
 
     private RenderingContextImpl() {
     }
@@ -179,12 +160,10 @@ public class RenderingContextImpl implements RenderingContext {
         } else if ((EMBED_ENRICHERS + separator + ENTITY_TYPE).toLowerCase().equals(paramKey)) {
             dirty.addAll(getParameters(MarshallingConstants.NXCONTENT_CATEGORY_HEADER));
         }
-        Set<String> result = new TreeSet<String>();
+        Set<String> result = new TreeSet<>();
         for (Object value : dirty) {
-            if (value instanceof String && value != null) {
-                for (String cleaned : org.nuxeo.common.utils.StringUtils.split((String) value, ',', true)) {
-                    result.add(cleaned);
-                }
+            if (value instanceof String) {
+                result.addAll(Arrays.asList(org.nuxeo.common.utils.StringUtils.split((String) value, ',', true)));
             }
         }
         return result;
@@ -235,7 +214,6 @@ public class RenderingContextImpl implements RenderingContext {
         return false;
     }
 
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public <T> List<T> getParameters(String name) {
@@ -246,9 +224,9 @@ public class RenderingContextImpl implements RenderingContext {
         List<T> values = (List<T>) parameters.get(realName);
         List<T> result;
         if (values != null) {
-            result = new ArrayList<T>(values);
+            result = new ArrayList<>(values);
         } else {
-            result = new ArrayList<T>();
+            result = new ArrayList<>();
         }
         if (WRAPPED_CONTEXT.toLowerCase().equals(realName)) {
             return result;
@@ -258,7 +236,7 @@ public class RenderingContextImpl implements RenderingContext {
                 return result;
             }
             if (wrapped instanceof List) {
-                for (Object element: (List) wrapped) {
+                for (Object element : (List) wrapped) {
                     try {
                         T casted = (T) element;
                         result.add(casted);
@@ -281,14 +259,14 @@ public class RenderingContextImpl implements RenderingContext {
     @Override
     public Map<String, List<Object>> getAllParameters() {
         // make a copy of the local parameters
-        Map<String, List<Object>> unModifiableParameters = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> unModifiableParameters = new HashMap<>();
         for (Map.Entry<String, List<Object>> entry : parameters.entrySet()) {
             String key = entry.getKey();
             List<Object> value = entry.getValue();
             if (value == null) {
                 unModifiableParameters.put(key, null);
             } else {
-                unModifiableParameters.put(key, new ArrayList<Object>(value));
+                unModifiableParameters.put(key, new ArrayList<>(value));
             }
         }
         return unModifiableParameters;
@@ -316,7 +294,7 @@ public class RenderingContextImpl implements RenderingContext {
         if (values == null) {
             parameters.remove(realName);
         }
-        parameters.put(realName, new CopyOnWriteArrayList<Object>(values));
+        parameters.put(realName, new CopyOnWriteArrayList<>(values));
     }
 
     @Override
@@ -333,14 +311,7 @@ public class RenderingContextImpl implements RenderingContext {
         if (values == null) {
             return;
         }
-        List<Object> currentValues = parameters.get(realName);
-        if (currentValues == null) {
-            currentValues = new CopyOnWriteArrayList<Object>();
-            parameters.put(realName, currentValues);
-        }
-        for (Object value : values) {
-            currentValues.add(value);
-        }
+        parameters.computeIfAbsent(realName, key -> new CopyOnWriteArrayList()).addAll(values);
     }
 
     static RenderingContextBuilder builder() {

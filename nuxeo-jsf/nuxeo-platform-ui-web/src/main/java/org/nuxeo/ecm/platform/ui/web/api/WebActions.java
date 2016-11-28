@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: WebActions.java 25545 2007-09-28 15:03:26Z btatar $
  */
-
 package org.nuxeo.ecm.platform.ui.web.api;
 
 import java.util.List;
@@ -35,42 +32,42 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
  */
 public interface WebActions {
 
-    public static final String NULL_TAB_ID = "";
+    String NULL_TAB_ID = "";
 
     /**
      * The category of actions for default tabs
      */
-    public static final String DEFAULT_TABS_CATEGORY = "VIEW_ACTION_LIST";
+    String DEFAULT_TABS_CATEGORY = "VIEW_ACTION_LIST";
 
     /**
      * The category of actions for main tabs
      *
      * @since 5.5
      */
-    public static final String MAIN_TABS_CATEGORY = "MAIN_TABS";
+    String MAIN_TABS_CATEGORY = "MAIN_TABS";
 
-    public static final String SUBTAB_CATEGORY_SUFFIX = "_sub_tab";
+    String SUBTAB_CATEGORY_SUFFIX = "_sub_tab";
 
     /**
      * Identifier of main tab for the "Documents management" area
      *
      * @since 5.5
      */
-    public static final String DOCUMENTS_MAIN_TAB_ID = "documents";
+    String DOCUMENTS_MAIN_TAB_ID = "documents";
 
     /**
      * Request parameter used for tab ids settings
      *
      * @since 5.5
      */
-    public static final String TAB_IDS_PARAMETER = "tabIds";
+    String TAB_IDS_PARAMETER = "tabIds";
 
     /**
      * Request parameter used for main tab id settings
      *
      * @since 5.5
      */
-    public static final String MAIN_TAB_ID_PARAMETER = "mainTabId";
+    String MAIN_TAB_ID_PARAMETER = "mainTabId";
 
     /**
      * Event raised when the current tab has changed, with 2 parameters: first parameter is a String representing the
@@ -79,7 +76,7 @@ public interface WebActions {
      *
      * @since 5.4.2
      */
-    public static final String CURRENT_TAB_CHANGED_EVENT = "currentTabChanged";
+    String CURRENT_TAB_CHANGED_EVENT = "currentTabChanged";
 
     /**
      * Event raised when the current tab is selected, with 2 parameters: first parameter is a String representing the
@@ -90,14 +87,14 @@ public interface WebActions {
      *
      * @since 5.6
      */
-    public static final String CURRENT_TAB_SELECTED_EVENT = "currentTabSelected";
+    String CURRENT_TAB_SELECTED_EVENT = "currentTabSelected";
 
     /**
      * Framework property to control ajaxified behaviour of document tabs.
      *
      * @since 5.8
      */
-    public static final String AJAX_TAB_PROPERTY = "nuxeo.jsf.useAjaxTabs";
+    String AJAX_TAB_PROPERTY = "nuxeo.jsf.useAjaxTabs";
 
     /**
      * Return actions in given document context for given category.

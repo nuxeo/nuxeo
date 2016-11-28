@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.net.URLStreamHandlerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 
 public class InlineURLFactory {
@@ -79,7 +79,7 @@ public class InlineURLFactory {
     }
 
     public static URL newURL(String mimetype, byte[] data) throws IOException {
-        return new URL("inline:".concat(mimetype).concat(";base64,".concat(Base64.encodeBytes(data))));
+        return new URL("inline:".concat(mimetype).concat(";base64,".concat(Base64.encodeBase64String(data))));
     }
 
     public static <T> T newObject(Class<T> clazz, URL url) throws IOException {
@@ -97,7 +97,7 @@ public class InlineURLFactory {
         @SuppressWarnings("unused")
         String mimetype = matcher.group(1);
         String data = matcher.group(2);
-        return Base64.decode(data);
+        return Base64.decodeBase64(data);
     }
 
 }

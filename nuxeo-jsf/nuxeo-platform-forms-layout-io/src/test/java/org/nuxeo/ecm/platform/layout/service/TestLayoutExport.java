@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +56,8 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import net.sf.json.JSONObject;
 
 /**
  * @author Anahide Tchertchian
@@ -106,15 +106,10 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     protected void checkLayoutTypeImport(String filename, boolean isCompat) throws Exception {
         JSONObject json = null;
-        InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename));
-        try {
+        try (InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename))) {
             byte[] bytes = FileUtils.readBytes(in);
             if (bytes.length != 0) {
                 json = JSONObject.fromObject(new String(bytes, "UTF-8"));
-            }
-        } finally {
-            if (in != null) {
-                in.close();
             }
         }
 
@@ -153,7 +148,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         File file = Framework.createTempFile("widgettypes-export", ".json");
         FileOutputStream out = new FileOutputStream(file);
-        List<WidgetTypeDefinition> wTypeDefs = new ArrayList<WidgetTypeDefinition>();
+        List<WidgetTypeDefinition> wTypeDefs = new ArrayList<>();
         wTypeDefs.add(wTypeDef);
         JSONLayoutExporter.export(wTypeDefs, out);
 
@@ -172,15 +167,10 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     protected void checkWidgetTypeImport(String filename, boolean isCompat) throws Exception {
         JSONObject json = null;
-        InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename));
-        try {
+        try (InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename))) {
             byte[] bytes = FileUtils.readBytes(in);
             if (bytes.length != 0) {
                 json = JSONObject.fromObject(new String(bytes, "UTF-8"));
-            }
-        } finally {
-            if (in != null) {
-                in.close();
             }
         }
 

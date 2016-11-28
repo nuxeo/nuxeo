@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     troger
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.ui.web.htmleditor.service;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -68,7 +65,7 @@ public class HtmlEditorPluginDescriptor {
         this.toolbarName = toolbarName;
     }
 
-    public Boolean getRemove() {
+    public boolean isRemove() {
         return remove;
     }
 

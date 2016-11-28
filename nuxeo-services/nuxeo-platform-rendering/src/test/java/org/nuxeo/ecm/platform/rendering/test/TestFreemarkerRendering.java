@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.rendering.test;
 
 import static org.junit.Assert.assertEquals;
@@ -67,8 +64,8 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
 
         WikiTransformer tr = new WikiTransformer();
         tr.getSerializer().addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        tr.getSerializer().addFilter(
-                new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+        tr.getSerializer()
+          .addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
         tr.getSerializer().registerMacro(new FreemarkerMacro());
         engine.setSharedVariable("wiki", tr);
     }
@@ -85,8 +82,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         DocumentPart documentPart = doc1.getPart("dublincore");
         documentPart.get("title").setValue("The dublincore title for doc1");
         documentPart.get("description").setValue("A descripton *with* wiki code and a WikiName");
-        Blob blob = new URLBlob(TestFreemarkerRendering.class.getClassLoader().getResource(
-                "testdata/blob.wiki"));
+        Blob blob = new URLBlob(TestFreemarkerRendering.class.getClassLoader().getResource("testdata/blob.wiki"));
         doc1.getPart("dublincore").get("content").setValue(blob);
         // also add something prefetched (dm not loaded)
         Prefetch prefetch = new Prefetch();
@@ -99,7 +95,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         engine.setSharedVariable("doc", doc2);
 
         StringWriter writer = new StringWriter();
-        Map<String, Object> input = new HashMap<String, Object>();
+        Map<String, Object> input = new HashMap<>();
         input.put("doc", doc1);
 
         // double s = System.currentTimeMillis();
@@ -127,7 +123,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
     @Test
     public void testUrlEscaping() throws Exception {
         StringWriter writer = new StringWriter();
-        Map<String, Object> input = new HashMap<String, Object>();
+        Map<String, Object> input = new HashMap<>();
         input.put("parameter", "\u00e9/");
         engine.render("testdata/url.ftl", input, writer);
         assertEquals("<p>http://google.com?q=%C3%A9%2F</p>", writer.toString());

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Exposes {@link Batch} as a JAX-RS resource
  *
- * @deprecated Use {@link org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject} instead.
+ * @deprecated since 7.4, use {@link org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject} instead.
  * @author Tiry (tdelprat@nuxeo.com)
  * @author Antoine Taillefer
  */
@@ -176,12 +176,14 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         if (StringUtils.isEmpty(batchId)) {
             batchId = bm.initBatch();
         } else if (!bm.hasBatch(batchId)) {
-            if (!Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
-                    BatchManagerComponent.CLIENT_BATCH_ID_FLAG)) {
+            if (!Framework.getService(ConfigurationService.class)
+                          .isBooleanPropertyTrue(BatchManagerComponent.CLIENT_BATCH_ID_FLAG)) {
                 String errorMsg = String.format(
                         "Cannot upload a file with a client-side generated batch id, please use new upload API or set configuration property %s to true (not recommended)",
                         BatchManagerComponent.CLIENT_BATCH_ID_FLAG);
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + errorMsg + "\"}").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                               .entity("{\"error\" : \"" + errorMsg + "\"}")
+                               .build();
             } else {
                 log.warn(String.format(
                         "Allowing to initialize upload batch with a client-side generated id since configuration property %s is set to true but this is not recommended, please use new upload API instead",
@@ -190,7 +192,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         }
         bm.addStream(batchId, idx, is, fileName, mimeType);
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put("batchId", batchId);
         result.put("uploaded", "true");
         return buildFromMap(result, useIFrame);
@@ -211,13 +213,9 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         final BatchManager bm = Framework.getLocalService(BatchManager.class);
         // register commit hook for cleanup
         request.setAttribute(REQUEST_BATCH_ID, batchId);
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
-            @Override
-            public void cleanup(HttpServletRequest req) {
-                String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
-                bm.clean(bid);
-            }
-
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
+            String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
+            bm.clean(bid);
         });
 
         try {
@@ -235,7 +233,9 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
             if (WebException.isSecurityError(e)) {
                 return Response.status(Status.FORBIDDEN).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
             } else {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                               .entity("{\"error\" : \"" + e.getMessage() + "\"}")
+                               .build();
             }
         }
     }
@@ -274,7 +274,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         result.put("batchId", batchId);
         result.put("dropped", "true");
         return buildFromMap(result);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.core.api.security;
 
 import org.nuxeo.runtime.api.login.LoginComponent;
@@ -29,81 +26,85 @@ import org.nuxeo.runtime.api.login.LoginComponent;
 // TODO: make it a constant utility class instead of an interface.
 public interface SecurityConstants {
 
-    static final String SYSTEM_USERNAME = LoginComponent.SYSTEM_USERNAME;
+    String SYSTEM_USERNAME = LoginComponent.SYSTEM_USERNAME;
 
     /**
-     * @deprecated administrator user names are configurable on user manager
+     * @deprecated since 5.3.1 administrator user names are configurable on user manager
+     * Too many references to this constant, no clean for LTS 2017
      */
     @Deprecated
-    static final String ADMINISTRATOR = "Administrator";
+    String ADMINISTRATOR = "Administrator";
 
     /**
-     * @deprecated anonymous user name is configurable on user manager
+     * @deprecated since 5.3.1 anonymous user name is configurable on user manager
+     * Too many references to this constant, no clean for LTS 2017
      */
     @Deprecated
-    static final String ANONYMOUS = "anonymous";
+    String ANONYMOUS = "anonymous";
 
     /**
-     * @deprecated administrators groups are configurable on user manager
+     * @deprecated since 5.3.1 administrators groups are configurable on user manager
+     * Too many references to this constant, no clean for LTS 2017
      */
     @Deprecated
-    static final String ADMINISTRATORS = "administrators";
+    String ADMINISTRATORS = "administrators";
 
     /**
-     * @deprecated default group is configurable on user manager
+     * @deprecated since 5.3.1 default group is configurable on user manager
+     * Too many references to this constant, no clean for LTS 2017
      */
     @Deprecated
-    static final String MEMBERS = "members";
+    String MEMBERS = "members";
 
-    static final String EVERYONE = "Everyone";
+    String EVERYONE = "Everyone";
 
-    static final String EVERYTHING = "Everything";
+    String EVERYTHING = "Everything";
 
-    static final String RESTRICTED_READ = "RestrictedRead";
+    String RESTRICTED_READ = "RestrictedRead";
 
-    static final String READ = "Read";
+    String READ = "Read";
 
-    static final String WRITE = "Write";
+    String WRITE = "Write";
 
-    static final String READ_WRITE = "ReadWrite";
+    String READ_WRITE = "ReadWrite";
 
-    static final String REMOVE = "Remove";
+    String REMOVE = "Remove";
 
-    static final String VERSION = "Version";
+    String VERSION = "Version";
 
-    static final String READ_VERSION = "ReadVersion";
+    String READ_VERSION = "ReadVersion";
 
-    static final String WRITE_VERSION = "WriteVersion";
+    String WRITE_VERSION = "WriteVersion";
 
-    static final String BROWSE = "Browse";
+    String BROWSE = "Browse";
 
-    static final String WRITE_SECURITY = "WriteSecurity";
+    String WRITE_SECURITY = "WriteSecurity";
 
-    static final String READ_SECURITY = "ReadSecurity";
+    String READ_SECURITY = "ReadSecurity";
 
-    static final String READ_PROPERTIES = "ReadProperties";
+    String READ_PROPERTIES = "ReadProperties";
 
-    static final String WRITE_PROPERTIES = "WriteProperties";
+    String WRITE_PROPERTIES = "WriteProperties";
 
-    static final String READ_CHILDREN = "ReadChildren";
+    String READ_CHILDREN = "ReadChildren";
 
-    static final String ADD_CHILDREN = "AddChildren";
+    String ADD_CHILDREN = "AddChildren";
 
-    static final String REMOVE_CHILDREN = "RemoveChildren";
+    String REMOVE_CHILDREN = "RemoveChildren";
 
-    static final String READ_LIFE_CYCLE = "ReadLifeCycle";
+    String READ_LIFE_CYCLE = "ReadLifeCycle";
 
-    static final String WRITE_LIFE_CYCLE = "WriteLifeCycle";
+    String WRITE_LIFE_CYCLE = "WriteLifeCycle";
 
-    static final String MANAGE_WORKFLOWS = "ManageWorkflows";
+    String MANAGE_WORKFLOWS = "ManageWorkflows";
 
-    static final String VIEW_WORKLFOW = "ReviewParticipant";
+    String VIEW_WORKLFOW = "ReviewParticipant";
 
-    static final String UNLOCK = "Unlock";
+    String UNLOCK = "Unlock";
 
     /**
      * Flag that can be used as principal to mark an unsupported ACL.
      */
-    static final String UNSUPPORTED_ACL = "_UNSUPPORTED_ACL_";
+    String UNSUPPORTED_ACL = "_UNSUPPORTED_ACL_";
 
 }

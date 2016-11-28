@@ -45,20 +45,8 @@ public class ThreadEntry implements Serializable {
         return comment;
     }
 
-    // TODO: remove for 5.4 unless there is an issue with that
-    @Deprecated
-    public void setComment(DocumentModel comment) {
-        this.comment = comment;
-    }
-
     public int getDepth() {
         return depth;
-    }
-
-    // TODO: remove for 5.4 unless there is an issue with that
-    @Deprecated
-    public void setDepth(int depth) {
-        this.depth = depth;
     }
 
     public String getId() {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  *
  * $Id$
  */
-
 package org.nuxeo.ecm.platform.ui.web.htmleditor.service;
 
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
 
     @Override
     public void activate(ComponentContext context) {
-        pluginsDescriptors = new HashMap<String, HtmlEditorPluginDescriptor>();
+        pluginsDescriptors = new HashMap<>();
     }
 
     @Override
@@ -57,7 +56,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PLUGINS_EXTENSION_POINT.equals(extensionPoint)) {
             final HtmlEditorPluginDescriptor descriptor = (HtmlEditorPluginDescriptor) contribution;
-            if (descriptor.getRemove() && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
+            if (descriptor.isRemove() && pluginsDescriptors.containsKey(descriptor.getPluginName())) {
                 pluginsDescriptors.remove(descriptor.getPluginName());
             } else {
                 pluginsDescriptors.put(descriptor.getPluginName(), descriptor);
@@ -75,7 +74,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
 
     @Override
     public List<String> getPluginsName() {
-        return new ArrayList<String>(pluginsDescriptors.keySet());
+        return new ArrayList<>(pluginsDescriptors.keySet());
     }
 
     @Override
@@ -84,7 +83,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
     }
 
     public List<String> getToolbarsButtonsNames() {
-        return new ArrayList<String>(pluginsDescriptors.keySet());
+        return new ArrayList<>(pluginsDescriptors.keySet());
     }
 
     @Override
@@ -94,16 +93,12 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
 
     @Override
     public Map<String, String> getToolbarsButtons() {
-        final Map<String, String> result = new HashMap<String, String>();
-        final Map<String, List<String>> temp = new HashMap<String, List<String>>();
+        final Map<String, String> result = new HashMap<>();
+        final Map<String, List<String>> temp = new HashMap<>();
 
         for (final HtmlEditorPluginDescriptor descriptor : pluginsDescriptors.values()) {
-            List<String> buttonsList = temp.get(descriptor.getToolbarName());
-            if (buttonsList == null) {
-                buttonsList = new ArrayList<String>();
-            }
-            buttonsList.add(descriptor.getPluginButtonName());
-            temp.put(descriptor.getToolbarName(), buttonsList);
+            temp.computeIfAbsent(descriptor.getToolbarName(), key -> new ArrayList<>())
+                .add(descriptor.getPluginButtonName());
         }
 
         for (final Map.Entry<String, List<String>> entry : temp.entrySet()) {

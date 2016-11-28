@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -282,7 +281,7 @@ public class SQLSession implements Session {
     public List<Document> getProxies(Document document, Document parent) {
         List<Node> proxyNodes = session.getProxies(((SQLDocument) document).getNode(),
                 parent == null ? null : ((SQLDocument) parent).getNode());
-        List<Document> proxies = new ArrayList<Document>(proxyNodes.size());
+        List<Document> proxies = new ArrayList<>(proxyNodes.size());
         for (Node proxyNode : proxyNodes) {
             proxies.add(newDocument(proxyNode));
         }
@@ -301,9 +300,8 @@ public class SQLSession implements Session {
     @Override
     public Document importDocument(String uuid, Document parent, String name, String typeName,
             Map<String, Serializable> properties) {
-        assert Model.PROXY_TYPE == CoreSession.IMPORT_PROXY_TYPE;
         boolean isProxy = typeName.equals(Model.PROXY_TYPE);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         Long pos = null; // TODO pos
         if (!isProxy) {
             // version & live document
@@ -501,7 +499,7 @@ public class SQLSession implements Session {
 
     // called by SQLQueryResult iterator
     protected List<Document> getDocumentsById(List<Serializable> ids) {
-        List<Document> docs = new ArrayList<Document>(ids.size());
+        List<Document> docs = new ArrayList<>(ids.size());
         List<Node> nodes = session.getNodesByIds(ids);
         for (int index = 0; index < ids.size(); ++index) {
             Node eachNode = nodes.get(index);
@@ -561,7 +559,7 @@ public class SQLSession implements Session {
 
     protected List<Document> getChildren(Node node) {
         List<Node> nodes = session.getChildren(node, null, false);
-        List<Document> children = new ArrayList<Document>(nodes.size());
+        List<Document> children = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             try {
                 children.add(newDocument(n));
@@ -642,7 +640,7 @@ public class SQLSession implements Session {
     protected List<Document> getVersions(String versionSeriesId) {
         Serializable vid = idFromString(versionSeriesId);
         List<Node> versionNodes = session.getVersions(vid);
-        List<Document> versions = new ArrayList<Document>(versionNodes.size());
+        List<Document> versions = new ArrayList<>(versionNodes.size());
         for (Node versionNode : versionNodes) {
             versions.add(newDocument(versionNode));
         }
@@ -789,7 +787,7 @@ public class SQLSession implements Session {
 
     // unit tested
     protected static ACLRow[] acpToAclRows(ACP acp) {
-        List<ACLRow> aclrows = new LinkedList<ACLRow>();
+        List<ACLRow> aclrows = new LinkedList<>();
         for (ACL acl : acp.getACLs()) {
             String name = acl.getName();
             if (name.equals(ACL.INHERITED_ACL)) {
@@ -805,8 +803,8 @@ public class SQLSession implements Session {
 
     // unit tested
     protected static ACLRow[] updateAclRows(ACLRow[] aclrows, ACP acp) {
-        List<ACLRow> newaclrows = new LinkedList<ACLRow>();
-        Map<String, ACL> aclmap = new HashMap<String, ACL>();
+        List<ACLRow> newaclrows = new LinkedList<>();
+        Map<String, ACL> aclmap = new HashMap<>();
         for (ACL acl : acp.getACLs()) {
             String name = acl.getName();
             if (ACL.INHERITED_ACL.equals(name)) {
@@ -827,8 +825,8 @@ public class SQLSession implements Session {
                 // start next round
                 name = aclrow.name;
                 ACL acl = aclmap.remove(name);
-                aces = acl == null ? Collections.<ACE> emptyList() : new LinkedList<ACE>(Arrays.asList(acl.getACEs()));
-                aceKeys = new HashSet<String>();
+                aces = acl == null ? Collections.<ACE> emptyList() : new LinkedList<>(Arrays.asList(acl.getACEs()));
+                aceKeys = new HashSet<>();
                 for (ACE ace : aces) {
                     aceKeys.add(getACEkey(ace));
                 }

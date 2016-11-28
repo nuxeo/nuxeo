@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Nuxeo
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.dom4j.dom.DOMDocument;
@@ -89,8 +88,8 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
             action = UNLOCK;
         }
 
-        String response = "";
-        String code = "";
+        String response;
+        String code;
         if (action.equals(LOCK)) {
             try {
                 Lock lock = session.getLockInfo(targetDocRef);

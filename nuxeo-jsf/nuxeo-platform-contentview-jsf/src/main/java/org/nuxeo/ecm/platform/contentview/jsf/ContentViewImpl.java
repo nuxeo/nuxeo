@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,12 +232,8 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     public ContentViewLayout getCurrentResultLayout() {
         // resolve binding if it is set
         if (!currentResultLayoutSet && !StringUtils.isBlank(resultLayoutBinding)) {
-            Object res = resolveWithSearchDocument(new Function<FacesContext, Object>() {
-                @Override
-                public Object apply(FacesContext ctx) {
-                    return ComponentTagUtils.resolveElExpression(ctx, resultLayoutBinding);
-                }
-            });
+            Object res = resolveWithSearchDocument(
+                    ctx -> ComponentTagUtils.resolveElExpression(ctx, resultLayoutBinding));
             if (res != null && res instanceof String) {
                 setCurrentResultLayout((String) res);
                 currentResultLayoutSet = true;
@@ -257,13 +253,10 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
 
     public void setCurrentResultLayout(final ContentViewLayout layout, boolean resetLayoutColumn) {
         if (!isBlank(resultLayoutBinding) && ComponentTagUtils.isStrictValueReference(resultLayoutBinding)) {
-            resolveWithSearchDocument(new Function<FacesContext, Object>() {
-                @Override
-                public Object apply(FacesContext ctx) {
-                    ComponentTagUtils.applyValueExpression(ctx, resultLayoutBinding,
-                            layout == null ? null : layout.getName());
-                    return null;
-                }
+            resolveWithSearchDocument(ctx -> {
+                ComponentTagUtils.applyValueExpression(ctx, resultLayoutBinding,
+                        layout == null ? null : layout.getName());
+                return null;
             });
         }
         // still set current result layout value
@@ -569,16 +562,13 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     public List<String> getCurrentResultLayoutColumns() {
         // always resolve binding if it is set
         if (!StringUtils.isBlank(resultColumnsBinding)) {
-            Object res = resolveWithSearchDocument(new Function<FacesContext, Object>() {
-                @Override
-                public Object apply(FacesContext ctx) {
-                    Object value = ComponentTagUtils.resolveElExpression(ctx, resultColumnsBinding);
-                    if (value != null && !(value instanceof List)) {
-                        log.error("Error processing expression '" + resultColumnsBinding + "', result is not a List: "
-                                + value);
-                    }
-                    return value;
+            Object res = resolveWithSearchDocument(ctx -> {
+                Object value = ComponentTagUtils.resolveElExpression(ctx, resultColumnsBinding);
+                if (value != null && !(value instanceof List)) {
+                    log.error("Error processing expression '" + resultColumnsBinding + "', result is not a List: "
+                            + value);
                 }
+                return value;
             });
             if (res != null && res instanceof List) {
                 return ((List) res).isEmpty() ? null : (List) res;
@@ -593,12 +583,9 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
             // set local values
             currentResultLayoutColumns = resultColumns;
         } else {
-            resolveWithSearchDocument(new Function<FacesContext, Object>() {
-                @Override
-                public Object apply(FacesContext ctx) {
-                    ComponentTagUtils.applyValueExpression(ctx, resultColumnsBinding, resultColumns);
-                    return null;
-                }
+            resolveWithSearchDocument(ctx -> {
+                ComponentTagUtils.applyValueExpression(ctx, resultColumnsBinding, resultColumns);
+                return null;
             });
         }
     }
@@ -624,7 +611,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
             if (value == null) {
                 return null;
             }
-            List<SortInfo> res = new ArrayList<SortInfo>();
+            List<SortInfo> res = new ArrayList<>();
             List listValue = (List) value;
             for (Object listItem : listValue) {
                 if (listItem instanceof SortInfo) {

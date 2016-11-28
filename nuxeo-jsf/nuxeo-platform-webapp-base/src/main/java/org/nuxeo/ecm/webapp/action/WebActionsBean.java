@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  *     Anahide Tchertchian
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.webapp.action;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;

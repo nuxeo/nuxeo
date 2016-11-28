@@ -17,8 +17,6 @@
  *     Nuxeo - initial API and implementation
  *     Julien Anguenot <ja@nuxeo.com>
  *     Estelle Giuly <egiuly@nuxeo.com>
- *
- * $Id: MimetypeRegistry.java 20731 2007-06-18 15:13:32Z ogrisel $
  */
 package org.nuxeo.ecm.platform.mimetype.interfaces;
 

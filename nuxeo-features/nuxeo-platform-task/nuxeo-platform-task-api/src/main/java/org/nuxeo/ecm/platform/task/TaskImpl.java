@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +49,7 @@ public class TaskImpl implements Task {
     public void addComment(String author, String text) {
         List<Map<String, Serializable>> existingTasks = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
         if (existingTasks == null) {
-            existingTasks = new ArrayList<Map<String, Serializable>>();
+            existingTasks = new ArrayList<>();
         }
         existingTasks.add(new TaskComment(author, text));
         setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME, existingTasks);
@@ -83,7 +84,7 @@ public class TaskImpl implements Task {
     public List<TaskComment> getComments() {
         List<Map<String, Serializable>> taskCommentsProperty = getPropertyValue(
                 TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
-        List<TaskComment> taskComments = new ArrayList<TaskComment>(taskCommentsProperty.size());
+        List<TaskComment> taskComments = new ArrayList<>(taskCommentsProperty.size());
         for (Map<String, Serializable> taskCommentMap : taskCommentsProperty) {
             taskComments.add(new TaskComment(taskCommentMap));
         }
@@ -162,7 +163,7 @@ public class TaskImpl implements Task {
     protected <T> T getPropertyValue(String propertyName) {
         Serializable value = doc.getPropertyValue(propertyName);
         if (value instanceof Object[]) {
-            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
+            value = new ArrayList<>(Arrays.asList((Object[]) value));
         }
         return (T) value;
     }
@@ -196,7 +197,7 @@ public class TaskImpl implements Task {
     @Override
     public Map<String, String> getVariables() {
         List<Map<String, String>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
-        Map<String, String> variableMap = new HashMap<String, String>(variables.size());
+        Map<String, String> variableMap = new HashMap<>(variables.size());
         for (Map<String, String> map : variables) {
             variableMap.put(map.get("key"), map.get("value"));
         }
@@ -322,9 +323,9 @@ public class TaskImpl implements Task {
     public void setVariable(String key, String value) {
         List<Map<String, Serializable>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variables == null) {
-            variables = new ArrayList<Map<String, Serializable>>();
+            variables = new ArrayList<>();
         }
-        Map<String, Serializable> variableMap = new HashMap<String, Serializable>(2);
+        Map<String, Serializable> variableMap = new HashMap<>(2);
         variableMap.put("key", key);
         variableMap.put("value", value);
         variables.add(variableMap);
@@ -336,15 +337,14 @@ public class TaskImpl implements Task {
         List<Map<String, Serializable>> variablesProperty = getPropertyValue(
                 TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variablesProperty == null) {
-            variablesProperty = new ArrayList<Map<String, Serializable>>();
+            variablesProperty = new ArrayList<>();
         }
         Map<String, Serializable> variable;
-        for (String key : variables.keySet()) {
-            Object value = variables.get(key);
-            if (value instanceof String) {
-                variable = new HashMap<String, Serializable>(1);
-                variable.put("key", key);
-                variable.put("value", (Serializable) value);
+        for (Entry<String, String> entry : variables.entrySet()) {
+            if (entry.getValue() != null) {
+                variable = new HashMap<>(2);
+                variable.put("key", entry.getKey());
+                variable.put("value", entry.getValue());
                 variablesProperty.add(variable);
             }
         }

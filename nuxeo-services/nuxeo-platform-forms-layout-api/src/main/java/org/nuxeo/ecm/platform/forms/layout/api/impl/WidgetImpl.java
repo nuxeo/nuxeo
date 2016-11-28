@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: WidgetImpl.java 28478 2008-01-04 12:53:58Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.forms.layout.api.impl;
 
 import java.io.Serializable;
@@ -170,6 +167,7 @@ public class WidgetImpl implements Widget {
         this.renderingInfos = renderingInfos;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -186,26 +184,32 @@ public class WidgetImpl implements Widget {
         return intValue.toString();
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getLayoutName() {
         return layoutName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getMode() {
         return mode;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public String getTypeCategory() {
         return typeCategory;
     }
@@ -214,6 +218,7 @@ public class WidgetImpl implements Widget {
         this.typeCategory = typeCategory;
     }
 
+    @Override
     public String getLabel() {
         if (label == null) {
             // compute default label name
@@ -222,14 +227,17 @@ public class WidgetImpl implements Widget {
         return label;
     }
 
+    @Override
     public String getHelpLabel() {
         return helpLabel;
     }
 
+    @Override
     public boolean isTranslated() {
         return translated;
     }
 
+    @Override
     public boolean isHandlingLabels() {
         Map<String, Serializable> controls = getControls();
         if (controls != null && controls.containsKey("handleLabels")) {
@@ -242,6 +250,7 @@ public class WidgetImpl implements Widget {
         return handlingLabels;
     }
 
+    @Override
     public Map<String, Serializable> getProperties() {
         if (properties == null) {
             return Collections.emptyMap();
@@ -249,6 +258,7 @@ public class WidgetImpl implements Widget {
         return Collections.unmodifiableMap(properties);
     }
 
+    @Override
     public Serializable getProperty(String name) {
         if (properties != null) {
             return properties.get(name);
@@ -256,9 +266,10 @@ public class WidgetImpl implements Widget {
         return null;
     }
 
+    @Override
     public void setProperty(String name, Serializable value) {
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
         properties.put(name, value);
     }
@@ -282,7 +293,7 @@ public class WidgetImpl implements Widget {
     @Override
     public void setControl(String name, Serializable value) {
         if (controls == null) {
-            controls = new HashMap<String, Serializable>();
+            controls = new HashMap<>();
         }
         controls.put(name, value);
     }
@@ -294,30 +305,37 @@ public class WidgetImpl implements Widget {
         this.controls = controls;
     }
 
+    @Override
     public boolean isRequired() {
         return required;
     }
 
+    @Override
     public FieldDefinition[] getFieldDefinitions() {
         return fields;
     }
 
+    @Override
     public Widget[] getSubWidgets() {
         return subWidgets;
     }
 
+    @Override
     public String getValueName() {
         return valueName;
     }
 
+    @Override
     public void setValueName(String valueName) {
         this.valueName = valueName;
     }
 
+    @Override
     public int getLevel() {
         return level;
     }
 
+    @Override
     public WidgetSelectOption[] getSelectOptions() {
         return selectOptions;
     }
@@ -327,6 +345,7 @@ public class WidgetImpl implements Widget {
         return renderingInfos;
     }
 
+    @Override
     public boolean isDynamic() {
         return dynamic;
     }
@@ -335,6 +354,7 @@ public class WidgetImpl implements Widget {
         this.dynamic = dynamic;
     }
 
+    @Override
     public boolean isGlobal() {
         return global;
     }
@@ -343,6 +363,7 @@ public class WidgetImpl implements Widget {
         this.global = global;
     }
 
+    @Override
     public WidgetDefinition getDefinition() {
         return definition;
     }

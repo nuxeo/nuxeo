@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
- *
  */
 package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
 
@@ -37,6 +34,10 @@ public interface PictureTilesAdapter {
 
     void setDoc(DocumentModel doc);
 
+    /**
+     * @deprecated since 9.1 as filename is now hold by the blob and no longer exist beside it
+     */
+    @Deprecated
     void setFileName(String fileName);
 
     void cleanup();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     troger
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.preview.codec;
 
 import java.util.ArrayList;
@@ -67,7 +64,7 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
             String uuid = m.group(2);
             final DocumentRef docRef = new IdRef(uuid);
 
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             final String property = m.group(3);
             params.put(PROPERTY_PATH_KEY, property);
 
@@ -85,12 +82,8 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
         String property = docView.getParameter(PROPERTY_PATH_KEY);
 
         // NXP-11215 Avoid NPE with not persisted documentModel
-        if (docLoc.getDocRef() == null) {
-            return null;
-        }
-
-        if (docLoc != null) {
-            List<String> items = new ArrayList<String>();
+        if (docLoc != null && docLoc.getDocRef() != null) {
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             items.add(docLoc.getServerName());
             items.add(docLoc.getDocRef().toString());
@@ -98,7 +91,7 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
             String uri = StringUtils.join(items, "/");
             uri += '/';
 
-            Map<String, String> requestParams = new HashMap<String, String>(docView.getParameters());
+            Map<String, String> requestParams = new HashMap<>(docView.getParameters());
             requestParams.remove(PROPERTY_PATH_KEY);
             return URIUtils.addParametersToURIQuery(uri, requestParams);
         }

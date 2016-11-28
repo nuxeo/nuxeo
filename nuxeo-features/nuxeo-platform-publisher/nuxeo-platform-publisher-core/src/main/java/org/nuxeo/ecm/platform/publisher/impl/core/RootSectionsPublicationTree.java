@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
  * Contributors:
  *     Thomas Roger
  */
-
 package org.nuxeo.ecm.platform.publisher.impl.core;
-
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
-import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
+import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
+import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -55,11 +56,11 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
                 useRootSections = false;
                 return super.getChildrenNodes();
             }
-            List<PublicationNode> publicationNodes = new ArrayList<PublicationNode>();
+            List<PublicationNode> publicationNodes = new ArrayList<>();
             for (DocumentModel rootSection : rootSections) {
                 if (isPublicationNode(rootSection)) {
-                    publicationNodes.add(new CoreFolderPublicationNode(rootSection, getConfigName(), sid, rootNode,
-                            factory));
+                    publicationNodes.add(
+                            new CoreFolderPublicationNode(rootSection, getConfigName(), sid, rootNode, factory));
                 }
             }
             return publicationNodes;

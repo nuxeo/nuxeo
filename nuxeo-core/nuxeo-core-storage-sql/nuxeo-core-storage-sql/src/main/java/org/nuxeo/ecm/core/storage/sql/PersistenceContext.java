@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
@@ -166,7 +167,7 @@ public class PersistenceContext {
         hierComplex = new SelectionContext(SelectionType.CHILDREN, Boolean.TRUE, mapper, this);
         hierNonComplex = new SelectionContext(SelectionType.CHILDREN, Boolean.FALSE, mapper, this);
         seriesVersions = new SelectionContext(SelectionType.SERIES_VERSIONS, null, mapper, this);
-        selections = new ArrayList<SelectionContext>(Arrays.asList(hierComplex, hierNonComplex, seriesVersions));
+        selections = new ArrayList<>(Arrays.asList(hierComplex, hierNonComplex, seriesVersions));
         if (model.proxiesEnabled) {
             seriesProxies = new SelectionContext(SelectionType.SERIES_PROXIES, null, mapper, this);
             targetProxies = new SelectionContext(SelectionType.TARGET_PROXIES, null, mapper, this);
@@ -181,18 +182,20 @@ public class PersistenceContext {
         // they need to be referenced, as the underlying mapper also has its own
         // cache
         pristine = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
-        modified = new HashMap<RowId, Fragment>();
+        modified = new HashMap<>();
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
-        createdIds = new LinkedHashSet<Serializable>();
-        cacheCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(),
-                "caches", "count"));
-        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(),
-                "caches", "hit"));
+        createdIds = new LinkedHashSet<>();
+        cacheCount = registry.counter(
+                MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(), "caches", "count"));
+        cacheHitCount = registry.counter(
+                MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(), "caches", "hit"));
         try {
-            bigSelWarnThreshold = Long.parseLong(Framework.getProperty(SEL_WARN_THRESHOLD_PROP, SEL_WARN_THRESHOLD_DEFAULT));
+            bigSelWarnThreshold = Long.parseLong(
+                    Framework.getProperty(SEL_WARN_THRESHOLD_PROP, SEL_WARN_THRESHOLD_DEFAULT));
         } catch (NumberFormatException e) {
-            log.error("Invalid value for " + SEL_WARN_THRESHOLD_PROP + ": " + Framework.getProperty(SEL_WARN_THRESHOLD_PROP));
+            log.error("Invalid value for " + SEL_WARN_THRESHOLD_PROP + ": "
+                    + Framework.getProperty(SEL_WARN_THRESHOLD_PROP));
         }
     }
 
@@ -359,7 +362,7 @@ public class PersistenceContext {
                 if (Model.HIER_TABLE_NAME.equals(tableName) && fragment.getId().equals(docId)) {
                     // deleting the document, record this
                     if (deleted == null) {
-                        deleted = new HashSet<Serializable>();
+                        deleted = new HashSet<>();
                     }
                     deleted.add(docId);
                 }
@@ -586,10 +589,10 @@ public class PersistenceContext {
      * Fragments not found are not returned if {@code allowAbsent} is {@code false}.
      */
     protected List<Fragment> getFromMapper(Collection<RowId> rowIds, boolean allowAbsent, boolean cacheOnly) {
-        List<Fragment> res = new ArrayList<Fragment>(rowIds.size());
+        List<Fragment> res = new ArrayList<>(rowIds.size());
 
         // find fragments we really want to fetch
-        List<RowId> todo = new ArrayList<RowId>(rowIds.size());
+        List<RowId> todo = new ArrayList<>(rowIds.size());
         for (RowId rowId : rowIds) {
             if (isIdNew(rowId.id)) {
                 // the id has not been saved, so nothing exists yet in the
@@ -632,8 +635,8 @@ public class PersistenceContext {
         }
 
         // find those already in the context
-        List<Fragment> res = new ArrayList<Fragment>(rowIds.size());
-        List<RowId> todo = new LinkedList<RowId>();
+        List<Fragment> res = new ArrayList<>(rowIds.size());
+        List<RowId> todo = new LinkedList<>();
         for (RowId rowId : rowIds) {
             Fragment fragment = getIfPresent(rowId);
             if (fragment == null) {
@@ -672,7 +675,7 @@ public class PersistenceContext {
      * @return the list of fragments
      */
     protected List<Fragment> getFragmentsFromFetchedRows(List<? extends RowId> rowIds, boolean allowAbsent) {
-        List<Fragment> fragments = new ArrayList<Fragment>(rowIds.size());
+        List<Fragment> fragments = new ArrayList<>(rowIds.size());
         for (RowId rowId : rowIds) {
             Fragment fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
             if (fragment != null) {
@@ -802,8 +805,8 @@ public class PersistenceContext {
      */
     public void removePropertyNode(SimpleFragment hierFragment) {
         // collect children
-        Deque<SimpleFragment> todo = new LinkedList<SimpleFragment>();
-        List<SimpleFragment> children = new LinkedList<SimpleFragment>();
+        Deque<SimpleFragment> todo = new LinkedList<>();
+        List<SimpleFragment> children = new LinkedList<>();
         todo.add(hierFragment);
         while (!todo.isEmpty()) {
             SimpleFragment fragment = todo.removeFirst();
@@ -1027,11 +1030,7 @@ public class PersistenceContext {
     }
 
     private List<Serializable> fragmentsIds(List<? extends Fragment> fragments) {
-        List<Serializable> ids = new ArrayList<Serializable>(fragments.size());
-        for (Fragment fragment : fragments) {
-            ids.add(fragment.getId());
-        }
-        return ids;
+        return fragments.stream().map(Fragment::getId).collect(Collectors.toList());
     }
 
     /*
@@ -1068,8 +1067,8 @@ public class PersistenceContext {
      * @param fetch {@code true} if we can use the database, {@code false} if only caches should be used
      */
     public PathAndId getPathOrMissingParentId(SimpleFragment hierFragment, boolean fetch) {
-        LinkedList<String> list = new LinkedList<String>();
-        Serializable parentId = null;
+        LinkedList<String> list = new LinkedList<>();
+        Serializable parentId;
         while (true) {
             String name = hierFragment.getString(Model.HIER_CHILD_NAME_KEY);
             if (name == null) {
@@ -1265,7 +1264,8 @@ public class PersistenceContext {
         Serializable pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new DocumentExistsException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
+                throw new DocumentExistsException(
+                        "Cannot " + op + " a node under itself: " + parentId + " is under " + id);
             }
             SimpleFragment p = getHier(pid, false);
             if (p == null) {
@@ -1345,7 +1345,7 @@ public class PersistenceContext {
         // invalidate child in other sessions' children Selection
         markInvalidated(copyResult.invalidations);
         // read new proxies in this session (updates Selections)
-        List<RowId> rowIds = new ArrayList<RowId>();
+        List<RowId> rowIds = new ArrayList<>();
         for (Serializable proxyId : copyResult.proxyIds) {
             rowIds.add(new RowId(Model.PROXY_TABLE_NAME, proxyId));
         }

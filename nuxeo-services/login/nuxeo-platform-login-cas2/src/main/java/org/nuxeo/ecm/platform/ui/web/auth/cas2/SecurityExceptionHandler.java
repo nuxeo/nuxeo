@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
+
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -36,8 +37,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
 
 public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
@@ -67,7 +66,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         }
 
         Principal principal = request.getUserPrincipal();
-        NuxeoPrincipal nuxeoPrincipal = null;
+        NuxeoPrincipal nuxeoPrincipal;
         if (principal instanceof NuxeoPrincipal) {
             nuxeoPrincipal = (NuxeoPrincipal) principal;
             // redirect to login than to requested page

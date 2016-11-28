@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 package org.nuxeo.ecm.platform.mimetype.service;
 
@@ -30,17 +29,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
-import net.sf.jmimemagic.MagicMatch;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -53,6 +45,12 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
+
+import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicException;
+import net.sf.jmimemagic.MagicMatch;
+import net.sf.jmimemagic.MagicMatchNotFoundException;
+import net.sf.jmimemagic.MagicParseException;
 
 /**
  * MimetypeEntry registry service.
@@ -233,12 +231,9 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
                 // check we didn't mis-detect files with zeroes
                 // check first 16 bytes
                 byte[] bytes = new byte[16];
-                FileInputStream is = new FileInputStream(file);
                 int n = 0;
-                try {
+                try (FileInputStream is = new FileInputStream(file)) {
                     n = is.read(bytes);
-                } finally {
-                    is.close();
                 }
                 for (int i = 0; i < n; i++) {
                     if (bytes[i] == 0) {
@@ -337,15 +332,12 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
 
     @Override
     public String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException {
-        File file = null;
+        File file;
         try {
             file = Framework.createTempFile("NXMimetypeBean", ".bin");
             try {
-                InputStream is = blob.getStream();
-                try {
+                try (InputStream is = blob.getStream()) {
                     FileUtils.copyToFile(is, file);
-                } finally {
-                    is.close();
                 }
                 return getMimetypeFromFile(file);
             } finally {

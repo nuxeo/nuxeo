@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,12 +52,6 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
 
     /**
      * Get the DocumentView for a user or a group from a URL.
-     *
-     * @param url
-     * @param defaultTab
-     * @param paramIdName
-     * @param paramShowName
-     * @return
      */
     public DocumentView getDocumentViewFromUrl(String url, String defaultTab, String paramIdName, String paramShowName) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
@@ -90,7 +84,7 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
                 String query = m.group(5);
                 Map<String, String> params = URIUtils.getRequestParameters(query);
                 if (params == null) {
-                    params = new HashMap<String, String>();
+                    params = new HashMap<>();
                 }
 
                 params.put(paramIdName, id);
@@ -109,16 +103,12 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
 
     /**
      * Get the url from a DocumentView for a user or a group.
-     *
-     * @param docView
-     * @param id
-     * @return
      */
     public String getUrlFromDocumentViewAndID(DocumentView docView, String paramName) {
         String id = docView.getParameter(paramName);
         if (id != null) {
             docView.removeParameter(paramName);
-            List<String> items = new ArrayList<String>();
+            List<String> items = new ArrayList<>();
             items.add(getPrefix());
             items.add(URIUtils.quoteURIPathComponent(id, true, false));
             String viewId = docView.getViewId();
@@ -128,7 +118,7 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
             String uri = StringUtils.join(items, "/");
             Map<String, String> parameters = docView.getParameters();
             if (parameters == null) {
-                parameters = new HashMap<String, String>();
+                parameters = new HashMap<>();
             }
             return URIUtils.addParametersToURIQuery(uri, parameters);
         }

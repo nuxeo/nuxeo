@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,8 +121,7 @@ public class DialectSQLServer extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
-        pathOptimizationsEnabled = repositoryDescriptor == null ? false
-                : repositoryDescriptor.getPathOptimizationsEnabled();
+        pathOptimizationsEnabled = repositoryDescriptor != null && repositoryDescriptor.getPathOptimizationsEnabled();
         String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
         if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
             idType = DialectIdType.VARCHAR;
@@ -156,19 +155,15 @@ public class DialectSQLServer extends Dialect {
     }
 
     protected int getEngineEdition(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("SELECT CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
             rs.next();
             return rs.getInt(1);
-        } finally {
-            st.close();
         }
     }
 
     protected void checkDatabaseConfiguration(Connection connection) throws SQLException {
-        Statement stmt = connection.createStatement();
-        try {
+        try (Statement stmt = connection.createStatement()) {
             String sql = "SELECT is_read_committed_snapshot_on FROM sys.databases WHERE name = db_name()";
             if (log.isTraceEnabled()) {
                 log.trace("SQL: " + sql);
@@ -182,8 +177,6 @@ public class DialectSQLServer extends Dialect {
                 throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
             }
             rs.close();
-        } finally {
-            stmt.close();
         }
     }
 
@@ -238,7 +231,7 @@ public class DialectSQLServer extends Dialect {
             return jdbcInfo("DATETIME2(3)", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("NVARCHAR(250)", Types.VARCHAR);
-            // -----
+        // -----
         case NODEID:
         case NODEIDFK:
         case NODEIDFKNP:
@@ -387,8 +380,8 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table,
-            List<Column> columns, Model model) {
+    public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
+            Model model) {
         StringBuilder buf = new StringBuilder();
         buf.append(String.format("CREATE FULLTEXT INDEX ON %s (", table.getQuotedName()));
         Iterator<Column> it = columns.iterator();
@@ -425,25 +418,26 @@ public class DialectSQLServer extends Dialect {
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
             Column mainColumn, Model model, Database database) {
         // TODO multiple indexes
-        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(Model.MAIN_KEY);
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String tableAlias = "_nxfttbl" + nthSuffix;
         FulltextMatchInfo info = new FulltextMatchInfo();
         // there are two left joins here
-        info.joins = new ArrayList<Join>();
+        info.joins = new ArrayList<>();
         if (nthMatch == 1) {
             // Need only one JOIN involving the fulltext table
             info.joins.add(new Join(Join.LEFT, ft.getQuotedName(), null, null, ftMain.getFullQuotedName(),
                     mainColumn.getFullQuotedName()));
         }
-        info.joins.add(new Join(
-                Join.LEFT, //
-                String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)", ft.getQuotedName(), getQuotedFulltextAnalyzer()),
-                tableAlias, // alias
-                fulltextQuery, // param
-                ftMain.getFullQuotedName(), // on1
-                String.format("%s.[KEY]", tableAlias) // on2
+        info.joins.add(
+                new Join(Join.LEFT, //
+                        String.format("CONTAINSTABLE(%s, *, ?, LANGUAGE %s)", ft.getQuotedName(),
+                                getQuotedFulltextAnalyzer()),
+                        tableAlias, // alias
+                        fulltextQuery, // param
+                        ftMain.getFullQuotedName(), // on1
+                        String.format("%s.[KEY]", tableAlias) // on2
         ));
         info.whereExpr = String.format("%s.[KEY] IS NOT NULL", tableAlias);
         info.scoreExpr = String.format("(%s.RANK / 1000.0)", tableAlias);
@@ -545,7 +539,7 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         switch (idType) {
         case VARCHAR:
             properties.put("idType", "NVARCHAR(36)");
@@ -572,7 +566,7 @@ public class DialectSQLServer extends Dialect {
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
-        List<String> permsList = new LinkedList<String>();
+        List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {
             permsList.add(String.format("  SELECT '%s' ", perm));
         }
@@ -625,7 +619,7 @@ public class DialectSQLServer extends Dialect {
     public List<String> getStartupSqls(Model model, Database database) {
         if (aclOptimizationsEnabled) {
             log.info("Vacuuming tables used by optimized acls");
-            return Arrays.asList("EXEC nx_vacuum_read_acls");
+            return Collections.singletonList("EXEC nx_vacuum_read_acls");
         }
         return Collections.emptyList();
     }
@@ -683,13 +677,10 @@ public class DialectSQLServer extends Dialect {
             return super.getGeneratedId(connection);
         }
         String sql = String.format("SELECT NEXT VALUE FOR [%s]", idSequenceName);
-        Statement s = connection.createStatement();
-        try {
+        try (Statement s = connection.createStatement()) {
             ResultSet rs = s.executeQuery(sql);
             rs.next();
             return Long.valueOf(rs.getLong(1));
-        } finally {
-            s.close();
         }
     }
 
@@ -698,11 +689,8 @@ public class DialectSQLServer extends Dialect {
      */
     @Override
     public void performPostOpenStatements(Connection connection) throws SQLException {
-        Statement stmt = connection.createStatement();
-        try {
+        try (Statement stmt = connection.createStatement()) {
             stmt.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
-        } finally {
-            stmt.close();
         }
     }
 

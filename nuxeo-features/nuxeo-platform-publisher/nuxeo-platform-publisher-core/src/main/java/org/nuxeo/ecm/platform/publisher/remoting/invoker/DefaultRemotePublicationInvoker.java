@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,24 @@
  * Contributors:
  *     Nuxeo
  */
-
 package org.nuxeo.ecm.platform.publisher.remoting.invoker;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.server.PublicationInvokationHandler;
 import org.nuxeo.ecm.platform.publisher.remoting.server.TestInvokationHandler;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
 
 /**
  * Dummy test invoker: does all marshaling work but directly calls the {@link TestInvokationHandler} without any
@@ -102,7 +101,7 @@ public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker
         HttpClient httpClient = new DefaultHttpClient();
 
         String BAHeaderContent = userName + ":" + password;
-        BAHeaderContent = Base64.encodeBytes(BAHeaderContent.getBytes());
+        BAHeaderContent = Base64.encodeBase64String(BAHeaderContent.getBytes());
         String BAHeader = "basic " + BAHeaderContent;
 
         String targetUrl = baseURL + methodName;
@@ -126,7 +125,7 @@ public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker
 
         BufferedReader br = new BufferedReader(isr);
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         int ch;
         while ((ch = br.read()) > -1) {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,7 @@
  *     Nuxeo - initial API and implementation
  *     bstefanescu, jcarsique
  *     Anahide Tchertchian
- *
- * $Id$
  */
-
 package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.BufferedInputStream;
@@ -432,7 +429,7 @@ public class DeploymentPreprocessor {
     }
 
     protected FragmentDescriptor getDirectoryFragment(File directory) throws IOException {
-        FragmentDescriptor fd = null;
+        FragmentDescriptor fd;
         File file = new File(directory.getAbsolutePath() + '/' + FRAGMENT_FILE);
         if (file.isFile()) {
             URL url;
@@ -461,15 +458,11 @@ public class DeploymentPreprocessor {
 
     protected FragmentDescriptor getJARFragment(File file) throws IOException {
         FragmentDescriptor fd = null;
-        JarFile jar = new JarFile(file);
-        try {
+        try (JarFile jar = new JarFile(file)) {
             ZipEntry ze = jar.getEntry(FRAGMENT_FILE);
             if (ze != null) {
-                InputStream in = new BufferedInputStream(jar.getInputStream(ze));
-                try {
+                try (InputStream in = new BufferedInputStream(jar.getInputStream(ze))) {
                     fd = (FragmentDescriptor) xmap.load(in);
-                } finally {
-                    in.close();
                 }
                 if (fd.name == null) {
                     // fallback on symbolic name
@@ -483,8 +476,6 @@ public class DeploymentPreprocessor {
                     processBundleForCompat(fd, file);
                 }
             }
-        } finally {
-            jar.close();
         }
         return fd;
     }
@@ -513,7 +504,7 @@ public class DeploymentPreprocessor {
             }
             if (requires != null) {
                 String[] ids = StringUtils.split(requires, ',', true);
-                fd.requires = new ArrayList<String>(ids.length);
+                fd.requires = new ArrayList<>(ids.length);
                 for (int i = 0; i < ids.length; i++) {
                     String rid = ids[i];
                     p = rid.indexOf(';');

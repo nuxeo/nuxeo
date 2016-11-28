@@ -17,7 +17,6 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
@@ -353,7 +352,8 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Returns the parent ref of the document referenced by {@code docRef} or {@code null} if this is the root document.
      * <p>
-     * This method does not check the permissions on the parent document of this {@code CoreSession}'s {@code Principal}.
+     * This method does not check the permissions on the parent document of this {@code CoreSession}'s {@code Principal}
+     * .
      *
      * @since 5.4.2
      */
@@ -1068,16 +1068,15 @@ public interface CoreSession extends AutoCloseable {
     IterableQueryResult queryAndFetch(String query, String queryType, boolean distinctDocuments, Object... params);
 
     /**
-     * Executes the given query and returns the first batch of results, next batch must be requested
-     * within the {@code keepAliveSeconds} delay.
+     * Executes the given query and returns the first batch of results, next batch must be requested within the
+     * {@code keepAliveSeconds} delay.
      *
      * @param query The NXQL query to execute
      * @param batchSize The expected result batch size, note that more results can be returned when the backend don't
-     *                  implement properly this feature
+     *            implement properly this feature
      * @param keepAliveSeconds The scroll context lifetime in seconds
-     * @return A {@link ScrollResult} including the search results and a scroll id, to be passed to the subsequent
-     * calls to {@link #scroll(String)}
-     *
+     * @return A {@link ScrollResult} including the search results and a scroll id, to be passed to the subsequent calls
+     *         to {@link #scroll(String)}
      * @since 8.4
      */
     ScrollResult scroll(String query, int batchSize, int keepAliveSeconds);
@@ -1086,7 +1085,6 @@ public interface CoreSession extends AutoCloseable {
      * Get the next batch of result, the {@code scrollId} is part of the previous {@link ScrollResult} response.
      *
      * @throws NuxeoException when the {@code scrollId} is unknown or when the scroll operation has timed out
-     *
      * @since 8.4
      */
     ScrollResult scroll(String scrollId);

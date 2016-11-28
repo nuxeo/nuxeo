@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *   Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.theme.localconfiguration;
 
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.localconfiguration.LocalConfiguration;
  */
 public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
 
-    public static final String OLD_THEME_CONFIGURATION_PROPERTY = "theme.useOldLocalConfiguration";
+    String OLD_THEME_CONFIGURATION_PROPERTY = "theme.useOldLocalConfiguration";
 
     /**
      * Returns the configured theme.

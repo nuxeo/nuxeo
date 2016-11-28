@@ -35,7 +35,7 @@ public class ReloadListener implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        if (event.getId() == ReloadEventNames.BEFORE_RELOAD_EVENT_ID) {
+        if (ReloadEventNames.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
             try {
                 if (!Framework.getService(WorkManager.class).shutdown(10, TimeUnit.SECONDS)) {
                     LogFactory.getLog(ReloadListener.class).warn("timed out while shutdowning works");
@@ -46,7 +46,7 @@ public class ReloadListener implements EventListener {
                 Thread.currentThread().interrupt();
                 LogFactory.getLog(ReloadListener.class).error("Caugh interruption while stopping works manager", cause);
             }
-        } else if (event.getId() == ReloadEventNames.AFTER_RELOAD_EVENT_ID) {
+        } else if (ReloadEventNames.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
             Framework.getService(WorkManager.class).init();
         }
     }

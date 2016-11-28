@@ -18,7 +18,6 @@
  *     Bogdan Stefanescu <bs@nuxeo.com>
  *     Estelle Giuly <egiuly@nuxeo.com>
  */
-
 package org.nuxeo.common.utils;
 
 import java.io.BufferedOutputStream;
@@ -133,48 +132,26 @@ public final class FileUtils {
     }
 
     public static String readFile(File file) throws IOException {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(file);
+        try (FileInputStream in = new FileInputStream(file)) {
             return read(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static List<String> readLines(File file) throws IOException {
         List<String> lines = new ArrayList<>();
-        BufferedReader reader = null;
-        try {
-            InputStream in = new FileInputStream(file);
-            reader = new BufferedReader(new InputStreamReader(in));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
-            }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                }
             }
         }
         return lines;
     }
 
     public static void writeLines(File file, List<String> lines) throws IOException {
-        PrintWriter out = null;
-        try {
-            out = new PrintWriter(new FileOutputStream(file));
+        try (PrintWriter out = new PrintWriter(new FileOutputStream(file))) {
             for (String line : lines) {
                 out.println(line);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
             }
         }
     }
@@ -196,9 +173,6 @@ public final class FileUtils {
     }
 
     /**
-     * @param file
-     * @param buf
-     * @param append
      * @throws IOException
      * @since 5.5
      */
@@ -219,9 +193,6 @@ public final class FileUtils {
     }
 
     /**
-     * @param file
-     * @param buf
-     * @param append
      * @throws IOException
      * @since 5.5
      */
@@ -275,17 +246,11 @@ public final class FileUtils {
     }
 
     public static void copyToFile(InputStream in, File file) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
+        try (OutputStream out = new FileOutputStream(file)) {
             byte[] buffer = createBuffer(in.available());
             int read;
             while ((read = in.read(buffer)) != -1) {
                 out.write(buffer, 0, read);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
             }
         }
     }

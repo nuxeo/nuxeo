@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
@@ -58,13 +55,11 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Retrieves the principal with the given username or null if it does not exist.
      * <p>
      * Can build principals for anonymous and virtual users as well as for users defined in the users directory.
-     *
      */
     NuxeoPrincipal getPrincipal(String username);
 
     /**
      * Returns the nuxeo group with given name or null if it does not exist.
-     *
      */
     NuxeoGroup getGroup(String groupName);
 
@@ -99,7 +94,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     /**
      * Updates user represented by given model.
      *
-     * @param userModel
      * @since 5.2M4
      */
     void updateUser(DocumentModel userModel);
@@ -197,7 +191,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     /**
      * Deletes group represented by given model.
      *
-     * @param groupModel
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
      */
@@ -206,7 +199,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     /**
      * Deletes group with given id.
      *
-     * @param groupId
      * @since 5.2M4
      * @throws DirectoryException if given entry does not exist
      */
@@ -237,14 +229,11 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Returns the list of groups that belong to this group.
      *
      * @param parentId the name of the parent group.
-     * @return
      */
     List<String> getGroupsInGroup(String parentId);
 
     /**
      * Returns the list of groups that are not members of other groups.
-     *
-     * @return
      */
     List<String> getTopLevelGroups();
 
@@ -252,7 +241,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Returns the list of users that belong to this group.
      *
      * @param groupId ID of the group
-     * @return
      */
     List<String> getUsersInGroup(String groupId);
 
@@ -260,7 +248,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * Get users from a group and its subgroups.
      *
      * @param groupId ID of the group
-     * @return
      */
     List<String> getUsersInGroupAndSubGroups(String groupId);
 

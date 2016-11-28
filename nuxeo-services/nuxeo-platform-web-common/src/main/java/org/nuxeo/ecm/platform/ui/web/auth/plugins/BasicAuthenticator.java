@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
 import java.io.IOException;
@@ -31,8 +28,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -86,7 +83,6 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
     /**
      * Checks if we need to include a basic auth header back to the client.
      *
-     * @param httpRequest
      * @return true if we need to include the auth header
      * @since 5.9.2
      */
@@ -115,7 +111,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         if (auth != null && auth.toLowerCase().startsWith("basic")) {
             int idx = auth.indexOf(' ');
             String b64userPassword = auth.substring(idx + 1);
-            byte[] clearUp = Base64.decode(b64userPassword);
+            byte[] clearUp = Base64.decodeBase64(b64userPassword);
             String userCredentials = new String(clearUp);
             int idxOfColon = userCredentials.indexOf(':');
             if (idxOfColon > 0 && idxOfColon < userCredentials.length() - 1) {
@@ -158,7 +154,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
             autoPrompt = parameters.get(AUTO_PROMPT_KEY).equalsIgnoreCase("true");
         }
 
-        forcePromptURLs = new ArrayList<String>();
+        forcePromptURLs = new ArrayList<>();
         for (Entry<String, String> entry : parameters.entrySet()) {
             if (entry.getKey().startsWith(FORCE_PROMPT_KEY)) {
                 forcePromptURLs.add(entry.getValue());

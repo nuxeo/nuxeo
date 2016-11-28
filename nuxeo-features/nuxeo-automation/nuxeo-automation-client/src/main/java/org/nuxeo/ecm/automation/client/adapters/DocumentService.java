@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,8 +229,11 @@ public class DocumentService {
 
     public Document setPermission(DocRef doc, String user, String permission, String acl, boolean granted)
             throws IOException {
-        OperationRequest req = session.newRequest(SetPermission).setInput(doc).set("user", user).set("permission",
-                permission).set("grant", granted);
+        OperationRequest req = session.newRequest(SetPermission)
+                                      .setInput(doc)
+                                      .set("user", user)
+                                      .set("permission", permission)
+                                      .set("grant", granted);
         if (acl != null) {
             req.set("acl", acl);
         }
@@ -290,13 +293,19 @@ public class DocumentService {
     }
 
     public Document publish(DocRef doc, DocRef section, boolean override) throws IOException {
-        return (Document) session.newRequest(PublishDocument).setInput(doc).set("target", section).set("override",
-                override).execute();
+        return (Document) session.newRequest(PublishDocument)
+                                 .setInput(doc)
+                                 .set("target", section)
+                                 .set("override", override)
+                                 .execute();
     }
 
     public Document createRelation(DocRef subject, String predicate, DocRef object) throws IOException {
-        return (Document) session.newRequest(CreateRelation).setInput(subject).set("object", object).set("predicate",
-                predicate).execute();
+        return (Document) session.newRequest(CreateRelation)
+                                 .setInput(subject)
+                                 .set("object", object)
+                                 .set("predicate", predicate)
+                                 .execute();
     }
 
     public Documents getRelations(DocRef doc, String predicate) throws IOException {
@@ -304,16 +313,23 @@ public class DocumentService {
     }
 
     public Documents getRelations(DocRef doc, String predicate, boolean outgoing) throws IOException {
-        return (Documents) session.newRequest(GetRelations).setInput(doc).set("predicate", predicate).set("outgoing",
-                outgoing).execute();
+        return (Documents) session.newRequest(GetRelations)
+                                  .setInput(doc)
+                                  .set("predicate", predicate)
+                                  .set("outgoing", outgoing)
+                                  .execute();
     }
 
     /**
      * @since 5.5
      */
     public Documents getRelations(DocRef doc, String predicate, boolean outgoing, String graphName) throws IOException {
-        return (Documents) session.newRequest(GetRelations).setInput(doc).set("predicate", predicate).set("outgoing",
-                outgoing).set("graphName", graphName).execute();
+        return (Documents) session.newRequest(GetRelations)
+                                  .setInput(doc)
+                                  .set("predicate", predicate)
+                                  .set("outgoing", outgoing)
+                                  .set("graphName", graphName)
+                                  .execute();
     }
 
     public void setBlob(DocRef doc, Blob blob) throws IOException {

@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -88,8 +90,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
-
 /**
  * A {@link JDBCMapper} maps objects to and from a JDBC database. It is specific to a given database connection, as it
  * computes statements.
@@ -101,7 +101,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private static final Log log = LogFactory.getLog(JDBCMapper.class);
 
-    public static Map<String, Serializable> testProps = new HashMap<String, Serializable>();
+    public static Map<String, Serializable> testProps = new HashMap<>();
 
     protected static Map<String, CursorResult> cursorResults = new ConcurrentHashMap<>();
 
@@ -134,7 +134,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param sqlInfo the sql info
      * @param clusterInvalidator the cluster invalidator
      * @param noSharing whether to use no-sharing mode for the connection
-     * @param repository
+     * @param repository the repository
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
             boolean noSharing, RepositoryImpl repository) {
@@ -222,7 +222,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         DatabaseMetaData metadata = connection.getMetaData();
         Set<String> tableNames = findTableNames(metadata, schemaName);
         Database database = sqlInfo.getDatabase();
-        Map<String, List<Column>> added = new HashMap<String, List<Column>>();
+        Map<String, List<Column>> added = new HashMap<>();
 
         for (Table table : database.getTables()) {
             String tableName = getTableName(table.getPhysicalName());
@@ -245,9 +245,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                  * Get existing columns.
                  */
 
-                Map<String, Integer> columnTypes = new HashMap<String, Integer>();
-                Map<String, String> columnTypeNames = new HashMap<String, String>();
-                Map<String, Integer> columnTypeSizes = new HashMap<String, Integer>();
+                Map<String, Integer> columnTypes = new HashMap<>();
+                Map<String, String> columnTypeNames = new HashMap<>();
+                Map<String, Integer> columnTypeSizes = new HashMap<>();
                 try (ResultSet rs = metadata.getColumns(null, schemaName, tableName, "%")) {
                     while (rs.next()) {
                         String schema = rs.getString("TABLE_SCHEM");
@@ -268,7 +268,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                  * Update types and create missing columns.
                  */
 
-                List<Column> addedColumns = new LinkedList<Column>();
+                List<Column> addedColumns = new LinkedList<>();
                 for (Column column : table.getColumns()) {
                     String upperName = column.getPhysicalName().toUpperCase();
                     Integer type = columnTypes.remove(upperName);
@@ -294,7 +294,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 if (!columnTypes.isEmpty()) {
                     log.warn("Database contains additional unused columns for table " + table.getQuotedName() + ": "
-                            + StringUtils.join(new ArrayList<String>(columnTypes.keySet()), ", "));
+                            + StringUtils.join(new ArrayList<>(columnTypes.keySet()), ", "));
                 }
                 if (!addedColumns.isEmpty()) {
                     if (added.containsKey(table.getKey())) {
@@ -420,7 +420,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     /** Finds uppercase table names. */
     protected static Set<String> findTableNames(DatabaseMetaData metadata, String schemaName) throws SQLException {
-        Set<String> tableNames = new HashSet<String>();
+        Set<String> tableNames = new HashSet<>();
         ResultSet rs = metadata.getTables(null, schemaName, "%", new String[] { "TABLE" });
         while (rs.next()) {
             String tableName = rs.getString("TABLE_NAME");
@@ -466,7 +466,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
                 if (logger.isLogEnabled()) {
-                    logger.logSQL(sql, Arrays.asList(nodeId));
+                    logger.logSQL(sql, Collections.singletonList(nodeId));
                 }
                 column.setToPreparedStatement(ps, 1, nodeId);
                 ps.execute();
@@ -486,7 +486,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         PreparedStatement ps = connection.prepareStatement(sql);
         try {
             if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Arrays.asList(nodeId));
+                logger.logSQL(sql, Collections.singletonList(nodeId));
             }
             column.setToPreparedStatement(ps, 1, nodeId);
             int n = ps.executeUpdate();
@@ -515,11 +515,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 Set<RowId> rowIds = invalidations.getKindSet(kind);
 
                 // reorganize by id
-                Map<Serializable, Set<String>> res = new HashMap<Serializable, Set<String>>();
+                Map<Serializable, Set<String>> res = new HashMap<>();
                 for (RowId rowId : rowIds) {
                     Set<String> tableNames = res.get(rowId.id);
                     if (tableNames == null) {
-                        res.put(rowId.id, tableNames = new HashSet<String>());
+                        res.put(rowId.id, tableNames = new HashSet<>());
                     }
                     tableNames.add(rowId.tableName);
                 }
@@ -562,7 +562,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     // join that works on a set
-    protected static final String join(Collection<String> strings, char sep) {
+    protected static String join(Collection<String> strings, char sep) {
         if (strings.isEmpty()) {
             throw new RuntimeException();
         }
@@ -589,7 +589,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         try {
             if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Arrays.asList(nodeId));
+                logger.logSQL(sql, Collections.singletonList(nodeId));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = null;
@@ -672,7 +672,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 List<Column> columns = sqlInfo.getInsertRootIdColumns();
                 List<Serializable> debugValues = null;
                 if (logger.isLogEnabled()) {
-                    debugValues = new ArrayList<Serializable>(2);
+                    debugValues = new ArrayList<>(2);
                 }
                 int i = 0;
                 for (Column column : columns) {
@@ -768,7 +768,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
         if (q == null) {
             logger.log("Query cannot return anything due to conflicting clauses");
-            return new PartialList<Serializable>(Collections.<Serializable> emptyList(), 0);
+            return new PartialList<>(Collections.<Serializable> emptyList(), 0);
         }
         long limit = queryFilter.getLimit();
         long offset = queryFilter.getOffset();
@@ -823,7 +823,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
 
             Column column = q.selectInfo.whatColumns.get(0);
-            List<Serializable> ids = new LinkedList<Serializable>();
+            List<Serializable> ids = new LinkedList<>();
             int rowNum = 0;
             while (available && (limit != 0)) {
                 Serializable id = column.getFromResultSet(rs, 1);
@@ -854,7 +854,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 logger.logIds(ids, countUpTo != 0, totalSize);
             }
 
-            return new PartialList<Serializable>(ids, totalSize);
+            return new PartialList<>(ids, totalSize);
         } catch (SQLException e) {
             throw new NuxeoException("Invalid query: " + query, e);
         } finally {
@@ -976,9 +976,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     protected class CursorResult {
         protected final int keepAliveSeconds;
+
         protected final PreparedStatement preparedStatement;
+
         protected final ResultSet resultSet;
+
         protected final int batchSize;
+
         protected long lastCallTimestamp;
 
         CursorResult(PreparedStatement preparedStatement, ResultSet resultSet, int batchSize, int keepAliveSeconds) {
@@ -1015,7 +1019,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     protected void registerCursor(String scrollId, PreparedStatement ps, ResultSet rs, int batchSize,
-                                  int keepAliveSeconds) {
+            int keepAliveSeconds) {
         cursorResults.put(scrollId, new CursorResult(ps, rs, batchSize, keepAliveSeconds));
     }
 
@@ -1038,7 +1042,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         QueryMaker queryMaker = findQueryMaker("NXQL");
         List<String> ids;
         QueryFilter queryFilter = new QueryFilter(null, null, null, null, Collections.emptyList(), 0, 0);
-        try (IterableQueryResult  ret = new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, null)) {
+        try (IterableQueryResult ret = new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this,
+                null)) {
             ids = new ArrayList<>((int) ret.size());
             for (Map<String, Serializable> map : ret) {
                 ids.add(map.get("ecm:uuid").toString());
@@ -1094,7 +1099,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return getAncestorsIdsIterative(ids);
         }
         Serializable whereIds = newIdArray(ids);
-        Set<Serializable> res = new HashSet<Serializable>();
+        Set<Serializable> res = new HashSet<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -1108,7 +1113,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             countExecute();
             List<Serializable> debugIds = null;
             if (logger.isLogEnabled()) {
-                debugIds = new LinkedList<Serializable>();
+                debugIds = new LinkedList<>();
             }
             while (rs.next()) {
                 if (dialect.supportsArraysReturnInsteadOfRows()) {
@@ -1153,9 +1158,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            LinkedList<Serializable> todo = new LinkedList<Serializable>(ids);
-            Set<Serializable> done = new HashSet<Serializable>();
-            Set<Serializable> res = new HashSet<Serializable>();
+            LinkedList<Serializable> todo = new LinkedList<>(ids);
+            Set<Serializable> done = new HashSet<>();
+            Set<Serializable> res = new HashSet<>();
             while (!todo.isEmpty()) {
                 done.addAll(todo);
                 SQLInfoSelect select = sqlInfo.getSelectParentIds(todo.size());
@@ -1171,10 +1176,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 rs = ps.executeQuery();
                 countExecute();
-                todo = new LinkedList<Serializable>();
+                todo = new LinkedList<>();
                 List<Serializable> debugIds = null;
                 if (logger.isLogEnabled()) {
-                    debugIds = new LinkedList<Serializable>();
+                    debugIds = new LinkedList<>();
                 }
                 while (rs.next()) {
                     Serializable id = what.getFromResultSet(rs, 1);
@@ -1326,7 +1331,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     public interface LockCallable extends Callable<Lock> {
         @Override
-        public Lock call();
+        Lock call();
     }
 
     @Override
@@ -1340,8 +1345,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
         RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
         Row row = readSimpleRow(rowId);
-        return row == null ? null : new Lock((String) row.get(Model.LOCK_OWNER_KEY),
-                (Calendar) row.get(Model.LOCK_CREATED_KEY));
+        return row == null ? null
+                : new Lock((String) row.get(Model.LOCK_OWNER_KEY), (Calendar) row.get(Model.LOCK_CREATED_KEY));
     }
 
     @Override

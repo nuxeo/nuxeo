@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,11 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.query.api.*;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -61,10 +65,10 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public PageProviderDefinition getPageProviderDefinition(String name) {
         PageProviderDefinition def = providerReg.getPageProvider(name);
-        if (def != null) {
-            return def.clone();
+        if (def == null) {
+            return null;
         }
-        return def;
+        return def.clone();
     }
 
     @Override
@@ -78,7 +82,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         PageProvider<?> pageProvider = newPageProviderInstance(name, desc);
         // XXX: set local properties without resolving, and merge with given
         // properties.
-        Map<String, Serializable> allProps = new HashMap<String, Serializable>();
+        Map<String, Serializable> allProps = new HashMap<>();
         Map<String, String> localProps = desc.getProperties();
         if (localProps != null) {
             allProps.putAll(localProps);

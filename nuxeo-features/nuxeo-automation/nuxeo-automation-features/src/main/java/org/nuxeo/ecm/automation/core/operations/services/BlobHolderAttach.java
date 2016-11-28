@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
-@Operation(id = BlobHolderAttach.ID, category = Constants.CAT_BLOB, label = "Attach File or files to the currentDocument.", description = "Attach the input file(s) to the current document using the BlobHolder abstraction", aliases = { "BlobHolder.Attach" })
+@Operation(id = BlobHolderAttach.ID, category = Constants.CAT_BLOB, label = "Attach File or files to the currentDocument.", description = "Attach the input file(s) to the current document using the BlobHolder abstraction", aliases = {
+        "BlobHolder.Attach" })
 public class BlobHolderAttach {
 
     public static final String ID = "BlobHolder.AttachOnCurrentDocument";
@@ -75,7 +76,7 @@ public class BlobHolderAttach {
 
     @OperationMethod
     public DocumentModel run(BlobList blobs) throws OperationException {
-        DocumentModel currentDocument = null;
+        DocumentModel currentDocument;
         if (useMainBlob) {
             Blob mainBlob = blobs.remove(0);
             currentDocument = run(mainBlob);
@@ -84,12 +85,13 @@ public class BlobHolderAttach {
         }
         if (blobs.size() > 0) {
             if (currentDocument.hasSchema("files")) {
-                List<Map<String, Object>> existingBlobs = (List<Map<String, Object>>) currentDocument.getPropertyValue("files:files");
+                List<Map<String, Object>> existingBlobs = (List<Map<String, Object>>) currentDocument.getPropertyValue(
+                        "files:files");
                 if (existingBlobs == null) {
-                    existingBlobs = new ArrayList<Map<String, Object>>();
+                    existingBlobs = new ArrayList<>();
                 }
                 for (Blob blob : blobs) {
-                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> map = new HashMap<>();
                     map.put("file", blob);
                     map.put("filename", blob.getFilename());
                     existingBlobs.add(map);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.mail.listener.action;
 
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.ATTACHMENTS_KEY;
@@ -106,10 +103,10 @@ public class CreateDocumentsAction extends AbstractMailAction {
         documentModel.setPropertyValue(RECIPIENTS_PROPERTY_NAME, recipients);
         documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME, ccRecipients);
         if (attachments != null && !attachments.isEmpty()) {
-            ArrayList<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+            ArrayList<Map<String, Serializable>> files = new ArrayList<>();
             for (FileBlob currentFileBlob : attachments) {
                 if (currentFileBlob != null) {
-                    Map<String, Serializable> file = new HashMap<String, Serializable>();
+                    Map<String, Serializable> file = new HashMap<>();
                     file.put("file", currentFileBlob);
                     file.put("filename", currentFileBlob.getFilename());
                     files.add(file);
@@ -124,7 +121,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
             Blob sb = Blobs.createBlob(text);
             BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
             ConversionService conversionService = Framework.getService(ConversionService.class);
-            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+            Map<String, Serializable> parameters = new HashMap<>();
             parameters.put("tagFilter", "body");
             BlobHolder simpleTextBH = conversionService.convert("html2text", simpleBlobHolder, parameters);
             String simpleText;

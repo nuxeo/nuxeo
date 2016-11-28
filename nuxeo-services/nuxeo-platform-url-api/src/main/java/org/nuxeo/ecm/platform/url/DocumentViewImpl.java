@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: DocumentViewImpl.java 28460 2008-01-03 15:34:05Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.url;
 
 import java.io.Serializable;
@@ -122,7 +119,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
 
     public Map<String, String> getParameters() {
         if (parameters == null) {
-            parameters = new HashMap<String, String>();
+            parameters = new HashMap<>();
         }
         String tabId = getTabId();
         if (tabId != null) {
@@ -140,7 +137,7 @@ public class DocumentViewImpl implements DocumentView, Serializable {
 
     public void addParameter(String name, String value) {
         if (parameters == null) {
-            parameters = new HashMap<String, String>();
+            parameters = new HashMap<>();
         }
         parameters.put(name, value);
     }
@@ -174,9 +171,10 @@ public class DocumentViewImpl implements DocumentView, Serializable {
 
     @Override
     public String toString() {
-        return String.format("DocumentViewImpl [documentLocation=%s, "
-                + "parameters=%s, patternName=%s, subURI=%s, tabId=%s, viewId=%s]", documentLocation, parameters,
-                patternName, subURI, tabId, viewId);
+        return String.format(
+                "DocumentViewImpl [documentLocation=%s, "
+                        + "parameters=%s, patternName=%s, subURI=%s, tabId=%s, viewId=%s]",
+                documentLocation, parameters, patternName, subURI, tabId, viewId);
     }
 
 }

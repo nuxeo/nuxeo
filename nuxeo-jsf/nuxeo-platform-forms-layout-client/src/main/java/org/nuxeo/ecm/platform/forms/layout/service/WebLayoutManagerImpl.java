@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: WebLayoutManagerImpl.java 28510 2008-01-06 10:21:44Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.forms.layout.service;
 
 import java.io.Serializable;
@@ -325,7 +322,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         if (BuiltinWidgetModes.HIDDEN.equals(wMode)) {
             return null;
         }
-        List<Widget> subWidgets = new ArrayList<Widget>();
+        List<Widget> subWidgets = new ArrayList<>();
         WidgetDefinition[] swDefs = wDef.getSubWidgetDefinitions();
         if (swDefs != null) {
             for (WidgetDefinition swDef : swDefs) {
@@ -362,8 +359,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         String wType = wDef.getType();
         String wTypeCat = wDef.getTypeCategory();
         // fill default property and control values from the widget definition
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        Map<String, Serializable> controls = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
+        Map<String, Serializable> controls = new HashMap<>();
         String actualWTypeCat = getStoreCategory(wTypeCat);
         WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(actualWTypeCat, wType);
 
@@ -485,7 +482,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         boolean scaffold = Boolean.parseBoolean(String.valueOf(props.get("scaffold")));
         if (scaffold) {
             // ignore rows, retrieve all widgets from the definition, and put them in a map held by layout
-            Map<String, Widget> widgetsMap = new LinkedHashMap<String, Widget>();
+            Map<String, Widget> widgetsMap = new LinkedHashMap<>();
             Map<String, WidgetDefinition> widgetDefs = lDef.getWidgetDefinitions();
             if (widgetDefs != null) {
                 for (WidgetDefinition widgetDef : widgetDefs.values()) {
@@ -515,8 +512,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                     LayoutFunctions.computeLayoutDefinitionId(lDef));
         } else {
             LayoutRowDefinition[] rowsDef = lDef.getRows();
-            List<LayoutRow> rows = new ArrayList<LayoutRow>();
-            Set<String> foundRowNames = new HashSet<String>();
+            List<LayoutRow> rows = new ArrayList<>();
+            Set<String> foundRowNames = new HashSet<>();
             int rowIndex = -1;
             for (LayoutRowDefinition rowDef : rowsDef) {
                 rowIndex++;
@@ -536,7 +533,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                         && !rowDef.isAlwaysSelected()) {
                     continue;
                 }
-                List<Widget> widgets = new ArrayList<Widget>();
+                List<Widget> widgets = new ArrayList<>();
                 for (WidgetReference widgetRef : rowDef.getWidgetReferences()) {
                     String widgetName = widgetRef.getName();
                     if (StringUtils.isBlank(widgetName)) {
@@ -622,8 +619,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         String wType = wDef.getType();
         String wTypeCat = wDef.getTypeCategory();
         // fill default property and control values from the widget definition
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        Map<String, Serializable> controls = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
+        Map<String, Serializable> controls = new HashMap<>();
         String actualWTypeCat = getStoreCategory(wTypeCat);
         WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(actualWTypeCat, wType);
 

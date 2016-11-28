@@ -220,11 +220,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.typeName = typeName;
         dataModels = new HashMap<>();
         contextData = new ScopedMap();
-        instanceFacets = new HashSet<String>();
-        instanceFacetsOrig = new HashSet<String>();
-        facets = new HashSet<String>();
-        schemas = new HashSet<String>();
-        schemasOrig = new HashSet<String>();
+        instanceFacets = new HashSet<>();
+        instanceFacetsOrig = new HashSet<>();
+        facets = new HashSet<>();
+        schemas = new HashSet<>();
+        schemasOrig = new HashSet<>();
     }
 
     /**
@@ -237,15 +237,15 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         String fullPath = parentPath == null ? name : parentPath + (parentPath.endsWith("/") ? "" : "/") + name;
         path = new Path(fullPath);
         ref = new PathRef(fullPath);
-        instanceFacets = new HashSet<String>();
-        instanceFacetsOrig = new HashSet<String>();
-        facets = new HashSet<String>();
-        schemas = new HashSet<String>();
+        instanceFacets = new HashSet<>();
+        instanceFacetsOrig = new HashSet<>();
+        facets = new HashSet<>();
+        schemas = new HashSet<>();
         if (getDocumentType() != null) {
             facets.addAll(getDocumentType().getFacets());
         }
         schemas = computeSchemas(getDocumentType(), instanceFacets, false);
-        schemasOrig = new HashSet<String>(schemas);
+        schemasOrig = new HashSet<>(schemas);
     }
 
     /**
@@ -255,6 +255,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      *
      * @param facets the per-instance facets
      */
+    // TODO check if we use it
     public DocumentModelImpl(String sid, String type, String id, Path path, Lock lock, DocumentRef docRef,
             DocumentRef parentRef, String[] schemas, Set<String> facets, String sourceId, String repositoryName) {
         this(sid, type, id, path, docRef, parentRef, schemas, facets, sourceId, repositoryName, false);
@@ -268,18 +269,18 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.path = path;
         ref = docRef;
         this.parentRef = parentRef;
-        instanceFacets = facets == null ? new HashSet<String>() : new HashSet<String>(facets);
-        instanceFacetsOrig = new HashSet<String>(instanceFacets);
-        this.facets = new HashSet<String>(instanceFacets);
+        instanceFacets = facets == null ? new HashSet<>() : new HashSet<>(facets);
+        instanceFacetsOrig = new HashSet<>(instanceFacets);
+        this.facets = new HashSet<>(instanceFacets);
         if (getDocumentType() != null) {
             this.facets.addAll(getDocumentType().getFacets());
         }
         if (schemas == null) {
             this.schemas = computeSchemas(getDocumentType(), instanceFacets, isProxy);
         } else {
-            this.schemas = new HashSet<String>(Arrays.asList(schemas));
+            this.schemas = new HashSet<>(Arrays.asList(schemas));
         }
-        schemasOrig = new HashSet<String>(this.schemas);
+        schemasOrig = new HashSet<>(this.schemas);
         this.repositoryName = repositoryName;
         this.sourceId = sourceId;
         setIsProxy(isProxy);
@@ -289,7 +290,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * Recomputes effective schemas from a type + instance facets.
      */
     public static Set<String> computeSchemas(DocumentType type, Collection<String> instanceFacets, boolean isProxy) {
-        Set<String> schemas = new HashSet<String>();
+        Set<String> schemas = new HashSet<>();
         if (type != null) {
             schemas.addAll(Arrays.asList(type.getSchemaNames()));
         }
@@ -496,6 +497,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    @Deprecated
     public DataModel getDataModel(String schema) {
         DataModel dataModel = dataModels.get(schema);
         if (dataModel == null) {
@@ -505,6 +507,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    @Deprecated
     public Collection<DataModel> getDataModelsCollection() {
         return dataModels.values();
     }
@@ -578,7 +581,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         instanceFacets.remove(facet);
 
         // find the schemas that were dropped
-        Set<String> droppedSchemas = new HashSet<String>(schemas);
+        Set<String> droppedSchemas = new HashSet<>(schemas);
         schemas = computeSchemas(getDocumentType(), instanceFacets, isProxy());
         droppedSchemas.removeAll(schemas);
 
@@ -592,7 +595,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected static Set<String> inferFacets(Set<String> facets, DocumentType documentType) {
         if (facets == null) {
-            facets = new HashSet<String>();
+            facets = new HashSet<>();
             if (documentType != null) {
                 facets.addAll(documentType.getFacets());
             }
@@ -1165,7 +1168,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 list = (List<Object>) value;
             }
             if (ftype.isComplexType()) {
-                List<Object> clonedList = new ArrayList<Object>(list.size());
+                List<Object> clonedList = new ArrayList<>(list.size());
                 for (Object o : list) {
                     clonedList.add(cloneField(lfield, null, o));
                 }
@@ -1187,7 +1190,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             } else {
                 // a map, regular complex type
                 Map<String, Object> map = (Map<String, Object>) value;
-                Map<String, Object> clonedMap = new HashMap<String, Object>();
+                Map<String, Object> clonedMap = new HashMap<>();
                 for (Map.Entry<String, Object> entry : map.entrySet()) {
                     Object v = entry.getValue();
                     String k = entry.getKey();
@@ -1335,6 +1338,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    @Deprecated
     public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
@@ -1344,6 +1348,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
+    @Deprecated
     public DocumentPart[] getParts() {
         // DocumentType type = getDocumentType();
         // type = Framework.getService(SchemaManager.class).getDocumentType(
@@ -1503,7 +1508,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             String key = entry.getKey();
             DataModel data = entry.getValue();
             DataModelImpl newData = new DataModelImpl(key, data.getMap());
-            for (String name:data.getDirtyFields()) {
+            for (String name : data.getDirtyFields()) {
                 newData.setDirty(name);
             }
             dm.dataModels.put(key, newData);
@@ -1625,7 +1630,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * Sets the document id. May be useful when detaching from a repo and attaching to another one or when unmarshalling
      * a documentModel from a XML or JSON representation
      *
-     * @param id
      * @since 5.7.2
      */
     public void setId(String id) {
@@ -1692,4 +1696,5 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         detach(session != null && ref != null && session.exists(ref));
         stream.defaultWriteObject();
     }
+
 }

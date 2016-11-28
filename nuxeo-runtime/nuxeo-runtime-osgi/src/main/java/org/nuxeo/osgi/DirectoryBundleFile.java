@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.osgi;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,7 +36,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.util.CompoundEnumeration;
 import org.nuxeo.osgi.util.EntryFilter;
 import org.nuxeo.osgi.util.FileIterator;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**
@@ -65,7 +62,7 @@ public class DirectoryBundleFile implements BundleFile {
     }
 
     protected List<File> findFiles(File file) {
-        List<File> files = new ArrayList<File>(2);
+        List<File> files = new ArrayList<>(2);
         files.add(file);
         if (file.getPath().endsWith("/bin")) {
             // hack for Eclipse PDE development
@@ -78,14 +75,11 @@ public class DirectoryBundleFile implements BundleFile {
     }
 
     private Enumeration<URL> createEnumeration(File root, final EntryFilter efilter, final boolean recurse) {
-        FileIterator it = new FileIterator(root, new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                if (pathname.isDirectory()) {
-                    return recurse;
-                }
-                return efilter.match(pathname.getName());
+        FileIterator it = new FileIterator(root, pathname -> {
+            if (pathname.isDirectory()) {
+                return recurse;
             }
+            return efilter.match(pathname.getName());
         });
         it.setSkipDirs(true);
         return FileIterator.asUrlEnumeration(it);
@@ -103,7 +97,7 @@ public class DirectoryBundleFile implements BundleFile {
             for (File f : files) {
                 enums[i++] = createEnumeration(new File(f, name), efilter, recurse);
             }
-            return new CompoundEnumeration<URL>(enums);
+            return new CompoundEnumeration<>(enums);
         }
     }
 
@@ -151,11 +145,8 @@ public class DirectoryBundleFile implements BundleFile {
         for (File file : files) {
             File entry = new File(file, MANIFEST_PATH);
             if (entry.exists()) {
-                FileInputStream fis = new FileInputStream(entry);
-                try {
+                try (FileInputStream fis = new FileInputStream(entry)) {
                     return new Manifest(fis);
-                } finally {
-                    fis.close();
                 }
             }
         }
@@ -174,7 +165,7 @@ public class DirectoryBundleFile implements BundleFile {
             return null;
         }
         String[] paths = StringUtils.split(cp, ',', true);
-        List<BundleFile> nested = new ArrayList<BundleFile>();
+        List<BundleFile> nested = new ArrayList<>();
         for (String path : paths) {
             File nestedBundle = new File(file, path);
             if (nestedBundle.isDirectory()) {
@@ -188,7 +179,7 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir) throws IOException {
-        List<BundleFile> nested = new ArrayList<BundleFile>();
+        List<BundleFile> nested = new ArrayList<>();
         File[] files = FileUtils.findFiles(file, "*.jar", true);
         for (File jar : files) {
             if (jar.isDirectory()) {
@@ -231,8 +222,8 @@ public class DirectoryBundleFile implements BundleFile {
     }
 
     public static void main(String[] args) throws Exception {
-        DirectoryBundleFile bf = new DirectoryBundleFile(new File(
-                "/Users/bstefanescu/work/org.eclipse.ecr/plugins/org.eclipse.ecr.application/bin"));
+        DirectoryBundleFile bf = new DirectoryBundleFile(
+                new File("/Users/bstefanescu/work/org.eclipse.ecr/plugins/org.eclipse.ecr.application/bin"));
         Enumeration<URL> urls = bf.findEntries("META-INF", "*.txt", false);
         while (urls.hasMoreElements()) {
             System.out.println(urls.nextElement());
@@ -241,7 +232,6 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public void close(OSGiAdapter osgi) throws IOException {
-        return;
     }
 
 }

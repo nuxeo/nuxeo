@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -51,8 +52,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Insert;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
@@ -147,24 +148,24 @@ public class SQLInfo {
         selectRootIdSql = null;
         selectRootIdWhatColumn = null;
 
-        selectFragmentById = new HashMap<String, SQLInfoSelect>();
+        selectFragmentById = new HashMap<>();
 
-        selections = new HashMap<SelectionType, SQLInfoSelection>();
+        selections = new HashMap<>();
 
         selectChildrenIdsAndTypesSql = null;
         selectChildrenIdsAndTypesWhatColumns = null;
         selectComplexChildrenIdsAndTypesSql = null;
 
-        insertSqlMap = new HashMap<String, String>();
-        insertColumnsMap = new HashMap<String, List<Column>>();
+        insertSqlMap = new HashMap<>();
+        insertColumnsMap = new HashMap<>();
 
-        deleteSqlMap = new HashMap<String, String>();
+        deleteSqlMap = new HashMap<>();
 
-        copySqlMap = new HashMap<String, String>();
-        copyIdColumnMap = new HashMap<String, Column>();
+        copySqlMap = new HashMap<>();
+        copyIdColumnMap = new HashMap<>();
 
-        getBinariesSql = new ArrayList<String>(1);
-        getBinariesColumns = new ArrayList<Column>(1);
+        getBinariesSql = new ArrayList<>(1);
+        getBinariesColumns = new ArrayList<>(1);
 
         initSQL();
         initSelections();
@@ -191,11 +192,11 @@ public class SQLInfo {
     }
 
     public String getInsertRootIdSql() {
-        return insertSqlMap.get(model.REPOINFO_TABLE_NAME);
+        return insertSqlMap.get(Model.REPOINFO_TABLE_NAME);
     }
 
     public List<Column> getInsertRootIdColumns() {
-        return insertColumnsMap.get(model.REPOINFO_TABLE_NAME);
+        return insertColumnsMap.get(Model.REPOINFO_TABLE_NAME);
     }
 
     public SQLInfoSelection getSelection(SelectionType type) {
@@ -287,7 +288,7 @@ public class SQLInfo {
      * @return the clause, like {@code table.id = ?}
      */
     public String getIdEqualsClause(String tableName) {
-        return database.getTable(tableName).getColumn(model.MAIN_KEY).getQuotedName() + " = ?"
+        return database.getTable(tableName).getColumn(Model.MAIN_KEY).getQuotedName() + " = ?"
                 + getSoftDeleteClause(tableName);
     }
 
@@ -298,7 +299,7 @@ public class SQLInfo {
      * @return the clause
      */
     public String getSoftDeleteClause(String tableName) {
-        if (model.HIER_TABLE_NAME.equals(tableName) && softDeleteEnabled) {
+        if (Model.HIER_TABLE_NAME.equals(tableName) && softDeleteEnabled) {
             return " AND " + getSoftDeleteClause();
         } else {
             return "";
@@ -312,7 +313,7 @@ public class SQLInfo {
      */
     public String getSoftDeleteClause() {
         if (softDeleteEnabled) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(model.MAIN_IS_DELETED_KEY).getFullQuotedName()
+            return database.getTable(Model.HIER_TABLE_NAME).getColumn(Model.MAIN_IS_DELETED_KEY).getFullQuotedName()
                     + " IS NULL";
         } else {
             return null;
@@ -325,20 +326,20 @@ public class SQLInfo {
 
     public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys, Set<String> deltas) {
         Table table = database.getTable(tableName);
-        List<Column> columns = new LinkedList<Column>();
+        List<Column> columns = new LinkedList<>();
         for (String key : keys) {
             columns.add(table.getColumn(key));
         }
         Update update = new Update(table);
         update.setUpdatedColumns(columns, deltas);
         update.setWhere(getIdEqualsClause(tableName));
-        columns.add(table.getColumn(model.MAIN_KEY));
+        columns.add(table.getColumn(Model.MAIN_KEY));
         return new SQLInfoSelect(update.getStatement(), columns, null, null);
     }
 
     public Update getUpdateByIdForKeys(String tableName, List<String> keys) {
         Table table = database.getTable(tableName);
-        List<Column> columns = new LinkedList<Column>();
+        List<Column> columns = new LinkedList<>();
         for (String key : keys) {
             columns.add(table.getColumn(key));
         }
@@ -359,11 +360,12 @@ public class SQLInfo {
      * Select by ids for all values of several fragments (maybe ordered along columns -- for collection fragments
      * retrieval).
      */
-    public SQLInfoSelect getSelectFragmentsByIds(String tableName, int nids, String[] orderBys, Set<String> skipColumns) {
+    public SQLInfoSelect getSelectFragmentsByIds(String tableName, int nids, String[] orderBys,
+            Set<String> skipColumns) {
         Table table = database.getTable(tableName);
-        List<Column> whatColumns = new LinkedList<Column>();
-        List<String> whats = new LinkedList<String>();
-        List<Column> opaqueColumns = new LinkedList<Column>();
+        List<Column> whatColumns = new LinkedList<>();
+        List<String> whats = new LinkedList<>();
+        List<Column> opaqueColumns = new LinkedList<>();
         for (Column column : table.getColumns()) {
             if (column.isOpaque()) {
                 opaqueColumns.add(column);
@@ -372,7 +374,7 @@ public class SQLInfo {
                 whats.add(column.getQuotedName());
             }
         }
-        Column whereColumn = table.getColumn(model.MAIN_KEY);
+        Column whereColumn = table.getColumn(Model.MAIN_KEY);
         StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
         wherebuf.append(" IN (");
         for (int i = 0; i < nids; i++) {
@@ -388,7 +390,7 @@ public class SQLInfo {
         select.setFrom(table.getQuotedName());
         select.setWhere(wherebuf.toString());
         if (orderBys != null) {
-            List<String> orders = new LinkedList<String>();
+            List<String> orders = new LinkedList<>();
             for (String orderBy : orderBys) {
                 orders.add(table.getColumn(orderBy).getQuotedName());
             }
@@ -410,8 +412,8 @@ public class SQLInfo {
         if (sql == null) {
             return null;
         }
-        Table table = database.getTable(model.HIER_TABLE_NAME);
-        Column mainColumn = table.getColumn(model.MAIN_KEY);
+        Table table = database.getTable(Model.HIER_TABLE_NAME);
+        Column mainColumn = table.getColumn(Model.MAIN_KEY);
         // no soft-delete check needed, as ancestors of a non-deleted doc
         // aren't deleted either
         return new SQLInfoSelect(sql, Collections.singletonList(mainColumn), null, null);
@@ -421,9 +423,9 @@ public class SQLInfo {
      * Select parentid by ids for all values of several fragments.
      */
     public SQLInfoSelect getSelectParentIds(int nids) {
-        Table table = database.getTable(model.HIER_TABLE_NAME);
-        Column whatColumn = table.getColumn(model.HIER_PARENT_KEY);
-        Column whereColumn = table.getColumn(model.MAIN_KEY);
+        Table table = database.getTable(Model.HIER_TABLE_NAME);
+        Column whatColumn = table.getColumn(Model.HIER_PARENT_KEY);
+        Column whereColumn = table.getColumn(Model.MAIN_KEY);
         StringBuilder wherebuf = new StringBuilder(whereColumn.getQuotedName());
         wherebuf.append(" IN (");
         for (int i = 0; i < nids; i++) {
@@ -433,7 +435,7 @@ public class SQLInfo {
             wherebuf.append('?');
         }
         wherebuf.append(')');
-        wherebuf.append(getSoftDeleteClause(model.HIER_TABLE_NAME));
+        wherebuf.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
         Select select = new Select(table);
         select.setWhat("DISTINCT " + whatColumn.getQuotedName());
         select.setFrom(table.getQuotedName());
@@ -446,17 +448,17 @@ public class SQLInfo {
      * Selects all children (not complex) for several parent ids.
      */
     public SQLInfoSelect getSelectChildrenNodeInfos(int nids) {
-        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
-        Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
+        Table hierTable = database.getTable(Model.HIER_TABLE_NAME);
+        Column mainColumn = hierTable.getColumn(Model.MAIN_KEY);
         List<Column> whatColumns = new ArrayList<>();
         whatColumns.add(mainColumn);
-        whatColumns.add(hierTable.getColumn(model.HIER_PARENT_KEY));
-        whatColumns.add(hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY));
+        whatColumns.add(hierTable.getColumn(Model.HIER_PARENT_KEY));
+        whatColumns.add(hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY));
         Table proxyTable = null;
         if (proxiesEnabled) {
-            proxyTable = database.getTable(model.PROXY_TABLE_NAME);
-            whatColumns.add(proxyTable.getColumn(model.PROXY_TARGET_KEY));
-            whatColumns.add(proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY));
+            proxyTable = database.getTable(Model.PROXY_TABLE_NAME);
+            whatColumns.add(proxyTable.getColumn(Model.PROXY_TARGET_KEY));
+            whatColumns.add(proxyTable.getColumn(Model.PROXY_VERSIONABLE_KEY));
         }
         List<String> selectWhats = new ArrayList<>(whatColumns.size());
         for (Column col : whatColumns) {
@@ -467,10 +469,10 @@ public class SQLInfo {
         String from = hierTable.getQuotedName();
         if (proxiesEnabled) {
             from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON " + mainColumn.getFullQuotedName() + " = "
-                    + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+                    + proxyTable.getColumn(Model.MAIN_KEY).getFullQuotedName();
         }
         select.setFrom(from);
-        Column whereColumn = hierTable.getColumn(model.HIER_PARENT_KEY);
+        Column whereColumn = hierTable.getColumn(Model.HIER_PARENT_KEY);
         StringBuilder wherebuf = new StringBuilder(whereColumn.getFullQuotedName());
         if (nids == 1) {
             wherebuf.append(" = ?");
@@ -485,9 +487,9 @@ public class SQLInfo {
             wherebuf.append(')');
         }
         wherebuf.append(" AND ");
-        wherebuf.append(hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getFullQuotedName());
-        wherebuf.append(" = " + dialect.toBooleanValueString(false)); // not complex
-        wherebuf.append(getSoftDeleteClause(model.HIER_TABLE_NAME));
+        wherebuf.append(hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getFullQuotedName());
+        wherebuf.append(" = ").append(dialect.toBooleanValueString(false)); // not complex
+        wherebuf.append(getSoftDeleteClause(Model.HIER_TABLE_NAME));
         select.setWhere(wherebuf.toString());
         return new SQLInfoSelect(select.getStatement(), whatColumns, Collections.singletonList(whereColumn), null);
     }
@@ -516,7 +518,7 @@ public class SQLInfo {
         Delete delete = new Delete(table);
         String where = null;
         for (Column column : table.getColumns()) {
-            if (column.getKey().equals(model.MAIN_KEY)) {
+            if (column.getKey().equals(Model.MAIN_KEY)) {
                 StringBuilder buf = new StringBuilder();
                 buf.append(column.getQuotedName());
                 if (n == 1) {
@@ -559,10 +561,10 @@ public class SQLInfo {
     // ----- copy -----
 
     public SQLInfoSelect getCopyHier(boolean explicitName, boolean resetVersion) {
-        Table table = database.getTable(model.HIER_TABLE_NAME);
+        Table table = database.getTable(Model.HIER_TABLE_NAME);
         Collection<Column> columns = table.getColumns();
-        List<String> selectWhats = new ArrayList<String>(columns.size());
-        List<Column> selectWhatColumns = new ArrayList<Column>(5);
+        List<String> selectWhats = new ArrayList<>(columns.size());
+        List<Column> selectWhatColumns = new ArrayList<>(5);
         Insert insert = new Insert(table);
         for (Column column : columns) {
             if (column.isIdentity()) {
@@ -572,13 +574,13 @@ public class SQLInfo {
             insert.addColumn(column);
             String quotedName = column.getQuotedName();
             String key = column.getKey();
-            if (key.equals(model.MAIN_KEY) //
-                    || key.equals(model.HIER_PARENT_KEY) //
-                    || key.equals(model.MAIN_BASE_VERSION_KEY) //
-                    || key.equals(model.MAIN_CHECKED_IN_KEY) //
-                    || (key.equals(model.MAIN_MINOR_VERSION_KEY) && resetVersion) //
-                    || (key.equals(model.MAIN_MAJOR_VERSION_KEY) && resetVersion) //
-                    || (key.equals(model.HIER_CHILD_NAME_KEY) && explicitName)) {
+            if (key.equals(Model.MAIN_KEY) //
+                    || key.equals(Model.HIER_PARENT_KEY) //
+                    || key.equals(Model.MAIN_BASE_VERSION_KEY) //
+                    || key.equals(Model.MAIN_CHECKED_IN_KEY) //
+                    || (key.equals(Model.MAIN_MINOR_VERSION_KEY) && resetVersion) //
+                    || (key.equals(Model.MAIN_MAJOR_VERSION_KEY) && resetVersion) //
+                    || (key.equals(Model.HIER_CHILD_NAME_KEY) && explicitName)) {
                 // explicit value set
                 selectWhats.add("?");
                 selectWhatColumns.add(column);
@@ -587,7 +589,7 @@ public class SQLInfo {
                 selectWhats.add(quotedName);
             }
         }
-        Column whereColumn = table.getColumn(model.MAIN_KEY);
+        Column whereColumn = table.getColumn(Model.MAIN_KEY);
         Select select = new Select(null);
         select.setFrom(table.getQuotedName());
         select.setWhat(StringUtils.join(selectWhats, ", "));
@@ -626,7 +628,7 @@ public class SQLInfo {
         }
 
         for (String tableName : model.getFragmentNames()) {
-            if (tableName.equals(model.HIER_TABLE_NAME)) {
+            if (tableName.equals(Model.HIER_TABLE_NAME)) {
                 continue;
             }
             initFragmentSQL(tableName);
@@ -636,10 +638,10 @@ public class SQLInfo {
          * versions
          */
 
-        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
-        Table versionTable = database.getTable(model.VERSION_TABLE_NAME);
-        hierTable.addIndex(model.MAIN_IS_VERSION_KEY);
-        versionTable.addIndex(model.VERSION_VERSIONABLE_KEY);
+        Table hierTable = database.getTable(Model.HIER_TABLE_NAME);
+        Table versionTable = database.getTable(Model.VERSION_TABLE_NAME);
+        hierTable.addIndex(Model.MAIN_IS_VERSION_KEY);
+        versionTable.addIndex(Model.VERSION_VERSIONABLE_KEY);
         // don't index series+label, a simple label scan will suffice
 
         /*
@@ -647,9 +649,9 @@ public class SQLInfo {
          */
 
         if (proxiesEnabled) {
-            Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
-            proxyTable.addIndex(model.PROXY_VERSIONABLE_KEY);
-            proxyTable.addIndex(model.PROXY_TARGET_KEY);
+            Table proxyTable = database.getTable(Model.PROXY_TABLE_NAME);
+            proxyTable.addIndex(Model.PROXY_VERSIONABLE_KEY);
+            proxyTable.addIndex(Model.PROXY_TARGET_KEY);
         }
 
         initSelectDescendantsSQL();
@@ -658,7 +660,7 @@ public class SQLInfo {
          * fulltext
          */
         if (!model.getRepositoryDescriptor().getFulltextDescriptor().getFulltextSearchDisabled()) {
-            Table table = database.getTable(model.FULLTEXT_TABLE_NAME);
+            Table table = database.getTable(Model.FULLTEXT_TABLE_NAME);
             FulltextConfiguration fulltextConfiguration = model.getFulltextConfiguration();
             if (fulltextConfiguration.indexNames.size() > 1 && !dialect.supportsMultipleFulltextIndexes()) {
                 String msg = String.format("SQL database supports only one fulltext index, but %d are configured: %s",
@@ -669,10 +671,10 @@ public class SQLInfo {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 int ftic = dialect.getFulltextIndexedColumns();
                 if (ftic == 1) {
-                    table.addIndex(indexName, IndexType.FULLTEXT, model.FULLTEXT_FULLTEXT_KEY + suffix);
+                    table.addIndex(indexName, IndexType.FULLTEXT, Model.FULLTEXT_FULLTEXT_KEY + suffix);
                 } else if (ftic == 2) {
-                    table.addIndex(indexName, IndexType.FULLTEXT, model.FULLTEXT_SIMPLETEXT_KEY + suffix,
-                            model.FULLTEXT_BINARYTEXT_KEY + suffix);
+                    table.addIndex(indexName, IndexType.FULLTEXT, Model.FULLTEXT_SIMPLETEXT_KEY + suffix,
+                            Model.FULLTEXT_BINARYTEXT_KEY + suffix);
                 }
             }
         }
@@ -697,17 +699,17 @@ public class SQLInfo {
     }
 
     protected void initClusterSQL() {
-        TableMaker maker = new TableMaker(model.CLUSTER_NODES_TABLE_NAME);
-        maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, ColumnType.CLUSTERNODE);
-        maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, ColumnType.TIMESTAMP);
+        TableMaker maker = new TableMaker(Model.CLUSTER_NODES_TABLE_NAME);
+        maker.newColumn(Model.CLUSTER_NODES_NODEID_KEY, ColumnType.CLUSTERNODE);
+        maker.newColumn(Model.CLUSTER_NODES_CREATED_KEY, ColumnType.TIMESTAMP);
         maker.postProcessClusterNodes();
 
-        maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);
-        maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, ColumnType.CLUSTERNODE);
-        maker.newColumn(model.CLUSTER_INVALS_ID_KEY, ColumnType.NODEVAL);
-        maker.newColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY, ColumnType.CLUSTERFRAGS);
-        maker.newColumn(model.CLUSTER_INVALS_KIND_KEY, ColumnType.TINYINT);
-        maker.table.addIndex(model.CLUSTER_INVALS_NODEID_KEY);
+        maker = new TableMaker(Model.CLUSTER_INVALS_TABLE_NAME);
+        maker.newColumn(Model.CLUSTER_INVALS_NODEID_KEY, ColumnType.CLUSTERNODE);
+        maker.newColumn(Model.CLUSTER_INVALS_ID_KEY, ColumnType.NODEVAL);
+        maker.newColumn(Model.CLUSTER_INVALS_FRAGMENTS_KEY, ColumnType.CLUSTERFRAGS);
+        maker.newColumn(Model.CLUSTER_INVALS_KIND_KEY, ColumnType.TINYINT);
+        maker.table.addIndex(Model.CLUSTER_INVALS_NODEID_KEY);
         maker.postProcessClusterInvalidations();
     }
 
@@ -716,9 +718,9 @@ public class SQLInfo {
      * node.
      */
     protected void initRepositorySQL() {
-        TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
-        maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
-        maker.newColumn(model.REPOINFO_REPONAME_KEY, ColumnType.SYSNAME);
+        TableMaker maker = new TableMaker(Model.REPOINFO_TABLE_NAME);
+        maker.newColumn(Model.MAIN_KEY, ColumnType.NODEIDFK);
+        maker.newColumn(Model.REPOINFO_REPONAME_KEY, ColumnType.SYSNAME);
         maker.postProcessRepository();
     }
 
@@ -726,14 +728,14 @@ public class SQLInfo {
      * Creates the SQL for the table holding hierarchy information.
      */
     protected void initHierarchySQL() {
-        TableMaker maker = new TableMaker(model.HIER_TABLE_NAME);
+        TableMaker maker = new TableMaker(Model.HIER_TABLE_NAME);
         // if (separateMainTable)
         // maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFK);
-        maker.newColumn(model.MAIN_KEY, ColumnType.NODEID);
-        Column column = maker.newColumn(model.HIER_PARENT_KEY, ColumnType.NODEIDFKNULL);
-        maker.newColumn(model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
-        maker.newColumn(model.HIER_CHILD_NAME_KEY, ColumnType.STRING);
-        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
+        maker.newColumn(Model.MAIN_KEY, ColumnType.NODEID);
+        Column column = maker.newColumn(Model.HIER_PARENT_KEY, ColumnType.NODEIDFKNULL);
+        maker.newColumn(Model.HIER_CHILD_POS_KEY, ColumnType.INTEGER);
+        maker.newColumn(Model.HIER_CHILD_NAME_KEY, ColumnType.STRING);
+        maker.newColumn(Model.HIER_CHILD_ISPROPERTY_KEY, ColumnType.BOOLEAN); // notnull
         // if (!separateMainTable)
         maker.newFragmentFields();
         maker.postProcess();
@@ -741,32 +743,32 @@ public class SQLInfo {
         // if (!separateMainTable)
         // maker.postProcessIdGeneration();
 
-        maker.table.addIndex(model.HIER_PARENT_KEY);
-        maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
+        maker.table.addIndex(Model.HIER_PARENT_KEY);
+        maker.table.addIndex(Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
-        maker.table.addIndex(model.MAIN_PRIMARY_TYPE_KEY);
+        maker.table.addIndex(Model.MAIN_PRIMARY_TYPE_KEY);
 
         if (model.getRepositoryDescriptor().getSoftDeleteEnabled()) {
-            maker.table.addIndex(model.MAIN_IS_DELETED_KEY);
+            maker.table.addIndex(Model.MAIN_IS_DELETED_KEY);
         }
     }
 
     protected void initSelectDescendantsSQL() {
-        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
+        Table hierTable = database.getTable(Model.HIER_TABLE_NAME);
         Table proxyTable = null;
         if (proxiesEnabled) {
-            proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+            proxyTable = database.getTable(Model.PROXY_TABLE_NAME);
         }
-        Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
-        List<Column> whatCols = new ArrayList<Column>(Arrays.asList(mainColumn,
-                hierTable.getColumn(model.HIER_PARENT_KEY), hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY),
-                hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY)));
+        Column mainColumn = hierTable.getColumn(Model.MAIN_KEY);
+        List<Column> whatCols = new ArrayList<>(Arrays.asList(mainColumn,
+                hierTable.getColumn(Model.HIER_PARENT_KEY), hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY),
+                hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY)));
         if (proxiesEnabled) {
-            whatCols.add(proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY));
-            whatCols.add(proxyTable.getColumn(model.PROXY_TARGET_KEY));
+            whatCols.add(proxyTable.getColumn(Model.PROXY_VERSIONABLE_KEY));
+            whatCols.add(proxyTable.getColumn(Model.PROXY_TARGET_KEY));
         }
         // no mixins, not used to decide if we have a version or proxy
-        List<String> whats = new ArrayList<String>(6);
+        List<String> whats = new ArrayList<>(6);
         for (Column col : whatCols) {
             whats.add(col.getFullQuotedName());
         }
@@ -775,11 +777,11 @@ public class SQLInfo {
         String from = hierTable.getQuotedName();
         if (proxiesEnabled) {
             from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON " + mainColumn.getFullQuotedName() + " = "
-                    + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+                    + proxyTable.getColumn(Model.MAIN_KEY).getFullQuotedName();
         }
         select.setFrom(from);
         String where = dialect.getInTreeSql(mainColumn.getFullQuotedName(), null);
-        where += getSoftDeleteClause(model.HIER_TABLE_NAME);
+        where += getSoftDeleteClause(Model.HIER_TABLE_NAME);
         select.setWhere(where);
         selectDescendantsInfoSql = select.getStatement();
         selectDescendantsInfoWhatColumns = whatCols;
@@ -792,9 +794,9 @@ public class SQLInfo {
      * hierarchy table.
      */
     protected void initAncestorsSQL() {
-        TableMaker maker = new TableMaker(model.ANCESTORS_TABLE_NAME);
-        maker.newColumn(model.MAIN_KEY, ColumnType.NODEIDFKMUL);
-        maker.newColumn(model.ANCESTORS_ANCESTOR_KEY, ColumnType.NODEARRAY);
+        TableMaker maker = new TableMaker(Model.ANCESTORS_TABLE_NAME);
+        maker.newColumn(Model.MAIN_KEY, ColumnType.NODEIDFKMUL);
+        maker.newColumn(Model.ANCESTORS_ANCESTOR_KEY, ColumnType.NODEARRAY);
     }
 
     /**
@@ -803,16 +805,16 @@ public class SQLInfo {
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
         ColumnType type;
-        if (tableName.equals(model.HIER_TABLE_NAME)) {
+        if (tableName.equals(Model.HIER_TABLE_NAME)) {
             type = ColumnType.NODEID;
-        } else if (tableName.equals(model.LOCK_TABLE_NAME)) {
+        } else if (tableName.equals(Model.LOCK_TABLE_NAME)) {
             type = ColumnType.NODEIDPK; // no foreign key to hierarchy
         } else if (model.isCollectionFragment(tableName)) {
             type = ColumnType.NODEIDFKMUL;
         } else {
             type = ColumnType.NODEIDFK;
         }
-        maker.newColumn(model.MAIN_KEY, type);
+        maker.newColumn(Model.MAIN_KEY, type);
         maker.newFragmentFields();
         maker.postProcess();
         // if (isMain)
@@ -851,9 +853,8 @@ public class SQLInfo {
             }
         }
 
-        protected Column newColumn(String key, ColumnType type) {
-            String columnName = key;
-            Column column = table.addColumn(columnName, type, key, model);
+        protected Column newColumn(String columnName, ColumnType type) {
+            Column column = table.addColumn(columnName, type, columnName, model);
             if (type == ColumnType.NODEID) {
                 // column.setIdentity(true); if idGenPolicy identity
                 column.setNullable(false);
@@ -865,11 +866,11 @@ public class SQLInfo {
             }
             if (type == ColumnType.NODEIDFKMUL) {
                 column.setNullable(false);
-                table.addIndex(key);
+                table.addIndex(columnName);
             }
             if (type == ColumnType.NODEIDFK || type == ColumnType.NODEIDFKNP || type == ColumnType.NODEIDFKNULL
                     || type == ColumnType.NODEIDFKMUL) {
-                column.setReferences(database.getTable(model.HIER_TABLE_NAME), model.MAIN_KEY);
+                column.setReferences(database.getTable(Model.HIER_TABLE_NAME), Model.MAIN_KEY);
             }
             return column;
         }
@@ -878,29 +879,27 @@ public class SQLInfo {
 
         protected void postProcessClusterNodes() {
             Collection<Column> columns = table.getColumns();
-            List<Column> insertColumns = new ArrayList<Column>(columns.size());
             Insert insert = new Insert(table);
             for (Column column : columns) {
-                insertColumns.add(column);
                 insert.addColumn(column);
             }
             createClusterNodeSql = insert.getStatement();
             createClusterNodeColumns = new ArrayList<>(columns);
 
             Delete delete = new Delete(table);
-            Column column = table.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+            Column column = table.getColumn(Model.CLUSTER_NODES_NODEID_KEY);
             delete.setWhere(column.getQuotedName() + " = ?");
             deleteClusterNodeSql = delete.getStatement();
             deleteClusterNodeColumn = column;
         }
 
         protected void postProcessClusterInvalidations() {
-            clusterInvalidationsColumns = Arrays.asList(table.getColumn(model.CLUSTER_INVALS_NODEID_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_ID_KEY), table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+            clusterInvalidationsColumns = Arrays.asList(table.getColumn(Model.CLUSTER_INVALS_NODEID_KEY),
+                    table.getColumn(Model.CLUSTER_INVALS_ID_KEY), table.getColumn(Model.CLUSTER_INVALS_FRAGMENTS_KEY),
+                    table.getColumn(Model.CLUSTER_INVALS_KIND_KEY));
 
             Delete delete = new Delete(table);
-            Column column = table.getColumn(model.CLUSTER_INVALS_NODEID_KEY);
+            Column column = table.getColumn(Model.CLUSTER_INVALS_NODEID_KEY);
             delete.setWhere(column.getQuotedName() + " = ?");
             deleteClusterInvalsSql = delete.getStatement();
             deleteClusterInvalsColumn = column;
@@ -917,10 +916,10 @@ public class SQLInfo {
             for (Column column : table.getColumns()) {
                 String key = column.getKey();
                 String qname = column.getQuotedName();
-                if (key.equals(model.MAIN_KEY)) {
+                if (key.equals(Model.MAIN_KEY)) {
                     what = qname;
                     selectRootIdWhatColumn = column;
-                } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
+                } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
                     where = qname + " = ?";
                 } else {
                     throw new RuntimeException(column.toString());
@@ -952,32 +951,32 @@ public class SQLInfo {
 
         protected void postProcessSelectById() {
             String[] orderBys = orderBy == null ? NO_ORDER_BY : new String[] { orderBy, ORDER_ASC };
-            SQLInfoSelect select = makeSelect(table, orderBys, model.MAIN_KEY);
+            SQLInfoSelect select = makeSelect(table, orderBys, Model.MAIN_KEY);
             selectFragmentById.put(tableName, select);
         }
 
         protected void postProcessSelectChildrenIdsAndTypes() {
-            List<Column> whatColumns = new ArrayList<Column>(2);
-            List<String> whats = new ArrayList<String>(2);
-            Column column = table.getColumn(model.MAIN_KEY);
+            List<Column> whatColumns = new ArrayList<>(2);
+            List<String> whats = new ArrayList<>(2);
+            Column column = table.getColumn(Model.MAIN_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
-            column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+            column = table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
-            column = table.getColumn(model.MAIN_MIXIN_TYPES_KEY);
+            column = table.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
-            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName() + " = ?"
+            String where = table.getColumn(Model.HIER_PARENT_KEY).getQuotedName() + " = ?"
                     + getSoftDeleteClause(tableName);
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
-            where += " AND " + table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() + " = "
+            where += " AND " + table.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() + " = "
                     + dialect.toBooleanValueString(true);
             select.setWhere(where);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
@@ -987,7 +986,7 @@ public class SQLInfo {
         protected void postProcessInsert() {
             // insert (implicitly auto-generated sequences not included)
             Collection<Column> columns = table.getColumns();
-            List<Column> insertColumns = new ArrayList<Column>(columns.size());
+            List<Column> insertColumns = new ArrayList<>(columns.size());
             Insert insert = new Insert(table);
             for (Column column : columns) {
                 if (column.isIdentity()) {
@@ -1003,9 +1002,9 @@ public class SQLInfo {
 
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
-            List<String> wheres = new LinkedList<String>();
+            List<String> wheres = new LinkedList<>();
             for (Column column : table.getColumns()) {
-                if (column.getKey().equals(model.MAIN_KEY)) {
+                if (column.getKey().equals(Model.MAIN_KEY)) {
                     wheres.add(column.getQuotedName() + " = ?");
                 }
             }
@@ -1017,8 +1016,8 @@ public class SQLInfo {
         // INSERT INTO foo (id, x, y) SELECT ?, x, y FROM foo WHERE id = ?
         protected void postProcessCopy() {
             Collection<Column> columns = table.getColumns();
-            List<String> selectWhats = new ArrayList<String>(columns.size());
-            Column copyIdColumn = table.getColumn(model.MAIN_KEY);
+            List<String> selectWhats = new ArrayList<>(columns.size());
+            Column copyIdColumn = table.getColumn(Model.MAIN_KEY);
             Insert insert = new Insert(table);
             for (Column column : columns) {
                 if (column.isIdentity()) {
@@ -1060,7 +1059,8 @@ public class SQLInfo {
         /**
          * Standard select for given columns.
          */
-        public SQLInfoSelect(String sql, List<Column> whatColumns, List<Column> whereColumns, List<Column> opaqueColumns) {
+        public SQLInfoSelect(String sql, List<Column> whatColumns, List<Column> whereColumns,
+                List<Column> opaqueColumns) {
             this(sql, whatColumns, null, whereColumns, opaqueColumns);
         }
 
@@ -1077,8 +1077,8 @@ public class SQLInfo {
             this.sql = sql;
             this.whatColumns = whatColumns;
             this.mapMaker = mapMaker;
-            this.whereColumns = whereColumns == null ? null : new ArrayList<Column>(whereColumns);
-            this.opaqueColumns = opaqueColumns == null ? null : new ArrayList<Column>(opaqueColumns);
+            this.whereColumns = whereColumns == null ? null : new ArrayList<>(whereColumns);
+            this.opaqueColumns = opaqueColumns == null ? null : new ArrayList<>(opaqueColumns);
         }
     }
 
@@ -1100,13 +1100,13 @@ public class SQLInfo {
             SQLInfoSelect selectFiltered;
             String from = table.getQuotedName();
             List<String> clauses;
-            if (selType.tableName.equals(model.HIER_TABLE_NAME)) {
+            if (selType.tableName.equals(Model.HIER_TABLE_NAME)) {
                 // clause already added by makeSelect
                 clauses = null;
             } else {
-                Table hierTable = database.getTable(model.HIER_TABLE_NAME);
+                Table hierTable = database.getTable(Model.HIER_TABLE_NAME);
                 Join join = new Join(Join.INNER, hierTable.getQuotedName(), null, null,
-                        hierTable.getColumn(model.MAIN_KEY), table.getColumn(model.MAIN_KEY));
+                        hierTable.getColumn(Model.MAIN_KEY), table.getColumn(Model.MAIN_KEY));
                 from += join.toSql(dialect);
                 String clause = getSoftDeleteClause();
                 clauses = clause == null ? null : Collections.singletonList(clause);
@@ -1142,10 +1142,7 @@ public class SQLInfo {
 
         public ColumnMapMaker(List<Column> columns) {
             this.columns = columns;
-            keys = new ArrayList<String>(columns.size());
-            for (Column column : columns) {
-                keys.add(column.getKey());
-            }
+            this.keys = columns.stream().map(Column::getKey).collect(Collectors.toList());
         }
 
         public ColumnMapMaker(List<Column> columns, List<String> keys) {
@@ -1155,7 +1152,7 @@ public class SQLInfo {
 
         @Override
         public Map<String, Serializable> makeMap(ResultSet rs) throws SQLException {
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            Map<String, Serializable> map = new HashMap<>();
             int i = 1;
             for (Column column : columns) {
                 String key = keys.get(i - 1);
@@ -1187,11 +1184,11 @@ public class SQLInfo {
             String... freeColumns) {
         boolean fullQuotedName = from != null;
         List<String> freeColumnsList = Arrays.asList(freeColumns);
-        List<Column> whatColumns = new LinkedList<Column>();
-        List<Column> whereColumns = new LinkedList<Column>();
-        List<Column> opaqueColumns = new LinkedList<Column>();
-        List<String> whats = new LinkedList<String>();
-        List<String> wheres = new LinkedList<String>();
+        List<Column> whatColumns = new LinkedList<>();
+        List<Column> whereColumns = new LinkedList<>();
+        List<Column> opaqueColumns = new LinkedList<>();
+        List<String> whats = new LinkedList<>();
+        List<String> wheres = new LinkedList<>();
         for (Column column : table.getColumns()) {
             String qname = fullQuotedName ? column.getFullQuotedName() : column.getQuotedName();
             if (freeColumnsList.contains(column.getKey())) {
@@ -1219,7 +1216,7 @@ public class SQLInfo {
         select.setFrom(from);
         String where = StringUtils.join(wheres, " AND ") + getSoftDeleteClause(table.getKey());
         select.setWhere(where);
-        List<String> orders = new LinkedList<String>();
+        List<String> orders = new LinkedList<>();
         for (int i = 0; i < orderBys.length; i++) {
             String name = orderBys[i++];
             String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC : "";
@@ -1228,12 +1225,12 @@ public class SQLInfo {
             orders.add(qcol + ascdesc);
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
-        return new SQLInfoSelect(select.getStatement(), whatColumns, whereColumns, opaqueColumns.isEmpty() ? null
-                : opaqueColumns);
+        return new SQLInfoSelect(select.getStatement(), whatColumns, whereColumns,
+                opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
     public void initSQLStatements(Map<String, Serializable> testProps, List<String> sqlInitFiles) throws IOException {
-        sqlStatements = new HashMap<String, List<SQLStatement>>();
+        sqlStatements = new HashMap<>();
         SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
         if (sqlInitFiles != null) {
             for (String filename : sqlInitFiles) {

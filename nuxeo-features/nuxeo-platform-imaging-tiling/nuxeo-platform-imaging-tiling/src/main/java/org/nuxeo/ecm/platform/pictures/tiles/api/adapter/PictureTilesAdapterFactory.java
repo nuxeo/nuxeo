@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
- *
  */
 package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -38,8 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author tiry
  */
 public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
-
-    private static final Log log = LogFactory.getLog(PictureTilesAdapterFactory.class);
 
     protected static final String ORIGINAL_JPEG_VIEW_NAME = "OriginalJpeg";
 
@@ -70,8 +63,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         }
     }
 
-    private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc, String blobProperty)
-            {
+    private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc, String blobProperty) {
         if (blobProperty != null) {
             try {
                 return getPictureTilesAdapter(doc, blobProperty);

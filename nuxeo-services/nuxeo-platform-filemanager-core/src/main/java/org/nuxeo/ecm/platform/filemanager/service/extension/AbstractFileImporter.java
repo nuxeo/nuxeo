@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- *
- * $Id: AbstractPlugin.java 4105 2006-10-15 12:29:25Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
@@ -64,7 +60,7 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     protected String docType;
 
-    protected List<String> filters = new ArrayList<String>();
+    protected List<String> filters = new ArrayList<>();
 
     protected List<Pattern> patterns;
 
@@ -87,7 +83,7 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     public void setFilters(List<String> filters) {
         this.filters = filters;
-        patterns = new ArrayList<Pattern>();
+        patterns = new ArrayList<>();
         for (String filter : filters) {
             patterns.add(Pattern.compile(filter));
         }
@@ -319,8 +315,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * @deprecated use {@link #checkIn} instead, noting that it does not save the document
      */
     @Deprecated
-    protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager, DocumentModel doc)
-            {
+    protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager, DocumentModel doc) {
         doc.putContextData(VersioningService.VERSIONING_OPTION, fileManagerService.getVersioningOption());
         return documentManager.saveDocument(doc);
     }

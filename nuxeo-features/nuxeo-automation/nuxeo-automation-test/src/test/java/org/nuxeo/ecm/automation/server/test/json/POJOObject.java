@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class POJOObject {
 
     String textContent = "";
 
-    List<String> items = new ArrayList<String>();
+    List<String> items = new ArrayList<>();
 
     public POJOObject() {
         // I am a well behaved POJO suitable for automated serialization by

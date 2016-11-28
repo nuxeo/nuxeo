@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.ecm.core.management.statuses;
 
 import java.io.IOException;
@@ -28,10 +27,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.runtime.api.Framework;
@@ -67,7 +66,7 @@ public class NuxeoInstanceIdentifierHelper {
                         try {
                             byte[] hwAddr = (byte[]) method.invoke(ni);
                             if (hwAddr != null) {
-                                hwUID = hwUID + "-" + Base64.encodeBytes(hwAddr);
+                                hwUID = hwUID + "-" + Base64.encodeBase64String(hwAddr);
                             }
                             break;
                         } catch (ReflectiveOperationException e) {
@@ -78,7 +77,7 @@ public class NuxeoInstanceIdentifierHelper {
             } else {
                 Enumeration<InetAddress> addrs = ni.getInetAddresses();
                 while (addrs.hasMoreElements()) {
-                    hwUID = hwUID + "-" + Base64.encodeBytes(addrs.nextElement().getAddress());
+                    hwUID = hwUID + "-" + Base64.encodeBase64String(addrs.nextElement().getAddress());
                 }
             }
         }

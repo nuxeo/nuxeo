@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  *     Dragos Mihalache
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.impl;
 
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
@@ -289,7 +288,7 @@ public class SimpleDocumentModel implements DocumentModel {
         String partPath = cxpath.substring(cxpath.indexOf(':') + 1);
         try {
             Property property = part.resolvePath(partPath);
-		    // force dirty for updated properties
+            // force dirty for updated properties
             property.setForceDirty(true);
             return property;
         } catch (PropertyNotFoundException e) {
@@ -396,16 +395,19 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    @Deprecated
     public Collection<DataModel> getDataModelsCollection() {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @Deprecated
     public Map<String, DataModel> getDataModels() {
         return dataModels;
     }
 
     @Override
+    @Deprecated
     public DataModel getDataModel(String schema) {
         return getDataModelInternal(schema);
     }
@@ -611,6 +613,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    @Deprecated
     public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
@@ -620,6 +623,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    @Deprecated
     public DocumentPart[] getParts() {
         throw new UnsupportedOperationException();
     }

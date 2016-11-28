@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.convert.service;
 
 import java.io.Serializable;
@@ -90,7 +89,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     class ReloadListener implements EventListener {
 
-
         @Override
         public void handleEvent(Event event) {
             if (ReloadService.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
@@ -105,6 +103,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             return true;
         }
     }
+
     @Override
     public void activate(ComponentContext context) {
         converterDescriptors.clear();
@@ -224,7 +223,7 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
         // set parameters if null to avoid NPE in converters
         if (parameters == null) {
-            parameters = new HashMap<String, Serializable>();
+            parameters = new HashMap<>();
         }
 
         // exist if not registered

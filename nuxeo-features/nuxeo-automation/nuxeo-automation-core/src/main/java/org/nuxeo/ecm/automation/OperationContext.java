@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -57,8 +55,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationContext implements Map<String, Object> {
-
-    private static final Log log = LogFactory.getLog(OperationContext.class);
 
     /**
      * The context variables map
@@ -121,12 +117,12 @@ public class OperationContext implements Map<String, Object> {
     }
 
     public OperationContext(CoreSession session, Map<String, Object> vars) {
-        stacks = new HashMap<String, List<Object>>();
-        cleanupHandlers = new ArrayList<CleanupHandler>();
+        stacks = new HashMap<>();
+        cleanupHandlers = new ArrayList<>();
         loginStack = new LoginStack(session);
-        trace = new ArrayList<String>();
+        trace = new ArrayList<>();
         chainCallback = new ChainCallback();
-        this.vars = vars != null ? vars : new HashMap<String, Object>();
+        this.vars = vars != null ? vars : new HashMap<>();
     }
 
     public void setCoreSession(CoreSession session) {
@@ -173,7 +169,7 @@ public class OperationContext implements Map<String, Object> {
     public void push(String type, Object obj) {
         List<Object> stack = stacks.get(type);
         if (stack == null) {
-            stack = new ArrayList<Object>();
+            stack = new ArrayList<>();
             stacks.put(type, stack);
         }
         stack.add(obj);
@@ -247,9 +243,7 @@ public class OperationContext implements Map<String, Object> {
     public void dispose() throws OperationException {
         trace.clear();
         loginStack.clear();
-        for (CleanupHandler handler : cleanupHandlers) {
-            handler.cleanup();
-        }
+        cleanupHandlers.forEach(CleanupHandler::cleanup);
     }
 
     /**
@@ -303,7 +297,7 @@ public class OperationContext implements Map<String, Object> {
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends Object> m) {
+    public void putAll(Map<? extends String, ?> m) {
         vars.putAll(m);
     }
 
@@ -393,7 +387,7 @@ public class OperationContext implements Map<String, Object> {
      * @return a subcontext
      */
     public OperationContext getSubContext(Boolean isolate, Object input) {
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(getVars()) : getVars();
+        Map<String, Object> vars = isolate ? new HashMap<>(getVars()) : getVars();
         OperationContext subctx = new OperationContext(getCoreSession(), vars);
         subctx.setInput(input);
         subctx.addChainCallback(getChainCallback());

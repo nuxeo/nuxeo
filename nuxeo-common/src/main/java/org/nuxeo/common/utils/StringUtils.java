@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: StringUtils.java 28482 2008-01-04 15:33:39Z sfermigier $
  */
-
 package org.nuxeo.common.utils;
 
 import java.text.Normalizer;
@@ -37,7 +34,7 @@ public final class StringUtils {
     private static final String PLAIN_ASCII =
     // grave
     "AaEeIiOoUu"
-    // acute
+            // acute
             + "AaEeIiOoUuYy"
             // circumflex
             + "AaEeIiOoUuYy"
@@ -165,7 +162,7 @@ public final class StringUtils {
             }
             return new String[] { str };
         }
-        List<String> ar = new ArrayList<String>();
+        List<String> ar = new ArrayList<>();
         do {
             String segment = str.substring(s, e);
             if (trim) {

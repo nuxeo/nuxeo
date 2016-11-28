@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class OrderByList extends ArrayList<OrderByExpr> implements Operand {
 
     @Override
     public String toString() {
-        List<String> list = new ArrayList<String>(size());
+        List<String> list = new ArrayList<>(size());
         for (OrderByExpr expr : this) {
             list.add(expr.toString());
         }

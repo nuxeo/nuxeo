@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
  */
-
 package org.nuxeo.ecm.core.io.impl;
 
 import java.io.IOException;
@@ -28,16 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.QName;
-
 import org.nuxeo.common.collections.PrimitiveArrays;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -70,8 +65,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ExportedDocumentImpl implements ExportedDocument {
 
-    private static final Log log = LogFactory.getLog(ExportedDocumentImpl.class);
-
     private static final Random random = new Random();
 
     protected DocumentLocation srcLocation;
@@ -95,7 +88,6 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     /**
-     * @param doc
      * @param path the path to use for this document this is used to remove full paths
      */
     public ExportedDocumentImpl(DocumentModel doc, Path path, boolean inlineBlobs) throws IOException {
@@ -324,7 +316,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         element.addElement(ExportConstants.BLOB_FILENAME).addText(blob.getFilename() != null ? blob.getFilename() : "");
         Element data = element.addElement(ExportConstants.BLOB_DATA);
         if (inlineBlobs) {
-            String content = Base64.encodeBytes(blob.getByteArray());
+            String content = Base64.encodeBase64String(blob.getByteArray());
             data.setText(content);
         } else {
             data.setText(blobPath);

@@ -21,13 +21,13 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -68,46 +68,6 @@ public class TestStringUtils {
         assertTrue(Arrays.equals(new String[] { " ", " ", " a ", " b", " c", " d  ", "  ", "  " }, ar));
         ar = StringUtils.split(str, ',', true);
         assertTrue(Arrays.equals(new String[] { "", "", "a", "b", "c", "d", "", "" }, ar));
-    }
-
-    @Test
-    public void testJoin() {
-        String[] ar;
-
-        // String[]
-        assertNull(StringUtils.join((String[]) null, "()"));
-        assertNull(StringUtils.join((String[]) null, ','));
-        assertNull(StringUtils.join((String[]) null, null));
-        assertNull(StringUtils.join((String[]) null));
-
-        assertEquals("", StringUtils.join(new String[0]));
-
-        ar = new String[] { "a", "b", "", "c", null, "d" };
-        assertEquals("a()b()()c()()d", StringUtils.join(ar, "()"));
-        assertEquals("abcd", StringUtils.join(ar, null));
-        assertEquals("abcd", StringUtils.join(ar));
-
-        // List<String>
-        assertNull(StringUtils.join((List<String>) null, null));
-        assertNull(StringUtils.join((List<String>) null, "()"));
-        assertNull(StringUtils.join((List<String>) null, ','));
-        assertNull(StringUtils.join((List<String>) null));
-
-        List<String> li = new LinkedList<String>();
-        assertEquals("", StringUtils.join(li, "()"));
-        assertEquals("", StringUtils.join(li, ','));
-        assertEquals("", StringUtils.join(li));
-
-        li.add("a");
-        li.add("b");
-        li.add("");
-        li.add("c");
-        li.add(null);
-        li.add("d");
-        assertEquals("a()b()()c()()d", StringUtils.join(li, "()"));
-        assertEquals("a,b,,c,,d", StringUtils.join(li, ','));
-        assertEquals("abcd", StringUtils.join(li, null));
-        assertEquals("abcd", StringUtils.join(li));
     }
 
     @Test

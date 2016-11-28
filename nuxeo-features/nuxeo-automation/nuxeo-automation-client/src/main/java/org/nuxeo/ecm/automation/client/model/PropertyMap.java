@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,19 +37,19 @@ public class PropertyMap implements Serializable {
     protected final LinkedHashMap<String, Object> map;
 
     public PropertyMap() {
-        map = new LinkedHashMap<String, Object>();
+        map = new LinkedHashMap<>();
     }
 
     public PropertyMap(PropertyMap props) {
-        map = new LinkedHashMap<String, Object>(props.map);
+        map = new LinkedHashMap<>(props.map);
     }
 
     public PropertyMap(Map<String, Object> map) {
-        this.map = new LinkedHashMap<String, Object>(map);
+        this.map = new LinkedHashMap<>(map);
     }
 
     public PropertyMap(int size) {
-        map = new LinkedHashMap<String, Object>(size);
+        map = new LinkedHashMap<>(size);
     }
 
     public String getString(String key) {

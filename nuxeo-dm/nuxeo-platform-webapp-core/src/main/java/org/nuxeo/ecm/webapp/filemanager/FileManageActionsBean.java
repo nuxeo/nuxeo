@@ -35,6 +35,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +50,6 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -217,7 +217,7 @@ public class FileManageActionsBean implements FileManageActions {
             Boolean UseBase64) {
         byte[] bcontent;
         if (UseBase64.booleanValue()) {
-            bcontent = Base64.decode(content);
+            bcontent = Base64.decodeBase64(content);
         } else {
             bcontent = content.getBytes();
         }

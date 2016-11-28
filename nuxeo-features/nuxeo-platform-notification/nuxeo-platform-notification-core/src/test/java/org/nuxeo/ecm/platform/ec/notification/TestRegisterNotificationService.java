@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: TestRegisterPlacefulService.java 13110 2007-03-01 17:25:47Z rspivak $
  */
 package org.nuxeo.ecm.platform.ec.notification;
 
@@ -42,7 +40,6 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -65,7 +62,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
         File propertiesFile = FileUtils.getResourceFileFromContext("notifications.properties");
         InputStream notificationsProperties = new FileInputStream(propertiesFile);
-        ((OSGiRuntimeService) runtime).loadProperties(notificationsProperties);
+        runtime.loadProperties(notificationsProperties);
 
         deployContrib("org.nuxeo.ecm.platform.notification.core", "OSGI-INF/NotificationService.xml");
     }
@@ -88,7 +85,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         assertEquals("test-template", notif.getTemplate());
         assertEquals("NotificationContext['exp1']", notif.getTemplateExpr());
 
-        Map<String, Serializable> infos = new HashMap<String, Serializable>();
+        Map<String, Serializable> infos = new HashMap<>();
         infos.put("exp1", "myDynamicTemplate");
         String template = mailHelper.evaluateMvelExpresssion(notif.getTemplateExpr(), infos);
         assertEquals("myDynamicTemplate", template);

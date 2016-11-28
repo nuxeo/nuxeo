@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,10 +167,6 @@ public class DocumentHelper {
      * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape
      * them using '\'. If the given type is different from {@link StringType#ID} then array elements will be converted
      * to the actual type.
-     *
-     * @param value
-     * @param type
-     * @return
      */
     public static Object readStringList(String value, SimpleType type) {
         if (!type.isPrimitive()) {
@@ -226,9 +222,6 @@ public class DocumentHelper {
     /**
      * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape
      * them using '\'.
-     *
-     * @param value
-     * @return
      */
     public static String[] readStringList(String value) {
         if (value == null) {
@@ -237,12 +230,11 @@ public class DocumentHelper {
         if (value.length() == 0) {
             return new String[0];
         }
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         char[] chars = value.toCharArray();
         StringBuilder buf = new StringBuilder();
         boolean esc = false;
-        for (int i = 0; i < chars.length; i++) {
-            char c = chars[i];
+        for (char c : chars) {
             if (c == '\\') {
                 if (esc) {
                     buf.append('\\');
@@ -269,10 +261,6 @@ public class DocumentHelper {
     /**
      * Sets the properties of a document based on their JSON representation (especially for scalar lists).
      *
-     * @param session
-     * @param doc
-     * @param properties
-     * @throws IOException
      * @since 5.9.2
      */
     public static void setJSONProperties(CoreSession session, DocumentModel doc, Properties properties)
@@ -286,12 +274,6 @@ public class DocumentHelper {
     }
 
     /**
-     * @param session
-     * @param doc
-     * @param key
-     * @param value
-     * @param decodeStringListAsJSON
-     * @throws IOException
      * @since 5.9.2
      */
     public static void setProperty(CoreSession session, DocumentModel doc, String key, String value,

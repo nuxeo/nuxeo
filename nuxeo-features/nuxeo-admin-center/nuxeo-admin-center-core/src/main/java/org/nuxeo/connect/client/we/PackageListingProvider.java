@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.connect.client.we;
 
 import java.util.ArrayList;
@@ -99,8 +98,10 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             pkgs = pm.listPackages(PackageType.getByValue(pkgType), targetPlatform);
         }
-        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg("showCommunityInfo", true).arg("source", "list").arg(
-                "filterOnPlatform", filterOnPlatform);
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
+                                       .arg("showCommunityInfo", true)
+                                       .arg("source", "list")
+                                       .arg("filterOnPlatform", filterOnPlatform);
     }
 
     @GET
@@ -122,8 +123,10 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             pkgs = pm.listUpdatePackages(PackageType.getByValue(pkgType), targetPlatform);
         }
-        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg("showCommunityInfo", true).arg("source",
-                "updates").arg("filterOnPlatform", filterOnPlatform);
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
+                                       .arg("showCommunityInfo", true)
+                                       .arg("source", "updates")
+                                       .arg("filterOnPlatform", filterOnPlatform);
     }
 
     @GET
@@ -145,8 +148,10 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             pkgs = pm.listPrivatePackages(PackageType.getByValue(pkgType), targetPlatform);
         }
-        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg("showCommunityInfo", true).arg("source",
-                "private").arg("filterOnPlatform", filterOnPlatform);
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
+                                       .arg("showCommunityInfo", true)
+                                       .arg("source", "private")
+                                       .arg("filterOnPlatform", filterOnPlatform);
     }
 
     @GET
@@ -199,13 +204,15 @@ public class PackageListingProvider extends DefaultObject {
                 pkgs = pm.listRemoteOrLocalPackages(PackageType.getByValue(pkgType), targetPlatform);
             }
         }
-        return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg("showCommunityInfo", false).arg("source",
-                "remote").arg("filterOnPlatform", filterOnPlatform.toString()).arg("type", pkgType.toString()).arg(
-                "onlyRemote", onlyRemote.toString());
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgs))
+                                       .arg("showCommunityInfo", false)
+                                       .arg("source", "remote")
+                                       .arg("filterOnPlatform", filterOnPlatform.toString())
+                                       .arg("type", pkgType.toString())
+                                       .arg("onlyRemote", onlyRemote.toString());
     }
 
     /**
-     * @param filterOnPlatform
      * @return target platform if {@code filterOnPlatform==true} else null
      * @since 5.6
      */
@@ -223,8 +230,9 @@ public class PackageListingProvider extends DefaultObject {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         List<DownloadablePackage> pkgs = pm.listAllStudioRemoteOrLocalPackages();
         List<DownloadablePackage> pkgsWithoutSnapshot = StudioSnapshotHelper.removeSnapshot(pkgs);
-        return getView("simpleListing").arg("pkgs", pm.sort(pkgsWithoutSnapshot)).arg("showCommunityInfo", false).arg(
-                "source", "studio");
+        return getView("simpleListing").arg("pkgs", pm.sort(pkgsWithoutSnapshot))
+                                       .arg("showCommunityInfo", false)
+                                       .arg("source", "studio");
     }
 
     public String getStateLabel(Package pkg) {
@@ -285,8 +293,8 @@ public class PackageListingProvider extends DefaultObject {
     public boolean canDownload(Package pkg) {
         return pkg.getPackageState() == PackageState.REMOTE
                 && (pkg.getType() == PackageType.STUDIO || pkg.getVisibility() == PackageVisibility.PUBLIC //
-                || (ConnectStatusHolder.instance().isRegistred() //
-                && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
+                        || (ConnectStatusHolder.instance().isRegistred() //
+                                && ConnectStatusHolder.instance().getStatus().status() == SubscriptionStatusType.OK));
     }
 
     @GET
@@ -309,7 +317,7 @@ public class PackageListingProvider extends DefaultObject {
     public boolean registrationRequired(Package pkg) {
         return pkg.getPackageState() == PackageState.REMOTE && pkg.getType() != PackageType.STUDIO
                 && pkg.getVisibility() != PackageVisibility.PUBLIC && (!ConnectStatusHolder.instance().isRegistred() //
-                || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
+                        || ConnectStatusHolder.instance().getStatus().status() != SubscriptionStatusType.OK);
     }
 
 }

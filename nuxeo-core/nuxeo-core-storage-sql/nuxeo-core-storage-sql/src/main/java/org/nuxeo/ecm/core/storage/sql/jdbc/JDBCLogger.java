@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public class JDBCLogger {
     }
 
     public void logResultSet(ResultSet rs, List<Column> columns) throws SQLException {
-        List<String> res = new LinkedList<String>();
+        List<String> res = new LinkedList<>();
         int i = 0;
         for (Column column : columns) {
             i++;
@@ -112,7 +112,7 @@ public class JDBCLogger {
     }
 
     public void logMap(Map<String, Serializable> map) throws SQLException {
-        List<String> res = new LinkedList<String>();
+        List<String> res = new LinkedList<>();
         for (Entry<String, Serializable> en : map.entrySet()) {
             res.add(en.getKey() + "=" + loggedValue(en.getValue()));
         }
@@ -123,7 +123,7 @@ public class JDBCLogger {
         List<Serializable> debugIds = ids;
         String end = "";
         if (ids.size() > DEBUG_MAX_ARRAY) {
-            debugIds = new ArrayList<Serializable>(DEBUG_MAX_ARRAY);
+            debugIds = new ArrayList<>(DEBUG_MAX_ARRAY);
             int i = 0;
             for (Serializable id : ids) {
                 debugIds.add(id);
@@ -145,7 +145,7 @@ public class JDBCLogger {
     }
 
     public void logSQL(String sql, List<Column> columns, Row row, Set<String> deltas) {
-        List<Serializable> values = new ArrayList<Serializable>(columns.size());
+        List<Serializable> values = new ArrayList<>(columns.size());
         for (Column column : columns) {
             String key = column.getKey();
             Serializable value = row.get(key);
@@ -226,7 +226,7 @@ public class JDBCLogger {
                 if (i > 0) {
                     b.append(',');
                     if (i > DEBUG_MAX_ARRAY) {
-                        b.append("...(" + v.length + " items)...");
+                        b.append("...(").append(v.length).append(" items)...");
                         break;
                     }
                 }

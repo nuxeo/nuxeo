@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,28 +111,24 @@ public interface AutomationService {
      */
     Object run(OperationContext ctx, String id, Map<String, Object> params) throws OperationException;
 
-/**
-     * Registers a parametrized operation chain. This chain can be executed
-     * later by calling <code>run</code> and passing the chain ID. If a chain
-     * having the same ID exists an exception is thrown
+    /**
+     * Registers a parametrized operation chain. This chain can be executed later by calling <code>run</code> and
+     * passing the chain ID. If a chain having the same ID exists an exception is thrown
      *
-     * @deprecated no specific chain registry anymore: chains are now
-     *             operations, use {@link #putOperation(OperationType, boolean)
-     *             method instead.
+     * @deprecated no specific chain registry anymore: chains are now operations, use
+     *             {@link #putOperation(OperationType, boolean) method instead.
      * @since 5.7.2
      */
     @Deprecated
     void putOperationChain(OperationChain chain) throws OperationException;
 
-/**
-     * Registers a parametrized operation chain. This chain can be executed
-     * later by calling <code>run</code> and passing the chain ID. If the
-     * replace attribute is true then any chain already registered under the
-     * same id will be replaced otherwise an exception is thrown.
+    /**
+     * Registers a parametrized operation chain. This chain can be executed later by calling <code>run</code> and
+     * passing the chain ID. If the replace attribute is true then any chain already registered under the same id will
+     * be replaced otherwise an exception is thrown.
      *
-     * @deprecated no specific chain registry anymore: chains are now
-     *             operations, use {@link #putOperation(OperationType, boolean)
-     *             method instead.
+     * @deprecated no specific chain registry anymore: chains are now operations, use
+     *             {@link #putOperation(OperationType, boolean) method instead.
      * @since 5.7.2
      */
     @Deprecated

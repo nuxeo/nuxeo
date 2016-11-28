@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,7 +174,7 @@ public abstract class AbstractWork implements Work {
     public void setDocuments(String repositoryName, List<String> docIds) {
         this.repositoryName = repositoryName;
         docId = null;
-        this.docIds = new ArrayList<String>(docIds);
+        this.docIds = new ArrayList<>(docIds);
     }
 
     /**
@@ -472,7 +472,7 @@ public abstract class AbstractWork implements Work {
                 log.debug("Suspended work: " + this);
             } else {
                 if (!(e instanceof ConcurrentUpdateException)) {
-                    if (!isSuspending() || !(e instanceof InterruptedException)) {
+                    if (!isSuspending()) {
                         log.error("Exception during work: " + this, e);
                         if (WorkSchedulePath.captureStack) {
                             WorkSchedulePath.log.error("Work schedule path", getSchedulePath().getStack());
@@ -559,7 +559,7 @@ public abstract class AbstractWork implements Work {
     @Override
     public List<DocumentLocation> getDocuments() {
         if (docIds != null) {
-            List<DocumentLocation> res = new ArrayList<DocumentLocation>(docIds.size());
+            List<DocumentLocation> res = new ArrayList<>(docIds.size());
             for (String docId : docIds) {
                 res.add(newDocumentLocation(docId));
             }
