@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.common.utils.URIUtils;
 
 /**
  * @since 5.8
@@ -43,24 +44,23 @@ public class URLUtilsTest {
     }
 
     @Test
-    public void spaceAreEncodedInUrls() throws Exception {
-
-        when(req.getPathInfo()).thenReturn("/path/doc with space/");
-
+    public void testAPIServletForwarding() throws Exception {
         APIServlet servlet = new APIServlet();
-        servlet.service(req, resp);
 
+        when(req.getContextPath()).thenReturn("/nuxeo");
+        when(req.getRequestURI()).thenReturn("/nuxeo/api/path/doc%20with%20space/");
+        servlet.service(req, resp);
         verify(req).getRequestDispatcher("/site/api/path/doc%20with%20space/");
 
-    }
-
-    @Test
-    public void arobasAreNotEncodediInUrls() throws Exception {
-        when(req.getPathInfo()).thenReturn("/path/default-domain/@children");
-
-        APIServlet servlet = new APIServlet();
+        when(req.getRequestURI()).thenReturn("/nuxeo/api/path/default-domain/@children");
         servlet.service(req, resp);
-
         verify(req).getRequestDispatcher("/site/api/path/default-domain/@children");
+
+        String encodedDocName = URIUtils.quoteURIPathComponent("test ; doc [with] some #, $, :, ; &? and =+", false,
+                false);
+        when(req.getRequestURI()).thenReturn("/nuxeo/api/path/default-domain/" + encodedDocName);
+        servlet.service(req, resp);
+        verify(req).getRequestDispatcher("/site/api/path/default-domain/" + encodedDocName);
     }
+
 }
