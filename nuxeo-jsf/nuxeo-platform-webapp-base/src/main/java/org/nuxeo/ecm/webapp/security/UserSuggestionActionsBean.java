@@ -265,16 +265,18 @@ public class UserSuggestionActionsBean implements Serializable {
     public Map<String, Object> getUserInfo(String id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put(ID_KEY_NAME, id);
-        if (userManager.getGroup(id) != null) {
-            // group
-            res.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + id);
-            res.put(TYPE_KEY_NAME, GROUP_TYPE);
-            res.put(ENTRY_KEY_NAME, userManager.getGroupModel(id));
-        } else if (!StringUtils.isBlank(id)) {
-            // user
-            res.put(PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + id);
-            res.put(TYPE_KEY_NAME, USER_TYPE);
-            res.put(ENTRY_KEY_NAME, userManager.getUserModel(id));
+        if (!StringUtils.isBlank(id)) {
+            if (userManager.getGroup(id) != null) {
+                // group
+                res.put(PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + id);
+                res.put(TYPE_KEY_NAME, GROUP_TYPE);
+                res.put(ENTRY_KEY_NAME, userManager.getGroupModel(id));
+            } else {
+                // user
+                res.put(PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + id);
+                res.put(TYPE_KEY_NAME, USER_TYPE);
+                res.put(ENTRY_KEY_NAME, userManager.getUserModel(id));
+            }
         }
         return res;
     }
