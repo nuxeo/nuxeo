@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -64,6 +65,9 @@ public class TestCoreDirectory {
 
     @Inject
     protected LoginService loginService;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected RuntimeHarness harness;
@@ -197,6 +201,8 @@ public class TestCoreDirectory {
 
         DocumentModelList users = dirSession.query(usernamefilter);
         assertEquals(1, users.size());
+
+        coreFeature.getStorageConfiguration().sleepForFulltext();
 
         Set<String> fulltext = new HashSet<>();
         fulltext.add("username");
