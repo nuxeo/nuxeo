@@ -21,11 +21,12 @@
 
 package org.nuxeo.ecm.webengine.security;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.ParseException;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestPermissionService {
 

@@ -97,7 +97,7 @@ public class RunOperationOnListInNewTransaction {
                 OperationContext subctx = new OperationContext(session, vars);
                 subctx.setInput(ctx.getInput());
                 subctx.put(itemName, value);
-                service.run(subctx, chainId, null);
+                service.run(subctx, chainId);
                 completedAbruptly = false;
             } finally {
                 if (completedAbruptly) {

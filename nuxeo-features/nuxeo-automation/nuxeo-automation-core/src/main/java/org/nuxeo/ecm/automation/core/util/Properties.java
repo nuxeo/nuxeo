@@ -26,14 +26,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.google.common.base.Objects;
-
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import com.google.common.base.Objects;
 
 /**
  * Inline properties file content. This class exists to have a real type for parameters accepting properties content.
@@ -81,7 +81,9 @@ public class Properties extends HashMap<String, String> {
 
     public Properties(String content) throws IOException {
         StringReader reader = new StringReader(content);
-        loadProperties(reader, this);
+        Map<String,String> props = new HashMap<>();
+        loadProperties(reader, props);
+        putAll(props);
     }
 
     /**

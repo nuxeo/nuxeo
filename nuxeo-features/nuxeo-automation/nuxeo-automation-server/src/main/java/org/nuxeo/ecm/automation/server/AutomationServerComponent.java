@@ -168,7 +168,7 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
     @Override
     public boolean accept(String name, boolean isChain, HttpServletRequest req) {
         if (isChain) {
-            name = "Chain." + name;
+            name = Constants.CHAIN_ID_PREFIX  + name;
         }
         RestBinding binding = lookup().get(name);
         if (binding != null) {

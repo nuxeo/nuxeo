@@ -39,15 +39,15 @@ public class OperationParameters implements Serializable {
 
     protected final String oid;
 
-    protected final Map<String, Object> params;
+    protected final Map<String, Object> params = new HashMap<>();
 
     public OperationParameters(String oid) {
-        this(oid, new HashMap<String, Object>());
+        this.oid = oid;
     }
 
     public OperationParameters(String oid, Map<String, Object> params) {
-        this.oid = oid;
-        this.params = params;
+        this(oid);
+        this.params.putAll(params);
     }
 
     /**

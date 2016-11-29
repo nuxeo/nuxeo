@@ -62,7 +62,7 @@ public class RunFileChain {
     protected boolean isolate = false;
 
     @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
-    protected Properties chainParameters;
+    protected Properties chainParameters = new Properties();
 
     /**
      * @since 6.0 Define if the chain in parameter should be executed in new transaction.
@@ -93,7 +93,7 @@ public class RunFileChain {
         if (newTx) {
             result = (Blob) service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
         } else {
-            result = (Blob) service.run(subctx, chainId, (Map) chainParameters);
+            result = (Blob) service.run(subctx, chainId, chainParameters);
         }
 
         // reconnect documents in the context

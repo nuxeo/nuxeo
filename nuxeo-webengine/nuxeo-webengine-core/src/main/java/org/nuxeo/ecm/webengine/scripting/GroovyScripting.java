@@ -21,12 +21,6 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyCodeSource;
-import groovy.lang.GroovyRuntimeException;
-import groovy.lang.Script;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -35,6 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.runtime.InvokerHelper;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyCodeSource;
+import groovy.lang.GroovyRuntimeException;
+import groovy.lang.Script;
 
 /**
  * For Groovy we are not using the javax.script API because we need more control over debug mode and script class

@@ -109,7 +109,7 @@ public interface AutomationService {
     /**
      * Shortcut to execute a single operation described by the given ID and map of parameters
      */
-    Object run(OperationContext ctx, String id, Map<String, Object> params) throws OperationException;
+    Object run(OperationContext ctx, String id, Map<String, ?> params) throws OperationException;
 
 /**
      * Registers a parametrized operation chain. This chain can be executed
@@ -274,6 +274,6 @@ public interface AutomationService {
      * @param rollbackGlobalOnError Rollback or not transaction after failing.
      * @since 6.0
      */
-    Object runInNewTx(OperationContext ctx, String chainId, Map chainParameters, Integer timeout,
+    Object runInNewTx(OperationContext ctx, String chainId, Map<String,?> chainParameters, Integer timeout,
             boolean rollbackGlobalOnError) throws OperationException;
 }

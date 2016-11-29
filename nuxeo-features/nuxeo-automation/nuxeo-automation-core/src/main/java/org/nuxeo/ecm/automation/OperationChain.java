@@ -21,9 +21,13 @@ package org.nuxeo.ecm.automation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * Describes an operation chain execution.
@@ -37,9 +41,9 @@ public class OperationChain implements Serializable {
     protected final String id;
 
     // (via REST for example)
-    protected final List<OperationParameters> operations;
+    protected final List<OperationParameters> operations = new ArrayList<>();
 
-    protected final Map<String, Object> chainParameters;
+    protected final Map<String, Object> chainParameters = new HashMap<>();
 
     protected String description;
 
@@ -51,21 +55,17 @@ public class OperationChain implements Serializable {
     protected boolean isPublic; // whether this chain is visible to clients
 
     public OperationChain(String id) {
-        this.id = id;
-        operations = new ArrayList<OperationParameters>();
-        chainParameters = new HashMap<String, Object>();
+        this(id, Collections.emptyList());
     }
 
     public OperationChain(String id, List<OperationParameters> operations) {
-        this.id = id;
-        this.operations = operations;
-        chainParameters = new HashMap<String, Object>();
+        this(id, operations, Collections.emptyMap());
     }
 
     public OperationChain(String id, List<OperationParameters> operations, Map<String, Object> chainParameters) {
         this.id = id;
-        this.operations = operations;
-        this.chainParameters = chainParameters;
+        this.operations.addAll(operations);
+        this.chainParameters.putAll(chainParameters);
     }
 
     public String getId() {
@@ -119,14 +119,18 @@ public class OperationChain implements Serializable {
     /**
      * @since 5.7.2 Adding chain parameters
      */
-    public void addChainParameters(Map<String, Object> chainParameter) {
+    public void addChainParameters(Map<String, ?> chainParameter) {
+        if (chainParameter == null) {
+            LogFactory.getLog(OperationChain.class).warn("null parameters given to " + id, new Throwable("stack trace"));
+            return;
+        }
         chainParameters.putAll(chainParameter);
     }
 
     /**
      * @since 5.7.2 Getting chain parameters
      */
-    public Map<String, Object> getChainParameters() {
+    public Map<String, ?> getChainParameters() {
         return chainParameters;
     }
 
