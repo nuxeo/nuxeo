@@ -149,12 +149,15 @@ public class RandomBug {
         @Inject
         protected RunNotifier notifier;
 
+        @Inject
+        FeaturesRunner runner;
+
         public RepeatStatement statement;
 
         @Override
         public Statement apply(Statement base, Description description) {
-            final Repeat actual = description.getAnnotation(Repeat.class);
-            if (actual == null) {
+            Repeat actual = runner.getConfig(Repeat.class);
+            if (actual.issue() == null) {
                 return base;
             }
             return statement = onRepeat(actual, notifier, base, description);
@@ -162,7 +165,7 @@ public class RandomBug {
 
         @Override
         public Statement apply(Statement base, FrameworkMethod method, Object fixtureTarget) {
-            final Repeat actual = method.getAnnotation(Repeat.class);
+            Repeat actual = method.getAnnotation(Repeat.class);
             if (actual == null) {
                 return base;
             }
