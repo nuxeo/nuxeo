@@ -75,7 +75,8 @@ public class TreeHelper {
             }
         }
         // create it
-        DocumentModel newDocument = session.createDocumentModel(rootPath, IdUtils.generateId(id), folderType);
+        DocumentModel newDocument = session.createDocumentModel(rootPath, IdUtils.generateId(id, "-", true, 24),
+                folderType);
         newDocument.setPropertyValue(TITLE_PROPERTY_NAME, id);
         newDocument = session.createDocument(newDocument);
         return newDocument;

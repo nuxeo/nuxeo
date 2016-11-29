@@ -40,11 +40,6 @@ public class RouteModelsReloader implements EventListener {
     private static final Log log = LogFactory.getLog(RouteModelsReloader.class);
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (!Framework.isDevModeSet()) {
             log.info("Do not flush the directory caches: dev mode is not set");

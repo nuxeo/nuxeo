@@ -33,7 +33,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon/>
     <common:icon-expanded/>
-    <common:size/>
   </schema>
   <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
     <rnode:lastActor/>

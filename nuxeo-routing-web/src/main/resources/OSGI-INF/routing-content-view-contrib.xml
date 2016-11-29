@@ -14,7 +14,7 @@
         <parameter>#{routingActions.getRelatedRoute().getDocument().getId()}</parameter>
         <whereClause docType="TaskDoc">
           <fixedPart>
-            nt:targetDocumentId = ? AND 
+            nt:targetDocumentsIds = ? AND
             nt:processId = ? AND
             ecm:currentLifeCycleState = 'ended'
           </fixedPart>

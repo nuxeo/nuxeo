@@ -32,7 +32,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon/>
     <common:icon-expanded/>
-    <common:size/>
   </schema>
   <schema xmlns:var_Task6d8="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task6d8" name="var_Task6d8">
     <var_Task6d8:comment/>

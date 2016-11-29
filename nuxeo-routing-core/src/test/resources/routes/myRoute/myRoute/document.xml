@@ -38,7 +38,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon/>
     <common:icon-expanded/>
-    <common:size/>
   </schema>
   <schema xmlns:docri="http://www.nuxeo.org/ecm/schemas/document_route_instance" name="document_route_instance">
     <docri:variablesFacet><![CDATA[FacetRoute1]]></docri:variablesFacet>

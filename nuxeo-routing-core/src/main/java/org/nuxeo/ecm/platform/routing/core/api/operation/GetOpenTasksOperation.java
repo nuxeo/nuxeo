@@ -85,7 +85,7 @@ public class GetOpenTasksOperation {
         }
         tasks = taskService.getAllTaskInstances(processId, nodeId, session);
         for (Task task : tasks) {
-            if (doc.getId().equals(task.getTargetDocumentId())) {
+            if (task.getTargetDocumentsIds().contains(doc.getId())) {
                 if (username == null || task.getActors().contains(username)) {
                     taskDocs.add(task.getDocument());
                 }

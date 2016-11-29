@@ -673,10 +673,6 @@ public class RoutingTaskActionsBean implements Serializable {
             return docIds;
         }
         uniqueTargetDocIds.addAll(currentTask.getTargetDocumentsIds());
-        String targetDocumentId = currentTask.getTargetDocumentId();
-        if (targetDocumentId != null) {
-            uniqueTargetDocIds.add(targetDocumentId);
-        }
         docIds.addAll(uniqueTargetDocIds);
         return docIds.isEmpty() ? null : docIds;
     }

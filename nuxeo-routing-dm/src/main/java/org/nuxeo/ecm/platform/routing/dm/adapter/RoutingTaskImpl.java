@@ -42,13 +42,10 @@ public class RoutingTaskImpl extends TaskImpl implements RoutingTask {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * @deprecated {@link Task#getTargetDocumentsIds() } should be used instead
-     */
-    @Deprecated
     @Override
     public DocumentModelList getAttachedDocuments(CoreSession coreSession) {
-        DocumentRef stepIdRef = new IdRef(getTargetDocumentId());
+        // Don't handle all target documents ids as it will be removed in 9.10
+        DocumentRef stepIdRef = new IdRef(getTargetDocumentsIds().get(0));
         DocumentModel targetDocument = coreSession.getDocument(stepIdRef);
         DocumentModelList docList = new DocumentModelListImpl();
         docList.add(targetDocument);

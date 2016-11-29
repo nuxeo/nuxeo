@@ -112,7 +112,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data.nt.targetDocumentId</field>
+        <field>data.nt.targetDocumentsIds</field>
       </fields>
     </widget>
 
@@ -198,7 +198,7 @@
       <translated>true</translated>
       <fields>
         <field>data</field>
-        <field>data.nt.targetDocumentId</field>
+        <field>data.nt.targetDocumentsIds</field>
       </fields>
       <properties mode="any">
         <property name="tab">TAB_ROUTE_WORKFLOW</property>

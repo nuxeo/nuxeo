@@ -1346,7 +1346,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             query.append(String.format(" AND nt:processId = '%s'", workflowInstanceId));
         }
         if (document != null) {
-            query.append(String.format(" AND nt:targetDocumentId = '%s'", document.getId()));
+            query.append(String.format(" AND nt:targetDocumentsIds = '%s'", document.getId()));
         }
         final DocumentModelList documentModelList = session.query(query.toString());
         final List<Task> result = new ArrayList<>();
