@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.webapp.clipboard;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +46,7 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -61,11 +62,8 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -128,13 +126,16 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     private transient Map<String, List<Action>> actionCache;
 
+    @Override
     public void releaseClipboardableDocuments() {
     }
 
+    @Override
     public boolean isInitialized() {
         return documentManager != null;
     }
 
+    @Override
     public void putSelectionInWorkList(Boolean forceAppend) {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -148,10 +149,12 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     public void putSelectionInWorkList() {
         putSelectionInWorkList(false);
     }
 
+    @Override
     public void putSelectionInDefaultWorkList() {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -169,6 +172,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     @WebRemote
     public void putInClipboard(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
@@ -179,6 +183,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         autoSelectCurrentList(DocumentsListsManager.CLIPBOARD);
     }
 
+    @Override
     public void putSelectionInClipboard() {
         canEditSelectedDocs = null;
         if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
@@ -197,10 +202,12 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     public void putSelectionInWorkList(List<DocumentModel> docsList) {
         putSelectionInWorkList(docsList, false);
     }
 
+    @Override
     public void putSelectionInWorkList(List<DocumentModel> docsList, Boolean forceAppend) {
         canEditSelectedDocs = null;
         if (null != docsList) {
@@ -218,6 +225,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         log.debug("add to worklist processed...");
     }
 
+    @Override
     @Deprecated
     public void copySelection(List<DocumentModel> copiedDocs) {
         if (null != copiedDocs) {
@@ -245,6 +253,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return ref != null && documentManager.exists(ref);
     }
 
+    @Override
     public String removeWorkListItem(DocumentRef ref) {
         DocumentModel doc = null;
         if (exists(ref)) {
@@ -261,19 +270,23 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String clearWorkingList() {
         documentsListsManager.resetWorkingList(getCurrentSelectedListName());
         return null;
     }
 
+    @Override
     public String pasteDocumentList(String listName) {
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
+    @Override
     public String pasteDocumentListInside(String listName, String docId) {
         return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
     }
 
+    @Override
     public String pasteDocumentList(List<DocumentModel> docPaste) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (null != docPaste) {
@@ -293,6 +306,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) {
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         if (null != docPaste) {
@@ -383,6 +397,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return moveDocumentList(listName, currentDocument.getId());
     }
 
+    @Override
     public String moveWorkingList() {
         try {
             moveDocumentList(getCurrentSelectedListName());
@@ -393,6 +408,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String pasteWorkingList() {
         try {
             pasteDocumentList(getCurrentSelectedList());
@@ -403,6 +419,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     public String pasteClipboard() {
         try {
             pasteDocumentList(DocumentsListsManager.CLIPBOARD);
@@ -415,12 +432,14 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     @WebRemote
     public String pasteClipboardInside(String docId) {
         pasteDocumentListInside(DocumentsListsManager.CLIPBOARD, docId);
         return null;
     }
 
+    @Override
     @WebRemote
     public String moveClipboardInside(String docId) {
         moveDocumentList(DocumentsListsManager.CLIPBOARD, docId);
@@ -548,27 +567,33 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
+    @Override
     @Factory(value = "isCurrentWorkListEmpty", scope = EVENT)
     public boolean factoryForIsCurrentWorkListEmpty() {
         return isWorkListEmpty();
     }
 
+    @Override
     public boolean isWorkListEmpty() {
         return documentsListsManager.isWorkingListEmpty(getCurrentSelectedListName());
     }
 
+    @Override
     public String exportWorklistAsZip() {
         return exportWorklistAsZip(documentsListsManager.getWorkingList(getCurrentSelectedListName()));
     }
 
+    @Override
     public String exportAllBlobsFromWorkingListAsZip() {
         return exportWorklistAsZip();
     }
 
+    @Override
     public String exportMainBlobFromWorkingListAsZip() {
         return exportWorklistAsZip();
     }
 
+    @Override
     public String exportWorklistAsZip(List<DocumentModel> documents) {
         return exportWorklistAsZip(documents, true);
     }
@@ -582,6 +607,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <p>
      * Condition: the list of selected documents is not empty.
      */
+    @Override
     public boolean getCanCopy() {
         if (navigationContext.getCurrentDocument() == null) {
             return false;
@@ -598,6 +624,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>the content of the list can be added as children of the current document
      * </ul>
      */
+    @Override
     public boolean getCanPaste(String listName) {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -628,6 +655,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         }
     }
 
+    @Override
     public boolean getCanPasteInside(String listName, DocumentModel document) {
         if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
@@ -659,6 +687,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>an element in the list can be removed from its folder and added as child of the current document
      * </ul>
      */
+    @Override
     public boolean getCanMoveInside(String listName, DocumentModel document) {
         if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
@@ -704,26 +733,32 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return getCanMoveInside(listName, currentDocument);
     }
 
+    @Override
     public boolean getCanPasteWorkList() {
         return getCanPaste(getCurrentSelectedListName());
     }
 
+    @Override
     public boolean getCanMoveWorkingList() {
         return getCanMove(getCurrentSelectedListName());
     }
 
+    @Override
     public boolean getCanPasteFromClipboard() {
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
     }
 
+    @Override
     public boolean getCanPasteFromClipboardInside(DocumentModel document) {
         return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
+    @Override
     public boolean getCanMoveFromClipboardInside(DocumentModel document) {
         return getCanMoveInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
+    @Override
     public void setCurrentSelectedList(String listId) {
         if (listId != null && !listId.equals(currentSelectedList)) {
             currentSelectedList = listId;
@@ -734,16 +769,19 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     @RequestParameter()
     String listIdToSelect;
 
+    @Override
     public void selectList() {
         if (listIdToSelect != null) {
             setCurrentSelectedList(listIdToSelect);
         }
     }
 
+    @Override
     public List<DocumentModel> getCurrentSelectedList() {
         return documentsListsManager.getWorkingList(getCurrentSelectedListName());
     }
 
+    @Override
     public String getCurrentSelectedListName() {
         if (currentSelectedList == null) {
             if (!getAvailableLists().isEmpty()) {
@@ -753,6 +791,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return currentSelectedList;
     }
 
+    @Override
     public String getCurrentSelectedListTitle() {
         String title = null;
         String listName = getCurrentSelectedListName();
@@ -765,6 +804,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return title;
     }
 
+    @Override
     public List<String> getAvailableLists() {
         if (availableLists == null) {
             availableLists = documentsListsManager.getWorkingListNamesForCategory("CLIPBOARD");
@@ -772,6 +812,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return availableLists;
     }
 
+    @Override
     public List<DocumentsListDescriptor> getDescriptorsForAvailableLists() {
         if (descriptorsForAvailableLists == null) {
             List<String> availableLists = getAvailableLists();
@@ -783,6 +824,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return descriptorsForAvailableLists;
     }
 
+    @Override
     public List<Action> getActionsForCurrentList() {
         String lstName = getCurrentSelectedListName();
         if (isWorkListEmpty()) {
@@ -799,6 +841,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         }
     }
 
+    @Override
     public List<Action> getActionsForSelection() {
         return webActions.getActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST", false);
     }
@@ -812,6 +855,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         setCurrentSelectedList(previouslySelectedList);
     }
 
+    @Override
     public boolean getCanEditSelectedDocs() {
         if (canEditSelectedDocs == null) {
             if (getCurrentSelectedList().isEmpty()) {
@@ -826,6 +870,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return canEditSelectedDocs;
     }
 
+    @Override
     @Deprecated
     // no longer used by the user_clipboard.xhtml template
     public boolean getCanEditListDocs(String listName) {
@@ -852,6 +897,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return true;
     }
 
+    @Override
     public boolean isCacheEnabled() {
         if (!SeamCacheHelper.canUseSeamCache()) {
             return false;
@@ -859,10 +905,12 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return isWorkListEmpty();
     }
 
+    @Override
     public String getCacheKey() {
         return getCurrentSelectedListName() + "::" + localeSelector.getLocaleString();
     }
 
+    @Override
     public boolean isCacheEnabledForSelection() {
         if (!SeamCacheHelper.canUseSeamCache()) {
             return false;
@@ -872,35 +920,29 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     @Override
     public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) {
+        Blob blob = null;
         try {
-            FacesContext context = FacesContext.getCurrentInstance();
+            DownloadService downloadService = Framework.getService(DownloadService.class);
             DocumentListZipExporter zipExporter = new DocumentListZipExporter();
-            File tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
-            if (tmpFile == null) {
+            blob = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
+            if (blob == null) {
                 // empty zip file, do nothing
                 facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.clipboard.emptyDocuments"));
                 return null;
-            } else {
-                if (tmpFile.length() > Functions.getBigFileSizeLimit()) {
-                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                    request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
-                    String zipDownloadURL = BaseURL.getBaseURL(request);
-                    zipDownloadURL += DownloadService.NXBIGZIPFILE + "/";
-                    zipDownloadURL += tmpFile.getName();
-                    try {
-                        context.getExternalContext().redirect(zipDownloadURL);
-                    } catch (IOException e) {
-                        log.error("Error while redirecting for big file downloader", e);
-                    }
-                } else {
-                    ComponentUtils.downloadFile(tmpFile, "clipboard.zip", "clipboardZip");
-                    tmpFile.delete();
-                }
-
-                return "";
             }
+            blob.setMimeType("application/zip");
+            blob.setFilename("clipboard.zip");
+
+            String key = downloadService.storeBlobs(Collections.singletonList(blob));
+            String url = BaseURL.getBaseURL() + "/" + downloadService.getDownloadUrl(key);
+            ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+            context.redirect(url);
+            return "";
         } catch (IOException io) {
-            throw new NuxeoException(io);
+            if (blob != null) {
+                blob.getFile().delete();
+            }
+            throw new NuxeoException("Error while redirecting for clipboard content", io);
         }
     }
 }

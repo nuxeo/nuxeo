@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -198,7 +199,7 @@ public final class ComponentUtils {
      * @since 7.3
      */
     public static void download(DocumentModel doc, String xpath, Blob blob, String filename, String reason) {
-        download(doc, xpath, blob, filename, reason, null);
+        download(doc, xpath, blob, filename, reason, Collections.emptyMap());
     }
 
     /**

@@ -19,16 +19,20 @@ package org.nuxeo.ecm.core.io.download;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
@@ -44,18 +48,18 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.ecm.core.io")
-@LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service.xml")
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.core.cache" })
 public class TestDownloadService {
 
     @Inject
@@ -156,6 +160,7 @@ public class TestDownloadService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service-permission.xml")
     public void testDownloadPermission() throws Exception {
         // blob to download
         String blobValue = "Hello World";
@@ -207,6 +212,50 @@ public class TestDownloadService {
         } finally {
             loginStack.pop();
         }
+    }
+
+    @Test
+    public void testTransientCleanup() throws IOException {
+        // transfert temporary file into a blob
+        Path path = Files.createTempFile("pfouh","pfouh");
+        FileBlob blob = new FileBlob("pfouh");
+        Files.move(path, blob.getFile().toPath(), REPLACE_EXISTING);
+
+        // store the blob for downloading
+        String key = downloadService.storeBlobs(Collections.singletonList(blob));
+
+        // mock request
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        // mock response
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        @SuppressWarnings("resource")
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
+
+        // do tests while logged in
+        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
+        loginStack.push(principal, null, null);
+
+        try {
+            downloadService.downloadBlob(request, response, key, "download");
+        } finally {
+            loginStack.pop();
+        }
+
+        // the file is gone
+        assertFalse(blob.getFile().exists());
     }
 
 }

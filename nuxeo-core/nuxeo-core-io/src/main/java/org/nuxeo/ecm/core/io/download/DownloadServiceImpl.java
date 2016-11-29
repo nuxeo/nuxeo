@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -62,6 +63,8 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -145,6 +148,25 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         registry.removeContribution(descriptor);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Multipart download are not yet supported. You can only provide
+     * a blob singleton at this time.
+     */
+    @Override
+    public String storeBlobs(List<Blob> blobs) {
+        if (blobs.size() > 1) {
+            throw new IllegalArgumentException("multipart download not yet implemented");
+        }
+        TransientStore ts = Framework.getService(TransientStoreService.class).getStore("download");
+        String storeKey = UUID.randomUUID().toString();
+        ts.putBlobs(storeKey, blobs);
+        return storeKey;
+    }
+
+
+
     @Override
     public String getDownloadUrl(DocumentModel doc, String xpath, String filename) {
         return getDownloadUrl(doc.getRepositoryName(), doc.getId(), xpath, filename);
@@ -154,25 +176,44 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     public String getDownloadUrl(String repositoryName, String docId, String xpath, String filename) {
         StringBuilder sb = new StringBuilder();
         sb.append(NXFILE);
-        sb.append("/");
-        sb.append(repositoryName);
-        sb.append("/");
-        sb.append(docId);
+        sb.append("/").append(repositoryName);
+        sb.append("/").append(docId);
         if (xpath != null) {
-            sb.append("/");
-            sb.append(xpath);
+            sb.append("/").append(xpath);
             if (filename != null) {
-                sb.append("/");
-                sb.append(URIUtils.quoteURIPathComponent(filename, true));
+                sb.append("/").append(URIUtils.quoteURIPathComponent(filename, true));
             }
         }
         return sb.toString();
     }
 
     @Override
+    public String getDownloadUrl(String storeKey) {
+        return DownloadService.NXBIGBLOB + "/" + storeKey;
+    }
+
+    @Override
+    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason) throws IOException {
+        TransientStore ts = Framework.getService(TransientStoreService.class).getStore("download");
+        try {
+            List<Blob> blobs = ts.getBlobs(key);
+            if (blobs == null) {
+                throw new IllegalArgumentException("no such blobs referenced with " + key);
+            }
+            if (blobs.size() > 1) {
+                throw new IllegalArgumentException("multipart download not yet implemented");
+            }
+            Blob blob = blobs.get(0);
+            downloadBlob(request, response, null, null, blob, blob.getFilename(), reason);
+        } finally {
+            ts.remove(key);
+        }
+    }
+
+    @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason) throws IOException {
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, null);
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, Collections.emptyMap());
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -233,6 +234,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
                     decrementStorageSize(entrySize);
                 }
             }
+            FileUtils.deleteQuietly(getCachingDirectory(key));
         }
     }
 

@@ -79,7 +79,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public int getApplicationStartedOrder() {
-        ComponentInstance repositoryComponent = (ComponentInstance) Framework.getRuntime().getComponentInstance(
+        ComponentInstance repositoryComponent = Framework.getRuntime().getComponentInstance(
                 "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
         if (repositoryComponent == null) {
             return super.getApplicationStartedOrder();
@@ -93,7 +93,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
             @Override
             public void handleEvent(RuntimeServiceEvent event) {
-                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_START != event.id) {
+                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
                     return;
                 }
                 Framework.removeListener(this);
