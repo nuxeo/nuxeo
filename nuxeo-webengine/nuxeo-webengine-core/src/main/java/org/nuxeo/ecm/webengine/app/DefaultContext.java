@@ -38,12 +38,14 @@ public class DefaultContext extends AbstractWebContext {
         super(request);
     }
 
+    @Override
     @Deprecated
     public HttpHeaders getHttpHeaders() {
         // throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
         return headers;
     }
 
+    @Override
     @Deprecated
     public UriInfo getUriInfo() {
         // throw new UnsupportedOperationException("Deprecated. Use @Context UriInfo to inject this object");

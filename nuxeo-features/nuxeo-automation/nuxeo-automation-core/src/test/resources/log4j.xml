@@ -6,19 +6,27 @@
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
-    <param name="Threshold" value="TRACE" />
+    <param name="Threshold" value="WARN" />
+
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
     </layout>
   </appender>
 
-  <logger name="org.nuxeo.ecm.core.storage">
-    <level value="WARN" />
-  </logger>
+  <appender name="FILE" class="org.apache.log4j.FileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="target/trace.log" />
+    <param name="Append" value="false" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+    </layout>
+  </appender>
+
 
   <root>
-    <priority value="WARN" />
+    <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

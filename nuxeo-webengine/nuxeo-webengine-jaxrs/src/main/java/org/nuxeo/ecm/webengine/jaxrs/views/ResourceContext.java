@@ -72,7 +72,7 @@ public class ResourceContext {
     public ResourceContext(ApplicationHost app) {
         // TODO rendering in app
         this.app = app;
-        this.bundleStack = new LinkedList<Bundle>();
+        bundleStack = new LinkedList<Bundle>();
         // this.bundleStack.add(app.getBundle());
     }
 
@@ -90,6 +90,7 @@ public class ResourceContext {
 
     public void setRequest(HttpServletRequest request) {
         this.request = request;
+        session = SessionFactory.getSession(request);
     }
 
     public final Bundle getBundle() {
@@ -113,9 +114,6 @@ public class ResourceContext {
     }
 
     public CoreSession getSession() {
-        if (session == null) {
-            session = SessionFactory.getSession(request);
-        }
         return session;
     }
 

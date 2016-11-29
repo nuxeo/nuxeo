@@ -21,12 +21,12 @@
 
 package org.nuxeo.ecm.webengine.loader;
 
-import groovy.lang.GroovyClassLoader;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.classgen.Verifier;
 import org.nuxeo.ecm.webengine.WebException;
+
+import groovy.lang.GroovyClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
