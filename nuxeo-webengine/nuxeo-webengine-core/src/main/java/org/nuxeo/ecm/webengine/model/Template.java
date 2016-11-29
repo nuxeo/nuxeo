@@ -21,19 +21,18 @@
 
 package org.nuxeo.ecm.webengine.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;

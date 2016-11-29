@@ -619,27 +619,26 @@ public class CoreOperationsTest {
     @Test
     public void testRunInNewTxOperation() throws Exception {
         OperationContext ctx = new OperationContext(session);
-        OperationChain chain = new OperationChain("testChain");
 
-        chain = new OperationChain("testChain");
         // test that the global transaction is not marked for rollback
-        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false").set(
-                "rollbackGlobalOnError", "false");
         try {
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false").set(
+                    "rollbackGlobalOnError", "false");
             service.run(ctx, chain);
         } finally {
             assertFalse(TransactionHelper.isTransactionMarkedRollback());
         }
 
         // test that the global transaction is marked for rollback
-        chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false").set(
-                "rollbackGlobalOnError", "true");
         try {
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false")
+                    .set("rollbackGlobalOnError", "true");
             service.run(ctx, chain);
         } catch (Exception e) {
             assertTrue(TransactionHelper.isTransactionMarkedRollback());
         }
-
         // needed for session cleanup
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

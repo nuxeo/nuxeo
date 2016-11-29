@@ -62,7 +62,7 @@ public class RunDocumentChain {
     protected boolean isolate = false;
 
     @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
-    protected Properties chainParameters;
+    protected Properties chainParameters = new Properties();
 
     /**
      * @since 6.0 Define if the chain in parameter should be executed in new transaction.
@@ -83,7 +83,6 @@ public class RunDocumentChain {
     protected boolean rollbackGlobalOnError = true;
 
     @OperationMethod
-    @SuppressWarnings("unchecked")
     public DocumentModel run(DocumentModel doc) throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(ctx.getVars()) : ctx.getVars();
@@ -95,7 +94,7 @@ public class RunDocumentChain {
             result = (DocumentModel) service.runInNewTx(subctx, chainId, chainParameters, timeout,
                     rollbackGlobalOnError);
         } else {
-            result = (DocumentModel) service.run(subctx, chainId, (Map) chainParameters);
+            result = (DocumentModel) service.run(subctx, chainId, chainParameters);
         }
 
         // reconnect documents in the context

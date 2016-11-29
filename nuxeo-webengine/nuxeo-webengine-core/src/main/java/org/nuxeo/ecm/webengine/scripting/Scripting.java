@@ -21,8 +21,6 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
-import groovy.lang.GroovyRuntimeException;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -43,6 +41,8 @@ import javax.script.SimpleScriptContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
+
+import groovy.lang.GroovyRuntimeException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

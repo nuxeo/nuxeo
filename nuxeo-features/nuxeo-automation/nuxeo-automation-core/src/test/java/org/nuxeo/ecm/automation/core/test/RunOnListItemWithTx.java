@@ -27,9 +27,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -64,13 +62,6 @@ public class RunOnListItemWithTx {
         getOrCreateList("sids").add(session.getSessionId());
         getOrCreateList("txids").add(tx.toString());
 
-        Session sqlSession = ((AbstractSession) session).getSession();
-
-        if (sqlSession == null) {
-            System.out.println("No SQl Session !!!");
-        } else {
-            getOrCreateList("sqlsids").add("" + sqlSession.hashCode());
-        }
     }
 
 }

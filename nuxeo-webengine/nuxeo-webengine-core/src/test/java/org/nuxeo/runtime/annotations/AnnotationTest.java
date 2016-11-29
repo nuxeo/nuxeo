@@ -21,15 +21,16 @@
 
 package org.nuxeo.runtime.annotations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

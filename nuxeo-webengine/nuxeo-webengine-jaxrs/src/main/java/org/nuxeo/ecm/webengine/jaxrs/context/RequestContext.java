@@ -55,7 +55,7 @@ public class RequestContext extends HashMap<String, Object> {
     public RequestContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
-        this.cleanupHandlers = new ArrayList<RequestCleanupHandler>();
+        cleanupHandlers = new ArrayList<RequestCleanupHandler>();
         CTX.set(this);
         request.setAttribute(RequestContext.class.getName(), this);
     }

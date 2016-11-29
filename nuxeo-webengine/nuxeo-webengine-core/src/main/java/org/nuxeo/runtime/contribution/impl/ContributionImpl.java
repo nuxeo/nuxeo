@@ -27,10 +27,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.runtime.contribution.Contribution;
-import org.nuxeo.runtime.contribution.ContributionRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.contribution.Contribution;
+import org.nuxeo.runtime.contribution.ContributionRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
