@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -597,7 +598,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         assertEquals(1, ((ArrayNode) initiatorProps.get("groups")).size());
         assertEquals("administrators", ((ArrayNode) initiatorProps.get("groups")).get(0).getTextValue());
         // For the sake of security
-        assertTrue(StringUtils.isBlank(initiatorProps.get("password").getTextValue()));
+        assertNull(initiatorNode.get("properties").get("password"));
     }
 
     /**
@@ -622,7 +623,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         assertEquals(1, taskActors.size());
         assertEquals("Administrator", taskActors.get(0).get("id").getTextValue());
         // For the sake of security
-        assertTrue(StringUtils.isBlank(taskActors.get(0).get("properties").get("password").getTextValue()));
+        assertNull(taskActors.get(0).get("properties").get("password"));
     }
 
     /**
