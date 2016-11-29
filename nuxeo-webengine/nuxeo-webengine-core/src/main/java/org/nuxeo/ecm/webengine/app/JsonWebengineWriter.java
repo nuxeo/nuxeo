@@ -19,16 +19,17 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.ws.rs.core.MediaType;
+
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * @since 6.0

@@ -63,6 +63,8 @@ public class BufferingHttpServletResponse extends HttpServletResponseWrapper {
         bufferingOutputStream.stopBuffering();
     }
 
+
+
     /**
      * Don't flush if we are still buffering.
      */

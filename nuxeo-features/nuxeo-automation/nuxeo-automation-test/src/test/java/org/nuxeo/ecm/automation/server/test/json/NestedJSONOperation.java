@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.server.test.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,10 @@ public class NestedJSONOperation {
 
     public static final String ID = "Operation.NestedJSONOperation";
 
+    public NestedJSONOperation() {
+        super();
+    }
+
     @Param(name = "doubleParam", required = false)
     Double doubleParam;
 
@@ -44,7 +49,7 @@ public class NestedJSONOperation {
     POJOObject pojoParam = new POJOObject();
 
     @Param(name = "map", required = false)
-    Map<String, Object> mapParam;
+    Map<String, Object> mapParam = new HashMap<String, Object>();
 
     @SuppressWarnings("unchecked")
     @OperationMethod
@@ -57,10 +62,10 @@ public class NestedJSONOperation {
         mergedTexts += pojoParam.getTextContent();
         mergedItems.addAll(pojoParam.getItems());
 
-        if (mapParam != null && mapParam.containsKey("textContent")) {
+        if (mapParam.containsKey("textContent")) {
             mergedTexts += mapParam.get("textContent").toString();
         }
-        if (mapParam != null && mapParam.containsKey("items") && mapParam.get("items") instanceof Collection) {
+        if (mapParam.containsKey("items") && mapParam.get("items") instanceof Collection) {
             mergedItems.addAll((Collection<? extends String>) mapParam.get("items"));
         }
         if (doubleParam != null) {

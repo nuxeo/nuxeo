@@ -88,18 +88,18 @@ public class OperationTypeRegistry extends ContributionFragmentRegistry<Operatio
     // API
 
     public OperationType getOperationType(Class<?> key) {
-        return operations.get(key.getAnnotation(Operation.class).id());
+        return lookup().get(key.getAnnotation(Operation.class).id());
     }
 
     public Map<String, OperationType> lookup() {
-        Map<String, OperationType> _lookup = lookup;
-        if (_lookup == null) {
+        if (lookup == null) {
             synchronized (this) {
-                lookup = new HashMap<String, OperationType>(operations);
-                _lookup = lookup;
+                if (lookup == null) {
+                    lookup = new HashMap<String, OperationType>(operations);
+                }
             }
         }
-        return _lookup;
+        return lookup;
     }
 
 }

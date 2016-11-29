@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.webengine;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
@@ -32,8 +34,6 @@ import org.codehaus.jackson.map.module.SimpleModule;
 import org.codehaus.jackson.map.ser.BeanSerializer;
 import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.IOException;
 
 /**
  * @since 6.0

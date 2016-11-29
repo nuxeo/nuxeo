@@ -20,6 +20,25 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import static org.nuxeo.ecm.automation.core.Constants.T_BOOLEAN;
+import static org.nuxeo.ecm.automation.core.Constants.T_DATE;
+import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENT;
+import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENTS;
+import static org.nuxeo.ecm.automation.core.Constants.T_FLOAT;
+import static org.nuxeo.ecm.automation.core.Constants.T_INTEGER;
+import static org.nuxeo.ecm.automation.core.Constants.T_LONG;
+import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
+import static org.nuxeo.ecm.automation.core.Constants.T_RESOURCE;
+import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
@@ -37,24 +56,6 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.impl.DocumentRefListImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.osgi.framework.Bundle;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.nuxeo.ecm.automation.core.Constants.T_BOOLEAN;
-import static org.nuxeo.ecm.automation.core.Constants.T_DATE;
-import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENT;
-import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENTS;
-import static org.nuxeo.ecm.automation.core.Constants.T_FLOAT;
-import static org.nuxeo.ecm.automation.core.Constants.T_INTEGER;
-import static org.nuxeo.ecm.automation.core.Constants.T_LONG;
-import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
-import static org.nuxeo.ecm.automation.core.Constants.T_RESOURCE;
-import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -92,13 +93,13 @@ public class OperationChainContribution {
         protected String id;
 
         @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
-        protected ArrayList<Param> params;
+        protected List<Param> params;
 
         public String getId() {
             return id;
         }
 
-        public ArrayList<Param> getParams() {
+        public List<Param> getParams() {
             return params;
         }
     }

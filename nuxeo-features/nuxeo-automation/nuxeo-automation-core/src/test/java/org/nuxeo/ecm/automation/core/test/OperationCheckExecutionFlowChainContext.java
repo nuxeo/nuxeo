@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.test;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -40,7 +41,7 @@ public class OperationCheckExecutionFlowChainContext {
     public DocumentModel run(DocumentModel doc) throws Exception {
         // Check if chain parameters injected into execution flow operation
         // exists
-        if (((Map) ctx.get("ChainParameters")).get("exampleKey2").equals("exampleValue2")) {
+        if (((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get("exampleKey2").equals("exampleValue2")) {
             return doc;
         }
         return null;

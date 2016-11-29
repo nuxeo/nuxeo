@@ -43,12 +43,12 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestProxyAuthenticator extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.login.mod_sso.test");
-        deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mock-usermanager-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.login.mod_sso.test", "OSGI-INF/mod_sso-descriptor-bundle.xml");
     }
 
