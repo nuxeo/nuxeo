@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             CoreSession session) {
         eventProperties.put(DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY, route);
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
-        DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), route.getDocument());
+        DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                route.getDocument());
         envContext.setProperties(eventProperties);
         EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
         eventProducer.fireEvent(envContext.newEvent(eventName));
@@ -220,7 +221,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 route.save(session);
                 if (startInstance) {
                     fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>());
-                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
+                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                            DocumentRoutingEngineService.class);
                     routingEngine.start(route, map, session);
                     fireEventAfterWorkflowStarted(route, session);
                 }
@@ -237,7 +239,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public String createNewInstance(String routeModelId, List<String> docIds, CoreSession session, boolean startInstance) {
+    public String createNewInstance(String routeModelId, List<String> docIds, CoreSession session,
+            boolean startInstance) {
         return createNewInstance(routeModelId, docIds, null, session, startInstance);
     }
 
@@ -280,7 +283,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     route.save(session);
                 }
                 fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
-                DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
+                DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                        DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
                 fireEventAfterWorkflowStarted(route, session);
             }
@@ -311,7 +315,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void completeTask(String routeId, String taskId, Map<String, Object> data, String status, CoreSession session) {
+    public void completeTask(String routeId, String taskId, Map<String, Object> data, String status,
+            CoreSession session) {
         DocumentModel task = session.getDocument(new IdRef(taskId));
         completeTask(routeId, null, task != null ? task.getAdapter(Task.class) : null, data, status, session);
     }
@@ -407,12 +412,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession) {
+    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel,
+            CoreSession userSession) {
         new UnrestrictedSessionRunner(userSession) {
             @Override
             public void run() {
-                DocumentRoute route = session.getDocument(routeModel.getDocument().getRef()).getAdapter(
-                        DocumentRoute.class);
+                DocumentRoute route = session.getDocument(routeModel.getDocument().getRef())
+                                             .getAdapter(DocumentRoute.class);
                 LockableDocumentRoute lockableRoute = route.getDocument().getAdapter(LockableDocumentRoute.class);
                 lockableRoute.unlockDocument(session);
             }
@@ -429,8 +435,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         new UnrestrictedSessionRunner(userSession) {
             @Override
             public void run() {
-                DocumentRoute route = session.getDocument(routeModel.getDocument().getRef()).getAdapter(
-                        DocumentRoute.class);
+                DocumentRoute route = session.getDocument(routeModel.getDocument().getRef())
+                                             .getAdapter(DocumentRoute.class);
                 route.validate(session);
             }
         }.runUnrestricted();
@@ -548,8 +554,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (!isLockedByCurrentUser(route, session)) {
             throw new DocumentRouteNotLockedException();
         }
-        DocumentModelList children = session.query(String.format(ORDERED_CHILDREN_QUERY,
-                session.getDocument(parentDocumentRef).getId()));
+        DocumentModelList children = session.query(
+                String.format(ORDERED_CHILDREN_QUERY, session.getDocument(parentDocumentRef).getId()));
         DocumentModel sourceDoc;
         try {
             sourceDoc = children.get(idx);
@@ -572,9 +578,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         DocumentModel docRouteElement = routeElement.getDocument();
         DocumentModel parentDocument = session.getDocument(parentDocumentRef);
         docRouteElement.setPathInfo(parentDocument.getPathAsString(), pss.generatePathSegment(docRouteElement));
-        String lifecycleState = parentDocument.getCurrentLifeCycleState().equals(
-                DocumentRouteElement.ElementLifeCycleState.draft.name()) ? DocumentRouteElement.ElementLifeCycleState.draft.name()
-                : DocumentRouteElement.ElementLifeCycleState.ready.name();
+        String lifecycleState = parentDocument.getCurrentLifeCycleState()
+                                              .equals(DocumentRouteElement.ElementLifeCycleState.draft.name())
+                                                      ? DocumentRouteElement.ElementLifeCycleState.draft.name()
+                                                      : DocumentRouteElement.ElementLifeCycleState.ready.name();
         docRouteElement.putContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME, lifecycleState);
         docRouteElement = session.createDocument(docRouteElement);
         session.orderBefore(parentDocumentRef, docRouteElement.getName(), sourceName);
@@ -748,7 +755,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null, 0L, props);
         } else {
             pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props, searchString + '%');
+                    DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props,
+                    searchString + '%');
         }
         allRouteModels.addAll(pageProvider.getCurrentPage());
         while (pageProvider.isNextPageAvailable()) {
@@ -1151,13 +1159,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
                     GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
                     if (routeInstance == null) {
-                        throw new DocumentRouteException("Invalid routeInstanceId: " + routeId
-                                + " referenced by the task " + taskId);
+                        throw new DocumentRouteException(
+                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
                     }
                     GraphNode node = routeInstance.getNode(task.getType());
                     if (node == null) {
-                        throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task "
-                                + taskId);
+                        throw new DocumentRouteException(
+                                "Invalid node " + routeId + " referenced by the task " + taskId);
                     }
                     if (!node.allowTaskReassignment()) {
                         throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node "
@@ -1199,7 +1207,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                             task.getDocument());
                     envContext.setProperties(eventProperties);
                     EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
-                    eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
+                    eventProducer.fireEvent(
+                            envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
                 }
             }
         }.runUnrestricted();
@@ -1222,17 +1231,17 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
                     GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
                     if (routeInstance == null) {
-                        throw new DocumentRouteException("Invalid routeInstanceId: " + routeId
-                                + " referenced by the task " + taskId);
+                        throw new DocumentRouteException(
+                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
                     }
                     GraphNode node = routeInstance.getNode(task.getType());
                     if (node == null) {
-                        throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task "
-                                + taskId);
+                        throw new DocumentRouteException(
+                                "Invalid node " + routeId + " referenced by the task " + taskId);
                     }
                     DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    Framework.getLocalService(TaskService.class)
-                             .delegateTask(session, taskId, delegatedActors, comment);
+                    Framework.getLocalService(TaskService.class).delegateTask(session, taskId, delegatedActors,
+                            comment);
                     // refresh task
                     task.getDocument().refresh();
                     // grant permission to the new assignees
@@ -1266,7 +1275,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                             task.getDocument());
                     envContext.setProperties(eventProperties);
                     EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
-                    eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
+                    eventProducer.fireEvent(
+                            envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
                 }
             }
         }.runUnrestricted();
@@ -1326,9 +1336,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<Task> getTasks(final DocumentModel document, String actorId, String workflowInstanceId,
             final String worflowModelName, CoreSession session) {
-        StringBuilder query = new StringBuilder(String.format(
-                "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
-                TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
+        StringBuilder query = new StringBuilder(
+                String.format("SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
+                        TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
         if (StringUtils.isNotBlank(actorId)) {
             query.append(String.format(" AND nt:actors/* = '%s'", actorId));
         }
@@ -1352,13 +1362,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
                         final String processId = task.getProcessId();
                         if (processId != null && session.exists(new IdRef(processId))) {
-                            final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
-                                    DocumentRoute.class);
+                            final DocumentRoute routeInstance = session.getDocument(new IdRef(processId))
+                                                                       .getAdapter(DocumentRoute.class);
                             if (routeInstance != null) {
                                 final String routeInstanceName = routeInstance.getName();
-                                if (routeInstanceName != null
-                                        && (routeInstanceName.equals(worflowModelName) || routeInstanceName.matches("^("
-                                                + worflowModelName + ")\\.\\d+"))) {
+                                if (routeInstanceName != null && (routeInstanceName.equals(worflowModelName)
+                                        || routeInstanceName.matches("^(" + worflowModelName + ")\\.\\d+"))) {
                                     result.add(task);
                                 }
                             }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.api.operation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.automation.core.Constants;
@@ -72,7 +71,7 @@ public class GetOpenTasksOperation {
     @OperationMethod
     public DocumentModelList getAllTasks(DocumentModel doc) {
         DocumentModelList taskDocs = new DocumentModelListImpl();
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks;
         if (nodeId == null && processId == null) {
             NuxeoPrincipal principal = username != null ? userManager.getPrincipal(username) : null;
             tasks = taskService.getTaskInstances(doc, principal, session);
@@ -87,12 +86,8 @@ public class GetOpenTasksOperation {
         tasks = taskService.getAllTaskInstances(processId, nodeId, session);
         for (Task task : tasks) {
             if (doc.getId().equals(task.getTargetDocumentId())) {
-                if (username == null) {
+                if (username == null || task.getActors().contains(username)) {
                     taskDocs.add(task.getDocument());
-                } else {
-                    if (task.getActors().contains(username)) {
-                        taskDocs.add(task.getDocument());
-                    }
                 }
             }
         }

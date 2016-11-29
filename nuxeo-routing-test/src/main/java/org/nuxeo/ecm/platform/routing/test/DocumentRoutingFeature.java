@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-life-cycle-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-engine-service.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-operations-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/document-routing-task-service.xml",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.core.mimetype:OSGI-INF/nxmimetype-service.xml" })
 public class DocumentRoutingFeature extends SimpleFeature {
