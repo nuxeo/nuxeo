@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.nuxeo.runtime.test.Failures;
 
-public class ConditionalIgnoreTests {
+public class ConditionalIgnoreTest {
 
     protected static boolean isRunningInners;
 
@@ -148,8 +148,8 @@ public class ConditionalIgnoreTests {
             Failures failures = new Failures(result.getFailures());
             fail("Unexpected failure\n" + failures.toString());
         }
-        assertEquals(0, result.getRunCount()); // NXP-17586: Should value 1 for consistency with @Ignore
-        assertEquals(1, result.getIgnoreCount());
+        assertEquals(2, result.getRunCount()); // NXP-17586: Should value 1 for consistency with @Ignore
+        assertEquals(2, result.getIgnoreCount());
     }
 
     @Test
@@ -160,6 +160,7 @@ public class ConditionalIgnoreTests {
             fail("Unexpected failure\n" + failures.toString());
         }
         assertEquals(2, result.getRunCount());
+        assertEquals(0, result.getIgnoreCount());
     }
 
 }

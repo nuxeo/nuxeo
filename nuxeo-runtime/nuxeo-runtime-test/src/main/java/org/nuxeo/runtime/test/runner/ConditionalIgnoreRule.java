@@ -106,7 +106,7 @@ public class ConditionalIgnoreRule implements MethodRule {
         Method fixtureMethod = method.getMethod();
         Description description = Description.createTestDescription(fixtureType, fixtureMethod.getName(),
                 fixtureMethod.getAnnotations());
-        return shouldIgnore(base, description, runner.getConfig(Ignore.class), fixtureType, fixtureMethod,
+        return shouldIgnore(base, description, runner.getConfig(method, Ignore.class), fixtureType, fixtureMethod,
                 fixtureTarget);
     }
 
@@ -128,7 +128,6 @@ public class ConditionalIgnoreRule implements MethodRule {
             @Override
             public void evaluate() throws Throwable {
                 runNotifier.fireTestIgnored(description);
-
             }
         };
     }
