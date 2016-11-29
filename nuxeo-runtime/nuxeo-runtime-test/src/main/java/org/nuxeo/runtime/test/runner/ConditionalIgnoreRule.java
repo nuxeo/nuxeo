@@ -1,15 +1,17 @@
 /*
- * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
  *     Stephane Lacoin, Julien Carsique
@@ -28,31 +30,28 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-public class ConditionalIgnoreRule implements MethodRule, TestRule {
+public class ConditionalIgnoreRule implements MethodRule {
     @Inject
     private RunNotifier runNotifier;
 
+    @Inject
+    private FeaturesRunner runner;
+
     public static class Feature extends SimpleFeature {
         protected static final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
-
-        @ClassRule
-        public static TestRule classRule() {
-            return rule;
-        }
 
         @Rule
         public MethodRule methodRule() {
             return rule;
         }
+
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -78,9 +77,8 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     }
 
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader()
-                                                                                                .getClass()
-                                                                                                .getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader"
+                .equals(getClass().getClassLoader().getClass().getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -108,24 +106,8 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
         Method fixtureMethod = method.getMethod();
         Description description = Description.createTestDescription(fixtureType, fixtureMethod.getName(),
                 fixtureMethod.getAnnotations());
-        if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            return shouldIgnore(base, description, fixtureType.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
-                    fixtureTarget);
-        }
-        if (fixtureMethod.isAnnotationPresent(Ignore.class)) {
-            return shouldIgnore(base, description, fixtureMethod.getAnnotation(Ignore.class), fixtureType,
-                    fixtureMethod, fixtureTarget);
-        }
-        return base;
-    }
-
-    @Override
-    public Statement apply(Statement base, Description description) {
-        Class<?> fixtureType = description.getTestClass();
-        if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            return shouldIgnore(base, description, fixtureType.getAnnotation(Ignore.class), fixtureType);
-        }
-        return base;
+        return shouldIgnore(base, description, runner.getConfig(method, Ignore.class), fixtureType, fixtureMethod,
+                fixtureTarget);
     }
 
     protected Statement shouldIgnore(Statement base, Description description, Ignore ignore, Class<?> type) {
@@ -138,11 +120,11 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
         if (conditionType == null) {
             return base;
         }
-        Condition condition = newCondition(type, method, target, conditionType);
-        if (!condition.shouldIgnore()) {
+        if (!newCondition(type, method, target, conditionType).shouldIgnore()) {
             return base;
         }
         return new Statement() {
+
             @Override
             public void evaluate() throws Throwable {
                 runNotifier.fireTestIgnored(description);
@@ -190,7 +172,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
                 }
             }
             if (eachValue == null) {
-                errors.addSuppressed(new Error("Cannot inject " + eachField.getName()));
+                continue;
             }
             eachField.setAccessible(true);
             try {
@@ -202,6 +184,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
+        runner.getInjector().injectMembers(condition);
     }
 
 }
