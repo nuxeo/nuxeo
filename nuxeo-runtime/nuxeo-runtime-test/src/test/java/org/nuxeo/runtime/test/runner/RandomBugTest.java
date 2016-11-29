@@ -41,7 +41,6 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
-
 import org.nuxeo.runtime.test.Failures;
 import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
 
@@ -273,6 +272,41 @@ public class RandomBugTest {
         }
     }
 
+    public static abstract class AbstractRepeatFeaturesTest {
+        @ClassRule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
+        @Inject
+        public FeaturesRunner runner;
+
+        public ThisFeature feature;
+
+        @Before
+        public void injectFeature() {
+            feature = runner.getFeature(ThisFeature.class);
+        }
+
+        @Test
+        public void repeatedTest() {
+            if (feature.repeated < 5) {
+                fail("should fail");
+            }
+        }
+    }
+
+    @RunWith(FeaturesRunner.class)
+    @Features({ RandomBug.Feature.class, ThisFeature.class })
+    @RandomBug.Repeat(issue = "repeatedTest", onFailure = 5)
+    public static class RepeatFeaturesTest extends AbstractRepeatFeaturesTest {
+
+    }
+
+    @Test
+    public void shouldRepeatFeaturesOnClass() {
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
+        runClassAndVerify(RepeatFeaturesTest.class, "RELAX mode expects a success", 5, 4, 0);
+    }
+
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class, ThisFeature.class })
     public static class RepeatFeaturesMethod {
@@ -298,41 +332,27 @@ public class RandomBugTest {
         }
     }
 
-    @RunWith(FeaturesRunner.class)
-    @Features({ RandomBug.Feature.class, ThisFeature.class })
-    @RandomBug.Repeat(issue = "repeatedTest", onFailure = 5)
-    public static class RepeatFeaturesTest {
-        @ClassRule
-        public static final IgnoreInner ignoreInner = new IgnoreInner();
-
-        @Inject
-        public FeaturesRunner runner;
-
-        public ThisFeature feature;
-
-        @Before
-        public void injectFeature() {
-            feature = runner.getFeature(ThisFeature.class);
-        }
-
-        @Test
-        public void repeatedTest() {
-            if (feature.repeated < 5) {
-                fail("should fail");
-            }
-        }
-    }
-
-    @Test
-    public void shouldRepeatFeaturesOnClass() {
-        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
-        runClassAndVerify(RepeatFeaturesTest.class, "RELAX mode expects a success", 5, 4, 0);
-    }
-
     @Test
     public void shouldRepeatFeaturesOnMethod() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
         runClassAndVerify(RepeatFeaturesMethod.class, "RELAX mode expects a success", 1, 0, 0);
+    }
+
+    @RandomBug.Repeat(issue = "repeatedTest", onFailure = 5)
+    public static class ThisRandomFeature extends SimpleFeature {
+
+    }
+
+    @RunWith(FeaturesRunner.class)
+    @Features({ RandomBug.Feature.class, ThisFeature.class, ThisRandomFeature.class })
+    public static class RepeatRandomFeaturesTest extends AbstractRepeatFeaturesTest {
+
+    }
+
+    @Test
+    public void shouldRepeatFeaturesOnFeature() {
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
+        runClassAndVerify(RepeatRandomFeaturesTest.class, "RELAX mode expects a success", 5, 4, 0);
     }
 
     protected Result runClassAndVerify(Class<?> klass, String testFailureDescription, int runCount, int failureCount,
