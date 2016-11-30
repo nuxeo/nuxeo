@@ -1,5 +1,5 @@
 /* 
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -96,7 +97,7 @@ public class CasPortal {
 
     protected String extractText(Pattern pattern, String content) {
         Matcher matcher = pattern.matcher(content);
-        if (matcher.matches() == false) {
+        if (!matcher.matches()) {
             throw new Error(String.format("Cannot extract '%s' from '%s'", pattern.pattern(), content));
         }
         return matcher.group(1);
@@ -117,10 +118,11 @@ public class CasPortal {
         if (connection.getResponseCode() != HttpServletResponse.SC_OK) {
             throw new Error("Cannot validate ticket");
         }
-        String content = FileUtils.read(connection.getInputStream());
-        String iou = extractProxyGrantingTicket(content);
-        String id = proxyGrantingTickets.remove(iou);
-        return id;
+        try (InputStream in = connection.getInputStream()) {
+            String content = FileUtils.read(in);
+            String iou = extractProxyGrantingTicket(content);
+            return proxyGrantingTickets.remove(iou);
+        }
     }
 
     protected Pattern proxyTicketPattern = Pattern.compile(".*<cas:proxyTicket>(.*)</cas:proxyTicket>.*",
@@ -141,8 +143,10 @@ public class CasPortal {
         if (proxyConnection.getResponseCode() != HttpServletResponse.SC_OK) {
             throw new Error("Cannot get service ticket for proxy");
         }
-        String proxyContent = FileUtils.read(proxyConnection.getInputStream());
-        return extractProxyTicket(proxyContent);
+        try (InputStream in = proxyConnection.getInputStream()) {
+            String proxyContent = FileUtils.read(in);
+            return extractProxyTicket(proxyContent);
+        }
     }
 
     public class ValidateServiceTicketServlet extends HttpServlet {
@@ -168,7 +172,7 @@ public class CasPortal {
         }
     }
 
-    protected Map<String, String> proxyGrantingTickets = new HashMap<String, String>();
+    protected Map<String, String> proxyGrantingTickets = new HashMap<>();
 
     public class AcceptProxyGrantingTicketServlet extends HttpServlet {
         private static final long serialVersionUID = 1L;
