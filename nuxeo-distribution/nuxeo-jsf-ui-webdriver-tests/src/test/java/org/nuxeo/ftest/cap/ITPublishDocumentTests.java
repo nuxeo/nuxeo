@@ -23,7 +23,6 @@ package org.nuxeo.ftest.cap;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
@@ -41,7 +40,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -644,7 +645,6 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    @Ignore("Until NXP-19709 is resolved")
     public void testMultipleVersionsPublicationsByApproval() throws Exception {
         // create file to be versionned and published
         login(MANAGER_USERNAME, MANAGER_USERNAME);
@@ -694,16 +694,12 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
-        assertEquals("0.1",
-                items.get(1)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        String ver0 = items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        String ver1 = items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        // this is a listing ordered by title, there is not order for the versions
+        assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
         // check both version 0.1 and 0.2 are listed in test section as manager
         login(MANAGER_USERNAME, MANAGER_USERNAME);
@@ -712,16 +708,12 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
-        assertEquals("0.1",
-                items.get(1)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        ver0 = items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        ver1 = items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        // this is a listing ordered by title, there is not order for the versions
+        assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
         // approve version 0.2 as manager
         sectionPage.goToDocument(TEST_NOTE_TITLE);
@@ -766,7 +758,6 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    @Ignore("Until NXP-19709 is resolved")
     public void testMultipleVersionsPublicationsByPublishOver() throws Exception {
         // create file to be versionned and published
         login(MANAGER_USERNAME, MANAGER_USERNAME);
@@ -816,16 +807,12 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
-        assertEquals("0.1",
-                items.get(1)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        String ver0 = items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        String ver1 = items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        // this is a listing ordered by title, there is not order for the versions
+        assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
         // check both version 0.1 and 0.2 are listed in test section as manager
         login(MANAGER_USERNAME, MANAGER_USERNAME);
@@ -834,16 +821,12 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
-        assertEquals("0.1",
-                items.get(1)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        ver0 = items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        ver1 = items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        // this is a listing ordered by title, there is not order for the versions
+        assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
         // publish over version 0.2 as manager
         open(TEST_FOLDER_URL);
