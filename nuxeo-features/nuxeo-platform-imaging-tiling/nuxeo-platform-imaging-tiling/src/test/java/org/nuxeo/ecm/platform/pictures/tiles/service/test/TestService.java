@@ -31,7 +31,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 import org.nuxeo.ecm.platform.pictures.tiles.tilers.PictureTiler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 public class TestService extends NXRuntimeTestCase {
 
@@ -303,7 +303,10 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    public static final String NXP21214 = "NXP-21214: GC runs are not always correct";
+
     @Test
+    @RandomBug.Repeat(issue = NXP21214)
     public void testGC2() throws Exception {
         int reduceSize = 500;
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
