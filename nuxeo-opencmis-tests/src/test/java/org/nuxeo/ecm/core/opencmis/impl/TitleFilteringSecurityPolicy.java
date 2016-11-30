@@ -54,7 +54,7 @@ public class TitleFilteringSecurityPolicy extends AbstractSecurityPolicy {
     }
 
     @Override
-    public boolean isExpressibleInQuery() {
+    public boolean isExpressibleInQuery(String repositoryName) {
         return false;
     }
 

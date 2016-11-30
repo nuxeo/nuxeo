@@ -2467,7 +2467,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
 
-        statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
+        statement = "SELECT A.cmis:objectId, A.cmis:name, B.*, C.note" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
                 + " LEFT JOIN Note C ON A.cmis:objectId = C.cmis:objectId" //
@@ -2515,7 +2515,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         waitForIndexing();
 
-        String statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
+        String statement = "SELECT A.cmis:objectId, A.cmis:name, B.cmis:name, C.note" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
                 + " LEFT JOIN Note C ON A.cmis:objectId = C.cmis:objectId" //

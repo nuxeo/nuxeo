@@ -38,12 +38,12 @@ public class TitleFilteringSecurityPolicy3 extends TitleFilteringSecurityPolicy 
     protected static final String PREFIX = "SECRET";
 
     @Override
-    public boolean isExpressibleInQuery() {
+    public boolean isExpressibleInQuery(String repositoryName) {
         return true;
     }
 
     @Override
-    public Transformer getQueryTransformer() {
+    public Transformer getQueryTransformer(String repositoryName) {
         return TitleFilteringTransformer.INSTANCE;
     }
 

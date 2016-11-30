@@ -41,6 +41,8 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -48,7 +50,6 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.resource.Resource;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.opencmis.impl.client.protocol.http.HttpURLInstaller;
 
 /**
@@ -119,7 +120,7 @@ public class CasPortal {
             throw new Error("Cannot validate ticket");
         }
         try (InputStream in = connection.getInputStream()) {
-            String content = FileUtils.read(in);
+            String content = IOUtils.toString(in, Charsets.UTF_8);
             String iou = extractProxyGrantingTicket(content);
             return proxyGrantingTickets.remove(iou);
         }
@@ -144,7 +145,7 @@ public class CasPortal {
             throw new Error("Cannot get service ticket for proxy");
         }
         try (InputStream in = proxyConnection.getInputStream()) {
-            String proxyContent = FileUtils.read(in);
+            String proxyContent = IOUtils.toString(in, Charsets.UTF_8);
             return extractProxyTicket(proxyContent);
         }
     }

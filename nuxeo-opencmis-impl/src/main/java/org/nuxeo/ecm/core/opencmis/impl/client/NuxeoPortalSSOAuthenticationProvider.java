@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.chemistry.opencmis.client.bindings.spi.AbstractAuthenticationProvider;
-import org.nuxeo.common.utils.Base64;
+import org.apache.chemistry.opencmis.commons.impl.Base64;
 
 public class NuxeoPortalSSOAuthenticationProvider extends AbstractAuthenticationProvider {
 
