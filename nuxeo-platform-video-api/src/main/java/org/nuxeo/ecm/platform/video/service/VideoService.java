@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.video.service;
 
 import java.util.Collection;
@@ -90,10 +89,6 @@ public interface VideoService {
     /**
      * Returns the status of the video conversion with the given conversion name on the given document.
      *
-     * @param repositoryName
-     * @param docId
-     * @param conversionName
-     * @return
      * @since 5.7.3
      */
     VideoConversionStatus getProgressStatus(String repositoryName, String docId, String conversionName);

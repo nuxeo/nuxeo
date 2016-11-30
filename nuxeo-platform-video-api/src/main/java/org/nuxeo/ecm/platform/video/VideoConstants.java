@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ public class VideoConstants {
      * @since 7.10
      */
     public static final String CTX_FORCE_INFORMATIONS_GENERATION = "forceInformationsGeneration";
-
 
     // Constant utility class.
     private VideoConstants() {

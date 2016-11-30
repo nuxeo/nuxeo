@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *     YannisJULIENNE
- *
  */
 package org.nuxeo.ecm.platform.video.convert;
 
@@ -113,8 +112,9 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
             // add the command line parameters for the storyboard extraction and run it
             int numberOfThumbnails = getNumberOfThumbnails(parameters);
             for (int i = 0; i < numberOfThumbnails; i++) {
-                double timecode = BigDecimal.valueOf(i * duration / numberOfThumbnails).setScale(2,
-                        RoundingMode.HALF_UP).doubleValue();
+                double timecode = BigDecimal.valueOf(i * duration / numberOfThumbnails)
+                                            .setScale(2, RoundingMode.HALF_UP)
+                                            .doubleValue();
                 Blob thumbBlob = Blobs.createBlobWithExtension(".jpeg");
                 params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, thumbBlob.getFile().getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
