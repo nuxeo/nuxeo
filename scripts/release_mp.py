@@ -28,7 +28,8 @@ import traceback
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 from nxutils import ExitException, Repository, assert_git_config, log, system, DEFAULT_MP_CONF_URL
-from release import Release, ReleaseInfo
+from release import Release
+from release_info import ReleaseInfo
 from terminalsize import get_terminal_size
 
 

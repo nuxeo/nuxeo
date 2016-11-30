@@ -54,8 +54,6 @@ Tag:                  sometag
 Next version:         5.5.0-HF01-SNAPSHOT
 No maintenance branch"""
 
-from collections import namedtuple
-from datetime import datetime
 import fnmatch
 import optparse
 import os
@@ -63,12 +61,13 @@ import re
 import shutil
 import sys
 import tempfile
+from collections import namedtuple
+from datetime import datetime
 from lxml import etree
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
-from nxutils import ExitException, Repository, assert_git_config, extract_zip, \
-    log, make_zip, system
+from nxutils import ExitException, Repository, assert_git_config, extract_zip, log, make_zip, system
+from release_info import ReleaseInfo
 from terminalsize import get_terminal_size
-
 
 PKG_RENAMINGS = {
     # Tomcat packages
@@ -101,106 +100,13 @@ def etree_parse(xmlfile):
                             (xmlfile, e.message))
     return tree
 
+
 # pylint: disable-msg=too-many-instance-attributes, too-few-public-methods
-class ReleaseInfo(object):
-    """Release information. This object is used to construct a Release as well as to (de)serialize it."""
-
-    # pylint: disable-msg=too-many-arguments, too-many-locals
-    def __init__(self, module=None, remote_alias=None, branch=None, tag="auto",
-                 next_snapshot=None, maintenance_version="discard", is_final=False, skip_tests=False,
-                 skip_its=False, profiles='', other_versions=None, files_pattern=None, props_pattern=None,
-                 msg_commit='', msg_tag='', auto_increment_policy='auto_patch', deploy = False, dryrun = False,
-                 interactive = False):
-        self.module = module
-        self.remote_alias = remote_alias
-        self.branch = branch
-        self.tag = tag
-        self.next_snapshot = next_snapshot
-        """Backward compat for maintenance_version = auto"""
-        self.maintenance_version = "discard" if maintenance_version == "auto" else maintenance_version
-        self.is_final = is_final
-        self.skip_tests = skip_tests
-        self.skip_its = skip_its
-        self.profiles = profiles
-        self.other_versions = other_versions
-        self.files_pattern = files_pattern
-        self.props_pattern = props_pattern
-        self.msg_commit = msg_commit
-        self.msg_tag = msg_tag
-        self.auto_increment_policy = auto_increment_policy
-        self.deploy = deploy
-        self.dryrun = dryrun
-
-    def compute_other_versions(self):
-        self.other_versions = ':'.join((self.files_pattern, self.props_pattern, self.other_versions))
-        if self.other_versions == "::":
-            self.other_versions = None
-
-    @staticmethod
-    def get_release_log(path=os.getcwd()):
-        """Return the path for the file containing the release parameters
-given the path parameter.
-
-        'path': root path of the repository being released."""
-        return os.path.abspath(os.path.join(path, os.pardir,
-                               "release-%s.log" % os.path.basename(path)))
-
-    # pylint: disable=R0914
-    def read_release_log(self, release_log):
-        """Read release parameters generated for the given path.
-
-        'release_log': path to a release log file."""
-        log("Reading parameters from %s ..." % release_log)
-        with open(release_log, "rb") as f:
-            for line in f:
-                (key, value) = line.split("=", 1)
-                key = key.strip()
-                value = value.strip()
-                if key == "MODULE":
-                    self.module = value
-                elif key == "REMOTE":
-                    self.remote_alias = value
-                elif key == "BRANCH":
-                    self.branch = value
-                elif key == "SNAPSHOT":
-                    self.snapshot = value
-                elif key == "TAG":
-                    self.tag = value
-                elif key == "NEXT_SNAPSHOT":
-                    self.next_snapshot = value
-                elif key == "MAINTENANCE":
-                    self.maintenance_version = value
-                elif key == "FINAL":
-                    self.is_final = value == "True"
-                elif key == "SKIP_TESTS":
-                    self.skip_tests = value == "True"
-                elif key == "SKIP_ITS":
-                    self.skip_its = value == "True"
-                elif key == "PROFILES":
-                    self.profiles = value
-                elif key == "OTHER_VERSIONS":
-                    self.other_versions = value
-                elif key == "FILES_PATTERN":
-                    self.files_pattern = value
-                elif key == "PROPS_PATTERN":
-                    self.props_pattern = value
-                elif key == "MSG_COMMIT":
-                    self.msg_commit = value
-                elif key == "MSG_TAG":
-                    self.msg_tag = value
-                elif key == "AUTO_INCREMENT_POLICY":
-                    self.auto_increment_policy = value
-                elif key == "DRY_RUN":
-                    self.dryrun = value == "True"
-                else:
-                    log("[WARN] Release info parsing failure for file %s on line: %s" % (release_log, line), sys.stderr)
-        self.compute_other_versions()
-
 # pylint: disable=R0902
 class Release(object):
     """Nuxeo release manager.
 
-    See 'self.perpare()', 'self.perform()'."""
+    See 'self.prepare()', 'self.perform()'."""
 
     # pylint: disable=R0913
     def __init__(self, repo, release_info):
@@ -245,6 +151,8 @@ class Release(object):
             for key, value in vars(self).iteritems():
                 print "DEBUG: %s=%s" % (key, value)
             print
+
+    # <editor-fold desc="Utility methods">
 
     def set_other_versions_and_patterns(self, release_info):
         """Set other versions and replacement patterns"""
@@ -494,6 +402,97 @@ class Release(object):
                     changed = True
         return changed
 
+    @staticmethod
+    def get_message(message, additional_message):
+        """Returns a message prefixing the additional message by ': ' if both
+        parameters are filled."""
+        if message and message.strip():
+            if additional_message and additional_message.strip():
+                return "%s: %s" % (message, additional_message)
+            return message
+        return additional_message
+
+    def get_commit_message(self, additional_message):
+        """Returns the given message prefixed with the commit message if
+        any."""
+        return self.get_message(self.msg_commit, additional_message)
+
+    def get_tag_message(self, additional_message):
+        """Returns the given message prefixed with tag message if any, or with
+        the message commit if any."""
+        message = self.msg_tag
+        if not message or not message.strip():
+            message = self.msg_commit
+        return self.get_message(message, additional_message)
+
+    def package(self, old_archive, new_name, failonerror=True):
+        """Repackage a ZIP following the rules:
+            - have a parent directory with the same name as the archive name
+            - set executable bit on scripts in bin/
+            - activate the setup wizard
+
+        If 'failonerror', raise an ExitException in case of missing filef."""
+        if not os.path.isfile(old_archive):
+            if failonerror:
+                raise ExitException(1, "Could not find %s" % old_archive)
+            else:
+                log("[WARN] Could not find %s" % old_archive, sys.stderr)
+                return
+        new_archive = os.path.join(self.archive_dir, new_name + ".zip")
+        extract_zip(old_archive, os.path.join(self.tmpdir, new_name))
+        log("Packaging %s ..." % new_archive)
+        cwd = os.getcwd()
+        os.chdir(os.path.join(self.tmpdir, new_name))
+        ls = os.listdir(os.curdir)
+        if len(ls) == 1:
+            if ls[0] != new_name:
+                shutil.move(ls[0], new_name)
+        else:
+            os.mkdir(new_name)
+            for filef in ls:
+                shutil.move(filef, os.path.join(new_name, filef))
+
+        files = os.listdir(os.path.join(new_name, "bin"))
+        for filename in (fnmatch.filter(files, "*ctl") +
+                             fnmatch.filter(files, "*.sh") +
+                             fnmatch.filter(files, "*.command")):
+            os.chmod(os.path.join(new_name, "bin", filename), 0744)
+        with open(os.path.join(new_name, "bin", "nuxeo.conf"), "a") as f:
+            f.write("nuxeo.wizard.done=false\n")
+        make_zip(os.path.join(
+            self.archive_dir, new_name + ".zip"), os.getcwd(), new_name)
+        os.chdir(cwd)
+        # Cleanup temporary directory
+        shutil.rmtree(os.path.join(self.tmpdir, new_name))
+
+    def package_sources(self, version):
+        sources_archive_name = "nuxeo-%s-sources.zip" % version
+        self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
+
+    def package_mp(self, old_archive, new_name, failonerror=True):
+        if not os.path.isfile(old_archive):
+            if failonerror:
+                raise ExitException(1, "Could not find %s" % old_archive)
+            else:
+                log("[WARN] Could not find %s" % old_archive, sys.stderr)
+                return
+        shutil.copy(old_archive, os.path.join(self.archive_dir, new_name))
+
+    def check_branch_to_release(self):
+        """ Check the parameters: if the branch to release has been previously created (the next snapshot is then set to
+        'done'), then the current branch is expected to equal to the current version minus '-SNAPSHOT'."""
+        if self.next_snapshot == 'done' and self.branch != self.snapshot.partition("-SNAPSHOT")[0]:
+            raise ExitException(1, "When releasing from an already created release branch (command 'branch'), the"
+                                   " branch to release (option '-b') must equal to the current version minus '-SNAPSHOT':"
+                                   " %s != %s" % (self.branch, self.snapshot.partition("-SNAPSHOT")[0]))
+
+    def check(self):
+        """ Check the release is feasible"""
+        # TODO NXP-8573 tag and release branch do not already exist
+        # TODO NXP-8573 all POMs have a namespace
+
+    # </editor-fold>
+
     def test(self):
         """For current script development purpose."""
         self.prepare(dryrun=True)
@@ -528,82 +527,6 @@ class Release(object):
 
         self.package_sources(version)
         shutil.rmtree(self.tmpdir)
-
-    def package(self, old_archive, new_name, failonerror=True):
-        """Repackage a ZIP following the rules:
-            - have a parent directory with the same name as the archive name
-            - set executable bit on scripts in bin/
-            - activate the setup wizard
-
-        If 'failonerror', raise an ExitException in case of missing filef."""
-        if not os.path.isfile(old_archive):
-            if failonerror:
-                raise ExitException(1, "Could not find %s" % old_archive)
-            else:
-                log("[WARN] Could not find %s" % old_archive, sys.stderr)
-                return
-        new_archive = os.path.join(self.archive_dir, new_name + ".zip")
-        extract_zip(old_archive, os.path.join(self.tmpdir, new_name))
-        log("Packaging %s ..." % new_archive)
-        cwd = os.getcwd()
-        os.chdir(os.path.join(self.tmpdir, new_name))
-        ls = os.listdir(os.curdir)
-        if len(ls) == 1:
-            if ls[0] != new_name:
-                shutil.move(ls[0], new_name)
-        else:
-            os.mkdir(new_name)
-            for filef in ls:
-                shutil.move(filef, os.path.join(new_name, filef))
-
-        files = os.listdir(os.path.join(new_name, "bin"))
-        for filename in (fnmatch.filter(files, "*ctl") +
-                         fnmatch.filter(files, "*.sh") +
-                         fnmatch.filter(files, "*.command")):
-            os.chmod(os.path.join(new_name, "bin", filename), 0744)
-        with open(os.path.join(new_name, "bin", "nuxeo.conf"), "a") as f:
-            f.write("nuxeo.wizard.done=false\n")
-        make_zip(os.path.join(
-                 self.archive_dir, new_name + ".zip"), os.getcwd(), new_name)
-        os.chdir(cwd)
-        # Cleanup temporary directory
-        shutil.rmtree(os.path.join(self.tmpdir, new_name))
-
-    def package_sources(self, version):
-        sources_archive_name = "nuxeo-%s-sources.zip" % version
-        self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
-
-    def package_mp(self, old_archive, new_name, failonerror=True):
-        if not os.path.isfile(old_archive):
-            if failonerror:
-                raise ExitException(1, "Could not find %s" % old_archive)
-            else:
-                log("[WARN] Could not find %s" % old_archive, sys.stderr)
-                return
-        shutil.copy(old_archive, os.path.join(self.archive_dir, new_name))
-
-    @staticmethod
-    def get_message(message, additional_message):
-        """Returns a message prefixing the additional message by ': ' if both
-        parameters are filled."""
-        if message and message.strip():
-            if additional_message and additional_message.strip():
-                return "%s: %s" % (message, additional_message)
-            return message
-        return additional_message
-
-    def get_commit_message(self, additional_message):
-        """Returns the given message prefixed with the commit message if
-        any."""
-        return self.get_message(self.msg_commit, additional_message)
-
-    def get_tag_message(self, additional_message):
-        """Returns the given message prefixed with tag message if any, or with
-        the message commit if any."""
-        message = self.msg_tag
-        if not message or not message.strip():
-            message = self.msg_commit
-        return self.get_message(message, additional_message)
 
     # pylint: disable=R0915
     def prepare(self, dodeploy=False, doperform=False, dryrun=False, upgrade_only=False):
@@ -828,19 +751,6 @@ class Release(object):
             self.repo.mvn("clean deploy", skip_tests=skip_tests, skip_ITs=skip_ITs,
                           profiles="release,-qa" + self.profiles, dryrun=dryrun)
         os.chdir(cwd)
-
-    def check_branch_to_release(self):
-        """ Check the parameters: if the branch to release has been previously created (the next snapshot is then set to
-        'done'), then the current branch is expected to equal to the current version minus '-SNAPSHOT'."""
-        if self.next_snapshot == 'done' and self.branch != self.snapshot.partition("-SNAPSHOT")[0]:
-            raise ExitException(1, "When releasing from an already created release branch (command 'branch'), the"
-                                " branch to release (option '-b') must equal to the current version minus '-SNAPSHOT':"
-                                " %s != %s" % (self.branch, self.snapshot.partition("-SNAPSHOT")[0]))
-
-    def check(self):
-        """ Check the release is feasible"""
-        # TODO NXP-8573 tag and release branch do not already exist
-        # TODO NXP-8573 all POMs have a namespace
 
 
 # pylint: disable=R0912,R0914,R0915
