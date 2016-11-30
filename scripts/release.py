@@ -651,11 +651,11 @@ class Release(object):
                 # Maintenance branches are kept, so update their versions
                 log("\n[INFO] Maintenance branch...")
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
-                self.repo.git_recurse("reset HEAD~", with_optionals=True)
+                self.repo.git_recurse("revert -n HEAD", with_optionals=True)
                 self.update_versions(self.snapshot, self.maintenance_version)
                 for other_version in self.other_versions:
                     if len(other_version) > 0:
-                        self.update_versions(other_version[0], other_version[2])
+                        self.update_versions(other_version[0], other_version[1])
                 self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
 
             log("\n[INFO] Released branch %s (update version and commit)..." % self.branch)
@@ -778,7 +778,8 @@ class Release(object):
             "update versions and commit...".format(self.branch, self.tag))
         self.repo.git_recurse("checkout -b %s" % self.branch)
         msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
-        self.update_versions(self.tag, self.maintenance_version)
+        self.repo.git_recurse("revert -n HEAD", with_optionals=True)
+        self.update_versions(self.snapshot, self.maintenance_version)
         for other_version in self.other_versions:
             if len(other_version) > 0:
                 self.update_versions(other_version[0], other_version[1])
