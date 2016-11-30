@@ -71,7 +71,6 @@ public class ReportComponent extends DefaultComponent {
         public void handleEvent(Event event) {
             if (ReloadService.AFTER_RELOAD_EVENT_ID.equals(event.getId())) {
                 applicationStarted(context);
-                return;
             } else if (ReloadService.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
                 applicationStopped(context);
             }
@@ -96,7 +95,8 @@ public class ReportComponent extends DefaultComponent {
                 Framework.getService(EventService.class).removeListener(ReloadService.RELOAD_TOPIC, reloadListener);
             }
         });
-        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC, reloadListener = new ReloadListener(context));
+        Framework.getService(EventService.class).addListener(ReloadService.RELOAD_TOPIC,
+                reloadListener = new ReloadListener(context));
     }
 
     final ReportConfiguration configuration = new ReportConfiguration();
@@ -148,13 +148,8 @@ public class ReportComponent extends DefaultComponent {
         public void run(String host, int port, String... names) throws IOException {
             ClassLoader tcl = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(Management.class.getClassLoader());
-            try (Socket sock = new Socket(host, port)) {
-                try (OutputStream sink =
-                        sock.getOutputStream()) {
-                    service.run(sink, new HashSet<>(Arrays.asList(names)));
-                }
-            } catch (IOException cause) {
-                throw cause;
+            try (Socket sock = new Socket(host, port); OutputStream sink = sock.getOutputStream()) {
+                service.run(sink, new HashSet<>(Arrays.asList(names)));
             } finally {
                 Thread.currentThread().setContextClassLoader(tcl);
             }
@@ -165,7 +160,8 @@ public class ReportComponent extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) {
         instance = this;
-        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report", ReportServer.class, management);
+        Framework.getService(ResourcePublisher.class).registerResource("connect-report", "connect-report",
+                ReportServer.class, management);
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
@@ -189,7 +185,8 @@ public class ReportComponent extends DefaultComponent {
         if (contribution instanceof Contribution) {
             configuration.addContribution((Contribution) contribution);
         } else {
-            throw new IllegalArgumentException(String.format("unknown contribution of type %s in %s", contribution.getClass(), contributor));
+            throw new IllegalArgumentException(
+                    String.format("unknown contribution of type %s in %s", contribution.getClass(), contributor));
         }
     }
 
