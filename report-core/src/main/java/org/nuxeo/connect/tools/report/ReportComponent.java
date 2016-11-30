@@ -45,13 +45,6 @@ import org.nuxeo.runtime.services.event.EventService;
  */
 public class ReportComponent extends DefaultComponent {
 
-    public interface Runner {
-
-        void run(OutputStream out, Set<String> names) throws IOException;
-
-        Set<String> list();
-    }
-
     public static ReportComponent instance;
 
     public ReportComponent() {
@@ -76,10 +69,6 @@ public class ReportComponent extends DefaultComponent {
             }
         }
 
-        @Override
-        public boolean aboutToHandleEvent(Event event) {
-            return true;
-        }
     }
 
     @Override
