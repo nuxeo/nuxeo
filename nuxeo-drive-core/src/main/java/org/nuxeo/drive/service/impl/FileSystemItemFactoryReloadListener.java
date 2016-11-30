@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ public class FileSystemItemFactoryReloadListener implements EventListener {
     @Override
     public void handleEvent(Event event) {
         if (ReloadService.RELOAD_EVENT_ID.equals(event.getId())) {
-            FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class);
+            FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(
+                    FileSystemItemAdapterService.class);
             fileSystemItemAdapterService.setActiveFactories();
         }
     }
