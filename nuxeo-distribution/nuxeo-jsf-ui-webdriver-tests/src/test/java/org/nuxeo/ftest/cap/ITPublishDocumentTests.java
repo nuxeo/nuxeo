@@ -88,6 +88,10 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     private static final String WRITER_USERNAME = "jsmith";
 
+    private static final String SECTION_ITEM_0_VERSION = "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version";
+
+    private static final String SECTION_ITEM_1_VERSION = "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version";
+
     @Before
     public void before() {
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
@@ -664,11 +668,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         List<WebElement> items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.1", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // check only version 0.1 is published in test section as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -677,11 +677,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.1", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // publish version 0.2 as reader
         open(TEST_FOLDER_URL);
@@ -694,10 +690,8 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        String ver0 = items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
-        String ver1 = items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        String ver0 = items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText();
+        String ver1 = items.get(1).findElement(By.id(SECTION_ITEM_1_VERSION)).getText();
         // this is a listing ordered by title, there is not order for the versions
         assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
@@ -708,10 +702,8 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        ver0 = items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
-        ver1 = items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        ver0 = items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText();
+        ver1 = items.get(1).findElement(By.id(SECTION_ITEM_1_VERSION)).getText();
         // this is a listing ordered by title, there is not order for the versions
         assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
@@ -725,11 +717,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.2", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // check result as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -738,11 +726,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.2", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // unpublish as admin
         login();
@@ -777,11 +761,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         List<WebElement> items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.1", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // check only version 0.1 is published in test section as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -790,11 +770,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.1",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.1", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // publish version 0.2 as reader
         open(TEST_FOLDER_URL);
@@ -807,10 +783,8 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        String ver0 = items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
-        String ver1 = items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        String ver0 = items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText();
+        String ver1 = items.get(1).findElement(By.id(SECTION_ITEM_1_VERSION)).getText();
         // this is a listing ordered by title, there is not order for the versions
         assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
@@ -821,10 +795,8 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(2, items.size());
-        ver0 = items.get(0).findElement(By.id(
-                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText();
-        ver1 = items.get(1).findElement(By.id(
-                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText();
+        ver0 = items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText();
+        ver1 = items.get(1).findElement(By.id(SECTION_ITEM_1_VERSION)).getText();
         // this is a listing ordered by title, there is not order for the versions
         assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
@@ -839,11 +811,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.2", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // check result as reader
         login(READER_USERNAME, READER_USERNAME);
@@ -852,11 +820,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         items = sectionPage.getContentView().getItems();
         assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
         assertEquals(1, items.size());
-        assertEquals("0.2",
-                items.get(0)
-                     .findElement(By.id(
-                             "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version"))
-                     .getText());
+        assertEquals("0.2", items.get(0).findElement(By.id(SECTION_ITEM_0_VERSION)).getText());
 
         // unpublish as admin
         login();
