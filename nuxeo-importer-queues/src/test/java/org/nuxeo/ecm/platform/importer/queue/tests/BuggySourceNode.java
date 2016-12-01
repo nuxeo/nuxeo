@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -8,11 +10,11 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
-public class BuggySourceNode implements SourceNode, Serializable {
+public class BuggySourceNode implements SourceNode {
 
-    private final int index;
-    private final boolean txBuggy;
-    private final boolean exceptionBuggy;
+    private int index;
+    private boolean txBuggy;
+    private boolean exceptionBuggy;
 
     public BuggySourceNode(int index, boolean txBuggy, boolean exceptionBuggy) {
         this.index = index;
@@ -55,6 +57,20 @@ public class BuggySourceNode implements SourceNode, Serializable {
 
     public boolean isExceptionBuggy() {
         return exceptionBuggy;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeInt(index);
+        out.writeBoolean(txBuggy);
+        out.writeBoolean(exceptionBuggy);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        index = in.readInt();
+        txBuggy = in.readBoolean();
+        exceptionBuggy = in.readBoolean();
     }
 
 }

@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.ecm.platform.importer.queue.producer.SourceNodeProducer;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -61,7 +62,7 @@ public class TestImporter {
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
 
-        BQManager qm = new BQManager(logger, 2, 100);
+        BQManager qm = new BQManager<SourceNode>(logger, 2, 100);
 
         RandomTextSourceNode root = RandomTextSourceNode.init(1000, 1, true);
 

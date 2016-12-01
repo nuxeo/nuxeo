@@ -23,8 +23,9 @@ import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.ecm.platform.importer.source.Node;
 
+import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 /**
  * @since 8.10
  */
-public class CQManager extends AbstractQueuesManager {
+public class CQManager<N extends Node> extends AbstractQueuesManager<N> {
 
     final List<ChronicleQueue> queues;
     final List<ExcerptAppender> appenders;
@@ -68,12 +69,12 @@ public class CQManager extends AbstractQueuesManager {
 
 
     @Override
-    public void put(int queue, SourceNode node) throws InterruptedException {
+    public void put(int queue, N node) throws InterruptedException {
         appenders.get(queue).writeDocument(w -> w.write("node").object(node));
     }
 
     @Override
-    public SourceNode poll(int queue) {
+    public N poll(int queue) {
         try {
             return poll(queue, 5, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
@@ -84,18 +85,18 @@ public class CQManager extends AbstractQueuesManager {
     }
 
     @Nullable
-    private SourceNode get(int queue) {
-        final SourceNode[] ret = new SourceNode[1];
+    private N get(int queue) {
+        final List<N> ret = new ArrayList<>(1);
         if (tailers.get(queue).readDocument(w -> {
-            ret[0] = (SourceNode) w.read("node").object();})) {
-            return ret[0];
+            ret.add((N) w.read("node").object());})) {
+            return ret.get(0);
         }
         return null;
     }
 
     @Override
-    public SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException {
-        SourceNode ret = get(queue);
+    public N poll(int queue, long timeout, TimeUnit unit) throws InterruptedException {
+        N ret = get(queue);
         if (ret != null) {
             return ret;
         }

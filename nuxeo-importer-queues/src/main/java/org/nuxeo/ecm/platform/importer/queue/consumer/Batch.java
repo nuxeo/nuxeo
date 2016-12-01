@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.ecm.platform.importer.source.Node;
 
 /**
  * @since 8.3
  */
-public class Batch {
+public class Batch<N extends Node> {
 
     private final int capacity;
 
-    final List<SourceNode> nodes = new ArrayList<>();
+    final List<N> nodes = new ArrayList<>();
 
 
     public Batch(int capacity) {
@@ -24,7 +24,7 @@ public class Batch {
         return nodes.size();
     }
 
-    public void add(SourceNode src) {
+    public void add(N src) {
         nodes.add(src);
     }
 
@@ -36,7 +36,7 @@ public class Batch {
         return nodes.size() >= capacity;
     }
 
-    public List<SourceNode> getNodes() {
+    public List<N> getNodes() {
         return Collections.unmodifiableList(nodes);
     }
 

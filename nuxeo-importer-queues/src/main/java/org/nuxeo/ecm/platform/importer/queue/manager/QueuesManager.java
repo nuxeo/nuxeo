@@ -16,17 +16,17 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
-import java.util.concurrent.BlockingQueue;
+import org.nuxeo.ecm.platform.importer.source.Node;
+
 import java.util.concurrent.TimeUnit;
 
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
  * This interface should be renamed into CompoundQueues or simply MultiQueues
  *
  * @since 8.3
  */
-public interface QueuesManager {
+public interface QueuesManager<N extends Node> {
 
     /**
      * Returns the number of queues
@@ -38,20 +38,20 @@ public interface QueuesManager {
      *
      * @throws InterruptedException
      */
-    void put(int queue, SourceNode node) throws InterruptedException;
+    void put(int queue, N node) throws InterruptedException;
 
     /**
      * Get a node from a queue.
      *
      */
-    SourceNode poll(int queue);
+    N poll(int queue);
 
     /**
      * Get a node from a queue, with a timeout.
      *
      * @throws InterruptedException
      */
-    SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException;
+    N poll(int queue, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Returns true if there is no element in the queue.

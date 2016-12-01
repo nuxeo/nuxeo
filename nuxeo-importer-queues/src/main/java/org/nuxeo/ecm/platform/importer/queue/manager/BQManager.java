@@ -16,8 +16,9 @@ package org.nuxeo.ecm.platform.importer.queue.manager;/*
  */
 
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.ecm.platform.importer.source.Node;
 
+import java.io.Externalizable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -28,9 +29,9 @@ import java.util.concurrent.TimeUnit;
  * Blocking Queues Manager, in memory queues
  * @since 8.10
  */
-public class BQManager extends AbstractQueuesManager {
+public class BQManager<N extends Node> extends AbstractQueuesManager<N> {
 
-    final List<BlockingQueue<SourceNode>> queues;
+    final List<BlockingQueue<N>> queues;
 
     protected final int maxQueueSize;
 
@@ -49,7 +50,7 @@ public class BQManager extends AbstractQueuesManager {
     }
 
     @Override
-    public SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException {
+    public N poll(int queue, long timeout, TimeUnit unit) throws InterruptedException {
         return queues.get(queue).poll(timeout, unit);
     }
 
@@ -59,12 +60,12 @@ public class BQManager extends AbstractQueuesManager {
     }
 
     @Override
-    public SourceNode poll(int queue) {
+    public N poll(int queue) {
         return queues.get(queue).poll();
     }
 
     @Override
-    public void put(int queue, SourceNode node) throws InterruptedException {
+    public void put(int queue, N node) throws InterruptedException {
         queues.get(queue).put(node);
     }
 

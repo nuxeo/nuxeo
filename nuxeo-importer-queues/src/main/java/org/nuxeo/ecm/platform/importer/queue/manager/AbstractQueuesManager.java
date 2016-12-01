@@ -17,12 +17,13 @@
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import org.nuxeo.ecm.platform.importer.source.Node;
 
 
 /**
  * @since 8.3
  */
-public abstract class AbstractQueuesManager implements QueuesManager {
+public abstract class AbstractQueuesManager<N extends Node> implements QueuesManager<N> {
 
     protected final int queuesNb;
     protected final ImporterLogger log;

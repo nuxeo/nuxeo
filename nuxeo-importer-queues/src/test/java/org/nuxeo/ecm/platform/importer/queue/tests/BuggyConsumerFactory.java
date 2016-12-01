@@ -1,7 +1,5 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
-import java.util.Random;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
@@ -9,8 +7,9 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.AbstractConsumer;
 import org.nuxeo.ecm.platform.importer.queue.consumer.Consumer;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.util.Random;
 
 public class BuggyConsumerFactory implements ConsumerFactory {
 
@@ -24,7 +23,7 @@ public class BuggyConsumerFactory implements ConsumerFactory {
         this.consumerDelayMs = consumerDelayMs;
     }
 
-    class BuggyConsumer extends AbstractConsumer {
+    class BuggyConsumer extends AbstractConsumer<BuggySourceNode> {
         private final int delayMs;
         int docs = 0;
 
@@ -40,25 +39,21 @@ public class BuggyConsumerFactory implements ConsumerFactory {
         }
 
         @Override
-        protected void process(CoreSession session, SourceNode sn) throws Exception {
-            if (sn instanceof BuggySourceNode) {
-                BuggySourceNode bsn = (BuggySourceNode) sn;
-                DocumentModel doc = session.createDocumentModel("/", bsn.getName(), "File");
-                doc = session.createDocument(doc);
-                if (delayMs > 0) {
-                    Thread.sleep((new Random()).nextInt(delayMs));
-                }
-                if (bsn.isTransactionBuggy()) {
-                    TransactionHelper.setTransactionRollbackOnly();
-                    // Thread.sleep(500);
-                } else {
-                    docs++;
-                }
-                if (bsn.isExceptionBuggy()) {
-                    // Thread.sleep(1000);
-                    throw new Exception("This is a buggy exception during consumer processing !");
-                }
-
+        public void process(CoreSession session, BuggySourceNode sn) throws Exception {
+            DocumentModel doc = session.createDocumentModel("/", sn.getName(), "File");
+            doc = session.createDocument(doc);
+            if (delayMs > 0) {
+                Thread.sleep((new Random()).nextInt(delayMs));
+            }
+            if (sn.isTransactionBuggy()) {
+                TransactionHelper.setTransactionRollbackOnly();
+                // Thread.sleep(500);
+            } else {
+                docs++;
+            }
+            if (sn.isExceptionBuggy()) {
+                // Thread.sleep(1000);
+                throw new Exception("This is a buggy exception during consumer processing !");
             }
         }
 

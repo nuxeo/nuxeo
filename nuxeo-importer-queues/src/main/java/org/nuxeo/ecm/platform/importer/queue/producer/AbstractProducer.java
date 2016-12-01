@@ -21,8 +21,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.AbstractTaskRunner;
+import org.nuxeo.ecm.platform.importer.source.Node;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import java.util.Random;
@@ -54,7 +54,7 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
         this.qm = qm;
     }
 
-    protected void dispatch(SourceNode node) throws InterruptedException {
+    protected void dispatch(Node node) throws InterruptedException {
         int idx = getTargetQueue(node, qm.count());
         qm.put(idx, node);
         producerCounter.inc();
@@ -62,7 +62,7 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
     }
 
     @Override
-    public int getTargetQueue(SourceNode bh, int nbQueues) {
+    public int getTargetQueue(Node node, int nbQueues) {
         return rand.nextInt(nbQueues);
     }
 }

@@ -23,6 +23,8 @@ package org.nuxeo.ecm.platform.importer.source;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,4 +88,13 @@ public class FileSourceNode implements SourceNode {
         return name.substring(0, p);
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(file);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        file = (File) in.readObject();
+    }
 }

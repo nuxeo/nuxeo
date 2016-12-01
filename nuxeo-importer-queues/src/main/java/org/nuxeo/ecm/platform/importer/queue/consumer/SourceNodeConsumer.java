@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import org.nuxeo.ecm.platform.importer.source.Node;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.api.Framework;
@@ -34,13 +35,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 8.3
  */
-public class DefaultConsumer extends AbstractConsumer {
+public class SourceNodeConsumer extends AbstractConsumer<SourceNode> {
 
     protected final FileManager fileManager;
 
     protected final String rootPath;
 
-    public DefaultConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue) {
+    public SourceNodeConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue) {
         super(log, root, batchSize, queuesManager, queue);
         fileManager = Framework.getService(FileManager.class);
         rootPath = root.getPathAsString();
@@ -51,8 +52,8 @@ public class DefaultConsumer extends AbstractConsumer {
     }
 
     @Override
-    protected void process(CoreSession session, SourceNode src) throws IOException {
-
+    public void process(CoreSession session, SourceNode node) throws IOException {
+        SourceNode src = (SourceNode) node;
         String fileName = null;
         String name = null;
         BlobHolder bh = src.getBlobHolder();

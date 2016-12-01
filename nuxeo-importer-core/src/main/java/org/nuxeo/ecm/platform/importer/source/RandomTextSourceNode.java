@@ -21,6 +21,9 @@
 
 package org.nuxeo.ecm.platform.importer.source;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -433,4 +436,39 @@ public class RandomTextSourceNode implements SourceNode {
     public String getSourcePath() {
         return null;
     }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(hazard);
+        out.writeObject(name);
+        out.writeBoolean(folderish);
+        out.writeInt(level);
+        out.writeInt(idx);
+        out.writeInt(blobSizeInKB);
+        out.writeBoolean(onlyText);
+        out.writeBoolean(nonUniformRepartition);
+        out.writeInt(defaultNbDataNodesPerFolder);
+        out.writeInt(bigNbNodesFactor);
+        out.writeInt(smallNbNodesDivider);
+        out.writeInt(nbVisitedFolders);
+        out.writeBoolean(withProperties);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        hazard = (Random) in.readObject();
+        name = (String) in.readObject();
+        folderish = in.readBoolean();
+        level = in.readInt();
+        idx = in.readInt();
+        blobSizeInKB = in.readInt();
+        onlyText = in.readBoolean();
+        nonUniformRepartition = in.readBoolean();
+        defaultNbDataNodesPerFolder = in.readInt();
+        bigNbNodesFactor = in.readInt();
+        smallNbNodesDivider = in.readInt();
+        nbVisitedFolders = in.readInt();
+        withProperties = in.readBoolean();
+    }
+
 }

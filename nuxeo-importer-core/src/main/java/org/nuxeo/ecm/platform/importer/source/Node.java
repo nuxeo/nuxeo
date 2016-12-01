@@ -1,3 +1,4 @@
+package org.nuxeo.ecm.platform.importer.source;/*
 /*
  * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -13,22 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Contributors:
+ *     bdelbosc
  */
-package org.nuxeo.ecm.platform.importer.queue.consumer;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 
 /**
- * @since 8.3
+ * @since 9.1
  */
-public class ConsumerFactoryImpl implements ConsumerFactory {
 
-    @Override
-    public Consumer createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
-                                   QueuesManager queuesManager,  int queue) {
-        return new SourceNodeConsumer(log, root, batchSize, queuesManager, queue);
-    }
+import java.io.Externalizable;
 
+public interface Node extends Externalizable {
+
+    /**
+     * Get a reference name for the node.
+     *
+     */
+    String getId();
 }

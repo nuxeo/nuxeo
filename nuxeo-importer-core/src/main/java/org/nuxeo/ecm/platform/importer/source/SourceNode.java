@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.importer.source;
 
+import java.io.Externalizable;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
  *
  * @author Thierry Delprat
  */
-public interface SourceNode {
+public interface SourceNode extends Node {
 
     boolean isFolderish();
 
@@ -43,4 +44,7 @@ public interface SourceNode {
 
     String getSourcePath();
 
+    default String getId() {
+        return getName();
+    }
 }

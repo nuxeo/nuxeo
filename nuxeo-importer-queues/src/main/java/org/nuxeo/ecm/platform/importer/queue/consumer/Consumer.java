@@ -17,12 +17,13 @@
 package org.nuxeo.ecm.platform.importer.queue.consumer;
 
 import org.nuxeo.ecm.platform.importer.queue.TaskRunner;
+import org.nuxeo.ecm.platform.importer.source.Node;
 
 
 /**
  * @since 8.3
  */
-public interface Consumer extends TaskRunner {
+public interface Consumer<N extends Node> extends TaskRunner {
 
     double getNbDocsCreated();
 

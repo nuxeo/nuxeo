@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ImportStat;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
+import org.nuxeo.ecm.platform.importer.source.Node;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 
@@ -116,9 +117,9 @@ public class QueueImporter {
                 log.error("Queue of conusmer " + i + " not empty, draining " + manager.size(i)  + " nodes to errors");
                 unprocessedNodesConsumer += manager.size(i);
                 do {
-                    SourceNode node = manager.poll(i);
+                    Node node = manager.poll(i);
                     if (node != null) {
-                        log.error("Unable to import " + node.getName() + " by consumer " + i);
+                        log.error("Unable to import " + node.getId() + " by consumer " + i);
                     }
                 } while (manager.isEmpty(i));
             }

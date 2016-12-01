@@ -44,12 +44,12 @@ public class TestCQManager {
         //ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
         ImporterLogger logger = new BufferredLogger(log);
-        CQManager qm = new CQManager(logger, 5);
-        SourceNode node = new BuggySourceNode(1, false, false);
+        CQManager<BuggySourceNode> qm = new CQManager<>(logger, 5);
+        BuggySourceNode node = new BuggySourceNode(1, false, false);
         qm.put(1, node);
         qm.put(1, node);
 
-        SourceNode node1 = qm.poll(1);
+        BuggySourceNode node1 = qm.poll(1);
         System.out.println(node1.getName());
         assertEquals(node.getName(), node1.getName());
     }
