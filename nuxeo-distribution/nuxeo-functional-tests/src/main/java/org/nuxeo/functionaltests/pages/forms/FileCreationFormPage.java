@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests.pages.forms;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
@@ -42,6 +43,25 @@ public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
         if (uploadBlob) {
             uploadBlob(filePrefix, fileSuffix, fileContent);
+        }
+
+        create();
+        return asPage(FileDocumentBasePage.class);
+    }
+
+    /**
+     * Create a file document referencing an existing file path.
+     *
+     * @since 9.1
+     */
+    public FileDocumentBasePage createFileDocument(String title, String description, String filePath)
+            throws IOException {
+        titleTextInput.sendKeys(title);
+        descriptionTextInput.sendKeys(description);
+
+        if (!StringUtils.isBlank(filePath)) {
+            FileWidgetElement fileWidget = getFileWidgetElement();
+            fileWidget.uploadFile(filePath);
         }
 
         create();
