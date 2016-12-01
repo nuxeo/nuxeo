@@ -87,6 +87,8 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
 
     protected List<DocumentModel> userDomains = null;
 
+    protected boolean isPathShrinked = false;
+
     /** View id description prefix for message label (followed by "="). */
     protected static final String BREADCRUMB_PREFIX = "breadcrumb";
 
@@ -104,8 +106,12 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
         return 80;
     }
 
-    protected String getPathEllipsis() {
+    public String getPathEllipsis() {
         return "…";
+    }
+
+    public boolean isPathShrinked() {
+        return this.isPathShrinked;
     }
 
     protected String getViewDomainsOutcome() {
@@ -209,6 +215,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
     protected List<PathElement> shrinkPathIfNeeded(List<PathElement> paths) {
 
         if (paths == null || paths.size() <= getMinPathSegmentsLen()) {
+            this.isPathShrinked = false;
             return paths;
         }
 
@@ -219,6 +226,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
         String completePath = sb.toString();
 
         if (completePath.length() <= getMaxPathCharLen()) {
+            this.isPathShrinked = false;
             return paths;
         }
 
@@ -239,7 +247,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
             // this means the current document has a title longer than MAX_PATH_CHAR_LEN !
             shrinkedPath.add(0, paths.get(paths.size() - 1));
         }
-        shrinkedPath.add(0, new TextPathElement(getPathEllipsis()));
+        this.isPathShrinked = true;
         return shrinkedPath;
     }
 

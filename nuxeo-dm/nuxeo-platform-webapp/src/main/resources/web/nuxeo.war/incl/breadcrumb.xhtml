@@ -50,6 +50,10 @@
       </c:if>
 
       <c:if test="#{!empty backendPath}">
+        <h:commandLink id="goToParentButton" action="#{breadcrumbActions.navigateToParent}"
+          rendered="#{breadcrumbActions.isPathShrinked() and facesContext.viewRoot.viewId != '/view_servers.xhtml'}">
+          <h:outputText value="#{breadcrumbActions.getPathEllipsis()}" />
+        </h:commandLink>
 
         <ui:repeat var="pathElement" value="#{backendPath}" varStatus="status">
           <ui:fragment rendered="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
