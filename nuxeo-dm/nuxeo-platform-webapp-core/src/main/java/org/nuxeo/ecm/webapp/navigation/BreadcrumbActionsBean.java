@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.TextPathElement;
 import org.nuxeo.ecm.platform.ui.web.pathelements.VersionDocumentPathElement;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
+import org.nuxeo.ecm.webapp.helpers.StartupHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -110,12 +111,16 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
         return "…";
     }
 
-    public boolean isPathShrinked() {
-        return this.isPathShrinked;
+    public boolean isGoToParentButtonShown() {
+        return this.isPathShrinked
+                && !FacesContext.getCurrentInstance()
+                                .getViewRoot()
+                                .getViewId()
+                                .equals("/" + StartupHelper.SERVERS_VIEW + ".xhtml");
     }
 
     protected String getViewDomainsOutcome() {
-        return "view_domains";
+        return StartupHelper.DOMAINS_VIEW;
     }
 
     @Override
@@ -130,7 +135,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
         nbDocInList = documentsFormingPath.size();
 
         if (nbDocInList == 0) {
-            return "view_servers";
+            return StartupHelper.SERVERS_VIEW;
         }
 
         String outcome;
@@ -142,7 +147,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
             if (pathElement instanceof TextPathElement) {
                 DocumentModel currentDocument = navigationContext.getCurrentDocument();
                 if (currentDocument == null) {
-                    return "view_servers";
+                    return StartupHelper.SERVERS_VIEW;
                 } else {
                     return navigationContext.navigateToDocument(currentDocument);
                 }

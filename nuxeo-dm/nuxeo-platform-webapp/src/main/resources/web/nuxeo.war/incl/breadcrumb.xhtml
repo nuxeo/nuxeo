@@ -51,7 +51,7 @@
 
       <c:if test="#{!empty backendPath}">
         <h:commandLink id="goToParentButton" action="#{breadcrumbActions.navigateToParent}"
-          rendered="#{breadcrumbActions.isPathShrinked() and facesContext.viewRoot.viewId != '/view_servers.xhtml'}">
+          rendered="#{breadcrumbActions.isGoToParentButtonShown()}">
           <h:outputText value="#{breadcrumbActions.getPathEllipsis()}" />
         </h:commandLink>
 
