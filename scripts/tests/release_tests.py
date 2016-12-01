@@ -63,6 +63,9 @@ class ReleaseTestCase(unittest.TestCase):
                                    auto_increment_policy=policy, next_snapshot='auto')
         self.assertEqual(expected, Release(Repository(os.getcwd(), 'nuxeo_scripts'), release_info).next_snapshot)
 
+    def generateResource(self, resource):
+        shutil.copy(os.path.join(os.path.dirname(__file__), resource), self.workdir)
+
     def testSetNextSnapshot(self):
         with(patch('release.etree_parse', side_effect=self.mocks.etree_parse)):
             self.assertNextSnapshot('1.0.19-SNAPSHOT', '1.0.20-SNAPSHOT')
@@ -84,8 +87,9 @@ class ReleaseTestCase(unittest.TestCase):
             self.assertNextSnapshot('29-SNAPSHOT', '30-SNAPSHOT', policy='auto_major')
 
     def testPrepare(self):
-        print self.workdir
-        shutil.copy(os.path.join(os.path.dirname(__file__), 'resources/pom.xml'), self.workdir)
+        self.generateResource('resources/pom.xml')
+        self.generateResource('resources/layouts-summary-contrib.xml')
+
         system('git add pom.xml')
         system('git commit -m "Original import"')
 
@@ -103,21 +107,21 @@ class ReleaseTestCase(unittest.TestCase):
                 patch('nxutils.Repository.mvn'), patch('release.Release.package'):
             release.prepare()
 
-        tags = check_output('git tag')
-        branches = check_output('git branch')
-
-        self.assertEqual('release-8.10', tags)
-        self.assertIn('8.10', branches)
-        self.assertIn('master', branches)
+        self.assertEqual('release-8.10', check_output('git tag'))
+        self.assertIn('8.10', check_output('git branch'))
+        self.assertIn('master', check_output('git branch'))
 
         system('git checkout release-8.10')
-        with open('pom.xml') as pom:
+        with open('pom.xml') as pom, open('layouts-summary-contrib.xml') as contrib:
             self.assertIn('<version>8.10</version>', pom.read())
+            self.assertIn('<sinceVersion>8.10</sinceVersion>', contrib.read())
 
         system('git checkout 8.10')
-        with open('pom.xml') as pom:
+        with open('pom.xml') as pom, open('layouts-summary-contrib.xml') as contrib:
             self.assertIn('<version>8.10-HF01-SNAPSHOT</version>', pom.read())
+            self.assertIn('<sinceVersion>8.10</sinceVersion>', contrib.read())
 
         system('git checkout master')
-        with open('pom.xml') as pom:
+        with open('pom.xml') as pom, open('layouts-summary-contrib.xml') as contrib:
             self.assertIn('<version>9.1-SNAPSHOT</version>', pom.read())
+            self.assertIn('<sinceVersion>8.10</sinceVersion>', contrib.read())
