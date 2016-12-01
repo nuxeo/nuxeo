@@ -66,10 +66,20 @@ public class FileWidgetElement extends AbstractWidgetElement {
 
     public void uploadTestFile(String prefix, String suffix, String content) throws IOException {
         String fileToUploadPath = AbstractTest.getTmpFileToUploadPath(prefix, suffix, content);
+        uploadFile(fileToUploadPath);
+    }
+
+    /**
+     * Uploads file with given path.
+     *
+     * @throws IOException
+     * @since 9.1
+     */
+    public void uploadFile(String filePath) throws IOException {
         WebElement upRadioButton = getSubElement("choiceupload");
         Locator.waitUntilEnabledAndClick(upRadioButton);
         WebElement fileInput = getSubElement("upload");
-        fileInput.sendKeys(fileToUploadPath);
+        fileInput.sendKeys(filePath);
     }
 
     public void removeFile() {
