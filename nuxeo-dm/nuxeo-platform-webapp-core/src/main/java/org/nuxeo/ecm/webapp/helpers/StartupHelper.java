@@ -56,9 +56,9 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardNavigationHelper;
 @Install(precedence = Install.FRAMEWORK)
 public class StartupHelper implements Serializable {
 
-    protected static final String SERVERS_VIEW = "view_servers";
+    public static final String SERVERS_VIEW = "view_servers";
 
-    protected static final String DOMAINS_VIEW = "view_domains";
+    public static final String DOMAINS_VIEW = "view_domains";
 
     protected static final String DOMAIN_TYPE = "Domain";
 
