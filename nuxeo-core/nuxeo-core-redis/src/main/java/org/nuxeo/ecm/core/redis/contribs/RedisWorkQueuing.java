@@ -767,16 +767,22 @@ public class RedisWorkQueuing implements WorkQueuing {
         RedisExecutor redisExecutor = Framework.getService(RedisExecutor.class);
         List<byte[]> keys = keys(queueId);
         List<byte[]> args = Collections.singletonList(STATE_RUNNING);
-        Object id = redisExecutor.evalsha(popWorkSha, keys, args);
-        if (id == null) {
+        List<?> result = (List<?>)redisExecutor.evalsha(popWorkSha, keys, args);
+        if (result == null) {
             return null;
         }
-        if (id instanceof String) {
-            id = bytes((String) id);
+
+        List<Number> numbers = (List<Number>)result.get(0);
+        WorkQueueMetrics metrics = metrics(queueId, coerceNullToZero(numbers));
+        Object bytes = result.get(1);
+        if (bytes instanceof String) {
+            bytes = bytes((String) bytes);
         }
-        byte[] workIdBytes = (byte[]) id;
-        byte[] workBytes = redisExecutor.execute(jedis -> jedis.hget(dataKey(), workIdBytes));
-        return deserializeWork(workBytes);
+        Work work = deserializeWork((byte[])bytes);
+
+        listener.queueChanged(work, metrics);
+
+        return work;
     }
 
     /**
@@ -843,7 +849,10 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected static Number[] coerceNullToZero(List<Number> numbers) {
-        Number[] counters = numbers.toArray(new Number[numbers.size()]);
+        return coerceNullToZero(numbers.toArray(new Number[numbers.size()]));
+    }
+
+    protected static Number[] coerceNullToZero(Number[] counters) {
         for (int i = 0; i < counters.length; ++i) {
             if (counters[i] == null) {
                 counters[i] = 0;
@@ -851,7 +860,6 @@ public class RedisWorkQueuing implements WorkQueuing {
         }
         return counters;
     }
-
     @Override
     public void listen(Listener listener) {
         this.listener = listener;
