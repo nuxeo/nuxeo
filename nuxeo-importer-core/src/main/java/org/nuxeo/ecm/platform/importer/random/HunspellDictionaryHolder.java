@@ -37,6 +37,8 @@ import java.util.Random;
  */
 public class HunspellDictionaryHolder implements DictionaryHolder {
 
+    protected static final String DEFAULT_DIC = "fr_FR.dic";
+
     protected static final int INITIAL_SIZE = 100000;
 
     protected List<String> words = new ArrayList<>(INITIAL_SIZE);
@@ -45,13 +47,15 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
 
     protected int wordCount;
 
-    protected String dicName;
+    protected String dicName = DEFAULT_DIC;
 
     public static final Log log = LogFactory.getLog(HunspellDictionaryHolder.class);
 
-    public HunspellDictionaryHolder(String dicName) {
+    public HunspellDictionaryHolder(String lang) {
         generator = new Random(System.currentTimeMillis());
-        this.dicName = dicName;
+        if (lang != null) {
+            dicName = lang.replaceAll("\\W+", "") + ".dic";
+        }
     }
 
     @Override

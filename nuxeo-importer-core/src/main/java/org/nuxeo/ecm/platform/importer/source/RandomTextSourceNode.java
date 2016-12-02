@@ -142,12 +142,12 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) {
-        return init(maxSize, blobSizeInKB, onlyText, false, false);
+        return init(maxSize, blobSizeInKB, onlyText, false, false, null);
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText, boolean nonUniform,
-                                            boolean withProperties) {
-        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"), nonUniform,
+                                            boolean withProperties, String lang) {
+        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder(lang), nonUniform,
                 withProperties);
     }
 
