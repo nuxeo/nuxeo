@@ -55,7 +55,7 @@ public class TestRandomNodes {
 
     @Test
     public void testRandomWithProperties() throws Exception {
-        RandomTextSourceNode root = RandomTextSourceNode.init(1000, 0, true, false, true);
+        RandomTextSourceNode root = RandomTextSourceNode.init(1000, 0, true, false, true, "en_US");
         List<SourceNode> children = root.getChildren();
         for (SourceNode child: children) {
             if (child.isFolderish()) {
@@ -88,7 +88,7 @@ public class TestRandomNodes {
 
         int target = 500 * 1000;
 
-        RandomTextSourceNode root = RandomTextSourceNode.init(target, null, true, true, false);
+        RandomTextSourceNode root = RandomTextSourceNode.init(target, null, true, true, false, null);
         browse(root);
         logReport();
         assertTrue(isSmallNbNodes);
