@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.runtime.test.runner.BlacklistComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -31,7 +30,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Features(RedisFeature.class)
 @Deploy({ "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-redis-sync-root-cache-contrib.xml" })
 @BlacklistComponent("org.nuxeo.drive.sync.roots.cache.test")
-@RandomBug.Repeat(issue = "NXP-21114")
 public class NuxeoDriveRedisCacheFeature extends SimpleFeature {
 
 }
