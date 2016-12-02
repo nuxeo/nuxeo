@@ -111,11 +111,17 @@ public class RedisEmbeddedLuaEngine {
             }
             if (value.istable()) {
                 LuaValue element = value.get(1);
+                if (element.istable()) {
+                    // special case for pop work script
+                    return Arrays.asList(new Object[] {
+                            Arrays.asList((Number[]) CoerceLuaToJava.coerce(value.get(1), Number[].class)),
+                            CoerceLuaToJava.coerce(value.get(2), byte[].class) });
+                }
                 if (element.isnumber()) {
-                    return Arrays.asList((Number[])CoerceLuaToJava.coerce(value, Number[].class));
+                    return Arrays.asList((Number[]) CoerceLuaToJava.coerce(value, Number[].class));
                 }
                 if (element.isstring()) {
-                    return Arrays.asList((String[])CoerceLuaToJava.coerce(value, String[].class));
+                    return Arrays.asList((String[]) CoerceLuaToJava.coerce(value, String[].class));
                 }
                 throw new UnsupportedOperationException("unsupported table of " + element.typename());
             }

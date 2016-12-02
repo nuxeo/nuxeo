@@ -16,9 +16,18 @@ local id = redis.call('RPOP', queuedKey)
 if (id == false) then
   return false
 end
+
 redis.call('SREM', scheduledKey, id)
-redis.call('HINCRBY', countKey, scheduledKey, -1)
 redis.call('SADD', runningKey, id)
 redis.call('HSET', stateKey, id, state)
-redis.call('HINCRBY', countKey, runningKey, 1)
-return id
+
+return {
+    {
+      redis.call('HINCRBY', countKey, scheduledKey, -1), 
+      redis.call('HINCRBY', countKey, runningKey, 1), 
+      redis.call('HINCRBY', countKey, completedKey, 0),
+      redis.call('HINCRBY', countKey, canceledKey, 0)
+    },
+    redis.call('HGET', dataKey, id)
+}
+
