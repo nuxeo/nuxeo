@@ -53,7 +53,7 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> impleme
 
     protected final Condition activation = activationLock.newCondition();
 
-    protected volatile boolean active = true;
+    protected volatile boolean active = false;
 
     protected final String queueId;
 

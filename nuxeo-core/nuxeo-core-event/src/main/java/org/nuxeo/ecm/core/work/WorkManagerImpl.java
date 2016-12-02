@@ -197,25 +197,31 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.info("Unregistered work queue " + id);
     }
 
+    void initializeQueue(WorkQueueDescriptor config) {
+        if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
+            throw new IllegalArgumentException("cannot initialize all queues");
+        }
+        if (queuing.getQueue(config.id) != null) {
+            throw new IllegalStateException("work queue " + config.id + " is already initialized");
+        }
+        if (executors.containsKey(config.id)) {
+            throw new IllegalStateException("work queue " + config.id + " already have an executor");
+        }
+        NuxeoBlockingQueue queue = queuing.init(config);
+        ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX + config.id + "-");
+        int maxPoolSize = config.getMaxThreads();
+        WorkThreadPoolExecutor executor = new WorkThreadPoolExecutor(maxPoolSize, maxPoolSize, 0, TimeUnit.SECONDS,
+                queue, threadFactory);
+        // prestart all core threads so that direct additions to the queue
+        // (from another Nuxeo instance) can be seen
+        executor.prestartAllCoreThreads();
+        executors.put(config.id, executor);
+        log.info("Initialized work queue " + config.id + " " + config.toEffectiveString());
+    }
+
     void activateQueue(WorkQueueDescriptor config) {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
-            return;
-        }
-        NuxeoBlockingQueue queue = queuing.getQueue(config.id);
-        if (queue == null) {
-            queue = queuing.init(config);
-        }
-        WorkThreadPoolExecutor executor = executors.get(config.id);
-        if (executor == null) {
-            ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX + config.id + "-");
-            int maxPoolSize = config.getMaxThreads();
-            executor = new WorkThreadPoolExecutor(maxPoolSize, maxPoolSize,
-                    0, TimeUnit.SECONDS,
-                    queue, threadFactory);
-            // prestart all core threads so that direct additions to the queue
-            // (from another Nuxeo instance) can be seen
-            executor.prestartAllCoreThreads();
-            executors.put(config.id, executor);
+            throw new IllegalArgumentException("cannot activate all queues");
         }
         queuing.setActive(config.id, config.isProcessingEnabled());
         log.info("Activated work queue " + config.id + " " + config.toEffectiveString());
@@ -223,15 +229,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     void deactivateQueue(WorkQueueDescriptor config) {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
-            return;
+            throw new IllegalArgumentException("cannot deactivate all queues");
         }
-        WorkThreadPoolExecutor executor = executors.get(config.id);
-        try {
-            executor.shutdownAndSuspend();
-        } catch (InterruptedException cause) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted while deactivating queue " + config.id, cause);
-        }
+        queuing.setActive(config.id, false);
         log.info("Deactivated work queue " + config.id);
     }
 
@@ -350,6 +350,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             completionSynchronizer = new WorkCompletionSynchronizer();
             started = true;
             workQueueConfig.index();
+            for (String id : workQueueConfig.getQueueIds()) {
+                initializeQueue(workQueueConfig.get(id));
+            }
             for (String id : workQueueConfig.getQueueIds()) {
                 activateQueue(workQueueConfig.get(id));
             }
