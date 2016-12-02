@@ -6,6 +6,7 @@
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
+    <param name="Threshold" value="INFO" />
 
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
@@ -30,23 +31,23 @@
     </layout>
   </appender>
 
-  <category name="org.nuxeo.ecm.core.redis.embedded" additivity="false">
-     <priority value="TRACE"/>
-     <appender-ref ref="REDIS"/>
+  <category name="org.nuxeo.ecm.core.redis.embedded" additivity="true">
+    <priority value="TRACE"/>
+    <appender-ref ref="REDIS"/>
   </category>
   
-    <category name="org.nuxeo.ecm.core.work" additivity="false">
-     <priority value="TRACE"/>
-     <appender-ref ref="REDIS"/>
+  <category name="org.nuxeo.ecm.core.work" additivity="true">
+    <priority value="TRACE"/>
+    <appender-ref ref="REDIS"/>
   </category>
 
 <!--
-  <category name="org.nuxeo" additivity="false">
+  <category name="org.nuxeo" additivity="true">
      <priority value="DEBUG"/>
      <appender-ref ref="FILE"/>
   </category>
- -->
-  
+-->
+
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
