@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
@@ -84,7 +83,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@Ignore(value = "NXP-21114")
 public class DefaultFileSystemItemFactoryFixture {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
