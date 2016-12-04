@@ -6,14 +6,14 @@
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
     <resource name="nuxeo-three-d.html" type="import" shrinkable="false">
-      <uri>/ui/nuxeo-three-d/nuxeo-three-d.html</uri>
+      <uri>/ui/nuxeo-threed/nuxeo-threed.html</uri>
     </resource>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
     <bundle name="web-ui">
       <resources append="true">
-        <resource>nuxeo-three-d.html</resource>
+        <resource>nuxeo-threed.html</resource>
       </resources>
     </bundle>
   </extension>
