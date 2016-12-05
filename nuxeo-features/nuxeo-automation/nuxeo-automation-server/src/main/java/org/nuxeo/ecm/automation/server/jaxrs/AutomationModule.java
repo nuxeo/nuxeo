@@ -74,7 +74,10 @@ public class AutomationModule extends WebEngineModule {
             }
         }
 
+        result.add(new AutomationServiceProvider());
+        result.add(new AutomationServerProvider());
         result.add(new JsonFactoryProvider());
+        result.add(new CoreSessionProvider());
         // nuxeo-core-io MarshallerRegistry service reading and writing
         result.add(new JsonCoreIODelegate());
         return result;
