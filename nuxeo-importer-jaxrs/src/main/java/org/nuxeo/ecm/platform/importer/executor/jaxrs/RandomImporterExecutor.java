@@ -58,8 +58,8 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("blockSyncPostCommitProcessing") Boolean blockSyncPostCommitProcessing,
             @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing,
             @QueryParam("blockIndexing") Boolean blockIndexing, @QueryParam("bulkMode") Boolean bulkMode,
-            @QueryParam("transactionTimeout") Integer transactionTimeout) {
-
+            @QueryParam("transactionTimeout") Integer transactionTimeout,
+            @QueryParam("lang") String lang) {
         if (onlyText == null) {
             onlyText = true;
         }
@@ -73,7 +73,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             bulkMode = true;
         }
         getLogger().info("Init Random text generator");
-        SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText, nonUniform, withProperties);
+        SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText, nonUniform, withProperties, lang);
         getLogger().info("Random text generator initialized");
 
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(source, targetPath,
