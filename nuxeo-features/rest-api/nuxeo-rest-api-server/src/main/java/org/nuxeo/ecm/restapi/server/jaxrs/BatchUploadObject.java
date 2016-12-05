@@ -290,10 +290,10 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     @Context
-    HttpServletRequest request;
+   protected  HttpServletRequest request;
 
     @Context
-    HttpServletResponse response;
+    protected HttpServletResponse response;
 
     @POST
     @Produces("application/json")
