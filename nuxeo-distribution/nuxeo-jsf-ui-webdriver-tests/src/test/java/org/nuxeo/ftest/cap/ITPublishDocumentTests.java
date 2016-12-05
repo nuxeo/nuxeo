@@ -708,7 +708,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         assertEquals(new HashSet<>(Arrays.asList("0.1", "0.2")), new HashSet<>(Arrays.asList(ver0, ver1)));
 
         // approve version 0.2 as manager
-        sectionPage.goToDocument(TEST_NOTE_TITLE);
+        sectionPage.goToDocumentWithVersion(TEST_NOTE_TITLE, "0.2");
         asPage(SummaryTabSubPage.class).approvePublication();
 
         // check only 0.2 are published in test section as manager (need refresh)

@@ -101,6 +101,20 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     /**
+     * @since 9.1
+     */
+    public WebElement getItemWithTitleAndVersion(String title, String version) {
+        for (WebElement item : getItems()) {
+            String t = item.findElement(By.xpath("td[3]")).getText(); // title
+            String v = item.findElement(By.xpath("td[7]")).getText(); // version
+            if (t.equals(title) && v.equals(version)) {
+                return item;
+            }
+        }
+        throw new NoSuchElementException("No item with title \"" + title + "\" and version " + version);
+    }
+
+    /**
      * @since 8.3
      */
     public void clickOnItemTitle(String title) {
