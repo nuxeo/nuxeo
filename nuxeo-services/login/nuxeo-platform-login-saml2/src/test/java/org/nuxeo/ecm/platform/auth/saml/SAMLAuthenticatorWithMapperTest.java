@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -38,6 +37,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.usermapper.test.UserMapperFeature;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.xml.Configuration;
@@ -63,11 +63,9 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(UserMapperFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.usermapper", "org.nuxeo.ecm.platform.login.saml2" })
+@Deploy({ "org.nuxeo.ecm.platform.login.saml2" })
 @LocalDeploy({"org.nuxeo.ecm.platform.auth.saml:OSGI-INF/test-sql-directory.xml","org.nuxeo.ecm.platform.auth.saml:OSGI-INF/usermapper-contribs.xml"})
 public class SAMLAuthenticatorWithMapperTest {
 

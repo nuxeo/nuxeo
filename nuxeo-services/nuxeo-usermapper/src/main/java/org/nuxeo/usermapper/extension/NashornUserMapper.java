@@ -20,17 +20,24 @@
 
 package org.nuxeo.usermapper.extension;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.automation.scripting.internals.ScriptingCache;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService.Session;
+import org.nuxeo.automation.scripting.internals.AutomationMapper;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link UserMapper} implementation using Nashorn to implement logic using JavaScript
@@ -40,8 +47,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 
 public class NashornUserMapper extends AbstractUserMapper {
-
-    protected ScriptEngine engine;
 
     protected final String mapperSource;
 
@@ -58,22 +63,25 @@ public class NashornUserMapper extends AbstractUserMapper {
         if (StringUtils.isEmpty(wrapperSource)) {
             return null;
         }
-        Bindings bindings = new SimpleBindings();
-        bindings.put("nuxeoPrincipal", principal);
-        bindings.put("userObject", userObject);
-        bindings.put("params", params);
-        try {
-            engine.eval(wrapperSource, bindings);
-        } catch (ScriptException e) {
-            log.error("Error while executing JavaScript mapper", e);
+        try (CoreSession core = CoreInstance
+                .openCoreSession(Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
+            try (Session session = Framework.getService(AutomationScriptingService.class).get(core)) {
+                Map<String, Object> bindings = session.adapt(ScriptEngine.class)
+                        .getBindings(ScriptContext.ENGINE_SCOPE);
+                bindings.put("nuxeoPrincipal", principal);
+                bindings.put("userObject", userObject);
+                bindings.put("params", params);
+                session.run(new ByteArrayInputStream(wrapperSource.getBytes(Charsets.UTF_8)));
+                return bindings.get("userObject");
+            } catch (Exception e) {
+                throw new NuxeoException("Error while executing JavaScript mapper", e);
+            }
         }
-        return bindings.get("userObject");
     }
 
     @Override
     public void init(Map<String, String> params) throws Exception {
-        ScriptingCache scripting = new ScriptingCache(true);
-        engine = scripting.getScriptEngine();
+
     }
 
     @Override
@@ -84,17 +92,21 @@ public class NashornUserMapper extends AbstractUserMapper {
     @Override
     protected void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes) {
-        Bindings bindings = new SimpleBindings();
-        bindings.put("searchAttributes", searchAttributes);
-        bindings.put("profileAttributes", profileAttributes);
-        bindings.put("userAttributes", userAttributes);
-        bindings.put("userObject", userObject);
 
-        try {
-            engine.eval(mapperSource, bindings);
-        } catch (ScriptException e) {
-            log.error("Error while executing JavaScript mapper", e);
+        try (CoreSession core = CoreInstance
+                .openCoreSession(Framework.getService(RepositoryManager.class).getDefaultRepositoryName())) {
+            try (Session session = Framework.getService(AutomationScriptingService.class).get(core)) {
+                AutomationMapper mapper = session.adapt(AutomationMapper.class);
+                mapper.put("searchAttributes", searchAttributes);
+                mapper.put("profileAttributes", profileAttributes);
+                mapper.put("userAttributes", userAttributes);
+                mapper.put("userObject", userObject);
+                session.run(new ByteArrayInputStream(mapperSource.getBytes(Charsets.UTF_8)));
+            } catch (Exception e) {
+                throw new NuxeoException("Error while executing JavaScript mapper", e);
+            }
         }
+
     }
 
 }

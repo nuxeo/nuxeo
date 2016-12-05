@@ -8,6 +8,8 @@
   <service>
     <provide interface="org.nuxeo.usermapper.service.UserMapperService" />
   </service>
+  
+  <require>org.nuxeo.automation.scripting.internals.AutomationScriptingComponent</require>
 
   <documentation>
     This component expose a service to help mapping NuxeoPrincipal to
