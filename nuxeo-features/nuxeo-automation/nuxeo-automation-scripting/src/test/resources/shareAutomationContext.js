@@ -5,16 +5,20 @@ var rootDoc = Repository.GetDocument(null, {
 
 Context.PushDocument(rootDoc,{});
 
+function checkRestore() {
 try {
 	var restoredRoot = Context.PopDocument(null,{});
 
 	if (restoredRoot==null) {
-	  print("KO");
+	  return "KO";
 	} else {
-	  print("OK");
+	  return "OK";
 	}
 } catch (err) {
-   print(err);
+   return "ERR";
 }
+}
+
+checkRestore();
 
 

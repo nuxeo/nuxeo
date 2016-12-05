@@ -24,8 +24,8 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-@Operation(id = "o1")
-public class Operation1 {
+@Operation(id = "Test.Username")
+public class TestUsername {
 
     @Context
     OperationContext context;
