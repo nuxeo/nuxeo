@@ -7,7 +7,6 @@
 
   <service>
       <provide interface="org.nuxeo.automation.scripting.api.AutomationScriptingService" />
-      <provide interface="javax.script.ScriptEngineManager"/>
   </service>
 
   <extension-point name="operation">

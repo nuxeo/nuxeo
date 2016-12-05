@@ -18,15 +18,16 @@
  */
 package org.nuxeo.automation.scripting.internals.operation;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.script.ScriptException;
 
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.ScriptOperationContext;
-import org.nuxeo.automation.scripting.internals.WrapperHelper;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService.Session;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,46 +35,28 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ScriptingOperationImpl {
 
-    protected final ScriptOperationContext ctx;
+    protected final String script;
+
+    protected final OperationContext ctx;
 
     protected final Map<String, Object> args;
 
-    protected final String source;
-
-    public ScriptingOperationImpl(String source, ScriptOperationContext ctx, Map<String, Object> args)
-            throws ScriptException {
+    public ScriptingOperationImpl(String script, OperationContext ctx, Map<String, Object> args) {
+        this.script = script;
         this.ctx = ctx;
         this.args = args;
-        this.source = source;
     }
 
-    public Object run(Object input) throws Exception {
-        try {
-            AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-            scriptingService.setOperationContext(ctx);
-            ScriptingOperationInterface itf = scriptingService.getInterface(ScriptingOperationInterface.class, source,
-                    ctx.getCoreSession());
-            input = wrapArgsAndInput(input, args);
-            return unwrapResult(itf.run(input, args));
+    public interface Runnable {
+        Object run(Object input, Map<String, Object> parameters);
+    };
+
+    public Object run() throws Exception {
+        try (Session session = Framework.getService(AutomationScriptingService.class).get(ctx)) {
+            return session.handleof(new ByteArrayInputStream(script.getBytes(Charset.forName("UTF-8"))), Runnable.class).run(ctx.getInput(), args);
         } catch (ScriptException e) {
             throw new OperationException(e);
-        } finally {
-            if (ctx.get(Constants.VAR_IS_CHAIN) != null && !(Boolean) ctx.get(Constants.VAR_IS_CHAIN)) {
-                ctx.deferredDispose();
-            }
         }
-    }
-
-    protected Object wrapArgsAndInput(Object input, Map<String, Object> args) {
-        args.replaceAll((key, value) -> WrapperHelper.wrap(value, ctx.getCoreSession()));
-        return WrapperHelper.wrap(input, ctx.getCoreSession());
-    }
-
-    protected Object unwrapResult(Object res) {
-        // Unwrap Context
-        ctx.replaceAll((key, value) -> WrapperHelper.unwrap(value));
-        // Unwrap Result
-        return WrapperHelper.unwrap(res);
     }
 
 }

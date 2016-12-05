@@ -51,7 +51,7 @@ public class ScriptingOperationDescriptor {
     protected OperationDocumentation.Param[] params = new OperationDocumentation.Param[0];
 
     @XNode("script")
-    protected String script;
+    protected String source;
 
     public String[] getAliases() {
         return aliases;
@@ -79,10 +79,6 @@ public class ScriptingOperationDescriptor {
 
     public OperationDocumentation.Param[] getParams() {
         return params;
-    }
-
-    public String getScript() {
-        return script;
     }
 
 }
