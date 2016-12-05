@@ -18,54 +18,46 @@
  */
 package org.nuxeo.automation.scripting.internals.operation;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.script.ScriptException;
-
-import org.nuxeo.automation.scripting.internals.ScriptOperationContext;
+import org.nuxeo.automation.scripting.api.AutomationScriptingService;
+import org.nuxeo.automation.scripting.api.ScriptingException;
+import org.nuxeo.automation.scripting.internals.AutomationScriptingServiceImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
-import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
-import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @since 7.2
  */
-public class ScriptingOperationTypeImpl extends OperationTypeImpl {
+public class ScriptingOperationTypeImpl implements OperationType {
 
-    protected final AutomationService service;
+    protected final AutomationScriptingService scripting;
+
+    protected final AutomationService automation;
 
     protected final ScriptingOperationDescriptor desc;
 
-    protected final InvokableMethod[] methods;
+    protected final InvokableMethod method = runMethod();
 
-    public ScriptingOperationTypeImpl(AutomationService service,
-            ScriptingOperationDescriptor desc) {
-        this.service = service;
+    public ScriptingOperationTypeImpl(AutomationScriptingServiceImpl scripting, AutomationService automation,
+            ScriptingOperationDescriptor desc) throws ScriptingException {
+        this.scripting = scripting;
+        this.automation = automation;
         this.desc = desc;
-        this.inputType = desc.getInputType();
-        this.methods = new InvokableMethod[] { runMethod() };
     }
-
 
     @Override
     public String getContributingComponent() {
-        return null;
+        return "org.nuxeo.automation.scripting.internals.AutomationScriptingComponent";
     }
 
     @Override
@@ -91,35 +83,8 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
     }
 
     @Override
-    public List<InvokableMethod> getMethods() {
-        return Arrays.asList(methods);
-    }
-
-    @Override
-    public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
-        return methods;
-    }
-
-    @Override
-    public AutomationService getService() {
-        return service;
-    }
-
-    @Override
-    public Class<?> getType() {
-        return ScriptingOperationImpl.class;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
-        try {
-            resolveArguments(ctx, args);
-            ScriptOperationContext sctx = new ScriptOperationContext(ctx);
-            return new ScriptingOperationImpl(desc.getScript(), sctx, args);
-        } catch (ScriptException e) {
-            throw new NuxeoException(e);
-        }
+    public Object newInstance(OperationContext ctx, Map<String, ?> args) throws OperationException {
+       return new ScriptingOperationImpl(desc.source, ctx, resolve(ctx, args));
     }
 
     /**
@@ -129,46 +94,69 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
      * fallback on chains variables and evaluate script expression like MVEL.
      *
      * @since 8.3
-     * @param ctx Automation Context
-     * @param args Operation Parameters
+     * @param ctx
+     *            Automation Context
+     * @param args
+     *            Operation Parameters
      */
-    protected void resolveArguments(OperationContext ctx, Map<String, Object> args) {
-        for (String key : args.keySet()) {
-            if (args.get(key) instanceof Expression) {
-                Object obj = ((Expression) args.get(key)).eval(ctx);
-                args.put(key, obj);
-            }
-        }
+    protected Map<String, Object> resolve(OperationContext ctx, Map<String, ?> args) {
+        Map<String, Object> resolved = args.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                e -> e.getValue() instanceof Expression ? ((Expression) e.getValue()).eval(ctx) : e.getValue()));
+
         if (ctx.getVars().containsKey(Constants.VAR_RUNTIME_CHAIN)) {
-            args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> m = (Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN);
+            resolved.putAll(m);
         }
+        return resolved;
     }
 
-    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
-        String t;
-        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
-            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
-        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
-            t = Constants.T_DOCUMENTS;
-        } else if (BlobList.class.isAssignableFrom(type)) {
-            t = Constants.T_BLOBS;
-        } else if (Blob.class.isAssignableFrom(type)) {
-            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
-        } else if (URL.class.isAssignableFrom(type)) {
-            t = Constants.T_RESOURCE;
-        } else if (Calendar.class.isAssignableFrom(type)) {
-            t = Constants.T_DATE;
-        } else {
-            t = type.getSimpleName().toLowerCase();
-        }
-        return t;
+//    @Override
+//    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
+//        String t;
+//        if (DocumentModel.class.isAssignableFrom(type) || DocumentRef.class.isAssignableFrom(type)) {
+//            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
+//        } else if (DocumentModelList.class.isAssignableFrom(type) || DocumentRefList.class.isAssignableFrom(type)) {
+//            t = Constants.T_DOCUMENTS;
+//        } else if (BlobList.class.isAssignableFrom(type)) {
+//            t = Constants.T_BLOBS;
+//        } else if (Blob.class.isAssignableFrom(type)) {
+//            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
+//        } else if (URL.class.isAssignableFrom(type)) {
+//            t = Constants.T_RESOURCE;
+//        } else if (Calendar.class.isAssignableFrom(type)) {
+//            t = Constants.T_DATE;
+//        } else {
+//            t = type.getSimpleName().toLowerCase();
+//        }
+//        return t;
+//    }
+
+    @Override
+    public Class<?> getType() {
+        return ScriptingOperationImpl.class;
+    }
+
+    @Override
+    public AutomationService getService() {
+        return automation;
+    }
+
+    @Override
+    public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
+        return new InvokableMethod[] { method };
+    }
+
+    @Override
+    public List<InvokableMethod> getMethods() {
+        return Collections.singletonList(method);
     }
 
     protected InvokableMethod runMethod() {
         try {
-            return new InvokableMethod(this, ScriptingOperationImpl.class.getMethod("run", Object.class));
-        } catch (NoSuchMethodException | SecurityException e) {
-            throw new UnsupportedOperationException("Cannot use reflection for run method", e);
+            return new InvokableMethod(this, ScriptingOperationImpl.class.getMethod("run"));
+        } catch (ReflectiveOperationException cause) {
+            throw new Error("Cannot reference run method of " + ScriptingOperationImpl.class);
         }
     }
 

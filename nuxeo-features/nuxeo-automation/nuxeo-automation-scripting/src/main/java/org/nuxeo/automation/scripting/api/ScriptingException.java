@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.internals.operation;
+package org.nuxeo.automation.scripting.api;
 
-import java.util.Map;
+import org.nuxeo.ecm.automation.OperationException;
 
 /**
- * @since 7.2
+ *
+ *
+ * @since 8.4
  */
-public interface ScriptingOperationInterface {
+public class ScriptingException extends OperationException {
 
-    Object run(Object input, Map<String, Object> parameters);
+    public ScriptingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    private static final long serialVersionUID = -1L;
 
 }

@@ -22,12 +22,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,14 +34,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.script.ScriptException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationTypeImpl;
+import org.nuxeo.automation.scripting.AutomationScriptingFeature;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -52,9 +47,9 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
-import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -63,25 +58,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.automation.scripting", "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.scripting.tests:automation-scripting-contrib.xml",
-        "org.nuxeo.ecm.automation.scripting.tests:core-types-contrib.xml" })
+@Features(AutomationScriptingFeature.class)
 public class TestScriptRunnerInfrastructure {
 
     protected static String[] attachments = { "att1", "att2", "att3" };
@@ -92,6 +76,9 @@ public class TestScriptRunnerInfrastructure {
     @Inject
     AutomationService automationService;
 
+    @Inject
+    AutomationScriptingFeature feature;
+
     ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
     private PrintStream outStream;
@@ -100,7 +87,7 @@ public class TestScriptRunnerInfrastructure {
     TracerFactory factory;
 
     @Before
-    public void setUpStreams() {
+    public void setupContext() {
         outStream = System.out;
         System.setOut(new PrintStream(outContent));
     }
@@ -111,21 +98,13 @@ public class TestScriptRunnerInfrastructure {
         System.setOut(outStream);
     }
 
-    @Test
-    public void serviceShouldBeDeclared() {
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-    }
+    @Inject
+    AutomationScriptingFeature scripting;
 
     @Test
     public void shouldExecuteSimpleScript() throws Exception {
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/simpleAutomationScript.js");
-        assertNotNull(stream);
-        scriptingService.run(stream, session);
-        assertEquals("Documents Updated" + System.lineSeparator(), outContent.toString());
+        DocumentModelList docs = scripting.run("simpleAutomationScript.js", session, DocumentModelList.class);
+        assertEquals(10, docs.size());
     }
 
     @Test
@@ -133,7 +112,6 @@ public class TestScriptRunnerInfrastructure {
 
         OperationType type = automationService.getOperation("Scripting" + ".HelloWorld");
         assertNotNull(type);
-        assertTrue(type instanceof ScriptingOperationTypeImpl);
 
         Param[] paramDefs = type.getDocumentation().getParams();
         assertEquals(1, paramDefs.length);
@@ -191,14 +169,8 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void simpleCallToScriptingOperationsChain() throws Exception {
-
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/simpleCallToChain.js");
-        assertNotNull(stream);
-        scriptingService.run(stream, session);
-        assertEquals("Hello Bonjour John" + System.lineSeparator(), outContent.toString());
+        String message = scripting.run("simpleCallToChain.js", session, String.class);
+        assertEquals("Hello Bonjour John", message);
 
     }
 
@@ -252,9 +224,9 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
         params.put("document", "/newDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
-        assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
-        assertEquals("doc title:New Title" + System.lineSeparator() + "doc title:New Title" + System.lineSeparator()
-                + "title:creationFields.json" + System.lineSeparator(), outContent.toString());
+        final Blob blob = (Blob) result.getPropertyValue("file:content");
+        assertEquals("New Title", result.getTitle());
+        assertEquals("creationFields.json", blob.getFilename());
     }
 
     @Test
@@ -299,30 +271,19 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void testClassFilter() throws ScriptException, OperationException {
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/classFilterScript.js");
-        assertNotNull(stream);
+    public void testClassFilter() throws Exception {
         try {
-            scriptingService.run(stream, session);
-            fail();
-        } catch (RuntimeException e) {
-            assertEquals("java.lang.ClassNotFoundException: java.io.File", e.getMessage());
+            scripting.run("classFilterScript.js", session, Void.class);
+        } catch (RuntimeException cause) {
+            assertEquals(ClassNotFoundException.class, cause.getCause().getClass());
         }
     }
 
     @Test
-    public void testFn() throws ScriptException, OperationException {
+    public void testFn() throws Exception {
         // Test platform functions injection
-        AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
-        assertNotNull(scriptingService);
-
-        InputStream stream = this.getClass().getResourceAsStream("/platformFunctions.js");
-        assertNotNull(stream);
-        scriptingService.run(stream, session);
-        assertEquals("devnull@nuxeo.com" + System.lineSeparator(), outContent.toString());
+        String message = scripting.run("platformFunctions.js", session, String.class);
+        assertEquals("devnull@nuxeo.com", message);
     }
 
     public String toString(Map<String, Object> creationProps) {
@@ -343,8 +304,7 @@ public class TestScriptRunnerInfrastructure {
     @Test
     public void handleDocumentListAsInput() throws OperationException {
         OperationContext ctx = new OperationContext(session);
-        DocumentModelList result = (DocumentModelList) automationService.run(ctx, "Scripting.TestInputDocumentList",
-                null);
+        DocumentModelList result = (DocumentModelList) automationService.run(ctx, "Scripting.TestInputDocumentList");
         assertNotNull(result);
     }
 
@@ -357,7 +317,7 @@ public class TestScriptRunnerInfrastructure {
         nodeVars.put("var", "node");
         ctx.put(Constants.VAR_WORKFLOW, wfVars);
         ctx.put(Constants.VAR_WORKFLOW_NODE, nodeVars);
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationWF", null);
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationWF");
         assertEquals("workflow", result.getPropertyValue("dc:title"));
         assertEquals("node", result.getPropertyValue("dc:description"));
     }
@@ -367,7 +327,7 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes", null);
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes");
         assertNotNull(result);
     }
 
@@ -382,14 +342,6 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
         params.put("doc", root);
         Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
-        assertEquals(
-                "Root input title:New Title" + System.lineSeparator() + "Root input title:New Title"
-                        + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
-                        + "Root ctx title:New Title" + System.lineSeparator() + "Root params title:New Title"
-                        + System.lineSeparator() + "Root params title:New Title" + System.lineSeparator()
-                        + "Root result title:New Title" + System.lineSeparator() + "Root result title:New Title"
-                        + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
-                        + "Root ctx title:New Title" + System.lineSeparator(), outContent.toString());
         assertTrue(result instanceof DocumentModel);
         Object doc = ctx.get("doc");
         assertNotNull(doc);
@@ -411,12 +363,7 @@ public class TestScriptRunnerInfrastructure {
         doc.setPropertyValue("list:complexItem", (Serializable) values);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(session.createDocument(doc));
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList", null);
-        assertEquals(
-                "att1" + System.lineSeparator() + "att2" + System.lineSeparator() + "att3" + System.lineSeparator()
-                        + "newValue" + System.lineSeparator() + "att2" + System.lineSeparator() + "att3"
-                        + System.lineSeparator() + "vlad" + System.lineSeparator() + "desc" + System.lineSeparator(),
-                outContent.toString());
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList");
         assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
         assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
     }
@@ -425,8 +372,8 @@ public class TestScriptRunnerInfrastructure {
     public void canHandleLoginAsCtx() throws OperationException {
         try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
             OperationContext ctx = new OperationContext(session);
-            automationService.run(ctx, "my-chain-with-loginasctx", null);
-            assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
+            String username = (String)automationService.run(ctx, "my-chain-with-loginasctx");
+            assertEquals("Administrator", username);
         }
     }
 
@@ -434,9 +381,8 @@ public class TestScriptRunnerInfrastructure {
     public void canHandleLoginAsOp() throws OperationException {
         try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
             OperationContext ctx = new OperationContext(session);
-            String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
-            assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
-            assertEquals("Administrator", principal);
+            String username = (String) automationService.run(ctx, "my-chain-with-loginasop");
+            assertEquals("Administrator", username);
         }
     }
 
@@ -448,7 +394,7 @@ public class TestScriptRunnerInfrastructure {
         docs.add(root);
         docs.add(root);
         ctx.put("docs", docs);
-        Object result = automationService.run(ctx, "Scripting.SimpleScript", null);
+        Object result = automationService.run(ctx, "Scripting.SimpleScript");
         assertNotNull(result);
     }
 
@@ -478,7 +424,7 @@ public class TestScriptRunnerInfrastructure {
     @Test
     public void testMVELScriptResolver() throws Exception {
         OperationContext ctx = new OperationContext(session);
-        String mvelResult = (String) automationService.run(ctx, "my-chain-with-mvelresolver", null);
+        String mvelResult = (String) automationService.run(ctx, "my-chain-with-mvelresolver");
         assertEquals("Foo Bar", mvelResult);
     }
 
@@ -490,7 +436,7 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSet", null);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSet");
         // Don't use getPropertyValue in order to not use prefetch feature
         assertEquals(123L, root.getProperty("size").getValue());
         assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
@@ -507,7 +453,7 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValue", null);
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValue");
         assertEquals(123L, root.getProperty("size").getValue());
         assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
         Calendar cal = Calendar.getInstance();
@@ -523,8 +469,9 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetArray", null);
-        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetArray");
+        assertArrayEquals(new String[] { "sciences", "society" },
+                (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
     /*
@@ -535,8 +482,9 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray", null);
-        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray");
+        assertArrayEquals(new String[] { "sciences", "society" },
+                (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
     /*
@@ -556,7 +504,7 @@ public class TestScriptRunnerInfrastructure {
         session.saveDocument(doc);
 
         OperationContext ctx = new OperationContext(session);
-        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobList", null);
+        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobList");
         assertNotNull(result);
         assertEquals(2, result.size());
         // We added two blobs to context
@@ -582,7 +530,7 @@ public class TestScriptRunnerInfrastructure {
         session.saveDocument(doc);
 
         OperationContext ctx = new OperationContext(session);
-        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobArray", null);
+        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobArray");
         assertNotNull(result);
         assertEquals(2, result.size());
         // We added two blobs to context
@@ -596,8 +544,9 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestArrayObjectProperties", null);
-        assertArrayEquals(new String[] { "sciences", "society" }, (Object[]) root.getProperty("dc:subjects").getValue());
+        root = (DocumentModel) automationService.run(ctx, "Scripting.TestArrayObjectProperties");
+        assertArrayEquals(new String[] { "sciences", "society" },
+                (Object[]) root.getProperty("dc:subjects").getValue());
     }
 
 }
