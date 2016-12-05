@@ -22,6 +22,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -93,6 +94,12 @@ public class SectionContentTabSubPage extends DocumentBasePage {
 
     public DocumentBasePage goToDocument(String documentTitle) {
         getElement().clickOnItemTitle(documentTitle);
+        return asPage(DocumentBasePage.class);
+    }
+
+    public DocumentBasePage goToDocumentWithVersion(String title, String version) {
+        WebElement rowElement = getContentView().getItemWithTitleAndVersion(title, version);
+        Locator.findElementWaitUntilEnabledAndClick(rowElement, By.linkText(title));
         return asPage(DocumentBasePage.class);
     }
 
