@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.collections.core.test.operations;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.TraceException;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.automation.AddToCollectionOperation;
@@ -102,7 +102,7 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
         }
     }
 
-    @Test
+    @Test(expected=OperationException.class)
     public void testOperationWithNonCollectableDocument() throws Exception {
         // Create a second collection for the test
         DocumentModel collection2 = collectionManager.createCollection(session, COLLECTION_NAME,
@@ -118,8 +118,6 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
             service.run(ctx, chain);
             // Should fail before
             fail("File is not a proper file");
-        } catch (TraceException e) {
-            return;
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();

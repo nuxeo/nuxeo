@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.trace;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.PatternSyntaxException;
@@ -29,7 +30,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.cache.Cache;
@@ -61,8 +65,8 @@ public class TracerFactory implements TracerFactoryMBean {
     protected Trace lastError;
 
     public TracerFactory() {
-        tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL).maximumSize(
-                CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+        tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
+                .maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
         recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
         printableTraces = Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
     }
@@ -78,7 +82,7 @@ public class TracerFactory implements TracerFactoryMBean {
         }
 
         protected String add(Trace trace) {
-            final int index = Integer.valueOf(traces.size());
+            int index = Integer.valueOf(traces.size());
             traces.put(Integer.valueOf(index), trace);
             return formatKey(trace.chain, index);
         }
@@ -104,11 +108,20 @@ public class TracerFactory implements TracerFactoryMBean {
     /**
      * If trace mode is enabled, instantiate {@link Tracer}. If not, instantiate {@link TracerLite}.
      */
-    public OperationCallback newTracer(String operationTypeId) {
-        if (recording) {
-            return new Tracer(this, printable(operationTypeId));
+    public OperationCallback newTracer() {
+        return new Tracer(this);
+    }
+
+    public Call newCall(OperationType chain, OperationContext context, OperationType type, InvokableMethod method,
+            Map<String, Object> params) {
+        if (!recording) {
+            return new Call(chain, type);
         }
-        return new TracerLite(this);
+        return new Call(chain, context, type, method, params);
+    }
+
+    public Trace newTrace(Call parent, OperationType typeof, List<Call> calls, Object output, OperationException error) {
+        return new Trace(parent, typeof, calls, calls.get(0).details.input, output, error);
     }
 
     protected Boolean printable(String operationTypeId) {
@@ -130,7 +143,7 @@ public class TracerFactory implements TracerFactoryMBean {
         return true;
     }
 
-    public String recordTrace(Trace trace) {
+    protected void recordTrace(Trace trace) {
         String chainId = trace.chain.getId();
         ChainTraces chainTraces = tracesCache.getIfPresent(chainId);
         if (chainTraces == null) {
@@ -143,7 +156,7 @@ public class TracerFactory implements TracerFactoryMBean {
         if (chainTraces.size() != 0) {
             chainTraces.removeTrace(1);
         }
-        return tracesCache.getIfPresent(chainId).add(trace);
+        tracesCache.getIfPresent(chainId).add(trace);
     }
 
     public Trace getTrace(OperationChain chain, int index) {
@@ -151,7 +164,8 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     /**
-     * @param key The name of the chain.
+     * @param key
+     *            The name of the chain.
      * @return The last trace of the given chain.
      */
     public Trace getTrace(String key) {
@@ -190,8 +204,16 @@ public class TracerFactory implements TracerFactoryMBean {
         return String.format("%s:%s", chain.getId(), index);
     }
 
-    public void onTrace(Trace popped) {
-        recordTrace(popped);
+    public void onTrace(Trace trace) {
+        if (trace.error != null) {
+            trace.error.addSuppressed(new Throwable(print(trace)));
+        }
+        if (printable(trace.chain.getId())) {
+            LogFactory.getLog(Trace.class).info(print(trace));
+        }
+        if (recording) {
+            recordTrace(trace);
+        }
     }
 
     @Override
@@ -213,5 +235,9 @@ public class TracerFactory implements TracerFactoryMBean {
     public String setPrintableTraces(String printableTraces) {
         this.printableTraces = printableTraces;
         return printableTraces;
+    }
+
+    public String print(Trace trace)  {
+        return TracePrinter.print(trace, !recording);
     }
 }
