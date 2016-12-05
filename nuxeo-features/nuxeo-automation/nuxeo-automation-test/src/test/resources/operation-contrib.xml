@@ -41,9 +41,6 @@
       <param name="lang" type="string"/>
       <script>
         function run(input, params) {
-
-          print(input["dc:title"]);
-
           return input;
         }
       </script>
@@ -56,9 +53,6 @@
       <param name="lang" type="string"/>
       <script>
         function run(input, params) {
-
-          print(input[0]["dc:title"]);
-
           return input;
         }
       </script>

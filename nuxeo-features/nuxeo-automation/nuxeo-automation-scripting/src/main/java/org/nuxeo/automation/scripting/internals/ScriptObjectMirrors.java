@@ -35,6 +35,11 @@ public class ScriptObjectMirrors {
 
     private static final String JAVASCRIPT_DATE_CLASS_TYPE = "Date";
 
+    private static final String JAVASCRIPT_GLOBAL_CLASS_TYPE = "global";
+
+    private static final String JAVASCRIPT_FUNCTION_CLASS_TYPE = "Function";
+
+
     private ScriptObjectMirrors() {
         // empty
     }
@@ -46,6 +51,10 @@ public class ScriptObjectMirrors {
             return unwrapMap(jso);
         } else if (JAVASCRIPT_DATE_CLASS_TYPE.equals(jso.getClassName())) {
             return unwrapDate(jso);
+        } else if (JAVASCRIPT_GLOBAL_CLASS_TYPE.equals(jso.getClassName())) {
+            return null;
+        } else if (JAVASCRIPT_FUNCTION_CLASS_TYPE.equals(jso.getClassName())) {
+            return null;
         } else {
             throw new UnsupportedOperationException(jso.getClassName() + " is not supported!");
         }
@@ -79,7 +88,7 @@ public class ScriptObjectMirrors {
             if (o instanceof ScriptObjectMirror) {
                 result.put(k, unwrap((ScriptObjectMirror) o));
             } else {
-                result.put(k, o);
+                result.put(k, DocumentScriptingWrapper.unwrap(o));
             }
         }
         return result;

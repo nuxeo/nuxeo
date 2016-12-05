@@ -1,3 +1,2 @@
-var result = Scripting.ChainedHello("John", {});
-print(result);
+Scripting.ChainedHello("John", {});
 

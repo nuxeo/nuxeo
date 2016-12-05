@@ -1,2 +1,8 @@
-print(Repository);
-Repository="toto";
+
+function alterAndReturn() {
+    var pfouh = Repository;
+    Repository="toto";
+    return pfouh;
+}
+
+alterAndReturn()
