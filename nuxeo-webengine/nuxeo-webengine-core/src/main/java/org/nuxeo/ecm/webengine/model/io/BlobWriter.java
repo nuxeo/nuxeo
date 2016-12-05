@@ -86,7 +86,9 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
     }
 
     protected void transferBlob(Blob blob, OutputStream entityStream) throws IOException {
-        BufferingServletOutputStream.stopBufferingThread();
+        if (entityStream instanceof BufferingServletOutputStream) {
+            ((BufferingServletOutputStream)entityStream).stopBuffering();
+        }
         blob.transferTo(entityStream);
         entityStream.flush();
     }
