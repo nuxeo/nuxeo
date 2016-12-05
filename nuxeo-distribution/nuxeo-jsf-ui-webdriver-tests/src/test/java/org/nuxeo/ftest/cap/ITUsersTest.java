@@ -61,7 +61,7 @@ public class ITUsersTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         String username = TEST_USERNAME + System.currentTimeMillis();
 
-        usersTab.getUserCreatePage().inviteUser(username, username, "lastname1", "company1", "email1", "members");
+        usersTab.getUserCreatePage().inviteUser(username, username, "lastname1", "company1", "email1@test.com", "members");
 
         // Need few seconds to display the search view after
         AbstractPage.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"));
@@ -78,7 +78,7 @@ public class ITUsersTest extends AbstractTest {
         String username = "jsmith";
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, "firstname", "lastname1", "company1", "email1",
+            page = usersTab.getUserCreatePage().createUser(username, "firstname", "lastname1", "company1", "email1@test.com",
                     TEST_PASSWORD, "members");
             RestHelper.addUserToDelete(username);
             // no confirmation message anymore
@@ -113,7 +113,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab = usersTab.searchUser(TEST_USERNAME);
         assertFalse(usersTab.isUserFound(TEST_USERNAME));
         // check invalid password match
-        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
+        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1@test.com",
                 TEST_PASSWORD, "foo", "members", false);
         assertEquals(page.getErrorFeedbackMessage(), "Please correct errors.");
         UserCreationFormPage creationPage = asPage(UserCreationFormPage.class);
@@ -121,7 +121,7 @@ public class ITUsersTest extends AbstractTest {
 
         // start again with passwords match
         page = creationPage.cancelCreation().getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1",
-                "company1", "email1", TEST_PASSWORD, "members", false);
+                "company1", "email1@test.com", TEST_PASSWORD, "members", false);
         assertEquals("User created.", page.getInfoFeedbackMessage());
         RestHelper.addUserToDelete(TEST_USERNAME);
 
@@ -133,7 +133,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab = usersTab.exitAdminCenter().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
 
         // user already exists
-        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1", "lastname1", "company1", "email1",
+        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1", "lastname1", "company1", "email1@test.com",
                 TEST_PASSWORD, "members");
         assertEquals("User already exists.", page.getErrorFeedbackMessage());
         // cancel
