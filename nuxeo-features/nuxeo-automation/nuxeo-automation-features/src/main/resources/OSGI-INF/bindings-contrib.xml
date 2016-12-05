@@ -1,0 +1,12 @@
+<component name="org.nuxeo.ecm.core.automation.features.bindings">
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <!-- don't allow direct access to Audit log -->
+    <binding name="Audit.Query">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="Audit.QueryWithPageProvider">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
+</component>
