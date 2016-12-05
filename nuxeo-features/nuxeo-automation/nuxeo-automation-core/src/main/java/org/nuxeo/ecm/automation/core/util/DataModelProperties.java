@@ -36,9 +36,6 @@ import org.nuxeo.ecm.core.api.PropertyException;
  */
 public class DataModelProperties extends Properties {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     protected boolean onlyDirtyProperties = false;
@@ -84,5 +81,40 @@ public class DataModelProperties extends Properties {
     public Map<String, Serializable> getMap() {
         return properties;
     }
+
+    @Override
+    public String toString() {
+        Map<String,Serializable> merged = new HashMap<String, Serializable>();
+        merged.putAll(properties);
+        merged.putAll(this);
+        return merged.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + properties.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof DataModelProperties)) {
+            return false;
+        }
+        DataModelProperties other = (DataModelProperties) obj;
+        if (!properties.equals(other.properties)) {
+            return false;
+        }
+        return true;
+    }
+
 
 }
