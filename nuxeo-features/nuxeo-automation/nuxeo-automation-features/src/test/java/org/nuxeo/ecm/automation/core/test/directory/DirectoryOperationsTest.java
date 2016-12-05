@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -138,10 +139,10 @@ public class DirectoryOperationsTest {
             service.run(ctx, chain);
             fail();
         } catch (OperationException e) {
-            if (!(e.getCause() instanceof OperationException)) {
+            if (!(e.getCause() instanceof DirectoryException)) {
                 fail();
             }
-            assertEquals(e.getCause().getCause().getMessage(), "Entry with id europe already exists");
+            assertEquals(e.getCause().getMessage(), "Entry with id europe already exists");
         }
 
     }

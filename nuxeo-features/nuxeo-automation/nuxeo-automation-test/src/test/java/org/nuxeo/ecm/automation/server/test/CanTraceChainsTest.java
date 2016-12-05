@@ -115,7 +115,7 @@ public class CanTraceChainsTest {
         Call firstCall = calls.get(0);
         assertEquals(DummyOperation.ID, firstCall.getType().getId());
         assertEquals(DummyOperation.ID, firstCall.getVariables().get(DummyOperation.ID));
-        assertEquals(DummyOperation.ID, firstCall.getParmeters().get(DummyOperation.ID));
+        assertEquals(DummyOperation.ID, firstCall.getParameters().get(DummyOperation.ID));
 
         // Deactivate trace mode -> light weight trace
         factory.toggleRecording();
@@ -159,9 +159,9 @@ public class CanTraceChainsTest {
         service.run(context, "testChainTrace");
         Trace trace = factory.getTrace("testChainTrace");
         assertEquals("chain.doc",
-                ((Call.ExpressionParameter) trace.getCalls().get(2).getParmeters().get("name")).getParameterValue());
+                ((Call.ExpressionParameter) trace.getCalls().get(2).getParameters().get("name")).getParameterValue());
         assertEquals("name",
-                ((Call.ExpressionParameter) trace.getCalls().get(2).getParmeters().get("name")).getParameterId());
+                ((Call.ExpressionParameter) trace.getCalls().get(2).getParameters().get("name")).getParameterId());
     }
 
     @Test
