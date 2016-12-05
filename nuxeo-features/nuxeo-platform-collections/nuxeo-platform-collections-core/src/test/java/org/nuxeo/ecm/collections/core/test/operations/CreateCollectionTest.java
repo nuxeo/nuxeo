@@ -25,17 +25,17 @@ import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.TraceException;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.collections.core.automation.CreateCollectionOperation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import junit.framework.Assert;
 
 /**
  * Class testing the operation "Collection.CreateCollection".
@@ -89,7 +89,7 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         assertTrue(session.exists(new PathRef(collectionPath)));
     }
 
-    @Test
+    @Test(expected=OperationException.class)
     public void testCreateCollectionOnWrongDocument() throws Exception {
         DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(), "test", "File");
         session.createDocument(doc);
@@ -109,8 +109,6 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
             service.run(ctx, chain);
             // Should fail before
             fail("Document is not a File");
-        } catch (TraceException e) {
-            return;
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();

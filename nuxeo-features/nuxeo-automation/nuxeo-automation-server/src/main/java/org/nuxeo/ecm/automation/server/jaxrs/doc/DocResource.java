@@ -194,11 +194,10 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         }
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         Trace trace = tracerFactory.getTrace(opId);
-        if (trace != null) {
-            return tracerFactory.getTrace(opId).getFormattedText();
-        } else {
+        if (trace == null) {
             return "no trace";
         }
+        return tracerFactory.print(trace);
     }
 
     public String[] getInputs(OperationDocumentation op) {
