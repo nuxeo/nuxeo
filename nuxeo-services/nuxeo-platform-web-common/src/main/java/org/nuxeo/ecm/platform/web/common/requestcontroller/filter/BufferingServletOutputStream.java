@@ -37,13 +37,5 @@ public class BufferingServletOutputStream {
         org.nuxeo.ecm.core.io.download.BufferingServletOutputStream.stopBuffering(out);
     }
 
-    /**
-     * @deprecated since 7.3, use
-     *             {@link org.nuxeo.ecm.core.io.download.BufferingServletOutputStream#stopBufferingThread} instead
-     */
-    @Deprecated
-    public static void stopBufferingThread() throws IOException {
-        org.nuxeo.ecm.core.io.download.BufferingServletOutputStream.stopBufferingThread();
-    }
 
 }
