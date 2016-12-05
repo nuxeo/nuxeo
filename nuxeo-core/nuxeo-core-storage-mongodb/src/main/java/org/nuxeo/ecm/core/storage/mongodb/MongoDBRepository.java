@@ -150,8 +150,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
 
-    private static final boolean DEBUG_NULL_LIST_ELEMENTS = Framework.isBooleanPropertyTrue("nuxeo.mongodb.debugNullListElements");
-
     protected MongoClient mongoClient;
 
     protected DBCollection coll;
@@ -634,49 +632,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    // for debug of NXP-21278
-    private boolean hasNullListElements(Object value) {
-        if (value instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Object> list = (List<Object>) value;
-            Class<?> klass = Object.class;
-            boolean hasNull = false;
-            for (Object o : list) {
-                if (o != null) {
-                    klass = o.getClass();
-                    if (hasNullListElements(o)) {
-                        return true;
-                    }
-                } else {
-                    hasNull = true;
-                }
-            }
-            if (DBObject.class.isAssignableFrom(klass)) { // complex list
-                if (hasNull) {
-                    return true;
-                }
-            }
-        } else if (value instanceof DBObject) {
-            DBObject ob = (DBObject) value;
-            for (String key : ob.keySet()) {
-                if (hasNullListElements(ob.get(key))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public void createState(State state) {
         DBObject ob = stateToBson(state);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE " + ob.get(idKey) + ": " + ob);
-        }
-        if (DEBUG_NULL_LIST_ELEMENTS) {
-            if (hasNullListElements(ob)) {
-                log.warn("Writing null list element for: " + state, new Exception("DEBUG STRACK TRACE"));
-            }
         }
         coll.insert(ob);
         // TODO dupe exception
@@ -690,14 +650,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
             log.trace("MongoDB: CREATE ["
                     + obs.stream().map(ob -> ob.get(idKey).toString()).collect(Collectors.joining(", "))
                     + "]: " + obs);
-        }
-        if (DEBUG_NULL_LIST_ELEMENTS) {
-            for (DBObject ob : obs) {
-                if (hasNullListElements(ob)) {
-                    log.warn("Writing null list element for: " + states.get(obs.indexOf(ob)),
-                            new Exception("DEBUG STRACK TRACE"));
-                }
-            }
         }
         coll.insert(obs);
     }
@@ -720,12 +672,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
         for (DBObject update : diffToBson(diff)) {
             if (log.isTraceEnabled()) {
                 log.trace("MongoDB: UPDATE " + id + ": " + update);
-            }
-            if (DEBUG_NULL_LIST_ELEMENTS) {
-                if (hasNullListElements(update)) {
-                    log.warn("Writing null list element for: " + id + " diff: " + diff + " update: " + update,
-                            new Exception("DEBUG STRACK TRACE"));
-                }
             }
             coll.update(query, update);
             // TODO dupe exception
