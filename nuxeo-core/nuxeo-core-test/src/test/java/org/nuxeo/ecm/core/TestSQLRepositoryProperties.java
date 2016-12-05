@@ -389,6 +389,36 @@ public class TestSQLRepositoryProperties {
         assertComplexListElements(actual, 0, "baz", 333);
     }
 
+    // DBS-only test for in-db data corruption(?) (NXP-21278)
+    @Test
+    public void testComplexListElementNullInStorage() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isDBS());
+
+        doc.setPropertyValue("tp:complexList",
+                (Serializable) Arrays.asList( //
+                        Collections.singletonMap("string", "foo"), //
+                        Collections.singletonMap("string", "bar")));
+        doc = session.saveDocument(doc);
+        String id = doc.getId();
+        session.save();
+        nextTransaction();
+
+        // change data
+        StateDiff diff = new StateDiff();
+        diff.put("tp:complexList",
+                (Serializable) Arrays.asList( //
+                        null, // null as first element of the list
+                        Collections.singletonMap("string", "bar")));
+        changeDoc(id, diff);
+
+        // check that we don't crash on read
+        doc = session.getDocument(doc.getRef());
+        List<?> list = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(2, list.size());
+        assertComplexListElements(list, 0, null, -1);
+        assertComplexListElements(list, 1, "bar", -1);
+    }
+
     @Test
     public void testComplexListPropertyRemove() throws Exception {
         List<Map<String, Serializable>> values = Arrays.asList( //
