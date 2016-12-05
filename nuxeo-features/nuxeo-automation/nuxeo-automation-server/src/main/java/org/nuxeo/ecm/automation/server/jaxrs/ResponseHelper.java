@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +40,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentRefList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
@@ -124,6 +127,10 @@ public class ResponseHelper {
         } else if (result instanceof DocumentRef) {
             CoreSession session = SessionFactory.getSession(request);
             return Response.status(httpStatus).entity(session.getDocument((DocumentRef) result)).build();
+        } else if (result instanceof DocumentRefList) {
+            CoreSession session = SessionFactory.getSession(request);
+            return Response.status(httpStatus).entity(((DocumentRefList) result).stream().map(session::getDocument)
+                    .collect(Collectors.toCollection(DocumentModelListImpl::new))).build();
         } else if (result instanceof DocumentModel || result instanceof DocumentModelList
                 || result instanceof JsonAdapter || result instanceof RecordSet || result instanceof Paginable<?>) {
             return Response.status(httpStatus).entity(result).build();
