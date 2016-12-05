@@ -54,6 +54,7 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
     public HunspellDictionaryHolder(String lang) {
         generator = new Random(System.currentTimeMillis());
         if (lang != null) {
+            // sanitize the input so we don't open a security breach.
             dicName = lang.replaceAll("\\W+", "") + ".dic";
         }
     }
