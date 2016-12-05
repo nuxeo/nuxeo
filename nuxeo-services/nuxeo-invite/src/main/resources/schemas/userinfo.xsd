@@ -12,6 +12,7 @@
   <xs:element name="email">
     <xs:simpleType>
       <xs:restriction base="xs:string">
+        <!-- the same pattern is used in user.xsd -->
         <xs:pattern value="[^@]+@[^\.]+\..+" />
       </xs:restriction>
     </xs:simpleType>
