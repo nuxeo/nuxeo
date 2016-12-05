@@ -119,12 +119,11 @@ public class DocumentHelper {
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
                 doc.setPropertyValue(entry.getKey(), entry.getValue());
             }
-        } else {
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                setProperty(session, doc, key, value);
-            }
+        }
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            setProperty(session, doc, key, value);
         }
     }
 
