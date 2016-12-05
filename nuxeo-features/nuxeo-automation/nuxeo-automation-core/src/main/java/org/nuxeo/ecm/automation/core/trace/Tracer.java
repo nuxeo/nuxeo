@@ -20,33 +20,82 @@
 
 package org.nuxeo.ecm.automation.core.trace;
 
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Stack;
 
+import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
- * Automation tracer recording all automation execution traces when mode activated.
+ * Automation Abstract tracer recording all automation execution traces.
  *
- * @since 5.7.3
+ * @since 5.9.1
  */
-public class Tracer extends BasedTracer {
+public class Tracer implements OperationCallback {
 
-    protected Tracer(TracerFactory factory, Boolean printable) {
-        super(factory, printable);
+    protected final TracerFactory factory;
+
+    protected Stack<Context> stack = new Stack<Context>();
+
+    class Context {
+        final Call parent;
+        final OperationType typeof;
+        final LinkedList<Call> calls = new LinkedList<Call>();
+        OperationException error;
+
+        Context(Call parent, OperationType oftype) {
+            this.parent = parent;
+            typeof = oftype;
+        }
+
+    }
+
+    protected Tracer(TracerFactory factory) {
+        this.factory = factory;
+    }
+
+    protected void pushContext(OperationType chain) {
+        stack.push(new Context(stack.isEmpty() ? null : stack.peek().calls.peekLast(), chain));
+    }
+
+    protected void popContext() {
+        Context context = stack.pop();
+        Trace trace = factory.newTrace(context.parent, context.typeof, context.calls, context.calls.getLast().getOutput(), context.error);
+        if (stack.isEmpty()) {
+            factory.onTrace(trace);
+        } else {
+            context.parent.nested.add(trace);
+        }
     }
 
     @Override
-    public void onOperation(OperationContext context, OperationType type, InvokableMethod method,
+    public void onChainEnter(OperationType chain) {
+        pushContext(chain);
+    }
+
+    @Override
+    public void onChainExit() {
+        popContext();
+    }
+
+    @Override
+    public void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method,
             Map<String, Object> params) {
-        if (type instanceof ChainTypeImpl) {
-            pushContext(type);
-            return;
-        }
-        Call call = new Call(chain, context, type, method, params);
-        calls.add(call);
+        stack.peek().calls.add(factory.newCall(stack.peek().typeof, context, type, method, params));
+    }
+
+    @Override
+    public void onOperationExit(Object output) {
+        stack.peek().calls.peekLast().details.output = output;
+    }
+
+    @Override
+    public OperationException onError(OperationException error) {
+        return stack.peek().error = error;
     }
 
 }

@@ -375,7 +375,7 @@ public class BlobOperationsTest {
             // Should fails before
             fail();
         } catch (OperationException e) {
-            assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getCause().getMessage());
+            assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getMessage());
         }
 
         // Test check on context blob failure
@@ -396,7 +396,7 @@ public class BlobOperationsTest {
             fail();
         } catch (OperationException e) {
             assertNotNull("The blob to append from variable context: 'blobToAppend' is not a blob.",
-                    e.getCause().getMessage());
+                    e.getMessage());
         }
     }
     // TODO add post and file2pdf tests

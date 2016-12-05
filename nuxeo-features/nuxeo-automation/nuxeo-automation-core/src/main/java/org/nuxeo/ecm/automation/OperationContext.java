@@ -30,8 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
-import org.nuxeo.ecm.automation.core.trace.Trace;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -95,25 +94,10 @@ public class OperationContext implements Map<String, Object> {
     /**
      * @since 5.7.3 Collect operation invokes.
      */
-    protected ChainCallback chainCallback;
+    protected OperationCallback callback;
 
     public OperationContext() {
         this(null, null);
-    }
-
-    public OperationContext(OperationContext ctx) {
-        if (ctx.loginStack == null) {
-            this.loginStack = new LoginStack(ctx.getCoreSession());
-        } else {
-            this.loginStack = ctx.loginStack;
-        }
-        this.vars = ctx.vars;
-        this.cleanupHandlers = ctx.cleanupHandlers;
-        this.stacks = ctx.stacks;
-        this.commit = ctx.commit;
-        this.input = ctx.input;
-        this.trace = ctx.trace;
-        this.chainCallback = ctx.chainCallback;
     }
 
     public OperationContext(CoreSession session) {
@@ -125,7 +109,7 @@ public class OperationContext implements Map<String, Object> {
         cleanupHandlers = new ArrayList<CleanupHandler>();
         loginStack = new LoginStack(session);
         trace = new ArrayList<String>();
-        chainCallback = new ChainCallback();
+        callback = Framework.getService(TracerFactory.class).newTracer();
         this.vars = vars != null ? vars : new HashMap<String, Object>();
     }
 
@@ -327,64 +311,19 @@ public class OperationContext implements Map<String, Object> {
         return vars.entrySet();
     }
 
+
     /**
-     * ChainCallback store all automation traces for execution
-     *
      * @since 5.7.3
      */
-    protected static class ChainCallback implements OperationCallback {
-
-        public OperationCallback operationCallback;
-
-        protected void set(OperationCallback callback) {
-            operationCallback = callback;
-        }
-
-        @Override
-        public void onChain(OperationType chain) {
-            operationCallback.onChain(chain);
-        }
-
-        @Override
-        public void onOperation(OperationContext context, OperationType type, InvokableMethod method,
-                Map<String, Object> parms) {
-            operationCallback.onOperation(context, type, method, parms);
-        }
-
-        @Override
-        public void onError(OperationException error) {
-            operationCallback.onError(error);
-        }
-
-        @Override
-        public void onOutput(Object output) {
-            operationCallback.onOutput(output);
-        }
-
-        @Override
-        public Trace getTrace() {
-            return operationCallback.getTrace();
-        }
-
-        @Override
-        public String getFormattedText() {
-            throw new UnsupportedOperationException("#getFormattedText is not available for: " + this);
-        }
-
+    public OperationCallback getCallback() {
+        return callback;
     }
 
     /**
      * @since 5.7.3
      */
-    public OperationCallback getChainCallback() {
-        return chainCallback.operationCallback;
-    }
-
-    /**
-     * @since 5.7.3
-     */
-    public void addChainCallback(OperationCallback chainCallback) {
-        this.chainCallback.set(chainCallback);
+    public void setCallback(OperationCallback chainCallback) {
+        callback = chainCallback;
     }
 
     /**
@@ -396,7 +335,8 @@ public class OperationContext implements Map<String, Object> {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(getVars()) : getVars();
         OperationContext subctx = new OperationContext(getCoreSession(), vars);
         subctx.setInput(input);
-        subctx.addChainCallback(getChainCallback());
+        subctx.setCallback(callback);
         return subctx;
     }
+
 }

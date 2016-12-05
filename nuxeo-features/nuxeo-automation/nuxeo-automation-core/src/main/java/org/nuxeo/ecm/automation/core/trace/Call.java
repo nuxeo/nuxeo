@@ -40,8 +40,7 @@ public class Call {
     private static final Log log = LogFactory.getLog(Call.class);
 
     /**
-     * Black listing of mvel expressions which should not be evaluated by the Automation traces for debugging
-     * purpose
+     * Black listing of mvel expressions which should not be evaluated by the Automation traces for debugging purpose
      *
      * @since 8.1
      */
@@ -53,59 +52,88 @@ public class Call {
 
     protected final OperationType type;
 
-    protected final InvokableMethod method;
-
-    protected final Map<String, Object> parameters;
-
-    protected final Map<String, Object> variables;
-
     protected final List<Trace> nested = new LinkedList<Trace>();
 
-    protected final Object input;
+    protected final Details details;
+
+
+    protected Call(OperationType chain, OperationType op, Details details) {
+        type = op;
+        chainId = chain.getId();
+        aliases = Arrays.toString(chain.getAliases());
+        this.details = details;
+    }
+
+    public Call(OperationType chain, OperationType op) {
+        this(chain, op, new Details());
+    }
 
     public Call(OperationType chain, OperationContext context, OperationType type, InvokableMethod method,
             Map<String, Object> parms) {
-        this.type = type;
-        variables = (context != null) ? new HashMap<>(context) : null;
-        this.method = method;
-        input = (context != null) ? context.getInput() : null;
-        parameters = new HashMap<>();
-        if (parms != null) {
-            for (String paramId : parms.keySet()) {
-                Object paramValue = parms.get(paramId);
-                if (paramValue instanceof Expression) {
-                    try {
-                        ExpressionParameter expressionParameter = null;
-                        for (String mvelExpr : MVEL_BLACK_LIST_EXPR) {
-                            if (((Expression) paramValue).getExpr().contains(mvelExpr)) {
-                                expressionParameter = new ExpressionParameter(paramId, String.format(
-                                        "Cannot be evaluated in traces when using '%s' expression", mvelExpr));
-                                parameters.put(paramId, expressionParameter);
-                                break;
-                            }
-                        }
-                        if (parameters.get(paramId) == null) {
-                            expressionParameter = new ExpressionParameter(paramId,
-                                    ((Expression) paramValue).eval(context));
-                            parameters.put(paramId, expressionParameter);
+        this(chain, type, new Details(context, method, parms));
+    }
 
-                        }
-                    } catch (RuntimeException e) {
-                        log.warn("Cannot evaluate mvel expression for parameter: " + paramId, e);
+    static class Details {
+
+        final Map<String, Object> parameters = new HashMap<>();
+
+        final Map<String, Object> variables = new HashMap<>();
+
+        final InvokableMethod method;
+
+        final Object input;
+
+        Object output;
+
+        Details() {
+            method = null;
+            input = null;
+        }
+
+        Details(OperationContext context, InvokableMethod method,  Map<String, Object> parms) {
+            this.method = method;
+            input = context.getInput();
+            variables.putAll(context);
+            parms.forEach(new Evaluator(context)::inject);
+        }
+
+        class Evaluator {
+
+            final OperationContext context;
+
+            Evaluator(OperationContext context) {
+                this.context = context;
+            }
+
+            void inject(String key, Object value) {
+                if (!(value instanceof Expression)) {
+                    parameters.put(key, value);
+                    return;
+                }
+                Expression exp = (Expression) value;
+                for (String mvelExpr : MVEL_BLACK_LIST_EXPR) {
+                    if (((Expression) value).getExpr().contains(mvelExpr)) {
+                        parameters.put(key, new ExpressionParameter(key,
+                                String.format("Cannot be evaluated in traces when using '%s' expression", mvelExpr)));
+                        return;
                     }
-                } else {
-                    parameters.put(paramId, paramValue);
+                }
+                try {
+                    parameters.put(key, new ExpressionParameter(key, exp.eval(context)));
+                    return;
+                } catch (RuntimeException e) {
+                    log.warn("Cannot evaluate mvel expression for parameter: " + key, e);
                 }
             }
         }
-        chainId = (chain != null) ? chain.getId() : "Not bound to a chain";
-        aliases = (chain != null) ? Arrays.toString(chain.getAliases()) : null;
+
+
     }
 
     /**
      * @since 7.1
      */
-    public class ExpressionParameter {
+    public static class ExpressionParameter {
 
         protected final String parameterId;
 
@@ -131,19 +159,23 @@ public class Call {
     }
 
     public InvokableMethod getMethod() {
-        return method;
+        return details.method;
     }
 
-    public Map<String, Object> getParmeters() {
-        return parameters;
+    public Map<String, Object> getParameters() {
+        return details.parameters;
     }
 
     public Map<String, Object> getVariables() {
-        return variables;
+        return details.variables;
     }
 
     public Object getInput() {
-        return input;
+        return details.input;
+    }
+
+    public Object getOutput() {
+        return details.output;
     }
 
     public List<Trace> getNested() {
