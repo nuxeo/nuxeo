@@ -2701,6 +2701,7 @@ the specific language governing permissions and limitations under the Apache Lic
             if (this.opts.closeOnSelect) {
                 this.close();
                 this.search.width(10);
+                this.resizeSearch();
             } else {
                 if (this.countSelectableResults()>0) {
                     this.search.width(10);
