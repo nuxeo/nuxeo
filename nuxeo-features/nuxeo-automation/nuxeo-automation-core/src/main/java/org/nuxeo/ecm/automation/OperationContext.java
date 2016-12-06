@@ -229,6 +229,10 @@ public class OperationContext implements Map<String, Object> {
     }
 
     public void dispose() throws OperationException {
+        if (getCoreSession() != null && isCommit()) {
+            // auto save session if any.
+            getCoreSession().save();
+        }
         trace.clear();
         loginStack.clear();
         for (CleanupHandler handler : cleanupHandlers) {
