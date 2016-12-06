@@ -346,4 +346,34 @@ public class ChainTypeImpl implements OperationType {
     public List<InvokableMethod> getMethods() {
         return Arrays.asList(methods);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((chain == null) ? 0 : chain.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof ChainTypeImpl)) {
+            return false;
+        }
+        ChainTypeImpl other = (ChainTypeImpl) obj;
+        if (chain == null) {
+            if (other.chain != null) {
+                return false;
+            }
+        } else if (!chain.equals(other.chain)) {
+            return false;
+        }
+        return true;
+    }
 }
