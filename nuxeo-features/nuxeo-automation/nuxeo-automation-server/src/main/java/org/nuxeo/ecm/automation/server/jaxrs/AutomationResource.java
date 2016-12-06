@@ -66,7 +66,7 @@ public class AutomationResource extends ModuleRoot {
     protected AutomationService service;
 
     public AutomationResource() {
-        this.service = Framework.getLocalService(AutomationService.class);
+        service = Framework.getLocalService(AutomationService.class);
     }
 
     @Path("/doc")
@@ -140,26 +140,24 @@ public class AutomationResource extends ModuleRoot {
     public Object getExecutable(@PathParam("oid") String oid) {
         if (oid.startsWith(Constants.CHAIN_ID_PREFIX)) {
             oid = oid.substring(6);
-            return new ChainResource(service, oid);
-        } else {
-            try {
-                OperationType op = service.getOperation(oid);
-                return new OperationResource(service, op);
-            } catch (OperationException cause) {
-                if (cause instanceof ConflictOperationException) {
-                    return WebException.newException("Failed to invoke operation: " + oid, cause,
-                            HttpServletResponse.SC_CONFLICT);
-                } else if (cause instanceof OperationNotFoundException) {
-                    return WebException.newException("Failed to invoke " + "operation: " + oid, cause,
-                            HttpServletResponse.SC_NOT_FOUND);
-                } else {
-                    Throwable unWrapException = ExceptionHelper.unwrapException(cause);
-                    if (unWrapException instanceof RestOperationException) {
-                        int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
-                        throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
-                    }
-                    throw WebException.newException("Failed to invoke operation: " + oid, cause);
+        }
+        try {
+            OperationType op = service.getOperation(oid);
+            return newObject("operation", op);
+        } catch (OperationException cause) {
+            if (cause instanceof ConflictOperationException) {
+                return WebException.newException("Failed to invoke operation: " + oid, cause,
+                        HttpServletResponse.SC_CONFLICT);
+            } else if (cause instanceof OperationNotFoundException) {
+                return WebException.newException("Failed to invoke " + "operation: " + oid, cause,
+                        HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                Throwable unWrapException = ExceptionHelper.unwrapException(cause);
+                if (unWrapException instanceof RestOperationException) {
+                    int customHttpStatus = ((RestOperationException) unWrapException).getStatus();
+                    throw WebException.newException("Failed to invoke operation: " + oid, cause, customHttpStatus);
                 }
+                throw WebException.newException("Failed to invoke operation: " + oid, cause);
             }
         }
     }
