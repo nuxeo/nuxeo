@@ -21,14 +21,13 @@
 package org.nuxeo.ecm.automation.core.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Iterables;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
@@ -38,7 +37,6 @@ import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.CompiledChain;
-import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationCompoundExceptionBuilder;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -47,15 +45,14 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.exception.CatchChainException;
 import org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry;
-import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.google.common.collect.Iterables;
 
 /**
  * The operation registry is thread safe and optimized for modifications at startup and lookups at runtime.
@@ -72,7 +69,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     protected final AutomationFilterRegistry automationFilterRegistry;
 
-    protected Map<CacheKey, CompiledChainImpl> compiledChains = new HashMap<CacheKey, CompiledChainImpl>();
+    protected final OperationChainCompiler compiler = new OperationChainCompiler(this);
 
     /**
      * Adapter registry.
@@ -88,41 +85,54 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public Object run(OperationContext ctx, String operationId) throws OperationException {
-        OperationType operationType = getOperation(operationId);
-        if (operationType instanceof ChainTypeImpl) {
-            return run(ctx, operationType, ((ChainTypeImpl) operationType).getChainParameters());
-        } else {
-            return run(ctx, operationType, null);
+        return run(ctx, getOperationChain(operationId));
+    }
+
+    @Override
+    public Object run(OperationContext ctx, String operationId, Map<String, ?> args) throws OperationException {
+        OperationType op = operations.lookup().get(operationId);
+        if (op == null) {
+            throw new IllegalArgumentException("No such operation " + operationId);
         }
+        if (args == null) {
+            log.warn("null operation parameters given for " + operationId, new Throwable("stack trace"));
+            args = Collections.emptyMap();
+        }
+        if (op instanceof ChainTypeImpl) {
+            return doRun(ctx, ((ChainTypeImpl)op).chain, args);
+        }
+        OperationChain chain = new OperationChain(operationId);
+        chain.add(operationId);
+        return doRun(ctx, chain, args);
     }
 
     @Override
     public Object run(OperationContext ctx, OperationChain chain) throws OperationException {
-        Map<String, Object> chainParameters = Collections.<String, Object> emptyMap();
-        if (!chain.getChainParameters().isEmpty()) {
-            chainParameters = chain.getChainParameters();
+        return doRun(ctx, chain, chain.getChainParameters());
+    }
+
+    protected Object doRun(OperationContext ctx, OperationChain chain, Map<String,?> params) throws OperationException {
+        Object input = ctx.getInput();
+        Class<?> inputType = input == null ? Void.TYPE : input.getClass();
+        CompiledChain compiled = compileChain(inputType, chain);
+        ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
+        try {
+            return compiled.invoke(ctx);
+        } catch (OperationException cause) {
+            if (hasChainException(chain.getId())) {
+                return run(ctx, getChainExceptionToRun(ctx, chain.getId(), cause));
+            } else if (cause.isRollback()) {
+                ctx.setRollback();
+            }
+            throw cause;
+        } finally {
+            ctx.remove(Constants.VAR_RUNTIME_CHAIN);
+            ctx.dispose();
         }
-        ChainTypeImpl chainType = new ChainTypeImpl(this, chain);
-        return run(ctx, chainType, chainParameters);
     }
 
-    /**
-     * TODO avoid creating a temporary chain and then compile it. try to find a way to execute the single operation
-     * without compiling it. (for optimization)
-     */
     @Override
-    public Object run(OperationContext ctx, String operationId, Map<String, Object> runtimeParameters)
-            throws OperationException {
-        OperationType type = getOperation(operationId);
-        return run(ctx, type, runtimeParameters);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public Object runInNewTx(OperationContext ctx, String chainId, Map chainParameters, Integer timeout,
+    public Object runInNewTx(OperationContext ctx, String chainId, Map<String, ?> chainParameters, Integer timeout,
             boolean rollbackGlobalOnError) throws OperationException {
         Object result = null;
         // if the current transaction was already marked for rollback,
@@ -161,96 +171,16 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     /**
-     * @since 5.7.2
-     * @param ctx the operation context.
-     * @param operationType a chain or an operation.
-     * @param params The chain parameters.
-     */
-    public Object run(OperationContext ctx, OperationType operationType, Map<String, Object> params)
-            throws OperationException {
-        Boolean mainChain = true;
-        CompiledChainImpl chain;
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
-        // Put Chain parameters into the context - even for cached chains
-        if (!params.isEmpty()) {
-            ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
-        }
-        OperationCallback tracer;
-        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
-        if (ctx.getChainCallback() == null) {
-            tracer = tracerFactory.newTracer(operationType.getId());
-            ctx.addChainCallback(tracer);
-        } else {
-            // Not logging at output if success for a child chain
-            mainChain = false;
-            tracer = ctx.getChainCallback();
-        }
-        try {
-            Object input = ctx.getInput();
-            Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-            tracer.onChain(operationType);
-            if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
-                ctx.put(Constants.VAR_IS_CHAIN, true);
-                CacheKey cacheKey = new CacheKey(operationType.getId(), inputType.getName());
-                chain = compiledChains.get(cacheKey);
-                if (chain == null) {
-                    chain = (CompiledChainImpl) operationType.newInstance(ctx, params);
-                    // Registered Chains are the only ones that can be cached
-                    // Runtime ones can update their operations, model...
-                    if (hasOperation(operationType.getId())) {
-                        compiledChains.put(cacheKey, chain);
-                    }
-                }
-            } else {
-                chain = CompiledChainImpl.buildChain(inputType, toParams(operationType.getId()));
-            }
-            Object ret = chain.invoke(ctx);
-            tracer.onOutput(ret);
-            if (ctx.getCoreSession() != null && ctx.isCommit()) {
-                // auto save session if any.
-                ctx.getCoreSession().save();
-            }
-            // Log at the end of the main chain execution.
-            if (mainChain && tracer.getTrace() != null && tracerFactory.getRecordingState()) {
-                log.info(tracer.getFormattedText());
-            }
-            return ret;
-        } catch (OperationException oe) {
-            // Record trace
-            tracer.onError(oe);
-            // Handle exception chain and rollback
-            String operationTypeId = operationType.getId();
-            if (hasChainException(operationTypeId)) {
-                // Rollback is handled by chain exception
-                return run(ctx, getChainExceptionToRun(ctx, operationTypeId, oe));
-            } else if (oe.isRollback()) {
-                ctx.setRollback();
-            }
-            // Handle exception
-            if (mainChain) {
-                throw new TraceException(tracer, oe);
-            } else {
-                throw new TraceException(oe);
-            }
-        } finally {
-            ctx.dispose();
-        }
-    }
-
-    /**
      * @since 5.7.3 Fetch the right chain id to run when catching exception for given chain failure.
      */
     protected String getChainExceptionToRun(OperationContext ctx, String operationTypeId, OperationException oe)
             throws OperationException {
         // Inject exception name into the context
-        //since 6.0-HF05 should use exceptionName and exceptionObject on the context instead of Exception
+        // since 6.0-HF05 should use exceptionName and exceptionObject on the context instead of Exception
         ctx.put("Exception", oe.getClass().getSimpleName());
         ctx.put("exceptionName", oe.getClass().getSimpleName());
         ctx.put("exceptionObject", oe);
-        
+
         ChainException chainException = getChainException(operationTypeId);
         CatchChainException catchChainException = new CatchChainException();
         for (CatchChainException catchChainExceptionItem : chainException.getCatchChainExceptions()) {
@@ -265,8 +195,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                                 catchChainExceptionItem);
                     }
                 } catch (RuntimeException e) { // TODO more specific exceptions?
-                    throw new OperationException("Cannot evaluate Automation Filter " + filter.getId()
-                            + " mvel expression.", e);
+                    throw new OperationException(
+                            "Cannot evaluate Automation Filter " + filter.getId() + " mvel expression.", e);
                 }
             } else {
                 // Check if priority for this chain exception is higher
@@ -302,27 +232,37 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
-    public synchronized void putOperationChain(OperationChain chain) throws OperationException {
+    public void putOperationChain(OperationChain chain) throws OperationException {
         putOperationChain(chain, false);
     }
 
+    final Map<String, OperationType> typeofChains = new HashMap<>();
+
     @Override
-    public synchronized void putOperationChain(OperationChain chain, boolean replace) throws OperationException {
-        OperationType docChainType = new ChainTypeImpl(this, chain);
-        this.putOperation(docChainType, replace);
+    public void putOperationChain(OperationChain chain, boolean replace) throws OperationException {
+        final OperationType typeof = OperationType.typeof(chain, replace);
+        this.putOperation(typeof, replace);
+        typeofChains.put(chain.getId(), typeof);
     }
 
     @Override
-    public synchronized void removeOperationChain(String id) {
-        OperationChain chain = new OperationChain(id);
-        OperationType docChainType = new ChainTypeImpl(this, chain);
-        operations.removeContribution(docChainType);
+    public void removeOperationChain(String id) {
+        OperationType typeof = operations.lookup().get(id);
+        if (typeof == null) {
+            throw new IllegalArgumentException("no such chain " + id);
+        }
+        this.removeOperation(typeof);
     }
 
     @Override
     public OperationChain getOperationChain(String id) throws OperationNotFoundException {
-        ChainTypeImpl chain = (ChainTypeImpl) getOperation(id);
-        return chain.getChain();
+        OperationType type = getOperation(id);
+        if (type instanceof ChainTypeImpl) {
+            return ((ChainTypeImpl) type).chain;
+        }
+        OperationChain chain = new OperationChain(id);
+        chain.add(id);
+        return chain;
     }
 
     @Override
@@ -342,7 +282,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     @Override
     public synchronized void flushCompiledChains() {
-        compiledChains.clear();
+        compiler.cache.clear();
     }
 
     @Override
@@ -370,12 +310,12 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
-    public synchronized void putOperation(OperationType op, boolean replace) throws OperationException {
+    public void putOperation(OperationType op, boolean replace) throws OperationException {
         operations.addContribution(op, replace);
     }
 
     @Override
-    public synchronized void removeOperation(Class<?> key) {
+    public void removeOperation(Class<?> key) {
         OperationType type = operations.getOperationType(key);
         if (type == null) {
             log.warn("Cannot remove operation, no such operation " + key);
@@ -385,7 +325,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
-    public synchronized void removeOperation(OperationType type) {
+    public void removeOperation(OperationType type) {
         operations.removeContribution(type);
     }
 
@@ -406,7 +346,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
     /**
      * @since 5.7.2
-     * @param id operation ID.
+     * @param id
+     *            operation ID.
      * @return true if operation registry contains the given operation.
      */
     @Override
@@ -419,14 +360,13 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
-    public CompiledChain compileChain(Class<?> inputType, OperationChain chain) throws OperationException {
-        List<OperationParameters> ops = chain.getOperations();
-        return compileChain(inputType, ops.toArray(new OperationParameters[ops.size()]));
+    public CompiledChain compileChain(Class<?> inputType, OperationParameters... chain) throws OperationException {
+        return compileChain(inputType, new OperationChain("", Arrays.asList(chain)));
     }
 
     @Override
-    public CompiledChain compileChain(Class<?> inputType, OperationParameters... operations) throws OperationException {
-        return CompiledChainImpl.buildChain(this, inputType == null ? Void.TYPE : inputType, operations);
+    public CompiledChain compileChain(Class<?> inputType, OperationChain chain) throws OperationException {
+        return compiler.compile(ChainTypeImpl.typeof(chain, false), inputType);
     }
 
     @Override
@@ -452,11 +392,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt, Class<?> targetType) throws OperationException {
-        if (toAdapt == null) {
-            return null;
-        }
         // handle primitive types
-        Class<?> toAdaptClass = toAdapt.getClass();
+        Class<?> toAdaptClass = toAdapt == null ? Void.class : toAdapt.getClass();
         if (targetType.isPrimitive()) {
             targetType = getTypeForPrimitive(targetType);
             if (targetType.isAssignableFrom(toAdaptClass)) {
@@ -464,7 +401,9 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             }
         }
         if (targetType.isArray() && toAdapt instanceof List) {
-            return (T) Iterables.toArray((Iterable) toAdapt, targetType.getComponentType());
+            @SuppressWarnings("rawtypes")
+            final Iterable iterable = (Iterable) toAdapt;
+            return (T) Iterables.toArray(iterable, targetType.getComponentType());
         }
         TypeAdapter adapter = getTypeAdapter(toAdaptClass, targetType);
         if (adapter == null) {
@@ -473,8 +412,11 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                 ObjectMapper mapper = new ObjectMapper();
                 return (T) mapper.convertValue(toAdapt, targetType);
             }
-            throw new OperationException("No type adapter found for input: " + toAdapt.getClass() + " and output "
-                    + targetType);
+            if (targetType.isAssignableFrom(OperationContext.class)) {
+                return (T) ctx;
+            }
+            throw new OperationException(
+                    "No type adapter found for input: " + toAdapt.getClass() + " and output " + targetType);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }
@@ -591,46 +533,4 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         return automationFilters.toArray(new AutomationFilter[automationFilters.size()]);
     }
 
-    /**
-     * @since 5.8 - Composite key to handle several operations with same id and different input types.
-     */
-    protected static class CacheKey {
-
-        String operationId;
-
-        String inputType;
-
-        public CacheKey(String operationId, String inputType) {
-            this.operationId = operationId;
-            this.inputType = inputType;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            CacheKey cacheKey = (CacheKey) o;
-
-            if (inputType != null ? !inputType.equals(cacheKey.inputType) : cacheKey.inputType != null) {
-                return false;
-            }
-            if (operationId != null ? !operationId.equals(cacheKey.operationId) : cacheKey.operationId != null) {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = operationId != null ? operationId.hashCode() : 0;
-            result = 31 * result + (inputType != null ? inputType.hashCode() : 0);
-            return result;
-        }
-    }
 }

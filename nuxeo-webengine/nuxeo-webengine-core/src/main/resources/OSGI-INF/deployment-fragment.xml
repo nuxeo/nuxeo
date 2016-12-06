@@ -9,6 +9,12 @@
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
+    
+    <filter-mapping>
+       <filter-name>NuxeoRequestController</filter-name>
+       <url-pattern>/site/*</url-pattern>
+       <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
 
   </extension>
 
