@@ -134,4 +134,42 @@ public class OperationChain implements Serializable {
         return chainParameters;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id.hashCode();
+        result = prime * result + chainParameters.hashCode();
+        result = prime * result +  operations.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OperationChain)) {
+            return false;
+        }
+        OperationChain other = (OperationChain) obj;
+        if (!id.equals(other.id)) {
+            return false;
+        }
+        if (!chainParameters.equals(other.chainParameters)) {
+            return false;
+        }
+        if (!operations.equals(other.operations)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "OperationChain [id="+id+"]";
+    }
 }
