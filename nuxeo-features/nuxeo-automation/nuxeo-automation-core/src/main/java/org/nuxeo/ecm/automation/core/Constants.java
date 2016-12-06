@@ -168,12 +168,6 @@ public class Constants {
     // key for setting chain runtime variables on the operation context
     public static final String VAR_RUNTIME_CHAIN = "ChainParameters";
 
-    /**
-     * Key to define if we are in a chain or not on the Operation Context
-     *
-     * @since 7.10
-     */
-    public static final String VAR_IS_CHAIN = "isChainExecution";
 
     private Constants() {
     }

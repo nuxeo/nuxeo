@@ -73,6 +73,13 @@
     <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="filterConfig">
+    <filterConfig name="webengine" transactional="true" synchonize="false">
+      <pattern>${org.nuxeo.ecm.contextPath}/site.*</pattern>
+    </filterConfig>
+  </extension>
+  
   <!-- extension target="org.nuxeo.runtime.server" point="webapp">
     <webapp name="nuxeo" path="/">
       <root>web/root.war</root>

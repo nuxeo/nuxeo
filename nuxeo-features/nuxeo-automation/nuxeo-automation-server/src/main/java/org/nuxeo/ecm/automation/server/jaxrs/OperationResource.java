@@ -24,7 +24,7 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.OperationChainTypeImpl;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
@@ -69,7 +69,7 @@ public class OperationResource extends ExecutableResource {
 
     @Override
     public boolean isChain() {
-        return false;
+        return type instanceof ChainTypeImpl;
     }
 
 }

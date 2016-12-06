@@ -93,7 +93,7 @@ public class OperationChainContribution {
         protected String id;
 
         @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
-        protected List<Param> params;
+        protected List<Param> params = new ArrayList<>();
 
         public String getId() {
             return id;
@@ -207,7 +207,8 @@ public class OperationChainContribution {
                     case 'd':
                         if (T_DOCUMENT.equals(type)) {
                             if (param.value.startsWith(".")) {
-                                val = Scripting.newExpression("Document" + ".resolvePathAsRef(\"" + param.value + "\")");
+                                val = Scripting
+                                        .newExpression("Document" + ".resolvePathAsRef(\"" + param.value + "\")");
                             } else {
                                 val = StringToDocRef.createRef(param.value);
                             }
@@ -277,5 +278,41 @@ public class OperationChainContribution {
 
     public String[] getAliases() {
         return aliases;
+    }
+
+    public static OperationChainContribution contribOf(OperationChain chain, boolean replace) {
+        OperationChainContribution contrib = new OperationChainContribution();
+        contrib.id = chain.getId();
+        contrib.aliases = chain.getAliases();
+        contrib.description = "inlined chain of " + contrib.id;
+        contrib.isPublic = false;
+        contrib.params = paramsOf(chain.getChainParameters());
+        contrib.ops = operationsOf(chain.getOperations());
+        contrib.replace = replace;
+        return contrib;
+    }
+
+    public static OperationDocumentation.Param[] paramsOf(Map<String, ?> args) {
+        return args.entrySet().stream().map(entry -> {
+            OperationDocumentation.Param param = new OperationDocumentation.Param();
+            param.name = entry.getKey();
+            param.type = entry.getClass().getName();
+            return param;
+        }).toArray(OperationDocumentation.Param[]::new);
+    }
+
+    public static Operation[] operationsOf(List<OperationParameters> operations) {
+        return operations.stream().map(params -> {
+            Operation op = new Operation();
+            op.id = params.id();
+            params.map().forEach((k,v) -> {
+                Param param = new Param();
+                param.name = k;
+                param.type = "unknown";
+                param.value = v == null ? "null" : v.toString();
+                op.params.add(param);
+            });
+            return op;
+        }).toArray(Operation[]::new);
     }
 }
