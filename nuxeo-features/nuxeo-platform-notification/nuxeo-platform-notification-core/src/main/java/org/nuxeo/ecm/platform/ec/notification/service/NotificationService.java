@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
@@ -537,9 +538,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName) {
-        String nxql = String.format("SELECT * FROM Document WHERE ecm:mixinType ='Notifiable' "
-                + "AND ecm:isCheckedInVersion = 0 "
-                + "AND notif:notifications/*/subscribers/* = '%s'", prefixedPrincipalName);
+        String nxql = String.format("SELECT * FROM Document WHERE ecm:mixinType = '"
+                + SubscriptionAdapter.NOTIFIABLE_FACET + "' " + "AND ecm:isCheckedInVersion = 0 "
+                + "AND notif:notifications/*/subscribers/* = " + NXQL.escapeString(prefixedPrincipalName));
 
         return UnrestrictedDocFetcher.query(nxql);
     }
