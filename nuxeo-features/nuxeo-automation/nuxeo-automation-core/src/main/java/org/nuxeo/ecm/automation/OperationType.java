@@ -72,4 +72,15 @@ public interface OperationType {
      * @since 5.7.2
      */
     public List<InvokableMethod> getMethods();
+
+    @Override
+    int hashCode();
+
+    @Override
+    boolean equals(Object obj);
+
+    static OperationType typeof(OperationChain chain, boolean replace) {
+        return ChainTypeImpl.typeof(chain, replace);
+    }
+
 }
