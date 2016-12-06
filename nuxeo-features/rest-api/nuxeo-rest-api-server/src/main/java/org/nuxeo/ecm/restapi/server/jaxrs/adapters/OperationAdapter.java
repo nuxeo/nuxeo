@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,8 +33,8 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
@@ -56,7 +57,7 @@ public class OperationAdapter extends DefaultAdapter {
     @POST
     @Path("{operationName}")
     public Response doPost(@PathParam("operationName") String oid, @Context HttpServletRequest request,
-            ExecutionRequest xreq) {
+            @Context HttpServletResponse response, ExecutionRequest xreq) {
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
             if (!srv.accept(oid, false, request)) {
@@ -84,7 +85,7 @@ public class OperationAdapter extends DefaultAdapter {
                 }
             }
 
-            OperationContext ctx = xreq.createContext(request, getContext().getCoreSession());
+            OperationContext ctx = xreq.createContext(request, response, getContext().getCoreSession());
             Object result = service.run(ctx, oid, xreq.getParams());
 
             int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
