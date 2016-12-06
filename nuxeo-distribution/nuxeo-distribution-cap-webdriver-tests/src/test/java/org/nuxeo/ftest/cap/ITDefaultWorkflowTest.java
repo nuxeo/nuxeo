@@ -84,8 +84,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         UsersGroupsBasePage page;
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
-                    group);
+            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1",
+                    username + "@test.com", pswd, group);
             usersTab = page.getUsersTab(true);
             // make sure user has been created
             usersTab = usersTab.searchUser(username);

@@ -137,7 +137,7 @@ public class ITSafeEditTest extends AbstractTest {
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
             page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
-                    "email1", TEST_PASSWORD, "members");
+                    "email1@test.com", TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
         usersTab.searchUser(TEST_USERNAME);

@@ -58,8 +58,8 @@ public class ITCopyPasteTest extends AbstractTest {
         UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, null, null, TEST_USERNAME,
-                    TEST_PASSWORD, "members");
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, null, null,
+                    TEST_USERNAME + "@test.com", TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
         usersTab.searchUser(TEST_USERNAME);

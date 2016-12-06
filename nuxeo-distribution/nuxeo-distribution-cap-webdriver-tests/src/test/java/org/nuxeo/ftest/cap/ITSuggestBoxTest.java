@@ -94,7 +94,7 @@ public class ITSuggestBoxTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
+            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1@test.com", pswd,
                     "members");
             usersTab = page.getUsersTab(true);
         }
