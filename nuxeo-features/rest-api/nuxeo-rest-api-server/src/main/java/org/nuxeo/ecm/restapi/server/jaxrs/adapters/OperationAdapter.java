@@ -89,11 +89,7 @@ public class OperationAdapter extends DefaultAdapter {
             Object result = service.run(ctx, oid, xreq.getParams());
 
             int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
-            if (customHttpStatus >= 100) {
-                return Response.status(customHttpStatus).entity(result).build();
-            }
-
-            return Response.ok(result).build();
+            return Response.status(customHttpStatus).entity(result).build();
         } catch (OperationException cause) {
             if (ExceptionHelper.unwrapException(cause) instanceof RestOperationException) {
                 int customHttpStatus = ((RestOperationException) ExceptionHelper.unwrapException(cause)).getStatus();
