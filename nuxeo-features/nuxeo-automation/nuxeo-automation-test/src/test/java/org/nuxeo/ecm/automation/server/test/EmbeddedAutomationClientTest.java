@@ -286,9 +286,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      */
     @Test
     public void testRemoteChain() throws Exception {
-        OperationDocumentation opd = session.getOperation("principals");
+        OperationDocumentation opd = session.getOperation("testchain");
         assertNotNull(opd);
-        Document doc = (Document) session.newRequest("principals").setInput(DocRef.newRef("/")).execute();
+        Document doc = (Document) session.newRequest("testchain").setInput(DocRef.newRef("/")).execute();
         assertNotNull(doc);
     }
 
