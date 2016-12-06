@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -288,11 +289,17 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return buildEmptyResponse(Status.NO_CONTENT);
     }
 
+    @Context
+    HttpServletRequest request;
+
+    @Context
+    HttpServletResponse response;
+
     @POST
     @Produces("application/json")
     @Path("{batchId}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(OPERATION_ID) String operationId,
-            @Context HttpServletRequest request, ExecutionRequest xreq) throws UnsupportedEncodingException {
+            ExecutionRequest xreq) throws UnsupportedEncodingException {
         return executeBatch(batchId, null, operationId, request, xreq);
     }
 
@@ -300,7 +307,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("{batchId}/{fileIdx}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
-            @PathParam(OPERATION_ID) String operationId, @Context HttpServletRequest request, ExecutionRequest xreq)
+            @PathParam(OPERATION_ID) String operationId, ExecutionRequest xreq)
             throws UnsupportedEncodingException {
         return executeBatch(batchId, fileIdx, operationId, request, xreq);
     }
@@ -318,7 +325,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
         try {
             CoreSession session = ctx.getCoreSession();
-            OperationContext ctx = xreq.createContext(request, session);
+            OperationContext ctx = xreq.createContext(request, response, session);
             Map<String, Object> params = xreq.getParams();
             BatchManager bm = Framework.getLocalService(BatchManager.class);
             Object result;
