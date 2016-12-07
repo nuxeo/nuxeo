@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thierry Delprat
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.template.rendition;
 
@@ -48,9 +49,11 @@ public class TemplateBasedRenditionProvider implements RenditionProvider {
     public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         TemplateBasedDocument tbd = doc.getAdapter(TemplateBasedDocument.class);
         String template = tbd.getTemplateNameForRendition(definition.getName());
-        Blob rendered = tbd.renderWithTemplate(template);
         List<Blob> blobs = new ArrayList<Blob>();
-        blobs.add(rendered);
+        if (template != null) {
+            Blob rendered = tbd.renderWithTemplate(template);
+            blobs.add(rendered);
+        }
         return blobs;
     }
 

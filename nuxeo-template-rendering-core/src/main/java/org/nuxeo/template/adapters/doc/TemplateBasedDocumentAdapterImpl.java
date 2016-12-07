@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Estelle Giuly <egiuly@nuxeo.com>
  *
  */
 package org.nuxeo.template.adapters.doc;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -139,13 +141,20 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         if (tRef == null) {
             return null;
         }
-        return getSession().getDocument(tRef);
+        try {
+            return getSession().getDocument(tRef);
+        } catch (DocumentSecurityException e) {
+            return null;
+        }
     }
 
     public List<TemplateSourceDocument> getSourceTemplates() {
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
         for (TemplateBinding binding : bindings) {
-            result.add(getSourceTemplate(binding.getName()));
+            TemplateSourceDocument template = getSourceTemplate(binding.getName());
+            if (template != null) {
+                result.add(template);
+            }
         }
         return result;
     }
@@ -214,7 +223,11 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
             } catch (IOException e) {
                 throw new NuxeoException("Failed to render template: " + templateName, e);
             }
-            String format = getSourceTemplate(templateName).getOutputFormat();
+            TemplateSourceDocument template = getSourceTemplate(templateName);
+            if (template == null) {
+                throw new NuxeoException("No associated template for name " + templateName);
+            }
+            String format = template.getOutputFormat();
             if (blob != null && format != null && !format.isEmpty()) {
                 try {
                     return convertBlob(templateName, blob, format);
@@ -361,7 +374,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
 
     public String getTemplateNameForRendition(String renditionName) {
         for (TemplateBinding binding : bindings) {
-            if (renditionName.equals(getSourceTemplate(binding.getName()).getTargetRenditionName())) {
+            TemplateSourceDocument template = getSourceTemplate(binding.getName());
+            if (template != null && renditionName.equals(template.getTargetRenditionName())) {
                 return binding.getName();
             }
         }

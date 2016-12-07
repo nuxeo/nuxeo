@@ -12,15 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *     Nuxeo - initial API and implementation
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.template.pub.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFactory.RENDITION_NAME_PARAMETER_KEY;
@@ -36,9 +40,16 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -76,6 +87,10 @@ public class TestRenditionPublication {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
 
+    protected static final String WEBVIEW_RENDITION = "webView";
+
+    protected static final String JOE_USERNAME = "joe";
+
     @Inject
     protected CoreSession session;
 
@@ -88,7 +103,7 @@ public class TestRenditionPublication {
     @Inject
     TemplateProcessorService tps;
 
-    protected DocumentModel createTemplateBasedDoc() throws Exception {
+    protected DocumentModel createTemplateDoc() throws Exception {
 
         DocumentModel root = session.getRootDocument();
 
@@ -96,8 +111,6 @@ public class TestRenditionPublication {
         DocumentModel templateDoc = session.createDocumentModel(root.getPathAsString(), "templatedDoc",
                 "TemplateSource");
         templateDoc.setProperty("dublincore", "title", "MyTemplate");
-        // File file =
-        // FileUtils.getResourceFileFromContext("data/DocumentsAttributes.odt");
         File file = FileUtils.getResourceFileFromContext("data/htmlRender.ftl");
         Blob fileBlob = Blobs.createBlob(file);
         fileBlob.setFilename("htmlRendered.ftl");
@@ -108,7 +121,7 @@ public class TestRenditionPublication {
 
         // configure rendition and output format
         TemplateSourceDocument source = templateDoc.getAdapter(TemplateSourceDocument.class);
-        source.setTargetRenditioName("webView", false);
+        source.setTargetRenditioName(WEBVIEW_RENDITION, false);
 
         // check that parameter has been detected
         assertEquals(1, source.getParams().size());
@@ -127,6 +140,13 @@ public class TestRenditionPublication {
         TemplateInput inputParam = source.getParams().get(0);
         assertEquals("htmlContent", inputParam.getName());
         assertEquals("htmlPreview", inputParam.getSource());
+
+        return templateDoc;
+    }
+
+    protected DocumentModel createTemplateBasedDoc(DocumentModel templateDoc) throws Exception {
+
+        DocumentModel root = session.getRootDocument();
 
         // create the Note
         DocumentModel testDoc = session.createDocumentModel(root.getPathAsString(), "testDoc", "Note");
@@ -150,7 +170,7 @@ public class TestRenditionPublication {
     @Test
     public void verifyRenditionBinding() throws Exception {
 
-        DocumentModel templateBasedDoc = createTemplateBasedDoc();
+        DocumentModel templateBasedDoc = createTemplateBasedDoc(createTemplateDoc());
         TemplateBasedDocument templateBased = templateBasedDoc.getAdapter(TemplateBasedDocument.class);
         assertNotNull(templateBased);
 
@@ -160,7 +180,7 @@ public class TestRenditionPublication {
         // one blob => pdf rendition, + export renditions
         assertEquals(3, defs.size());
 
-        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName("webView", true);
+        templateBased.getSourceTemplate(TEMPLATE_NAME).setTargetRenditioName(WEBVIEW_RENDITION, true);
         defs = renditionService.getAvailableRenditionDefinitions(templateBasedDoc);
         // blob, + delivery rendition binding + export renditions => 5 rendition
         assertEquals(4, defs.size());
@@ -182,11 +202,11 @@ public class TestRenditionPublication {
         assertTrue(tree.canPublishTo(targetNode));
 
         // create a template doc
-        DocumentModel templateBasedDoc = createTemplateBasedDoc();
+        DocumentModel templateBasedDoc = createTemplateBasedDoc(createTemplateDoc());
 
         // publish
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) tree.publish(templateBasedDoc,
-                targetNode, Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "webView"));
+                targetNode, Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, WEBVIEW_RENDITION));
 
         // check rendition is done
         DocumentModel proxy = publishedDocument.getProxy();
@@ -202,7 +222,8 @@ public class TestRenditionPublication {
         System.out.print(htmlPage);
         assertTrue(htmlPage.contains((String) templateBasedDoc.getPropertyValue("dc:description")));
         assertTrue(htmlPage.contains(templateBasedDoc.getTitle()));
-        String noteHtmlContent = HtmlBodyExtractor.extractHtmlBody((String) templateBasedDoc.getPropertyValue("note:note"));
+        String noteHtmlContent = HtmlBodyExtractor.extractHtmlBody(
+                (String) templateBasedDoc.getPropertyValue("note:note"));
         assertNotNull(noteHtmlContent);
         System.out.print(noteHtmlContent);
         assertTrue(htmlPage.contains(noteHtmlContent));
@@ -224,7 +245,7 @@ public class TestRenditionPublication {
 
         // republish
         publishedDocument = (SimpleCorePublishedDocument) tree.publish(templateBasedDoc, targetNode,
-                Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, "webView"));
+                Collections.singletonMap(RENDITION_NAME_PARAMETER_KEY, WEBVIEW_RENDITION));
 
         proxy = publishedDocument.getProxy();
         assertTrue(proxy.hasFacet(RENDITION_FACET));
@@ -238,5 +259,44 @@ public class TestRenditionPublication {
         proxy = session.getDocument(proxy.getRef());
         assertEquals("0.2", proxy.getVersionLabel());
 
+    }
+
+    @Test
+    public void shouldGetNullTemplateIfAccessToTemplateForbidden() throws Exception {
+
+        // Forbid access to the template doc
+        DocumentModel templateDoc = createTemplateDoc();
+        ACP acpDeny = new ACPImpl();
+        ACL aclDeny = new ACLImpl();
+        aclDeny.add(ACE.BLOCK);
+        acpDeny.addACL(aclDeny);
+        session.setACP(templateDoc.getRef(), acpDeny, true);
+
+        // Authorize access to the template based document
+        DocumentModel templateBasedDoc = createTemplateBasedDoc(templateDoc);
+        ACP acpGrant = new ACPImpl();
+        ACL aclGrant = new ACLImpl();
+        aclGrant.add(new ACE(JOE_USERNAME, "Read", true));
+        acpGrant.addACL(aclGrant);
+        session.setACP(templateBasedDoc.getRef(), acpGrant, true);
+
+        session.save();
+
+        try (CoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), JOE_USERNAME)) {
+            // Check that joe user cannot access the template document
+            try {
+                joeSession.getDocument(templateDoc.getRef());
+                fail("privilege to the template document is granted but should not be");
+            } catch (DocumentSecurityException e) {
+                // ok
+            }
+
+            // Check that joe user can access the template based document
+            DocumentModel joeTemplateBasedDoc = joeSession.getDocument(templateBasedDoc.getRef());
+            assertNotNull(joeTemplateBasedDoc);
+            TemplateBasedDocument joeTemplateBased = joeTemplateBasedDoc.getAdapter(TemplateBasedDocument.class);
+            assertNull(joeTemplateBased.getSourceTemplate(TEMPLATE_NAME));
+            assertNull(joeTemplateBased.getTemplateNameForRendition(WEBVIEW_RENDITION));
+        }
     }
 }
