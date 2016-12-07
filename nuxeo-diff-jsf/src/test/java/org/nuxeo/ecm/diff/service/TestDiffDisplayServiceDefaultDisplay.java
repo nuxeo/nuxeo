@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,21 +91,21 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         leftDoc.setPropertyValue("dc:description", "Description of my sample type.");
         leftDoc.setPropertyValue("dc:subjects", new String[] { "Art", "Architecture" });
         leftDoc.setPropertyValue("dc:creator", "Joe");
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> file = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> files = new ArrayList<>();
+        Map<String, Serializable> file = new HashMap<>();
         file.put("file", (Serializable) Blobs.createBlob("Joe is not rich."));
         file.put("filename", "Joe.txt");
         files.add(file);
         leftDoc.setPropertyValue("files:files", (Serializable) files);
         leftDoc = session.createDocument(leftDoc);
         // Set complex properties to test the diffComplexField contribs
-        Map<String, Serializable> complexProp = new HashMap<String, Serializable>();
+        Map<String, Serializable> complexProp = new HashMap<>();
         complexProp.put("stringItem", "My name is Joe");
         complexProp.put("booleanItem", true);
         complexProp.put("integerItem", 3);
         complexProp.put("dateItem", new GregorianCalendar(2012, Calendar.DECEMBER, 25));
         leftDoc.setPropertyValue("ct:complex", (Serializable) complexProp);
-        List<Map<String, Serializable>> complexListProp = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> complexListProp = new ArrayList<>();
         complexListProp.add(complexProp);
         leftDoc.setPropertyValue("ct:complexList", (Serializable) complexListProp);
 
@@ -112,21 +113,21 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         rightDoc.setPropertyValue("dc:description", "Description of my other sample type.");
         rightDoc.setPropertyValue("dc:subjects", new String[] { "Art" });
         rightDoc.setPropertyValue("dc:creator", "Jack");
-        files = new ArrayList<Map<String, Serializable>>();
-        file = new HashMap<String, Serializable>();
+        files = new ArrayList<>();
+        file = new HashMap<>();
         file.put("file", (Serializable) Blobs.createBlob("Joe is not rich, nor is Jack."));
         file.put("filename", "Jack.pdf");
         files.add(file);
         rightDoc.setPropertyValue("files:files", (Serializable) files);
         rightDoc = session.createDocument(rightDoc);
         // Set complex properties to test the diffComplexField contribs
-        complexProp = new HashMap<String, Serializable>();
+        complexProp = new HashMap<>();
         complexProp.put("stringItem", "My name is Jack");
         complexProp.put("booleanItem", false);
         complexProp.put("integerItem", 50);
         complexProp.put("dateItem", new GregorianCalendar(2011, Calendar.NOVEMBER, 23));
         rightDoc.setPropertyValue("ct:complex", (Serializable) complexProp);
-        complexListProp = new ArrayList<Map<String, Serializable>>();
+        complexListProp = new ArrayList<>();
         complexListProp.add(complexProp);
         rightDoc.setPropertyValue("ct:complexList", (Serializable) complexListProp);
 
@@ -144,14 +145,14 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
             if (checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.dublincore", 1)) {
                 checkDiffDisplayBlockSchema(diffDisplayBlock, "dublincore", 2, Arrays.asList("description", "creator"));
             } else if (checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.files", 1)) {
-                checkDiffDisplayBlockSchema(diffDisplayBlock, "files", 1, Arrays.asList("files"));
+                checkDiffDisplayBlockSchema(diffDisplayBlock, "files", 1, Collections.singletonList("files"));
             } else if (checkDiffDisplayBlock(diffDisplayBlock, "label.diffBlock.complextypes", 1)) {
                 checkDiffDisplayBlockSchema(diffDisplayBlock, "complextypes", 2,
                         Arrays.asList("complex", "complexList"));
-                checkDiffDisplayBlockFieldWidgets(diffDisplayBlock, "complextypes:complex", new String[] { "dateItem",
-                        "stringItem" }, true);
-                checkDiffDisplayBlockFieldWidgets(diffDisplayBlock, "complextypes:complexList", new String[] { "index",
-                        "integerItem", "booleanItem" }, false);
+                checkDiffDisplayBlockFieldWidgets(diffDisplayBlock, "complextypes:complex",
+                        new String[] { "dateItem", "stringItem" }, true);
+                checkDiffDisplayBlockFieldWidgets(diffDisplayBlock, "complextypes:complexList",
+                        new String[] { "index", "integerItem", "booleanItem" }, false);
             } else {
                 fail("Unmatching diff display block.");
             }
@@ -221,7 +222,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         WidgetDefinition[] subWidgetDefs = widgetDef.getSubWidgetDefinitions();
         assertNotNull(subWidgetDefs);
         assertEquals(fieldItemNames.length, subWidgetDefs.length);
-        List<String> remainingFieldItemNames = new ArrayList<String>(Arrays.asList(fieldItemNames));
+        List<String> remainingFieldItemNames = new ArrayList<>(Arrays.asList(fieldItemNames));
         for (int i = 0; i < subWidgetDefs.length; i++) {
             WidgetDefinition subWidgetDef = subWidgetDefs[i];
             FieldDefinition[] fieldDefs = subWidgetDef.getFieldDefinitions();
