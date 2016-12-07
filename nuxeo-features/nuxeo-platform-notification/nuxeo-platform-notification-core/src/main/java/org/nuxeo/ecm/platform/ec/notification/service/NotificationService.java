@@ -549,9 +549,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public List<DocumentModel> getSubscribedDocuments(String prefixedPrincipalName) {
-        String nxql = String.format("SELECT * FROM Document WHERE ecm:mixinType = '"
-                + SubscriptionAdapter.NOTIFIABLE_FACET + "' " + "AND ecm:isCheckedInVersion = 0 "
-                + "AND notif:notifications/*/subscribers/* = " + NXQL.escapeString(prefixedPrincipalName));
+        String nxql = "SELECT * FROM Document WHERE ecm:mixinType = '" + SubscriptionAdapter.NOTIFIABLE_FACET + "' "
+                + "AND ecm:isCheckedInVersion = 0 " + "AND notif:notifications/*/subscribers/* = "
+                + NXQL.escapeString(prefixedPrincipalName);
 
         return UnrestrictedDocFetcher.query(nxql);
     }
