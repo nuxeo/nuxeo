@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.importer.properties;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -31,11 +34,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.runner.RunWith;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;

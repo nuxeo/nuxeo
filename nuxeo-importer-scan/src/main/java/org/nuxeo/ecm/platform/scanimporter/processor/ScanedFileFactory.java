@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 package org.nuxeo.ecm.platform.scanimporter.processor;
 
@@ -95,7 +93,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
             }
         }
 
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> options = new HashMap<>();
         DocumentModel doc;
         if (isUpdateDocument) {
             doc = session.getDocument(ref);
@@ -111,12 +109,11 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
     @Override
     public DocumentModel createLeafNode(CoreSession session, DocumentModel parent, SourceNode node) throws IOException {
 
-        String docType = "File";
         BlobHolder bh = node.getBlobHolder();
 
         if (bh instanceof ScanFileBlobHolder) {
             ScanFileBlobHolder scanBH = (ScanFileBlobHolder) bh;
-            docType = scanBH.getTargetType();
+            String docType = scanBH.getTargetType();
             setLeafType(docType);
         }
 
@@ -147,7 +144,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
         if (docExists && config.isUpdate()) {
             doc = session.getDocument(docRef);
         } else {
-            Map<String, Object> options = new HashMap<String, Object>();
+            Map<String, Object> options = new HashMap<>();
             doc = session.createDocumentModel(leafType, options);
             doc.setPathInfo(parent.getPathAsString(), name);
             doc.setProperty("dublincore", "title", node.getName());

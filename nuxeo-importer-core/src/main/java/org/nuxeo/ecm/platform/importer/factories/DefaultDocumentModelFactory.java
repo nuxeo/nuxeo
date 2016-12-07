@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *     Thibaud Arguillere (Nuxeo)
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.importer.factories;
 
 import java.io.IOException;
@@ -140,7 +137,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
             doc.addFacet(facet);
         }
         doc.setProperty("dublincore", "title", node.getName());
-        if (blob != null && blob.getLength() > 0 ) {
+        if (blob != null && blob.getLength() > 0) {
             doc.setProperty("file", "filename", fileName);
             doc.setProperty("file", "content", blob);
         }
