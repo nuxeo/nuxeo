@@ -27,12 +27,15 @@
         <range-element-index type="string">ecm:name</range-element-index>
         <range-element-index type="string">ecm:primaryType</range-element-index>
         <range-element-index type="string">ecm:lifeCycleState</range-element-index>
+        <range-element-index type="string">dc:title</range-element-index>
+        <range-element-index type="dateTime">dc:created</range-element-index>
         <range-element-index type="dateTime">dc:modified</range-element-index>
         <range-element-index type="string">rend:renditionName</range-element-index>
+        <range-element-index type="dateTime">rend:modificationDate</range-element-index>
+        <range-element-index type="dateTime">rend:sourceModificationDate</range-element-index>
         <range-element-index type="string">collectionMember:collectionIds</range-element-index>
         <!-- Unit tests elements -->
         <range-element-index type="string">dc:description</range-element-index>
-        <range-element-index type="string">dc:title</range-element-index>
         <range-element-index type="string">dc:coverage</range-element-index>
         <range-element-index type="long">ecm:pos</range-element-index>
         <range-element-index type="string">ecm:lockOwner</range-element-index>
