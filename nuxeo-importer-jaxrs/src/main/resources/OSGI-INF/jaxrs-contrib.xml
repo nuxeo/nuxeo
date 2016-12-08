@@ -7,5 +7,7 @@
               class="org.nuxeo.ecm.platform.importer.executor.jaxrs.HttpFileImporterExecutor"/>
     <resource path="randomImporter"
               class="org.nuxeo.ecm.platform.importer.executor.jaxrs.RandomImporterExecutor"/>
+    <resource path="randomQImporter"
+              class="org.nuxeo.ecm.platform.importer.executor.jaxrs.RandomQImporterExecutor"/>
   </extension>
 </component>

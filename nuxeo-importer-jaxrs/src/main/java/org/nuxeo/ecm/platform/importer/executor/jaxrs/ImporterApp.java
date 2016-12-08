@@ -34,6 +34,7 @@ public class ImporterApp extends Application {
         HashSet<Class<?>> set = new HashSet<Class<?>>();
         set.add(HttpFileImporterExecutor.class);
         set.add(RandomImporterExecutor.class);
+        set.add(RandomQImporterExecutor.class);
         return set;
     }
 
