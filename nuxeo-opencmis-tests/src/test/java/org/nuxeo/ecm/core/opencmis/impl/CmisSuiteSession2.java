@@ -362,9 +362,12 @@ public class CmisSuiteSession2 {
 
     protected JsonNode checkOkContentStreamResponse(String contentMD5Hex, ObjectMapper mapper,
             CloseableHttpResponse response) throws IOException {
-        assertEquals(HttpServletResponse.SC_CREATED, response.getStatusLine().getStatusCode());
-        InputStream is = response.getEntity().getContent();
-        JsonNode root = mapper.readTree(is);
+        String content;
+        try (InputStream is = response.getEntity().getContent()) {
+            content = IOUtils.toString(is);
+        }
+        assertEquals(content, HttpServletResponse.SC_CREATED, response.getStatusLine().getStatusCode());
+        JsonNode root = mapper.readTree(content);
         String expectedContentStreamHash = new ContentStreamHashImpl(
                 ContentStreamHashImpl.ALGORITHM_MD5, contentMD5Hex).toString();
         Iterator iter = root.path("succinctProperties").path("cmis:contentStreamHash").getElements();
@@ -382,9 +385,12 @@ public class CmisSuiteSession2 {
 
     protected JsonNode checkBadContentStreamResponse(ObjectMapper mapper, CloseableHttpResponse response)
             throws IOException {
-        assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
-        InputStream is = response.getEntity().getContent();
-        JsonNode root = mapper.readTree(is);
+        String content;
+        try (InputStream is = response.getEntity().getContent()) {
+            content = IOUtils.toString(is);
+        }
+        assertEquals(content, HttpServletResponse.SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        JsonNode root = mapper.readTree(content);
         String exception = root.path("exception").getTextValue();
         assertEquals("invalidArgument", exception);
         return root;
