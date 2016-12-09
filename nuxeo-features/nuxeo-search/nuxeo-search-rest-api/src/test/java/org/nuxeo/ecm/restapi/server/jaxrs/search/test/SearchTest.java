@@ -641,6 +641,9 @@ public class SearchTest extends BaseTest {
 
     @Test
     public void iCanExecuteDefaultSavedSearch() throws IOException {
+        // this saved search uses ecm:fulltext so some databases doing async fulltext indexing will need a pause
+        coreFeature.getStorageConfiguration().waitForFulltextIndexing();
+
         ClientResponse response = getResponse(RequestType.GET,
                 getSavedSearchExecutePath(RestServerInit.getSavedSearchId(3, session)));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
