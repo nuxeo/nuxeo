@@ -73,6 +73,9 @@ public class ResponseHelper {
         if (type == null || "???".equals(type)) {
             type = MediaType.APPLICATION_OCTET_STREAM;
         }
+        if (blob.getEncoding() != null) {
+            type += "; charset=" + blob.getEncoding();
+        }
         return Response.status(httpStatus).entity(blob).type(type).header("Content-Disposition",
                 "attachment; filename=" + blob.getFilename()).build();
     }
