@@ -137,7 +137,7 @@ public class HTMLBlobUploader implements JSFBlobUploader {
         Blob sblob = (Blob) submittedFile;
         if (sblob.getLength() == 0) {
             String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
-                    : InputFileInfo.INVALID_FILE_MESSAGE;
+                    : InputFileInfo.EMPTY_FILE_MESSAGE;
             ComponentUtils.addErrorMessage(context, parent, message);
             parent.setValid(false);
             return;
