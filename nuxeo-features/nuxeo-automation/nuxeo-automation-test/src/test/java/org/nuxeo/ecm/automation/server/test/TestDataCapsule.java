@@ -26,7 +26,7 @@ public class TestDataCapsule {
         generator.writeObject(new MyObject());
         writer.close();
         String json = writer.toString();
-        Blob blob = new StringBlob(json, "application/json");
+        Blob blob = new StringBlob(json, "application/json", null);
         blob.setFilename(ID);
         return blob;
     }
