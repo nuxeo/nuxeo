@@ -44,15 +44,15 @@ public class ITFileWidgetTest extends AbstractWidgetPageTest {
         checkNoError();
         assertEquals("File widget", driver.findElement(By.id("fileWidgetLayout_view_form")).getText());
         checkValueRequired(false);
-        assertNotEquals("Invalid file", getEditWidgetMessage());
+        assertNotEquals("Empty file", getEditWidgetMessage());
         doSubmitDemo();
-        assertEquals("Invalid file", getEditWidgetMessage());
+        assertEquals("Empty file", getEditWidgetMessage());
         LayoutElement edit = new LayoutElement(driver, pageId + "Layout_edit_form:nxl_" + pageId + "Layout");
         FileWidgetElement w = edit.getWidget("nxw_" + pageId, FileWidgetElement.class);
         w.uploadTestFile("file_1", ".txt", "hello");
         doSubmitDemo();
         checkValueRequired(false);
-        assertNotEquals("Invalid file", getEditWidgetMessage());
+        assertNotEquals("Empty file", getEditWidgetMessage());
         String viewName = getViewWidget().getSubElement("download").getText();
         String editName = getEditWidget().getSubElement("default_download:download").getText();
         assertTrue(viewName.startsWith("file_1"));
