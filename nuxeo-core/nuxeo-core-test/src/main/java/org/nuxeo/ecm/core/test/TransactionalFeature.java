@@ -61,7 +61,7 @@ public class TransactionalFeature extends SimpleFeature {
     }
 
     public void nextTransaction() {
-        nextTransaction(2, TimeUnit.MINUTES);
+        nextTransaction(5, TimeUnit.MINUTES);
     }
 
     public void nextTransaction(long duration, TimeUnit unit) {
