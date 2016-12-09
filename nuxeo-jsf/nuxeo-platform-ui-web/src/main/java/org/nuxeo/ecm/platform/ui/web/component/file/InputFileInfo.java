@@ -43,6 +43,8 @@ public class InputFileInfo implements Serializable {
 
     private static final Log log = LogFactory.getLog(InputFileInfo.class);
 
+    public static final String EMPTY_FILE_MESSAGE = "error.inputFile.emptyFile";
+
     public static final String INVALID_FILE_MESSAGE = "error.inputFile.invalidFile";
 
     public static final String INVALID_WITH_AJAX_MESSAGE = "error.inputFile.ajax";
