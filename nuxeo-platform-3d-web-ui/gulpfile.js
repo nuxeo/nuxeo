@@ -25,7 +25,7 @@ var del = require('del');
 var runSequence = require('run-sequence');
 var path = require('path');
 
-var DIST = 'target/classes/web/nuxeo.war/ui/nuxeo-three-d';
+var DIST = 'target/classes/web/nuxeo.war/ui/nuxeo-threed';
 
 var dist = function (subpath) {
     return !subpath ? DIST : path.join(DIST, subpath);
