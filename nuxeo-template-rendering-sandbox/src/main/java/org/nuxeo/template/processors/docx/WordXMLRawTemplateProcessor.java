@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.template.processors.docx;
 
 import java.io.File;
@@ -212,7 +210,8 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
     @Override
     @SuppressWarnings("rawtypes")
-    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName) throws IOException {
+    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName)
+            throws IOException {
 
         Blob blob = templateDocument.getTemplateBlob(templateName);
 

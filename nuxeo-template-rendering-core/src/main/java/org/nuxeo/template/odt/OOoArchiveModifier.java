@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.template.odt;
 
 import java.io.ByteArrayInputStream;
@@ -64,7 +62,7 @@ public class OOoArchiveModifier {
             contentDirs = new File(unzipDir, "Content");
         }
 
-        StringBuffer blobsManifest = new StringBuffer();
+        StringBuilder blobsManifest = new StringBuilder();
         for (Blob blob : blobs) {
             if (blob.getMimeType().startsWith("image")) {
                 FileUtils.copyToFile(blob.getStream(), new File(pictureDirs, blob.getFilename()));
@@ -106,22 +104,20 @@ public class OOoArchiveModifier {
     }
 
     protected void mkOOoZip(File directory, File outFile) throws IOException {
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(outFile))) {
+            File manif = new File(directory, "mimetype");
+            writeOOoEntry(zipOutputStream, manif.getName(), manif, ZipEntry.STORED);
 
-        ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(outFile));
-
-        File manif = new File(directory, "mimetype");
-        writeOOoEntry(zipOutputStream, manif.getName(), manif, ZipEntry.STORED);
-
-        for (File fileEntry : directory.listFiles()) {
-            if (!fileEntry.getName().equals(manif.getName())) {
-                writeOOoEntry(zipOutputStream, fileEntry.getName(), fileEntry, ZipEntry.DEFLATED);
+            for (File fileEntry : directory.listFiles()) {
+                if (!fileEntry.getName().equals(manif.getName())) {
+                    writeOOoEntry(zipOutputStream, fileEntry.getName(), fileEntry, ZipEntry.DEFLATED);
+                }
             }
         }
-
-        zipOutputStream.close();
     }
 
-    protected void writeOOoEntry(ZipOutputStream zipOutputStream, String entryName, File fileEntry, int zipMethod) throws IOException {
+    protected void writeOOoEntry(ZipOutputStream zipOutputStream, String entryName, File fileEntry, int zipMethod)
+            throws IOException {
 
         if (fileEntry.isDirectory()) {
             entryName = entryName + "/";

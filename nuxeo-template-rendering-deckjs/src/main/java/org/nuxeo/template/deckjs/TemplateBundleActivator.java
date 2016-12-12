@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.template.deckjs;
 
 import java.io.File;
@@ -125,8 +123,7 @@ public class TemplateBundleActivator implements BundleActivator {
         Enumeration<?> urls = findEntries(getTemplateResourcesRootPath());
         while (urls.hasMoreElements()) {
             URL resourceURL = (URL) urls.nextElement();
-            try {
-                InputStream is = resourceURL.openStream();
+            try (InputStream is = resourceURL.openStream()) {
                 String filePath = resourceURL.getFile();
                 filePath = filePath.split("/" + getTemplateResourcesRootPath() + "/")[1];
                 filePath = "/" + filePath;
@@ -136,7 +133,6 @@ public class TemplateBundleActivator implements BundleActivator {
                     parent.mkdirs();
                 }
                 FileUtils.copyToFile(is, f);
-                is.close();
             } catch (IOException e) {
                 throw new NuxeoException("Failed for template: " + resourceURL, e);
             }

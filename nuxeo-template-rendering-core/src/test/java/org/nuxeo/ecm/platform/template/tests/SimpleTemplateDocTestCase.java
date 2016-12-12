@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public abstract class SimpleTemplateDocTestCase {
         testDoc.setProperty("dublincore", "description", "some description");
 
         // set dc:subjects
-        List<String> subjects = new ArrayList<String>();
+        List<String> subjects = new ArrayList<>();
         subjects.add("Subject 1");
         subjects.add("Subject 2");
         subjects.add("Subject 3");
@@ -99,8 +99,8 @@ public abstract class SimpleTemplateDocTestCase {
         File imgFile = FileUtils.getResourceFileFromContext("data/android.jpg");
         Blob imgBlob = Blobs.createBlob(imgFile);
         imgBlob.setFilename("android.jpg");
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> blob1 = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> blobs = new ArrayList<>();
+        Map<String, Serializable> blob1 = new HashMap<>();
         blob1.put("file", (Serializable) imgBlob);
         blob1.put("filename", "android.jpg");
         blobs.add(blob1);
@@ -119,13 +119,13 @@ public abstract class SimpleTemplateDocTestCase {
 
     protected List<TemplateInput> getTestParams() {
 
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
         TemplateInput input1 = new TemplateInput("StringVar", "John Smith");
         TemplateInput input2 = new TemplateInput("DateVar", new Date());
         TemplateInput input3 = new TemplateInput("Description");
         input3.setType(InputType.PictureProperty);
         input3.setSource("dc:description");
-        TemplateInput input4 = new TemplateInput("BooleanVar", new Boolean(false));
+        TemplateInput input4 = new TemplateInput("BooleanVar", Boolean.FALSE);
         TemplateInput input5 = new TemplateInput("picture");
         input5.setType(InputType.PictureProperty);
         input5.setSource("files:files/0/file");
