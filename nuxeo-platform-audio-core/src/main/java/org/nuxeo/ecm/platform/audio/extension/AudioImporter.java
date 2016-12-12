@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Peter Di Lorenzo
  */
-
 package org.nuxeo.ecm.platform.audio.extension;
 
 import java.io.IOException;
@@ -51,6 +50,7 @@ public class AudioImporter extends AbstractFileImporter {
 
     public static final String AUDIO_TYPE = "Audio";
 
+    @Override
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
             String fullname, TypeManager typeService) throws IOException {
 
