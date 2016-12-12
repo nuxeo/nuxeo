@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.preview.adapter.contrib">
+<component name="org.nuxeo.threed.preview.adapter.contrib">
   <extension target="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent"
              point="MimeTypePreviewer">
     <previewer class="org.nuxeo.ecm.platform.threed.adapter.ThreeDPreviewer">
