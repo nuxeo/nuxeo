@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  *     Florent Guillaume
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-
 package org.nuxeo.ecm.platform.signature.core.sign;
 
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.SIGNED_CURRENT;
@@ -120,7 +119,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     protected final Map<String, SignatureDescriptor> signatureRegistryMap;
 
     public SignatureServiceImpl() {
-        signatureRegistryMap = new HashMap<String, SignatureDescriptor>();
+        signatureRegistryMap = new HashMap<>();
     }
 
     @Override
@@ -257,12 +256,13 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         } else {
             // convert to PDF or PDF/A first
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+            Map<String, Serializable> parameters = new HashMap<>();
             if (pdfa) {
                 parameters.put(PDFA1_PARAM, Boolean.TRUE);
             }
             try {
-                BlobHolder holder = conversionService.convert("any2pdf", new SimpleBlobHolder(originalBlob), parameters);
+                BlobHolder holder = conversionService.convert("any2pdf", new SimpleBlobHolder(originalBlob),
+                        parameters);
                 pdfBlob = holder.getBlob();
             } catch (ConversionException conversionException) {
                 throw new SignException(conversionException);
@@ -282,7 +282,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         case ARCHIVE:
             // archive as attachment
             originalBlob.setFilename(archiveFilename);
-            map = new HashMap<String, Serializable>();
+            map = new HashMap<>();
             map.put(FILES_FILE, (Serializable) originalBlob);
             map.put(FILES_FILENAME, originalBlob.getFilename());
             listDiff = new ListDiff();
@@ -293,7 +293,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             break;
         case ATTACH:
             // set as first attachment
-            map = new HashMap<String, Serializable>();
+            map = new HashMap<>();
             map.put(FILES_FILE, (Serializable) signedBlob);
             map.put(FILES_FILENAME, signedBlob.getFilename());
             listDiff = new ListDiff();
@@ -335,7 +335,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
                 throw new AlreadySignedException(message);
             }
 
-            List<Certificate> certificates = new ArrayList<Certificate>();
+            List<Certificate> certificates = new ArrayList<>();
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
@@ -352,20 +352,13 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             log.debug("File " + outputFile.getAbsolutePath() + " created and signed with " + reason);
 
             return blob;
-        } catch (IOException e) {
-            throw new SignException(e);
-        } catch (DocumentException e) {
-            // iText PDF stamping
+        } catch (IOException | DocumentException | InstantiationException | IllegalAccessException e) {
             throw new SignException(e);
         } catch (IllegalArgumentException e) {
             if (String.valueOf(e.getMessage()).contains("PdfReader not opened with owner password")) {
                 // iText PDF reading
                 throw new SignException("PDF is password-protected");
             }
-            throw new SignException(e);
-        } catch (InstantiationException e) {
-            throw new SignException(e);
-        } catch (IllegalAccessException e) {
             throw new SignException(e);
         }
     }
@@ -384,8 +377,9 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         }
         return new SignatureDescriptor.SignatureLayout();
     }
-    
-    protected SignatureAppearanceFactory getSignatureAppearanceFactory() throws InstantiationException, IllegalAccessException {
+
+    protected SignatureAppearanceFactory getSignatureAppearanceFactory()
+            throws InstantiationException, IllegalAccessException {
         for (SignatureDescriptor signatureDescriptor : signatureRegistryMap.values()) {
             return signatureDescriptor.getAppearanceFatory();
         }
@@ -518,7 +512,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     }
 
     protected List<X509Certificate> getCertificates(PdfReader pdfReader) throws SignException {
-        List<X509Certificate> pdfCertificates = new ArrayList<X509Certificate>();
+        List<X509Certificate> pdfCertificates = new ArrayList<>();
         AcroFields acroFields = pdfReader.getAcroFields();
         @SuppressWarnings("unchecked")
         List<String> signatureNames = acroFields.getSignatureNames();

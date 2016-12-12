@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,13 +76,13 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException {
-        UserInfo userInfo = null;
+        UserInfo userInfo;
         String userID = (String) userModel.getPropertyValue("user:username");
         String firstName = (String) userModel.getPropertyValue("user:firstName");
         String lastName = (String) userModel.getPropertyValue("user:lastName");
         String email = (String) userModel.getPropertyValue("user:email");
 
-        Map<CNField, String> userFields = new HashMap<CNField, String>();
+        Map<CNField, String> userFields = new HashMap<>();
 
         userFields.put(CNField.C, countryCode);
         userFields.put(CNField.O, organization);
@@ -116,7 +116,6 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException {
         return Framework.doPrivileged(() -> {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
-                String userKeystorePassword = userKeyPassword;
                 DocumentModel certificate = null;
 
                 // create an entry in the directory
@@ -130,13 +129,13 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 }
 
                 LOG.info("Starting certificate generation for: " + userID);
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("userid", userID);
 
                 // add a keystore to a directory entry
                 KeyStore keystore = getCertService().initializeUser(getUserInfo(user), userKeyPassword);
                 ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
-                getCertService().storeCertificate(keystore, byteOS, userKeystorePassword);
+                getCertService().storeCertificate(keystore, byteOS, userKeyPassword);
                 String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
                 map.put("keystore", keystore64Encoded);
                 map.put("certificate", getUserCertInfo(keystore, user));
@@ -156,9 +155,8 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     @Override
     public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException {
-        String userKeystorePassword = userKeyPassword;
         String userID = (String) user.getPropertyValue("user:username");
-        KeyStore keystore = getUserKeystore(userID, userKeystorePassword);
+        KeyStore keystore = getUserKeystore(userID, userKeyPassword);
         return getUserCertInfo(keystore, user);
     }
 

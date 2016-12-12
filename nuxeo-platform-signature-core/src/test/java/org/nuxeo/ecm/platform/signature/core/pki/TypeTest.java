@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Wojciech Sulejman
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.signature.core.pki;
 
 import static org.junit.Assert.assertNotNull;
@@ -39,7 +38,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -103,7 +101,7 @@ public class TypeTest {
         // create an entry in the directory
         String userID = "testUserID2";
         try (Session sqlSession = directoryService.open("certificate")) {
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("userid", userID);
 
             // add a keystore to the entry
@@ -133,7 +131,7 @@ public class TypeTest {
 
     public UserInfo getUserInfo(String userID) throws Exception {
         Map<CNField, String> userFields;
-        userFields = new HashMap<CNField, String>();
+        userFields = new HashMap<>();
         userFields.put(CNField.CN, "Wojciech Sulejman");
         userFields.put(CNField.C, "US");
         userFields.put(CNField.OU, "IT");
