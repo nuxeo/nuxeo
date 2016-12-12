@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -51,6 +52,8 @@ import org.nuxeo.ecm.platform.video.tools.VideoTool;
  * @since 5.5
  */
 public abstract class BaseVideoConversionConverter extends CommandLineBasedConverter {
+
+    protected final String OUTPUT_TMP_PATH = "converterTmpPath";
 
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
@@ -85,6 +88,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
         cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
         String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
         cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
+        cmdStringParams.put(OUTPUT_TMP_PATH, outDir.getAbsolutePath());
 
         VideoInfo videoInfo = (VideoInfo) parameters.get("videoInfo");
         if (videoInfo == null) {
@@ -116,6 +120,11 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
         List<Blob> blobs = new ArrayList<>(Collections.singletonList(blob));
         Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
+
+        // remove the temp output directory
+        File outDir = new File(cmdParameters.getParameter(OUTPUT_TMP_PATH));
+        FileUtils.deleteQuietly(outDir);
+
         return new SimpleBlobHolderWithProperties(blobs, properties);
     }
 
