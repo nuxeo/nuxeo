@@ -393,7 +393,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             submitted.setFilename(null);
             submitted.setChoice(InputFileChoice.none.name());
             String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
-                    : InputFileInfo.INVALID_FILE_MESSAGE;
+                    : InputFileInfo.EMPTY_FILE_MESSAGE;
             ComponentUtils.addErrorMessage(context, this, message);
             setValid(false);
             return;
