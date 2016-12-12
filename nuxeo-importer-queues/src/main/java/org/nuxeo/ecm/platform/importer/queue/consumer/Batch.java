@@ -15,7 +15,6 @@ public class Batch<N extends Node> {
 
     final List<N> nodes = new ArrayList<>();
 
-
     public Batch(int capacity) {
         this.capacity = capacity;
     }
@@ -35,6 +34,7 @@ public class Batch<N extends Node> {
     public boolean isFull() {
         return nodes.size() >= capacity;
     }
+
 
     public List<N> getNodes() {
         return Collections.unmodifiableList(nodes);

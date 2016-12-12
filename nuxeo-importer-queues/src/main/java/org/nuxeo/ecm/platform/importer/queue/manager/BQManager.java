@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.importer.queue.manager;/*
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.Node;
 
-import java.io.Externalizable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;

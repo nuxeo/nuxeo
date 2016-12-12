@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.platform.importer.source;
 
-import java.io.Externalizable;
 import java.io.IOException;
 import java.util.List;
 
@@ -40,11 +39,9 @@ public interface SourceNode extends Node {
 
     List<SourceNode> getChildren() throws IOException;
 
-    String getName();
-
     String getSourcePath();
 
-    default String getId() {
+    default String getPath() {
         return getName();
     }
 }

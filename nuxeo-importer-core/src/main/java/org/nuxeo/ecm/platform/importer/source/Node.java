@@ -27,8 +27,15 @@ import java.io.Externalizable;
 public interface Node extends Externalizable {
 
     /**
-     * Get a reference name for the node.
+     * The name of the node
      *
      */
-    String getId();
+    String getName();
+
+    /**
+     * The path of the node (parentPath/name)
+     *
+     */
+    String getPath();
+
 }

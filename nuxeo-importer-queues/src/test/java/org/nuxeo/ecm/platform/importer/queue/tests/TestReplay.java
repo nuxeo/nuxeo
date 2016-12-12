@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.importer.queue.tests;
 import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -71,15 +70,15 @@ public class TestReplay {
         ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
         // ImporterLogger logger = new BufferredLogger(log);
-        QueueImporter importer = new QueueImporter(logger);
+        QueueImporter<BuggySourceNode> importer = new QueueImporter<>(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
-        BQManager qm = new BQManager(logger, 5, 42);
+        BQManager<BuggySourceNode> qm = new BQManager<>(logger, 5, 42);
 
         // Given a producer that generate some buggy nodes.
         // index-0, index-30, index-50, index-60 and index-90 should not be created
-        Producer producer = new BuggyNodeProducer(logger, 100, 30, 50, producerDelayMs, 0);
-        ConsumerFactory fact = new BuggyConsumerFactory(consumerDelayMs);
+        Producer<BuggySourceNode> producer = new BuggyNodeProducer(logger, 100, 30, 50, producerDelayMs, 0);
+        ConsumerFactory<BuggySourceNode> fact = new BuggyConsumerFactory(consumerDelayMs);
 
         // When the importer launches the import
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);

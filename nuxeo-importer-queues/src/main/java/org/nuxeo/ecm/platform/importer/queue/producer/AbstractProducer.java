@@ -30,11 +30,11 @@ import java.util.Random;
 /**
  * @since 8.3
  */
-public abstract class AbstractProducer extends AbstractTaskRunner implements Producer {
+public abstract class AbstractProducer<N extends Node> extends AbstractTaskRunner implements Producer<N> {
 
     final protected ImporterLogger log;
 
-    protected QueuesManager qm;
+    protected QueuesManager<N> qm;
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -50,11 +50,11 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
     }
 
     @Override
-    public void init(QueuesManager qm) {
+    public void init(QueuesManager<N> qm) {
         this.qm = qm;
     }
 
-    protected void dispatch(Node node) throws InterruptedException {
+    protected void dispatch(N node) throws InterruptedException {
         int idx = getTargetQueue(node, qm.count());
         qm.put(idx, node);
         producerCounter.inc();
@@ -62,7 +62,7 @@ public abstract class AbstractProducer extends AbstractTaskRunner implements Pro
     }
 
     @Override
-    public int getTargetQueue(Node node, int nbQueues) {
+    public int getTargetQueue(N node, int nbQueues) {
         return rand.nextInt(nbQueues);
     }
 }

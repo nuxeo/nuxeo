@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
-import static org.junit.Assert.assertTrue;
-
+import com.google.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -32,16 +31,21 @@ import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
-import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactoryImpl;
+import org.nuxeo.ecm.platform.importer.queue.consumer.ImmutableNodeConsumerFactory;
+import org.nuxeo.ecm.platform.importer.queue.consumer.SourceNodeConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
+import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
+import org.nuxeo.ecm.platform.importer.queue.producer.RandomNodeProducer;
 import org.nuxeo.ecm.platform.importer.queue.producer.SourceNodeProducer;
+import org.nuxeo.ecm.platform.importer.source.ImmutableNode;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -54,24 +58,47 @@ public class TestImporter {
     CoreSession session;
 
     @Test
-    public void shouldImport() {
+    public void shouldImportSourceNode() {
 
         ImporterLogger logger = new BufferredLogger(log);
-        QueueImporter importer = new QueueImporter(logger);
+        QueueImporter<SourceNode> importer = new QueueImporter<>(logger);
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
 
-        BQManager qm = new BQManager<SourceNode>(logger, 2, 100);
+        BQManager<SourceNode> qm = new BQManager<>(logger, 2, 100);
 
         RandomTextSourceNode root = RandomTextSourceNode.init(1000, 1, true);
 
-        Producer producer = new SourceNodeProducer(root, logger);
+        Producer<SourceNode> producer = new SourceNodeProducer(root, logger);
 
-        ConsumerFactory fact = new ConsumerFactoryImpl();
+        ConsumerFactory<SourceNode> fact = new SourceNodeConsumerFactory();
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 5, fact);
         assertTrue(importer.getCreatedDocsCounter() > 1000);
 
     }
+
+    @Test
+    public void shouldImportImmutableNode() {
+        int nbConsumers = 7;
+        int nbDocuments = 683;
+        int batchSize = 100;
+
+        ImporterLogger logger = new BufferredLogger(log);
+        QueueImporter<ImmutableNode> importer = new QueueImporter<>(logger);
+
+        ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
+        importer.addFilter(filter);
+
+        // BQManager<ImmutableNode> qm = new BQManager<>(logger, nbConsumers, 10);
+        CQManager<ImmutableNode> qm = new CQManager<>(logger, nbConsumers);
+        Producer<ImmutableNode> producer = new RandomNodeProducer(logger, nbDocuments, nbConsumers); //.withBlob(1, true);
+
+        ConsumerFactory<ImmutableNode> fact = new ImmutableNodeConsumerFactory();
+        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), batchSize, fact);
+        assertEquals(nbDocuments, importer.getCreatedDocsCounter());
+
+    }
+
 
 }

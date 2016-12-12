@@ -20,24 +20,17 @@ package org.nuxeo.ecm.platform.importer.executor.jaxrs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
-import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
-import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
-import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
-import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
-import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.QueueImporter;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
-import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactoryImpl;
+import org.nuxeo.ecm.platform.importer.queue.consumer.ImmutableNodeConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
 import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
-import org.nuxeo.ecm.platform.importer.queue.producer.SourceNodeProducer;
+import org.nuxeo.ecm.platform.importer.queue.producer.RandomNodeProducer;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
-import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.ecm.platform.importer.source.ImmutableNode;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.ws.rs.GET;
@@ -59,49 +52,49 @@ public class RandomQImporterExecutor extends AbstractJaxRSImporterExecutor {
     @Path("run")
     @Produces("text/plain; charset=UTF-8")
     public String run(@QueryParam("targetPath") String targetPath,
-            @QueryParam("batchSize") Integer batchSize, @QueryParam("nbThreads") Integer nbThreads,
-            @QueryParam("nbNodes") Integer nbNodes,
-            @QueryParam("fileSizeKB") Integer fileSizeKB, @QueryParam("onlyText") Boolean onlyText,
-            @QueryParam("nonUniform") Boolean nonUniform, @QueryParam("withProperties") Boolean withProperties,
-            @QueryParam("transactionTimeout") Integer transactionTimeout,
-            @QueryParam("queueType") String queueType,
-            @QueryParam("lang") String lang) {
+                      @QueryParam("batchSize") Integer batchSize, @QueryParam("nbThreads") Integer nbThreads,
+                      @QueryParam("nbNodes") Integer nbNodes,
+                      @QueryParam("fileSizeKB") Integer fileSizeKB, @QueryParam("onlyText") Boolean onlyText,
+                      @QueryParam("transactionTimeout") Integer transactionTimeout,
+                      @QueryParam("queueType") String queueType,
+                      @QueryParam("lang") String lang,
+                      @QueryParam("countFolderAsDocument") Boolean countFolderAsDocument) {
         if (onlyText == null) {
             onlyText = true;
-        }
-        if (nonUniform == null) {
-            nonUniform = false;
-        }
-        if (withProperties == null) {
-            withProperties = false;
         }
         if (queueType == null) {
             queueType = "CQ";
         }
-        log.info("Init Random text generator");
-        SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText, nonUniform, withProperties, lang);
-        log.info("Random text generator initialized");
-
-        QueueImporter importer = new QueueImporter(getLogger());
-        QueuesManager qm;
+        if (countFolderAsDocument == null) {
+            countFolderAsDocument = true;
+        }
+        log.info("Init Random Queue importer Executor");
+        QueueImporter<ImmutableNode> importer = new QueueImporter<>(getLogger());
+        QueuesManager<ImmutableNode> qm;
         switch (queueType) {
             case "BQ":
                 log.info("Using in memory BlockingQueue");
-                qm = new BQManager(getLogger(), nbThreads, 10000);
+                qm = new BQManager<>(getLogger(), nbThreads, 10000);
                 break;
             case "CQ":
             default:
                 log.info("Using Off heap Chronicle Queue");
-                qm = new CQManager(getLogger(), nbThreads);
+                qm = new CQManager<>(getLogger(), nbThreads);
         }
-        Producer producer = new SourceNodeProducer(source, getLogger());
-        ConsumerFactory consumerFactory = new ConsumerFactoryImpl();
+        Producer<ImmutableNode> producer = new RandomNodeProducer(getLogger(), nbNodes, nbThreads)
+                .withBlob(fileSizeKB, onlyText)
+                .setLang(lang)
+                .countFolderAsDocument(countFolderAsDocument);
+        ConsumerFactory<ImmutableNode> consumerFactory = new ImmutableNodeConsumerFactory();
         if (transactionTimeout != null) {
             Framework.getService(DefaultImporterService.class).setTransactionTimeout(transactionTimeout);
         }
-        log.warn(String.format("Running import of %d documents into %s with %d consumers, commit batch size: %d", nbNodes, targetPath, nbThreads, batchSize ));
+        long startTime = System.currentTimeMillis();
+        log.warn(String.format("Running import of %d documents into %s with %d consumers, commit batch size: %d", nbNodes, targetPath, nbThreads, batchSize));
         importer.importDocuments(producer, qm, targetPath, "default", batchSize, consumerFactory);
-        log.warn("Import terminated, created:" + importer.getCreatedDocsCounter());
+        long elapsed = System.currentTimeMillis() - startTime;
+        long created = importer.getCreatedDocsCounter();
+        log.warn("Import terminated, created:" + created + " throughput: " + created / (elapsed / 1000) + " docs/s");
         return "OK " + importer.getCreatedDocsCounter();
     }
 

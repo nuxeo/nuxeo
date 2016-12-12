@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.source.Node;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.api.Framework;
@@ -41,7 +40,7 @@ public class SourceNodeConsumer extends AbstractConsumer<SourceNode> {
 
     protected final String rootPath;
 
-    public SourceNodeConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue) {
+    public SourceNodeConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager<SourceNode> queuesManager, int queue) {
         super(log, root, batchSize, queuesManager, queue);
         fileManager = Framework.getService(FileManager.class);
         rootPath = root.getPathAsString();
@@ -52,11 +51,10 @@ public class SourceNodeConsumer extends AbstractConsumer<SourceNode> {
     }
 
     @Override
-    public void process(CoreSession session, SourceNode node) throws IOException {
-        SourceNode src = (SourceNode) node;
+    public DocumentModel process(CoreSession session, SourceNode node) throws IOException {
         String fileName = null;
         String name = null;
-        BlobHolder bh = src.getBlobHolder();
+        BlobHolder bh = node.getBlobHolder();
         if (bh != null) {
             Blob blob = bh.getBlob();
             if (blob != null) {
@@ -78,12 +76,11 @@ public class SourceNodeConsumer extends AbstractConsumer<SourceNode> {
             doc.setProperty("file", "filename", fileName);
             doc.setProperty("file", "content", bh.getBlob());
 
-            if (bh != null) {
-                doc = setDocumentProperties(session, bh.getProperties(), doc);
-            }
-
+            doc = setDocumentProperties(session, bh.getProperties(), doc);
             doc = session.createDocument(doc);
+            return doc;
         }
+        return null;
     }
 
     protected DocumentModel setDocumentProperties(CoreSession session, Map<String, Serializable> properties,

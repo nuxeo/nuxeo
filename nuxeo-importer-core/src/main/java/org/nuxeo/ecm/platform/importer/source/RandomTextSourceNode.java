@@ -416,6 +416,13 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     @Override
+    public String getPath() {
+
+        // ?
+        return name;
+    }
+
+    @Override
     public boolean isFolderish() {
         return folderish;
     }

@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * @since 8.3
  */
-public class BuggyNodeProducer extends AbstractProducer {
+public class BuggyNodeProducer extends AbstractProducer<BuggySourceNode> {
 
     private final int producerDelayMs;
     private final int nbNode;

@@ -19,26 +19,24 @@ package org.nuxeo.ecm.platform.importer.queue.manager;/*
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
-import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.Node;
 
-import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder.binary;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 /**
  * @since 8.10
  */
 public class CQManager<N extends Node> extends AbstractQueuesManager<N> {
-
     final List<ChronicleQueue> queues;
     final List<ExcerptAppender> appenders;
     final List<ExcerptTailer> tailers;
@@ -60,9 +58,10 @@ public class CQManager<N extends Node> extends AbstractQueuesManager<N> {
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
             }
-            try (ChronicleQueue queue = SingleChronicleQueueBuilder.binary(path).build()) {
+            try (ChronicleQueue queue = binary(path).build()) {
                 appenders.add(queue.acquireAppender());
                 tailers.add(queue.createTailer().toEnd());
+                queues.add(queue);
             }
         }
     }
@@ -88,7 +87,9 @@ public class CQManager<N extends Node> extends AbstractQueuesManager<N> {
     private N get(int queue) {
         final List<N> ret = new ArrayList<>(1);
         if (tailers.get(queue).readDocument(w -> {
-            ret.add((N) w.read("node").object());})) {
+            //noinspection unchecked
+            ret.add((N) w.read("node").object());
+        })) {
             return ret.get(0);
         }
         return null;
@@ -101,7 +102,7 @@ public class CQManager<N extends Node> extends AbstractQueuesManager<N> {
             return ret;
         }
         final long deadline = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeout, unit);
-        while(ret == null && System.currentTimeMillis() < deadline) {
+        while (ret == null && System.currentTimeMillis() < deadline) {
             Thread.sleep(100);
             ret = get(queue);
         }
@@ -110,7 +111,7 @@ public class CQManager<N extends Node> extends AbstractQueuesManager<N> {
 
     @Override
     public boolean isEmpty(int queue) {
-        return ! tailers.get(queue).readingDocument().isPresent();
+        return !tailers.get(queue).readingDocument().isPresent();
     }
 
     @Override

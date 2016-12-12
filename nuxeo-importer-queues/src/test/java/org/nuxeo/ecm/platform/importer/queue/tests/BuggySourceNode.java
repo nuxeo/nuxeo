@@ -3,7 +3,6 @@ package org.nuxeo.ecm.platform.importer.queue.tests;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 

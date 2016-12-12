@@ -11,7 +11,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.util.Random;
 
-public class BuggyConsumerFactory implements ConsumerFactory {
+public class BuggyConsumerFactory implements ConsumerFactory<BuggySourceNode>  {
 
     private final int consumerDelayMs;
 
@@ -27,7 +27,7 @@ public class BuggyConsumerFactory implements ConsumerFactory {
         private final int delayMs;
         int docs = 0;
 
-        public BuggyConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue,
+        public BuggyConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager<BuggySourceNode> queuesManager, int queue,
                              int delayMs) {
             super(log, root, batchSize, queuesManager, queue);
             this.delayMs = delayMs;
@@ -39,7 +39,7 @@ public class BuggyConsumerFactory implements ConsumerFactory {
         }
 
         @Override
-        public void process(CoreSession session, BuggySourceNode sn) throws Exception {
+        public DocumentModel process(CoreSession session, BuggySourceNode sn) throws Exception {
             DocumentModel doc = session.createDocumentModel("/", sn.getName(), "File");
             doc = session.createDocument(doc);
             if (delayMs > 0) {
@@ -55,13 +55,14 @@ public class BuggyConsumerFactory implements ConsumerFactory {
                 // Thread.sleep(1000);
                 throw new Exception("This is a buggy exception during consumer processing !");
             }
+            return doc;
         }
 
     }
 
     @Override
-    public Consumer createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
-                                   QueuesManager queuesManager, int queue) {
+    public Consumer<BuggySourceNode> createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
+                                   QueuesManager<BuggySourceNode> queuesManager, int queue) {
         return new BuggyConsumer(log, root, batchSize, queuesManager, queue, consumerDelayMs);
     }
 

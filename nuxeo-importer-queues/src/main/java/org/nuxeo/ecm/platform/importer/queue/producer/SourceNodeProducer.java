@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 /**
  * @since 8.3
  */
-public class SourceNodeProducer extends AbstractProducer {
+public class SourceNodeProducer extends AbstractProducer<SourceNode> {
 
     protected final SourceNode root;
 

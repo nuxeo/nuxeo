@@ -19,15 +19,16 @@ package org.nuxeo.ecm.platform.importer.queue.consumer;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
  * @since 8.3
  */
-public class ConsumerFactoryImpl implements ConsumerFactory {
+public class SourceNodeConsumerFactory implements ConsumerFactory<SourceNode> {
 
     @Override
-    public Consumer createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
-                                   QueuesManager queuesManager,  int queue) {
+    public Consumer<SourceNode> createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
+                                   QueuesManager<SourceNode> queuesManager, int queue) {
         return new SourceNodeConsumer(log, root, batchSize, queuesManager, queue);
     }
 

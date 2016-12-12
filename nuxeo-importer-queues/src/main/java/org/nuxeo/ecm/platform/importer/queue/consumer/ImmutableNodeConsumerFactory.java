@@ -14,19 +14,22 @@
  * limitations under the License.
  *
  */
-package org.nuxeo.ecm.platform.importer.queue.producer;
+package org.nuxeo.ecm.platform.importer.queue.consumer;
 
-import org.nuxeo.ecm.platform.importer.source.Node;
-import org.nuxeo.ecm.platform.importer.queue.TaskRunner;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
+import org.nuxeo.ecm.platform.importer.source.ImmutableNode;
 
 /**
- * @since 8.3
+ * @since 9.1
  */
-public interface Producer<N extends Node> extends TaskRunner {
+public class ImmutableNodeConsumerFactory implements ConsumerFactory<ImmutableNode> {
 
-    void init(QueuesManager<N> qm);
-
-    int getTargetQueue(N node, int nbQueues);
+    @Override
+    public Consumer<ImmutableNode> createConsumer(ImporterLogger log, DocumentModel root, int batchSize,
+                                                  QueuesManager<ImmutableNode> queuesManager, int queue) {
+        return new ImmutableNodeConsumer(log, root, batchSize, queuesManager, queue);
+    }
 
 }

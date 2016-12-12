@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.importer.service;
 
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
-import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;

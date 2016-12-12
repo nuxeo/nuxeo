@@ -56,14 +56,14 @@ public class TestBuggyProducer {
         ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
         // ImporterLogger logger = new BufferredLogger(log);
-        QueueImporter importer = new QueueImporter(logger);
+        QueueImporter<BuggySourceNode> importer = new QueueImporter<>(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
-        BQManager qm = new BQManager(logger, 5, 42);
+        BQManager<BuggySourceNode> qm = new BQManager<>(logger, 5, 42);
 
         // Given a producer that fail at node 20
-        Producer producer = new BuggyNodeProducer(logger, 100, 0, 0, 0, 80);
-        ConsumerFactory fact = new BuggyConsumerFactory(100);
+        Producer<BuggySourceNode> producer = new BuggyNodeProducer(logger, 100, 0, 0, 0, 80);
+        ConsumerFactory<BuggySourceNode> fact = new BuggyConsumerFactory(100);
 
         // When consumer are slow
         importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);

@@ -87,10 +87,10 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
 
     protected static final long TRANSACTION_THRESOLD_MS = 3 * 60 * 1000; // 3 min
 
-    public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager queuesManager, int queue) {
+    public AbstractConsumer(ImporterLogger log, DocumentModel root, int batchSize, QueuesManager<N> queuesManager, int queue) {
         this.log = log;
         repositoryName = root.getRepositoryName();
-        this.batch = new Batch(batchSize);
+        this.batch = new Batch<>(batchSize);
         this.queuesManager = queuesManager;
         this.queue = queue;
         rootRef = root.getRef();
@@ -178,7 +178,8 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
                     Timer.Context stopWatch = processTimer.time();
                     try {
                         setThreadName(node);
-                        process(session, node);
+                        DocumentModel doc = process(session, node);
+                        // System.out.println("<<<" + doc.getType() + " " + node.getPath());
                         restoreThreadName();
                     } catch (Exception e) {
                         log.error("Exception while consuming node: " + node, e);
@@ -200,7 +201,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
             private void setThreadName(Node src) {
                 String name = threadName + "-" + nbProcessed;
                 if (src != null) {
-                    name += "-" + src.getId();
+                    name += "-" + src.getPath();
                 } else {
                     name += "-null";
                 }
@@ -234,7 +235,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
 
     }
 
-    public abstract void process(CoreSession session, N node) throws Exception;
+    public abstract DocumentModel process(CoreSession session, N node) throws Exception;
 
     /**
      * commit if batch is full or if transaction is running for more than 5 min.
@@ -316,9 +317,9 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
             }
             TransactionHelper.commitOrRollbackTransaction();
             if (success) {
-                log.debug("Replaying successfully node: " + node.getId());
+                log.debug("Replaying successfully node: " + node.getPath());
             } else {
-                log.error("Import failure after replay on node: " + node.getId());
+                log.error("Import failure after replay on node: " + node.getPath());
             }
         }
     }
@@ -330,7 +331,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
      * @param e
      */
     protected void onSourceNodeException(Node node, Exception e) {
-        log.error(String.format("Unable to import node [%s]", node.getId(), e));
+        log.error(String.format("Unable to import node [%s]", node.getPath()), e);
     }
 
     /**
@@ -339,7 +340,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
      * @param node
      */
     protected void onSourceNodeRollBack(Node node) {
-        log.error(String.format("Rollback while replaying consumer node [%s]", node.getId()));
+        log.error(String.format("Rollback while replaying consumer node [%s]", node.getPath()));
     }
 
     public String getOriginatingUsername() {

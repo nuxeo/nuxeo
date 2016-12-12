@@ -22,14 +22,10 @@
   </appender>
 
   <category name="org.nuxeo.ecm.platform.importer.queue" additivity="false">
-    <priority value="DEBUG" />
-    <appender-ref ref="FILE"/>
-  </category>
-
-  <category name="org.nuxeo.ecm.platform.importer.queue" additivity="false">
-    <priority value="INFO" />
+    <priority value="ERROR" />
     <appender-ref ref="CONSOLE"/>
   </category>
+
 
   <root>
     <priority value="WARN" />

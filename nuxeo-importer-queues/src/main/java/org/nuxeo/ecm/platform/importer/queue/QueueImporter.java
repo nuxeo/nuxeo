@@ -36,13 +36,12 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.ImportStat;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.ecm.platform.importer.source.Node;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 
 /**
  * @since 8.3
  */
-public class QueueImporter {
+public class QueueImporter<N extends Node> {
 
     protected ImporterLogger log = null;
 
@@ -66,13 +65,13 @@ public class QueueImporter {
         this.log = log;
     }
 
-    public void importDocuments(Producer producer, QueuesManager manager, String importPath, String repositoryName,
-                                int batchSize, ConsumerFactory factory) {
+    public void importDocuments(Producer<N> producer, QueuesManager<N> manager, String importPath, String repositoryName,
+                                int batchSize, ConsumerFactory<N> factory) {
         importDocuments(Collections.singletonList(producer), manager, importPath, repositoryName, batchSize, factory);
     }
 
-    public void importDocuments(List<Producer> producers, QueuesManager manager, String importPath, String repositoryName,
-                                int batchSize, ConsumerFactory factory) {
+    public void importDocuments(List<Producer<N>> producers, QueuesManager<N> manager, String importPath, String repositoryName,
+                                int batchSize, ConsumerFactory<N> factory) {
         log.info("importer: Starting import process");
         isRunning = true;
         Exception finalException = null;
@@ -83,7 +82,7 @@ public class QueueImporter {
             producers.get(0).init(manager);
             DocumentModel root = session.getDocument(new PathRef(importPath));
             startProducerThread(producers.get(0));
-            List<Consumer> consumers = startConsumerPool(manager, root, batchSize, factory);
+            List<Consumer<N>> consumers = startConsumerPool(manager, root, batchSize, factory);
             finalException = waitForProducer(producers.get(0));
             processed = producers.get(0).getNbProcessed();
             for (int i = 1; i< producers.size(); i++) {
@@ -119,14 +118,14 @@ public class QueueImporter {
                 do {
                     Node node = manager.poll(i);
                     if (node != null) {
-                        log.error("Unable to import " + node.getId() + " by consumer " + i);
+                        log.error("Unable to import " + node.getPath() + " by consumer " + i);
                     }
                 } while (manager.isEmpty(i));
             }
         }
     }
 
-    private void updateStats(List<Consumer> consumers, List<Producer> producers) {
+    private void updateStats(List<Consumer<N>> consumers, List<Producer<N>> producers) {
         nbDocsCreated = 0;
         for (Consumer c : consumers) {
             processedNodesConsumer += c.getNbProcessed();
@@ -145,7 +144,7 @@ public class QueueImporter {
 
     }
 
-    private Exception waitForConsumers(List<Consumer> consumers) {
+    private Exception waitForConsumers(List<Consumer<N>> consumers) {
         Exception ret = null;
         try {
             while (!consumersTerminated(consumers)) {
@@ -186,7 +185,7 @@ public class QueueImporter {
         return ret;
     }
 
-    private void consumersCanStop(List<Consumer> consumers) {
+    private void consumersCanStop(List<Consumer<N>> consumers) {
         consumers.forEach(TaskRunner::canStop);
     }
 
@@ -214,7 +213,7 @@ public class QueueImporter {
         return ret;
     }
 
-    protected boolean consumersTerminated(List<Consumer> consumers) {
+    protected boolean consumersTerminated(List<Consumer<N>> consumers) {
         for (Consumer c : consumers) {
             if (!c.isTerminated()) {
                 return false;
@@ -223,17 +222,15 @@ public class QueueImporter {
         return true;
     }
 
-    private List<Consumer> startConsumerPool(QueuesManager manager, DocumentModel root, int batchSize, ConsumerFactory factory) {
-		ArrayList<Consumer> ret = new ArrayList<>(manager.count());
+    private List<Consumer<N>> startConsumerPool(QueuesManager<N> manager, DocumentModel root, int batchSize, ConsumerFactory<N> factory) {
+		ArrayList<Consumer<N>> ret = new ArrayList<>(manager.count());
 		for (int i = 0; i < manager.count(); i++) {
-            Consumer c;
+            Consumer<N> c;
             c = factory.createConsumer(log, root, batchSize, manager, i);
             ret.add(c);
             Thread ct = new Thread(c);
             ct.setName("import-Consumer" + i);
-            ct.setUncaughtExceptionHandler((t, e) -> {
-                log.error("Uncaught exception in " + ct.getName() + ". Consumer is going to be stopped", e);
-            });
+            ct.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught exception in " + ct.getName() + ". Consumer is going to be stopped", e));
             ct.start();
             consumerThreads.add(ct);
         }
