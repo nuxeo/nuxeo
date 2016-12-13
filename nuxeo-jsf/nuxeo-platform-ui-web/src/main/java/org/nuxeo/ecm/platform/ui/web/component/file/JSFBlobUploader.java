@@ -43,7 +43,7 @@ public interface JSFBlobUploader {
     /**
      * Generates the HTML for an upload choice.
      */
-    void encodeBeginUpload(UIInput parent, FacesContext context, String onClick) throws IOException;
+    void encodeBeginUpload(UIInput parent, FacesContext context, String onChange) throws IOException;
 
     /**
      * Transforms input into a blob.
