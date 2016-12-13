@@ -18,6 +18,20 @@
  */
 package org.nuxeo.ecm.platform.threed.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_SCHEMA;
+import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -31,23 +45,12 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import javax.inject.Inject;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_FACET;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_SCHEMA;
-import static org.nuxeo.ecm.platform.threed.ThreeDConstants.THREED_TYPE;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.filemanager.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.threed.core", "org.nuxeo.ecm.platform.threed.api" })
+        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.threed.core",
+        "org.nuxeo.ecm.platform.threed.api" })
 public class Test3DCore {
 
     @Inject
@@ -91,9 +94,9 @@ public class Test3DCore {
         assertNotNull(doc);
         assertEquals(doc.getType(), THREED_TYPE);
         assertTrue(doc.hasFacet(THREED_FACET));
-        assertEquals(doc.getName(), blob.getFilename());
-        assertEquals(doc.getPropertyValue("file:filename"), blob.getFilename());
-        assertEquals(doc.getPropertyValue("file:content"), blob);
+        assertEquals(blob.getFilename(), doc.getName());
+        assertEquals(blob.getFilename(), doc.getPropertyValue("file:filename"));
+        assertEquals(blob, doc.getPropertyValue("file:content"));
     }
 
 }
