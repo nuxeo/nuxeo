@@ -4,4 +4,5 @@ Bundle-Name: Nuxeo ECM Importer
 Bundle-SymbolicName: org.nuxeo.ecm.platform.importer.core;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/convert-service-contrib.xml,
- OSGI-INF/default-importer-service.xml
+ OSGI-INF/default-importer-service.xml,
+ OSGI-INF/kafka-configs-service.xml

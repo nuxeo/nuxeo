@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.kafka.service.test.kafkaservice">
+  <extension target="org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaComponent" point="kafkaConfiguration">
+    <kafkaConfig bootstrapServer="127.0.0.1:9092">
+      <topics>
+        <topic>test</topic>
+      </topics>
+      <producerConfigs
+              acks="all"
+              retries="0"
+              batchSize="4194304"
+              lingerMs="0"
+              maxBlocksMs="1000"
+              keySerializer="org.apache.kafka.common.serialization.StringSerializer"
+              valueSerializer="org.nuxeo.ecm.platform.importer.queue.serialization.SourceNodeSerializer"
+      />
+      <consumerConfigs
+              groupId="testGroup"
+              autoCommit="false"
+              offsetConfig="earliest"
+              sessionTimeout="10000"
+              maxPartitionFetch="64000"
+              maxPollRecords="50"
+              heartbeat="1000"
+              requestTimeout="15000"
+              keyDeserializer="org.apache.kafka.common.serialization.StringDeserializer"
+              valueDeserializer="org.nuxeo.ecm.platform.importer.queue.serialization.SourceNodeDeserializer"
+      />
+    </kafkaConfig>
+  </extension>
+</component>

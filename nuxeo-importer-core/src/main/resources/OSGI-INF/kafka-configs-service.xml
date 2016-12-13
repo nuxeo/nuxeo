@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaComponent">
+
+  <documentation>
+    The component allows to set configuration for both Kafka producer and consumer
+
+    <code>
+      <extension target="org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaComponent" point="kafkaConfiguration">
+        <kafkaConfig
+                bootstrapServer="127.0.0.1:9092">
+          <topics>
+            <topic>test</topic>
+          </topics>
+          <producerConfigs
+                  acks="all"
+                  retries="0"
+                  batchSize="4194304"
+                  lingerMs="0"
+                  maxBlocksMs="1000"
+                  keySerializer="org.apache.kafka.common.serialization.StringSerializer"
+                  valueSerializer="org.apache.kafka.common.serialization.StringSerializer"
+          />
+          <consumerConfigs
+                  groupId="testGroup"
+                  autoCommit="false"
+                  offsetConfig="earliest"
+                  sessionTimeout="10000"
+                  maxPartitionFetch="64000"
+                  maxPollRecords="50"
+                  heartbeat="1000"
+                  requestTimeout="10000"
+                  keyDeserializer="org.apache.kafka.common.serialization.StringDeserializer"
+                  valueDeserializer="org.apache.kafka.common.serialization.StringDeserializer"
+          />
+        </kafkaConfig>
+      </extension>
+    </code>
+
+  </documentation>
+
+  <implementation
+          class="org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaService" />
+  </service>
+
+  <extension-point name="kafkaConfiguration">
+    <object class="org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaConfigurationDescriptor" />
+  </extension-point>
+
+</component>

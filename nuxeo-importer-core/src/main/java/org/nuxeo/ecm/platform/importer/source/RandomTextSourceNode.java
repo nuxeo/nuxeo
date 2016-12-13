@@ -21,17 +21,6 @@
 
 package org.nuxeo.ecm.platform.importer.source;
 
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -42,6 +31,17 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.platform.importer.random.DictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
+
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 
 /**
@@ -126,6 +126,9 @@ public class RandomTextSourceNode implements SourceNode {
 
     static protected String[] DC_COVERAGE = { "europe/France", "europe/Germany", "europe/Italy", "europe/Spain",
             "oceania/Tonga", "africa/Mali", "asia/Japan", "north-america/United_States_of_America" };
+
+
+    public RandomTextSourceNode() {}
 
     public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText, boolean withProperties) {
         this.folderish = folderish;
