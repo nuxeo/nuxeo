@@ -6,8 +6,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:h="http://java.sun.com/jsf/html">
   <ui:fragment rendered="#{documentManager.hasPermission(field.ref, 'Everything')}">
-    <nxd:restDocumentLink document="#{field}"
-      tab="TAB_MANAGE" subTab="TAB_RIGHTS">
+    <nxd:restDocumentLink document="#{field}" tab="TAB_MANAGE">
       <h:graphicImage value="/icons/manage_collection.png"
         alt="#{messages['action.view.manage']}"
         title="#{messages['action.view.manage']}"/>
