@@ -61,7 +61,7 @@ public class HTMLBlobUploader implements JSFBlobUploader {
     }
 
     @Override
-    public void encodeBeginUpload(UIInput parent, FacesContext context, String onClick) throws IOException {
+    public void encodeBeginUpload(UIInput parent, FacesContext context, String onChange) throws IOException {
         UIComponent facet = parent.getFacet(UPLOAD_FACET_NAME);
         if (!(facet instanceof HtmlInputFile)) {
             return;
@@ -118,7 +118,7 @@ public class HTMLBlobUploader implements JSFBlobUploader {
         }
 
         // encode upload component
-        inputFile.setOnclick(onClick);
+        inputFile.setOnchange(onChange);
         // TODO: add size limit info
         ComponentUtils.encodeComponent(context, inputFile);
     }

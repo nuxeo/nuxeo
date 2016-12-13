@@ -617,8 +617,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                     }
                 }
             } else if (InputFileChoice.isUpload(radioChoice)) {
-                String onClick = String.format("document.getElementById('%s').checked='checked'", id);
-                uploaderService.getJSFBlobUploader(radioChoice).encodeBeginUpload(this, context, onClick);
+                String onChange = String.format("document.getElementById('%s').checked='checked'", id);
+                uploaderService.getJSFBlobUploader(radioChoice).encodeBeginUpload(this, context, onChange);
             }
             writer.endElement("td");
             writer.endElement("tr");
