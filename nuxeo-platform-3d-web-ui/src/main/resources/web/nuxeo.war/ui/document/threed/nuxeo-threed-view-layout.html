@@ -128,41 +128,36 @@ Contributors:
       .format-info-element {
         float: left;
       }
+
+      .card-section {
+        @apply(--paper-card);
+        padding: 1em;
+        margin: 0 22px 22px 0;
+      }
     </style>
 
-    <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
-      <nuxeo-dropzone document="{{document}}"
-                      message="[[i18n('threeDViewLayout.dropzone.message','Drop to replace the 3D content')]]"
-                      message-empty="[[i18n('threeDViewLayout.dropzone.empty.message', 'Click here or drop to replace the 3D')]]"
-                      uploaded-message="[[i18n('threeDViewLayout.dropzone.uploaded.message', '3D file uploaded')]]"
-                      empty="[[!document.properties.file:content.data]]">
-        <nuxeo-3d-viewer id="threedViewer"
-                         src="[[document.properties.threed:transmissionFormats.0.content.data]]"
-                         hidden="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-        </nuxeo-3d-viewer>
-      </nuxeo-dropzone>
-    </template>
-    <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-      <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
-    </template>
     <div class="card-section">
+      <!-- viewer area -->
+      <template is="dom-if" if="{{document.properties.file:content}}">
+        <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
+          <nuxeo-3d-viewer id="threedViewer" src="[[document.properties.threed:transmissionFormats.0.content.data]]">
+          </nuxeo-3d-viewer>
+        </template>
+        <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
+          <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
+        </template>
+      </template>
+      <template is="dom-if" if="{{!document.properties.file:content}}">
+        <nuxeo-dropzone document="{{document}}" xpath="{{file:content}}" update-document></nuxeo-dropzone>
+      </template>
+      <!-- file content area -->
       <div class="horizontal layout center">
         <template is="dom-if" if="[[document.properties.file:content]]">
           <p class="title">
             <a href="[[document.properties.file:content.data]]">[[document.title]]</a>
           </p>
           <div class="horizontal flex end-justified layout">
-            <nuxeo-document-view-delete-blob
-              document="{{document}}"
-              tool-tip="[[i18n('threeDViewLayout.delete.tooltip', 'Delete 3D content')]]"
-              confirm-message="[[i18n('threeDViewLayout.delete.confirm.message', 'Do you really want to delete this 3D?')]]"
-              delete-message="[[i18n('threeDViewLayout.deleted.message', '3D deleted')]]"
-              hidden="[[!document.properties.file:content]]">
-            </nuxeo-document-view-delete-blob>
-            <nuxeo-upload-blob-button document="{{document}}"
-                                      uploaded-message="[[i18n('threeDViewLayout.uploaded.messaged', '3D uploaded')]]"
-                                      tool-tip="[[i18n('threeDViewLayout.upload.tooltip', 'Upload 3D')]]">
-            </nuxeo-upload-blob-button>
+            <nuxeo-delete-blob-button document="{{document}}" xpath="file:content"></nuxeo-delete-blob-button>
           </div>
         </template>
         <template is="dom-if" if="[[!document.properties.file:content]]">
@@ -172,7 +167,8 @@ Contributors:
         </template>
       </div>
     </div>
-    <div class="card-section sep">
+
+    <div class="card-section">
       <p class="title">[[i18n('threeDViewLayout.renderViews.heading', 'Render Views')]]</p>
       <template is="dom-if" if="{{_hasItems(document.properties.threed:renderViews)}}">
         <div class="render-views">
@@ -189,21 +185,19 @@ Contributors:
         </div>
       </template>
       <template is="dom-if" if="{{!_hasItems(document.properties.threed:renderViews)}}">
-        <p>No items.</p>
+        <p>[[i18n('threeDViewLayout.renderViews.notAvailable', 'No render views available.')]]</p>
       </template>
     </div>
-    <div class="card-section sep">
+
+    <div class="card-section">
       <p class="title">[[i18n('threeDViewLayout.threed_transmissionFormats.heading', 'Transmission Formats')]]</p>
       <template is="dom-if" if="{{_hasItems(document.properties.threed:transmissionFormats)}}">
         <div class="transmission-formats">
           <template is="dom-repeat" items="[[document.properties.threed:transmissionFormats]]" as="format">
-
             <div class="format">
-
               <div class="format-name">
                 <label class="layout flex-2">[[format.name]]</label>
               </div>
-
               <div class="format-info">
                 <div class="format-polygons item">
                   <iron-icon class="format-info-element" icon="image:details"></iron-icon>
@@ -234,7 +228,6 @@ Contributors:
                   </template>
                 </div>
               </div>
-
               <div class="format-buttons">
                 <iron-icon icon="icons:visibility" on-tap="_loadFormat"></iron-icon>
                 <a href="[[format.content.data]]"
@@ -242,9 +235,7 @@ Contributors:
                   <iron-icon icon="icons:file-download"></iron-icon>
                 </a>
               </div>
-
             </div>
-
           </template>
         </div>
       </template>
@@ -252,9 +243,11 @@ Contributors:
         <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable', 'No transmission formats available.')]]</p>
       </template>
     </div>
+
     <div class="card-section attachments">
       <nuxeo-document-attachments document="{{document}}"></nuxeo-document-attachments>
     </div>
+
   </template>
 
   <script>

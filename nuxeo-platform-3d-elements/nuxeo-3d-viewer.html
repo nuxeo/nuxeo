@@ -140,6 +140,10 @@ Example - Load a source with complete loader. Loads animations, shaders and all 
       'on-setup-finished': 'load'
     },
 
+    attached: function() {
+      this.async(this.notifyResize(), 1000);
+    },
+
     ready: function() {
       this._setupDone = false;
       this.$.threed.width = this.width;
