@@ -55,7 +55,7 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     // @since 8.3
     @XNode("@useExternalVersion")
-    protected boolean externalVersion = false;
+    protected boolean externalVersion = true;
 
     public String getClusterName() {
         return clusterName;
