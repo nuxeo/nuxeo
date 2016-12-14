@@ -36,6 +36,7 @@ import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.TopicPartition;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.kafka.service.DefaultKafkaService;
 import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
@@ -69,7 +70,7 @@ public class KQManager<N extends Node> extends AbstractQueuesManager<N> {
     private Properties consumerProps;
 
     @SuppressWarnings("unchecked")
-    public KQManager(ImporterLogger logger, int queuesNb) throws IOException {
+    public KQManager(ImporterLogger logger, int queuesNb) {
         super(logger, queuesNb);
 
         listCache = Collections.synchronizedList(new ArrayList<>(
@@ -78,7 +79,11 @@ public class KQManager<N extends Node> extends AbstractQueuesManager<N> {
 
         DefaultKafkaService service = Framework.getService(DefaultKafkaService.class);
 
-        topics = service.propagateTopics(queuesNb, (short)1, 10000);
+        try {
+            topics = service.propagateTopics(queuesNb, (short)1, 10000);
+        } catch (IOException e) {
+            throw new NuxeoException("Fail to initialize Kafka topics", e);
+        }
         producerProps = service.getProducerProperties();
         consumerProps = service.getConsumerProperties();
         client = (String) producerProps.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG);

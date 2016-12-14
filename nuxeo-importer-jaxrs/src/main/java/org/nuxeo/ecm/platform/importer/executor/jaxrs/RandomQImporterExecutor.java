@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.importer.queue.consumer.ConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.consumer.ImmutableNodeConsumerFactory;
 import org.nuxeo.ecm.platform.importer.queue.manager.BQManager;
 import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
+import org.nuxeo.ecm.platform.importer.queue.manager.KQManager;
 import org.nuxeo.ecm.platform.importer.queue.manager.QueuesManager;
 import org.nuxeo.ecm.platform.importer.queue.producer.Producer;
 import org.nuxeo.ecm.platform.importer.queue.producer.RandomNodeProducer;
@@ -72,14 +73,26 @@ public class RandomQImporterExecutor extends AbstractJaxRSImporterExecutor {
         QueueImporter<ImmutableNode> importer = new QueueImporter<>(getLogger());
         QueuesManager<ImmutableNode> qm;
         switch (queueType) {
+            case "KQ":
+                log.info("Using Off heap KafkaQueue");
+                qm = new KQManager<>(getLogger(), nbThreads);
+                break;
             case "BQ":
                 log.info("Using in memory BlockingQueue");
                 qm = new BQManager<>(getLogger(), nbThreads, 10000);
                 break;
             case "CQ":
-            default:
-                log.info("Using Off heap Chronicle Queue");
+                log.info("Using Off heap ChronicleQueue");
+                // there are assert in chronicle queue code that should be disabled for performance and memory reasons
+                ClassLoader loader = ClassLoader.getSystemClassLoader();
+                loader.setDefaultAssertionStatus(false);
                 qm = new CQManager<>(getLogger(), nbThreads);
+                break;
+            default:
+                String msg = "Invalid queue type: " + queueType;
+                log.error(msg);
+                return "KO " + msg;
+
         }
         Producer<ImmutableNode> producer = new RandomNodeProducer(getLogger(), nbNodes, nbThreads)
                 .withBlob(fileSizeKB, onlyText)
@@ -90,12 +103,14 @@ public class RandomQImporterExecutor extends AbstractJaxRSImporterExecutor {
             Framework.getService(DefaultImporterService.class).setTransactionTimeout(transactionTimeout);
         }
         long startTime = System.currentTimeMillis();
-        log.warn(String.format("Running import of %d documents into %s with %d consumers, commit batch size: %d", nbNodes, targetPath, nbThreads, batchSize));
+        log.warn(String.format("Running import of %d documents (%d KB) into %s with %d consumers, commit batch size: %d",
+                nbNodes, fileSizeKB, targetPath, nbThreads, batchSize));
         importer.importDocuments(producer, qm, targetPath, "default", batchSize, consumerFactory);
         long elapsed = System.currentTimeMillis() - startTime;
         long created = importer.getCreatedDocsCounter();
-        log.warn("Import terminated, created:" + created + " throughput: " + created / (elapsed / 1000) + " docs/s");
-        return "OK " + importer.getCreatedDocsCounter();
+        String msg = "Import terminated, created:" + created + " throughput: " + created / (elapsed / 1000) + " docs/s";
+        log.warn(msg);
+        return "OK " + msg;
     }
 
     @Override
