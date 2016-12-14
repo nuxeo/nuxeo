@@ -128,6 +128,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisVersioningException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlEntryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlPrincipalDataImpl;
@@ -2889,6 +2890,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testCancelCheckout() throws Exception {
+        // initial VersioningState.CHECKEDOUT
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
         waitForAsyncCompletion();
@@ -2899,6 +2901,62 @@ public class TestCmisBinding extends TestCmisBindingBase {
         } catch (CmisObjectNotFoundException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testCancelCheckout2() throws Exception {
+        // VersioningState.CHECKEDOUT after VersioningState.MAJOR
+        ObjectData ob = getObjectByPath("/testfolder1/testfile2");
+        String id = ob.getId();
+
+        Properties props = createProperties("dc:title", "newtitle");
+        byte[] bytes = "foo-bar".getBytes("UTF-8");
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        ContentStream cs = new ContentStreamImpl("test.pdf", BigInteger.valueOf(bytes.length), "application/pdf", in);
+
+        Holder<String> idHolder = new Holder<>(id);
+        verService.checkIn(repositoryId, idHolder, Boolean.TRUE, props, cs, "comment", null, null, null, null);
+        String vid = idHolder.getValue();
+        ObjectData ver = getObject(vid);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ver);
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ver);
+        checkValue(PropertyIds.CHECKIN_COMMENT, "comment", ver);
+        checkValue("dc:title", "newtitle", ver);
+
+        verService.checkOut(repositoryId, idHolder, null, null);
+        String pwcId = idHolder.getValue();
+        ObjectData pwc = getObject(pwcId);
+        checkValue(PropertyIds.VERSION_LABEL, null, pwc);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, pwc);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, pwc);
+
+        waitForAsyncCompletion();
+        verService.cancelCheckOut(repositoryId, pwcId, null);
+        ob = getObject(id);
+        assertEquals(id, ob.getId());
+        checkValue(PropertyIds.VERSION_LABEL, "1.0", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/cancelcheckout-error-draft.xml")
+    public void testCancelCheckoutErrorOnDraft() {
+        // initial VersioningState.CHECKEDOUT
+        waitForAsyncCompletion();
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        String id = ob.getId();
+        try {
+            verService.cancelCheckOut(repositoryId, id, null);
+            fail("should have failed due to configuration");
+        } catch (CmisVersioningException e) {
+            assertEquals("Cannot cancelCheckOut of draft version due to configuration", e.getMessage());
+        }
+        ob = getObject(id);
+        assertEquals(id, ob.getId());
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
     }
 
     @Test

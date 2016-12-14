@@ -93,6 +93,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedExceptio
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisVersioningException;
 import org.apache.chemistry.opencmis.commons.impl.WSConverter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
@@ -179,6 +180,7 @@ import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -212,6 +214,9 @@ public class NuxeoCmisService extends AbstractCmisService
 
     public static final String ES_AUDIT_EVENT_ID = "eventId";
 
+    public static final String ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP =
+            "org.nuxeo.cmis.errorOnCancelCheckOutOfDraftVersion";
+
     private static final Log log = LogFactory.getLog(NuxeoCmisService.class);
 
     protected final BindingsObjectFactory objectFactory = new BindingsObjectFactoryImpl();
@@ -234,6 +239,8 @@ public class NuxeoCmisService extends AbstractCmisService
     protected final Set<String> readPermissions;
 
     protected final Set<String> writePermissions;
+
+    protected final boolean errorOnCancelCheckOutOfDraftVersion;
 
     public static NuxeoCmisService extractFromCmisService(CmisService service) {
         if (service == null) {
@@ -279,6 +286,9 @@ public class NuxeoCmisService extends AbstractCmisService
         readPermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ)));
         writePermissions = new HashSet<>(
                 Arrays.asList(securityService.getPermissionsToCheck(SecurityConstants.READ_WRITE)));
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        errorOnCancelCheckOutOfDraftVersion = configurationService.isBooleanPropertyTrue(
+                ERROR_ON_CANCEL_CHECK_OUT_OF_DRAFT_VERSION_PROP);
     }
 
     // called in a finally block from dispatcher
@@ -2048,6 +2058,9 @@ public class NuxeoCmisService extends AbstractCmisService
         // find last version
         DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
         if (verRef == null) {
+            if (errorOnCancelCheckOutOfDraftVersion && "0.0".equals(doc.getVersionLabel())) {
+                throw new CmisVersioningException("Cannot cancelCheckOut of draft version due to configuration");
+            }
             // delete
             coreSession.removeDocument(docRef);
         } else {

@@ -10,7 +10,8 @@ Export-Package: org.nuxeo.ecm.core.opencmis.impl.client,
 Bundle-ActivationPolicy: lazy
 Eclipse-ExtensibleAPI: true
 Nuxeo-Component: OSGI-INF/opencmis-contrib.xml,
- OSGI-INF/cmis-querymaker-contrib.xml
+ OSGI-INF/cmis-querymaker-contrib.xml,
+ OSGI-INF/properties-contrib.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: javax.resource,
  javax.servlet,
