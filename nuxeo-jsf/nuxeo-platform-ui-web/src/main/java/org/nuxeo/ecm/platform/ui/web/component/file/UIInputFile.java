@@ -688,8 +688,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
                 if (uploadFacet instanceof HtmlInputFile) {
                     HtmlInputFile uploadComp = (HtmlInputFile) uploadFacet;
-                    String onClick = "document.getElementById('%s').checked='checked'";
-                    uploadComp.setOnclick(String.format(onClick, id));
+                    String onChange = "document.getElementById('%s').checked='checked'";
+                    uploadComp.setOnchange(String.format(onChange, id));
                     // TODO: add size limit info
                     ComponentUtils.encodeComponent(context, uploadComp);
                 }
