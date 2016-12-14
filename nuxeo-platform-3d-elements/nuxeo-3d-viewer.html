@@ -141,7 +141,7 @@ Example - Load a source with complete loader. Loads animations, shaders and all 
     },
 
     attached: function() {
-      this.async(this.notifyResize(), 1000);
+      this.async(this.notifyResize, 1000);
     },
 
     ready: function() {
@@ -150,7 +150,6 @@ Example - Load a source with complete loader. Loads animations, shaders and all 
       this.$.threed.height = this.height;
       this._setup();
       this._loaderChanged();
-      this.async(this.notifyResize, 1);
     },
 
     load: function() {
