@@ -251,7 +251,7 @@ class Release(object):
         Patterns = namedtuple('Patterns', ['files', 'props'])
         self.default_patterns = Patterns(
             # Files extensions
-            "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
+            "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl|md)$",
             # Properties like nuxeo.*.version
             "{%s}(nuxeo|marketplace)\\..*version" % NAMESPACES.get("pom"))
         other_versions = release_info.other_versions
@@ -965,7 +965,7 @@ properties can be provided using two colon (':') separators:
 ':my.property:1.0-SNAPSHOT/1.0/1.1-SNAPSHOT', ... Those patterns are common \
 to all replacements, including the released version.\n
 Default files and properties patterns are respectively:
-'^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$' and
+'^.*\\.(xml|properties|txt|defaults|sh|html|nxftl|md)$' and
 '(nuxeo|marketplace)\\..*version'. They can't be removed.""")
         versioning_options.add_option(
             '--mc', '--msg-commit', action="store", type="string",
