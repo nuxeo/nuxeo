@@ -11,8 +11,7 @@
 
     <pictureConversion id="Thumbnail" enabled="false" maxSize="160" order="11" />
     <pictureConversion id="Original" enabled="false" maxSize="800" order="17" />
-    <pictureConversion id="OriginalJpeg" enabled="false"
-      maxSize="0" order="7" />
+    <pictureConversion id="OriginalJpeg" enabled="false" maxSize="0" order="7" />
 
   </extension>
 
