@@ -14,22 +14,63 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Contributors:
-  Tiago Cardoso <tcardoso@nuxeo.com>
-
+    Tiago Cardoso <tcardoso@nuxeo.com>
+    Miguel Nixo <mnixo@nuxeo.com>
 <!--
-`threed-metadata-layout`
-@group Nuxeo UI
-@element threed-metadata-ayout
+`nuxeo-threed-metadata-layout`
+@group Nuxeo 3D Elements
+@element nuxeo-threed-metadata-layout
 -->
 
 <dom-module id="nuxeo-threed-metadata-layout">
   <template>
-    <nuxeo-dublincore-metadata-layout document="[[document]]"></nuxeo-dublincore-metadata-layout>
+
+    <style>
+      label + div {
+        word-break: break-word;
+      }
+    </style>
+
+    <div role="widget">
+      <label>[[i18n('label.dublincore.title')]]</label>
+      <div>[[document.properties.dc:title]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:description]]">
+      <label>[[i18n('label.dublincore.description')]]</label>
+      <div class="multiline">[[document.properties.dc:description]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:nature]]">
+      <label>[[i18n('label.dublincore.nature')]]</label>
+      <div>[[formatDirectory(document.properties.dc:nature)]]</div>
+    </div>
+
+    <nuxeo-directory-suggestion role="widget"
+                                label="[[i18n('label.dublincore.subjects')]]"
+                                directory-name="l10nsubjects"
+                                value="{{document.properties.dc:subjects}}"
+                                hidden$="[[!document.properties.dc:subjects.length]]"
+                                multiple="true"
+                                dbl10n="true"
+                                readonly>
+    </nuxeo-directory-suggestion>
+
+    <div role="widget" hidden$="[[!document.properties.dc:coverage]]">
+      <label>[[i18n('label.dublincore.coverage')]]</label>
+      <div>[[formatDirectory(document.properties.dc:coverage)]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:expired]]">
+      <label>[[i18n('label.dublincore.expire')]]</label>
+      <div>[[formatDate(document.properties.dc:expired)]]</div>
+    </div>
+
   </template>
   <script>
     Polymer({
       is: 'nuxeo-threed-metadata-layout',
-      behaviors: [Nuxeo.I18nBehavior],
+      behaviors: [Nuxeo.LayoutBehavior],
       properties: {
         document: Object
       }
