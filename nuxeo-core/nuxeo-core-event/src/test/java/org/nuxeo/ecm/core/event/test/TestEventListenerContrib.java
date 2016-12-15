@@ -21,6 +21,9 @@
 
 package org.nuxeo.ecm.core.event.test;
 
+import java.net.URL;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.event.EventService;
@@ -29,14 +32,11 @@ import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.script.ScriptingPostCommitEventListener;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import java.net.URL;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestEventListenerContrib extends NXRuntimeTestCase {
@@ -53,10 +53,9 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
     public void testMerge() throws Exception {
         EventService service = Framework.getService(EventService.class);
         EventServiceImpl serviceImpl = (EventServiceImpl) service;
-        int N =  serviceImpl.getEventListenerList().getInlineListenersDescriptors().size() + 1;
+        int N = serviceImpl.getEventListenerList().getInlineListenersDescriptors().size() + 1;
         URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
-        RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
-
+        deployTestContrib("org.nuxeo.ecm.core.event", url);
 
         List<EventListenerDescriptor> inLineDescs = serviceImpl.getEventListenerList().getInlineListenersDescriptors();
         assertEquals(N, inLineDescs.size());
@@ -75,7 +74,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         // test PostCommit
         url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners.xml");
         deployTestContrib("org.nuxeo.ecm.core.event", url);
-        List<EventListenerDescriptor> apcDescs = serviceImpl.getEventListenerList().getAsyncPostCommitListenersDescriptors();
+        List<EventListenerDescriptor> apcDescs = serviceImpl.getEventListenerList()
+                                                            .getAsyncPostCommitListenersDescriptors();
         assertEquals(1, apcDescs.size());
         assertEquals(1, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
         desc = serviceImpl.getEventListener("testPostCommit");
@@ -105,6 +105,32 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         assertFalse(isScriptListener);
         desc = serviceImpl.getEventListener("testPostCommit");
         assertEquals(20, desc.getPriority());
+    }
+
+    @Test
+    public void testInvalidListeners() throws Exception {
+        EventService service = Framework.getService(EventService.class);
+        EventServiceImpl serviceImpl = (EventServiceImpl) service;
+        assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
+        URL url = EventListenerTest.class.getClassLoader().getResource("test-InvalidListeners.xml");
+        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        assertEquals(0, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
+        List<String> warns = Framework.getRuntime().getWarnings();
+        assertNotNull(warns);
+        assertEquals(3, warns.size());
+
+        assertEquals("Failed to register event listener in component 'service:test-invalid-listeners': "
+                + "error initializing event listener 'invalidListenerUnknown' (java.lang.RuntimeException: "
+                + "java.lang.ClassNotFoundException: org.nuxeo.invalid.listener.UnknownClass)", warns.get(0));
+        assertEquals(
+                "Failed to register event listener in component 'service:test-invalid-listeners': "
+                        + "error initializing event listener 'invalidListenerNotEventListener' "
+                        + "(java.lang.IllegalArgumentException: Listener extension must define a class extending "
+                        + "EventListener or PostCommitEventListener: 'org.nuxeo.ecm.core.event.test.InvalidEventListener'.)",
+                warns.get(1));
+        assertEquals("Failed to register event listener in component 'service:test-invalid-listeners': "
+                + "error initializing event listener 'invalidListenerNoRef' (java.lang.IllegalArgumentException: "
+                + "Listener extension must define either a class or a script)", warns.get(2));
     }
 
 }
