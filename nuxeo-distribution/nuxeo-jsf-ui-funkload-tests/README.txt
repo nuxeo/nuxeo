@@ -133,7 +133,7 @@ Running test
 Using a Makefile
 ~~~~~~~~~~~~~~~~~
 
-You need a Nuxeo DM (not CAP) running instance.
+You need a Nuxeo Server running instance with the JSF UI package installed.
 
 
 * make

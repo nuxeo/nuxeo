@@ -54,28 +54,31 @@ Ant usage: `ant package`
 ## Modules listing
 
  * nuxeo-functional-tests: Framework for testing Nuxeo distributions
- * nuxeo-startup-wizard: Startup Wizard WebApp
+ * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo Server with the JSF UI package installed
+ * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo Server with the JSF UI package installed
+ * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo Server with the JSF UI package installed
  * nuxeo-launcher: Control Panel and Launcher
- * nuxeo-test-dependencies: Convenient helper POM listing the Nuxeo test dependencies
- * nuxeo-nxr-server: Server NXR
- * nuxeo-server-tomcat: Package Nuxeo Server with Tomcat
- * nuxeo-wizard-tests: WebDriver tests on Startup Wizard
- * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
- * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo JSF UI
- * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo JSF UI
- * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo JSF UI
  * nuxeo-marketplace-dm: Transitional package for DM
+ * nuxeo-marketplace-jsf-ui: Package for the JSF UI
+ * nuxeo-nxr-jsf-ui: JSF UI NXR
+ * nuxeo-nxr-server: Server NXR
+ * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
+ * nuxeo-server-tests: Functional tests on Nuxeo Server
+ * nuxeo-server-tomcat: Nuxeo Server packaged with Tomcat
+ * nuxeo-startup-wizard: Startup Wizard Web App
+ * nuxeo-test-dependencies: Convenient helper POM listing the Nuxeo test dependencies
+ * nuxeo-wizard-tests: WebDriver tests on Startup Wizard
 
 ## Produced packages
 
  * NXR packages
    * Server
-   * Content Application Platform (CAP), **deprecated**
+   * JSF UI
  * Nuxeo Packages
+   * Nuxeo JSF UI
    * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
    * Server
-   * Content Application Platform (CAP), **deprecated**
    * SDK
 
 ## Understanding Maven phases and options
@@ -106,6 +109,13 @@ Built NXR is in `nuxeo-nxr-server/target/`.
 
 This is the default application packaged within Tomcat in `nuxeo-server-tomcat/target/` (see "server").
 
+### Nuxeo JSF UI
+
+Complete user interface for the Nuxeo Server built with JSF.
+
+Built Nuxeo Package is in `nuxeo-marketplace-jsf-ui/target/`.
+
+It can be installed in a Nuxeo Server using `nuxeoctl` or from the Administration page within the Nuxeo server.
 
 ### Nuxeo Document Management
 
@@ -113,7 +123,7 @@ Advanced document management features. The package has been split and deprecated
 
 Built Nuxeo Package is in `nuxeo-marketplace-dm/target/`.
 
-It can be installed in CAP Tomcat using `nuxeoctl` or from the Administration page within the Nuxeo server.
+It can be installed in a Nuxeo Server using `nuxeoctl` or from the Administration page within the Nuxeo server.
 
 ### Other applications
 
