@@ -82,7 +82,14 @@ public class EventServiceComponent extends DefaultComponent {
         if (EVENT_LISTENER_XP.equals(extensionPoint)) {
             EventListenerDescriptor descriptor = (EventListenerDescriptor) contribution;
             descriptor.setRuntimeContext(contributor.getRuntimeContext());
-            service.addEventListener(descriptor);
+            try {
+                service.addEventListener(descriptor);
+            } catch (RuntimeException e) {
+                String msg = "Failed to register event listener in component '" + contributor.getName()
+                        + "': error initializing event listener '" + descriptor.getName() + "' (" + e.toString() + ')';
+                Framework.getRuntime().getWarnings().add(msg);
+                Framework.handleDevError(e);
+            }
         } else if (EVENT_PIPE_XP.equals(extensionPoint)) {
             EventPipeDescriptor descriptor = (EventPipeDescriptor) contribution;
             service.addEventPipe(descriptor);

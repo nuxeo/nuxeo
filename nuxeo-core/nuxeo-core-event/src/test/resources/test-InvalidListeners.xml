@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="test-invalid-listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="invalidListenerUnknown" async="false" postCommit="false"
+      class="org.nuxeo.invalid.listener.UnknownClass" priority="120">
+      <event>loginSuccess</event>
+      <event>loginFailed</event>
+    </listener>
+
+    <listener name="invalidListenerNotEventListener" async="false"
+      postCommit="false" class="org.nuxeo.ecm.core.event.test.InvalidEventListener"
+      priority="120">
+      <event>loginSuccess</event>
+      <event>loginFailed</event>
+    </listener>
+
+    <listener name="invalidListenerNoRef" async="false" postCommit="false"
+      priority="120">
+      <event>loginSuccess</event>
+      <event>loginFailed</event>
+    </listener>
+
+  </extension>
+
+</component>

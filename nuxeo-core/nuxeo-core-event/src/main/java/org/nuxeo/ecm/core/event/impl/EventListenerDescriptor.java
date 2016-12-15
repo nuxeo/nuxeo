@@ -54,7 +54,7 @@ public class EventListenerDescriptor {
      * The event listener class.
      */
     @XNode("@class")
-    protected Class<?> clazz;
+    protected String className;
 
     /**
      * A script reference: URL, file path, or bundle entry. Runtime variable are expanded. To specify a bundle entry use
@@ -140,13 +140,23 @@ public class EventListenerDescriptor {
 
     public void initListener() {
         try {
-            if (clazz != null) {
-                if (EventListener.class.isAssignableFrom(clazz)) {
-                    inLineListener = (EventListener) clazz.newInstance();
+            if (className != null) {
+                Class<?> klass;
+                try {
+                    klass = getRuntimeContext().loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                if (EventListener.class.isAssignableFrom(klass)) {
+                    inLineListener = (EventListener) klass.newInstance();
                     isPostCommit = false;
-                } else if (PostCommitEventListener.class.isAssignableFrom(clazz)) {
-                    postCommitEventListener = (PostCommitEventListener) clazz.newInstance();
+                } else if (PostCommitEventListener.class.isAssignableFrom(klass)) {
+                    postCommitEventListener = (PostCommitEventListener) klass.newInstance();
                     isPostCommit = true;
+                } else {
+                    throw new IllegalArgumentException(
+                            "Listener extension must define a class extending EventListener or PostCommitEventListener: '"
+                                    + className + "'.");
                 }
             } else if (script != null) {
                 if (isPostCommit) {
@@ -157,7 +167,7 @@ public class EventListenerDescriptor {
             } else {
                 throw new IllegalArgumentException("Listener extension must define either a class or a script");
             }
-        } catch (ReflectiveOperationException | IOException e) {
+        } catch (ReflectiveOperationException | NoClassDefFoundError | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -189,8 +199,8 @@ public class EventListenerDescriptor {
 
     public String getName() {
         if (name == null) {
-            if (clazz != null) {
-                name = clazz.getSimpleName();
+            if (className != null) {
+                name = className;
             } else {
                 name = script;
             }
@@ -206,12 +216,12 @@ public class EventListenerDescriptor {
 
         isEnabled = other.isEnabled;
 
-        if (other.clazz != null) {
-            clazz = other.clazz;
+        if (other.className != null) {
+            className = other.className;
             rc = other.rc;
         } else if (other.script != null) {
             script = other.script;
-            clazz = null;
+            className = null;
             rc = other.rc;
         }
 
