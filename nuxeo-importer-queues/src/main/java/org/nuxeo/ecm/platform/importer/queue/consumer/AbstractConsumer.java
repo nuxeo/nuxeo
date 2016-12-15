@@ -132,7 +132,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
         log.error("Consumer is broken, draining the queue to rejected");
         do {
             try {
-                Node node = queuesManager.poll(queue, 1, TimeUnit.SECONDS);
+                N node = queuesManager.poll(queue, 1, TimeUnit.SECONDS);
                 if (node == null && canStop) {
                     log.info("End of broken consumer, processed node: " + getNbProcessed());
                     break;
@@ -330,7 +330,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
      * @param node
      * @param e
      */
-    protected void onSourceNodeException(Node node, Exception e) {
+    protected void onSourceNodeException(N node, Exception e) {
         log.error(String.format("Unable to import node [%s]", node.getPath()), e);
     }
 
@@ -339,7 +339,7 @@ public abstract class AbstractConsumer<N extends Node> extends AbstractTaskRunne
      *
      * @param node
      */
-    protected void onSourceNodeRollBack(Node node) {
+    protected void onSourceNodeRollBack(N node) {
         log.error(String.format("Rollback while replaying consumer node [%s]", node.getPath()));
     }
 

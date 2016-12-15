@@ -16,14 +16,15 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.producer;
 
+import org.nuxeo.ecm.platform.importer.source.Node;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
  * @since 8.3
  */
-public interface CallBackProducer extends Producer {
+public interface CallBackProducer<N extends Node> extends Producer<N> {
 
     void terminate();
 
-    void submit(SourceNode node) throws Exception;
+    void submit(N node) throws Exception;
 }
