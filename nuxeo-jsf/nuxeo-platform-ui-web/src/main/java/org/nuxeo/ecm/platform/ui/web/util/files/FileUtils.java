@@ -150,8 +150,12 @@ public class FileUtils {
 
     /**
      * Returns a clean filename, stripping upload path on client side.
+     * For instance, it turns "/tmp/2349876398/foo.pdf" into "foo.pdf"
      * <p>
      * Fixes NXP-544
+     *
+     * @param filename the filename
+     * @return the stripped filename
      */
     public static String getCleanFileName(String filename) {
         String res = null;

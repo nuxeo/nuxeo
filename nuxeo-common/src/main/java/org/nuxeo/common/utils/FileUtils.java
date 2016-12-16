@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
+ *     Bogdan Stefanescu <bs@nuxeo.com>
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 
 package org.nuxeo.common.utils;
@@ -44,9 +45,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
 public final class FileUtils {
 
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
@@ -648,6 +646,18 @@ public final class FileUtils {
         } else {
             return expected.equals(source);
         }
+    }
+
+    /**
+     * Returns a safe filename, replacing unsafe characters (: \ / * ..) with "_".
+     * For instance, it turns "tmp/../2349:876398/foo.png" into "tmp___2349_876398_foo.png"
+     *
+     * @param filename the filename
+     * @return the safe filename with underscores instead of unsafe characters
+     * @since 9.1
+     */
+    public static String getSafeFilename(String filename) {
+        return filename.replaceAll("(\\\\)|(\\/)|(\\:)|(\\*)|(\\.\\.)", "_");
     }
 
 }
