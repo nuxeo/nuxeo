@@ -136,8 +136,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
                 "Collection");
         testCollection1 = session.createDocument(testCollection1);
 
-        DocumentModel testCollection2 = session.createDocumentModel(testWorkspace.getPathAsString(),
-                TEST_FILE_NAME + 2, "Collection");
+        DocumentModel testCollection2 = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME + 2,
+                "Collection");
         testCollection2 = session.createDocument(testCollection2);
 
         try {
@@ -212,7 +212,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         final DocumentModel collectionBis = session.getDocument(collectionPathRefBis);
 
         assertFalse(copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collection.getId()));
-        assertTrue(copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collectionBis.getId()));
+        assertTrue(
+                copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collectionBis.getId()));
     }
 
 }
