@@ -139,8 +139,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
                 "Collection");
         testCollection1 = session.createDocument(testCollection1);
 
-        DocumentModel testCollection2 = session.createDocumentModel(testWorkspace.getPathAsString(),
-                TEST_FILE_NAME + 2, "Collection");
+        DocumentModel testCollection2 = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME + 2,
+                "Collection");
         testCollection2 = session.createDocument(testCollection2);
 
         try {
@@ -215,7 +215,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         final DocumentModel collectionBis = session.getDocument(collectionPathRefBis);
 
         assertFalse(copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collection.getId()));
-        assertTrue(copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collectionBis.getId()));
+        assertTrue(
+                copiedTestFile.getAdapter(CollectionMember.class).getCollectionIds().contains(collectionBis.getId()));
     }
 
     /**
@@ -228,7 +229,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         testWorkspace = session.createDocument(testWorkspace);
         DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
-        DocumentRef refVersion =  testFile.checkIn(VersioningOption.MAJOR, "blbabla");
+        DocumentRef refVersion = testFile.checkIn(VersioningOption.MAJOR, "blbabla");
         DocumentModel version = session.getDocument(refVersion);
         collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, version, session);
 
