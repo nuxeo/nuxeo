@@ -34,6 +34,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -217,6 +219,37 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public String getDownloadUrl(String storeKey) {
         return DownloadService.NXBIGBLOB + "/" + storeKey;
+    }
+
+    @Override
+    public List<Map<String, String>> parseDownloadUrls(String content) {
+        return parseDownloadUrls(getDownloadUrlRegex(), content);
+    }
+
+    @Override
+    public List<Map<String, String>> parseDownloadUrlsInHtmlLinks(String content) {
+        return parseDownloadUrls("src=\"" + getDownloadUrlRegex() + "\"", content);
+    }
+
+    protected List<Map<String, String>> parseDownloadUrls(String regex, String content) {
+        List<Map<String, String>> parsedUrls = new ArrayList<Map<String, String>>();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            Map<String, String> urlDetails = new HashMap<String, String>();
+            urlDetails.put("url", matcher.group(1));
+            urlDetails.put("repository", matcher.group(3));
+            urlDetails.put("id", matcher.group(4));
+            urlDetails.put("index", matcher.group(5));
+            urlDetails.put("filename", matcher.group(6));
+            parsedUrls.add(urlDetails);
+        }
+        return parsedUrls;
+    }
+
+    protected String getDownloadUrlRegex() {
+        // http://localhost/nuxeo/nxfile/default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png
+        return "((.*?)/" + NXFILE + "/(.*?)/([0-9a-z-]+)/files:files/([0-9])+/file/(.*?))";
     }
 
     @Override
