@@ -82,7 +82,8 @@ public class TestCollectionSyncRootFolderItemFactory {
     @Test
     public void testFactory() throws Exception {
 
-        FileSystemItemFactory collectionSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("collectionSyncRootFolderItemFactory");
+        FileSystemItemFactory collectionSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
+                "collectionSyncRootFolderItemFactory");
         DocumentModel collection = collectionManager.createCollection(session, "testCollection", "Test collection.",
                 "/");
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
