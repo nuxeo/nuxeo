@@ -18,20 +18,14 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -264,31 +258,14 @@ public class StorageConfiguration {
     }
 
     /**
-     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
+     * Sleep a bit to get to the next millisecond, to have different timestamps.
      */
     public void maybeSleepToNextSecond() {
-        if (isVCS()) {
-            databaseHelper.maybeSleepToNextSecond();
-        } else {
-            // DBS
-        }
-        // sleep 1 ms nevertheless to have different timestamps
         try {
-            Thread.sleep(1);
+            Thread.sleep(1); // 1 millisecond
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // restore interrupted status
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Checks if the database has sub-second resolution.
-     */
-    public boolean hasSubSecondResolution() {
-        if (isVCS()) {
-            return databaseHelper.hasSubSecondResolution();
-        } else {
-            return true; // DBS
         }
     }
 
@@ -368,72 +345,4 @@ public class StorageConfiguration {
         return contribURL;
     }
 
-    public void assertEqualsTimestamp(Calendar expected, Calendar actual) {
-        assertEquals(convertToStoredCalendar(expected), convertToStoredCalendar(actual));
-    }
-
-    public void assertNotEqualsTimestamp(Calendar expected, Calendar actual) {
-        assertNotEquals(convertToStoredCalendar(expected), convertToStoredCalendar(actual));
-    }
-
-    /**
-     * Due to some DB restriction this method could fire a false negative. For example 1001ms is before 1002ms but it's
-     * not the case for MySQL (they're equals).
-     */
-    public void assertBeforeTimestamp(Calendar expected, Calendar actual) {
-        BiConsumer<Calendar, Calendar> assertTrue = (exp, act) -> assertTrue(
-                String.format("expected=%s is not before actual=%s", exp, act), exp.before(act));
-        assertTrue.accept(convertToStoredCalendar(expected), convertToStoredCalendar(actual));
-    }
-
-    public void assertNotBeforeTimestamp(Calendar expected, Calendar actual) {
-        BiConsumer<Calendar, Calendar> assertFalse = (exp, act) -> assertFalse(
-                String.format("expected=%s is before actual=%s", exp, act), exp.before(act));
-        assertFalse.accept(convertToStoredCalendar(expected), convertToStoredCalendar(actual));
-    }
-
-    /**
-     * Due to some DB restriction this method could fire a false negative. For example 1002ms is after 1001ms but it's
-     * not the case for MySQL (they're equals).
-     */
-    public void assertAfterTimestamp(Calendar expected, Calendar actual) {
-        BiConsumer<Calendar, Calendar> assertTrue = (exp, act) -> assertTrue(
-                String.format("expected=%s is not after actual=%s", exp, act), exp.after(act));
-        assertTrue.accept(convertToStoredCalendar(expected), convertToStoredCalendar(actual));
-    }
-
-    public void assertNotAfterTimestamp(Calendar expected, Calendar actual) {
-        BiConsumer<Calendar, Calendar> assertFalse = (exp, act) -> assertFalse(
-                String.format("expected=%s is after actual=%s", exp, act), exp.after(act));
-        assertFalse.accept(convertToStoredCalendar(expected), convertToStoredCalendar(actual));
-    }
-
-    private Calendar convertToStoredCalendar(Calendar calendar) {
-        if (isVCSMySQL() || isVCSSQLServer()) {
-            Calendar result = (Calendar) calendar.clone();
-            result.setTimeInMillis(convertToStoredTimestamp(result.getTimeInMillis()));
-            return result;
-        }
-        return calendar;
-    }
-
-    private long convertToStoredTimestamp(long timestamp) {
-        if (isVCSMySQL()) {
-            return timestamp / 1000 * 1000;
-        } else if (isVCSSQLServer()) {
-            // as datetime in SQL Server are rounded to increments of .000, .003, or .007 seconds
-            // see https://msdn.microsoft.com/en-us/library/aa258277(SQL.80).aspx
-            long milliseconds = timestamp % 10;
-            long newTimestamp = timestamp - milliseconds;
-            if (milliseconds == 9) {
-                newTimestamp += 10;
-            } else if (milliseconds >= 5) {
-                newTimestamp += 7;
-            } else if (milliseconds >= 2) {
-                newTimestamp += 3;
-            }
-            return newTimestamp;
-        }
-        return timestamp;
-    }
 }

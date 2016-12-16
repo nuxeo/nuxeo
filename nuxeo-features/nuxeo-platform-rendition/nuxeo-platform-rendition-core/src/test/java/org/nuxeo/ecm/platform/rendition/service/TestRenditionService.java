@@ -800,7 +800,7 @@ public class TestRenditionService {
         for (Rendition rend : renditions) {
             assertNotNull(rend);
             assertTrue(rend.isStored());
-            storageConfig.assertNotBeforeTimestamp(cal, rend.getModificationDate());
+            assertFalse(cal.before(rend.getModificationDate()));
             assertNotNull(rend.getBlob());
             assertTrue(rendition.getBlob().getString().contains(desc));
         }

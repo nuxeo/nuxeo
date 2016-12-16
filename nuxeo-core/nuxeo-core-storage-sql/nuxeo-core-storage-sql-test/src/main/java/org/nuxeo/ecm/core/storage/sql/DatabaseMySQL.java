@@ -76,11 +76,6 @@ public class DatabaseMySQL extends DatabaseHelper {
     }
 
     @Override
-    public boolean hasSubSecondResolution() {
-        return false;
-    }
-
-    @Override
     public int getRecursiveRemovalDepthLimit() {
         // Stupid MySQL limitations:
         // "Cascading operations may not be nested more than 15 levels deep."
