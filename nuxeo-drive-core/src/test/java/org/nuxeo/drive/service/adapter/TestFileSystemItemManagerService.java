@@ -297,11 +297,9 @@ public class TestFileSystemItemManagerService {
         assertNotNull(children);
 
         assertEquals(4, children.size());
-        // Don't check children order against MySQL database because of the
-        // milliseconds limitation
-        boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
+        // Ordered
         checkChildren(children, folder.getId(), file.getId(), note.getId(), folderishFile.getId(), subFolder.getId(),
-                ordered);
+                true);
 
         children = fileSystemItemManagerService.getChildren(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(),
                 principal);

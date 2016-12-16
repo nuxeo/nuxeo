@@ -821,11 +821,9 @@ public class DefaultFileSystemItemFactoryFixture {
         // Check getChildren
         List<FileSystemItem> folderChildren = folderItem.getChildren();
         assertEquals(4, folderChildren.size());
-        // Don't check children order against MySQL database because of the
-        // milliseconds limitation
-        boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
+        // Ordered
         checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
-                adaptableChild.getId(), ordered);
+                adaptableChild.getId(), true);
 
         // Check scrollDescendants
         assertTrue(folderItem.getCanScrollDescendants());

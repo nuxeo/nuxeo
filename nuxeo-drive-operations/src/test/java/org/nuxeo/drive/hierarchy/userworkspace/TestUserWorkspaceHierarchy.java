@@ -493,12 +493,6 @@ public class TestUserWorkspaceHierarchy {
         blob.setFilename(fileName);
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
-        // If the test is run against MySQL or SQL Server, because of its
-        // milliseconds limitation, we need to wait for 1 second between each
-        // document creation to ensure correct ordering when fetching a folder's
-        // children, the default page provider query being ordered by ascendant
-        // creation date.
-        waitIfMySQLOrSQLServer();
         return file;
     }
 
@@ -507,12 +501,6 @@ public class TestUserWorkspaceHierarchy {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
-        // If the test is run against MySQL or SQL Server, because of its
-        // milliseconds limitation, we need to wait for 1 second between each
-        // document creation to ensure correct ordering when fetching a folder's
-        // children, the default page provider query being ordered by ascendant
-        // creation date.
-        waitIfMySQLOrSQLServer();
         return folder;
     }
 
@@ -537,12 +525,6 @@ public class TestUserWorkspaceHierarchy {
         localACL.add(new ACE(userName, permission, isGranted));
         session.setACP(doc.getRef(), acp, true);
         session.save();
-    }
-
-    protected void waitIfMySQLOrSQLServer() throws InterruptedException {
-        if (storageConfiguration.isVCSMySQL() || storageConfiguration.isVCSSQLServer()) {
-            Thread.sleep(1000);
-        }
     }
 
 }

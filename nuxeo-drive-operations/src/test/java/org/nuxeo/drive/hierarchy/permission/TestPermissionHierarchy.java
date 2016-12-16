@@ -74,7 +74,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
@@ -809,12 +808,6 @@ public class TestPermissionHierarchy {
         blob.setFilename(fileName);
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
-        // If the test is run against MySQL or SQL Server, because of its
-        // milliseconds limitation, we need to wait for 1 second between each
-        // document creation to ensure correct ordering when fetching a folder's
-        // children, the default page provider query being ordered by ascendant
-        // creation date.
-        waitIfMySQLOrSQLServer();
         return file;
     }
 
@@ -823,12 +816,6 @@ public class TestPermissionHierarchy {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
-        // If the test is run against MySQL or SQL Server, because of its
-        // milliseconds limitation, we need to wait for 1 second between each
-        // document creation to ensure correct ordering when fetching a folder's
-        // children, the default page provider query being ordered by ascendant
-        // creation date.
-        waitIfMySQLOrSQLServer();
         return folder;
     }
 
@@ -869,13 +856,6 @@ public class TestPermissionHierarchy {
         session.setACP(docRef, acp, true);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-    }
-
-    protected void waitIfMySQLOrSQLServer() throws InterruptedException {
-        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
-        if (storageConfiguration.isVCSMySQL() || storageConfiguration.isVCSSQLServer()) {
-            Thread.sleep(1000);
-        }
     }
 
 }

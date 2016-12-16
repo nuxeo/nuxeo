@@ -381,10 +381,8 @@ public class TestFileSystemItemOperations {
         assertNotNull(children);
         assertEquals(2, children.size());
 
-        // Don't check children order against MySQL database because of the
-        // milliseconds limitation
-        boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
-        checkChildren(children, subFolder1.getId(), file3.getId(), file4.getId(), ordered);
+        // Ordered
+        checkChildren(children, subFolder1.getId(), file3.getId(), file4.getId(), true);
     }
 
     @Test
