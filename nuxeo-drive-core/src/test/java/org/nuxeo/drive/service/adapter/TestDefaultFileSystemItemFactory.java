@@ -946,7 +946,6 @@ public class TestDefaultFileSystemItemFactory {
         DocumentModel nonSyncrootCollection = collectionManager.createCollection(session, "Non sync root collection",
                 "", session.getRootDocument().getPathAsString());
         collectionManager.addToCollection(nonSyncrootCollection, doc, session);
-        doc = session.getDocument(doc.getRef());
         try {
             defaultFileSystemItemFactory.getFileSystemItem(doc);
             fail("Trying to adapt doc as a FileSystemItem should throw a RootlessItemException");
@@ -959,13 +958,11 @@ public class TestDefaultFileSystemItemFactory {
                 session.getRootDocument().getPathAsString());
         nuxeoDriveManager.registerSynchronizationRoot(principal, syncRootCollection, session);
         collectionManager.addToCollection(syncRootCollection, doc, session);
-        doc = session.getDocument(doc.getRef());
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(doc);
         assertNotNull(fsItem);
 
         log.trace("Adapt a document member of a sync root collection only");
         collectionManager.removeFromCollection(nonSyncrootCollection, doc, session);
-        doc = session.getDocument(doc.getRef());
         assertEquals(fsItem, defaultFileSystemItemFactory.getFileSystemItem(doc));
     }
 

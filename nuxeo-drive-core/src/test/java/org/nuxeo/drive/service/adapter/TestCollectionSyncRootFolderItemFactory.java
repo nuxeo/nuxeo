@@ -91,11 +91,13 @@ public class TestCollectionSyncRootFolderItemFactory {
         doc1.setPropertyValue("file:content", new StringBlob("Content of file 1."));
         doc1 = session.createDocument(doc1);
         collectionManager.addToCollection(collection, doc1, session);
+        assertTrue(collectionManager.isInCollection(collection, doc1, session));
         DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
         doc2.setPropertyValue("dc:title", "doc2");
         doc2.setPropertyValue("file:content", new StringBlob("Content of file 2."));
         doc2 = session.createDocument(doc2);
         collectionManager.addToCollection(collection, doc2, session);
+        assertTrue(collectionManager.isInCollection(collection, doc2, session));
 
         log.trace("Check document that is not a Collection");
         assertFalse(collectionSyncRootFolderItemFactory.isFileSystemItem(session.getRootDocument()));
@@ -146,6 +148,7 @@ public class TestCollectionSyncRootFolderItemFactory {
 
         log.trace("Test AbstractDocumentBackedFileSystemItem#delete");
         child1.delete();
+        doc1 = session.getDocument(doc1.getRef());
         assertTrue(!doc1.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE));
         assertFalse(collectionManager.isInCollection(collection, doc1, session));
     }
