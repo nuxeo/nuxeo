@@ -31,8 +31,7 @@ class Spreadsheet {
     this._data = [];
     this.options = {
       data: this._data,
-      autoColumnSize: false,
-      colWidths: 200,
+      autoColumnSize: true,
       stretchH: 'all',
       rowHeaders: true,
       manualColumnResize: true,
@@ -48,7 +47,7 @@ class Spreadsheet {
 
     this.query = new Query(connection);
     // include the user's permission on each document
-    this.query.enrich('document', 'permissions');
+    this.query.enrich('document', 'permissions', 'thumbnail');
     // fetch every property and versioning information
     this.query.fetch('document', 'properties', 'versionLabel');
     // fetch parent for directory entries

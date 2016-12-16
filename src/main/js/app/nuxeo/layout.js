@@ -31,7 +31,7 @@ class Layout {
   fetch() {
     return new Promise((resolve, reject) => {
       var request = this.conn.request('/site/layout-manager/layouts/json?layoutName=' + this.name + '&lang=' + this.lang).repositoryName(undefined);
-      request._url = this.conn.baseURL;
+      request._url = this.conn.baseURL;	
 
       request.get((error, def) => {
         if (error) {

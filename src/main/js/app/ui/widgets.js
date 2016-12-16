@@ -15,10 +15,13 @@
  *     Nelson Silva <nelson.silva@inevo.pt>
  */
 import {DirectoryEditor, DirectoryRenderer} from './editors/directory';
+import {ProdLineDirectoryEditor} from './editors/prodLineDirectory';
 import {DocumentEditor} from './editors/document';
 import {UserEditor, UserRenderer} from './editors/user';
+import {ImageRenderer} from './editors/image';
 
 Handsontable.editors.registerEditor('directory', DirectoryEditor);
+Handsontable.editors.registerEditor('product_line', ProdLineDirectoryEditor);
 Handsontable.editors.registerEditor('document', DocumentEditor);
 Handsontable.editors.registerEditor('user', UserEditor);
 
@@ -55,6 +58,18 @@ export const WIDGETS = {
   },
   listing_title_link: {
     type: 'text'
+  },
+  listing_thumbnail: {
+	  	type: 'viewImage',
+	    field: 'thumbnailURL'
+  },
+  product_line: {
+	type: 'productLineType',
+	properties: {
+      any: {
+        directoryName: 'ProductLines'
+      }
+    }
   }
 };
 
@@ -87,6 +102,10 @@ export const WIDGET_TYPES = {
   },
 
   // SUGGESTION
+  productLineType: {
+    renderer: DirectoryRenderer,
+    editor: 'product_line'
+  },
   suggestOneDirectory: {
     renderer: DirectoryRenderer,
     editor: 'directory'
@@ -111,5 +130,8 @@ export const WIDGET_TYPES = {
   multipleDocumentsSuggestion: {
     editor: 'document',
     multiple: true
-  }
+  },
+  viewImage: {
+	    renderer: ImageRenderer
+	  }
 };

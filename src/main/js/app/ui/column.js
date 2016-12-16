@@ -62,6 +62,7 @@ class Column {
     if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].field) {
       return SPECIAL_FIELDS[this.field].field;
     }
+
     return `properties.${this.field}`;
   }
 
@@ -123,6 +124,12 @@ const SPECIAL_FIELDS = {
       readOnly: true
     },
     field: 'versionLabel'
+  },
+  'thumbnailURL': {
+	widget: {
+      readOnly: true
+    },
+	field: 'contextParameters.thumbnail.url'
   }
 };
 
