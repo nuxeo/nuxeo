@@ -74,8 +74,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         awaitCollectionWorks();
 
         for (DocumentModel file : files) {
-            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef()).getAdapter(
-                    CollectionMember.class);
+            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef())
+                                                              .getAdapter(CollectionMember.class);
 
             assertFalse(collectionMemberAdapter.getCollectionIds().contains(newCollectionId));
         }
@@ -109,8 +109,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         awaitCollectionWorks();
 
         for (int i = 1; i <= nbCollection; i++) {
-            DocumentModel collectionModel = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/"
-                    + COLLECTION_NAME + i));
+            DocumentModel collectionModel = session.getDocument(
+                    new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME + i));
             Collection collection = collectionModel.getAdapter(Collection.class);
             assertFalse(collection.getCollectedDocumentIds().contains(testFileId));
         }
