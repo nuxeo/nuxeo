@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Estelle Giuy <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.core.io.download;
 
@@ -133,6 +134,27 @@ public interface DownloadService {
      * @since 9.1
      */
     String getDownloadUrl(String storeKey);
+
+    /**
+     * Finds a document's blob given the URL to use to download the blob.
+     *
+     * @param url the URL to use to download the blob
+     * @return the blob, or {@code null} if not found
+     * @since 9.1
+     */
+    Blob resolveBlobFromDownloadUrl(String url);
+
+    /**
+     * Handles the download of a document.
+     *
+     * @param req the request
+     * @param resp the response
+     * @param baseUrl the request baseUrl
+     * @param path the request path, without the context
+     * @since 9.1
+     */
+    void handleDownload(HttpServletRequest req, HttpServletResponse resp, String baseUrl, String path)
+            throws IOException;
 
     /**
      * Triggers a blobs download. Once the temporary blobs are transfered from the store, they are

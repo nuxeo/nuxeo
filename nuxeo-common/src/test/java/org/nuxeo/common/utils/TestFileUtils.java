@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 
 package org.nuxeo.common.utils;
@@ -151,6 +151,14 @@ public class TestFileUtils {
     @Deprecated
     public static boolean isWindows() {
         return SystemUtils.IS_OS_WINDOWS;
+    }
+
+    @Test
+    public void testGetSafeFilename() {
+        assertEquals("my-image.png", FileUtils.getSafeFilename("my-image.png"));
+        assertEquals("_", FileUtils.getSafeFilename(".."));
+        assertEquals("tmp___2349_876398___foo.png", FileUtils.getSafeFilename("tmp/../2349:876398/*/foo.png"));
+        assertEquals("_tmp___2349_876398___foo.png", FileUtils.getSafeFilename("\\tmp\\..\\2349:876398\\*\\foo.png"));
     }
 
 }
