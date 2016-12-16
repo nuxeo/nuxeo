@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.core.io.download;
 
@@ -22,6 +23,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -35,7 +37,10 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -43,17 +48,22 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.local.LoginStack;
+import org.nuxeo.ecm.core.io.download.DownloadServiceImpl.Action;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -288,6 +298,48 @@ public class TestDownloadService {
 
         // the file is gone
         assertFalse(blob.getFile().exists());
+    }
+
+    @Test
+    public void testGetDownloadPathAndAction() {
+        DownloadServiceImpl downloadServiceImpl = new DownloadServiceImpl();
+        String path = "nxfile/default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png";
+        Pair<String, Action> pair = downloadServiceImpl.getDownloadPathAndAction(path);
+        assertEquals("default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", pair.getLeft());
+        assertEquals(Action.DOWNLOAD_FROM_DOC, pair.getRight());
+
+        path = "plop/default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png";
+        pair = downloadServiceImpl.getDownloadPathAndAction(path);
+        assertNull(pair);
+    }
+
+    @Test
+    public void testResolveBlobFromDownloadUrl() throws IOException {
+        String repositoryName = "test";
+        CoreSession session = CoreInstance.openCoreSession(repositoryName);
+        Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
+        DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
+        doc.setProperty("dublincore", "title", "Diamonds are forever");
+
+        FileBlob blob = new FileBlob("Synopsis");
+        String blobFilename = "synopsis.txt";
+        blob.setFilename(blobFilename);
+
+        Map<String, Object> fileMap = new HashMap<String, Object>();
+        fileMap.put("file", blob);
+        fileMap.put("filename", blob.getFilename());
+        List<Map<String, Object>> docFiles = new ArrayList<Map<String, Object>>();
+        docFiles.add(fileMap);
+
+        doc.setProperty("files", "files", docFiles);
+        doc = session.createDocument(doc);
+        session.save();
+
+        String url = "http://localhost:8080/nuxeo/nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/"
+                + blobFilename;
+        Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(url);
+        assertEquals(blob, resolvedBlob);
+        session.close();
     }
 
 }
