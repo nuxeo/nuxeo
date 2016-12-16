@@ -160,8 +160,8 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     public void checkCanAddToCollection(final DocumentModel collection, final DocumentModel documentToBeAdded,
             final CoreSession session) {
         if (!isCollectable(documentToBeAdded)) {
-            throw new IllegalArgumentException(String.format("Document %s is not collectable",
-                    documentToBeAdded.getTitle()));
+            throw new IllegalArgumentException(
+                    String.format("Document %s is not collectable", documentToBeAdded.getTitle()));
         }
         checkCanCollectInCollection(collection, session);
     }
@@ -169,11 +169,9 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     /**
      * @since 8.4
      */
-    protected void checkCanCollectInCollection(final DocumentModel collection,
-            final CoreSession session) {
+    protected void checkCanCollectInCollection(final DocumentModel collection, final CoreSession session) {
         if (!isCollection(collection)) {
-            throw new IllegalArgumentException(String.format("Document %s is not a collection",
-                    collection.getTitle()));
+            throw new IllegalArgumentException(String.format("Document %s is not a collection", collection.getTitle()));
         }
         if (!session.hasPermission(collection.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
             throw new DocumentSecurityException(String.format(PERMISSION_ERROR_MESSAGE,
@@ -191,14 +189,13 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         return session.createDocument(newCollection);
     }
 
-    protected DocumentModel createDefaultCollections(final CoreSession session, DocumentModel userWorkspace)
-            {
+    protected DocumentModel createDefaultCollections(final CoreSession session, DocumentModel userWorkspace) {
         DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME, CollectionConstants.COLLECTIONS_TYPE);
         String title = null;
         try {
-            title = I18NUtils.getMessageString("messages", CollectionConstants.DEFAULT_COLLECTIONS_TITLE,
-                    new Object[0], getLocale(session));
+            title = I18NUtils.getMessageString("messages", CollectionConstants.DEFAULT_COLLECTIONS_TITLE, new Object[0],
+                    getLocale(session));
         } catch (MissingResourceException e) {
             title = CollectionConstants.DEFAULT_COLLECTIONS_TITLE;
         }
@@ -218,8 +215,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session)
-            {
+    public DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session) {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
         final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
@@ -276,8 +272,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public boolean hasVisibleCollection(final DocumentModel collectionMember, CoreSession session)
-            {
+    public boolean hasVisibleCollection(final DocumentModel collectionMember, CoreSession session) {
         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
         List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
         for (final String collectionId : collectionIds) {
@@ -305,8 +300,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public boolean isInCollection(DocumentModel collection, DocumentModel document, CoreSession session)
-            {
+    public boolean isInCollection(DocumentModel collection, DocumentModel document, CoreSession session) {
         if (isCollected(document)) {
             final CollectionMember collectionMemberAdapter = document.getAdapter(CollectionMember.class);
             return collectionMemberAdapter.getCollectionIds().contains(collection.getId());
@@ -426,8 +420,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public DocumentModel createCollection(final CoreSession session, String title, String description, String path)
-            {
+    public DocumentModel createCollection(final CoreSession session, String title, String description, String path) {
         DocumentModel newCollection = null;
         // Test if the path is null or empty
         if (StringUtils.isEmpty(path)) {
@@ -457,8 +450,8 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         return new Locale(Locale.getDefault().getLanguage());
     }
 
-    protected void fireEvent(DocumentModel doc, CoreSession session, String eventName, Map<String, Serializable> props)
-            {
+    protected void fireEvent(DocumentModel doc, CoreSession session, String eventName,
+            Map<String, Serializable> props) {
         EventService eventService = Framework.getService(EventService.class);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
@@ -472,7 +465,8 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     @Override
     public boolean moveMembers(final CoreSession session, final DocumentModel collection, final DocumentModel member1,
             final DocumentModel member2) {
-        checkCanCollectInCollection(collection, session);;
+        checkCanCollectInCollection(collection, session);
+        ;
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         boolean result = collectionAdapter.moveMembers(member1.getId(), member2 != null ? member2.getId() : null);
         if (result) {

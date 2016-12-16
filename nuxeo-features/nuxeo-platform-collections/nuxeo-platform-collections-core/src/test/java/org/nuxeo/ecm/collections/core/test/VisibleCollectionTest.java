@@ -52,8 +52,8 @@ public class VisibleCollectionTest extends CollectionTestCase {
         // Check visible collections limited to 2
         collections = collectionManager.getVisibleCollection(testFile, 2, session);
         assertEquals(2, collections.size());
-        DocumentModel testCollection2 = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/"
-                + COLLECTION_NAME_2));
+        DocumentModel testCollection2 = session.getDocument(
+                new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME_2));
         assertEquals(testCollection.getId(), collections.get(0).getId());
         assertEquals(testCollection2.getId(), collections.get(1).getId());
 

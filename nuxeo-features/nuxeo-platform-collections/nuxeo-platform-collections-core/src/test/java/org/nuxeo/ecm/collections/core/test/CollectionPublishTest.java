@@ -46,23 +46,27 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CollectionFeature.class)
-@Deploy({
-    "org.nuxeo.ecm.user.center.dashboard"
-})
+@Deploy({ "org.nuxeo.ecm.user.center.dashboard" })
 public class CollectionPublishTest {
 
     protected static final String TEST_FILE_NAME = "testFile";
 
-    @Inject FavoritesManager favoritesManager;
+    @Inject
+    FavoritesManager favoritesManager;
 
-    @Inject CoreSession session;
-    
-    @Inject PageProviderService pps;
-    
-    @Inject protected EventService eventService;
-    
-    @Test public void addToFavoritesAndPublish() throws Exception {
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
+    @Inject
+    CoreSession session;
+
+    @Inject
+    PageProviderService pps;
+
+    @Inject
+    protected EventService eventService;
+
+    @Test
+    public void addToFavoritesAndPublish() throws Exception {
+        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
+                "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
@@ -75,10 +79,11 @@ public class CollectionPublishTest {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         DocumentModel favoritesDoc = favoritesManager.getFavorites(null, session);
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider("user_favorites", sortInfos, null, null, props, new Object[] { favoritesDoc.getId() });
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider("user_favorites",
+                sortInfos, null, null, props, new Object[] { favoritesDoc.getId() });
         List<DocumentModel> list = pageProvider.getCurrentPage();
         assertEquals(1, list.size());
-        
+
         PathRef sectionsRootRef = new PathRef("/default-domain/sections");
         assertTrue(session.exists(sectionsRootRef));
         DocumentModel sectionDoc = session.getDocument(sectionsRootRef);
