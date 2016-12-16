@@ -111,7 +111,7 @@ public class DialectMySQL extends Dialect {
         case DOUBLE:
             return jdbcInfo("DOUBLE", Types.DOUBLE);
         case TIMESTAMP:
-            return jdbcInfo("DATETIME", Types.TIMESTAMP);
+            return jdbcInfo("DATETIME(3)", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("VARCHAR(250) BINARY", Types.VARCHAR);
             // -----

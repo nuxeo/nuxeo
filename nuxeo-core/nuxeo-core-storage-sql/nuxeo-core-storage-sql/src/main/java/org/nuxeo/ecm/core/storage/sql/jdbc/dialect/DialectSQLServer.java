@@ -235,7 +235,7 @@ public class DialectSQLServer extends Dialect {
         case DOUBLE:
             return jdbcInfo("DOUBLE PRECISION", Types.DOUBLE);
         case TIMESTAMP:
-            return jdbcInfo("DATETIME", Types.TIMESTAMP);
+            return jdbcInfo("DATETIME2(3)", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("NVARCHAR(250)", Types.VARCHAR);
             // -----

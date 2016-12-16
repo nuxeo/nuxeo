@@ -4273,4 +4273,18 @@ public class TestSQLRepositoryAPI {
         assertEquals("Administrator", lock.getOwner());
     }
 
+    @Test
+    public void testChangeToken() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        doc = session.createDocument(doc);
+        session.save();
+        String token = doc.getChangeToken();
+
+        nextTransaction();
+        reopenSession();
+        doc = session.getDocument(doc.getRef());
+        assertEquals(token, doc.getChangeToken());
+    }
+
 }
