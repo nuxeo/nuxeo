@@ -99,19 +99,13 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
             @Override
             public void run() {
 
-                DocumentModel temp = documentToBeAdded;
-
-                temp.addFacet(CollectionConstants.COLLECTABLE_FACET);
-
-                disableEvents(temp);
-
-                temp = session.saveDocument(temp);
+                documentToBeAdded.addFacet(CollectionConstants.COLLECTABLE_FACET);
 
                 // We want to disable the following listener on a
                 // collection member when it is added to a collection
-                disableEvents(temp);
+                disableEvents(documentToBeAdded);
 
-                CollectionMember docAdapter = temp.getAdapter(CollectionMember.class);
+                CollectionMember docAdapter = documentToBeAdded.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
                 DocumentModel addedDoc = session.saveDocument(docAdapter.getDocument());
                 fireEvent(addedDoc, session, CollectionConstants.ADDED_TO_COLLECTION, props);

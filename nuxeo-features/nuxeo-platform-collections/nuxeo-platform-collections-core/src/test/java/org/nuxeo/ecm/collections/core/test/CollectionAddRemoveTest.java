@@ -188,7 +188,6 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
         collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, testFile, session);
-        testFile = session.getDocument(testFile.getRef());
         DocumentModel copiedTestFile = session.copy(testFile.getRef(), testFile.getParentRef(),
                 TEST_FILE_NAME + "_BIS");
 
@@ -198,8 +197,6 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         // Let's add to another collection and see it still does not belong to the original one.
         collectionManager.addToNewCollection(COLLECTION_NAME + "_BIS", COLLECTION_DESCRIPTION + "_BIS", copiedTestFile,
                 session);
-
-        copiedTestFile = session.getDocument(copiedTestFile.getRef());
 
         final String collectionPath = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME;
         DocumentRef collectionPathRef = new PathRef(collectionPath);

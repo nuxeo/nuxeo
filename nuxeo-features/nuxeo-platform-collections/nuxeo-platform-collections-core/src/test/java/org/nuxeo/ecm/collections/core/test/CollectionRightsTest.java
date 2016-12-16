@@ -100,8 +100,6 @@ public class CollectionRightsTest {
 
         collectionManager.addToNewCollection("Collection1", "blablabla", testFile, userSession);
 
-        testFile = userSession.getDocument(docRef);
-
         DataModel dm = testFile.getDataModel("dublincore");
 
         String[] contributorsArray = (String[]) dm.getData("contributors");

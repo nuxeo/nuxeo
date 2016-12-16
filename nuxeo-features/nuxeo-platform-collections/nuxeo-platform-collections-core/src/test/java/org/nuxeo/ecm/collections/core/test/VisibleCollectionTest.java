@@ -41,7 +41,6 @@ public class VisibleCollectionTest extends CollectionTestCase {
         collectionManager.addToNewCollection(COLLECTION_NAME_2, COLLECTION_DESCRIPTION, testFile, session);
 
         // Check visible collections limited to 1
-        testFile = session.getDocument(testFile.getRef());
         List<DocumentModel> collections = collectionManager.getVisibleCollection(testFile, 1, session);
         assertEquals(1, collections.size());
         DocumentModel testCollection = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME));
