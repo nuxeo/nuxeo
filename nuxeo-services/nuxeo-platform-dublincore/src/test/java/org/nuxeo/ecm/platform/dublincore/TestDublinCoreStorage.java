@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.dublincore;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
@@ -374,8 +375,8 @@ public class TestDublinCoreStorage {
         waitForAsyncCompletion();
 
         assertNotNull(copy);
-        assertEqualsCalendar(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
-        assertEqualsCalendar(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+        assertEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
     }
 
     @Test
@@ -387,8 +388,8 @@ public class TestDublinCoreStorage {
         waitForAsyncCompletion();
 
         assertNotNull(copy);
-        assertNotEqualsCalendar(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
-        assertNotEqualsCalendar(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+        assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
     }
 
     @Test
@@ -403,16 +404,8 @@ public class TestDublinCoreStorage {
         waitForAsyncCompletion();
 
         assertNotNull(copy);
-        assertNotEqualsCalendar(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
-        assertNotEqualsCalendar(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
-    }
-
-    private void assertEqualsCalendar(Object expected, Object actual) {
-        storageConfiguration.assertEqualsTimestamp((Calendar) expected, (Calendar) actual);
-    }
-
-    private void assertNotEqualsCalendar(Object expected, Object actual) {
-        storageConfiguration.assertNotEqualsTimestamp((Calendar) expected, (Calendar) actual);
+        assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
     }
 
     protected void waitForAsyncCompletion() {

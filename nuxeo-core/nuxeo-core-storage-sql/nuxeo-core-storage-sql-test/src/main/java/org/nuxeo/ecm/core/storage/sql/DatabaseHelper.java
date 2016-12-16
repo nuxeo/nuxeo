@@ -246,25 +246,6 @@ public abstract class DatabaseHelper {
     }
 
     /**
-     * For databases that don't have subsecond resolution, sleep a bit to get to the next second.
-     */
-    public void maybeSleepToNextSecond() {
-        if (!hasSubSecondResolution()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-
-    /**
-     * For databases that don't have subsecond resolution, like MySQL.
-     */
-    public boolean hasSubSecondResolution() {
-        return true;
-    }
-
-    /**
      * For databases that fail to cascade deletes beyond a certain depth.
      */
     public int getRecursiveRemovalDepthLimit() {
