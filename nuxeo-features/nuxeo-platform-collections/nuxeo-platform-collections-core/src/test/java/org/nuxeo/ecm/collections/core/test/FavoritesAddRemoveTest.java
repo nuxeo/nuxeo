@@ -62,15 +62,9 @@ public class FavoritesAddRemoveTest {
         testFile = session.createDocument(testFile);
 
         favoritesManager.addToFavorites(testFile, session);
-
-        testFile = session.getDocument(testFile.getRef());
-
         assertTrue(favoritesManager.isFavorite(testFile, session));
 
         favoritesManager.removeFromFavorites(testFile, session);
-
-        testFile = session.getDocument(testFile.getRef());
-
         assertFalse(favoritesManager.isFavorite(testFile, session));
     }
 

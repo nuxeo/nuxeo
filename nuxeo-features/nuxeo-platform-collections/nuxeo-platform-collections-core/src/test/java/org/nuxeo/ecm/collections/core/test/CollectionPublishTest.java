@@ -71,9 +71,8 @@ public class CollectionPublishTest {
         DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
         testFile = session.createDocument(testFile);
         favoritesManager.addToFavorites(testFile, session);
-        testFile = session.getDocument(testFile.getRef());
         assertTrue(favoritesManager.isFavorite(testFile, session));
-        
+
         waitForAsyncCompletion();
         List<SortInfo> sortInfos = null;
         Map<String, Serializable> props = new HashMap<String, Serializable>();
