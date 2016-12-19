@@ -87,11 +87,11 @@ public class Insert implements Serializable {
             buf.append(dialect.getNoColumnsInsertString(idColumn));
         } else {
             buf.append('(');
-            buf.append(StringUtils.join(columnNames, ", "));
+            buf.append(String.join(", ", columnNames));
             buf.append(") ");
             if (insertValues == null) {
                 buf.append("VALUES (");
-                buf.append(StringUtils.join(values, ", "));
+                buf.append(String.join(", ", values));
                 buf.append(')');
             } else {
                 buf.append(insertValues);

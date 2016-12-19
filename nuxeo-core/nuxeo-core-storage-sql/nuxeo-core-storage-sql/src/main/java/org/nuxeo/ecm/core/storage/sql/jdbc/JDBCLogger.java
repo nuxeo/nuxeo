@@ -28,8 +28,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -108,15 +108,15 @@ public class JDBCLogger {
             Serializable v = column.getFromResultSet(rs, i);
             res.add(column.getKey() + "=" + loggedValue(v));
         }
-        log("  -> " + StringUtils.join(res, ", "));
+        log("  -> " + String.join(", ", res));
     }
 
     public void logMap(Map<String, Serializable> map) throws SQLException {
-        List<String> res = new LinkedList<>();
-        for (Entry<String, Serializable> en : map.entrySet()) {
-            res.add(en.getKey() + "=" + loggedValue(en.getValue()));
-        }
-        log("  -> " + StringUtils.join(res, ", "));
+        String result = map.entrySet()
+                           .stream()
+                           .map(entry -> entry.getKey() + "=" + loggedValue(entry.getValue()))
+                           .collect(Collectors.joining(", "));
+        log("  -> " + result);
     }
 
     public void logIds(List<Serializable> ids, boolean countTotal, long totalSize) {

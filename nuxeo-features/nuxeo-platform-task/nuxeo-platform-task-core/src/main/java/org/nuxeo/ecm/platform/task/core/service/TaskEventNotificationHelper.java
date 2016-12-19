@@ -98,11 +98,6 @@ public final class TaskEventNotificationHelper {
 
         List<String> docIds = new ArrayList<>();
         docIds.addAll(task.getTargetDocumentsIds());
-        // handle compatibility with tasks created before 5.8
-        String docId = task.getTargetDocumentId();
-        if (!docIds.contains(docId)) {
-            docIds.add(docId);
-        }
         // also handle compatibility with deprecated jbpm tasks
         String docIdVar = task.getVariable(TaskService.VariableName.documentId.name());
         if (!docIds.contains(docIdVar)) {
@@ -117,7 +112,7 @@ public final class TaskEventNotificationHelper {
                     documents.add(document);
                 }
             } catch (DocumentNotFoundException e) {
-                log.error(String.format("Could not fetch document with id '%s:%s' for notification", docRepo, docId), e);
+                log.error(String.format("Could not fetch document with id '%s:(%s)' for notification", docRepo, docIds), e);
             }
         } else {
             log.error(String.format("Could not resolve document for notification: "

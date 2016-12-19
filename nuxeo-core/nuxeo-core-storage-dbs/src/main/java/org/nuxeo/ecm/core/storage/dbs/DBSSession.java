@@ -63,9 +63,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.text.Normalizer;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -1040,25 +1038,6 @@ public class DBSSession implements Session {
             // version & live document
             props.put(KEY_LIFECYCLE_POLICY, properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
             props.put(KEY_LIFECYCLE_STATE, properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
-            // compat with old lock import
-            @SuppressWarnings("deprecation")
-            String key = (String) properties.get(CoreSession.IMPORT_LOCK);
-            if (key != null) {
-                String[] values = key.split(":");
-                if (values.length == 2) {
-                    String owner = values[0];
-                    Calendar created = new GregorianCalendar();
-                    try {
-                        created.setTimeInMillis(DateFormat.getDateInstance(DateFormat.MEDIUM)
-                                                          .parse(values[1])
-                                                          .getTime());
-                    } catch (ParseException e) {
-                        // use current date
-                    }
-                    props.put(KEY_LOCK_OWNER, owner);
-                    props.put(KEY_LOCK_CREATED, created);
-                }
-            }
 
             Serializable importLockOwnerProp = properties.get(CoreSession.IMPORT_LOCK_OWNER);
             if (importLockOwnerProp != null) {

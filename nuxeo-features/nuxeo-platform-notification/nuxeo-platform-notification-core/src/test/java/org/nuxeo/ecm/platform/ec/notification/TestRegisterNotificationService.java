@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
-import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -50,8 +49,6 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     private static final String BUNDLE_TEST_NAME = "org.nuxeo.ecm.platform.notification.core.tests";
 
     NotificationService notificationService;
-
-    NotificationRegistry notificationRegistry;
 
     EmailHelper mailHelper = new EmailHelper();
 
@@ -90,7 +87,7 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         String template = mailHelper.evaluateMvelExpresssion(notif.getTemplateExpr(), infos);
         assertEquals("myDynamicTemplate", template);
 
-        notifications = getRegistry().getNotificationsForSubscriptions("section");
+        notifications = getService().getNotificationsForSubscriptions("section");
         assertEquals(1, notifications.size());
 
         URL newModifTemplate = NotificationService.getTemplateURL("test-template");
@@ -140,10 +137,10 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         assertEquals("test-template-ov", notif.getTemplate());
         assertEquals("NotificationContext['exp1-ov']", notif.getTemplateExpr());
 
-        notifications = getRegistry().getNotificationsForSubscriptions("section");
+        notifications = getService().getNotificationsForSubscriptions("section");
         assertEquals(0, notifications.size());
 
-        notifications = getRegistry().getNotificationsForSubscriptions("folder");
+        notifications = getService().getNotificationsForSubscriptions("folder");
         assertEquals(0, notifications.size());
 
         URL newModifTemplate = NotificationService.getTemplateURL("test-template");
@@ -188,13 +185,6 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
             notificationService = (NotificationService) Framework.getLocalService(NotificationManager.class);
         }
         return notificationService;
-    }
-
-    public NotificationRegistry getRegistry() {
-        if (notificationRegistry == null) {
-            notificationRegistry = getService().getNotificationRegistry();
-        }
-        return notificationRegistry;
     }
 
 }

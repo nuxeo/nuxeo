@@ -76,20 +76,6 @@ public class DocumentViewImpl implements DocumentView, Serializable {
         viewId = typeInfo.getDefaultView();
     }
 
-    @Deprecated
-    public DocumentViewImpl(DocumentLocation docLoc, String viewId, String tabId, String subURI) {
-        documentLocation = docLoc;
-        this.viewId = viewId;
-        this.tabId = tabId;
-        if (subURI != null) {
-            subURI = subURI.trim();
-            if (subURI.length() == 0) {
-                subURI = null;
-            }
-        }
-        this.subURI = subURI;
-    }
-
     public DocumentViewImpl(DocumentLocation docLoc) {
         documentLocation = docLoc;
         subURI = null;

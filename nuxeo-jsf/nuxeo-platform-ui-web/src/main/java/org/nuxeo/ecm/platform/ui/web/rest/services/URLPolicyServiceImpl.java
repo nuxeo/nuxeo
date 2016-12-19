@@ -317,36 +317,6 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         return url;
     }
 
-    /**
-     * Returns patterns sorted according to:
-     * <ul>
-     * <li>First patterns holding the given view id</li>
-     * <li>The default pattern if it does not hold this view id</li>
-     * <li>Other patterns not holding this view id</li>
-     * </ul>
-     *
-     * @since 5.4.2
-     * @param viewId
-     * @deprecated since 5.5
-     */
-    @Deprecated
-    protected List<URLPatternDescriptor> getSortedURLPatternDescriptorsFor(String viewId) {
-        List<URLPatternDescriptor> sortedDescriptors = new ArrayList<URLPatternDescriptor>();
-        List<URLPatternDescriptor> nonMatchingViewIdDescriptors = new ArrayList<URLPatternDescriptor>();
-
-        List<URLPatternDescriptor> descriptors = getURLPatternDescriptors();
-        for (URLPatternDescriptor descriptor : descriptors) {
-            List<String> handledViewIds = descriptor.getViewIds();
-            if (handledViewIds != null && handledViewIds.contains(viewId)) {
-                sortedDescriptors.add(descriptor);
-            } else {
-                nonMatchingViewIdDescriptors.add(descriptor);
-            }
-        }
-        sortedDescriptors.addAll(nonMatchingViewIdDescriptors);
-        return sortedDescriptors;
-    }
-
     @Override
     public String getUrlFromDocumentView(String patternName, DocumentView docView, String baseUrl) {
         if (DOWNLOADFILE_PATTERN.equals(patternName)) {

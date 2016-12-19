@@ -7,7 +7,6 @@
 	>
 
 	<xs:element name="icon" type="xs:string"/>
-	<xs:element name="size" type="xs:integer"/>
 
 </xs:schema>
 

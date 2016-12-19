@@ -87,14 +87,14 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         // test rows
         LayoutRowDefinition[] rows = dublincore.getRows();
         assertEquals(3, rows.length);
-        assertEquals(1, rows[0].getWidgets().length);
-        assertEquals("title", rows[0].getWidgets()[0]);
-        assertEquals(1, rows[1].getWidgets().length);
-        assertEquals("description", rows[1].getWidgets()[0]);
-        assertEquals(3, rows[2].getWidgets().length);
-        assertEquals("creationDate", rows[2].getWidgets()[0]);
-        assertEquals("", rows[2].getWidgets()[1]);
-        assertEquals("modificationDate", rows[2].getWidgets()[2]);
+        assertEquals(1, rows[0].getWidgetReferences().length);
+        assertEquals("title", rows[0].getWidgetReferences()[0].getName());
+        assertEquals(1, rows[1].getWidgetReferences().length);
+        assertEquals("description", rows[1].getWidgetReferences()[0].getName());
+        assertEquals(3, rows[2].getWidgetReferences().length);
+        assertEquals("creationDate", rows[2].getWidgetReferences()[0].getName());
+        assertEquals("", rows[2].getWidgetReferences()[1].getName());
+        assertEquals("modificationDate", rows[2].getWidgetReferences()[2].getName());
         assertEquals(3, dublincore.getColumns());
 
         // test widgets
@@ -181,8 +181,8 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         // test rows
         LayoutRowDefinition[] rows = filesLayout.getRows();
         assertEquals(1, rows.length);
-        assertEquals(1, rows[0].getWidgets().length);
-        assertEquals("files", rows[0].getWidgets()[0]);
+        assertEquals(1, rows[0].getWidgetReferences().length);
+        assertEquals("files", rows[0].getWidgetReferences()[0].getName());
         assertEquals(1, filesLayout.getColumns());
 
         // test widgets

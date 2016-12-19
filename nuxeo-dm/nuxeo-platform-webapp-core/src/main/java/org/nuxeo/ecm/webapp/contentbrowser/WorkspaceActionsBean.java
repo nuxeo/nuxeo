@@ -37,14 +37,13 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Manager;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.el.ContextStringWrapper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documenttemplates.DocumentTemplatesActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 import org.nuxeo.ecm.webapp.security.SecurityActions;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Action listener that deals with operations with the workspaces.
@@ -267,7 +267,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
 
             // duplicate the template
             String title = (String) tmpWorkspace.getProperty("dublincore", "title");
-            String name = IdUtils.generatePathSegment(title);
+            String name = Framework.getService(PathSegmentService.class).generatePathSegment(title);
             documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name);
             DocumentModel created = documentManager.getChild(currentDocRef, name);
 

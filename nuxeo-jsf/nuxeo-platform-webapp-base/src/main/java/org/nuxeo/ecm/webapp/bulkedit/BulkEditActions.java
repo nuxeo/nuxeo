@@ -131,14 +131,6 @@ public class BulkEditActions implements Serializable {
         return null;
     }
 
-    /**
-     * @deprecated since 5.7. Use {@link org.nuxeo.ecm.webapp.bulkedit.BulkEditActions#bulkEditSelection()} .
-     */
-    @Deprecated
-    public void bulkEditSelectionNoRedirect() {
-        bulkEditSelection();
-    }
-
     public boolean getCanEdit() {
         if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return false;

@@ -21,7 +21,6 @@
    "properties" : {
       "common:icon" : null,
       "common:icon-expanded" : null,
-      "common:size" : null,
       "dc:contributors" : [],
       "dc:coverage" : null,
       "dc:created" : null,

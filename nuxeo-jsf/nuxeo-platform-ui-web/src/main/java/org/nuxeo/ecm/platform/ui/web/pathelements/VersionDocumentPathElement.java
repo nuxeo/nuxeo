@@ -37,9 +37,7 @@ public class VersionDocumentPathElement extends DocumentPathElement {
     @Override
     public String getName() {
         VersioningDocument docVer = docModel.getAdapter(VersioningDocument.class);
-        String minorVer = docVer.getMinorVersion().toString();
-        String majorVer = docVer.getMajorVersion().toString();
-        return majorVer + '.' + minorVer;
+        return docVer.getVersionLabel();
     }
 
     @Override

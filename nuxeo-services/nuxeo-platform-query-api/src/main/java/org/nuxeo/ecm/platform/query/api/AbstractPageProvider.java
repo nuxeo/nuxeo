@@ -179,14 +179,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
-    /**
-     * @deprecated: use {@link #firstPage()} instead
-     */
-    @Deprecated
-    public void rewind() {
-        firstPage();
-    }
-
     @Override
     public long getCurrentPageIndex() {
         long pageSize = getPageSize();
@@ -471,14 +463,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         pageChanged();
     }
 
-    /**
-     * @deprecated: use {@link #lastPage()} instead
-     */
-    @Deprecated
-    public void last() {
-        lastPage();
-    }
-
     @Override
     public void nextPage() {
         long pageSize = getPageSize();
@@ -490,14 +474,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         offset += pageSize;
         setCurrentPageOffset(offset);
         pageChanged();
-    }
-
-    /**
-     * @deprecated: use {@link #nextPage()} instead
-     */
-    @Deprecated
-    public void next() {
-        nextPage();
     }
 
     @Override
@@ -513,14 +489,6 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             setCurrentPageOffset(offset);
             pageChanged();
         }
-    }
-
-    /**
-     * @deprecated: use {@link #previousPage()} instead
-     */
-    @Deprecated
-    public void previous() {
-        previousPage();
     }
 
     /**

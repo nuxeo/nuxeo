@@ -36,12 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoExceptionFilter implements Filter {
 
-    /**
-     * @deprecated use {@link NuxeoExceptionHandler#EXCEPTION_HANDLER_MARKER}
-     */
-    @Deprecated
-    public static final String EXCEPTION_FILTER_ATTRIBUTE = "NuxeoExceptionFilter";
-
     private NuxeoExceptionHandler exceptionHandler;
 
     private static final Log log = LogFactory.getLog(NuxeoExceptionFilter.class);

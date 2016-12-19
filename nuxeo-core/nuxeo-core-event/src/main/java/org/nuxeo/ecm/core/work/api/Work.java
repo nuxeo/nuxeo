@@ -257,19 +257,6 @@ public interface Work extends Serializable {
     State getWorkInstanceState();
 
     /**
-     * DO NOT USE THIS - gets the state of this work instance.
-     * <p>
-     * This should not be used because for non in-memory persistence, the work instance gets serialized and deserialized
-     * for running and when retrieved after completion, and therefore the original instance cannot get updated after the
-     * original scheduling.
-     *
-     * @return the state
-     * @deprecated since 5.8, use {@link WorkManager#getWorkState} instead
-     */
-    @Deprecated
-    State getState();
-
-    /**
      * Gets the category for this work.
      * <p>
      * Used to choose an execution queue.

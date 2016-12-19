@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -262,7 +261,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     @Override
     public DocumentModel getTargetDocumentModel(Task task, CoreSession coreSession) {
         try {
-            return coreSession.getDocument(new IdRef(task.getTargetDocumentId()));
+            // TODO handle while target documents from task
+            return coreSession.getDocument(new IdRef(task.getTargetDocumentsIds().get(0)));
         } catch (DocumentNotFoundException e) {
             return null;
         }
@@ -409,18 +409,6 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             if (newTasks != null) {
                 tasks.addAll(newTasks);
             }
-        }
-        return tasks;
-    }
-
-    /**
-     * @deprecated since 5.6
-     */
-    @Deprecated
-    protected List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
-        List<Task> tasks = new ArrayList<>();
-        for (DocumentModel doc : taskDocuments) {
-            tasks.add(doc.getAdapter(Task.class));
         }
         return tasks;
     }

@@ -81,54 +81,15 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected Map<String, List<LayoutDefinition>> fieldLayouts;
 
-    @SuppressWarnings({ "unchecked" })
     public WidgetTypeConfigurationImpl() {
-        this(null, null, null, null, false, Collections.emptyMap(), Collections.emptyList(), false, false, false, false,
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyMap());
-    }
-
-    /**
-     * @deprecated since 5.6: use setters instead
-     */
-    @Deprecated
-    public WidgetTypeConfigurationImpl(String sinceVersion, String title, String description, String demoId,
-            boolean demoPreviewEnabled, Map<String, Serializable> properties, List<String> supportedModes,
-            boolean acceptingSubWidgets, boolean list, boolean complex, List<String> supportedFieldTypes,
-            List<String> defaultFieldTypes, List<FieldDefinition> defaultFieldDefinitions, List<String> categories,
-            Map<String, List<LayoutDefinition>> propertyLayouts) {
-        this(sinceVersion, title, description, demoId, demoPreviewEnabled, properties, supportedModes,
-                acceptingSubWidgets, list, complex, false, supportedFieldTypes, defaultFieldTypes,
-                defaultFieldDefinitions, categories, propertyLayouts);
-    }
-
-    /**
-     * @deprecated since 5.6: use setters instead
-     */
-    @Deprecated
-    public WidgetTypeConfigurationImpl(String sinceVersion, String title, String description, String demoId,
-            boolean demoPreviewEnabled, Map<String, Serializable> properties, List<String> supportedModes,
-            boolean acceptingSubWidgets, boolean list, boolean complex, boolean containingForm,
-            List<String> supportedFieldTypes, List<String> defaultFieldTypes,
-            List<FieldDefinition> defaultFieldDefinitions, List<String> categories,
-            Map<String, List<LayoutDefinition>> propertyLayouts) {
         super();
-        this.sinceVersion = sinceVersion;
-        this.title = title;
-        this.description = description;
-        this.demoId = demoId;
-        this.demoPreviewEnabled = demoPreviewEnabled;
-        this.properties = properties;
-        this.supportedModes = supportedModes;
-        this.acceptingSubWidgets = acceptingSubWidgets;
-        this.list = list;
-        this.complex = complex;
-        this.containingForm = containingForm;
-        this.supportedFieldTypes = supportedFieldTypes;
-        this.defaultFieldTypes = defaultFieldTypes;
-        this.defaultFieldDefinitions = defaultFieldDefinitions;
-        this.categories = categories;
-        this.propertyLayouts = propertyLayouts;
+        this.properties = Collections.emptyMap();
+        this.supportedModes = Collections.emptyList();
+        this.supportedFieldTypes = Collections.emptyList();
+        this.defaultFieldTypes = Collections.emptyList();
+        this.defaultFieldDefinitions = Collections.emptyList();
+        this.categories = Collections.emptyList();
+        this.propertyLayouts = Collections.emptyMap();
     }
 
     @Override

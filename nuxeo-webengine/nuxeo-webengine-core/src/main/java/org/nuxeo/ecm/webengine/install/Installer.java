@@ -121,7 +121,7 @@ public class Installer {
             throw new WebDeployException("Installation failed for bundle: " + ctx.getBundle().getSymbolicName(), e);
         } finally {
             if (deleteDir && bundleDir != null) {
-                FileUtils.deleteTree(bundleDir);
+                org.apache.commons.io.FileUtils.deleteQuietly(bundleDir);
             }
         }
     }

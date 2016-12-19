@@ -48,11 +48,6 @@ public class NuxeoSeamFlusher implements EventListener {
     protected Log log = LogFactory.getLog(NuxeoSeamFlusher.class);
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (NuxeoSeamWebGate.isInitialized() == false) {
             return;

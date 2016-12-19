@@ -56,14 +56,14 @@ public class DirectoryTreeService extends DefaultComponent {
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
         registry.addContribution(descriptor);
-        getActionService().getActionRegistry().addAction(descriptor.getAction());
+        getActionService().addAction(descriptor.getAction());
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         DirectoryTreeDescriptor descriptor = (DirectoryTreeDescriptor) contribution;
         registry.removeContribution(descriptor);
-        getActionService().getActionRegistry().removeAction(descriptor.getAction().getId());
+        getActionService().removeAction(descriptor.getAction().getId());
     }
 
     /**

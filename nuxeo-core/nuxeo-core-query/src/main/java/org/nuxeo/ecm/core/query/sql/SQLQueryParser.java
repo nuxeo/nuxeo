@@ -54,14 +54,4 @@ public final class SQLQueryParser {
         return query;
     }
 
-    /**
-     * Returns the string literal in a form ready to embed in an NXQL statement.
-     *
-     * @deprecated since 5.7, 5.6.0-HF08 use {{@link NXQL#escapeString} instead
-     */
-    @Deprecated
-    public static String prepareStringLiteral(String s) {
-        return NXQL.escapeString(s);
-    }
-
 }

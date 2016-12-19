@@ -157,7 +157,7 @@
             <property name="size">5</property>
           </properties>
         </aggregate>
-        <aggregate id="size" type="range" parameter="common:size">
+        <aggregate id="size" type="range" parameter="file:content/length">
           <field schema="advanced_search" name="size_agg"/>
           <ranges>
             <range key="small" to="2048"/>
@@ -177,7 +177,7 @@
             <dateRange key="last_month" fromDate="now-3w"/>
           </dateRanges>
         </aggregate>
-        <aggregate id="size_histo" type="histogram" parameter="common:size">
+        <aggregate id="size_histo" type="histogram" parameter="file:content/length">
           <field schema="advanced_search" name="size_histo_agg"/>
           <properties>
             <property name="interval">1024</property>

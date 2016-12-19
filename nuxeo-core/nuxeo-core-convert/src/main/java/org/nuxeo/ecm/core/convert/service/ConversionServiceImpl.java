@@ -98,10 +98,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             }
         }
 
-        @Override
-        public boolean aboutToHandleEvent(Event event) {
-            return true;
-        }
     }
 
     @Override

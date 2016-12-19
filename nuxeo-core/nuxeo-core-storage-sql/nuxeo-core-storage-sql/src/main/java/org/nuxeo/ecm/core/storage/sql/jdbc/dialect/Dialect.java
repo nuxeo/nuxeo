@@ -544,7 +544,7 @@ public abstract class Dialect {
     }
 
     public String getIndexName(String tableName, List<String> columnNames) {
-        return makeName(qualifyIndexName() ? tableName + '_' : "", StringUtils.join(columnNames, '_'), "_IDX",
+        return makeName(qualifyIndexName() ? tableName + '_' : "", String.join("_", columnNames), "_IDX",
                 getMaxIndexNameSize());
     }
 
@@ -570,7 +570,7 @@ public abstract class Dialect {
             return getCreateFulltextIndexSql(indexName, quotedIndexName, table, columns, model);
         } else {
             return String.format("CREATE INDEX %s ON %s (%s)", quotedIndexName, table.getQuotedName(),
-                    StringUtils.join(qcols, ", "));
+                    String.join(", ", qcols));
         }
     }
 
@@ -710,9 +710,9 @@ public abstract class Dialect {
     public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKeys, String referencedTable,
             String[] primaryKeys, boolean referencesPrimaryKey) {
         String sql = String.format(" ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s", constraintName,
-                StringUtils.join(foreignKeys, ", "), referencedTable);
+                String.join(", ", foreignKeys), referencedTable);
         if (!referencesPrimaryKey) {
-            sql += " (" + StringUtils.join(primaryKeys, ", ") + ')';
+            sql += " (" + String.join(", ", primaryKeys) + ')';
         }
         return sql;
     }
@@ -1266,7 +1266,7 @@ public abstract class Dialect {
      * @since 5.9.3
      */
     public String getBinaryFulltextSql(List<String> columns) {
-        return "SELECT " + StringUtils.join(columns, ", ") + " FROM fulltext WHERE id=?";
+        return "SELECT " + String.join(", ", columns) + " FROM fulltext WHERE id=?";
     }
 
     /**

@@ -32,7 +32,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("listener")
 public class ListenerDescriptor {
 
-    private static final NullListener NULL_LISTENER = new NullListener();
+    private static final EventListener NULL_LISTENER = event -> {};
 
     private static final Log log = LogFactory.getLog(ListenerDescriptor.class);
 
@@ -54,19 +54,6 @@ public class ListenerDescriptor {
     @Override
     public String toString() {
         return listener + " { " + Arrays.toString(topics) + " }";
-    }
-
-}
-
-class NullListener implements EventListener {
-
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
-    @Override
-    public void handleEvent(Event event) {
     }
 
 }

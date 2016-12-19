@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.simple;
 
 import java.security.Principal;
 import java.security.acl.Group;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,7 +92,7 @@ public class LoginModuleYes extends NuxeoAbstractServerLoginModule {
 
     @Override
     protected Principal createIdentity(String username) {
-        return new UserPrincipal(username);
+        return new UserPrincipal(username, Collections.emptyList(), false, false);
     }
 
 }

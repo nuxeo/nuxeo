@@ -217,30 +217,6 @@ public interface WebActions {
     List<Action> getActionsList(String category);
 
     /**
-     * Returns all actions for a given category and given resolution context.
-     * <p>
-     * Actions are not filtered according to filters set on the actions definitions: actions that should have been
-     * removed are just marked as non-available.
-     * <p>
-     * Since 5.8, the category can be a list of categories, separated by commas.
-     *
-     * @deprecated since 5.7, use {@link #getActionsList(String, ActionContext, boolean)}
-     */
-    @Deprecated
-    List<Action> getUnfiltredActionsList(String category, ActionContext context);
-
-    /**
-     * Returns all actions for a given category, creating a new context for the filters resolution.
-     * <p>
-     * Since 5.8, the category can be a list of categories, separated by commas.
-     *
-     * @see #getUnfiltredActionsList(String, ActionContext)
-     * @deprecated since 5.7, use {@link #getActionsList(String, ActionContext, boolean)}
-     */
-    @Deprecated
-    List<Action> getUnfiltredActionsList(String category);
-
-    /**
      * Returns all actions for a given category, without filtering.
      */
     List<Action> getAllActions(String category);
@@ -446,38 +422,5 @@ public interface WebActions {
      * @see #useAjaxTabs()
      */
     boolean canUseAjaxTabs();
-
-    @Deprecated
-    List<Action> getSubViewActionsList();
-
-    /**
-     * @deprecated use {@link #setCurrentTabId()} or {@link #setCurrentTabAction(String, Action)}
-     */
-    @Deprecated
-    void setCurrentTabAction(String currentTabActionId);
-
-    /**
-     * @deprecated since 5.4: useless, and does nothing
-     */
-    @Deprecated
-    void selectTabAction();
-
-    /**
-     * @deprecated should be handled by a workflow related (or at least document) action listener.
-     */
-    @Deprecated
-    String getCurrentLifeCycleState();
-
-    /**
-     * @deprecated since 5.4.2: useless
-     */
-    @Deprecated
-    void setTabsList(List<Action> tabsList);
-
-    /**
-     * @deprecated since 5.4.2: useless
-     */
-    @Deprecated
-    void setSubTabsList(List<Action> tabsList);
 
 }

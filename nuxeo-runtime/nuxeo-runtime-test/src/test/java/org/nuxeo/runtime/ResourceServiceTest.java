@@ -23,9 +23,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.resource.ResourceService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -45,11 +46,8 @@ public class ResourceServiceTest extends NXRuntimeTestCase {
     public void testContributions() throws Exception {
         ResourceService rs = Framework.getLocalService(ResourceService.class);
         URL url = rs.getResource("myres");
-        InputStream in = url.openStream();
-        try {
-            assertEquals("test resource", FileUtils.read(in).trim());
-        } finally {
-            in.close();
+        try (InputStream in = url.openStream()) {
+            assertEquals("test resource", IOUtils.toString(in, Charsets.UTF_8).trim());
         }
     }
 

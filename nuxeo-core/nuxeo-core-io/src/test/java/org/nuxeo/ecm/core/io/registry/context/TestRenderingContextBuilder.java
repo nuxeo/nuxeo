@@ -23,10 +23,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.DOCUMENT_PROPERTIES_HEADER;
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.NXCONTENT_CATEGORY_HEADER;
 import static org.nuxeo.ecm.core.io.registry.context.RenderingContext.DEFAULT_LOCALE;
 import static org.nuxeo.ecm.core.io.registry.context.RenderingContext.DEFAULT_URL;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_ENRICHERS;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
 
 import java.util.List;
 import java.util.Locale;
@@ -78,7 +78,7 @@ public class TestRenderingContextBuilder {
     public void testDocProperties() throws Exception {
         RenderingContext ctx = CtxBuilder.properties("one,two, three")
                                          .properties("four")
-                                         .param(DOCUMENT_PROPERTIES_HEADER, " five , six")
+                                         .param(EMBED_PROPERTIES, " five , six")
                                          .get();
         Set<String> properties = ctx.getProperties();
         assertEquals(6, properties.size());
@@ -95,7 +95,7 @@ public class TestRenderingContextBuilder {
     public void testEnrichment() throws Exception {
         RenderingContext ctx = CtxBuilder.enrich(ENTITY_TYPE, "one,two, three")
                                          .enrichDoc("four")
-                                         .param(NXCONTENT_CATEGORY_HEADER, " five , six")
+                                         .param(EMBED_ENRICHERS + "-document", " five , six")
                                          .get();
         Set<String> properties = ctx.getEnrichers(ENTITY_TYPE);
         assertEquals(6, properties.size());

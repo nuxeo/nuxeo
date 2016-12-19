@@ -21,9 +21,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.rest.descriptors;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -67,13 +64,6 @@ public class URLPatternDescriptor {
 
     @XNodeList(value = "bindings/binding", type = ValueBindingDescriptor[].class, componentType = ValueBindingDescriptor.class)
     private ValueBindingDescriptor[] valueBindings;
-
-    /**
-     * @deprecated since 5.5: use {@link #documentViewBindingApplies} binding instead
-     */
-    @Deprecated
-    @XNodeList(value = "viewIds/viewId", type = ArrayList.class, componentType = String.class)
-    List<String> viewIds;
 
     @XNode("codecName")
     private String documentViewCodecName;
@@ -172,14 +162,6 @@ public class URLPatternDescriptor {
 
     public void setNewDocumentViewBinding(String newDocumentViewBinding) {
         this.newDocumentViewBinding = newDocumentViewBinding;
-    }
-
-    /**
-     * @deprecated since 5.5: use {@link #getDocumentViewBindingApplies()} binding instead
-     */
-    @Deprecated
-    public List<String> getViewIds() {
-        return viewIds;
     }
 
 }

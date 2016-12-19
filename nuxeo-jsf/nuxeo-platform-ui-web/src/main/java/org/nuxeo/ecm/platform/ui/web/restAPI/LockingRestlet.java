@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.joda.time.DateTime;
@@ -133,7 +136,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         } else if (action.equals(STATUS)) {
             try {
                 Lock lock = session.getLockInfo(targetDocRef);
-                response = session.getLock(targetDocRef);
+                response = oldLockKey(session.getLockInfo(targetDocRef));
                 if (lock == null) {
                     code = SC_LOCKINFO_NOT_LOCKED;
                 } else {
@@ -171,6 +174,18 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
         result.setRootElement((org.dom4j.Element) current);
         res.setEntity(result.asXML(), MediaType.TEXT_XML);
         res.getEntity().setCharacterSet(CharacterSet.UTF_8);
+    }
+
+    protected String oldLockKey(Lock lock) {
+        if (lock == null) {
+            return null;
+        }
+        // return deprecated format, like "someuser:Nov 29, 2010"
+        String lockCreationDate = (lock.getCreated() == null) ? null : DateFormat.getDateInstance(DateFormat.MEDIUM)
+                                                                                 .format(new Date(
+                                                                                         lock.getCreated()
+                                                                                             .getTimeInMillis()));
+        return lock.getOwner() + ':' + lockCreationDate;
     }
 
 }

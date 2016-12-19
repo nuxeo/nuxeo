@@ -155,12 +155,6 @@ public interface ContentView extends Serializable {
     void setCurrentPageSize(Long pageSize);
 
     /**
-     * @deprecated use {@link #getCurrentResultLayoutColumns()} instead
-     */
-    @Deprecated
-    List<String> getResultLayoutColumns();
-
-    /**
      * Returns the list of selected result layout columns, resolving the bound EL expression set in the content view
      * definition if columns where not explicitely set with {@link #setCurrentResultLayoutColumns(List)}.
      *

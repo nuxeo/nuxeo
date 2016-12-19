@@ -19,25 +19,53 @@
 package org.nuxeo.runtime.services.resource;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
-import org.nuxeo.runtime.model.ReloadableComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // FIXME: make it handle hot reload correctly
-public class ResourceService extends ReloadableComponent {
+public class ResourceService extends DefaultComponent {
 
     public final static String XP_RESOURCES = "resources";
 
     protected Map<String, URL> registry;
 
+    protected List<Extension> extensions = new ArrayList<>();
+
     public ResourceService() {
+    }
+
+    @Override
+    public void registerExtension(Extension extension) {
+        super.registerExtension(extension);
+        extensions.add(extension);
+    }
+
+    @Override
+    public void unregisterExtension(Extension extension) {
+        extensions.remove(extension);
+        super.unregisterExtension(extension);
+    }
+
+    public void reload(ComponentContext context) {
+        deactivate(context);
+        activate(context);
+        for (Extension xt : extensions) {
+            super.registerExtension(xt);
+        }
+    }
+
+    public List<Extension> getExtensions() {
+        return extensions;
     }
 
     public URL getResource(String name) {

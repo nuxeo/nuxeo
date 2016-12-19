@@ -43,12 +43,6 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         return commentManager.createComment(docModel, comment);
     }
 
-    @Deprecated
-    public DocumentModel addComment(String comment) {
-        CommentManager commentManager = Framework.getService(CommentManager.class);
-        return commentManager.createComment(docModel, comment);
-    }
-
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, parent, comment);

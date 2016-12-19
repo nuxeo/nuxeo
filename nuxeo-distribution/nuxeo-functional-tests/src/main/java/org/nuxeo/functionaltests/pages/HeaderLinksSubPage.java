@@ -19,16 +19,11 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.pages.usermanagement.compat.UsersGroupsPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 public class HeaderLinksSubPage extends AbstractPage {
-
-    @FindBy(linkText = "Users & Groups")
-    @Deprecated
-    WebElement userAndGroupsLink;
 
     @FindBy(xpath = "//div[@class=\"userMenuActions\"]")
     public WebElement userActions;
@@ -41,11 +36,6 @@ public class HeaderLinksSubPage extends AbstractPage {
 
     public HeaderLinksSubPage(WebDriver driver) {
         super(driver);
-    }
-
-    public UsersGroupsPage goToUserManagementPage() {
-        userAndGroupsLink.click();
-        return asPage(UsersGroupsPage.class);
     }
 
     public String getText() {

@@ -30,11 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.codehaus.jackson.JsonFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.io.services.IOComponent;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -44,14 +42,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationServerComponent extends DefaultComponent implements AutomationServer {
-
-    /**
-     * Was used to get the JsonFactory, but since 5.7.3 use either: *
-     * <code>{@link JsonFactoryManager#getJsonFactory()}</code> * Context annotation in JAX-RS object (providers or
-     * resources)
-     */
-    @Deprecated
-    public static AutomationServerComponent me;
 
     protected static final String XP_BINDINGS = "bindings";
 
@@ -76,14 +66,12 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
         bindings = new HashMap<>();
         writers = new ArrayList<>();
         readers = new ArrayList<>();
-        me = this;
         ioComponent = ((IOComponent) Framework.getRuntime().getComponentInstance(IOCOMPONENT_NAME).getInstance());
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         bindings = null;
-        me = null;
     }
 
     @Override
@@ -121,14 +109,6 @@ public class AutomationServerComponent extends DefaultComponent implements Autom
     @Override
     public void applicationStarted(ComponentContext context) {
         super.applicationStarted(context);
-    }
-
-    /**
-     * Since 5.7.3, use {@link JsonFactoryManager#getJsonFactory()}
-     */
-    @Deprecated
-    public JsonFactory getFactory() {
-        return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
     }
 
     @Override

@@ -202,12 +202,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
             assertEquals(UNKNOWN, work4.getWorkInstanceState());
 
             SleepWork work5 = new SleepWork(duration, false, "1"); // id=1
-            service.schedule(work5, Scheduling.IF_NOT_RUNNING);
+            service.schedule(work5, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
             assertEquals(UNKNOWN, work5.getWorkInstanceState());
-
-            SleepWork work6 = new SleepWork(duration, false, "1"); // id=1
-            service.schedule(work6, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
-            assertEquals(UNKNOWN, work6.getWorkInstanceState());
         }
 
         SleepWork work7 = new SleepWork(duration, false, "3"); // id=3

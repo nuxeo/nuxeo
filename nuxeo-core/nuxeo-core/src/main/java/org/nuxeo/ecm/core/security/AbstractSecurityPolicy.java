@@ -37,14 +37,6 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
 
     @Override
     public Transformer getQueryTransformer(String repositoryName) {
-        return getQueryTransformer();
-    }
-
-    /**
-     * Legacy method for compatibility, use {@link #getQueryTransformer(String)} instead
-     */
-    @Deprecated
-    public Transformer getQueryTransformer() {
         // implement this if isExpressibleInQuery is true
         throw new UnsupportedOperationException();
     }
@@ -64,14 +56,6 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
 
     @Override
     public boolean isExpressibleInQuery(String repositoryName) {
-        return isExpressibleInQuery();
-    }
-
-    /**
-     * Legacy method for compatibility, use {@link #isExpressibleInQuery(String)} instead
-     */
-    @Deprecated
-    public boolean isExpressibleInQuery() {
         // by default, we don't know, so no
         return false;
     }

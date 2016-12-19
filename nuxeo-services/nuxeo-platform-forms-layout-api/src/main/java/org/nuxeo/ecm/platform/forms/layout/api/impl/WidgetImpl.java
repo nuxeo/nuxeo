@@ -94,32 +94,6 @@ public class WidgetImpl implements Widget {
         super();
     }
 
-    /**
-     * @deprecated since 5.5: use
-     *             {@link #WidgetImpl(String, String, String, String, String, FieldDefinition[], String, String, boolean, Map, boolean, Widget[], int, WidgetSelectOption[], String)}
-     */
-    @Deprecated
-    public WidgetImpl(String layoutName, String name, String mode, String type, String valueName,
-            FieldDefinition[] fields, String label, String helpLabel, boolean translated,
-            Map<String, Serializable> properties, boolean required, Widget[] subWidgets, int level) {
-        this(layoutName, name, mode, type, valueName, fields, label, helpLabel, translated, properties, required,
-                subWidgets, level, null, null);
-    }
-
-    /**
-     * @since 5.4.2
-     * @deprecated since 5.5: use
-     *             {@link #WidgetImpl(String, String, String, String, String, FieldDefinition[], String, String, boolean, Map, boolean, Widget[], int, WidgetSelectOption[], String)}
-     */
-    @Deprecated
-    public WidgetImpl(String layoutName, String name, String mode, String type, String valueName,
-            FieldDefinition[] fields, String label, String helpLabel, boolean translated,
-            Map<String, Serializable> properties, boolean required, Widget[] subWidgets, int level,
-            WidgetSelectOption[] selectOptions) {
-        this(layoutName, name, mode, type, valueName, fields, label, helpLabel, translated, properties, required,
-                subWidgets, level, selectOptions, null);
-    }
-
     // BBB
     public WidgetImpl(String layoutName, String name, String mode, String type, String valueName,
             FieldDefinition[] fields, String label, String helpLabel, boolean translated,

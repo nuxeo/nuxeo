@@ -112,16 +112,6 @@ public class LogTestWatchman extends TestWatchman {
         };
     }
 
-    /**
-     * @deprecated since 5.9.2, use {@link ScreenshotTaker#dumpPageSource(org.openqa.selenium.WebDriver, String)}
-     *             instead.
-     */
-    @Deprecated
-    public File dumpPageSource(String filename) {
-        ScreenshotTaker taker = new ScreenshotTaker();
-        return taker.dumpPageSource(driver, filename);
-    }
-
     @Override
     public void failed(Throwable e, FrameworkMethod method) {
         String className = getTestClassName(method);
@@ -214,16 +204,6 @@ public class LogTestWatchman extends TestWatchman {
         if (lastScreenshot != null) {
             new File(lastScreenshot).delete();
         }
-    }
-
-    /**
-     * @deprecated since 5.9.2, use {@link ScreenshotTaker#takeScreenshot(org.openqa.selenium.WebDriver, String)}
-     *             instead.
-     */
-    @Deprecated
-    public File takeScreenshot(String filename) {
-        ScreenshotTaker taker = new ScreenshotTaker();
-        return taker.takeScreenshot(driver, filename);
     }
 
 }

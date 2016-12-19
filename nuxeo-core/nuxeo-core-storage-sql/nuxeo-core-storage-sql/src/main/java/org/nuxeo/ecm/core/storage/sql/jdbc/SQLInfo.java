@@ -386,7 +386,7 @@ public class SQLInfo {
         wherebuf.append(')');
         wherebuf.append(getSoftDeleteClause(tableName));
         Select select = new Select(table);
-        select.setWhat(StringUtils.join(whats, ", "));
+        select.setWhat(String.join(", ", whats));
         select.setFrom(table.getQuotedName());
         select.setWhere(wherebuf.toString());
         if (orderBys != null) {
@@ -394,7 +394,7 @@ public class SQLInfo {
             for (String orderBy : orderBys) {
                 orders.add(table.getColumn(orderBy).getQuotedName());
             }
-            select.setOrderBy(StringUtils.join(orders, ", "));
+            select.setOrderBy(String.join(", ", orders));
         }
         return new SQLInfoSelect(select.getStatement(), whatColumns, Collections.singletonList(whereColumn),
                 opaqueColumns.isEmpty() ? null : opaqueColumns);
@@ -460,12 +460,9 @@ public class SQLInfo {
             whatColumns.add(proxyTable.getColumn(Model.PROXY_TARGET_KEY));
             whatColumns.add(proxyTable.getColumn(Model.PROXY_VERSIONABLE_KEY));
         }
-        List<String> selectWhats = new ArrayList<>(whatColumns.size());
-        for (Column col : whatColumns) {
-            selectWhats.add(col.getFullQuotedName());
-        }
+        String selectWhats = whatColumns.stream().map(Column::getFullQuotedName).collect(Collectors.joining(", "));
         Select select = new Select(null);
-        select.setWhat(StringUtils.join(selectWhats, ", "));
+        select.setWhat(selectWhats);
         String from = hierTable.getQuotedName();
         if (proxiesEnabled) {
             from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON " + mainColumn.getFullQuotedName() + " = "
@@ -592,7 +589,7 @@ public class SQLInfo {
         Column whereColumn = table.getColumn(Model.MAIN_KEY);
         Select select = new Select(null);
         select.setFrom(table.getQuotedName());
-        select.setWhat(StringUtils.join(selectWhats, ", "));
+        select.setWhat(String.join(", ", selectWhats));
         select.setWhere(whereColumn.getQuotedName() + " = ?");
         insert.setValues(select.getStatement());
         String sql = insert.getStatement();
@@ -760,20 +757,17 @@ public class SQLInfo {
             proxyTable = database.getTable(Model.PROXY_TABLE_NAME);
         }
         Column mainColumn = hierTable.getColumn(Model.MAIN_KEY);
-        List<Column> whatCols = new ArrayList<>(Arrays.asList(mainColumn,
-                hierTable.getColumn(Model.HIER_PARENT_KEY), hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY),
+        List<Column> whatCols = new ArrayList<>(Arrays.asList(mainColumn, hierTable.getColumn(Model.HIER_PARENT_KEY),
+                hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY),
                 hierTable.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY)));
         if (proxiesEnabled) {
             whatCols.add(proxyTable.getColumn(Model.PROXY_VERSIONABLE_KEY));
             whatCols.add(proxyTable.getColumn(Model.PROXY_TARGET_KEY));
         }
         // no mixins, not used to decide if we have a version or proxy
-        List<String> whats = new ArrayList<>(6);
-        for (Column col : whatCols) {
-            whats.add(col.getFullQuotedName());
-        }
+        String whats = whatCols.stream().map(Column::getFullQuotedName).collect(Collectors.joining(", "));
         Select select = new Select(null);
-        select.setWhat(StringUtils.join(whats, ", "));
+        select.setWhat(whats);
         String from = hierTable.getQuotedName();
         if (proxiesEnabled) {
             from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON " + mainColumn.getFullQuotedName() + " = "
@@ -968,7 +962,7 @@ public class SQLInfo {
             whatColumns.add(column);
             whats.add(column.getQuotedName());
             Select select = new Select(table);
-            select.setWhat(StringUtils.join(whats, ", "));
+            select.setWhat(String.join(", ", whats));
             select.setFrom(table.getQuotedName());
             String where = table.getColumn(Model.HIER_PARENT_KEY).getQuotedName() + " = ?"
                     + getSoftDeleteClause(tableName);
@@ -1002,13 +996,12 @@ public class SQLInfo {
 
         protected void postProcessDelete() {
             Delete delete = new Delete(table);
-            List<String> wheres = new LinkedList<>();
-            for (Column column : table.getColumns()) {
-                if (column.getKey().equals(Model.MAIN_KEY)) {
-                    wheres.add(column.getQuotedName() + " = ?");
-                }
-            }
-            delete.setWhere(StringUtils.join(wheres, " AND "));
+            String wheres = table.getColumns()
+                                 .stream()
+                                 .filter(col -> Model.MAIN_KEY.equals(col.getKey()))
+                                 .map(col -> col.getQuotedName() + " = ?")
+                                 .collect(Collectors.joining(" AND "));
+            delete.setWhere(wheres);
             deleteSqlMap.put(tableName, delete.getStatement());
         }
 
@@ -1034,7 +1027,7 @@ public class SQLInfo {
                 }
             }
             Select select = new Select(table);
-            select.setWhat(StringUtils.join(selectWhats, ", "));
+            select.setWhat(String.join(", ", selectWhats));
             select.setFrom(table.getQuotedName());
             select.setWhere(copyIdColumn.getQuotedName() + " = ?");
             insert.setValues(select.getStatement());
@@ -1209,12 +1202,12 @@ public class SQLInfo {
             wheres.addAll(clauses);
         }
         Select select = new Select(table);
-        select.setWhat(StringUtils.join(whats, ", "));
+        select.setWhat(String.join(", ", whats));
         if (from == null) {
             from = table.getQuotedName();
         }
         select.setFrom(from);
-        String where = StringUtils.join(wheres, " AND ") + getSoftDeleteClause(table.getKey());
+        String where = String.join(" AND ", wheres) + getSoftDeleteClause(table.getKey());
         select.setWhere(where);
         List<String> orders = new LinkedList<>();
         for (int i = 0; i < orderBys.length; i++) {
@@ -1224,7 +1217,7 @@ public class SQLInfo {
             String qcol = fullQuotedName ? col.getFullQuotedName() : col.getQuotedName();
             orders.add(qcol + ascdesc);
         }
-        select.setOrderBy(StringUtils.join(orders, ", "));
+        select.setOrderBy(String.join(", ", orders));
         return new SQLInfoSelect(select.getStatement(), whatColumns, whereColumns,
                 opaqueColumns.isEmpty() ? null : opaqueColumns);
     }

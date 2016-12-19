@@ -68,7 +68,6 @@ import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBAL
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WRITER;
 
-import java.awt.*;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 import java.io.Serializable;
@@ -376,41 +375,6 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
             imageInfo = getImagingService().getImageInfo(fileContent);
         }
         return imageInfo;
-    }
-
-    /**
-     * @deprecated since 5.7
-     */
-    @Deprecated
-    protected static Point getSize(Point current, int max) {
-        int x = current.x;
-        int y = current.y;
-        int newx;
-        int newy;
-        if (x > y) { // landscape
-            newy = (y * max) / x;
-            newx = max;
-        } else { // portrait
-            newx = (x * max) / y;
-            newy = max;
-        }
-        if (newx > x || newy > y) {
-            return current;
-        }
-        return new Point(newx, newy);
-    }
-
-    /**
-     * O@deprecated since 5.7
-     */
-    @Deprecated
-    protected String computeViewFilename(String filename, String format) {
-        int index = filename.lastIndexOf(".");
-        if (index == -1) {
-            return filename + "." + format;
-        } else {
-            return filename.substring(0, index + 1) + format;
-        }
     }
 
     protected Blob getContentFromViews(Integer i) {

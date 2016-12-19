@@ -86,20 +86,6 @@ public final class FileUtils {
         }
     }
 
-    /**
-     * Read the byte stream as a string assuming a UTF-8 encoding.
-     *
-     * @deprecated Since 5.7. Use {@link IOUtils#toString(InputStream, java.nio.charset.Charset)} explicitly instead (or
-     *             any other encoding when provided by the source of the byte stream).
-     */
-    @Deprecated
-    public static String read(InputStream in) throws IOException {
-        // UTF-8 should be configured as the default "file.encoding" in a system property configured in the nuxeo.conf
-        // file. However this option might not be passed when running the Nuxeo as a library or using the Maven test
-        // runner. Therefore we hardcode the default charset to "UTF-8" to ensure consistency.
-        return IOUtils.toString(in, Charsets.UTF_8);
-    }
-
     public static byte[] readBytes(URL url) throws IOException {
         return readBytes(url.openStream());
     }
@@ -133,7 +119,7 @@ public final class FileUtils {
 
     public static String readFile(File file) throws IOException {
         try (FileInputStream in = new FileInputStream(file)) {
-            return read(in);
+            return IOUtils.toString(in, Charsets.UTF_8);
         }
     }
 
@@ -210,38 +196,6 @@ public final class FileUtils {
                 in.close();
             }
             out.close();
-        }
-    }
-
-    /**
-     * @deprecated Since 5.6. Use {@link org.apache.commons.io.FileUtils#deleteDirectory(File)} or
-     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)} instead.
-     */
-    @Deprecated
-    public static void deleteTree(File dir) {
-        emptyDirectory(dir);
-        dir.delete();
-    }
-
-    /**
-     * @deprecated Since 5.6. Use {@link org.apache.commons.io.FileUtils#deleteDirectory(File)} or
-     *             {@link org.apache.commons.io.FileUtils#deleteQuietly(File)} instead. Warning: suggested methods will
-     *             delete the root directory whereas current method doesn't.
-     */
-    @Deprecated
-    public static void emptyDirectory(File dir) {
-        File[] files = dir.listFiles();
-        if (files == null) {
-            return;
-        }
-        int len = files.length;
-        for (int i = 0; i < len; i++) {
-            File file = files[i];
-            if (file.isDirectory()) {
-                deleteTree(file);
-            } else {
-                file.delete();
-            }
         }
     }
 

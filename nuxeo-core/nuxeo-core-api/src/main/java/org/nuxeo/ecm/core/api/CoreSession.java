@@ -70,12 +70,6 @@ public interface CoreSession extends AutoCloseable {
 
     String IMPORT_LIFECYCLE_STATE = "ecm:lifeCycleState";
 
-    /**
-     * @deprecated since 5.4.2, use {@link #IMPORT_LOCK_OWNER} and {@link #IMPORT_LOCK_CREATED} instead
-     */
-    @Deprecated
-    String IMPORT_LOCK = "ecm:lock";
-
     /** @since 5.4.2 */
     String IMPORT_LOCK_OWNER = "ecm:lockOwner";
 
@@ -735,16 +729,6 @@ public interface CoreSession extends AutoCloseable {
     // -------- Versioning API ---------------
 
     /**
-     * Gets the last version of a document.
-     *
-     * @param docRef the reference to the document
-     * @return the version
-     * @deprecated use {@link #getLastDocumentVersion} instead
-     */
-    @Deprecated
-    VersionModel getLastVersion(DocumentRef docRef);
-
-    /**
      * Gets the document corresponding to the last version for the given document.
      *
      * @param docRef the reference to the document
@@ -834,18 +818,6 @@ public interface CoreSession extends AutoCloseable {
             boolean skipCheckout);
 
     /**
-     * Restores the given document to the specified version permitting to skip the creation of the snapshot for current
-     * document.
-     *
-     * @param docRef the reference to the document
-     * @param version the version to which the document should be restored to - only the label is used for the moment
-     * @param skipSnapshotCreation indicates if skipping snapshot creation
-     * @deprecated use {@link #restoreToVersion(DocumentRef, DocumentRef, boolean, boolean)} instead
-     */
-    @Deprecated
-    DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation);
-
-    /**
      * Restores the given document to the specified version.
      *
      * @param docRef the reference to the document
@@ -853,16 +825,6 @@ public interface CoreSession extends AutoCloseable {
      * @since 5.4
      */
     DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef);
-
-    /**
-     * Restores the given document to the specified version.
-     *
-     * @param docRef the reference to the document
-     * @param version the version to which the document should be restored to - only the label is used for the moment
-     * @deprecated use {@link #restoreToVersion(DocumentRef, DocumentRef)} instead
-     */
-    @Deprecated
-    DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version);
 
     /**
      * Gets the version to which a checked in document is linked.
@@ -879,17 +841,6 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the reference to the document
      */
     void checkOut(DocumentRef docRef);
-
-    /**
-     * Checks in a modified document, creating a new version.
-     *
-     * @param docRef the reference to the document
-     * @param version the version descriptor
-     * @return the version document just created
-     * @deprecated use {@link #checkIn(DocumentRef, VersioningOption, String)} instead
-     */
-    @Deprecated
-    DocumentModel checkIn(DocumentRef docRef, VersionModel version);
 
     /**
      * Checks in a modified document, creating a new version.
@@ -1188,46 +1139,6 @@ public interface CoreSession extends AutoCloseable {
     Object[] getDataModelsFieldUp(DocumentRef docRef, String schema, String field);
 
     /**
-     * Gets the lock key on the given document if a lock exists or null otherwise.
-     * <p>
-     * A lock key has the form {@code someuser:Nov 29, 2010}.
-     *
-     * @param doc the document reference
-     * @return the lock key if the document is locked, null otherwise
-     * @deprecated since 5.4.2, use {@link #getLockInfo} instead
-     */
-    @Deprecated
-    String getLock(DocumentRef doc);
-
-    /**
-     * Sets a lock on the given document using the given key.
-     * <p>
-     * A lock key must have the form {@code someuser:Nov 29, 2010}.
-     *
-     * @param doc the document reference
-     * @param key the lock key
-     * @throws LockException if the document is already locked
-     * @deprecated since 5.4.2, use {@link #setLock(DocumentRef)} instead
-     */
-    @Deprecated
-    void setLock(DocumentRef doc, String key) throws LockException;
-
-    /**
-     * Removes the lock if one exists.
-     * <p>
-     * The caller principal should be the same as the one who set the lock or to belongs to the administrator group,
-     * otherwise an exception will be throw.
-     * <p>
-     * If the document was not locked, does nothing.
-     *
-     * @param docRef the document to unlock
-     * @return the lock key that was removed
-     * @deprecated since 5.4.2, use {@link #removeLock} instead
-     */
-    @Deprecated
-    String unlock(DocumentRef docRef);
-
-    /**
      * Sets a lock on the given document.
      *
      * @param docRef the document reference
@@ -1276,16 +1187,6 @@ public interface CoreSession extends AutoCloseable {
     void applyDefaultPermissions(String userOrGroupName);
 
     /**
-     * Checks if the given document is dirty.
-     *
-     * @param doc the doc reference
-     * @return true if dirty false otherwise
-     * @deprecated since 5.4, use {@link #isCheckedOut} instead
-     */
-    @Deprecated
-    boolean isDirty(DocumentRef doc);
-
-    /**
      * Publishes the document in a section overwriting any existing proxy to the same document. This is simmilar to
      * publishDocument(docToPublish, section, true);
      *
@@ -1315,20 +1216,6 @@ public interface CoreSession extends AutoCloseable {
      * @since 1.4.1 for the case where docRef is a proxy
      */
     DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef);
-
-    /**
-     * Gets all proxy versions to document docRef inside folder folderRef.
-     * <p>
-     * Intended to be used by UI clients to display information about proxies in sections.
-     *
-     * @param docRef the target document for the proxies
-     * @param folderRef the folder where proxies are located
-     * @return an array of the proxy versions, with an empty string being used for a live proxy. {@code null} is
-     *         returned if no proxies are found the specified folder
-     * @deprecated since 5.4, use {@link #getProxies} instead
-     */
-    @Deprecated
-    String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef);
 
     /**
      * Returns the type of his parent SuperSpace (workspace, section, etc.). SuperSpace is qualified by the SuperSpace

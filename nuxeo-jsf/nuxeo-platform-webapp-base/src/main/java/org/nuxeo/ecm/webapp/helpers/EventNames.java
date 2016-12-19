@@ -48,14 +48,6 @@ public final class EventNames {
     public static final String CONTENT_ROOT_SELECTION_CHANGED = "contentRootSelectionChanged";
 
     /**
-     * Fired when a workspace root or section root selection changes.
-     *
-     * @deprecated content root children should be managed as regular documents
-     */
-    @Deprecated
-    public static final String CONTENT_ROOT_CHILD_SELECTION_CHANGED = "contentRootChildSelectionChanged";
-
-    /**
      * Fired when a document selection changes ( file, folder etc not workspace or above ).
      */
     public static final String DOCUMENT_SELECTION_CHANGED = "documentSelectionChanged";

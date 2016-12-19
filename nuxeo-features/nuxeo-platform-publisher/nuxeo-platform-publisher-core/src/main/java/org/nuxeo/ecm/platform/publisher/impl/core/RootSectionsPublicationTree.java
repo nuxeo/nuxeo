@@ -27,8 +27,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
-import org.nuxeo.ecm.platform.publisher.helper.RootSectionsFinderHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -45,7 +46,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
             PublishedDocumentFactory factory, String configName, String title) {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
-        rootFinder = RootSectionsFinderHelper.getRootSectionsFinder(coreSession);
+        rootFinder = Framework.getLocalService(PublisherService.class).getRootSectionFinder(coreSession);
     }
 
     @Override

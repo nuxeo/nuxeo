@@ -26,18 +26,6 @@ package org.nuxeo.ecm.core.api.facet;
 public interface VersioningDocument {
 
     /**
-     * @deprecated use {@link VersioningService#VERSIONING_OPTION} instead
-     */
-    @Deprecated
-    String CREATE_SNAPSHOT_ON_SAVE_KEY = "CREATE_SNAPSHOT_ON_SAVE";
-
-    /**
-     * @deprecated use {@link VersioningService#VERSIONING_OPTION} instead
-     */
-    @Deprecated
-    String KEY_FOR_INC_OPTION = "VersioningOption";
-
-    /**
      * Key used in options map to send current versions to versioning listener so it will know what version the document
      * had before restoring.
      */
@@ -49,18 +37,6 @@ public interface VersioningDocument {
      * Key used in options map to send the UUID of the version being restored to the listeners.
      */
     String RESTORED_VERSION_UUID_KEY = "RESTORED_VERSION_UUID";
-
-    /**
-     * @deprecated use {@link VersioningService#getVersionLabel} instead
-     */
-    @Deprecated
-    Long getMinorVersion();
-
-    /**
-     * @deprecated use {@link VersioningService#getVersionLabel} instead
-     */
-    @Deprecated
-    Long getMajorVersion();
 
     /**
      * Returns a string representation of the version number.

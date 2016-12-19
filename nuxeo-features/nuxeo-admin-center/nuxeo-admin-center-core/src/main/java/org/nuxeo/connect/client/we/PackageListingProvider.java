@@ -18,7 +18,6 @@
  */
 package org.nuxeo.connect.client.we;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -31,12 +30,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
-import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.packages.PackageManager;
-import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
@@ -53,38 +50,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "packageListingProvider")
 public class PackageListingProvider extends DefaultObject {
-
-    /**
-     * @deprecated since 5.6
-     */
-    @Deprecated
-    public String getConnectBaseUrl() {
-        return ConnectUrlConfig.getBaseUrl();
-    }
-
-    /**
-     * @deprecated Since 5.6. Use {@link #getTargetPlatform(Boolean)} in original request to get only the wanted
-     *             packages instead of later filtering the whole list.
-     */
-    @Deprecated
-    protected List<DownloadablePackage> filterOnPlatform(List<DownloadablePackage> pkgs, Boolean filterOnPlatform) {
-        if (filterOnPlatform != Boolean.TRUE) {
-            return pkgs;
-        }
-        String targetPF = PlatformVersionHelper.getPlatformFilter();
-        if (targetPF == null) {
-            return pkgs;
-        } else {
-            List<DownloadablePackage> filteredPackages = new ArrayList<>();
-            for (DownloadablePackage pkg : pkgs) {
-                if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg,
-                        PlatformVersionHelper.getPlatformFilter())) {
-                    filteredPackages.add(pkg);
-                }
-            }
-            return filteredPackages;
-        }
-    }
 
     @GET
     @Produces("text/html")

@@ -109,6 +109,7 @@ public class DocumentPageProviderOperation {
     @Param(name = "language", required = false, widget = Constants.W_OPTION, values = { NXQL.NXQL })
     protected String lang = NXQL.NXQL;
 
+    /** @deprecated since 6.0 use currentPageIndex instead. */
     @Param(name = "page", required = false)
     @Deprecated
     protected Integer page;

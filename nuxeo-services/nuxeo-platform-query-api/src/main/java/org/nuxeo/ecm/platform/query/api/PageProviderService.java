@@ -52,18 +52,6 @@ public interface PageProviderService extends Serializable {
     PageProviderDefinition getPageProviderDefinition(String name);
 
     /**
-     * Returns an instance of a page provider with given name and definition.
-     *
-     * @since 5.4
-     * @deprecated since 5.7: use
-     *             {@link #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)}
-     *             with search document model as additional parameter
-     */
-    @Deprecated
-    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, Object... parameters);
-
-    /**
      * Returns an instance of page provider with given name and definition.
      * <p>
      * Useful to share the definition between the page provider service, and the content view service (as content views

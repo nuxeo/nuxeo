@@ -681,7 +681,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             getExecutor(queueId).removeScheduled(workId);
             break;
         case IF_NOT_SCHEDULED:
-        case IF_NOT_RUNNING:
         case IF_NOT_RUNNING_OR_SCHEDULED:
             // TODO disabled for now because hasWorkInState uses isScheduled
             // which is buggy
@@ -757,16 +756,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    @Deprecated
-    public Work find(Work work, State state, boolean useEquals, int[] pos) {
-        if (pos != null) {
-            pos[0] = 0; // compat
-        }
-        String workId = work.getId();
-        return queuing.find(workId, state);
-    }
-
-    @Override
     public Work find(String workId, State state) {
         return queuing.find(workId, state);
     }
@@ -812,12 +801,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         } else {
             throw new IllegalArgumentException(String.valueOf(state));
         }
-    }
-
-    @Override
-    @Deprecated
-    public int getNonCompletedWorkSize(String queueId) {
-        return getQueueSize(queueId, null);
     }
 
     @Override

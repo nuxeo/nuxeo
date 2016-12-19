@@ -55,8 +55,8 @@
         <templateItem typeName="Folder" id="Secret_Folder" title="Secret Folder"
                       description="Secret Folder">
           <acl>
-            <ace granted="true" permission="Everything" userName="Administrator"/>
-            <ace granted="false" permission="Everything" userName="Everyone"/>
+            <ace granted="true" permission="Everything" principal="Administrator"/>
+            <ace granted="false" permission="Everything" principal="Everyone"/>
           </acl>
           <notifications>
             <notification event="Modification">

@@ -169,16 +169,6 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public String getTargetDocumentId() {
-        String targetDocumentId = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME);
-        if (targetDocumentId == null) {
-            List<String> targetDocIds = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
-            targetDocumentId = targetDocIds != null && targetDocIds.size() > 0 ? targetDocIds.get(0) : null;
-        }
-        return targetDocumentId;
-    }
-
-    @Override
     public List<String> getTargetDocumentsIds() {
         return getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
     }
@@ -297,20 +287,7 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void setTargetDocumentId(String targetDocId) {
-        List<String> ids = new ArrayList<String>();
-        ids.add(targetDocId);
-        // handle compatibility before @5.8
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, targetDocId);
-    }
-
-    @Override
     public void setTargetDocumentsIds(List<String> ids) {
-        // handle compatibility before @5.8
-        if (ids != null && ids.size() > 0) {
-            setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, ids.get(0));
-        }
         setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
     }
 

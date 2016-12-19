@@ -107,25 +107,11 @@ public class ConfigurationGenerator {
 
     private static final Log log = LogFactory.getLog(ConfigurationGenerator.class);
 
-    /**
-     * @deprecated Since 5.6, use {@link Environment#NUXEO_HOME} instead
-     */
-    @Deprecated
-    public static final String NUXEO_HOME = Environment.NUXEO_HOME;
-
     public static final String NUXEO_CONF = "nuxeo.conf";
 
     public static final String TEMPLATES = "templates";
 
     public static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
-
-    /**
-     * Absolute or relative PATH to the user chosen template
-     *
-     * @deprecated use {@link #PARAM_TEMPLATES_NAME} instead
-     */
-    @Deprecated
-    public static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
     /**
      * Absolute or relative PATH to the user chosen templates (comma separated list)
@@ -145,12 +131,6 @@ public class ConfigurationGenerator {
      * @since 8.1
      */
     public static final String PARAM_TEMPLATE_DBNOSQL_TYPE = "nuxeo.dbnosql.type";
-
-    /**
-     * @deprecated since 5.7
-     */
-    @Deprecated
-    public static final String PARAM_TEMPLATES_NODB = "nuxeo.nodbtemplates";
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
 
@@ -271,16 +251,6 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public static final String SEAM_DEBUG_SYSTEM_PROP = "org.nuxeo.seam.debug";
-
-    /**
-     * Old way of detecting if seam debug should be enabled, by looking for the presence of this file. Setting property
-     * {@link #SEAM_DEBUG_SYSTEM_PROP} in nuxeo.conf is enough now.
-     *
-     * @deprecated since 5.6
-     * @since 5.6
-     */
-    @Deprecated
-    public static final String SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE = "seam-debug.properties";
 
     /** @since 8.4 */
     public static final String JVMCHECK_PROP = "jvmcheck";
@@ -634,23 +604,6 @@ public class ConfigurationGenerator {
         log.debug(includedTemplates);
     }
 
-    /**
-     * Old way of detecting if seam debug is set, by checking for the presence of a file.
-     * <p>
-     * On 5.6, using the config generator to get the info from the nuxeo.conf file makes it possible to get the property
-     * value this early, so adding an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE} is no longer needed.
-     *
-     * @deprecated since 5.6
-     */
-    @Deprecated
-    protected boolean hasSeamDebugFile() {
-        File f = new File(getServerConfigurator().getConfigDir(), SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE);
-        if (!f.exists()) {
-            return false;
-        }
-        return true;
-    }
-
     private void logDebugInformation() {
         String debugPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP);
         if (Boolean.parseBoolean(debugPropValue)) {
@@ -663,12 +616,8 @@ public class ConfigurationGenerator {
         // it needs to be activated at startup, and requires the seam-debug jar
         // to be in the classpath anyway
         String seamDebugPropValue = userConfig.getProperty(SEAM_DEBUG_SYSTEM_PROP);
-        if (Boolean.parseBoolean(seamDebugPropValue) || hasSeamDebugFile()) {
+        if (Boolean.parseBoolean(seamDebugPropValue)) {
             log.debug("Nuxeo Seam HotReload is enabled");
-            // add it to the system props for compat, in case this mode was
-            // detected because of presence of the file in the config dir, and
-            // because it's checked there on code that relies on it
-            System.setProperty(SEAM_DEBUG_SYSTEM_PROP, "true");
         } else {
             log.debug("Nuxeo Seam HotReload is not enabled");
         }
@@ -777,10 +726,6 @@ public class ConfigurationGenerator {
     public String getUserTemplates() {
         if (templates == null) {
             templates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        }
-        if (templates == null) {
-            // backward compliance: manage parameter for a single template
-            templates = userConfig.getProperty(PARAM_TEMPLATE_NAME);
         }
         if (templates == null) {
             log.warn("No template found in configuration! Fallback on 'default'.");

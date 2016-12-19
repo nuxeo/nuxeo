@@ -266,7 +266,6 @@ Example of a JSON document entry
     "files:files": [],
     "common:icon": null,
     "common:icon-expanded": null,
-    "common:size": null,
     "file:content":     {
       "name": "test.jpg",
       "mime-type": "image/jpeg",
@@ -631,7 +630,6 @@ Content-Length: 1121
     "files:files": [],
     "common:icon": null,
     "common:icon-expanded": null,
-    "common:size": null,
     "file:content":     {
       "name": "test.jpg",
       "mime-type": "image/jpeg",

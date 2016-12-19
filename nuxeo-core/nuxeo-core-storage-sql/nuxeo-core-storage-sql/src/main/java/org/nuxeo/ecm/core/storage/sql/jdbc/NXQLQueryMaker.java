@@ -1331,7 +1331,6 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_ISVERSION_OLD.equals(name) || //
                     NXQL.ECM_ISVERSION.equals(name) || //
                     NXQL.ECM_ISCHECKEDIN.equals(name) || //
-                    NXQL.ECM_LOCK.equals(name) || //
                     NXQL.ECM_LOCK_OWNER.equals(name) || //
                     NXQL.ECM_LOCK_CREATED.equals(name) || //
                     NXQL.ECM_PROXY_TARGETID.equals(name) || //
@@ -1588,7 +1587,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 propertyName = Model.VERSION_IS_LATEST_PROP;
             } else if (NXQL.ECM_ISLATESTMAJORVERSION.equals(name)) {
                 propertyName = Model.VERSION_IS_LATEST_MAJOR_PROP;
-            } else if (NXQL.ECM_LOCK.equals(name) || NXQL.ECM_LOCK_OWNER.equals(name)) {
+            } else if (NXQL.ECM_LOCK_OWNER.equals(name)) {
                 propertyName = Model.LOCK_OWNER_PROP;
             } else if (NXQL.ECM_LOCK_CREATED.equals(name)) {
                 propertyName = Model.LOCK_CREATED_PROP;

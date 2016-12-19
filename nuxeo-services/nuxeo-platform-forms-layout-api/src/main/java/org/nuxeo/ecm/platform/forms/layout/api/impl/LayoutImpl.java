@@ -74,23 +74,6 @@ public class LayoutImpl implements Layout {
     }
 
     /**
-     * @deprecated since 5.5: use {@link #LayoutImpl(String, String, String, List, int, Map, String)}
-     */
-    @Deprecated
-    public LayoutImpl(String name, String mode, String template, List<LayoutRow> rows, int columns) {
-        this(name, mode, template, rows, columns, null);
-    }
-
-    /**
-     * @deprecated since 5.5: use {@link #LayoutImpl(String, String, String, List, int, Map, String)}
-     */
-    @Deprecated
-    public LayoutImpl(String name, String mode, String template, List<LayoutRow> rows, int columns,
-            Map<String, Serializable> properties) {
-        this(name, mode, template, rows, columns, properties, null);
-    }
-
-    /**
      * @since 5.5
      */
     public LayoutImpl(String name, String mode, String template, List<LayoutRow> rows, int columns,

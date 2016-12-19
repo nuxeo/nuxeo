@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -661,21 +660,6 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     @Test
-    public void testSearchPrincipals() throws Exception {
-        deleteTestObjects();
-        userManager.createUser(getUser("test_u1"));
-        userManager.createUser(getUser("test_u2"));
-
-        List<NuxeoPrincipal> principals = userManager.searchPrincipals("test_");
-
-        assertEquals(2, principals.size());
-        String name1 = principals.get(0).getName();
-        String name2 = principals.get(1).getName();
-        assertTrue("test_u1".equals(name1) && "test_u2".equals(name2)
-                || "test_u1".equals(name2) && "test_u2".equals(name1));
-    }
-
-    @Test
     public void testSearchUser() throws Exception {
         assertEquals(0, userManager.searchUsers("test").size());
 
@@ -710,18 +694,19 @@ public class TestUserManager extends UserManagerTestCase {
         u1.setFirstName("fname1");
         u1.setLastName("lname1");
         u1.setCompany("company1");
-        userManager.createPrincipal(u1);
+        DocumentModel u1Model = userManager.createUser(u1.getModel());
 
-        NuxeoGroup g1 = new NuxeoGroupImpl("test_g1");
-        g1.setMemberUsers(Collections.singletonList("test_u1"));
-        userManager.createGroup(g1);
+        DocumentModel g1 = getGroup("test_g1");
+        g1 = userManager.createGroup(g1);
 
-        NuxeoGroup g2 = new NuxeoGroupImpl("test_g2");
-        g2.setMemberUsers(Collections.singletonList("test_u1"));
-        userManager.createGroup(g2);
+        DocumentModel g2 = getGroup("test_g2");
+        g2 = userManager.createGroup(g2);
 
-        NuxeoGroup g3 = new NuxeoGroupImpl("test_g3");
-        userManager.createGroup(g3);
+        DocumentModel g3 = getGroup("test_g3");
+        g3 = userManager.createGroup(g3);
+
+        u1Model.setProperty("user", "groups", Arrays.asList("test_g1", "test_g2"));
+        userManager.updateUser(u1Model);
 
         // refresh u1
         u1 = userManager.getPrincipal("test_u1");
@@ -735,7 +720,7 @@ public class TestUserManager extends UserManagerTestCase {
         u1.setCompany("company2");
         u1.getGroups().remove("test_g2"); // ???!!!
         u1.getGroups().add("test_g3");
-        userManager.updatePrincipal(u1);
+        userManager.updateUser(u1.getModel());
 
         NuxeoPrincipal newU1 = userManager.getPrincipal("test_u1");
         assertNotNull(newU1);
@@ -752,18 +737,18 @@ public class TestUserManager extends UserManagerTestCase {
     public void testUpdateGroupLabel() throws Exception {
         deleteTestObjects();
 
-        NuxeoGroup g = new NuxeoGroupImpl("test_g");
-        g.setLabel("test group");
-        userManager.createGroup(g);
+        DocumentModel groupModel = getGroup("test_g");
+        groupModel.setProperty("group", "grouplabel", "test group");
+        groupModel = userManager.createGroup(groupModel);
 
-        g = userManager.getGroup("test_g");
-        assertEquals("test group", g.getLabel());
+        NuxeoGroup group = userManager.getGroup("test_g");
+        assertEquals("test group", group.getLabel());
 
-        g.setLabel("another group");
-        userManager.updateGroup(g);
+        groupModel.setProperty("group", "grouplabel", "another group");
+        userManager.updateGroup(groupModel);
 
-        g = userManager.getGroup("test_g");
-        assertEquals("another group", g.getLabel());
+        group = userManager.getGroup("test_g");
+        assertEquals("another group", group.getLabel());
 
     }
 
@@ -771,35 +756,35 @@ public class TestUserManager extends UserManagerTestCase {
     public void testUpdateGroup() throws Exception {
         deleteTestObjects();
         // setup group g
-        NuxeoPrincipal u1 = new NuxeoPrincipalImpl("test_u1");
-        userManager.createPrincipal(u1);
+        DocumentModel u1 = getUser("test_u1");
+        userManager.createUser(u1);
 
-        NuxeoPrincipal u2 = new NuxeoPrincipalImpl("test_u2");
-        userManager.createPrincipal(u2);
+        DocumentModel u2 = getUser("test_u2");
+        userManager.createUser(u2);
 
-        NuxeoPrincipal u3 = new NuxeoPrincipalImpl("test_u3");
-        userManager.createPrincipal(u3);
+        DocumentModel u3 = getUser("test_u3");
+        userManager.createUser(u3);
 
-        NuxeoGroup g1 = new NuxeoGroupImpl("test_g1");
+        DocumentModel g1 = getGroup("test_g1");
         userManager.createGroup(g1);
-        NuxeoGroup g2 = new NuxeoGroupImpl("test_g2");
+        DocumentModel g2 = getGroup("test_g2");
         userManager.createGroup(g2);
-        NuxeoGroup g3 = new NuxeoGroupImpl("test_g3");
+        DocumentModel g3 = getGroup("test_g3");
         userManager.createGroup(g3);
 
         List<String> gUsers = Arrays.asList("test_u1", "test_u2");
         List<String> gGroups = Arrays.asList("test_g1", "test_g2");
 
-        NuxeoGroup g = new NuxeoGroupImpl("test_g");
-        g.setMemberUsers(gUsers);
-        g.setMemberGroups(gGroups);
-        userManager.createGroup(g);
+        DocumentModel g = getGroup("test_g");
+        g.setProperty("group", "members", gUsers);
+        g.setProperty("group", "subGroups", gGroups);
+        g = userManager.createGroup(g);
 
         // update group g
-        g.getMemberUsers().remove("test_u2");
-        g.getMemberUsers().add("test_u3");
-        g.getMemberGroups().remove("test_g2");
-        g.getMemberGroups().add("test_g3");
+        gUsers = new ArrayList<>(Arrays.asList("test_u1", "test_u3"));
+        gGroups = new ArrayList<>(Arrays.asList("test_g1", "test_g3"));
+        g.setProperty("group", "members", gUsers);
+        g.setProperty("group", "subGroups", gGroups);
         userManager.updateGroup(g);
 
         // check new group
@@ -812,7 +797,6 @@ public class TestUserManager extends UserManagerTestCase {
         List<String> actualGroups = newG.getMemberGroups();
         Collections.sort(actualGroups);
         assertEquals(newGGroups, actualGroups);
-        assertEquals(newG, g);
     }
 
     /**

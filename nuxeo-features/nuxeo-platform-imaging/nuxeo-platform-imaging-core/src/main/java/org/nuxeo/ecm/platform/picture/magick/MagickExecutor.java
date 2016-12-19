@@ -42,12 +42,4 @@ public class MagickExecutor {
         return cles.execCommand(commandName, params);
     }
 
-    /**
-     * @deprecated since 5.6. Quoting file paths is done by {@link CmdParameters}.
-     */
-    @Deprecated
-    protected static String formatFilePath(String filePath) {
-        return String.format("\"%s\"", filePath);
-    }
-
 }

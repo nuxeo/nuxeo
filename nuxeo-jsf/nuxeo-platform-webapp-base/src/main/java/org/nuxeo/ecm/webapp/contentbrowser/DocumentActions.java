@@ -36,23 +36,6 @@ public interface DocumentActions extends Serializable {
     String CHILDREN_DOCUMENT_LIST = "CHILDREN_DOCUMENT_LIST";
 
     /**
-     * Returns the edit view of a document.
-     *
-     * @deprecated since 5.3: edit views are managed through tabs, the edit view is not used.
-     */
-    @Deprecated
-    String editDocument();
-
-    /**
-     * Saves changes held by the changeableDocument document model.
-     *
-     * @deprecated since 5.4.2, currentDocument should be used in edition screens instead of changeableDocument, so
-     *             {@link #updateCurrentDocument()} should be used instead
-     */
-    @Deprecated
-    String updateDocument();
-
-    /**
      * Saves changes held by the given document, and updates the current document context with the new version.
      * <p>
      * Makes it possible to specify whether current tabs should be restored or not after edition.
@@ -62,11 +45,6 @@ public interface DocumentActions extends Serializable {
      * @return the JSF outcome for navigation after document edition.
      */
     String updateDocument(DocumentModel document, Boolean restoreCurrentTabs);
-
-    /**
-     * Saves changes held by the changeableDocument document model in current version and then create a new current one.
-     */
-    String updateDocumentAsNewVersion();
 
     /**
      * Updates document considering that current document model holds edited values.
@@ -107,9 +85,6 @@ public interface DocumentActions extends Serializable {
      */
     void download(DocumentView docView);
 
-    @Deprecated
-    String downloadFromList();
-
     /**
      * @return ecm type for current document, <code>null</code> if current doc is null.
      */
@@ -125,33 +100,11 @@ public interface DocumentActions extends Serializable {
     boolean getWriteRight();
 
     /**
-     * Returns the comment to attach to the document
-     *
-     * @deprecated since 5.4: comment can be put directly in the document context data using key 'request/comment'.
-     */
-    @Deprecated
-    String getComment();
-
-    /**
-     * Sets the comment to attach to a document
-     *
-     * @deprecated since 5.4: comment can be put directly in the document context data using key 'request/comment'.
-     */
-    @Deprecated
-    void setComment(String comment);
-
-    /**
      * This method is used to test whether the logged user has enough rights for the unpublish support.
      *
      * @return true if the user can unpublish, false otherwise
      */
     boolean getCanUnpublish();
-
-    /**
-     * @deprecated since 5.6: nxl:documentLayout tag now offers the same features
-     */
-    @Deprecated
-    String getCurrentDocumentSummaryLayout();
 
     void followTransition(DocumentModel changedDocument);
 

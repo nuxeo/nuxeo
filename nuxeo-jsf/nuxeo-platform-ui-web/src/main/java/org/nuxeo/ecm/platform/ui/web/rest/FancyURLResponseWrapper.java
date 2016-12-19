@@ -52,16 +52,6 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
         super(response);
     }
 
-    /**
-     * @deprecated since 5.5: use constructor without the {@link StaticNavigationHandler} that is now wrapped into the
-     *             {@link URLPolicyService}
-     */
-    @Deprecated
-    public FancyURLResponseWrapper(HttpServletResponse response, HttpServletRequest request,
-            StaticNavigationHandler navigationHandler) {
-        this(response, request);
-    }
-
     public FancyURLResponseWrapper(HttpServletResponse response, HttpServletRequest request) {
         super(response);
         this.request = request;

@@ -158,14 +158,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         asyncWaitHooks.remove(callback);
     }
 
-    /**
-     * @deprecated use {@link #waitForAsyncCompletion()} instead.
-     */
-    @Deprecated
-    public int getActiveAsyncTaskCount() {
-        return asyncExec.getUnfinishedCount();
-    }
-
     @Override
     public void waitForAsyncCompletion() {
         waitForAsyncCompletion(Long.MAX_VALUE);

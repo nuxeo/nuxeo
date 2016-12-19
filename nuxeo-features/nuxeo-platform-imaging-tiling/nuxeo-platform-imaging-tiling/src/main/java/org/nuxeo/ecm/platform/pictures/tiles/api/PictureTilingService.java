@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.api;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
 
 /**
@@ -30,32 +29,6 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
  * @author tiry
  */
 public interface PictureTilingService {
-
-    /**
-     * Gets the picture tiles from a blob.
-     *
-     * @param blob
-     * @param tileWidth
-     * @param tileHeight
-     * @param maxTiles
-     * @return
-     */
-    @Deprecated
-    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles);
-
-    /**
-     * Gets the picture tiles from a blob Tiles are lazily generated.
-     *
-     * @param blob
-     * @param tileWidth
-     * @param tileHeight
-     * @param maxTiles
-     * @param progressive
-     * @return
-     */
-    @Deprecated
-    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter, int yCenter,
-            boolean fullGeneration);
 
     PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter);
 

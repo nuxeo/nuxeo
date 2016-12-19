@@ -26,8 +26,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -297,8 +295,6 @@ public class LockActionsBean implements LockActions {
             }
             lockDetails.put(LOCKER, lock.getOwner());
             lockDetails.put(LOCK_CREATED, lock.getCreated());
-            lockDetails.put(LOCK_TIME,
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(lock.getCreated().getTimeInMillis())));
         }
         return lockDetails;
     }

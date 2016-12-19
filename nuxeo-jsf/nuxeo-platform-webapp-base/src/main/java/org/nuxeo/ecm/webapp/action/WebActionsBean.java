@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -46,7 +45,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.common.utils.UserAgentMatcher;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -184,16 +182,6 @@ public class WebActionsBean implements WebActions, Serializable {
     @Override
     public List<Action> getActionsList(String category) {
         return getActions(createActionContext(), category, true, false);
-    }
-
-    @Override
-    public List<Action> getUnfiltredActionsList(String category, ActionContext context) {
-        return getActions(context, category, false, false);
-    }
-
-    @Override
-    public List<Action> getUnfiltredActionsList(String category) {
-        return getActions(createActionContext(), category, false, false);
     }
 
     @Override
@@ -486,61 +474,6 @@ public class WebActionsBean implements WebActions, Serializable {
         // set current tab
         setCurrentTabId(currentTabActionId);
         return viewId;
-    }
-
-    // deprecated API
-
-    @Override
-    @Deprecated
-    public List<Action> getSubViewActionsList() {
-        return getActionsList("SUBVIEW_UPPER_LIST");
-    }
-
-    @Override
-    @Deprecated
-    public void selectTabAction() {
-        // if (tabAction != null) {
-        // setCurrentTabAction(tabAction);
-        // }
-    }
-
-    @Override
-    @Deprecated
-    public String getCurrentLifeCycleState() {
-        // only user of documentManager in this bean, look it up by hand
-        CoreSession documentManager = (CoreSession) Component.getInstance("documentManager");
-        return documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());
-    }
-
-    @Override
-    @Deprecated
-    public void setTabsList(List<Action> tabsList) {
-        tabsActionsList = tabsList;
-    }
-
-    @Override
-    @Deprecated
-    public void setSubTabsList(List<Action> tabsList) {
-        subTabsActionsList = tabsList;
-        subTabsCategory = null;
-        if (tabsList != null) {
-            // BBB code
-            for (Action action : tabsList) {
-                if (action != null) {
-                    String[] categories = action.getCategories();
-                    if (categories != null && categories.length > 0) {
-                        subTabsCategory = categories[0];
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    @Deprecated
-    public void setCurrentTabAction(String currentTabActionId) {
-        setCurrentTabId(currentTabActionId);
     }
 
     @Override

@@ -411,7 +411,6 @@
       <category>Scripting</category>
       <script><![CDATA[
         function run(input, params) {
-          input['size'] = 123;
           input['dc:title'] = 'TitleFromTest';
           input['dc:created'] = new Date(0);
           return input;
@@ -425,7 +424,6 @@
       <category>Scripting</category>
       <script><![CDATA[
         function run(input, params) {
-          input.setPropertyValue('size', 123);
           input.setPropertyValue('dc:title', 'TitleFromTest');
           input.setPropertyValue('dc:created', new Date(0));
           return input;

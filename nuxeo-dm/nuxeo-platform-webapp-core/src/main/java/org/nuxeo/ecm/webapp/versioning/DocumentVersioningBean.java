@@ -31,7 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -51,9 +50,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
@@ -80,12 +77,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    /**
-     * @deprecated since 5.7.3: versioning options map does not need to be kept in cache anymore here
-     */
-    @Deprecated
-    protected Map<String, String> availableVersioningOptionsMap;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -132,24 +123,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void resetVersioningOption() {
-        availableVersioningOptionsMap = null;
         selectedOption = null;
         rendered = null;
-    }
-
-    @Deprecated
-    @Override
-    public Map<String, String> getAvailableVersioningOptionsMap() {
-        // FIXME: should cache the map and invalidate it correctly as it refers
-        // to current document
-        DocumentModel doc = navigationContext.getCurrentDocument();
-        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-        for (Entry<String, String> en : getVersioningOptionsMap(doc).entrySet()) {
-            // reverse keys with values for the jsf controls
-            map.put(en.getValue(), en.getKey());
-        }
-        availableVersioningOptionsMap = map;
-        return availableVersioningOptionsMap;
     }
 
     @Override
@@ -168,15 +143,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return map;
     }
 
-    /**
-     * @deprecated since 5.7.3: options are resolved from the layout value instead now that a generic widget definition
-     *             handles it
-     */
-    @Deprecated
-    private VersionIncEditOptions getCurrentAvailableVersioningOptions() {
-        return getAvailableVersioningOptions(navigationContext.getCurrentDocument());
-    }
-
     public VersionIncEditOptions getAvailableVersioningOptions(DocumentModel doc) {
         return versioningManager.getVersionIncEditOptions(doc);
     }
@@ -184,59 +150,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @Override
     public String getVersionLabel(DocumentModel doc) {
         return versioningManager.getVersionLabel(doc);
-    }
-
-    @Deprecated
-    @Override
-    public String getVersioningOptionInstanceId() {
-        if (selectedOption == null) {
-            // FIXME: should cache the versioning options and invalidate them
-            // correctly as it refers to current document
-            VersionIncEditOptions options = getCurrentAvailableVersioningOptions();
-            if (options != null) {
-                selectedOption = options.getDefaultVersioningAction();
-            }
-            if (selectedOption == null) {
-                selectedOption = VersioningActions.ACTION_NO_INCREMENT;
-            }
-        }
-        return selectedOption.name();
-    }
-
-    @Deprecated
-    @Override
-    public void setVersioningOptionInstanceId(String optionId) {
-        setVersioningOptionInstanceId(navigationContext.getCurrentDocument(), optionId);
-    }
-
-    @Deprecated
-    @Override
-    public void setVersioningOptionInstanceId(DocumentModel docModel, String optionId) {
-        if (optionId != null) {
-            selectedOption = VersioningActions.valueOf(optionId);
-            setVersioningOptionInstanceId(docModel, selectedOption);
-        } else {
-            // component is present but no option has been selected
-            // should not reach here...
-        }
-    }
-
-    @Deprecated
-    @Override
-    public void setVersioningOptionInstanceId(DocumentModel docModel, VersioningActions option) {
-        // add version inc option to document context so it will be
-        // taken into consideration on the server side
-        VersioningOption vo;
-        if (option == VersioningActions.ACTION_INCREMENT_MAJOR) {
-            vo = VersioningOption.MAJOR;
-        } else if (option == VersioningActions.ACTION_INCREMENT_MINOR) {
-            vo = VersioningOption.MINOR;
-        } else if (option == VersioningActions.ACTION_NO_INCREMENT) {
-            vo = VersioningOption.NONE;
-        } else {
-            vo = null;
-        }
-        docModel.putContextData(VersioningService.VERSIONING_OPTION, vo);
     }
 
     @Override
@@ -251,40 +164,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
 
         throw new ValidatorException(message);
-    }
-
-    @Deprecated
-    @Override
-    @Factory(value = "renderVersioningOptionsForCurrentDocument", scope = EVENT)
-    public boolean factoryForRenderVersioningOption() {
-        return getRendered();
-    }
-
-    /**
-     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget definition instead
-     */
-    @Deprecated
-    public boolean getRendered() {
-        if (rendered == null) {
-            rendered = Boolean.FALSE;
-            if (navigationContext.getCurrentDocument() != null) {
-                Map<String, String> options = getAvailableVersioningOptionsMap();
-                // do not display the versioning options if there is only one
-                // choice
-                if (options != null && options.size() > 1) {
-                    rendered = Boolean.TRUE;
-                }
-            }
-        }
-        return rendered.booleanValue();
-    }
-
-    /**
-     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget definition instead
-     */
-    @Deprecated
-    public void setRendered(Boolean rendered) {
-        this.rendered = rendered;
     }
 
 }

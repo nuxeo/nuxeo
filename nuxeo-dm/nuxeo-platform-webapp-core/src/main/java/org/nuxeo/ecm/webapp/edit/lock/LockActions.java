@@ -37,10 +37,6 @@ public interface LockActions extends Serializable {
 
     String LOCKER = "document.locker";
 
-    /** @deprecated since 5.4.2, use {@link #LOCK_CREATED} instead */
-    @Deprecated
-    String LOCK_TIME = "document.lock.time";
-
     /** @since 5.4.2 */
     String LOCK_CREATED = "document.lock.created";
 

@@ -26,15 +26,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
@@ -71,9 +70,9 @@ public class DialectMySQL extends Dialect {
     @Override
     public String getAddForeignKeyConstraintString(String constraintName, String[] foreignKeys, String referencedTable,
             String[] primaryKeys, boolean referencesPrimaryKey) {
-        String cols = StringUtils.join(foreignKeys, ", ");
+        String cols = String.join(", ", foreignKeys);
         return String.format(" ADD INDEX %s (%s), ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)",
-                constraintName, cols, constraintName, cols, referencedTable, StringUtils.join(primaryKeys, ", "));
+                constraintName, cols, constraintName, cols, referencedTable, String.join(", ", primaryKeys));
     }
 
     @Override
@@ -217,12 +216,9 @@ public class DialectMySQL extends Dialect {
     @Override
     public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
             Model model) {
-        List<String> columnNames = new ArrayList<>(columns.size());
-        for (Column col : columns) {
-            columnNames.add(col.getQuotedName());
-        }
+        String indexedColumns = columns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
         return String.format("CREATE FULLTEXT INDEX %s ON %s (%s)", quotedIndexName, table.getQuotedName(),
-                StringUtils.join(columnNames, ", "));
+                indexedColumns);
     }
 
     @Override
@@ -434,7 +430,7 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getBinaryFulltextSql(List<String> columns) {
-        return "SELECT " + StringUtils.join(columns, ", ") + " FROM `fulltext` WHERE id=?";
+        return "SELECT " + String.join(", ", columns) + " FROM `fulltext` WHERE id=?";
     }
 
     @Override

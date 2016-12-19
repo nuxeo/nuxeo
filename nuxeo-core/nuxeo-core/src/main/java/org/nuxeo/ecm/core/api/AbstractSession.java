@@ -43,13 +43,11 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -1462,16 +1460,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Boolean disableAutoCheckOut = (Boolean) docModel.getContextData(VersioningService.DISABLE_AUTO_CHECKOUT);
         docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
         options.put(VersioningService.DISABLE_AUTO_CHECKOUT, disableAutoCheckOut);
-        // compat
-        boolean snapshot = Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
-        docModel.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
-        if (versioningOption == null && snapshot && dirty) {
-            String key = String.valueOf(docModel.getContextData(ScopeType.REQUEST,
-                    VersioningDocument.KEY_FOR_INC_OPTION));
-            docModel.putContextData(ScopeType.REQUEST, VersioningDocument.KEY_FOR_INC_OPTION, null);
-            versioningOption = "inc_major".equals(key) ? VersioningOption.MAJOR : VersioningOption.MINOR;
-        }
 
         if (!docModel.isImmutable()) {
             // pre-save versioning
@@ -1521,12 +1509,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    @Deprecated
-    public boolean isDirty(DocumentRef docRef) {
-        return resolveReference(docRef).isCheckedOut();
-    }
-
-    @Override
     public void saveDocuments(DocumentModel[] docModels) {
         // TODO: optimize this - avoid calling at each iteration saveDoc...
         for (DocumentModel docModel : docModels) {
@@ -1554,14 +1536,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         versionModel.setDescription(version.getCheckinComment());
         versionModel.setLabel(version.getVersionLabel());
         return versionModel;
-    }
-
-    @Override
-    public VersionModel getLastVersion(DocumentRef docRef) {
-        Document doc = resolveReference(docRef);
-        checkPermission(doc, READ_VERSION);
-        Document version = doc.getLastVersion();
-        return version == null ? null : getVersionModel(version);
     }
 
     @Override
@@ -1622,20 +1596,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         Document ver = resolveReference(versionRef);
         return restoreToVersion(doc, ver, false, true);
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version) {
-        return restoreToVersion(docRef, version, false);
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation) {
-        Document doc = resolveReference(docRef);
-        Document ver = doc.getVersion(version.getLabel());
-        return restoreToVersion(doc, ver, skipSnapshotCreation, false);
     }
 
     @Override
@@ -1709,13 +1669,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         checkPermission(ver, READ);
         return new IdRef(ver.getUUID());
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver) {
-        DocumentRef verRef = checkIn(docRef, VersioningOption.MINOR, ver == null ? null : ver.getDescription());
-        return readModel(resolveReference(verRef));
     }
 
     @Override
@@ -1929,30 +1882,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef) {
-        Document folder = resolveReference(folderRef);
-        Document doc = resolveReference(docRef);
-        checkPermission(folder, READ_CHILDREN);
-        Collection<Document> children = getSession().getProxies(doc, folder);
-        if (children.isEmpty()) {
-            return null;
-        }
-        List<String> versions = new ArrayList<>();
-        for (Document child : children) {
-            if (hasPermission(child, READ)) {
-                Document target = child.getTargetDocument();
-                if (target.isVersion()) {
-                    versions.add(target.getVersionLabel());
-                } else {
-                    // live proxy
-                    versions.add("");
-                }
-            }
-        }
-        return versions.toArray(new String[versions.size()]);
-    }
-
-    @Override
     public List<String> getAvailableSecurityPermissions() {
         // XXX: add security check?
         return Arrays.asList(getSecurityService().getPermissionProvider().getPermissions());
@@ -2104,38 +2033,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         System.arraycopy(parentRefs, 0, allRefs, 1, parentRefs.length);
 
         return getDataModelsField(allRefs, schema, field);
-    }
-
-    protected String oldLockKey(Lock lock) {
-        if (lock == null) {
-            return null;
-        }
-        // return deprecated format, like "someuser:Nov 29, 2010"
-        String lockCreationDate = (lock.getCreated() == null) ? null : DateFormat.getDateInstance(DateFormat.MEDIUM)
-                                                                                 .format(new Date(
-                                                                                         lock.getCreated()
-                                                                                             .getTimeInMillis()));
-        return lock.getOwner() + ':' + lockCreationDate;
-    }
-
-    @Override
-    @Deprecated
-    public String getLock(DocumentRef docRef) {
-        Lock lock = getLockInfo(docRef);
-        return oldLockKey(lock);
-    }
-
-    @Override
-    @Deprecated
-    public void setLock(DocumentRef docRef, String key) {
-        setLock(docRef);
-    }
-
-    @Override
-    @Deprecated
-    public String unlock(DocumentRef docRef) {
-        Lock lock = removeLock(docRef);
-        return oldLockKey(lock);
     }
 
     @Override

@@ -22,7 +22,7 @@ import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -69,7 +69,7 @@ public class DatabaseDerby extends DatabaseHelper {
         }
         File dbdir = new File(DIRECTORY);
         File parent = dbdir.getParentFile();
-        FileUtils.deleteTree(dbdir);
+        FileUtils.deleteQuietly(dbdir);
         parent.mkdirs();
         // the following noticeably improves performance
         System.setProperty("derby.system.durability", "test");

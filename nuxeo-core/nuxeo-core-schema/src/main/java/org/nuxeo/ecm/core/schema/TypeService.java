@@ -19,9 +19,7 @@
  */
 package org.nuxeo.ecm.core.schema;
 
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
@@ -33,12 +31,6 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class TypeService extends DefaultComponent {
 
-    /**
-     * @deprecated since 5.7 (unused)
-     */
-    @Deprecated
-    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.schema.TypeService");
-
     private static final String XP_SCHEMA = "schema";
 
     private static final String XP_DOCTYPE = "doctype";
@@ -46,30 +38,6 @@ public class TypeService extends DefaultComponent {
     private static final String XP_CONFIGURATION = "configuration";
 
     private SchemaManagerImpl schemaManager;
-
-    /**
-     * @deprecated since 5.7, use {@code Framework.getLocalService(SchemaManager.class)} instead.
-     */
-    @Deprecated
-    public static SchemaManager getSchemaManager() {
-        return Framework.getLocalService(SchemaManager.class);
-    }
-
-    /**
-     * @deprecated since 5.7, use {@code Framework.getLocalService(SchemaManager.class)} instead.
-     */
-    @Deprecated
-    public SchemaManager getTypeManager() {
-        return schemaManager;
-    }
-
-    /**
-     * @deprecated since 5.7 (unused)
-     */
-    @Deprecated
-    public XSDLoader getSchemaLoader() {
-        return new XSDLoader(schemaManager);
-    }
 
     @Override
     public void activate(ComponentContext context) {

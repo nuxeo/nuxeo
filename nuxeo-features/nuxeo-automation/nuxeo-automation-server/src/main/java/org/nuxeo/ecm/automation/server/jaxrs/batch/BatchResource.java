@@ -111,15 +111,6 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     }
 
     /**
-     * @deprecated since 5.7.2. The timeout is managed by the {@link BatchManager#execute} method.
-     */
-    @Deprecated
-    protected int getUploadWaitTimeout() {
-        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout", "5");
-        return Integer.parseInt(t);
-    }
-
-    /**
      * @deprecated since 7.4, use {@link BatchUploadObject#upload(HttpServletRequest, String, String)} instead.
      */
     @Deprecated

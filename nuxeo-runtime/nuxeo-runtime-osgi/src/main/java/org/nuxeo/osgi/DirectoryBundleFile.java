@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -150,7 +151,7 @@ public class DirectoryBundleFile implements BundleFile {
                 }
             }
         }
-        String paths = StringUtils.join(files.toArray(new Object[files.size()]), ", ");
+        String paths = files.stream().map(File::toString).collect(Collectors.joining(", "));
         throw new IOException(String.format("Could not find a file '%s' in paths: %s", MANIFEST_PATH, paths));
     }
 

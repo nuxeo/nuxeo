@@ -32,11 +32,6 @@ public class RepositoryReloader implements EventListener {
     private static Log log = LogFactory.getLog(RepositoryReloader.class);
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         final String id = event.getId();
         if (ReloadService.RELOAD_REPOSITORIES_ID.equals(id) || ReloadService.FLUSH_EVENT_ID.equals(id)) {

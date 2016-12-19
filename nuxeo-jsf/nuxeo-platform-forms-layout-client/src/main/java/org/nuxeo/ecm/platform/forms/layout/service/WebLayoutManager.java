@@ -189,23 +189,6 @@ public interface WebLayoutManager extends LayoutManager {
      * @param type the widget type name.
      * @param mode the mode.
      * @param valueName the value name to use when computing tag attributes.
-     * @param properties optional properties to use when computing the widget.
-     * @param subWidgets optional sub widgets for this widget.
-     * @return a widget computed in this context.
-     * @see #createWidget(FaceletContext, String, String, String, List, String, String, Boolean, Map, Widget[])
-     */
-    @Deprecated
-    Widget createWidget(FaceletContext ctx, String type, String mode, String valueName,
-            Map<String, Serializable> properties, Widget[] subWidgets);
-
-    /**
-     * Returns a widget computed from given information.
-     *
-     * @param ctx the facelet context this layout will be computed in. If context is null, no expressions can be
-     *            resolved during computing.
-     * @param type the widget type name.
-     * @param mode the mode.
-     * @param valueName the value name to use when computing tag attributes.
      * @param fieldDefinitions the field definitions
      * @param label the widget label
      * @param helpLabel the widget help label
@@ -233,20 +216,6 @@ public interface WebLayoutManager extends LayoutManager {
      */
     Widget createWidget(FaceletContext ctx, WidgetDefinition widgetDef, String mode, String valueName,
             Widget[] subWidgets);
-
-    /**
-     * Returns true if property with given name and value should be referenced as a value expression.
-     * <p>
-     * Assumes the widget type is in category #JSF_CATEGORY for backward compatibility.
-     *
-     * @see #referencePropertyAsExpression(String, Serializable, String, String, String)
-     * @since 5.6
-     * @deprecated since 5.7.3, use
-     *             {@link #referencePropertyAsExpression(String, Serializable, String, String, String, String)} instead
-     */
-    @Deprecated
-    boolean referencePropertyAsExpression(String name, Serializable value, String widgetType, String mode,
-            String template);
 
     /**
      * Returns true if property with given name and value should be referenced as a value expression.

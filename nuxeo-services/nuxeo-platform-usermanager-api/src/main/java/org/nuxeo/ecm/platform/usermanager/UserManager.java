@@ -377,68 +377,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      */
     List<String> getAdministratorsGroups();
 
-    // DEPRECATED API
-
-    /**
-     * @deprecated use {@link #getUserModel(String)}
-     */
-    @Deprecated
-    DocumentModel getModelForUser(String name);
-
-    /**
-     * @deprecated use {@link #getUserIds()} or {@link #searchUsers(null)}
-     */
-    @Deprecated
-    List<NuxeoPrincipal> getAvailablePrincipals();
-
-    /**
-     * @deprecated use {@link #createUser(DocumentModel)}
-     */
-    @Deprecated
-    void createPrincipal(NuxeoPrincipal principal);
-
-    /**
-     * @deprecated use {@link #updateUser(DocumentModel)}
-     */
-    @Deprecated
-    void updatePrincipal(NuxeoPrincipal principal);
-
-    /**
-     * @deprecated use {@link #deleteUser(DocumentModel)}
-     */
-    @Deprecated
-    void deletePrincipal(NuxeoPrincipal principal);
-
-    /**
-     * @deprecated use {@link #searchUsers(Map, Set)}
-     */
-    @Deprecated
-    List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern);
-
-    /**
-     * @deprecated use {@link #getGroupIds()} or {@link #searchGroups(Map, Set)}
-     */
-    @Deprecated
-    List<NuxeoGroup> getAvailableGroups();
-
-    /**
-     * @deprecated use {@link #createGroup(DocumentModel)}
-     */
-    @Deprecated
-    void createGroup(NuxeoGroup group);
-
-    /**
-     * @deprecated use {@link #deleteGroup(DocumentModel)}
-     */
-    @Deprecated
-    void deleteGroup(NuxeoGroup group);
-
-    /**
-     * @deprecated use {@link #updateGroup(DocumentModel)}
-     */
-    @Deprecated
-    void updateGroup(NuxeoGroup group);
-
     /**
      * For an ACP, get the list of user that has a permission. This method should be use with care as it can cause
      * performance issues while getting the list of users.

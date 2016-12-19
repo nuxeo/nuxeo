@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -615,10 +617,10 @@ public abstract class AbstractAutomationClientTest {
 
     @Test
     public void testSetArrayProperty() throws Exception {
-        PropertyMap props = new PropertyMap();
-        props.set("dc:title", "My Test Folder");
-        props.set("dc:description", "test");
-        props.set("dc:subjects", "art,sciences,biology");
+        Map<String, Object> props = new HashMap<>();
+        props.put("dc:title", "My Test Folder");
+        props.put("dc:description", "test");
+        props.put("dc:subjects", "art,sciences,biology");
         Document folder = (Document) session.newRequest(CreateDocument.ID)
                                             .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
                                             .setInput(automationTestFolder)
@@ -654,7 +656,7 @@ public abstract class AbstractAutomationClientTest {
                                      .set("value", "/")
                                      .setHeader(Constants.HEADER_NX_SCHEMAS, "common")
                                      .execute();
-            assertEquals(4, root.getProperties().size());
+            assertEquals(3, root.getProperties().size());
 
             // reset
             session.setDefaultSchemas(null);

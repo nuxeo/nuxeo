@@ -73,45 +73,12 @@ public class LocalThemeConfigAdapter extends AbstractLocalConfiguration<LocalThe
         return this;
     }
 
-    @Override
-    public String getTheme() {
-        return theme;
-    }
-
-    @Override
-    public String getPage() {
-        return page;
-    }
-
-    @Override
-    public String getPerspective() {
-        return perspective;
-    }
-
-    @Override
-    public String getEngine() {
-        return engine;
-    }
-
-    @Override
-    public String getMode() {
-        return mode;
-    }
-
     /**
      * @since 5.5
      */
     @Override
     public String getFlavor() {
         return flavor;
-    }
-
-    @Override
-    public String computePagePath() {
-        if (theme == null || page == null) {
-            return null;
-        }
-        return theme + "/" + page;
     }
 
 }

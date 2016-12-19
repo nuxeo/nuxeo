@@ -218,12 +218,6 @@ public abstract class AbstractWork implements Work {
     }
 
     @Override
-    @Deprecated
-    public State getState() {
-        return state;
-    }
-
-    @Override
     public void setProgress(Progress progress) {
         this.progress = progress;
         if (log.isTraceEnabled()) {

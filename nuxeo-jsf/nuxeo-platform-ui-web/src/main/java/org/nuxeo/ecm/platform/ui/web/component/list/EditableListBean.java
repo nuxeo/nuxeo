@@ -36,7 +36,6 @@ import javax.faces.event.FacesEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * Bean used to interact with {@link UIEditableList} component.
@@ -104,44 +103,6 @@ public class EditableListBean {
         ExternalContext eContext = context.getExternalContext();
         Map<String, String> requestMap = eContext.getRequestParameterMap();
         performAction(component, requestMap);
-    }
-
-    /**
-     * Resets all {@link UIEditableList} components cached model in first container found thanks to given event
-     *
-     * @since 5.3.1
-     * @deprecated since 5.6: the component resets its cache correctly after update now so forcing the reset is now
-     *             useless
-     */
-    @Deprecated
-    public void resetAllListsCachedModels(ActionEvent event) {
-        UIComponent component = event.getComponent();
-        if (component == null) {
-            return;
-        }
-        // take first anchor and force flush on every list component
-        UIComponent anchor = ComponentUtils.getBase(component);
-        resetListCachedModels(anchor);
-    }
-
-    /**
-     * @deprecated since 5.6: the component resets its cache correctly after update now so forcing the reset is now
-     *             useless
-     */
-    @Deprecated
-    protected void resetListCachedModels(UIComponent parent) {
-        if (parent == null) {
-            return;
-        }
-        if (parent instanceof UIEditableList) {
-            ((UIEditableList) parent).resetCachedModel();
-        }
-        List<UIComponent> children = parent.getChildren();
-        if (children != null && !children.isEmpty()) {
-            for (UIComponent child : children) {
-                resetListCachedModels(child);
-            }
-        }
     }
 
     protected static void performAction(UIComponent binding, Map<String, String> requestMap) {

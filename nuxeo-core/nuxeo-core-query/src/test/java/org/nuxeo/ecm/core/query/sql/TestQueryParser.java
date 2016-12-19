@@ -759,11 +759,4 @@ public class TestQueryParser {
         // Query query = QueryParser.parse("SELECT p, q, r FROM t HAVING p = 1");
     }
 
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testPrepareStringLiteral() {
-        assertEquals("'foo'", SQLQueryParser.prepareStringLiteral("foo"));
-        assertEquals("'can\\'t'", SQLQueryParser.prepareStringLiteral("can't"));
-    }
-
 }

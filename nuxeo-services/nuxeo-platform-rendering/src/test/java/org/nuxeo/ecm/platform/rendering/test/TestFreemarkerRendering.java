@@ -27,6 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,8 +104,9 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         engine.render("testdata/c.ftl", input, writer);
         // double e = System.currentTimeMillis();
 
-        InputStream expected = new FileInputStream(getTestFile("expecteddata/c_output.txt"));
-        assertTextEquals(FileUtils.read(expected), writer.toString());
+        try (InputStream expected = new FileInputStream(getTestFile("expecteddata/c_output.txt"))) {
+            assertTextEquals(IOUtils.toString(expected, Charsets.UTF_8), writer.toString());
+        }
 
     }
 

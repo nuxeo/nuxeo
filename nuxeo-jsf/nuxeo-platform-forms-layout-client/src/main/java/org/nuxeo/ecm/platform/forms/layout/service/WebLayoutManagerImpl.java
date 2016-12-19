@@ -598,12 +598,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
 
     @Override
     public Widget createWidget(FaceletContext ctx, String type, String mode, String valueName,
-            Map<String, Serializable> properties, Widget[] subWidgets) {
-        return createWidget(ctx, type, mode, valueName, null, null, null, null, properties, subWidgets);
-    }
-
-    @Override
-    public Widget createWidget(FaceletContext ctx, String type, String mode, String valueName,
             List<FieldDefinition> fieldDefinitions, String label, String helpLabel, Boolean translated,
             Map<String, Serializable> properties, Widget[] subWidgets) {
         return createWidget(
@@ -694,12 +688,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
     protected void unregisterDisabledPropertyRef(DisabledPropertyRefDescriptor desc) {
         disabledPropertyRefsReg.removeContribution(desc);
         log.info(String.format("Removed disabled property reference descriptor: %s", desc.toString()));
-    }
-
-    @Override
-    public boolean referencePropertyAsExpression(String name, Serializable value, String widgetType, String widgetMode,
-            String template) {
-        return referencePropertyAsExpression(name, value, widgetType, null, widgetMode, template);
     }
 
     @Override

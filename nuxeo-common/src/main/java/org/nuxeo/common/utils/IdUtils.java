@@ -105,41 +105,10 @@ public final class IdUtils {
             id = sb.toString();
             id = id.substring(0, Math.min(id.length(), maxChars));
         } else {
-            id = StringUtils.join(wordsList.toArray(), wordSeparator);
+            id = String.join(wordSeparator, wordsList);
         }
 
         return id;
-    }
-
-    /**
-     * Generates an id from a non-null String.
-     * <p>
-     * Uses default values for wordSeparator: '-', lower: true, maxChars: 24.
-     *
-     * @deprecated use {@link #generatePathSegment} instead, or {@link #generateId(String, String, boolean, int)}
-     *             depending on the use cases
-     */
-    @Deprecated
-    public static String generateId(String s) {
-        return generateId(s, "-", true, 24);
-    }
-
-    public static final Pattern STUPID_REGEXP = Pattern.compile("^[- .,;?!:/\\\\'\"]*$");
-
-    /**
-     * Generates a Nuxeo path segment from a non-null String.
-     * <p>
-     * Basically all characters are kept, except for slashes and initial/trailing spaces.
-     *
-     * @deprecated use {@link PathSegmentService} instead
-     */
-    @Deprecated
-    public static String generatePathSegment(String s) {
-        s = s.trim();
-        if (STUPID_REGEXP.matcher(s).matches()) {
-            return generateStringId();
-        }
-        return s.replace("/", "-");
     }
 
     /**

@@ -44,7 +44,7 @@ public class TestRegisterAuditAction extends NXRuntimeTestCase {
 
     @Test
     public void testRegistration() {
-        Action act1 = as.getActionRegistry().getAction("TAB_CONTENT_HISTORY");
+        Action act1 = as.getAction("TAB_CONTENT_HISTORY");
 
         assertEquals("action.view.history", act1.getLabel());
         assertEquals("/icons/file.gif", act1.getIcon());

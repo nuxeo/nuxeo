@@ -101,17 +101,6 @@ public class PackageInfo {
     }
 
     /**
-     * @deprecated since 5.7
-     */
-    @Deprecated
-    public PackageInfo(String name, String version, String id, int state) {
-        this.name = name;
-        this.version = version;
-        this.id = id;
-        this.state = PackageState.getByValue(state);
-    }
-
-    /**
      * @since 5.7
      */
     public PackageInfo(Package pkg) {

@@ -34,14 +34,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
  */
 public interface PictureManager {
 
-    /**
-     * Creates and saves a picture document.
-     *
-     * @deprecated since 5.5
-     */
-    @Deprecated
-    String addPicture();
-
     String crop() throws IOException;
 
     /**

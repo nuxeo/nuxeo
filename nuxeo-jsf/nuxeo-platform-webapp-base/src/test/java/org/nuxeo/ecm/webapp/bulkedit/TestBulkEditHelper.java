@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.webapp.bulkedit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,24 +31,15 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -104,52 +100,6 @@ public class TestBulkEditHelper {
         assertTrue(commonLayouts.contains("dublincore"));
         assertFalse(commonLayouts.contains("note"));
         assertFalse(commonLayouts.contains("file"));
-    }
-
-    @Test
-    public void testGetPropertiesToCopy() {
-        DocumentModel doc = new SimpleDocumentModel("dublincore");
-        ScopedMap map = doc.getContextData();
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:title", true);
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:description", false);
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:coverage dc:subjects", true);
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:creator", true);
-
-        List<String> propertiesToCopy = BulkEditHelper.getPropertiesToCopy(doc);
-        assertEquals(4, propertiesToCopy.size());
-        assertTrue(propertiesToCopy.contains("dc:title"));
-        assertTrue(propertiesToCopy.contains("dc:coverage"));
-        assertTrue(propertiesToCopy.contains("dc:subjects"));
-        assertTrue(propertiesToCopy.contains("dc:creator"));
-        assertFalse(propertiesToCopy.contains("dc:description"));
-    }
-
-    @Test
-    public void testCopyMetadata() throws Exception {
-        List<DocumentModel> docs = createTestDocuments();
-        // wait for fulltext processing before copy, to avoid transaction
-        // isolation issues (SQL Server)
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-
-        List<String> commonSchemas = BulkEditHelper.getCommonSchemas(docs);
-        DocumentModel sourceDoc = new SimpleDocumentModel(commonSchemas);
-        sourceDoc.setProperty("dublincore", "title", "new title");
-        sourceDoc.setProperty("dublincore", "description", "new description");
-        sourceDoc.setPropertyValue("dublincore:creator", "new creator");
-        sourceDoc.setPropertyValue("dc:source", "new source");
-        ScopedMap map = sourceDoc.getContextData();
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:title", true);
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:description", false);
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:creator", true);
-        map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:source", false);
-
-        BulkEditHelper.copyMetadata(session, sourceDoc, docs);
-        for (DocumentModel doc : docs) {
-            assertEquals("new title", doc.getPropertyValue("dc:title"));
-            assertEquals("new creator", doc.getProperty("dc:creator").getValue());
-            assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
-            assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
-        }
     }
 
 }

@@ -151,6 +151,14 @@ public class DocumentService {
         return createDocument(parent, type, name, null);
     }
 
+    /**
+     * THIS METHOD IS PART OF PRIVATE API NOW, DON'T USE IT.
+     *
+     * @deprecated since 9.1 use {@link #createDocument(String, Document)} or
+     *             {@link #createDocument(DocRef, String, String)} instead as instances of {@link PropertyMap} is now
+     *             read-only.
+     */
+    @Deprecated
     public Document createDocument(DocRef parent, String type, String name, PropertyMap properties) throws IOException {
         OperationRequest req = session.newRequest(CreateDocument).setInput(parent).set("type", type).set("name", name);
         if (properties != null && !properties.isEmpty()) {
@@ -281,9 +289,16 @@ public class DocumentService {
      * @return the document returned by the server
      */
     public Document update(Document document) throws IOException {
-        return update(new DocRef(document.getId()), document.getDirties());
+        return (Document) session.newRequest(UpdateDocument)
+                                 .setInput(document)
+                                 .set("properties", document.getDirties())
+                                 .execute();
     }
 
+    /**
+     * @deprecated since 9.1 use {@link #update(Document)} instead as instances of {@link PropertyMap} is now read-only.
+     */
+    @Deprecated
     public Document update(DocRef doc, PropertyMap properties) throws IOException {
         return (Document) session.newRequest(UpdateDocument).setInput(doc).set("properties", properties).execute();
     }

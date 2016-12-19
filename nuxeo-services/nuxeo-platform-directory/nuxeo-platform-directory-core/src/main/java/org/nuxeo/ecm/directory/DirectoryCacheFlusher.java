@@ -38,11 +38,6 @@ public class DirectoryCacheFlusher implements EventListener {
     private static final Log log = LogFactory.getLog(DirectoryCacheFlusher.class);
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (!Framework.isDevModeSet()) {
             log.info("Do not flush the directory caches: dev mode is not set");

@@ -210,7 +210,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
     }
 
     protected ErrorHandler getHandler(Throwable t) {
-        Throwable throwable = unwrapException(t);
+        Throwable throwable = ExceptionHelper.unwrapException(t);
         String className = null;
         if (throwable instanceof WrappedException) {
             WrappedException wrappedException = (WrappedException) throwable;
@@ -228,14 +228,6 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
 
     protected Object getUserMessage(String messageKey, Locale locale) {
         return I18NUtils.getMessageString(parameters.getBundleName(), messageKey, null, locale);
-    }
-
-    /**
-     * @deprecated use {@link ExceptionHelper#unwrapException(Throwable)}
-     */
-    @Deprecated
-    public static Throwable unwrapException(Throwable t) {
-        return ExceptionHelper.unwrapException(t);
     }
 
 }

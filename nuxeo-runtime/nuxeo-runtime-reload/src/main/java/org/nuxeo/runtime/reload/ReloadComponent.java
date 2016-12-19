@@ -246,33 +246,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         lastFlushed = System.currentTimeMillis();
     }
 
-    /**
-     * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead
-     */
-    @Override
-    @Deprecated
-    public void installWebResources(File file) throws IOException {
-        log.info("Install web resources");
-        if (file.isDirectory()) {
-            File war = new File(file, "web");
-            war = new File(war, "nuxeo.war");
-            if (war.isDirectory()) {
-                FileUtils.copyTree(war, getAppDir());
-            } else {
-                // compatibility mode with studio 1.5 - see NXP-6186
-                war = new File(file, "nuxeo.war");
-                if (war.isDirectory()) {
-                    FileUtils.copyTree(war, getAppDir());
-                }
-            }
-        } else if (file.isFile()) { // a jar
-            File war = getWarDir();
-            ZipUtils.unzip("web/nuxeo.war", file, war);
-            // compatibility mode with studio 1.5 - see NXP-6186
-            ZipUtils.unzip("nuxeo.war", file, war);
-        }
-    }
-
     @Override
     public void runDeploymentPreprocessor() throws IOException {
         if (log.isDebugEnabled()) {

@@ -491,8 +491,6 @@ public class TestScriptRunnerInfrastructure {
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
         root = (DocumentModel) automationService.run(ctx, "Scripting.TestSet", null);
-        // Don't use getPropertyValue in order to not use prefetch feature
-        assertEquals(123L, root.getProperty("size").getValue());
         assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0L);
@@ -508,7 +506,6 @@ public class TestScriptRunnerInfrastructure {
         DocumentModel root = session.getRootDocument();
         ctx.setInput(root);
         root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValue", null);
-        assertEquals(123L, root.getProperty("size").getValue());
         assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0L);

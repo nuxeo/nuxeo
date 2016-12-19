@@ -33,11 +33,6 @@ public class FileEventListener implements EventListener {
     }
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event anEvent) {
         ((FileEvent) anEvent).handle(handler);
     }

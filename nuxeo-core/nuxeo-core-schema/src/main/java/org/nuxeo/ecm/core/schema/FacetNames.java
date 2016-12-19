@@ -100,9 +100,6 @@ public final class FacetNames {
      */
     public static final String BIG_FOLDER = "BigFolder";
 
-    @Deprecated
-    public static final String BROWSE_VIA_SEARCH = "BrowseViaSearch";
-
     /**
      * Facet to be used for full-text indexing of related text content (e.g. comments, annotations, tags...)
      */

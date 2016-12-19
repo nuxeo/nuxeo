@@ -19,9 +19,7 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import org.nuxeo.common.utils.StringUtils;
+import java.util.stream.Collectors;
 
 /**
  * @author Florent Guillaume
@@ -41,11 +39,7 @@ public class OrderByList extends ArrayList<OrderByExpr> implements Operand {
 
     @Override
     public String toString() {
-        List<String> list = new ArrayList<>(size());
-        for (OrderByExpr expr : this) {
-            list.add(expr.toString());
-        }
-        return StringUtils.join(list, ", ");
+        return stream().map(OrderByExpr::toString).collect(Collectors.joining(", "));
     }
 
 }

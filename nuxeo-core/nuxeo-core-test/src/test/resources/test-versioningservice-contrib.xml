@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.versioning.VersioningService.facade.test">
-
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService"
-    point="versioningService">
-    <service class="org.nuxeo.ecm.core.versioning.CompatVersioningService" />
-  </extension>
-
-</component>

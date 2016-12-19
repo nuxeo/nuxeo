@@ -68,18 +68,6 @@ public interface RuntimeHarness {
      */
     void undeployContrib(String bundle, String contrib) throws Exception;
 
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Deprecated
-    void undeployContrib(String contrib);
-
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Deprecated
-    void undeploy(String contrib);
-
     RuntimeContext deployTestContrib(String bundle, URL contrib) throws Exception;
 
     /**
@@ -109,24 +97,6 @@ public interface RuntimeHarness {
      * @param contrib the path to contrib in the bundle.
      */
     void deployContrib(String bundle, String contrib) throws Exception;
-
-    /**
-     * Deploys a contribution file by looking for it in the class loader.
-     * <p>
-     * The first contribution file found by the class loader will be used. You have no guarantee in case of name
-     * collisions.
-     *
-     * @deprecated use the less ambiguous {@link #deployContrib(String, String)}
-     * @param contrib the relative path to the contribution file
-     */
-    @Deprecated
-    void deployContrib(String contrib);
-
-    /**
-     * @deprecated use <code>deployContrib()</code> instead
-     */
-    @Deprecated
-    void deploy(String contrib);
 
     void start() throws Exception;
 

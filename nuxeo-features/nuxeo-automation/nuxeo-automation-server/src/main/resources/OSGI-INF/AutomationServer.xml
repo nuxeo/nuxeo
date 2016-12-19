@@ -23,10 +23,4 @@
     <object class="org.nuxeo.ecm.automation.server.MarshallerDescriptor"/>
   </extension-point>
 
-  <!-- @deprecated since 5.8 use org.nuxeo.ecm.automation.io.services.IOComponent to register your codecs instead -->
-  <extension-point name="codecs">
-    <documentation>JSON codecs for adapting marshalling objects</documentation>
-    <object class="org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor"/>
-  </extension-point>
-
 </component>

@@ -46,11 +46,6 @@ public class NuxeoJSFReloadHandler implements EventListener {
     private static final Log log = LogFactory.getLog(NuxeoJSFReloadHandler.class);
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (!Framework.isDevModeSet()) {
             log.info("Do not flush the JSF application: debug mode is not set");

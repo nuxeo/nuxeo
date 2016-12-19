@@ -49,18 +49,6 @@ public class DirectoryTreeDescriptor {
      */
     public static final String DIR_ACTION_CATEGORY = "DIRECTORY_TREE_EXPLORER";
 
-    /**
-     * @deprecated since 5.6, supports other schemas than 'vocabulary' and 'xvocabulary'.
-     */
-    @Deprecated
-    public static final String VOCABULARY_SCHEMA = "vocabulary";
-
-    /**
-     * @deprecated since 5.6, supports other schemas than 'vocabulary' and 'xvocabulary'.
-     */
-    @Deprecated
-    public static final String XVOCABULARY_SCHEMA = "xvocabulary";
-
     @XNode("@name")
     protected String name;
 

@@ -29,11 +29,6 @@ import org.nuxeo.runtime.services.event.EventListener;
 public class ReloadListener implements EventListener {
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         final String id = event.getId();
         if ("flushCompiledChains".equals(id) || "flush".equals(id)) {

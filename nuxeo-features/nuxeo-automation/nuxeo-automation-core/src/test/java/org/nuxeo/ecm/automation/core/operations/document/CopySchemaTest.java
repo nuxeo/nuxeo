@@ -18,7 +18,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,10 +41,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.inject.Inject;
 
 /**
  * @since 8.3
@@ -159,12 +160,10 @@ public class CopySchemaTest {
         assertTrue(source.hasSchema(schema));
         assertTrue(target1.hasSchema(schema));
 
-        source.setProperty(schema, "size", 1);
         source.setProperty(schema, "icon-expanded", "icon-expanded1");
         source.setProperty(schema, "icon", "icon1");
         session.saveDocument(source);
 
-        target1.setProperty(schema, "size", 2);
         target1.setProperty(schema, "icon-expanded", "icon-expanded2");
         target1.setProperty(schema, "icon", "icon2");
         session.saveDocument(target1);
@@ -217,17 +216,14 @@ public class CopySchemaTest {
         assertTrue(target1.hasSchema(schema));
         assertTrue(target2.hasSchema(schema));
 
-        source.setProperty(schema, "size", 1);
         source.setProperty(schema, "icon-expanded", "icon-expanded1");
         source.setProperty(schema, "icon", "icon1");
         session.saveDocument(source);
 
-        target1.setProperty(schema, "size", 2);
         target1.setProperty(schema, "icon-expanded", "icon-expanded2");
         target1.setProperty(schema, "icon", "icon2");
         session.saveDocument(target1);
 
-        target2.setProperty(schema, "size", 3);
         target2.setProperty(schema, "icon-expanded", "icon-expanded2");
         target2.setProperty(schema, "icon", "icon2");
         session.saveDocument(target2);

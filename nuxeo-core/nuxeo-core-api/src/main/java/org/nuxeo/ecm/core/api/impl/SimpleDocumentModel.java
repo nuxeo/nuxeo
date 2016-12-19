@@ -97,79 +97,6 @@ public class SimpleDocumentModel implements DocumentModel {
         anySchema = true;
     }
 
-    /**
-     * A data model that is not tied to a particular schema, neither has anything to do with a session (CoreSession).
-     *
-     * @deprecated since 5.7.3. Use standard {@link DataModelImpl} instead.
-     */
-    @Deprecated
-    public static class SimpleDataModel implements DataModel {
-
-        private static final long serialVersionUID = 1L;
-
-        public final String schema;
-
-        public final Map<String, Object> data = new HashMap<String, Object>();
-
-        public SimpleDataModel(String schema) {
-            this.schema = schema;
-        }
-
-        @Override
-        public void setData(String key, Object value) throws PropertyException {
-            data.put(key, value);
-        }
-
-        @Override
-        public Object getData(String key) throws PropertyException {
-            return data.get(key);
-        }
-
-        @Override
-        public String getSchema() {
-            return schema;
-        }
-
-        @Override
-        public Map<String, Object> getMap() throws PropertyException {
-            return data;
-        }
-
-        @Override
-        public void setMap(Map<String, Object> data) throws PropertyException {
-            data = new HashMap<String, Object>(data);
-        }
-
-        @Override
-        public boolean isDirty() {
-            return true;
-        }
-
-        @Override
-        public boolean isDirty(String name) throws PropertyNotFoundException {
-            return true;
-        }
-
-        @Override
-        public void setDirty(String name) throws PropertyNotFoundException {
-        }
-
-        @Override
-        public Collection<String> getDirtyFields() {
-            return data.keySet();
-        }
-
-        @Override
-        public Object getValue(String path) throws PropertyException {
-            throw new UnsupportedOperationException("getValue");
-        }
-
-        @Override
-        public Object setValue(String path, Object value) throws PropertyException {
-            throw new UnsupportedOperationException("setValue");
-        }
-    }
-
     protected DataModel getDataModelInternal(String schema) {
         DataModel dm = dataModels.get(schema);
         if (dm == null && anySchema) {
@@ -418,22 +345,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getLock() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isLocked() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setLock(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void unlock() {
         throw new UnsupportedOperationException();
     }
 

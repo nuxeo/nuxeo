@@ -1,8 +1,0 @@
-<component name="org.nuxeo.ecm.automation.server.test-bindings-compat" version="1.0">
-
-  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
-        point="codecs">
-        <codec class="org.nuxeo.ecm.automation.server.test.MyObjectCodec" />
-  </extension>
-
-</component>

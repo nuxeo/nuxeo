@@ -294,7 +294,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 if (!columnTypes.isEmpty()) {
                     log.warn("Database contains additional unused columns for table " + table.getQuotedName() + ": "
-                            + StringUtils.join(new ArrayList<>(columnTypes.keySet()), ", "));
+                            + String.join(", ", columnTypes.keySet()));
                 }
                 if (!addedColumns.isEmpty()) {
                     if (added.containsKey(table.getKey())) {
@@ -727,7 +727,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return;
         }
         if (!dialect.supportsArrays()) {
-            principals = StringUtils.join((String[]) principals, Dialect.ARRAY_SEP);
+            principals = String.join(Dialect.ARRAY_SEP, (String[]) principals);
         }
         PreparedStatement ps = null;
         try {

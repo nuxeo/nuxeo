@@ -81,30 +81,4 @@ public class TestIdUtils {
         }
     }
 
-    @Test
-    public void testGeneratePathSegment() {
-        String s;
-
-        // stupid ids -> random
-        for (String id : Arrays.asList("", " ", "  ", "-", "./", ".", "..", " . ", " .. ", "\"", "'", "/", "//")) {
-            String newId = IdUtils.generatePathSegment(id);
-            assertTrue(id + " -> " + newId, newId.length() > 6);
-            assertTrue(newId, Character.isDigit(newId.charAt(0)));
-        }
-
-        // keeps normal names
-        s = "My Document.pdf";
-        assertEquals(s, IdUtils.generatePathSegment(s));
-        // keeps non-ascii chars and capitals
-        s = "C'est l'\u00E9t\u00E9   !!";
-        assertEquals(s, IdUtils.generatePathSegment(s));
-        // trims spaces
-        s = "  Foo  bar  ";
-        assertEquals("Foo  bar", IdUtils.generatePathSegment(s));
-        // converts slashes
-        s = "foo/bar";
-        assertEquals("foo-bar", IdUtils.generatePathSegment(s));
-
-    }
-
 }

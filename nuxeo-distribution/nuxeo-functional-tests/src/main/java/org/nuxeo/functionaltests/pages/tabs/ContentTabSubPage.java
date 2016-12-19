@@ -21,6 +21,9 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
@@ -36,9 +39,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
@@ -190,17 +190,6 @@ public class ContentTabSubPage extends DocumentBasePage {
             }
         });
         return asPage(ContentTabSubPage.class);
-    }
-
-    /**
-     * Selects documents by their index in the content view.
-     *
-     * @since 5.7.8
-     * @deprecated since 8.1, use {@link #selectByIndex(int...)} instead.
-     */
-    @Deprecated
-    public ContentTabSubPage selectDocumentByIndex(int... indexes) {
-        return selectByIndex(indexes);
     }
 
     /**

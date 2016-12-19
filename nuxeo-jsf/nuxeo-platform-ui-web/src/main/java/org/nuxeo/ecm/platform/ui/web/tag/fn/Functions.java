@@ -317,14 +317,6 @@ public final class Functions {
     }
 
     /**
-     * @deprecated since 5.9.1, use {@link #dateFormatter()} instead.
-     */
-    @Deprecated
-    public static String dateFormater(String formatLength) {
-        return dateFormatter(formatLength);
-    }
-
-    /**
      * Return the date format to handle date taking the user's locale into account.
      *
      * @since 5.9.1
@@ -359,14 +351,6 @@ public final class Functions {
     }
 
     /**
-     * @deprecated since 5.9.1, use {@link #basicDateFormatter()} instead.
-     */
-    @Deprecated
-    public static String basicDateFormater() {
-        return basicDateFormatter();
-    }
-
-    /**
      * Return the date format to handle date taking the user's locale into account. Uses the pseudo "shortWithCentury"
      * format.
      *
@@ -374,14 +358,6 @@ public final class Functions {
      */
     public static String basicDateFormatter() {
         return dateFormatter("shortWithCentury");
-    }
-
-    /**
-     * @deprecated since 5.9.1, use {@link #dateAndTimeFormatter(String)} instead.
-     */
-    @Deprecated
-    public static String dateAndTimeFormater(String formatLength) {
-        return dateAndTimeFormatter(formatLength);
     }
 
     /**
@@ -418,14 +394,6 @@ public final class Functions {
             pattern = YEAR_PATTERN.matcher(pattern).replaceAll("yyyy");
         }
         return pattern;
-    }
-
-    /**
-     * @deprecated since 5.9.1, use {@link #basicDateAndTimeFormatter()} instead.
-     */
-    @Deprecated
-    public static String basicDateAndTimeFormater() {
-        return basicDateAndTimeFormatter();
     }
 
     /**

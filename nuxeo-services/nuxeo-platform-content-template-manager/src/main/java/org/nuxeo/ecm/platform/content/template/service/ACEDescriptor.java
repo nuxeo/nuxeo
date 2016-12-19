@@ -44,19 +44,6 @@ public class ACEDescriptor {
         return permission;
     }
 
-    @Deprecated
-    // use getPrincipal() instead
-    public String getUserName() {
-        return principal;
-    }
-
-    @XNode("@userName")
-    @Deprecated
-    // keep for BBB with old config files
-    public void setUserName(String userName) {
-        principal = userName;
-    }
-
     public String getPrincipal() {
         return principal;
     }

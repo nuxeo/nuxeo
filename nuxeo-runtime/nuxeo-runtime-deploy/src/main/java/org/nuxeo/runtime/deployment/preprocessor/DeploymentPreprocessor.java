@@ -28,9 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -77,21 +75,11 @@ public class DeploymentPreprocessor {
 
     private ContainerDescriptor root;
 
-    // map jar names to bundle symbolic ids - WARN: no more used - will be
-    // removed in future,
-    @Deprecated
-    private final Map<String, String> jar2Id = new HashMap<String, String>();
-
     public DeploymentPreprocessor(File dir) {
         this.dir = dir;
         xmap = new XMap();
         xmap.register(ContainerDescriptor.class);
         xmap.register(FragmentDescriptor.class);
-    }
-
-    @Deprecated
-    public String getJarId(String jarName) {
-        return jar2Id.get(jarName);
     }
 
     public ContainerDescriptor getRootContainer() {
@@ -483,54 +471,49 @@ public class DeploymentPreprocessor {
     protected void processManifest(FragmentDescriptor fd, String fileName, Manifest mf) {
         Attributes attrs = mf.getMainAttributes();
         String id = attrs.getValue("Bundle-SymbolicName");
-        if (id != null) {
-            int p = id.indexOf(';');
-            if (p > -1) { // remove properties part if any
-                id = id.substring(0, p);
-            }
-            jar2Id.put(fileName, id);
-            fd.name = id;
-            if (fd.requires != null && !fd.requires.isEmpty()) {
-                throw new RuntimeException(
-                        "In compatibility mode you must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
-                                + fileName);
-            }
-            // needed to control start-up order (which differs from
-            // Require-Bundle)
-            String requires = attrs.getValue("Nuxeo-Require");
-            if (requires == null) { // if not specific requirement is met use
-                                    // Require-Bundle
-                requires = attrs.getValue("Require-Bundle");
-            }
-            if (requires != null) {
-                String[] ids = StringUtils.split(requires, ',', true);
-                fd.requires = new ArrayList<>(ids.length);
-                for (int i = 0; i < ids.length; i++) {
-                    String rid = ids[i];
-                    p = rid.indexOf(';');
-                    if (p > -1) { // remove properties part if any
-                        ids[i] = rid.substring(0, p);
-                    }
-                    fd.requires.add(ids[i]);
-                }
-            }
-
-            String requiredBy = attrs.getValue("Nuxeo-RequiredBy");
-            if (requiredBy != null) {
-                String[] ids = StringUtils.split(requiredBy, ',', true);
-                for (int i = 0; i < ids.length; i++) {
-                    String rid = ids[i];
-                    p = rid.indexOf(';');
-                    if (p > -1) { // remove properties part if any
-                        ids[i] = rid.substring(0, p);
-                    }
-                }
-                fd.requiredBy = ids;
-            }
-
-        } else {
-            jar2Id.put(fileName, fd.name);
+        int p = id.indexOf(';');
+        if (p > -1) { // remove properties part if any
+            id = id.substring(0, p);
         }
+        fd.name = id;
+        if (fd.requires != null && !fd.requires.isEmpty()) {
+            throw new RuntimeException(
+                    "In compatibility mode you must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
+                            + fileName);
+        }
+        // needed to control start-up order (which differs from
+        // Require-Bundle)
+        String requires = attrs.getValue("Nuxeo-Require");
+        if (requires == null) { // if not specific requirement is met use
+                                // Require-Bundle
+            requires = attrs.getValue("Require-Bundle");
+        }
+        if (requires != null) {
+            String[] ids = StringUtils.split(requires, ',', true);
+            fd.requires = new ArrayList<>(ids.length);
+            for (int i = 0; i < ids.length; i++) {
+                String rid = ids[i];
+                p = rid.indexOf(';');
+                if (p > -1) { // remove properties part if any
+                    ids[i] = rid.substring(0, p);
+                }
+                fd.requires.add(ids[i]);
+            }
+        }
+
+        String requiredBy = attrs.getValue("Nuxeo-RequiredBy");
+        if (requiredBy != null) {
+            String[] ids = StringUtils.split(requiredBy, ',', true);
+            for (int i = 0; i < ids.length; i++) {
+                String rid = ids[i];
+                p = rid.indexOf(';');
+                if (p > -1) { // remove properties part if any
+                    ids[i] = rid.substring(0, p);
+                }
+            }
+            fd.requiredBy = ids;
+        }
+
     }
 
     /**

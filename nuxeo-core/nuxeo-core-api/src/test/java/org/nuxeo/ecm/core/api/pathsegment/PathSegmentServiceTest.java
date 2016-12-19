@@ -18,14 +18,17 @@
  */
 package org.nuxeo.ecm.core.api.pathsegment;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -87,6 +90,34 @@ public class PathSegmentServiceTest extends NXRuntimeTestCase {
         assertEquals("my-document", service.generatePathSegment(doc));
         deployContrib("org.nuxeo.ecm.core.api.tests", "OSGI-INF/test-pathsegment-contrib2.xml");
         assertEquals("My Document", service.generatePathSegment(doc));
+    }
+
+    @Test
+    public void testGeneratePathSegment() {
+        PathSegmentService service = Framework.getService(PathSegmentService.class);
+        assertNotNull(service);
+
+        String s;
+        // stupid ids -> random
+        for (String id : Arrays.asList("", " ", "  ", "-", "./", ".", "..", " . ", " .. ", "\"", "'", "/", "//")) {
+            String newId = service.generatePathSegment(id);
+            assertTrue(id + " -> " + newId, newId.length() > 6);
+            assertTrue(newId, Character.isDigit(newId.charAt(0)));
+        }
+
+        // keeps normal names
+        s = "My Document.pdf";
+        assertEquals(s, service.generatePathSegment(s));
+        // keeps non-ascii chars and capitals
+        s = "C'est l'\u00E9t\u00E9   !!";
+        assertEquals(s, service.generatePathSegment(s));
+        // trims spaces
+        s = "  Foo  bar  ";
+        assertEquals("Foo  bar", service.generatePathSegment(s));
+        // converts slashes
+        s = "foo/bar";
+        assertEquals("foo-bar", service.generatePathSegment(s));
+
     }
 
 }

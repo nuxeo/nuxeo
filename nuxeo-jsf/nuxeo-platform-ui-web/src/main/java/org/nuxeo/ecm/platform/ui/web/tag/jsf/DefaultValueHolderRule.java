@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
  * @deprecated since 7.2: since this is a mixup between several attributes, this is not handled by rules anymore, see
  *             {@link GenericHtmlComponentHandler#onComponentCreated(FaceletContext, UIComponent, UIComponent)}
  */
+@Deprecated
 public class DefaultValueHolderRule extends MetaRule {
 
     public static final DefaultValueHolderRule Instance = new DefaultValueHolderRule();

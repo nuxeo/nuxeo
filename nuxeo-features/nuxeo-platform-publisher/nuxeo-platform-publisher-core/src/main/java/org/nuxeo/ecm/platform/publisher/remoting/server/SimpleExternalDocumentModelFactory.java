@@ -24,12 +24,12 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -47,7 +47,7 @@ public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDoc
         doc.setPathInfo(targetNode.getPath(), "remote_doc_" + pss.generatePathSegment(doc));
         // We don't want to erase the current version
         final ScopedMap ctxData = doc.getContextData();
-        ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.SKIP_VERSIONING, true);
+        ctxData.putScopedValue(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING, true);
         doc = coreSession.createDocument(doc);
         coreSession.save();
 

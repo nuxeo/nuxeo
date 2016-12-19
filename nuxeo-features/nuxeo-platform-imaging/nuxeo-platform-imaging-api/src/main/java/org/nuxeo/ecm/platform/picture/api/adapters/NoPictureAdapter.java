@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.picture.api.adapters;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +32,6 @@ import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 public class NoPictureAdapter extends AbstractPictureAdapter {
 
     public static final String ORIGINAL_VIEW_NAME = "Original";
-
-    @Override
-    public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException {
-        // create no views
-        return true;
-    }
 
     @Override
     public void doRotate(int angle) {

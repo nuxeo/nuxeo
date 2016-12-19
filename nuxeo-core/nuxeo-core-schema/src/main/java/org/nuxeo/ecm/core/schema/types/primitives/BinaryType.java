@@ -24,10 +24,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
@@ -85,8 +86,8 @@ public final class BinaryType extends PrimitiveType {
     @Override
     public String encode(Object object) {
         if (object instanceof InputStream) {
-            try {
-                return FileUtils.read((InputStream) object);
+            try (InputStream in = (InputStream) object){
+                return IOUtils.toString(in, Charsets.UTF_8);
             } catch (IOException e) {
                 log.error(e, e);
                 return null;

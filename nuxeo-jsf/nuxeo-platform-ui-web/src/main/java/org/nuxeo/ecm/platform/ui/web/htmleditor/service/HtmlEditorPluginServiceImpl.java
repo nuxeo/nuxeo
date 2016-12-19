@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.htmleditor.api.HtmlEditorPluginService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -79,7 +78,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
 
     @Override
     public String getFormattedPluginsNames() {
-        return StringUtils.join(getPluginsName(), ',');
+        return String.join(",", getPluginsName());
     }
 
     public List<String> getToolbarsButtonsNames() {
@@ -88,7 +87,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
 
     @Override
     public String getFormattedToolbarsButtonsNames() {
-        return StringUtils.join(getToolbarsButtonsNames(), ',');
+        return String.join(",", getToolbarsButtonsNames());
     }
 
     @Override
@@ -102,7 +101,7 @@ public class HtmlEditorPluginServiceImpl extends DefaultComponent implements Htm
         }
 
         for (final Map.Entry<String, List<String>> entry : temp.entrySet()) {
-            result.put(entry.getKey(), StringUtils.join(entry.getValue(), ','));
+            result.put(entry.getKey(), String.join(",", entry.getValue()));
         }
         return result;
     }

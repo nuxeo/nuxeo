@@ -84,11 +84,7 @@ public class FileTreeIterator implements Iterator<File> {
         if (file == null) {
             throw new IllegalStateException("there is no current file to delete");
         }
-        if (file.isDirectory()) {
-            FileUtils.deleteTree(file);
-        } else {
-            file.delete();
-        }
+        org.apache.commons.io.FileUtils.deleteQuietly(file);
     }
 
     // we don't fulfill iterator contract - we don't need a real iterator,

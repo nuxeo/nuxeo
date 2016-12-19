@@ -301,11 +301,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getLock() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     @Deprecated
     public DocumentPart getPart(String schema) {
         throw new UnsupportedOperationException();
@@ -483,11 +478,6 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void setLock(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Lock setLock() {
         throw new UnsupportedOperationException();
     }
@@ -519,11 +509,6 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public void setPropertyValue(String xpath, Serializable value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void unlock() {
         throw new UnsupportedOperationException();
     }
 

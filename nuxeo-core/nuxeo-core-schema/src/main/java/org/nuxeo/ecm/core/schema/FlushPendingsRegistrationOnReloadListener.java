@@ -27,11 +27,6 @@ import org.nuxeo.runtime.services.event.EventListener;
 public class FlushPendingsRegistrationOnReloadListener implements EventListener {
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return "reload".equals(event.getId());
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (!"reload".equals(event.getId())) {
             return;
