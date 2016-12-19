@@ -54,7 +54,6 @@
     <nuxeo.spreadsheet.version>8.10-HF01-SNAPSHOT</nuxeo.spreadsheet.version>
     <nuxeo.datadog.reporter.version>8.10-HF01-SNAPSHOT</nuxeo.datadog.reporter.version>
     <nuxeo.review.workflows.dashboards.version>8.10-HF01-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
-    <nuxeo.salesforce.version>8.10-HF01-SNAPSHOT</nuxeo.salesforce.version>
     <nuxeo.playground.version>8.10-HF01-SNAPSHOT</nuxeo.playground.version>
     <nuxeo.fsexporter.version>8.10-HF01-SNAPSHOT</nuxeo.fsexporter.version>
     <nuxeo.javaagent.version>8.10-HF01-SNAPSHOT</nuxeo.javaagent.version>
@@ -114,7 +113,6 @@
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
-    <module>nuxeo-salesforce</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-showcase-content-sample</module>
     <module>nuxeo-platform-smart-search</module>
@@ -905,18 +903,6 @@
         <groupId>org.nuxeo.ecm.review.workflows.dashboards</groupId>
         <artifactId>nuxeo-review-workflows-dashboards</artifactId>
         <version>${nuxeo.review.workflows.dashboards.version}</version>
-      </dependency>
-
-      <!-- Salesforce -->
-      <dependency>
-        <groupId>org.nuxeo.salesforce</groupId>
-        <artifactId>nuxeo-salesforce-core</artifactId>
-        <version>${nuxeo.salesforce.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.salesforce</groupId>
-        <artifactId>nuxeo-salesforce-web</artifactId>
-        <version>${nuxeo.salesforce.version}</version>
       </dependency>
 
       <!-- Nuxeo API Playground -->
