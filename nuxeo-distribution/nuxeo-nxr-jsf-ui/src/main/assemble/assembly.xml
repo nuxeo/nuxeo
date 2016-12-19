@@ -36,6 +36,7 @@
           <artifact artifactId="h2" />
           <artifact artifactId="mongo-java-driver" />
           <artifact artifactId="mysql-connector-java" />
+          <artifact artifactId="mariadb-java-client" />
           <artifact artifactId="postgresql" />
           <artifact artifactId="quartz-mongodb" />
           <artifact groupId="com.microsoft.sqlserver" artifactId="sqljdbc" />
