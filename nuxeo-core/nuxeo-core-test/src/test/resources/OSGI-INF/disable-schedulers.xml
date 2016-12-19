@@ -6,6 +6,7 @@
     <schedule id="workManagerCleanup" enabled="false" />
     <schedule id="softDeleteCleanup" enabled="false" />
     <schedule id="aceScheduler" enabled="false" />
+    <schedule id="transientStoreGC" enabled="false" />
   </extension>
 
 </component>
