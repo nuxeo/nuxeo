@@ -59,6 +59,9 @@
     <copy todir="${nxr}/templates/mysql/lib">
       <artifact:file artifactId="mysql-connector-java" />
     </copy>
+    <copy todir="${nxr}/templates/mariadb/lib">
+      <artifact:file artifactId="mariadb-java-client" />
+    </copy>
     <copy todir="${nxr}/templates/postgresql/lib">
       <artifact:file artifactId="postgresql" />
     </copy>

@@ -160,6 +160,7 @@ install nuxeo-jsf-ui
         <include name="h2-*" />
         <include name="mongo-java-driver-*" />
         <include name="mysql-connector-java-*" />
+        <include name="mariadb-java-client-*" />
         <include name="postgresql-*" />
         <include name="quartz-mongodb-*" />
         <include name="sqljdbc-*" />

@@ -32,7 +32,9 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     public static DatabaseHelper INSTANCE = new DatabaseMySQL();
 
-    private static final String DEF_URL = "jdbc:mysql://localhost:3306/nuxeojunittests";
+    private static final String DEF_KIND = "mysql"; // or mariadb
+
+    private static final String DEF_URL = "jdbc:" + DEF_KIND + "://localhost:3306/" + DEFAULT_DATABASE_NAME;
 
     private static final String DEF_USER = "nuxeo";
 
@@ -40,7 +42,7 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
 
-    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String DRIVER = DEF_KIND.equals("mysql") ? "com.mysql.jdbc.Driver" : "org.mariadb.jdbc.Driver";
 
     private void setProperties() {
         setProperty(URL_PROPERTY, DEF_URL);
