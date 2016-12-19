@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Julien Anguenot <ja@nuxeo.com>
+ *     Estelle Giuly <egiuly@nuxeo.com>
  *
  * $Id: MimetypeRegistry.java 20731 2007-06-18 15:13:32Z ogrisel $
  */
@@ -30,12 +32,12 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
  * MimetypeEntry registry.
  * <p>
  * Flexible registry of mimetypes.
- *
- * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface MimetypeRegistry {
 
     String DEFAULT_MIMETYPE = "application/octet-stream";
+
+    String PDF_MIMETYPE = "application/pdf";
 
     /**
      * Returns the mime type from a given stream.

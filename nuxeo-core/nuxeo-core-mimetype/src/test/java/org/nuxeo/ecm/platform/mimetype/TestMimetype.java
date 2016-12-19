@@ -28,6 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 
 /**
  * Test the mimetype class behavior.
@@ -40,10 +41,10 @@ public class TestMimetype {
 
     @Before
     public void setUp() {
-        String normalizedMimetype = "application/pdf";
+        String normalizedMimetype = MimetypeRegistry.PDF_MIMETYPE;
 
         List<String> mimetypes = new ArrayList<String>();
-        mimetypes.add("application/pdf");
+        mimetypes.add(MimetypeRegistry.PDF_MIMETYPE);
         // fake
         mimetypes.add("app/whatever-pdf");
 
@@ -96,17 +97,17 @@ public class TestMimetype {
 
     @Test
     public void testMimetypes() {
-        assertEquals("application/pdf", mimetype.getNormalized());
+        assertEquals(MimetypeRegistry.PDF_MIMETYPE, mimetype.getNormalized());
         assertEquals("application", mimetype.getMajor());
         assertEquals("pdf", mimetype.getMinor());
         List<String> mimetypes = mimetype.getMimetypes();
-        assertTrue(mimetypes.contains("application/pdf"));
+        assertTrue(mimetypes.contains(MimetypeRegistry.PDF_MIMETYPE));
         assertTrue(mimetypes.contains("app/whatever-pdf"));
     }
 
     @Test
     public void testNormalized() {
-        assertEquals("application/pdf", mimetype.getNormalized());
+        assertEquals(MimetypeRegistry.PDF_MIMETYPE, mimetype.getNormalized());
     }
 
 }
