@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
@@ -50,7 +51,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
-import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -94,12 +93,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
-
-    /**
-     * @deprecated since 5.6: default layout can now be defined on the nxl:documentLayout tag
-     */
-    @Deprecated
-    public static final String DEFAULT_SUMMARY_LAYOUT = "default_summary_layout";
 
     public static final String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
 
@@ -147,22 +140,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     @In(create = true)
     protected Map<String, String> messages;
 
-    @Deprecated
-    @Override
-    @Factory(autoCreate = true, value = "currentDocumentSummaryLayout", scope = EVENT)
-    public String getCurrentDocumentSummaryLayout() {
-        DocumentModel doc = navigationContext.getCurrentDocument();
-        if (doc == null) {
-            return null;
-        }
-        String[] layouts = typeManager.getType(doc.getType()).getLayouts(BuiltinModes.SUMMARY, null);
-
-        if (layouts != null && layouts.length > 0) {
-            return layouts[0];
-        }
-        return DEFAULT_SUMMARY_LAYOUT;
-    }
-
     @Override
     @Factory(autoCreate = true, value = "currentDocumentType", scope = EVENT)
     public Type getCurrentType() {
@@ -185,13 +162,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
             return null;
         }
         return typeManager.getType(changeableDocument.getType());
-    }
-
-    @Deprecated
-    @Override
-    public String editDocument() {
-        navigationContext.setChangeableDocument(navigationContext.getCurrentDocument());
-        return navigationContext.navigateToDocument(navigationContext.getCurrentDocument(), "edit");
     }
 
     public String getFileName(DocumentModel doc) {
@@ -255,12 +225,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         }
     }
 
-    @Deprecated
-    @Override
-    public String downloadFromList() {
-        return null;
-    }
-
     @Override
     public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs) {
         String tabId = null;
@@ -304,26 +268,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     public String updateCurrentDocument() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return updateDocument(currentDocument);
-    }
-
-    @Deprecated
-    @Override
-    public String updateDocument() {
-        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        return updateDocument(changeableDocument);
-    }
-
-    @Override
-    public String updateDocumentAsNewVersion() {
-        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        changeableDocument.putContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-        changeableDocument = documentManager.saveDocument(changeableDocument);
-
-        facesMessages.add(StatusMessage.Severity.INFO, messages.get("new_version_created"));
-        // then follow the standard pageflow for edited documents
-        EventManager.raiseEventsOnDocumentChange(changeableDocument);
-        return navigationContext.navigateToDocument(changeableDocument, "after-edit");
     }
 
     @Override
@@ -407,18 +351,6 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         if (comment != null && !"".equals(comment)) {
             changeableDocument.getContextData().put("comment", comment);
         }
-    }
-
-    @Deprecated
-    @Override
-    public String getComment() {
-        return "";
-    }
-
-    @Deprecated
-    @Override
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     @Override

@@ -21,7 +21,6 @@
 package org.nuxeo.ecm.platform.mimetype.interfaces;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -46,15 +45,6 @@ public interface MimetypeRegistry {
      * @throws MimetypeNotFoundException if mimetype sniffing failed to identify a registered mime type
      * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
      */
-    String getMimetypeFromStream(InputStream stream) throws MimetypeNotFoundException, MimetypeDetectionException;
-
-    /**
-     * Returns the mime type from a given stream.
-     *
-     * @return String mimetype name.
-     * @throws MimetypeNotFoundException if mimetype sniffing failed to identify a registered mime type
-     * @throws MimetypeDetectionException if unexpected problem prevent the detection to work as expected
-     */
     String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException;
 
     /**
@@ -66,13 +56,6 @@ public interface MimetypeRegistry {
      * @throws MimetypeDetectionException
      */
     String getMimetypeFromBlobWithDefault(Blob blob, String defaultMimetype) throws MimetypeDetectionException;
-
-    /**
-     * Returns the mime type from a given stream or provided default if not possible.
-     *
-     * @throws MimetypeDetectionException
-     */
-    String getMimetypeFromStreamWithDefault(InputStream is, String defaultMimetype) throws MimetypeDetectionException;
 
     /**
      * Returns the mime type from a given filename.

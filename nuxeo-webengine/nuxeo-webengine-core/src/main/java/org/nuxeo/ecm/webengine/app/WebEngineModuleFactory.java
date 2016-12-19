@@ -22,9 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.PathFilter;
 import org.nuxeo.common.utils.ZipUtils;
@@ -106,7 +106,7 @@ public class WebEngineModuleFactory {
                     return moduleRoot;
                 }
                 // remove existing files
-                FileUtils.deleteTree(moduleRoot);
+                FileUtils.deleteQuietly(moduleRoot);
             }
             // create the module root
             moduleRoot.mkdirs();

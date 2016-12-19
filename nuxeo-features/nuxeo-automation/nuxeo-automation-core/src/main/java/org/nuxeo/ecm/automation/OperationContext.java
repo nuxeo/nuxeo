@@ -203,35 +203,6 @@ public class OperationContext implements Map<String, Object> {
         }
     }
 
-    /**
-     * since 5.7.3 #addTrace is no longer useful for tracing. Use chain call backs to do it.
-     */
-    @Deprecated
-    public void addTrace(String trace) {
-        this.trace.add(trace);
-    }
-
-    /**
-     * since 5.7.3 #getTrace is no longer useful for tracing. Use chain call backs to do it.
-     */
-    @Deprecated
-    public List<String> getTrace() {
-        return trace;
-    }
-
-    /**
-     * since 5.7.3 #getFormattedTrace is no longer useful for tracing. Use chain call backs to do it.
-     */
-    @Deprecated
-    public String getFormattedTrace() {
-        String crlf = System.getProperty("line.separator");
-        StringBuilder buf = new StringBuilder();
-        for (String t : trace) {
-            buf.append("> ").append(t).append(crlf);
-        }
-        return buf.toString();
-    }
-
     public void addCleanupHandler(CleanupHandler handler) {
         cleanupHandlers.add(handler);
     }

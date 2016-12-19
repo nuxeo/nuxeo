@@ -146,16 +146,6 @@ public interface ReloadService extends TimestampedService {
      */
     public void runDeploymentPreprocessor() throws IOException;
 
-    /**
-     * Copies the bundle web resources into the nuxeo WAR directory.
-     *
-     * @since 5.5
-     * @deprecated since 5.6: {@link #runDeploymentPreprocessor()} method now re-deploys all jars so that the nuxeo.war
-     *             holds the same content than it would at startup.
-     */
-    @Deprecated
-    void installWebResources(File file) throws IOException;
-
     /***
      * Returns the OSGI bundle name if given file can be identified as an OSGI bundle, or null. The OSGI bundle can be a
      * jar or an exploded jar on file system.

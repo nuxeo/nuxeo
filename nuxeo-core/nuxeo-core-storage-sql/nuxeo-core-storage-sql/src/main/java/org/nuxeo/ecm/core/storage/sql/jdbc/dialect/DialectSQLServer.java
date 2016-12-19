@@ -570,7 +570,7 @@ public class DialectSQLServer extends Dialect {
         for (String perm : permissions) {
             permsList.add(String.format("  SELECT '%s' ", perm));
         }
-        properties.put("readPermissions", StringUtils.join(permsList, " UNION ALL "));
+        properties.put("readPermissions", String.join(" UNION ALL ", permsList));
         properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }

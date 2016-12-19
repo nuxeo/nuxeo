@@ -19,20 +19,16 @@
 
 package org.nuxeo.ecm.webapp.bulkedit;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper used for bulk edit actions
@@ -42,18 +38,6 @@ import org.nuxeo.runtime.api.Framework;
 public class BulkEditHelper {
 
     private static final Log log = LogFactory.getLog(BulkEditHelper.class);
-
-    /**
-     * @deprecated since 5.7.3. Now in {@link BulkEditService}.
-     */
-    @Deprecated
-    public static final String BULK_EDIT_PREFIX = "bulkEdit/";
-
-    /**
-     * @deprecated since 5.7.3. Now in {@link BulkEditService}.
-     */
-    @Deprecated
-    public static final String CONTEXT_DATA = "contextData";
 
     private BulkEditHelper() {
         // Helper class
@@ -101,48 +85,6 @@ public class BulkEditHelper {
             }
         }
         return schemas;
-    }
-
-    /**
-     * Copy all the marked properties (stored in the ContextData of {@code sourceDoc}) from {@code sourceDoc} to all the
-     * {@code targetDocs}.
-     *
-     * @param session the {@code CoreSession} to use
-     * @param sourceDoc the doc where to get the metadata to copy
-     * @param targetDocs the docs where to set the metadata
-     * @deprecated since 5.7.3. Now in {@link BulkEditService}.
-     */
-    @Deprecated
-    public static void copyMetadata(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
-            {
-        Framework.getLocalService(BulkEditService.class).updateDocuments(session, sourceDoc, targetDocs);
-    }
-
-    /**
-     * Extracts the properties to be copied from {@code sourceDoc}. The properties are stored in the ContextData of
-     * {@code sourceDoc}: the key is the xpath property, the value is {@code true} if the property has to be copied,
-     * {@code false otherwise}.
-     *
-     * @deprecated since 5.7.3. Now in {@link BulkEditServiceImpl}.
-     */
-    @Deprecated
-    protected static List<String> getPropertiesToCopy(DocumentModel sourceDoc) {
-        List<String> propertiesToCopy = new ArrayList<String>();
-        for (Map.Entry<String, Serializable> entry : sourceDoc.getContextData().entrySet()) {
-            String key = entry.getKey();
-            if (key.startsWith(BULK_EDIT_PREFIX)) {
-                String[] properties = key.replace(BULK_EDIT_PREFIX, "").split(" ");
-                Serializable value = entry.getValue();
-                if (value instanceof Boolean && (Boolean) value) {
-                    for (String property : properties) {
-                        if (!property.startsWith(CONTEXT_DATA)) {
-                            propertiesToCopy.add(property);
-                        }
-                    }
-                }
-            }
-        }
-        return propertiesToCopy;
     }
 
 }

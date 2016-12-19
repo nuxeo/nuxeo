@@ -154,13 +154,15 @@ public class RenderingContextImpl implements RenderingContext {
         paramKey = paramKey.toLowerCase();
         List<Object> dirty = getParameters(paramKey);
         dirty.addAll(getParameters(HEADER_PREFIX + paramKey));
+        // Deprecated on server since 5.8, but the code on client wasn't - keep this part of code as Nuxeo Automation
+        // Client is deprecated since 8.10 and Nuxeo Java Client handle this properly
         // backward compatibility, supports X-NXDocumentProperties and X-NXContext-Category
         if (EMBED_PROPERTIES.toLowerCase().equals(paramKey)) {
-            dirty.addAll(getParameters(MarshallingConstants.DOCUMENT_PROPERTIES_HEADER));
+            dirty.addAll(getParameters("X-NXDocumentProperties"));
         } else if ((EMBED_ENRICHERS + separator + ENTITY_TYPE).toLowerCase().equals(paramKey)) {
-            dirty.addAll(getParameters(MarshallingConstants.NXCONTENT_CATEGORY_HEADER));
+            dirty.addAll(getParameters("X-NXContext-Category"));
         }
-        Set<String> result = new TreeSet<>();
+        Set<String> result = new TreeSet<String>();
         for (Object value : dirty) {
             if (value instanceof String) {
                 result.addAll(Arrays.asList(org.nuxeo.common.utils.StringUtils.split((String) value, ',', true)));

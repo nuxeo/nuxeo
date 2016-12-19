@@ -552,16 +552,16 @@
         <property name="hideSubLabels">true</property>
       </properties>
       <subWidgets>
-        <widget name="common_size_agg" type="selectManyCheckboxRangeAggregate">
+        <widget name="content_length_agg" type="selectManyCheckboxRangeAggregate">
           <fields>
-            <field>defaults:common_size_agg</field>
+            <field>defaults:content_length_agg</field>
           </fields>
           <widgetModes>
             <mode value="edit">#{contentView.pageProvider.hasAggregateSupport() ?
               'edit' : 'hidden'}</mode>
           </widgetModes>
           <properties widgetMode="any">
-            <property name="selectOptions">#{contentView.pageProvider.aggregates['common_size_agg'].extendedBuckets}</property>
+            <property name="selectOptions">#{contentView.pageProvider.aggregates['content_length_agg'].extendedBuckets}</property>
             <property name="localize">true</property>
           </properties>
           <selectOptions>

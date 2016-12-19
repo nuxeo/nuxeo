@@ -43,10 +43,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -1097,14 +1097,14 @@ public class DialectPostgreSQL extends Dialect {
                 String line = String.format(concat, ftft.getQuotedName(), ftst.getQuotedName(), ftbt.getQuotedName());
                 lines.add(line);
             }
-            properties.put("fulltextTriggerStatements", StringUtils.join(lines, "\n"));
+            properties.put("fulltextTriggerStatements", String.join("\n", lines));
         }
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
         }
-        properties.put("readPermissions", StringUtils.join(permsList, ", "));
+        properties.put("readPermissions", String.join(", ", permsList));
         properties.put("usersSeparator", getUsersSeparator());
         properties.put("everyone", SecurityConstants.EVERYONE);
         properties.put("readAclMaxSize", Integer.toString(readAclMaxSize));
@@ -1269,11 +1269,10 @@ public class DialectPostgreSQL extends Dialect {
     public String getBinaryFulltextSql(List<String> columns) {
         if (compatibilityFulltextTable) {
             // extract tokens from tsvector
-            List<String> columnsAs = new ArrayList<>(columns.size());
-            for (String col : columns) {
-                columnsAs.add("regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')");
-            }
-            return "SELECT " + StringUtils.join(columnsAs, ", ") + " FROM fulltext WHERE id=?";
+            String columnsAs = columns.stream()
+                                      .map(col -> "regexp_replace(" + col + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')")
+                                      .collect(Collectors.joining(", "));
+            return "SELECT " + columnsAs + " FROM fulltext WHERE id=?";
         }
         return super.getBinaryFulltextSql(columns);
     }
@@ -1374,7 +1373,7 @@ public class DialectPostgreSQL extends Dialect {
             }
             newArgList.add(arg + suffix);
         }
-        return org.apache.commons.lang.StringUtils.join(newArgList, ", ");
+        return String.join(", ", newArgList);
     }
 
 }

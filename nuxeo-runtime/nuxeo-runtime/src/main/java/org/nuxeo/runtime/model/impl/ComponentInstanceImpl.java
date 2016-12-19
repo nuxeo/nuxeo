@@ -41,7 +41,6 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
-import org.nuxeo.runtime.model.ReloadableComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.service.TimestampedService;
 import org.osgi.framework.Bundle;
@@ -166,13 +165,9 @@ public class ComponentInstanceImpl implements ComponentInstance {
     public void reload() {
         // activate the implementation instance
         try {
-            if (instance instanceof ReloadableComponent) {
-                ((ReloadableComponent) instance).reload(this);
-            } else {
-                Method meth = instance.getClass().getDeclaredMethod("reload", ComponentContext.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, this);
-            }
+            Method meth = instance.getClass().getDeclaredMethod("reload", ComponentContext.class);
+            meth.setAccessible(true);
+            meth.invoke(instance, this);
         } catch (NoSuchMethodException e) {
             // ignore this exception since the reload method is not mandatory
         } catch (ReflectiveOperationException e) {

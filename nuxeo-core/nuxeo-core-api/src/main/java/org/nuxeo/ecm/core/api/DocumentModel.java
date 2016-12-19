@@ -310,18 +310,6 @@ public interface DocumentModel extends Serializable {
     void setPathInfo(String parentPath, String name);
 
     /**
-     * Gets the lock key if the document is locked.
-     * <p>
-     * Lock info is cached on the document for performance. Use {@link CoreSession#getLockInfo} to get the non-cached
-     * status.
-     *
-     * @return the lock key if the document is locked or null otherwise
-     * @deprecated since 5.4.2, use {@link #getLockInfo} instead
-     */
-    @Deprecated
-    String getLock();
-
-    /**
      * Tests if the document is locked.
      * <p>
      * Lock info is cached on the document for performance. Use {@link CoreSession#getLockInfo} to get the non-cached
@@ -330,27 +318,6 @@ public interface DocumentModel extends Serializable {
      * @return the lock key if the document is locked or null otherwise
      */
     boolean isLocked();
-
-    /**
-     * Locks this document using the given key.
-     * <p>
-     * This is a wrapper for {@link CoreSession#setLock(DocumentRef, String)}.
-     *
-     * @param key the key to use when locking
-     * @throws LockException if the document is already locked
-     * @deprecated since 5.4.2, use {@link #setLock} instead
-     */
-    @Deprecated
-    void setLock(String key) throws LockException;
-
-    /**
-     * Unlocks the given document.
-     *
-     * @throws LockException if the document is locked by someone else
-     * @deprecated since 5.4.2, use {@link #removeLock} instead
-     */
-    @Deprecated
-    void unlock() throws LockException;
 
     /**
      * Sets a lock on the document.

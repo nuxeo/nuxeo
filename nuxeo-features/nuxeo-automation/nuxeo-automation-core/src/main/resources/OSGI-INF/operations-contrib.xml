@@ -392,10 +392,6 @@
     <operation
         class="org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction"/>
 
-    <!-- register built-in operations -->
-    <!-- operation class="org.nuxeo.ecm.automation.core.operations.RunScriptFile"
-      / -->
-
     <!-- Trace related operations -->
     <operation
         class="org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceGetOperation"/>

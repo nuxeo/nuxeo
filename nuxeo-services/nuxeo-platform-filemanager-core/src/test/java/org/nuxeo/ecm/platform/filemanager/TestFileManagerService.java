@@ -110,7 +110,7 @@ public class TestFileManagerService {
         assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         BinaryBlob blob = (BinaryBlob) doc.getProperty("file", "content");
-        assertEquals(blob.getMimeType(), "application/msword");
+        assertEquals("application/msword", blob.getMimeType());
 
         // let's make the same test but this time without mime-type checking
         // because the blob already carries a mime-type that matches the file name
@@ -122,7 +122,7 @@ public class TestFileManagerService {
         assertEquals("hello2.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         blob = (BinaryBlob) doc.getProperty("file", "content");
-        assertEquals(blob.getMimeType(), "application/msword");
+        assertEquals("application/msword", blob.getMimeType());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class TestFileManagerService {
         assertEquals("hello3.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         BinaryBlob blob = (BinaryBlob) doc.getProperty("file", "content");
-        assertEquals(blob.getMimeType(), "application/msword");
+        assertEquals("application/msword", blob.getMimeType());
 
         input = Blobs.createBlob(file, "application/sometype");
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
@@ -149,7 +149,7 @@ public class TestFileManagerService {
         assertEquals("hello3.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         blob = (BinaryBlob) doc.getProperty("file", "content");
-        assertEquals(blob.getMimeType(), "application/sometype");
+        assertEquals("application/sometype", blob.getMimeType());
     }
 
     @Test

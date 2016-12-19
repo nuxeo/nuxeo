@@ -33,12 +33,6 @@ import org.nuxeo.common.Environment;
 public class TomcatConfigurator extends ServerConfigurator {
 
     /**
-     * @deprecated Use {@link #getTomcatConfig()}
-     */
-    @Deprecated
-    public static final String TOMCAT_CONFIG = "conf/Catalina/localhost/nuxeo.xml";
-
-    /**
      * @since 5.4.2
      */
     public static final String STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";

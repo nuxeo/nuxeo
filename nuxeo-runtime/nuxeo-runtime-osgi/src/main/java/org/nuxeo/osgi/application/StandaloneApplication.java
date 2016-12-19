@@ -277,10 +277,7 @@ public class StandaloneApplication extends OSGiAdapter {
         if (options != null) {
             String val = options.getOption("home");
             if (val == null) {
-                val = System.getProperty(Environment.HOME_DIR);
-                if (val == null) {
-                    val = ".";
-                }
+                val = ".";
             }
             File home = new File(val);
             home = home.getCanonicalFile();

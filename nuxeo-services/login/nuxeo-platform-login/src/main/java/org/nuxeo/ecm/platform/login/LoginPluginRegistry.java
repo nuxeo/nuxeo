@@ -130,16 +130,6 @@ public class LoginPluginRegistry extends DefaultComponent {
         pluginDescriptorStack = new HashMap<>();
     }
 
-    @Deprecated
-    public LoginPlugin getPlugin() {
-        return currentLoginPlugin;
-    }
-
-    @Deprecated
-    public Boolean useCustomLoginPlugin() {
-        return currentLoginPlugin != null;
-    }
-
     public CallbackResult handleSpecifcCallbacks(CallbackHandler callbackHandler) {
         if (callbackFactory == null) {
             return null;

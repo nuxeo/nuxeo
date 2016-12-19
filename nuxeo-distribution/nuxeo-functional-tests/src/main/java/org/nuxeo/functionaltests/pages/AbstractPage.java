@@ -81,23 +81,6 @@ public abstract class AbstractPage {
     }
 
     /**
-     * Gets the info feedback message.
-     *
-     * @return the message if any or an empty string.
-     * @deprecated since 5.8
-     */
-    @Deprecated
-    public String getFeedbackMessage() {
-        String ret;
-        try {
-            ret = findElementWithTimeout(By.xpath("//li[@class=\"errorFeedback\"]")).getText();
-        } catch (NoSuchElementException e) {
-            ret = "";
-        }
-        return ret.trim();
-    }
-
-    /**
      * Returns the error feedback message.
      * <p>
      * If there are more than one error message, always return the last one (not interested by 'Please correct errors'

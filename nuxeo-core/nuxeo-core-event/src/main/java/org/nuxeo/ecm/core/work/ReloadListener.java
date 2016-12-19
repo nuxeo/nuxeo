@@ -29,11 +29,6 @@ import org.nuxeo.runtime.services.event.EventListener;
 public class ReloadListener implements EventListener {
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (ReloadEventNames.BEFORE_RELOAD_EVENT_ID.equals(event.getId())) {
             try {

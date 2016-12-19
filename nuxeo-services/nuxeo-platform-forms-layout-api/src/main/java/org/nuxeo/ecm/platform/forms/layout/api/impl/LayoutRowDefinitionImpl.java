@@ -130,15 +130,6 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     }
 
     @Override
-    public String[] getWidgets() {
-        String[] names = new String[widgets.length];
-        for (int i = 0; i < widgets.length; i++) {
-            names[i] = widgets[i].getName();
-        }
-        return names;
-    }
-
-    @Override
     public WidgetReference[] getWidgetReferences() {
         return widgets;
     }

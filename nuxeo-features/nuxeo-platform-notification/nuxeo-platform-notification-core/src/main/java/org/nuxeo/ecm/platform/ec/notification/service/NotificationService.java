@@ -223,11 +223,6 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
-    @Override
-    public NotificationRegistry getNotificationRegistry() {
-        return notificationRegistry;
-    }
-
     public NotificationListenerVetoRegistry getNotificationListenerVetoRegistry() {
         return notificationVetoRegistry;
     }

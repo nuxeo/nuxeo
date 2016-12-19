@@ -19,8 +19,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import java.util.List;
-
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -29,7 +27,6 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.Select;
 
 /**
  * Nuxeo default login page.
@@ -52,13 +49,6 @@ public class LoginPage extends AbstractPage {
     @FindBy(name = "Submit")
     WebElement submitButton;
 
-    /**
-     * removed from login page since 5.6
-     */
-    @Deprecated
-    @FindBy(id = "language")
-    WebElement languageSelectBox;
-
     public LoginPage(WebDriver driver) {
         super(driver);
     }
@@ -69,26 +59,11 @@ public class LoginPage extends AbstractPage {
      * @param username the username
      * @param password the password
      * @param language value of one of the options in the language select box. For example, English (United States)
+     * @deprecated since 9.1 not used anymore, use {@link #login(String, String)} insted.
      */
+    @Deprecated
     public void login(String username, String password, String language) {
-        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-        usernameInputTextBox.sendKeys(username);
-        passwordInputTextBox.sendKeys(password);
-        jsExecutor.executeScript("document.getElementById('username').blur();return true;");
-        jsExecutor.executeScript("document.getElementById('password').blur();return true;");
-
-        if (language != null) {
-            Select languageSelect = new Select(languageSelectBox);
-
-            List<WebElement> list = languageSelect.getOptions();
-            for (WebElement webElement : list) {
-                if (language.trim().equals(webElement.getText().trim())) {
-                    languageSelect.selectByVisibleText(webElement.getText());
-                    break;
-                }
-            }
-        }
-        submitButton.click();
+        login(username, password);
     }
 
     /**
@@ -98,7 +73,13 @@ public class LoginPage extends AbstractPage {
      * @param password the password
      */
     public void login(String username, String password) {
-        login(username, password, (String) null);
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        usernameInputTextBox.sendKeys(username);
+        passwordInputTextBox.sendKeys(password);
+        jsExecutor.executeScript("document.getElementById('username').blur();return true;");
+        jsExecutor.executeScript("document.getElementById('password').blur();return true;");
+
+        submitButton.click();
     }
 
     /**

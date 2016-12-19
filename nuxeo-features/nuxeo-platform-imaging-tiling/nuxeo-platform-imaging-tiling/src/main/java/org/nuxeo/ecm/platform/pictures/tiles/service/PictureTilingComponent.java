@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
-import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.BlobResource;
 import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.tiler.MagickTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.tilers.PictureTiler;
@@ -157,12 +156,6 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     @Override
-    @Deprecated
-    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) {
-        return getTilesFromBlob(blob, tileWidth, tileHeight, maxTiles, 0, 0, false);
-    }
-
-    @Override
     public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles) {
         return getTiles(resource, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
@@ -177,15 +170,6 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         return computeTiles(existingTiles.getSourceImageInfo(), outputDirPath, existingTiles.getTilesWidth(),
                 existingTiles.getTilesHeight(), existingTiles.getMaxTiles(), xCenter, yCenter, lastModificationTime,
                 false);
-    }
-
-    @Override
-    @Deprecated
-    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, boolean fullGeneration) {
-
-        ImageResource resource = new BlobResource(blob);
-        return getTiles(resource, tileWidth, tileHeight, maxTiles, xCenter, yCenter, fullGeneration);
     }
 
     @Override

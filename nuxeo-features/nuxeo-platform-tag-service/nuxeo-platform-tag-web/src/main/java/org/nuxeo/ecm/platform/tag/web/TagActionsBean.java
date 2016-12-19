@@ -135,18 +135,6 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Gets the doc id to use with the tag service for a given document.
-     * <p>
-     * Proxies are not tagged directly, their underlying document is.
-     *
-     * @deprecated since 5.7.3. The proxy is tagged itself.
-     */
-    @Deprecated
-    public static String getDocIdForTag(DocumentModel doc) {
-        return doc.isProxy() ? doc.getSourceId() : doc.getId();
-    }
-
-    /**
      * Performs the tagging on the current document.
      */
     public String addTagging() {

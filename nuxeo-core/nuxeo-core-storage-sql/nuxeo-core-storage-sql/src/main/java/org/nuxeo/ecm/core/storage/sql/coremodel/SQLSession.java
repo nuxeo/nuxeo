@@ -307,24 +307,6 @@ public class SQLSession implements Session {
             // version & live document
             props.put(Model.MISC_LIFECYCLE_POLICY_PROP, properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
             props.put(Model.MISC_LIFECYCLE_STATE_PROP, properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
-            // compat with old lock import
-            @SuppressWarnings("deprecation")
-            String key = (String) properties.get(CoreSession.IMPORT_LOCK);
-            if (key != null) {
-                String[] values = key.split(":");
-                if (values.length == 2) {
-                    String owner = values[0];
-                    Calendar created = new GregorianCalendar();
-                    try {
-                        created.setTimeInMillis(
-                                DateFormat.getDateInstance(DateFormat.MEDIUM).parse(values[1]).getTime());
-                    } catch (ParseException e) {
-                        // use current date
-                    }
-                    props.put(Model.LOCK_OWNER_PROP, owner);
-                    props.put(Model.LOCK_CREATED_PROP, created);
-                }
-            }
 
             Serializable importLockOwnerProp = properties.get(CoreSession.IMPORT_LOCK_OWNER);
             if (importLockOwnerProp != null) {

@@ -24,7 +24,6 @@ package org.nuxeo.ecm.platform.filemanager.core.listener.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
@@ -79,14 +78,12 @@ public class TestMimetypeIconUpdater {
         String icon = (String) file.getProperty("common", "icon");
         assertNotNull(icon);
         assertEquals("/icons/pdf.png", icon);
-        assertTrue((Long) file.getPropertyValue("common:size") > 0L);
 
         // removing blob
         removeMainBlob(file);
         icon = (String) file.getProperty("common", "icon");
         assertNotNull(icon);
         assertEquals("/icons/pdf.png", icon);
-        assertEquals(0L, file.getPropertyValue("common:size"));
     }
 
     /**

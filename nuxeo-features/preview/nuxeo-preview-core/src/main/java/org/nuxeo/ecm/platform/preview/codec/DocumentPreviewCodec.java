@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -88,8 +87,7 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
             items.add(docLoc.getServerName());
             items.add(docLoc.getDocRef().toString());
             items.add(property);
-            String uri = StringUtils.join(items, "/");
-            uri += '/';
+            String uri = String.join("/", items) + '/';
 
             Map<String, String> requestParams = new HashMap<>(docView.getParameters());
             requestParams.remove(PROPERTY_PATH_KEY);

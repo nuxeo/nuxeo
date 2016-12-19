@@ -211,7 +211,6 @@ public class TestRenditionService {
         assertTrue(rendition.isStored());
         assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
         assertEquals("/icons/pdf.png", renditionDocument.getPropertyValue("common:icon"));
-        assertEquals(renditionBlob.getLength(), renditionDocument.getPropertyValue("common:size"));
 
         // now update the document
         file.setPropertyValue("dc:description", "I have been updated");
@@ -404,7 +403,6 @@ public class TestRenditionService {
         assertTrue(rendition.isStored());
         assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
         assertEquals("/icons/zip.png", renditionDocument.getPropertyValue("common:icon"));
-        assertEquals(renditionBlob.getLength(), renditionDocument.getPropertyValue("common:size"));
 
         // now get a different rendition as a different user
         NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");

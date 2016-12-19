@@ -27,9 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -127,20 +125,6 @@ public class TestMimetypeRegistryService {
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
 
         String mimetype = mimetypeRegistry.getMimetypeFromFile(file);
-        assertEquals("application/msword", mimetype);
-
-        List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
-        assertTrue(extensions.contains("doc"));
-    }
-
-    @Test
-    public void testGetMimetypeFromStream() throws Exception {
-        MimetypeEntry mimetypeEntry = getMimetypeSample();
-        mimetypeRegistryService.registerMimetype(mimetypeEntry);
-
-        InputStream istream = new FileInputStream(FileUtils.getResourceFileFromContext("test-data/hello.doc"));
-
-        String mimetype = mimetypeRegistry.getMimetypeFromStream(istream);
         assertEquals("application/msword", mimetype);
 
         List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);

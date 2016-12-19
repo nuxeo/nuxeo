@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 public class TestZipUtils {
@@ -42,7 +44,8 @@ public class TestZipUtils {
         assertTrue("Contains mimetype file", ZipUtils.hasEntry(sourceFile, "mimetype"));
 
         InputStream entryContent = ZipUtils.getEntryContentAsStream(sourceFile, "mimetype");
-        assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text", FileUtils.read(entryContent));
+        assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text",
+                IOUtils.toString(entryContent, Charsets.UTF_8));
         // need to close returned InputStream
         entryContent.close();
 
@@ -69,7 +72,8 @@ public class TestZipUtils {
 
         stream = new FileInputStream(sourceFile);
         try (InputStream entryContent = ZipUtils.getEntryContentAsStream(stream, "mimetype")) {
-            assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text", FileUtils.read(entryContent));
+            assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text",
+                    IOUtils.toString(entryContent, Charsets.UTF_8));
         }
 
         // direct access to content - No need to close returned InputStream
@@ -95,7 +99,8 @@ public class TestZipUtils {
         assertTrue("Contains mimetype file", ZipUtils.hasEntry(url, "mimetype"));
 
         try (InputStream entryContent = ZipUtils.getEntryContentAsStream(url, "mimetype")) {
-            assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text", FileUtils.read(entryContent));
+            assertEquals("Mimetype content", "application/vnd.oasis.opendocument.text",
+                    IOUtils.toString(entryContent, Charsets.UTF_8));
         }
 
         // direct access to content - No need to close returned InputStream

@@ -62,19 +62,6 @@ public class UITypesConfigurationActions implements Serializable {
     protected Map<String, String> messages;
 
     /**
-     * @deprecated since 5.7.
-     */
-    @Deprecated
-    public static final Comparator<? super Type> TYPE_ALPHABETICAL_ORDER = new Comparator<Type>() {
-
-        @Override
-        public int compare(Type type1, Type type2) {
-            return type1.getId().compareTo(type2.getId());
-        }
-
-    };
-
-    /**
      * @since 5.9.1
      */
     protected static class TypeLabelAlphabeticalOrder implements Comparator<Type> {

@@ -68,8 +68,23 @@ public class MockActionManager implements ActionManager {
     }
 
     @Override
+    public void addAction(Action action) {
+
+    }
+
+    @Override
+    public Action removeAction(String actionId) {
+        return null;
+    }
+
+    @Override
     public ActionFilter[] getFilters(String actionId) {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public ActionFilter getFilter(String filterId) {
+        return null;
     }
 
     @Override

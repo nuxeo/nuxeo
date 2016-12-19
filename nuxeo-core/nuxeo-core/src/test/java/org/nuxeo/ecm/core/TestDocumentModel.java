@@ -71,9 +71,6 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertEquals(Collections.emptySet(), model.getFacets());
         assertEquals(0, model.getSchemas().length);
         assertNull(model.getId());
-        @SuppressWarnings("deprecation")
-        String lock = model.getLock();
-        assertNull(lock); // old
         assertNull(model.getLockInfo());
         assertNull(model.getName());
         assertNull(model.getParentRef());

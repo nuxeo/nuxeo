@@ -42,8 +42,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
-import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceServiceImplComponent;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -129,73 +127,6 @@ public class TestUserWorkspace {
             uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
             assertNotNull(uw);
             assertTrue(uw.getPathAsString(), uw.getPathAsString().startsWith("/default-domain"));
-
-            // now delete the default-domain
-            session.removeDocument(new PathRef("/default-domain"));
-            session.save();
-            userSession.save();
-            uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
-            assertNotNull(uw);
-            assertTrue(uw.getPathAsString().startsWith("/alternate-domain"));
-        }
-    }
-
-    @Test
-    public void testMultiDomainsCompat() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.userworkspace.core", "OSGI-INF/compatUserWorkspaceImpl.xml");
-        uwm = Framework.getService(UserWorkspaceService.class); // re-compute
-        try {
-            doTestMultiDomainsCompat();
-        } finally {
-            harness.undeployContrib("org.nuxeo.ecm.platform.userworkspace.core",
-                    "OSGI-INF/compatUserWorkspaceImpl.xml");
-            uwm = Framework.getService(UserWorkspaceService.class); // re-compute
-        }
-    }
-
-    protected void doTestMultiDomainsCompat() throws Exception {
-        ACE ace = new ACE("Everyone", "Read", true);
-        ACL acl = new ACLImpl();
-        acl.add(ace);
-        ACP acp = new ACPImpl();
-        acp.addACL(acl);
-
-        DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
-        ws1 = session.createDocument(ws1);
-        ws1.setACP(acp, true);
-        ws1 = session.saveDocument(ws1);
-
-        DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
-        alternate = session.createDocument(alternate);
-        DocumentModel ws2 = session.createDocumentModel("/alternate-domain/workspaces", "ws2", "Workspace");
-        ws2 = session.createDocument(ws2);
-        ws2.setACP(acp, true);
-        ws2 = session.saveDocument(ws2);
-
-        session.save();
-
-        // force reset
-        UserWorkspaceServiceImplComponent.reset();
-        uwm = Framework.getService(UserWorkspaceService.class); // re-compute
-
-        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
-            // access from root
-            DocumentModel context = userSession.getRootDocument();
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
-            assertNotNull(uw);
-            assertTrue(uw.getPathAsString().startsWith("/default-domain"));
-
-            // access form default domain
-            context = userSession.getDocument(ws1.getRef());
-            uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
-            assertNotNull(uw);
-            assertTrue(uw.getPathAsString().startsWith("/default-domain"));
-
-            // access form alternate domain
-            context = userSession.getDocument(ws2.getRef());
-            uw = uwm.getCurrentUserPersonalWorkspace(userSession, context);
-            assertNotNull(uw);
-            assertTrue(uw.getPathAsString().startsWith("/alternate-domain"));
 
             // now delete the default-domain
             session.removeDocument(new PathRef("/default-domain"));

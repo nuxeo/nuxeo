@@ -34,8 +34,8 @@ import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
 /**
  * @since 5.7.3 - LogEntries Writer for Audit
- * @deprecated this marshaller was migrated to org.nuxeo.ecm.platform.audit.io.LogEntryListJsonWriter. To use it in
- *             JAX-RS, register the {@link JsonCoreIODelegate} to forward the JAX-RS marshalling to nuxeo-core-io.
+ * @deprecated since 7.2 this marshaller was migrated to org.nuxeo.ecm.platform.audit.io.LogEntryListJsonWriter. To use
+ *             it in JAX-RS, register the {@link JsonCoreIODelegate} to forward the JAX-RS marshalling to nuxeo-core-io.
  */
 @Deprecated
 @Provider

@@ -76,7 +76,7 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
             if (viewId != null) {
                 items.add(viewId);
             }
-            String uri = StringUtils.join(items, "/");
+            String uri = String.join("/", items);
             return URIUtils.addParametersToURIQuery(uri, docView.getParameters());
         }
         return null;

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,8 +37,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import static org.assertj.core.api.Assertions.*;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -150,14 +149,14 @@ public class TestDocumentModel {
     public void testDocumentDirtySerialization() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
-        doc.getProperty("common:size").setValue(10L);
+        doc.getProperty("dublincore:source").setValue("Source");
 
         assertThat(doc.isDirty()).isTrue();
 
         doc = SerializationUtils.clone(doc);
 
         assertThat(doc.getCoreSession()).isNull();
-        assertThat(doc.getProperty("common:size").getValue(Long.class)).isEqualTo(10L);
+        assertThat(doc.getProperty("dublincore:source").getValue(String.class)).isEqualTo("Source");
     }
 
     @Test
@@ -165,7 +164,7 @@ public class TestDocumentModel {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         doc.getProperty("dublincore:title").setValue("doc"); // prefetch
-        doc.getProperty("common:size").setValue(10L); // not prefetch
+        doc.getProperty("dublincore:source").setValue("Source"); // not prefetch
 
         session.removeDocument(doc.getRef());
 
@@ -174,15 +173,15 @@ public class TestDocumentModel {
         doc = SerializationUtils.clone(doc);
 
         assertThat(doc.getCoreSession()).isNull();
-        assertThat(doc.getProperty("common:size").getValue(Long.class)).isEqualTo(10L);
         assertThat(doc.getProperty("dublincore:title").getValue(String.class)).isEqualTo("doc");
+        assertThat(doc.getProperty("dublincore:source").getValue(String.class)).isEqualTo("Source");
     }
 
     @Test
     public void testDetachedDocumentSerialization() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
-        doc.getProperty("common:size").setValue(10L);
+        doc.getProperty("dublincore:source").setValue("Source");
         doc.detach(false);
 
         assertThat(doc.getCoreSession()).isNull();
@@ -191,7 +190,7 @@ public class TestDocumentModel {
 
         assertThat(doc.getCoreSession()).isNull();
         assertThat(doc.getName()).isEqualTo("doc");
-        assertThat(doc.getProperty("common:size").getValue(Long.class)).isEqualTo(10L);
+        assertThat(doc.getProperty("dublincore:source").getValue(String.class)).isEqualTo("Source");
     }
 
     @Test(expected = IllegalArgumentException.class)

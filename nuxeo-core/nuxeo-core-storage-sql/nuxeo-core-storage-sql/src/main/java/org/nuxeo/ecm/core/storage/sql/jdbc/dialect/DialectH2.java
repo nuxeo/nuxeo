@@ -26,12 +26,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
@@ -198,13 +198,12 @@ public class DialectH2 extends Dialect {
     @Override
     public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
             Model model) {
-        List<String> columnNames = new ArrayList<>(columns.size());
-        for (Column col : columns) {
-            columnNames.add("'" + col.getPhysicalName() + "'");
-        }
+        String columnNames = columns.stream()
+                                    .map(column -> "'" + column.getPhysicalName() + "'")
+                                    .collect(Collectors.joining(", "));
         String fullIndexName = String.format("PUBLIC_%s_%s", table.getPhysicalName(), indexName);
         return String.format("CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')", fullIndexName,
-                table.getPhysicalName(), StringUtils.join(columnNames, ", "), fulltextAnalyzer);
+                table.getPhysicalName(), columnNames, fulltextAnalyzer);
     }
 
     @Override
@@ -346,7 +345,7 @@ public class DialectH2 extends Dialect {
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
-        properties.put("readPermissions", StringUtils.join(permsList, ", "));
+        properties.put("readPermissions", String.join(", ", permsList));
         properties.put("h2Functions", "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
         properties.put("h2Fulltext", "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
         properties.put("usersSeparator", getUsersSeparator());

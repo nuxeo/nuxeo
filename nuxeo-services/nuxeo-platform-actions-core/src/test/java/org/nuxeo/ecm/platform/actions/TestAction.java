@@ -116,9 +116,9 @@ public class TestAction extends NXRuntimeTestCase {
         Collection<ActionFilter> filters = as.getFilterRegistry().getFilters();
         assertEquals(5, filters.size());
 
-        ActionFilter f1 = as.getFilterRegistry().getFilter("MyCustomFilter");
-        DefaultActionFilter f2 = (DefaultActionFilter) as.getFilterRegistry().getFilter("theFilter");
-        DefaultActionFilter f3 = (DefaultActionFilter) as.getFilterRegistry().getFilter("createChild");
+        ActionFilter f1 = as.getFilter("MyCustomFilter");
+        DefaultActionFilter f2 = (DefaultActionFilter) as.getFilter("theFilter");
+        DefaultActionFilter f3 = (DefaultActionFilter) as.getFilter("createChild");
 
         assertSame(DummyFilter.class, f1.getClass());
         assertSame(DefaultActionFilter.class, f2.getClass());
@@ -205,19 +205,19 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("newFilter3", filterIds.get(4));
 
         // check corresponding filters are registered correctly
-        ActionFilter filter = as.getFilterRegistry().getFilter("foo");
+        ActionFilter filter = as.getFilter("foo");
         assertNull(filter);
-        filter = as.getFilterRegistry().getFilter("MyCustomFilter");
+        filter = as.getFilter("MyCustomFilter");
         assertNotNull(filter);
         // no filter by that name
-        filter = as.getFilterRegistry().getFilter("newFilterId1");
+        filter = as.getFilter("newFilterId1");
         assertNull(filter);
         // no filter by that name
-        filter = as.getFilterRegistry().getFilter("newFilterId4");
+        filter = as.getFilter("newFilterId4");
         assertNull(filter);
-        filter = as.getFilterRegistry().getFilter("newFilter2");
+        filter = as.getFilter("newFilter2");
         assertNotNull(filter);
-        filter = as.getFilterRegistry().getFilter("newFilter3");
+        filter = as.getFilter("newFilter3");
         assertNotNull(filter);
 
         disabledAction = as.getAction("disabledAction");
@@ -235,7 +235,7 @@ public class TestAction extends NXRuntimeTestCase {
         List<String> previewFilterIds = previewAction.getFilterIds();
         assertEquals(1, previewFilterIds.size());
         assertTrue(previewFilterIds.contains("local_filter"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter("local_filter");
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("local_filter");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
         assertEquals(1, previewRules.length);
@@ -252,7 +252,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
         assertEquals(1, opreviewAction.getFilterIds().size());
         assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter("local_filter");
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("local_filter");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);
@@ -274,7 +274,7 @@ public class TestAction extends NXRuntimeTestCase {
         List<String> previewFilterIds = previewAction.getFilterIds();
         assertEquals(1, previewFilterIds.size());
         assertTrue(previewFilterIds.contains("local_filter"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter("local_filter");
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("local_filter");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
         assertEquals(1, previewRules.length);
@@ -293,7 +293,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertFalse(Arrays.asList(opreviewAction.getCategories()).contains("VIEW_ACTION_LIST"));
         assertEquals(1, opreviewAction.getFilterIds().size());
         assertTrue(opreviewAction.getFilterIds().contains("local_filter"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry().getFilter("local_filter");
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("local_filter");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(1, opreviewRules.length);
@@ -312,8 +312,7 @@ public class TestAction extends NXRuntimeTestCase {
         List<String> previewFilterIds = previewAction.getFilterIds();
         assertEquals(1, previewFilterIds.size());
         assertTrue(previewFilterIds.contains("filter_defined_globally"));
-        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilterRegistry()
-                                                                    .getFilter("filter_defined_globally");
+        DefaultActionFilter previewFilter = (DefaultActionFilter) as.getFilter("filter_defined_globally");
         FilterRule[] previewRules = previewFilter.getRules();
         assertNotNull(previewRules);
         assertEquals(1, previewRules.length);
@@ -330,8 +329,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertTrue(Arrays.asList(opreviewAction.getCategories()).contains("OVERRIDE"));
         assertEquals(1, opreviewAction.getFilterIds().size());
         assertTrue(opreviewAction.getFilterIds().contains("filter_defined_globally"));
-        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilterRegistry()
-                                                                     .getFilter("filter_defined_globally");
+        DefaultActionFilter opreviewFilter = (DefaultActionFilter) as.getFilter("filter_defined_globally");
         FilterRule[] opreviewRules = opreviewFilter.getRules();
         assertNotNull(opreviewRules);
         assertEquals(2, opreviewRules.length);

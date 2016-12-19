@@ -140,8 +140,6 @@ public class FrameworkLoader {
     }
 
     private static void doInitialize(Map<String, Object> hostEnv) {
-        // make sure this property was correctly initialized
-        System.setProperty(Environment.HOME_DIR, home.getAbsolutePath());
         boolean doPreprocessing = true;
         String v = (String) hostEnv.get(PREPROCESSING);
         if (v != null) {
@@ -297,7 +295,6 @@ public class FrameworkLoader {
     }
 
     protected static void loadSystemProperties() {
-        System.setProperty(Environment.HOME_DIR, home.getAbsolutePath());
         File file = new File(home, "system.properties");
         if (!file.isFile()) {
             return;

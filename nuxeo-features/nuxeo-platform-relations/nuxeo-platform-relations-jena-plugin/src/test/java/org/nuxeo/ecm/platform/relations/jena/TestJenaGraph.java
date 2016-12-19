@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
@@ -463,9 +465,11 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         graph.add(statements);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         graph.write(out, null, null);
-        InputStream written = new ByteArrayInputStream(out.toByteArray());
-        InputStream expected = new FileInputStream(getTestFile());
-        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""), FileUtils.read(written).replaceAll("\r?\n", ""));
+        try (InputStream written = new ByteArrayInputStream(out.toByteArray());
+                InputStream expected = new FileInputStream(getTestFile())) {
+            assertEquals(IOUtils.toString(expected, Charsets.UTF_8).replaceAll("\r?\n", ""),
+                    IOUtils.toString(written, Charsets.UTF_8).replaceAll("\r?\n", ""));
+        }
     }
 
     @Test
@@ -474,12 +478,12 @@ public class TestJenaGraph extends NXRuntimeTestCase {
         File file = Framework.createTempFile("test", ".rdf");
         String path = file.getPath();
         graph.write(path, null, null);
-        InputStream written = new FileInputStream(new File(path));
-        InputStream expected = new FileInputStream(getTestFile());
-
-        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
-        String writtenString = FileUtils.read(written).replaceAll("\r?\n", "");
-        assertEquals(expectedString, writtenString);
+        try (InputStream written = new FileInputStream(new File(path));
+                InputStream expected = new FileInputStream(getTestFile())) {
+            String expectedString = IOUtils.toString(expected, Charsets.UTF_8).replaceAll("\r?\n", "");
+            String writtenString = IOUtils.toString(written, Charsets.UTF_8).replaceAll("\r?\n", "");
+            assertEquals(expectedString, writtenString);
+        }
     }
 
     // XXX AT: test serialization of the graph because the RelationServiceBean

@@ -242,18 +242,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
     }
 
-    @Deprecated
-    public String getLogComment(LogEntry entry) {
-        CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
-        return cph.getLogComment(entry);
-    }
-
-    @Deprecated
-    public LinkedDocument getLogLinkedDocument(LogEntry entry) {
-        CommentProcessorHelper cph = new CommentProcessorHelper(documentManager);
-        return cph.getLogLinkedDocument(entry);
-    }
-
     public SortInfo getSortInfo() {
         return sortInfo;
     }

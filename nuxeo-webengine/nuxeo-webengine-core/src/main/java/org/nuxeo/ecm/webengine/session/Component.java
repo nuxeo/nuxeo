@@ -25,7 +25,7 @@ import java.io.Serializable;
  * <p>
  * A component is instantiate and activated the first time it is requested. It is destroyed when the user session ends.
  * <p>
- * Stateful components are not necessarily thread safe and should be used only from the UserSession thread.
+ * Stateful components are not necessarily thread safe.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

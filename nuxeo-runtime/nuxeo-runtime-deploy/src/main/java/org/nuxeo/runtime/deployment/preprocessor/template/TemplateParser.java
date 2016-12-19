@@ -27,7 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,31 +40,19 @@ public class TemplateParser {
     }
 
     public static Template parse(File file) throws IOException {
-        InputStream in = null;
-        try {
-            in = new BufferedInputStream(new FileInputStream(file));
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))){
             return parse(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static Template parse(URL url) throws IOException {
-        InputStream in = null;
-        try {
-            in = new BufferedInputStream(url.openStream());
+        try (InputStream in = new BufferedInputStream(url.openStream())){
             return parse(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
     public static Template parse(InputStream in) throws IOException {
-        String s = FileUtils.read(in);
+        String s = IOUtils.toString(in, Charsets.UTF_8);
         return parse(s.toCharArray());
     }
 

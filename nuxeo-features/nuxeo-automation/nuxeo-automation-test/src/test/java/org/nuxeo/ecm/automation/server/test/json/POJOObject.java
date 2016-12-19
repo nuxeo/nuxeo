@@ -61,7 +61,7 @@ public class POJOObject {
     @Override
     public String toString() {
         return String.format("%s(textContent=\"%s\", items=[\"%s\"])", getClass().getSimpleName(), textContent,
-                StringUtils.join(items, "\", \""));
+                String.join("\", \"", items));
     }
 
     @Override

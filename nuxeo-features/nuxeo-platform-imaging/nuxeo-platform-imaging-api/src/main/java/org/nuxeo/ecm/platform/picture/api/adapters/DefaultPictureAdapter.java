@@ -52,12 +52,6 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     private static final String FILENAME_PROPERTY = "filename";
 
     @Override
-    public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException {
-        return fillPictureViews(blob, filename, title, pictureConversions);
-    }
-
-    @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
             List<Map<String, Object>> pictureConversions) throws IOException {
         if (blob == null) {

@@ -82,8 +82,8 @@
               <property name="size">10</property>
             </properties>
           </aggregate>
-          <aggregate id="common_size_agg" type="range" parameter="common:size">
-            <field schema="default_search" name="common_size_agg" />
+          <aggregate id="content_length_agg" type="range" parameter="file:content/length">
+            <field schema="default_search" name="content_length_agg" />
             <ranges>
               <range key="tiny" to="102400"/>
               <range key="small" from="102401" to="1048576"/>

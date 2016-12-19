@@ -662,9 +662,6 @@ public class TestSQLRepositoryVersioning {
 
         // check version label
         assertEquals("0.1", version.getVersionLabel());
-        // check version label through VersionModel
-        VersionModel vm = session.getLastVersion(copy.getRef());
-        assertEquals("0.1", vm.getLabel());
     }
 
     @Test
@@ -692,12 +689,10 @@ public class TestSQLRepositoryVersioning {
         assertFalse(proxy.isLatestMajorVersion());
 
         checkVersions(doc, "0.1");
-        VersionModel lastVersion = session.getLastVersion(doc.getRef());
-        assertNotNull(lastVersion);
-        assertEquals("0.1", lastVersion.getLabel());
         DocumentModel lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("file", lastVersionDocument.getName());
+        assertEquals("0.1", lastVersionDocument.getVersionLabel());
     }
 
     @Test
@@ -708,20 +703,16 @@ public class TestSQLRepositoryVersioning {
         doc = session.createDocument(doc);
         checkVersions(doc);
 
-        VersionModel lastVersion = session.getLastVersion(doc.getRef());
-        assertNull(lastVersion);
         DocumentModel lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNull(lastVersionDocument);
 
         // publish
         DocumentModel proxy = session.publishDocument(doc, folder);
         checkVersions(doc, "0.1");
-        lastVersion = session.getLastVersion(doc.getRef());
-        assertNotNull(lastVersion);
-        assertEquals("0.1", lastVersion.getLabel());
         lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("file", lastVersionDocument.getName());
+        assertEquals("0.1", lastVersionDocument.getVersionLabel());
 
         // unpublish
         session.removeDocument(proxy.getRef());
@@ -734,20 +725,16 @@ public class TestSQLRepositoryVersioning {
         session.removeDocument(docVersion.getRef());
 
         checkVersions(doc);
-        lastVersion = session.getLastVersion(doc.getRef());
-        assertNull(lastVersion);
         lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNull(lastVersionDocument);
 
         // republish
         DocumentModel newProxy = session.publishDocument(doc, folder);
         checkVersions(doc, "0.2");
-        lastVersion = session.getLastVersion(doc.getRef());
-        assertNotNull(lastVersion);
-        assertEquals("0.2", lastVersion.getLabel());
         lastVersionDocument = session.getLastDocumentVersion(doc.getRef());
         assertNotNull(lastVersionDocument);
         assertEquals("file", lastVersionDocument.getName());
+        assertEquals("0.2", lastVersionDocument.getVersionLabel());
     }
 
     @Test

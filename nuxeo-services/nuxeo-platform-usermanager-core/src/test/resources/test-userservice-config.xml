@@ -19,8 +19,7 @@
         <directory>somedir</directory>
         <emailField>mail</emailField>
         <searchFields append="true">
-          <!-- BBB: use substringMatchSearchField explicitely instead -->
-          <searchField>first</searchField>
+          <substringMatchSearchField>first</substringMatchSearchField>
           <exactMatchSearchField>last</exactMatchSearchField>
           <substringMatchSearchField>email</substringMatchSearchField>
         </searchFields>

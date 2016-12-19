@@ -55,12 +55,12 @@ public class CheckInSecurityPolicy extends AbstractSecurityPolicy {
     }
 
     @Override
-    public boolean isExpressibleInQuery() {
+    public boolean isExpressibleInQuery(String repositoryName) {
         return true;
     }
 
     @Override
-    public SQLQuery.Transformer getQueryTransformer() {
+    public SQLQuery.Transformer getQueryTransformer(String repositoryName) {
         return SQLQuery.Transformer.IDENTITY;
     }
 

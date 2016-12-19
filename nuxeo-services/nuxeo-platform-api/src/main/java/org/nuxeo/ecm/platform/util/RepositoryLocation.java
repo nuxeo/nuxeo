@@ -66,18 +66,4 @@ public class RepositoryLocation implements Serializable, Comparable<RepositoryLo
         return this.name.hashCode();
     }
 
-    /**
-     * @deprecated Unused
-     */
-    @Deprecated
-    public Boolean getEnabled() {
-        return Boolean.FALSE;
-    }
-
-    /**
-     * @deprecated Unused
-     */
-    @Deprecated
-    public void setEnabled(Boolean enabled) {
-    }
 }

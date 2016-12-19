@@ -155,7 +155,7 @@ public class DocumentListingActionsBean implements Serializable {
             return Collections.emptyList();
         }
         TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
-        String[] layoutNames = typeInfo.getLayouts(BuiltinModes.LISTING, null);
+        String[] layoutNames = typeInfo.getLayouts(BuiltinModes.VIEW, null);
         List<String> res = new ArrayList<String>();
         if (layoutNames != null && layoutNames.length > 0) {
             res.addAll(Arrays.asList(layoutNames));

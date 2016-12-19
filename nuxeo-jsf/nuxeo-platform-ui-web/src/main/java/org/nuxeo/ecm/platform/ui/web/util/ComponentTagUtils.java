@@ -89,27 +89,6 @@ public final class ComponentTagUtils {
     }
 
     /**
-     * Returns true if the specified value conforms to the syntax requirements of a method binding expression.
-     * <p>
-     * The method can have parameters and the expression must use parentheses even if no parameters are needed.
-     *
-     * @param value the value to evaluate (not null)
-     * @deprecated since 5.5: method and value references are now equivalent with jboss EL
-     */
-    @Deprecated
-    public static boolean isMethodReference(String value) {
-        boolean isValue = isValueReference(value);
-        if (isValue) {
-            if (value.contains("(") && value.indexOf('(') < value.indexOf(')')
-            // make sure it's not a function
-                    && (!value.contains(":") || value.indexOf(':') > value.indexOf('('))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Resolves an expression from a given faces context.
      * <p>
      * Resolves the expression a second time when first resolution gives a String value using the EL Expression syntax.

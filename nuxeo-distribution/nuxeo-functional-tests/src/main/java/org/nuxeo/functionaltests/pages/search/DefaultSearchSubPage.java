@@ -58,7 +58,7 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_modified_agg")
     protected WebElement modifiedAggregate;
 
-    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_common_size_agg")
+    @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_content_length_agg")
     protected WebElement sizeAggregate;
 
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_subjects_agg")

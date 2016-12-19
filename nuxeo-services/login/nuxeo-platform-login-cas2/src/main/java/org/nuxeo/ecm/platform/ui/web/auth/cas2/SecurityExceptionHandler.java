@@ -57,7 +57,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             response.setHeader("Cache-Control", "no-cache");
         }
 
-        Throwable unwrappedException = unwrapException(t);
+        Throwable unwrappedException = ExceptionHelper.unwrapException(t);
 
         if (!ExceptionHelper.isSecurityError(unwrappedException)
                 && !response.containsHeader(SSO_INITIAL_URL_REQUEST_KEY)) {

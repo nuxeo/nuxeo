@@ -71,28 +71,6 @@ public class Document extends DocRef {
 
     protected final PropertyList facets;
 
-    @Deprecated
-    /**
-     * Deprecated now use with the constructor with versionLabel and isCheckedOut
-     */
-    public Document(String id, String type, PropertyList facets, String changeToken, String path, String state,
-            String lockOwner, String lockCreated, String repository, PropertyMap properties,
-            PropertyMap contextParameters) {
-        this(id, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, null, null, properties,
-                contextParameters);
-    }
-
-    @Deprecated
-    /**
-     * Deprecated now use with the constructor with isCheckedOut
-     */
-    public Document(String id, String type, PropertyList facets, String changeToken, String path, String state,
-            String lockOwner, String lockCreated, String repository, String versionLabel, PropertyMap properties,
-            PropertyMap contextParameters) {
-        this(id, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, null,
-                properties, contextParameters);
-    }
-
     /**
      * Reserved to framework. Should be only called by client framework when unmarshalling documents.
      *

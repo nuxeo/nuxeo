@@ -51,7 +51,6 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
@@ -75,11 +74,9 @@ import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -2504,7 +2501,7 @@ public class TestSQLRepositoryAPI {
         // version the note
         note.setProperty("dublincore", "title", "blah");
         ScopedMap context = note.getContextData();
-        context.putScopedValue(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        context.putScopedValue(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         session.saveDocument(note);
         session.save();
 
@@ -2541,7 +2538,7 @@ public class TestSQLRepositoryAPI {
         // version the note
         note.setProperty("dublincore", "title", "blah");
         ScopedMap context = note.getContextData();
-        context.putScopedValue(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        context.putScopedValue(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         session.saveDocument(note);
         session.save();
 

@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
 
     @Override
-    public boolean isExpressibleInQuery() {
+    public boolean isExpressibleInQuery(String repositoryName) {
         return true;
     }
 
@@ -66,7 +66,7 @@ public class NoFile2SecurityPolicy extends NoFileSecurityPolicy {
     public static final Transformer NO_FILE_TRANSFORMER = new NoFileTransformer();
 
     @Override
-    public Transformer getQueryTransformer() {
+    public Transformer getQueryTransformer(String repositoryName) {
         return NO_FILE_TRANSFORMER;
     }
 

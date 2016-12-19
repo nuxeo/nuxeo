@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
+import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.BlobResource;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.tiler.MagickTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.service.GCTask;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingCacheGCManager;
@@ -80,7 +81,7 @@ public class TestService extends NXRuntimeTestCase {
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
 
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 20);
 
         assertNotNull(tiles);
         assertFalse(tiles.getZoomfactor() == 0);
@@ -101,14 +102,14 @@ public class TestService extends NXRuntimeTestCase {
         Blob image = Blobs.createBlob(file);
 
         image.setFilename("slow.jpg");
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 20, 0, 0, false);
         assertNotNull(tiles);
         assertFalse(tiles.getZoomfactor() == 0);
         // System.out.println("ExecTime="
         // + tiles.getInfo().get("JavaProcessExecTime"));
 
         image.setFilename("quick.jpg");
-        PictureTiles tiles2 = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
+        PictureTiles tiles2 = pts.getTiles(new BlobResource(image), 255, 255, 20, 0, 0, false);
         assertNotNull(tiles2);
         assertFalse(tiles2.getZoomfactor() == 0);
         // System.out.println("ExecTime="
@@ -128,7 +129,7 @@ public class TestService extends NXRuntimeTestCase {
         Blob image = Blobs.createBlob(file);
 
         image.setFilename("test.jpg");
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 20, 0, 0, false);
 
         assertNotNull(tiles);
 
@@ -151,7 +152,7 @@ public class TestService extends NXRuntimeTestCase {
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
 
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 3);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 3);
 
         assertNotNull(tiles);
         assertFalse(tiles.getZoomfactor() == 0);
@@ -168,7 +169,7 @@ public class TestService extends NXRuntimeTestCase {
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
 
-        PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 5);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 255, 255, 5);
 
         assertNotNull(tiles);
         assertFalse(tiles.getZoomfactor() == 0);
@@ -187,7 +188,7 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
-        PictureTiles tiles = pts.getTilesFromBlob(image, 200, 200, 2);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 200, 200, 2);
         assertNotNull(tiles);
 
         tiles.getTile(0, 1);
@@ -201,7 +202,7 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
-        PictureTiles tiles = pts.getTilesFromBlob(image, 200, 160, 2);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 200, 160, 2);
         assertNotNull(tiles);
 
         tiles.getTile(0, 1);
@@ -218,7 +219,7 @@ public class TestService extends NXRuntimeTestCase {
         Blob image = Blobs.createBlob(file);
 
         long t0 = System.currentTimeMillis();
-        PictureTiles tiles = pts.getTilesFromBlob(image, 100, 100, 180);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 100, 100, 180);
         assertNotNull(tiles);
         long t1 = System.currentTimeMillis();
 
@@ -239,7 +240,7 @@ public class TestService extends NXRuntimeTestCase {
 
             long tt0 = System.currentTimeMillis();
 
-            PictureTiles tiles = pts.getTilesFromBlob(image, 200, 200, maxTiles);
+            PictureTiles tiles = pts.getTiles(new BlobResource(image), 200, 200, maxTiles);
             assertNotNull(tiles);
 
             int nxt = tiles.getXTiles();
@@ -375,7 +376,7 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         File file = FileUtils.getResourceFileFromContext("chutes.jpg");
         Blob image = Blobs.createBlob(file);
-        PictureTiles tiles = pts.getTilesFromBlob(image, 64, 64, 3);
+        PictureTiles tiles = pts.getTiles(new BlobResource(image), 64, 64, 3);
         assertNotNull(tiles);
 
         tiles.getTile(2, 1);

@@ -22,11 +22,8 @@ package org.nuxeo.ecm.core.io.registry.context;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.DOCUMENT_PROPERTIES_HEADER;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
-import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.NXCONTENT_CATEGORY_HEADER;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -141,30 +138,6 @@ public class TestRenderingContext {
         assertTrue(embeds.contains(VALUE1));
         assertTrue(embeds.contains(VALUE2));
         assertTrue(embeds.contains(VALUE3));
-    }
-
-    @Test
-    public void nxParamBackwardCompatPropertiesHeader() throws Exception {
-        @SuppressWarnings("deprecation")
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(DOCUMENT_PROPERTIES_HEADER, VALUE1 + "," + VALUE2)
-                                                          .get();
-        Set<String> embeds = ctx.getProperties();
-        assertNotNull(embeds);
-        assertEquals(2, embeds.size());
-        assertTrue(embeds.contains(VALUE1));
-        assertTrue(embeds.contains(VALUE2));
-    }
-
-    @Test
-    public void nxParamBackwardCompatEnricherHeader() throws Exception {
-        @SuppressWarnings("deprecation")
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(NXCONTENT_CATEGORY_HEADER, VALUE1 + "," + VALUE2)
-                                                          .get();
-        Set<String> embeds = ctx.getEnrichers(ENTITY_TYPE);
-        assertNotNull(embeds);
-        assertEquals(2, embeds.size());
-        assertTrue(embeds.contains(VALUE1));
-        assertTrue(embeds.contains(VALUE2));
     }
 
 }

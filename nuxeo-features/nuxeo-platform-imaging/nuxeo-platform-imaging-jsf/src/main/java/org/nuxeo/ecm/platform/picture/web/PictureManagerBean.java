@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
@@ -43,21 +40,16 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.jboss.seam.core.Events;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -154,63 +146,6 @@ public class PictureManagerBean implements PictureManager, Serializable {
     @Override
     public void setSelectItems(ArrayList selectItems) {
         this.selectItems = selectItems;
-    }
-
-    @Override
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public String addPicture() {
-        PathSegmentService pss = Framework.getService(PathSegmentService.class);
-        DocumentModel doc = navigationContext.getChangeableDocument();
-
-        String parentPath;
-        if (getCurrentDocument() == null) {
-            // creating item at the root
-            parentPath = documentManager.getRootDocument().getPathAsString();
-        } else {
-            parentPath = navigationContext.getCurrentDocument().getPathAsString();
-        }
-
-        String title = (String) doc.getProperty("dublincore", "title");
-        if (title == null) {
-            title = "";
-        }
-        // set parent path and name for document model
-        doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
-        try {
-            DocumentModel parent = getCurrentDocument();
-            ArrayList<Map<String, Object>> pictureConversions = null;
-            if (parent.getType().equals("PictureBook")) {
-                // Use PictureBook Properties
-                pictureConversions = (ArrayList<Map<String, Object>>) parent.getProperty("picturebook",
-                        "picturetemplates");
-            }
-            PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
-            boolean status = picture.fillPictureViews(fileContent, filename, title, pictureConversions);
-            if (!status) {
-                documentManager.cancel();
-                log.info("Picture type unsupported.");
-                FacesMessages.instance().add(StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get("label.picture.upload.error"));
-
-                return navigationContext.getActionResult(navigationContext.getCurrentDocument(), UserAction.VIEW);
-            } else {
-                doc = documentManager.createDocument(doc);
-                documentManager.saveDocument(doc);
-
-                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, parent);
-
-                documentManager.save();
-            }
-        } catch (IOException e) {
-            log.error("Picture Creation failed", e);
-            documentManager.cancel();
-            FacesMessage message = FacesMessages.createFacesMessage(FacesMessage.SEVERITY_ERROR,
-                    resourcesAccessor.getMessages().get("label.picture.upload.error"));
-            FacesMessages.instance().add(message);
-            return navigationContext.getActionResult(navigationContext.getCurrentDocument(), UserAction.VIEW);
-        }
-        return navigationContext.getActionResult(doc, UserAction.AFTER_CREATE);
     }
 
     @Override

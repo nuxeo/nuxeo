@@ -109,46 +109,6 @@ public class Environment {
     public static final String NUXEO_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
     /**
-     * The home directory.
-     *
-     * @deprecated never defined; use {@link #NUXEO_HOME_DIR}
-     */
-    @Deprecated
-    public static final String HOME_DIR = "org.nuxeo.app.home";
-
-    /**
-     * The web root.
-     *
-     * @deprecated never defined; use {@link #NUXEO_WEB_DIR}
-     */
-    @Deprecated
-    public static final String WEB_DIR = "org.nuxeo.app.web";
-
-    /**
-     * The config directory.
-     *
-     * @deprecated never defined; use {@link #NUXEO_CONFIG_DIR}
-     */
-    @Deprecated
-    public static final String CONFIG_DIR = "org.nuxeo.app.config";
-
-    /**
-     * The data directory.
-     *
-     * @deprecated never defined; use {@link #NUXEO_DATA_DIR}
-     */
-    @Deprecated
-    public static final String DATA_DIR = "org.nuxeo.app.data";
-
-    /**
-     * The log directory.
-     *
-     * @deprecated never defined; use {@link #NUXEO_LOG_DIR}
-     */
-    @Deprecated
-    public static final String LOG_DIR = "org.nuxeo.app.log";
-
-    /**
      * The application layout (optional): directory containing nuxeo runtime osgi bundles.
      */
     public static final String BUNDLES_DIR = "nuxeo.osgi.app.bundles";
@@ -319,7 +279,6 @@ public class Environment {
         if (properties != null) {
             loadProperties(properties);
         }
-        this.properties.setProperty(HOME_DIR, this.home.getAbsolutePath());
     }
 
     public static synchronized void setDefault(Environment env) {

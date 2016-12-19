@@ -461,17 +461,6 @@ public final class FaceletHandlerHelper {
     }
 
     /**
-     * @deprecated since 5.4.2, use
-     *             {@link FaceletHandlerHelper#getHtmlComponentHandler(String, TagAttributes, FaceletHandler, String, String)}
-     *             instead.
-     */
-    @Deprecated
-    public ComponentHandler getHtmlComponentHandler(TagAttributes attributes, FaceletHandler nextHandler,
-            String componentType, String rendererType) {
-        return getHtmlComponentHandler(null, attributes, nextHandler, componentType, rendererType);
-    }
-
-    /**
      * Returns an html component handler for this configuration.
      * <p>
      * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
@@ -482,14 +471,6 @@ public final class FaceletHandlerHelper {
         ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, tagConfigId, attributes, nextHandler,
                 componentType, rendererType);
         return new GenericHtmlComponentHandler(config);
-    }
-
-    /**
-     * @deprecated since 5.4.2, use {@link FaceletHandlerHelper#getErrorComponentHandler(String, String)} instead.
-     */
-    @Deprecated
-    public ComponentHandler getErrorComponentHandler(String errorMessage) {
-        return getErrorComponentHandler(null, errorMessage);
     }
 
     /**
@@ -507,17 +488,6 @@ public final class FaceletHandlerHelper {
     }
 
     /**
-     * @deprecated since 5.4.2, use
-     *             {@link FaceletHandlerHelper#getConvertHandler(String, TagAttributes, FaceletHandler, String)}
-     *             instead.
-     */
-    @Deprecated
-    public ConverterHandler getConvertHandler(TagAttributes attributes, FaceletHandler nextHandler,
-            String converterId) {
-        return getConvertHandler(null, attributes, nextHandler, converterId);
-    }
-
-    /**
      * Returns a convert handler for this configuration.
      * <p>
      * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
@@ -531,17 +501,6 @@ public final class FaceletHandlerHelper {
     }
 
     /**
-     * @deprecated since 5.4.2, use
-     *             {@link FaceletHandlerHelper#getValidateHandler(String, TagAttributes, FaceletHandler, String)}
-     *             instead.
-     */
-    @Deprecated
-    public ValidatorHandler getValidateHandler(TagAttributes attributes, FaceletHandler nextHandler,
-            String validatorId) {
-        return getValidateHandler(null, attributes, nextHandler, validatorId);
-    }
-
-    /**
      * Returns a validate handler for this configuration.
      * <p>
      * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
@@ -552,15 +511,6 @@ public final class FaceletHandlerHelper {
         ValidatorConfig config = TagConfigFactory.createValidatorConfig(tagConfig, tagConfigId, attributes, nextHandler,
                 validatorId);
         return new ValidatorHandler(config);
-    }
-
-    /**
-     * @deprecated since 5.4.2, use
-     *             {@link FaceletHandlerHelper#getMessageComponentHandler(String, String, String, String)} instead.
-     */
-    @Deprecated
-    public ComponentHandler getMessageComponentHandler(String id, String forId, String styleClass) {
-        return getMessageComponentHandler(null, id, forId, styleClass);
     }
 
     /**

@@ -29,18 +29,14 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.core.versioning.CompatVersioningService;
-import org.nuxeo.ecm.core.versioning.VersioningComponent;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -229,100 +225,6 @@ public class TestVersioningService {
         assertVersion("1.3", doc);
         assertVersionLabel("1.3", doc);
         assertLatestVersion("1.3", doc);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioningservice-contrib.xml")
-    public void testOldNuxeoVersioning() throws Exception {
-        ((VersioningComponent) service).service = new CompatVersioningService();
-
-        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
-        folder = session.createDocument(folder);
-        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
-        doc = session.createDocument(doc);
-        doc.setPropertyValue("dc:title", "A");
-        maybeSleepToNextSecond();
-        doc = session.saveDocument(doc);
-        DocumentRef docRef = doc.getRef();
-        assertTrue(doc.isCheckedOut());
-        assertVersion("1.0", doc);
-        assertLatestVersion(null, doc);
-
-        // snapshot A=1.0 and save B
-        doc.setPropertyValue("dc:title", "B");
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
-        maybeSleepToNextSecond();
-        doc = session.saveDocument(doc);
-        assertTrue(doc.isCheckedOut());
-        assertVersion("1.1", doc);
-        assertLatestVersion("1.0", doc);
-
-        // another snapshot for B=1.1, using major inc
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
-        maybeSleepToNextSecond();
-        doc = session.saveDocument(doc);
-        assertTrue(doc.isCheckedOut());
-        assertVersion("2.0", doc);
-        assertLatestVersion("1.1", doc);
-        DocumentModel v11 = session.getLastDocumentVersion(docRef);
-        assertVersion("1.1", v11);
-
-        // another snapshot but no increment doesn't change anything, doc is
-        // clean
-        doc.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
-        doc = session.saveDocument(doc);
-        assertTrue(doc.isCheckedOut());
-        assertVersion("2.0", doc);
-        assertLatestVersion("1.1", doc);
-
-        // now dirty doc and snapshot+inc
-        doc.setPropertyValue("dc:title", "C");
-        maybeSleepToNextSecond();
-        doc = session.saveDocument(doc);
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
-        maybeSleepToNextSecond();
-        doc = session.saveDocument(doc);
-        assertTrue(doc.isCheckedOut());
-        assertVersion("2.1", doc);
-        assertLatestVersion("2.0", doc);
-
-        // another save+inc, no snapshot
-        doc.setPropertyValue("dc:title", "D");
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
-        maybeSleepToNextSecond();
-        doc = session.saveDocument(doc);
-        assertTrue(doc.isCheckedOut());
-        assertVersion("3.0", doc);
-        assertLatestVersion("2.1", doc);
-
-        // checkin/checkout (old style)
-        maybeSleepToNextSecond();
-        session.checkIn(docRef, null);
-        session.checkOut(docRef);
-        doc = session.getDocument(docRef);
-        assertTrue(doc.isCheckedOut());
-        assertVersion("3.1", doc);
-        assertLatestVersion("3.0", doc);
-
-        // wait before doing a restore
-        session.save();
-        waitForAsyncCompletion();
-
-        // restore 1.1 -> 3.2 (snapshots 3.1)
-        maybeSleepToNextSecond();
-        doc = session.restoreToVersion(docRef, v11.getRef());
-        assertFalse(doc.isCheckedOut());
-        assertVersion("1.1", doc);
-        assertVersionLabel("1.1", doc);
-        assertLatestVersion("3.1", doc);
-
-        // checkout restored version
-        doc.checkOut();
-        assertTrue(doc.isCheckedOut());
-        assertVersion("3.2", doc);
-        assertVersionLabel("3.2", doc);
-        assertLatestVersion("3.1", doc);
     }
 
     @Test

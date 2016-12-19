@@ -288,48 +288,6 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         return getMimetypeFromExtension(extension);
     }
 
-    // the stream based detection is deprecated and should be replaced by
-    // StreamingBlob detection instead to make serialization efficient for
-    // remote call
-    @Override
-    @Deprecated
-    public String getMimetypeFromStream(InputStream stream)
-            throws MimetypeNotFoundException, MimetypeDetectionException {
-        File file = null;
-        try {
-            file = Framework.createTempFile("NXMimetypeBean", ".bin");
-            try {
-                FileUtils.copyToFile(stream, file);
-                return getMimetypeFromFile(file);
-            } finally {
-                file.delete();
-            }
-        } catch (IOException e) {
-            throw new MimetypeDetectionException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Finds the mimetype of a stream content and returns provided default if not possible.
-     *
-     * @param is content to be analyzed
-     * @param defaultMimetype default mimetype to be used if no found
-     * @return the string mimetype
-     * @throws MimetypeDetectionException
-     * @author lgodard
-     */
-    @Override
-    @Deprecated
-    // use getMimetypeFromBlobWithDefault instead
-    public String getMimetypeFromStreamWithDefault(InputStream is, String defaultMimetype)
-            throws MimetypeDetectionException {
-        try {
-            return getMimetypeFromStream(is);
-        } catch (MimetypeNotFoundException e) {
-            return defaultMimetype;
-        }
-    }
-
     @Override
     public String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException {
         File file;

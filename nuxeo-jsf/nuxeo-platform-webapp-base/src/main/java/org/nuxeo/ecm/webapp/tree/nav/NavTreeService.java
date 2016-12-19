@@ -58,7 +58,7 @@ public class NavTreeService extends DefaultComponent {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.addContribution(contrib);
-            getActionService().getActionRegistry().addAction(contrib.getAction());
+            getActionService().addAction(contrib.getAction());
         }
     }
 
@@ -70,7 +70,7 @@ public class NavTreeService extends DefaultComponent {
         if (NAVTREE_EP.equals(extensionPoint)) {
             NavTreeDescriptor contrib = (NavTreeDescriptor) contribution;
             registry.removeContribution(contrib);
-            getActionService().getActionRegistry().removeAction(contrib.getTreeId());
+            getActionService().removeAction(contrib.getTreeId());
         }
     }
 

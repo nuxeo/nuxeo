@@ -137,17 +137,6 @@ public class DirectoryUIActionsBean implements Serializable {
         this.selectedDirectoryName = selectedDirectoryName;
     }
 
-    @Deprecated
-    public String selectDirectory(String directoryName) {
-        resetSelectedDirectoryData();
-        currentDirectoryInfo = directoryUIManager.getDirectoryInfo(directoryName);
-        String view = currentDirectoryInfo.getView();
-        if (view == null) {
-            view = DIRECTORY_DEFAULT_VIEW;
-        }
-        return view;
-    }
-
     public void selectDirectory() {
         resetSelectedDirectoryData();
         currentDirectoryInfo = directoryUIManager.getDirectoryInfo(selectedDirectoryName);

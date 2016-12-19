@@ -63,30 +63,6 @@ public class MainTabsActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * @deprecated since 5.5, use {@link WebActions#MAIN_TABS_CATEGORY} instead
-     */
-    @Deprecated
-    public static final String MAIN_TABS_CATEGORY = WebActions.MAIN_TABS_CATEGORY;
-
-    /**
-     * @deprecated since 5.5, use {@link WebActions#DOCUMENTS_MAIN_TAB_ID} instead
-     */
-    @Deprecated
-    public static final String DOCUMENT_MANAGEMENT_ACTION = WebActions.DOCUMENTS_MAIN_TAB_ID;
-
-    /**
-     * @deprecated since 5.5, use {@link WebActions#TAB_IDS_PARAMETER} instead
-     */
-    @Deprecated
-    public static final String TAB_IDS_PARAMETER = WebActions.TAB_IDS_PARAMETER;
-
-    /**
-     * @deprecated since 5.5, use {@link WebActions#MAIN_TAB_ID_PARAMETER} instead
-     */
-    @Deprecated
-    public static final String MAIN_TAB_ID_PARAMETER = WebActions.MAIN_TAB_ID_PARAMETER;
-
     public static final String DEFAULT_VIEW = "view_documents";
 
     @In(create = true)

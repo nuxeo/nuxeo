@@ -131,7 +131,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
             // probably not a zip file
         } finally {
             if (tempFile != null) {
-                FileUtils.deleteTree(tempFile);
+                org.apache.commons.io.FileUtils.deleteQuietly(tempFile);
             }
         }
 

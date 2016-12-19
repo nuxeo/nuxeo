@@ -553,11 +553,6 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     }
 
     @Override
-    public List<String> getResultLayoutColumns() {
-        return getCurrentResultLayoutColumns();
-    }
-
-    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<String> getCurrentResultLayoutColumns() {
         // always resolve binding if it is set

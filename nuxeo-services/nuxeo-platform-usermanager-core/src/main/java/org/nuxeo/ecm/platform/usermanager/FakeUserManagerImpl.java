@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -438,56 +437,6 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
-    public void createGroup(NuxeoGroup group) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void createPrincipal(NuxeoPrincipal principal) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteGroup(NuxeoGroup group) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deletePrincipal(NuxeoPrincipal principal) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<NuxeoGroup> getAvailableGroups() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<NuxeoPrincipal> getAvailablePrincipals() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public DocumentModel getModelForUser(String name) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void updateGroup(NuxeoGroup group) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void updatePrincipal(NuxeoPrincipal principal) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<String> getAdministratorsGroups() {
         throw new UnsupportedOperationException();
     }
@@ -500,11 +449,6 @@ public class FakeUserManagerImpl implements UserManager {
     @Override
     public Principal authenticate(String name, String password) {
         return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
-    }
-
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
     }
 
     @Override

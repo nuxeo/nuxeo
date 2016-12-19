@@ -674,36 +674,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         ref = new PathRef(parentPath, name);
     }
 
-    protected String oldLockKey(Lock lock) {
-        if (lock == null) {
-            return null;
-        }
-        // return deprecated format, like "someuser:Nov 29, 2010"
-        String lockCreationDate = (lock.getCreated() == null) ? null
-                : DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(lock.getCreated().getTimeInMillis()));
-        return lock.getOwner() + ':' + lockCreationDate;
-    }
-
-    @Override
-    @Deprecated
-    public String getLock() {
-        return oldLockKey(getLockInfo());
-    }
-
     @Override
     public boolean isLocked() {
         return getLockInfo() != null;
-    }
-
-    @Override
-    @Deprecated
-    public void setLock(String key) {
-        setLock();
-    }
-
-    @Override
-    public void unlock() {
-        removeLock();
     }
 
     @Override

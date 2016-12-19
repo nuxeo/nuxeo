@@ -22,6 +22,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+
 import info.simplecloud.core.Group;
 import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
@@ -42,7 +45,7 @@ public class WorkingPostTest extends PostTest {
     protected User getUser() {
         try {
             InputStream in = this.getClass().getResourceAsStream("/user_full.json");
-            String fullUser = org.nuxeo.common.utils.FileUtils.read(in);
+            String fullUser = IOUtils.toString(in, Charsets.UTF_8);
             // String fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
             return new User(fullUser, Resource.ENCODING_JSON);
         } catch (Exception e) {

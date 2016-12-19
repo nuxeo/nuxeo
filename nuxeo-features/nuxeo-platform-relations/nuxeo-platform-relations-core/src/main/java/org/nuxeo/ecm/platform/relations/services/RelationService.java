@@ -20,8 +20,6 @@
  */
 package org.nuxeo.ecm.platform.relations.services;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,12 +38,9 @@ import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.GraphFactory;
-import org.nuxeo.ecm.platform.relations.api.Node;
-import org.nuxeo.ecm.platform.relations.api.QueryResult;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
-import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -389,90 +384,6 @@ public class RelationService extends DefaultComponent implements RelationManager
         } else {
             return adapter.getResourceRepresentation(resource, context);
         }
-    }
-
-    @Override
-    @Deprecated
-    public void add(String graphName, List<Statement> statements) {
-        getGraphByName(graphName).add(statements);
-    }
-
-    @Override
-    @Deprecated
-    public void clear(String graphName) {
-        getGraphByName(graphName).clear();
-    }
-
-    @Override
-    @Deprecated
-    public List<Node> getObjects(String graphName, Node subject, Node predicate) {
-        return getGraphByName(graphName).getObjects(subject, predicate);
-    }
-
-    @Override
-    @Deprecated
-    public List<Node> getPredicates(String graphName, Node subject, Node object) {
-        return getGraphByName(graphName).getPredicates(subject, object);
-    }
-
-    @Override
-    @Deprecated
-    public List<Statement> getStatements(String graphName, Statement statement) {
-        return getGraphByName(graphName).getStatements(statement);
-    }
-
-    @Override
-    @Deprecated
-    public List<Statement> getStatements(String graphName) {
-        return getGraphByName(graphName).getStatements();
-    }
-
-    @Override
-    @Deprecated
-    public List<Node> getSubjects(String graphName, Node predicate, Node object) {
-        return getGraphByName(graphName).getSubjects(predicate, object);
-    }
-
-    @Override
-    @Deprecated
-    public boolean hasResource(String graphName, Resource resource) {
-        return getGraphByName(graphName).hasResource(resource);
-    }
-
-    @Override
-    @Deprecated
-    public boolean hasStatement(String graphName, Statement statement) {
-        return getGraphByName(graphName).hasStatement(statement);
-    }
-
-    @Override
-    @Deprecated
-    public QueryResult query(String graphName, String queryString, String language, String baseURI) {
-        return getGraphByName(graphName).query(queryString, language, baseURI);
-    }
-
-    @Override
-    @Deprecated
-    public boolean read(String graphName, InputStream in, String lang, String base) {
-        return getGraphByName(graphName).read(in, lang, base);
-    }
-
-    @Override
-    @Deprecated
-    public void remove(String graphName, List<Statement> statements) {
-        getGraphByName(graphName).remove(statements);
-    }
-
-    @Override
-    @Deprecated
-    public Long size(String graphName) {
-        return getGraphByName(graphName).size();
-    }
-
-    @Override
-    @Deprecated
-    public boolean write(String graphName, OutputStream out, String lang, String base) {
-        return getGraphByName(graphName).write(out, lang, base);
     }
 
     @Override

@@ -100,7 +100,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
                 }
             }
 
-            String uri = StringUtils.join(items, "/");
+            String uri = String.join("/", items);
             String viewId = docView.getViewId();
             if (viewId != null) {
                 uri += "@" + viewId;

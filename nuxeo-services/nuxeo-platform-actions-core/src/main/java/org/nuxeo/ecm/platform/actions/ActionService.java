@@ -94,21 +94,17 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     /**
      * Return the action registry
-     *
-     * @deprecated since 5.5: use interface methods on ActionManager instead of public methods on ActionService.
      */
-    @Deprecated
-    public final ActionRegistry getActionRegistry() {
+    // used by unit test
+    protected final ActionRegistry getActionRegistry() {
         return actions.getRegistry();
     }
 
     /**
      * Return the action filter registry
-     *
-     * @deprecated since 5.5: use interface methods on ActionManager instead of public methods on ActionService.
      */
-    @Deprecated
-    public final ActionFilterRegistry getFilterRegistry() {
+    // used by unit test
+    protected final ActionFilterRegistry getFilterRegistry() {
         return filters.getRegistry();
     }
 
@@ -266,11 +262,15 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     @Override
+    public ActionFilter getFilter(String filterId) {
+        return getFilterRegistry().getFilter(filterId);
+    }
+
+    @Override
     public boolean checkFilter(String filterId, ActionContext context) {
         final Timer.Context timerContext = filterTimer.time();
         try {
-            ActionFilterRegistry filterReg = getFilterRegistry();
-            ActionFilter filter = filterReg.getFilter(filterId);
+            ActionFilter filter = getFilter(filterId);
             return filter != null && filter.accept(null, context);
         } finally {
             long duration = timerContext.stop();
@@ -315,6 +315,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 log.debug(String.format("Resolving filters %s took: %.2f ms", filterIds, duration / 1000000.0));
             }
         }
+    }
+
+    @Override
+    public void addAction(Action action) {
+        getActionRegistry().addAction(action);
+    }
+
+    @Override
+    public Action removeAction(String actionId) {
+        return getActionRegistry().removeAction(actionId);
     }
 
     @Override

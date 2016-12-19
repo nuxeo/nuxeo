@@ -25,6 +25,6 @@
   <xs:element name="dc_nature_agg" type="nxs:stringList" />
   <xs:element name="dc_subjects_agg" type="nxs:stringList" />
   <xs:element name="dc_coverage_agg" type="nxs:stringList" />
-  <xs:element name="common_size_agg" type="nxs:stringList" />
+  <xs:element name="content_length_agg" type="nxs:stringList" />
 
 </xs:schema>

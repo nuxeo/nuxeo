@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.types.Type;
@@ -309,15 +308,6 @@ public abstract class AbstractFileImporter implements FileImporter {
         if (fileManagerService.doVersioningAfterAdd()) {
             checkIn(doc);
         }
-    }
-
-    /**
-     * @deprecated use {@link #checkIn} instead, noting that it does not save the document
-     */
-    @Deprecated
-    protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager, DocumentModel doc) {
-        doc.putContextData(VersioningService.VERSIONING_OPTION, fileManagerService.getVersioningOption());
-        return documentManager.saveDocument(doc);
     }
 
     protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService)

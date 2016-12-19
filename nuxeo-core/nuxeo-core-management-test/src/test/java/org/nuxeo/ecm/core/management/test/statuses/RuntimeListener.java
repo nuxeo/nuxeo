@@ -42,11 +42,6 @@ public class RuntimeListener implements EventListener {
     }
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         String eventId = event.getId();
         String instanceId = (String) event.getSource();

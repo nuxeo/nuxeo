@@ -29,11 +29,6 @@ public class CacheReloadListener implements EventListener {
     private static final Log log = LogFactory.getLog(CacheReloadListener.class);
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if (!ReloadEventNames.FLUSH_EVENT_ID.equals(event.getId())) {
             return;

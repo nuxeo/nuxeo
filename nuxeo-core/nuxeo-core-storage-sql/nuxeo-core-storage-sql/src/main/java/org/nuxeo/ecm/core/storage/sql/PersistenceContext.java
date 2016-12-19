@@ -1106,7 +1106,7 @@ public class PersistenceContext {
                 path = name;
             }
         } else {
-            path = StringUtils.join(list, "/");
+            path = String.join("/", list);
         }
         return new PathAndId(path, null);
     }

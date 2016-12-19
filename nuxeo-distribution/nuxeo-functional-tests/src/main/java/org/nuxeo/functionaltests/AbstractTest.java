@@ -25,6 +25,10 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -73,11 +77,6 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.collect.ImmutableMap;
-
-import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Base functions for all pages.
@@ -501,6 +500,7 @@ public abstract class AbstractTest {
      * @param currentPage the current page
      * @return the created Workspace page
      * @throws Exception if initializing repository fails
+     * @deprecated since 8.3
      */
     @Deprecated
     protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
@@ -512,6 +512,7 @@ public abstract class AbstractTest {
      *
      * @param currentPage the current page
      * @throws Exception if cleaning repository fails
+     * @deprecated since 8.3
      */
     @Deprecated
     protected void cleanRepository(DocumentBasePage currentPage) throws Exception {

@@ -761,14 +761,14 @@ public class DialectOracle extends Dialect {
                         ftst.getQuotedName(), ftbt.getQuotedName());
                 lines.add(line);
             }
-            properties.put("fulltextTriggerStatements", StringUtils.join(lines, "\n"));
+            properties.put("fulltextTriggerStatements", String.join("\n", lines));
         }
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {
             permsList.add(String.format("  INTO ACLR_PERMISSION VALUES ('%s')", perm));
         }
-        properties.put("readPermissions", StringUtils.join(permsList, "\n"));
+        properties.put("readPermissions", String.join("\n", permsList));
         properties.put("usersSeparator", getUsersSeparator());
         properties.put("everyone", SecurityConstants.EVERYONE);
         return properties;

@@ -115,14 +115,6 @@ public class CoreInstance {
     }
 
     /**
-     * @deprecated since 5.9.3, use {@link #openCoreSession} instead.
-     */
-    @Deprecated
-    public CoreSession open(String repositoryName, Map<String, Serializable> context) {
-        return openCoreSession(repositoryName, getPrincipal(context));
-    }
-
-    /**
      * NOT PUBLIC, DO NOT CALL. Kept public for compatibility with old code.
      * <p>
      * Opens a {@link CoreSession} for the given context.
@@ -230,14 +222,6 @@ public class CoreInstance {
                 }
             }
         }
-    }
-
-    /**
-     * @deprecated since 5.9.3, use {@link CoreSession#close} instead.
-     */
-    @Deprecated
-    public void close(CoreSession session) {
-        session.close(); // calls back closeCoreSession
     }
 
     /**

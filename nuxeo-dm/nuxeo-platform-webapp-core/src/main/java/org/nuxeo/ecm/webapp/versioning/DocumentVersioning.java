@@ -29,7 +29,6 @@ import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
 /**
  * Web action listener interface for versioning.
@@ -58,46 +57,7 @@ public interface DocumentVersioning {
      */
     Map<String, String> getVersioningOptionsMap(final DocumentModel documentModel);
 
-    /**
-     * @deprecated since 5.7.3: available versioning options are resolved by the widget now
-     */
-    @Deprecated
-    Map<String, String> getAvailableVersioningOptionsMap();
-
     String getVersionLabel(DocumentModel document);
-
-    /**
-     * @deprecated since 5.7.3: selected option is not kept on this bean anymore, it's kept by the JSF component behind
-     *             widget definition
-     */
-    @Deprecated
-    String getVersioningOptionInstanceId();
-
-    /**
-     * @deprecated since 5.7.3: rendered clause for available versioning options are resolved by the widget now
-     */
-    @Deprecated
-    boolean factoryForRenderVersioningOption();
-
-    /**
-     * Web action method to set version increment option to the current documentModel.
-     *
-     * @deprecated since 5.7.3: document context map is now filled directly by the widget
-     */
-    @Deprecated
-    void setVersioningOptionInstanceId(String optionId);
-
-    /**
-     * @deprecated since 5.7.3: document context map is now filled directly by the widget
-     */
-    @Deprecated
-    void setVersioningOptionInstanceId(DocumentModel document, String optionId);
-
-    /**
-     * @deprecated since 5.7.3: document context map is now filled directly by the widget
-     */
-    @Deprecated
-    void setVersioningOptionInstanceId(DocumentModel document, VersioningActions option);
 
     /**
      * Versioning increment options - select radio component validator method. Check if an option has been selected.

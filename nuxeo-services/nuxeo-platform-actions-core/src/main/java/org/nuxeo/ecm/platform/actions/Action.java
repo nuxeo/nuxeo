@@ -47,10 +47,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     protected String link = null;
 
-    @Deprecated
-    @XNodeList(value = "link-params/param", type = Class[].class, componentType = Class.class)
-    private Class<?>[] linkParams;
-
     @XNode("@enabled")
     protected Boolean enabled;
 
@@ -273,23 +269,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     /**
-     * @deprecated since 5.6: useless now that EL expressions support parameters
-     */
-    @Deprecated
-    @SuppressWarnings("rawtypes")
-    public Class[] getLinkParams() {
-        return linkParams;
-    }
-
-    /**
-     * @deprecated since 5.6: useless now that EL expressions support parameters
-     */
-    @Deprecated
-    public void setLinkParams(Class<?>[] linkParams) {
-        this.linkParams = linkParams;
-    }
-
-    /**
      * Returns the confirm javascript for this element.
      * <p>
      * Since 5.7.3, fallbacks on properties when link is not set and retrieve it using key "confirm".
@@ -467,9 +446,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         Action clone = new Action();
         clone.id = id;
         clone.link = link;
-        if (linkParams != null) {
-            clone.linkParams = linkParams.clone();
-        }
         clone.enabled = enabled;
         clone.label = label;
         clone.icon = icon;

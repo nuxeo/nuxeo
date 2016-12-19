@@ -53,27 +53,6 @@ public class LayoutRowImpl implements LayoutRow {
     }
 
     /**
-     * @deprecated since 5.5: use {@link #LayoutRowImpl(String, boolean, boolean, List, Map, String)}
-     */
-    @Deprecated
-    public LayoutRowImpl(List<Widget> widgets, Map<String, Serializable> properties) {
-        this.widgets = widgets.toArray(new Widget[0]);
-        this.properties = properties;
-        name = null;
-        selectedByDefault = true;
-        alwaysSelected = false;
-    }
-
-    /**
-     * @deprecated since 5.5: use {@link #LayoutRowImpl(String, boolean, boolean, List, Map, String)}
-     */
-    @Deprecated
-    public LayoutRowImpl(String name, boolean selectedByDefault, boolean alwaysSelected, List<Widget> widgets,
-            Map<String, Serializable> properties) {
-        this(name, selectedByDefault, alwaysSelected, widgets, properties, null);
-    }
-
-    /**
      * @since 5.5
      */
     public LayoutRowImpl(String name, boolean selectedByDefault, boolean alwaysSelected, List<Widget> widgets,

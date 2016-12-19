@@ -42,12 +42,6 @@ public interface Task extends Serializable {
 
     String getId();
 
-    /**
-     * @deprecated
-     * @since 5.8, getTargetDocumentsIds() should be used instead
-     */
-    String getTargetDocumentId();
-
     List<String> getActors();
 
     String getInitiator();
@@ -94,12 +88,6 @@ public interface Task extends Serializable {
     void setActors(List<String> actors);
 
     void setInitiator(String initiator);
-
-    /**
-     * @deprecated
-     * @since 5.8, setTargetDocumentsIds(List<String> ids) should be used instead
-     */
-    void setTargetDocumentId(String targetDocumentId);
 
     void setName(String name);
 

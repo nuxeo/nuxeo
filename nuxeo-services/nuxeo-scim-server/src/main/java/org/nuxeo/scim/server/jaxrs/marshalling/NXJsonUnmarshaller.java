@@ -26,10 +26,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.nuxeo.common.utils.FileUtils;
 
 import com.unboundid.scim.data.BaseResource;
 import com.unboundid.scim.data.ResourceFactory;
@@ -52,7 +53,7 @@ public class NXJsonUnmarshaller extends JsonUnmarshaller {
                     throws InvalidResourceException {
         try {
 
-            String json = FileUtils.read(inputStream);
+            String json = IOUtils.toString(inputStream, Charsets.UTF_8);
             final JSONObject jsonObject = makeCaseInsensitive(new JSONObject(new JSONTokener(json)));
 
             final NXJsonParser parser = new NXJsonParser();

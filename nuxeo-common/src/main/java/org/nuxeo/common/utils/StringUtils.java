@@ -89,70 +89,6 @@ public final class StringUtils {
         return toAscii(s, false);
     }
 
-    /**
-     * Joins the elements of the provided array into a single String containing the provided list of elements.
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.lang.StringUtils#join(Object[])} instead
-     */
-    @Deprecated
-    public static String join(Object[] array) {
-        return org.apache.commons.lang.StringUtils.join(array);
-    }
-
-    /**
-     * Joins the elements of the provided array with an optional separator into a single String containing the provided
-     * list of elements.
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.lang.StringUtils#join(Object[], String)} instead
-     */
-    @Deprecated
-    public static String join(Object[] array, String separator) {
-        return org.apache.commons.lang.StringUtils.join(array, separator);
-    }
-
-    /**
-     * Joins the elements of the provided array with an optional separator into a single String containing the provided
-     * list of elements.
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.lang.StringUtils#join(Object[], char)} instead
-     */
-    @Deprecated
-    public static String join(Object[] array, char separator) {
-        return org.apache.commons.lang.StringUtils.join(array, separator);
-    }
-
-    /**
-     * Joins the elements of the provided {@link List} with an optional separator into a single String containing the
-     * provided elements.
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.lang.StringUtils#join(java.util.Collection, String)} instead
-     */
-    @Deprecated
-    public static String join(List<String> list, String separator) {
-        return org.apache.commons.lang.StringUtils.join(list, separator);
-    }
-
-    /**
-     * Joins the elements of the provided {@link List} into a single String containing the provided elements.
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.lang.StringUtils#join(java.util.Collection, null)} instead
-     */
-    @Deprecated
-    public static String join(List<String> list) {
-        return org.apache.commons.lang.StringUtils.join(list, null);
-    }
-
-    /**
-     * Joins the elements of the provided {@link List} with an optional separator into a single String containing the
-     * provided elements.
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.lang.StringUtils#join(java.util.Collection, char)} instead
-     */
-    @Deprecated
-    public static String join(List<String> list, char separator) {
-        return org.apache.commons.lang.StringUtils.join(list, separator);
-    }
-
     public static String[] split(String str, char delimiter, boolean trim) {
         int s = 0;
         int e = str.indexOf(delimiter, s);
@@ -185,22 +121,6 @@ public final class StringUtils {
         }
 
         return ar.toArray(new String[ar.size()]);
-    }
-
-    /**
-     * Converts a string to a sequence of hexadecimal characters, using a non-obvious encoding (unicode code points with
-     * all leading 0 stripped for each character).
-     *
-     * @deprecated since 5.7, use {@link org.apache.commons.codec.binary.Hex#encodeHexString(byte[])} instead
-     */
-    @Deprecated
-    public static String toHex(String string) {
-        char[] chars = string.toCharArray();
-        StringBuilder buf = new StringBuilder();
-        for (char c : chars) {
-            buf.append(Integer.toHexString(c).toUpperCase());
-        }
-        return buf.toString();
     }
 
     /**

@@ -38,23 +38,8 @@ public class VersioningDocumentAdapter implements VersioningDocument {
     }
 
     @Override
-    public Long getMajorVersion() {
-        return Long.valueOf(getValidVersionNumber(VersioningService.MAJOR_VERSION_PROP));
-    }
-
-    @Override
-    public Long getMinorVersion() {
-        return Long.valueOf(getValidVersionNumber(VersioningService.MINOR_VERSION_PROP));
-    }
-
-    @Override
     public String getVersionLabel() {
         return service.getVersionLabel(doc);
-    }
-
-    private long getValidVersionNumber(String propName) {
-        Object propVal = doc.getPropertyValue(propName);
-        return (propVal == null || !(propVal instanceof Long)) ? 0 : ((Long) propVal).longValue();
     }
 
 }

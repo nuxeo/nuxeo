@@ -177,13 +177,6 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         return ret;
     }
 
-    @Deprecated
-    @Override
-    public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {
-        return getPageProvider(name, desc, null, sortInfos, pageSize, currentPage, properties, parameters);
-    }
-
     @Override
     public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters) {

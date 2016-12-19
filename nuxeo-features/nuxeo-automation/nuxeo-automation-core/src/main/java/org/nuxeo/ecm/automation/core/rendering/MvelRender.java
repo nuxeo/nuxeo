@@ -25,10 +25,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.resource.ResourceService;
@@ -55,7 +56,7 @@ public class MvelRender implements Renderer {
                     throw new OperationException("Rendering resource not found: " + name);
                 }
                 try (InputStream in = url.openStream()) {
-                    content = FileUtils.read(in);
+                    content = IOUtils.toString(in, Charsets.UTF_8);
                 }
                 compiled = TemplateCompiler.compileTemplate(content);
                 cache.put(name, compiled);

@@ -70,9 +70,4 @@ public class TestStringUtils {
         assertTrue(Arrays.equals(new String[] { "", "", "a", "b", "c", "d", "", "" }, ar));
     }
 
-    @Test
-    public void testTodHex() {
-        assertEquals("", StringUtils.toHex(""));
-        assertEquals("746F746F", StringUtils.toHex("toto"));
-    }
 }

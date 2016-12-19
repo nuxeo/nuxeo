@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Descriptor for properties that should not be referenced using value expressions, see
- * {@link WebLayoutManager#referencePropertyAsExpression(String, java.io.Serializable, String, String, String)}
+ * {@link WebLayoutManager#referencePropertyAsExpression(String, Serializable, String, String, String, String)}
  *
  * @since 5.6
  */

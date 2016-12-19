@@ -21,6 +21,12 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,8 +36,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -69,7 +73,7 @@ public class TestUserService extends NXRuntimeTestCase {
         assertEquals("somedir", fum.userDirectoryName);
         assertEquals("mail", fum.userEmailField);
         // append mode:
-        assertEquals(new HashSet<String>(Arrays.asList("first", "last", "username", "firstName", "lastName", "email")),
+        assertEquals(new HashSet<>(Arrays.asList("first", "last", "username", "firstName", "lastName", "email")),
                 fum.getUserSearchFields());
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("username"));
         assertEquals(MatchType.SUBSTRING, fum.userSearchFields.get("firstName"));

@@ -56,26 +56,6 @@ public interface ContentHistoryActions extends Serializable {
 
     Map<Long, LinkedDocument> computeLogEntrieslinkedDocs();
 
-    /**
-     * Returns the log comment.
-     * <p>
-     * This log may be filled automatically when dealing with copy/paste/move log entries.
-     *
-     * @Deprecated This now handled by the PageProvider
-     */
-    @Deprecated
-    String getLogComment(LogEntry entry);
-
-    /**
-     * Returns the log linked document.
-     * <p>
-     * The linked document is resolved from the log original comment, when dealing with copy/paste/move log entries.
-     *
-     * @Deprecated This now handled by the PageProvider
-     */
-    @Deprecated
-    LinkedDocument getLogLinkedDocument(LogEntry entry);
-
     String doSearch();
 
     SortInfo getSortInfo();

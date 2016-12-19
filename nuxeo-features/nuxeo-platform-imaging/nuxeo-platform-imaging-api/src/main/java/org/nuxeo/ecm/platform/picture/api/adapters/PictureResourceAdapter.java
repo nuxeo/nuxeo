@@ -32,14 +32,6 @@ public interface PictureResourceAdapter {
     void setDocumentModel(DocumentModel doc);
 
     /**
-     * @deprecated since 5.7. Use
-     *             {@link #fillPictureViews(org.nuxeo.ecm.core.api.Blob, String, String, java.util.ArrayList)} instead.
-     */
-    @Deprecated
-    boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException;
-
-    /**
      * Fill this Picture views using the given {@code pictureConversions} and {@code blob} to compute the picture views.
      * <p>
      * The {@code blob} is converted to fit the defined {@code pictureConversions}.

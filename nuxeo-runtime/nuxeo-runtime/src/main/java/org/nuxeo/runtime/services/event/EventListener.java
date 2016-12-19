@@ -24,16 +24,6 @@ package org.nuxeo.runtime.services.event;
 public interface EventListener {
 
     /**
-     * Notified about an event about to be processed. Returns false to cancel the event.
-     *
-     * @param event the event
-     * @return false to cancel the event or true otherwise
-     * @deprecated since 5.7 (unused)
-     */
-    @Deprecated
-    boolean aboutToHandleEvent(Event event);
-
-    /**
      * An event was received.
      */
     void handleEvent(Event event);

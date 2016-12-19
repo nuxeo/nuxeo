@@ -27,8 +27,6 @@ public class TaskConstants {
 
     public static final String TASK_INITIATOR_PROPERTY_NAME = "nt:initiator";
 
-    public static final String TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME = "nt:targetDocumentId";
-
     public static final String TASK_DESCRIPTION_PROPERTY_NAME = "dublincore:description";
 
     public static final String TASK_DIRECTIVE_PROPERTY_NAME = "nt:directive";

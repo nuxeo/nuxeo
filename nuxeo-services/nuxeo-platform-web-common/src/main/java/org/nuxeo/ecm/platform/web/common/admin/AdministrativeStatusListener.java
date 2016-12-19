@@ -42,11 +42,6 @@ public class AdministrativeStatusListener implements EventListener {
 
     protected static String localInstanceId;
 
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
     protected static String getLocalInstanceId() {
         if (localInstanceId == null) {
             GlobalAdministrativeStatusManager gasm = Framework.getLocalService(GlobalAdministrativeStatusManager.class);

@@ -70,7 +70,7 @@ public class TestDocumentModelReader {
 
     @Test
     public void ICanReadADocModelFromJson() throws Exception {
-        String json = "{\"ecm:versionLabel\":\"0.0\",\"common:icon-expanded\":null,\"common:size\":null,"
+        String json = "{\"ecm:versionLabel\":\"0.0\",\"common:icon-expanded\":null,"
                 + "\"ecm:currentLifeCycleState\":\"project\",\"ecm:changeToken\":null,\"ecm:uuid\":\"56ca3935-c6c9-4cd4-ac23-d9df5ebf340a\","
                 + "\"dc:nature\":\"Nature0\",\"dc:created\":null,\"relatedtext:relatedtextresources\":[],\"dc:description\":null,"
                 + "\"dc:rights\":\"Rights0\",\"file:content\":null,\"uid:uid\":null,\"files:files\":[],"

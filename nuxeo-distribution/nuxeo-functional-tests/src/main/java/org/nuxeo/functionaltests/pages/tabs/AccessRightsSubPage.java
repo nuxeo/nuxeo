@@ -103,7 +103,7 @@ public class AccessRightsSubPage extends AbstractPage {
     }
 
     /**
-     * @deprecated use {@link #grantPermissionForUser} unless negative ACL are enabled.
+     * @deprecated since 6.0 use {@link #grantPermissionForUser} unless negative ACL are enabled.
      */
     @Deprecated
     public AccessRightsSubPage addPermissionForUser(String username, String permission, boolean grant) {

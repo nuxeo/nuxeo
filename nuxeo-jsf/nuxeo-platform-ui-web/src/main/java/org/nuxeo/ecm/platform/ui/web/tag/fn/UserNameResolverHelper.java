@@ -126,11 +126,6 @@ public class UserNameResolverHelper implements EventListener {
     }
 
     @Override
-    public boolean aboutToHandleEvent(Event arg0) {
-        return true;
-    }
-
-    @Override
     public void handleEvent(Event event) {
         if ("user_changed".equals(event.getId())) {
             String userName = (String) event.getData();

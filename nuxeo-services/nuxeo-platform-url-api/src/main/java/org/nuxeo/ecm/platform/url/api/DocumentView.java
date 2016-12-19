@@ -64,10 +64,4 @@ public interface DocumentView {
 
     void setSubURI(String subURI);
 
-    /**
-     * @deprecated should use the parameters map for the tab identifier.
-     */
-    @Deprecated
-    String getTabId();
-
 }

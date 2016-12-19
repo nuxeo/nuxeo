@@ -103,14 +103,6 @@ public interface NotificationManager {
     void removeSubscription(String username, String notification, DocumentModel doc);
 
     /**
-     * Returns the notification manager.
-     *
-     * @deprecated should never have to return the registry : use delegation
-     */
-    @Deprecated
-    NotificationRegistry getNotificationRegistry();
-
-    /**
      * Returns a notification with all data loaded (label, etc).
      */
     Notification getNotificationByName(String selectedNotification);

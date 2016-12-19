@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  */
-
 package org.nuxeo.runtime.test;
 
 import static org.junit.Assert.assertEquals;
@@ -59,6 +58,7 @@ import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
@@ -185,7 +185,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      */
     @Override
     public void fireFrameworkStarted() throws Exception {
-        boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback() && TransactionHelper.startTransaction();
+        boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback()
+                && TransactionHelper.startTransaction();
         boolean txFinished = false;
         try {
             osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
@@ -232,8 +233,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 if (System.getProperties().remove("nuxeo.home") != null) {
                     log.warn("Removed System property nuxeo.home.");
                 }
-                workingDir = File.createTempFile("nxruntime-" + Thread.currentThread().getName() + "-", null, new File(
-                        "target"));
+                workingDir = File.createTempFile("nxruntime-" + Thread.currentThread().getName() + "-", null,
+                        new File("target"));
                 workingDir.delete();
             }
         } catch (IOException e) {
@@ -268,16 +269,14 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     public static URL[] introspectClasspath(ClassLoader loader) {
-        return new FastClasspathScanner().getUniqueClasspathElements().stream()
-                .map(file -> {
-                    try {
-                        return file.toURI().toURL();
-                    } catch (MalformedURLException cause) {
-                        throw new Error("Could not get URL from " + file, cause);
-                    }
-                }).toArray(URL[]::new);
-     }
-
+        return new FastClasspathScanner().getUniqueClasspathElements().stream().map(file -> {
+            try {
+                return file.toURI().toURL();
+            } catch (MalformedURLException cause) {
+                throw new Error("Could not get URL from " + file, cause);
+            }
+        }).toArray(URL[]::new);
+    }
 
     protected void initUrls() throws Exception {
         ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
@@ -332,15 +331,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return loader.getResource(name);
     }
 
-    /**
-     * @deprecated use <code>deployContrib()</code> instead
-     */
-    @Override
-    @Deprecated
-    public void deploy(String contrib) {
-        deployContrib(contrib);
-    }
-
     protected void deployContrib(URL url) {
         assertEquals(runtime, Framework.getRuntime());
         log.info("Deploying contribution from " + url.toString());
@@ -349,23 +339,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         } catch (Exception e) {
             fail("Failed to deploy contrib " + url.toString());
         }
-    }
-
-    /**
-     * Deploys a contribution file by looking for it in the class loader.
-     * <p>
-     * The first contribution file found by the class loader will be used. You have no guarantee in case of name
-     * collisions.
-     *
-     * @deprecated use the less ambiguous {@link #deployContrib(String, String)}
-     * @param contrib the relative path to the contribution file
-     */
-    @Override
-    @Deprecated
-    public void deployContrib(String contrib) {
-        URL url = getResource(contrib);
-        assertNotNull("Test contribution not found: " + contrib, url);
-        deployContrib(url);
     }
 
     /**
@@ -423,30 +396,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
         ctx.deploy(contrib);
         return ctx;
-    }
-
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Override
-    @Deprecated
-    public void undeploy(String contrib) {
-        undeployContrib(contrib);
-    }
-
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Override
-    @Deprecated
-    public void undeployContrib(String contrib) {
-        URL url = getResource(contrib);
-        assertNotNull("Test contribution not found: " + contrib, url);
-        try {
-            runtime.getContext().undeploy(url);
-        } catch (Exception e) {
-            fail("Failed to undeploy contrib " + url.toString());
-        }
     }
 
     /**
@@ -574,25 +523,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 return bundleFile;
             }
         }
-        log.warn(String.format("No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme",
-                bundleName));
-        return oldLookupBundle(bundleName);
-    }
-
-    @Deprecated
-    protected BundleFile oldLookupBundle(String bundle) throws Exception {
-        URL url = lookupBundleUrl(bundle);
-        File file = new File(url.toURI());
-        BundleFile bundleFile;
-        if (file.isDirectory()) {
-            bundleFile = new DirectoryBundleFile(file);
-        } else {
-            bundleFile = new JarBundleFile(file);
-        }
-        log.warn(String.format(
-                "URL-based bundle lookup is deprecated. Please use the symbolic name from MANIFEST (%s) instead",
-                readSymbolicName(bundleFile)));
-        return bundleFile;
+        throw new RuntimeServiceException(String.format("No bundle with symbolic name '%s';", bundleName));
     }
 
     @Override

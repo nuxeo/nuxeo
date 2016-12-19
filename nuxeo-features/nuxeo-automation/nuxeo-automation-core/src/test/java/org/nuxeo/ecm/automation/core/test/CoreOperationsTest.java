@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
 import org.nuxeo.ecm.automation.core.operations.RunScript;
-import org.nuxeo.ecm.automation.core.operations.RunScriptFile;
 import org.nuxeo.ecm.automation.core.operations.SetVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
@@ -159,25 +157,6 @@ public class CoreOperationsTest {
         service.run(ctx, chain);
         String title = src.getProperty("dc:title").getValue(String.class);
         assertThat(title, is("modified from mvel"));
-    }
-
-    /*
-     * This test is not enabled for now since the operation is disabled until fully implemented Enable this test when
-     * the operation will be enabled.
-     */
-    @Ignore
-    @Test
-    public void testScriptFileOperation() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(RunScriptFile.ID).set("script", CoreOperationsTest.class.getResource("/test-script.mvel"));
-
-        String oldTitle = src.getTitle();
-        service.run(ctx, chain);
-        assertEquals(oldTitle, ctx.get("script_title"));
-        assertEquals("modified title", src.getPropertyValue("dc:title"));
     }
 
     /**

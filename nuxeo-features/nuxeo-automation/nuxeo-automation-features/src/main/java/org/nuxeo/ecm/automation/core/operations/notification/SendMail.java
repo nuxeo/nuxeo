@@ -29,10 +29,11 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -149,8 +150,9 @@ public class SendMail {
             if (url == null) {
                 throw new OperationException("No such mail template: " + name);
             }
-            InputStream in = url.openStream();
-            return FileUtils.read(in);
+            try (InputStream in = url.openStream()) {
+                return IOUtils.toString(in, Charsets.UTF_8);
+            }
         } else {
             return StringEscapeUtils.unescapeHtml(message);
         }

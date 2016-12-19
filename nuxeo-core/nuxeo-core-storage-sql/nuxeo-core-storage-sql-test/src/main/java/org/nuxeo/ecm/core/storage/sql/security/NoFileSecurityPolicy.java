@@ -49,12 +49,12 @@ public class NoFileSecurityPolicy extends AbstractSecurityPolicy implements Secu
     }
 
     @Override
-    public boolean isExpressibleInQuery() {
+    public boolean isExpressibleInQuery(String repositoryName) {
         return false;
     }
 
     @Override
-    public Transformer getQueryTransformer() {
+    public Transformer getQueryTransformer(String repositoryName) {
         throw new UnsupportedOperationException();
     }
 

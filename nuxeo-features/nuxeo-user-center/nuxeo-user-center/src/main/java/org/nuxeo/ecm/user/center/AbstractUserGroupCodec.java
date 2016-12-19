@@ -115,7 +115,7 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
             if (viewId != null) {
                 items.add(viewId);
             }
-            String uri = StringUtils.join(items, "/");
+            String uri = String.join("/", items);
             Map<String, String> parameters = docView.getParameters();
             if (parameters == null) {
                 parameters = new HashMap<>();

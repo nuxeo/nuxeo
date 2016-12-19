@@ -30,42 +30,6 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
     String OLD_THEME_CONFIGURATION_PROPERTY = "theme.useOldLocalConfiguration";
 
     /**
-     * Returns the configured theme.
-     */
-    @Deprecated
-    String getTheme();
-
-    /**
-     * Returns the configured page for the selected theme.
-     */
-    @Deprecated
-    String getPage();
-
-    /**
-     * Returns the configured perspective used in the {@code LocalPerspective} negociation scheme.
-     */
-    @Deprecated
-    String getPerspective();
-
-    /**
-     * Returns the configured engine.
-     */
-    @Deprecated
-    String getEngine();
-
-    /**
-     * Returns the configured mode.
-     */
-    @Deprecated
-    String getMode();
-
-    /**
-     * Returns the page path used in the {@code LocalTheme} negotiation scheme
-     */
-    @Deprecated
-    String computePagePath();
-
-    /**
      * Returns the flavor (collection) to use for current page
      *
      * @since 5.5

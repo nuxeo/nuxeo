@@ -25,10 +25,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 
 /**
@@ -58,8 +59,9 @@ public class TestInlineURLs {
 
     @Test
     public void canRead() throws IOException {
-        InputStream stream = inlineURL.openStream();
-        String inlinedContent = FileUtils.read(stream);
-        assertThat(inlinedContent, equalTo(info));
+        try (InputStream stream = inlineURL.openStream()) {
+            String inlinedContent = IOUtils.toString(stream, Charsets.UTF_8);
+            assertThat(inlinedContent, equalTo(info));
+        }
     }
 }

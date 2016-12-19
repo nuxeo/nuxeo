@@ -40,20 +40,7 @@ public class BuiltinModes {
 
     public static final String SEARCH = "search";
 
-    /**
-     * @deprecated: use {@link #VIEW} instead
-     */
-    @Deprecated
-    public static final String LISTING = "listing";
-
     public static final String SUMMARY = "summary";
-
-    /**
-     * @deprecated: use {@link #VIEW} instead
-     * @since 5.4.2
-     */
-    @Deprecated
-    protected static final String HEADER = "header";
 
     /**
      * @since 5.4.2
@@ -105,8 +92,7 @@ public class BuiltinModes {
         if (layoutMode != null) {
             if (isBoundToEditMode(layoutMode)) {
                 return BuiltinWidgetModes.EDIT;
-            } else if (layoutMode.startsWith(VIEW) || layoutMode.startsWith(SUMMARY) || layoutMode.startsWith(LISTING)
-                    || layoutMode.startsWith(HEADER)) {
+            } else if (layoutMode.startsWith(VIEW) || layoutMode.startsWith(SUMMARY)) {
                 return BuiltinWidgetModes.VIEW;
             } else if (layoutMode.startsWith(CSV)) {
                 return BuiltinWidgetModes.CSV;

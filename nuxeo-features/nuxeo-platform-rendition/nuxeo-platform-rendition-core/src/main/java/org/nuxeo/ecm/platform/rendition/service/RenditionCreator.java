@@ -113,7 +113,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         DocumentModel rendition = createRenditionDocument(sourceDocument);
         removeBlobs(rendition);
         updateMainBlob(rendition);
-        updateIconAndSizeFields(rendition);
+        updateIconField(rendition);
 
         // create a copy of the doc
         if (rendition.getId() == null) {
@@ -222,7 +222,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         bh.setBlob(renditionBlob);
     }
 
-    private void updateIconAndSizeFields(DocumentModel rendition) {
+    private void updateIconField(DocumentModel rendition) {
         if (!rendition.hasSchema("common")) {
             return;
         }
@@ -237,7 +237,6 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         if (mimetypeEntry != null && mimetypeEntry.getIconPath() != null) {
             rendition.setPropertyValue("common:icon", "/icons/" + mimetypeEntry.getIconPath());
         }
-        rendition.setPropertyValue("common:size", renditionBlob.getLength());
     }
 
     protected void setCorrectVersion(DocumentModel rendition, DocumentModel versionDocument) {

@@ -37,7 +37,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -91,14 +90,6 @@ public class StartupHelper implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    /**
-     * @deprecated since 5.6: use {@link RestHelper#setLocaleString(String)} instead of
-     *             {@link LocaleSelector#setLocaleString(String)}
-     */
-    @In(create = true)
-    @Deprecated
-    protected transient LocaleSelector localeSelector;
 
     @In(create = true)
     protected transient RestHelper restHelper;

@@ -74,7 +74,6 @@ public class TestSQLRepositoryLocking {
 
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         doc = session.createDocument(doc);
-        assertNull(doc.getLock()); // old
         assertNull(doc.getLockInfo());
         assertFalse(doc.isLocked());
         session.save();
@@ -86,7 +85,6 @@ public class TestSQLRepositoryLocking {
 
         assertEquals(ADMINISTRATOR, doc.getLockInfo().getOwner());
         assertNotNull(doc.getLockInfo().getCreated());
-        assertTrue(doc.getLock().startsWith(ADMINISTRATOR + ':')); // old
         assertTrue(doc.isLocked());
 
         nextTransaction();
@@ -95,7 +93,6 @@ public class TestSQLRepositoryLocking {
 
         assertEquals(ADMINISTRATOR, doc.getLockInfo().getOwner());
         assertNotNull(doc.getLockInfo().getCreated());
-        assertTrue(doc.getLock().startsWith(ADMINISTRATOR + ':')); // old
         assertTrue(doc.isLocked());
 
         nextTransaction();

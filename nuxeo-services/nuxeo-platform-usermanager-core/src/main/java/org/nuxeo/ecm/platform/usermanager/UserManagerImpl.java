@@ -939,90 +939,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
-    public void createGroup(NuxeoGroup group) {
-        DocumentModel newGroupModel = getBareGroupModel();
-        newGroupModel.setProperty(groupSchemaName, groupIdField, group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupLabelField, group.getLabel());
-        newGroupModel.setProperty(groupSchemaName, groupMembersField, group.getMemberUsers());
-        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField, group.getMemberGroups());
-        createGroup(newGroupModel);
-    }
-
-    @Override
-    public void createPrincipal(NuxeoPrincipal principal) {
-        createUser(principal.getModel());
-    }
-
-    @Override
-    public void deleteGroup(NuxeoGroup group) {
-        deleteGroup(group.getName());
-    }
-
-    @Override
-    public void deletePrincipal(NuxeoPrincipal principal) {
-        deleteUser(principal.getName());
-    }
-
-    @Override
-    public List<NuxeoGroup> getAvailableGroups() {
-        DocumentModelList groupModels = searchGroups(Collections.<String, Serializable> emptyMap(), null);
-        List<NuxeoGroup> groups = new ArrayList<>(groupModels.size());
-        for (DocumentModel groupModel : groupModels) {
-            groups.add(makeGroup(groupModel));
-        }
-        return groups;
-    }
-
-    @Override
-    public List<NuxeoPrincipal> getAvailablePrincipals() {
-        DocumentModelList userModels = searchUsers(Collections.<String, Serializable> emptyMap(), null);
-        List<NuxeoPrincipal> users = new ArrayList<>(userModels.size());
-        for (DocumentModel userModel : userModels) {
-            users.add(makePrincipal(userModel));
-        }
-        return users;
-    }
-
-    @Override
-    public DocumentModel getModelForUser(String name) {
-        return getUserModel(name);
-    }
-
-    @Override
-    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern) {
-        try (Session userDir = dirService.open(userDirectoryName)) {
-            removeVirtualFilters(filter);
-
-            DocumentModelList entries = userDir.query(filter, pattern);
-            List<NuxeoPrincipal> principals = new ArrayList<>(entries.size());
-            for (DocumentModel entry : entries) {
-                principals.add(makePrincipal(entry));
-            }
-            if (isAnonymousMatching(filter, pattern)) {
-                principals.add(makeAnonymousPrincipal());
-            }
-            return principals;
-        }
-    }
-
-    @Override
-    public void updateGroup(NuxeoGroup group) {
-        // XXX: need to refetch it for tests to pass, i don't get why (session
-        // id is used maybe?)
-        DocumentModel newGroupModel = getGroupModel(group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupIdField, group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupLabelField, group.getLabel());
-        newGroupModel.setProperty(groupSchemaName, groupMembersField, group.getMemberUsers());
-        newGroupModel.setProperty(groupSchemaName, groupSubGroupsField, group.getMemberGroups());
-        updateGroup(newGroupModel);
-    }
-
-    @Override
-    public void updatePrincipal(NuxeoPrincipal principal) {
-        updateUser(principal.getModel());
-    }
-
-    @Override
     public List<String> getAdministratorsGroups() {
         return administratorGroups;
     }
@@ -1492,11 +1408,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             }
         }
         return usernames.toArray(new String[usernames.size()]);
-    }
-
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
     }
 
     @Override

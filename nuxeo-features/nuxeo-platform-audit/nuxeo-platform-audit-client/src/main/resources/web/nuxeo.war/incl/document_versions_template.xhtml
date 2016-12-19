@@ -53,7 +53,7 @@
                   <tr>
                     <td>
                       <nxu:set var="actions"
-                        value="#{webActions.getUnfiltredActionsList('CURRENT_VERSION_SELECTION_LIST')}"
+                        value="#{webActions.getActionsList('CURRENT_VERSION_SELECTION_LIST', false)}"
                         cache="true"
                         useAlias="true">
                         <c:forEach var="sel_action" items="#{actions}">
