@@ -102,7 +102,6 @@ public abstract class SimpleTemplateDocTestCase {
         List<Map<String, Serializable>> blobs = new ArrayList<>();
         Map<String, Serializable> blob1 = new HashMap<>();
         blob1.put("file", (Serializable) imgBlob);
-        blob1.put("filename", "android.jpg");
         blobs.add(blob1);
         testDoc.setPropertyValue("files:files", (Serializable) blobs);
 

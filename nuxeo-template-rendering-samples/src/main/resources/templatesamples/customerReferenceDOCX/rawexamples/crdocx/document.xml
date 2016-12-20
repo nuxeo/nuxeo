@@ -74,7 +74,6 @@
       <data>45ae8242.blob</data>
       <digest>816946925963010b79fcd875037c537b</digest>
     </file:content>
-    <file:filename><![CDATA[450px-SWFC3600ppx4.jpg]]></file:filename>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
     <relatedtext:relatedtextresources/>

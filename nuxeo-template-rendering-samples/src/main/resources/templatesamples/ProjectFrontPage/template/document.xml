@@ -56,7 +56,6 @@
       <data>bf065d4e.blob</data>
       <digest>7e69d4f54e9b3784a1a51602fb4328a1</digest>
     </file:content>
-    <file:filename><![CDATA[ProjectFrontPage.odt]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

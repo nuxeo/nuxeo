@@ -55,7 +55,6 @@
       <filename>MetaData.xls</filename>
       <data>MetaData.xls</data>
     </file:content>
-    <file:filename><![CDATA[MetaData.xls]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

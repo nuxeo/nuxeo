@@ -55,7 +55,6 @@
           <data>8169224b.blob</data>
           <digest>fcbd2a73a21c9b72a6045f3968efe88b</digest>
         </file>
-        <filename><![CDATA[dyn-deploy.png]]></filename>
       </item>
       <item>
         <file>
@@ -65,7 +64,6 @@
           <data>498cc2ad.blob</data>
           <digest>87f7d28e296fa506d16540f8dc3ee5db</digest>
         </file>
-        <filename><![CDATA[app-lifecycle.png]]></filename>
       </item>
       <item>
         <file>
@@ -75,7 +73,6 @@
           <data>a78abb3f.blob</data>
           <digest>daa49ffc822656c392e69cc0354a3d34</digest>
         </file>
-        <filename><![CDATA[2012_RM.png]]></filename>
       </item>
       <item>
         <file>
@@ -85,7 +82,6 @@
           <data>d6ba49d7.blob</data>
           <digest>1af1916280962994afb450c6d1cb45e2</digest>
         </file>
-        <filename><![CDATA[RM_Check.png]]></filename>
       </item>
       <item>
         <file>
@@ -95,7 +91,6 @@
           <data>5b9a7457.blob</data>
           <digest>d432807b0c35336fe7b17a5c40f34b83</digest>
         </file>
-        <filename><![CDATA[app-factory.png]]></filename>
       </item>
       <item>
         <file>
@@ -105,7 +100,6 @@
           <data>77940371.blob</data>
           <digest>7b05a16b0dc8aae3ea0a062c42ae4d22</digest>
         </file>
-        <filename><![CDATA[NCC.png]]></filename>
       </item>
       <item>
         <file>
@@ -115,7 +109,6 @@
           <data>4bc73ada.blob</data>
           <digest>87a352b212ea3683dbd0998fa4ad549c</digest>
         </file>
-        <filename><![CDATA[Drive.png]]></filename>
       </item>
       <item>
         <file>
@@ -125,7 +118,6 @@
           <data>9e07cc9.blob</data>
           <digest>061d1474e83ca0f82b595de9e15c6689</digest>
         </file>
-        <filename><![CDATA[IDE.png]]></filename>
       </item>
       <item>
         <file>
@@ -135,7 +127,6 @@
           <data>b7345e68.blob</data>
           <digest>2b0b005934db06e6e66788f7584a181e</digest>
         </file>
-        <filename><![CDATA[Mobile.png]]></filename>
       </item>
       <item>
         <file>
@@ -145,7 +136,6 @@
           <data>667c17d7.blob</data>
           <digest>70dccb1a352b97d7b8972bdc8bb1b141</digest>
         </file>
-        <filename><![CDATA[livedit.png]]></filename>
       </item>
       <item>
         <file>
@@ -155,7 +145,6 @@
           <data>15a4743b.blob</data>
           <digest>63004e83cd3f6b664cc858d9e5426c94</digest>
         </file>
-        <filename><![CDATA[app-flavors.png]]></filename>
       </item>
       <item>
         <file>
@@ -165,7 +154,6 @@
           <data>a4eb9d90.blob</data>
           <digest>63e767f68c1564c984f7f312af03fd18</digest>
         </file>
-        <filename><![CDATA[long-road.jpg]]></filename>
       </item>
       <item>
         <file>
@@ -175,7 +163,6 @@
           <data>f51d2cf1.blob</data>
           <digest>a1a47605a304bd00786b00968d569924</digest>
         </file>
-        <filename><![CDATA[redis.png]]></filename>
       </item>
       <item>
         <file>
@@ -185,7 +172,6 @@
           <data>ec6d90e1.blob</data>
           <digest>758eb01846135e7477e674ca7312d290</digest>
         </file>
-        <filename><![CDATA[xsd.jpg]]></filename>
       </item>
       <item>
         <file>
@@ -195,7 +181,6 @@
           <data>29ffd4e1.blob</data>
           <digest>8957f16ac7a2e87dfa7c00bb2139f513</digest>
         </file>
-        <filename><![CDATA[layout_validation.png]]></filename>
       </item>
       <item>
         <file>
@@ -205,7 +190,6 @@
           <data>b1eecdaa.blob</data>
           <digest>8e58aacecd4d53eae47b49913c0e67a3</digest>
         </file>
-        <filename><![CDATA[rfwicket.png]]></filename>
       </item>
       <item>
         <file>
@@ -215,7 +199,6 @@
           <data>78854a44.blob</data>
           <digest>17197c4fe71301db517ca896b8e5c6cd</digest>
         </file>
-        <filename><![CDATA[gift.png]]></filename>
       </item>
       <item>
         <file>
@@ -225,7 +208,6 @@
           <data>5791b16e.blob</data>
           <digest>da18a8d8122c3b285520a48d5db0e685</digest>
         </file>
-        <filename><![CDATA[nuxeo-forge.png]]></filename>
       </item>
       <item>
         <file>
@@ -235,7 +217,6 @@
           <data>de7f99bb.blob</data>
           <digest>adf6897d167ac001775fa71ea0e79060</digest>
         </file>
-        <filename><![CDATA[studio_features_1.png]]></filename>
       </item>
       <item>
         <file>
@@ -245,7 +226,6 @@
           <data>a110a79c.blob</data>
           <digest>ddeca86076bf333860ecfc3dea4f3842</digest>
         </file>
-        <filename><![CDATA[routeandgraph.png]]></filename>
       </item>
       <item>
         <file>
@@ -255,7 +235,6 @@
           <data>190c78ff.blob</data>
           <digest>9939edd06db17be814713793f8b14e8d</digest>
         </file>
-        <filename><![CDATA[LocalStorage.png]]></filename>
       </item>
       <item>
         <file>
@@ -265,7 +244,6 @@
           <data>f560899a.blob</data>
           <digest>4538f49c977fe27a56c838cccfb6cd5f</digest>
         </file>
-        <filename><![CDATA[building-blocks.png]]></filename>
       </item>
       <item>
         <file>
@@ -275,7 +253,6 @@
           <data>7aa050b7.blob</data>
           <digest>1d037931cff6efa1b6a1b7dca35db99d</digest>
         </file>
-        <filename><![CDATA[2Players.png]]></filename>
       </item>
       <item>
         <file>
@@ -285,7 +262,6 @@
           <data>6a2662f5.blob</data>
           <digest>80ec1301669b596ddfe2880bbc0d207d</digest>
         </file>
-        <filename><![CDATA[loading.png]]></filename>
       </item>
       <item>
         <file>
@@ -295,7 +271,6 @@
           <data>7fdbc1c6.blob</data>
           <digest>da9db5bcecb71f6cd8c4af6be55e0bfc</digest>
         </file>
-        <filename><![CDATA[app-builder.png]]></filename>
       </item>
       <item>
         <file>
@@ -305,7 +280,6 @@
           <data>3c2ae464.blob</data>
           <digest>1e9002c8a9b5235b3cc47a1799997028</digest>
         </file>
-        <filename><![CDATA[nuxeo-build.png]]></filename>
       </item>
       <item>
         <file>
@@ -315,7 +289,6 @@
           <data>1e205f98.blob</data>
           <digest>2a9846594d30af562f542b913e43a565</digest>
         </file>
-        <filename><![CDATA[Graph.png]]></filename>
       </item>
       <item>
         <file>
@@ -325,7 +298,6 @@
           <data>670eb48c.blob</data>
           <digest>668ec64d60868e1f75cfc08a13bba370</digest>
         </file>
-        <filename><![CDATA[Stanbol-solr.png]]></filename>
       </item>
       <item>
         <file>
@@ -335,7 +307,6 @@
           <data>7c840832.blob</data>
           <digest>552051112259e0183daa0395cff255f1</digest>
         </file>
-        <filename><![CDATA[correspondence.png]]></filename>
       </item>
       <item>
         <file>
@@ -345,7 +316,6 @@
           <data>d0a2eb92.blob</data>
           <digest>46ee6681ad1fd21160daa0cfe6a45ced</digest>
         </file>
-        <filename><![CDATA[dam.png]]></filename>
       </item>
       <item>
         <file>
@@ -355,7 +325,6 @@
           <data>ad9ca40c.blob</data>
           <digest>8f85eba1c0d9935a39be830ef8dd5c23</digest>
         </file>
-        <filename><![CDATA[Nuxeo-CMF-wheel.png]]></filename>
       </item>
       <item>
         <file>
@@ -365,7 +334,6 @@
           <data>b4a3ef0b.blob</data>
           <digest>f4d87e8973894948f1db1a60c218755a</digest>
         </file>
-        <filename><![CDATA[SC-DM-DAM.png]]></filename>
       </item>
       <item>
         <file>
@@ -375,7 +343,6 @@
           <data>46fc7b08.blob</data>
           <digest>601eb848cdb4b5ddd2faf631c2bba194</digest>
         </file>
-        <filename><![CDATA[git-branch.png]]></filename>
       </item>
       <item>
         <file>
@@ -385,7 +352,6 @@
           <data>bff0a5d1.blob</data>
           <digest>22ec3e33bc03a9cc47c98370971f1b56</digest>
         </file>
-        <filename><![CDATA[cloud.png]]></filename>
       </item>
       <item>
         <file>
@@ -395,7 +361,6 @@
           <data>77ce80fd.blob</data>
           <digest>491276f3c9eb73c97e19ae2b364ec136</digest>
         </file>
-        <filename><![CDATA[Repo.png]]></filename>
       </item>
       <item>
         <file>

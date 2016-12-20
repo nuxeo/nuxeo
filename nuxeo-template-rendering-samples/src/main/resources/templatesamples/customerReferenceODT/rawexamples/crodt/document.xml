@@ -79,7 +79,6 @@
       <data>80b604c9.blob</data>
       <digest>b400708f06982bd9d3e43e7b628a9a5b</digest>
     </file:content>
-    <file:filename><![CDATA[Capture d’écran 2012-06-21 à 17.07.55.png]]></file:filename>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
     <relatedtext:relatedtextresources/>

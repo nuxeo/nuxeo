@@ -55,7 +55,6 @@
           <data>ef55d755.blob</data>
           <digest>63f2a2897c66ae5cc0cee6afedb90ea4</digest>
         </file>
-        <filename><![CDATA[nuxeo-theme-world-2012.css]]></filename>
       </item>
       <item>
         <file>
@@ -65,7 +64,6 @@
           <data>7cd9bcb9.blob</data>
           <digest>8d37c44089b5bd5531bfbfd3e8b49735</digest>
         </file>
-        <filename><![CDATA[nuxeo-transition.css]]></filename>
       </item>
       <item>
         <file>
@@ -75,7 +73,6 @@
           <data>eea5996f.blob</data>
           <digest>bb5e7d0a0e76c3da5a0cd6fc2d3dc387</digest>
         </file>
-        <filename><![CDATA[nxworld.png]]></filename>
       </item>
       <item>
         <file>
@@ -85,7 +82,6 @@
           <data>1a097f6b.blob</data>
           <digest>b9a81b029df53558567adace33f7c49f</digest>
         </file>
-        <filename><![CDATA[deck.hash.css]]></filename>
       </item>
       <item>
         <file>
@@ -95,7 +91,6 @@
           <data>3cb9ca6f.blob</data>
           <digest>096ec6f105755c17d33366a17312e4f0</digest>
         </file>
-        <filename><![CDATA[deck.hash.html]]></filename>
       </item>
       <item>
         <file>
@@ -105,7 +100,6 @@
           <data>ad6f82.blob</data>
           <digest>a1456ff9ff1590c5a1db5cdbeb8402db</digest>
         </file>
-        <filename><![CDATA[deck.hash.js]]></filename>
       </item>
       <item>
         <file>
@@ -115,7 +109,6 @@
           <data>b4d6bbb3.blob</data>
           <digest>f266cce9e3b1c2f4b58767570a3d68c1</digest>
         </file>
-        <filename><![CDATA[deck.hash.scss]]></filename>
       </item>
       <item>
         <file>
@@ -125,7 +118,6 @@
           <data>5d6d29b5.blob</data>
           <digest>77779db1ec993a7aff533a7228e2749e</digest>
         </file>
-        <filename><![CDATA[deck.menu.css]]></filename>
       </item>
       <item>
         <file>
@@ -135,7 +127,6 @@
           <data>ae2b3896.blob</data>
           <digest>a01a6f03b86c121d17fc89eaf5a34a2f</digest>
         </file>
-        <filename><![CDATA[deck.menu.js]]></filename>
       </item>
       <item>
         <file>
@@ -145,7 +136,6 @@
           <data>e47104ff.blob</data>
           <digest>e6a8b77a38c4fa8ead0e4d365914a122</digest>
         </file>
-        <filename><![CDATA[deck.menu.scss]]></filename>
       </item>
       <item>
         <file>
@@ -155,7 +145,6 @@
           <data>16f5609d.blob</data>
           <digest>700863c3b605b83eaae1c54fa990283a</digest>
         </file>
-        <filename><![CDATA[deck.navigation.css]]></filename>
       </item>
       <item>
         <file>
@@ -165,7 +154,6 @@
           <data>3e5de901.blob</data>
           <digest>bbe6448f856a577ea8cf5d5a2eb5d220</digest>
         </file>
-        <filename><![CDATA[deck.navigation.html]]></filename>
       </item>
       <item>
         <file>
@@ -175,7 +163,6 @@
           <data>46f1f19d.blob</data>
           <digest>e79b66f67fe8f8d6cd8e688666867ea9</digest>
         </file>
-        <filename><![CDATA[deck.navigation.js]]></filename>
       </item>
       <item>
         <file>
@@ -185,7 +172,6 @@
           <data>3dc2124.blob</data>
           <digest>68bed00830dbc1803e509c2c1f905648</digest>
         </file>
-        <filename><![CDATA[title.png]]></filename>
       </item>
       <item>
         <file>
@@ -195,7 +181,6 @@
           <data>ca9362b2.blob</data>
           <digest>973e7852721721d0b3f023eae55db58c</digest>
         </file>
-        <filename><![CDATA[deck.navigation.scss]]></filename>
       </item>
       <item>
         <file>
@@ -205,7 +190,6 @@
           <data>775f1190.blob</data>
           <digest>7c054f699b1c70360ad1c90a521255a5</digest>
         </file>
-        <filename><![CDATA[deck.scale.css]]></filename>
       </item>
       <item>
         <file>
@@ -215,7 +199,6 @@
           <data>d43551fb.blob</data>
           <digest>d2c9c72c0f826955857bb48e3bbdf684</digest>
         </file>
-        <filename><![CDATA[deck.scale.js]]></filename>
       </item>
       <item>
         <file>
@@ -225,7 +208,6 @@
           <data>b8bc5b77.blob</data>
           <digest>1cf1b33e587a0202881285b39060c615</digest>
         </file>
-        <filename><![CDATA[deck.scale.scss]]></filename>
       </item>
       <item>
         <file>
@@ -235,7 +217,6 @@
           <data>cde9ea65.blob</data>
           <digest>1f1efaa4f791a0fa2c34a8d24a7517c9</digest>
         </file>
-        <filename><![CDATA[deck.core.css]]></filename>
       </item>
       <item>
         <file>
@@ -245,7 +226,6 @@
           <data>1890804c.blob</data>
           <digest>fbfa44af2be462be98eb32ccc7a112b7</digest>
         </file>
-        <filename><![CDATA[deck.core.js]]></filename>
       </item>
       <item>
         <file>
@@ -255,7 +235,6 @@
           <data>19fedc26.blob</data>
           <digest>ba51dd9fcd2f6b6c181e4c239e687f96</digest>
         </file>
-        <filename><![CDATA[deck.core.scss]]></filename>
       </item>
       <item>
         <file>
@@ -265,7 +244,6 @@
           <data>8c41ffd2.blob</data>
           <digest>19497b928fd25ba200a6c07a224ac2eb</digest>
         </file>
-        <filename><![CDATA[deck.goto.css]]></filename>
       </item>
       <item>
         <file>
@@ -275,7 +253,6 @@
           <data>87679986.blob</data>
           <digest>c419593d8bf771f9f319c9fd3419eb33</digest>
         </file>
-        <filename><![CDATA[deck.goto.html]]></filename>
       </item>
       <item>
         <file>
@@ -285,7 +262,6 @@
           <data>59315330.blob</data>
           <digest>03a6ab34e37148bb17fefc78e3e5374e</digest>
         </file>
-        <filename><![CDATA[deck.goto.js]]></filename>
       </item>
       <item>
         <file>
@@ -295,7 +271,6 @@
           <data>2dbc9327.blob</data>
           <digest>f42413a23a75bb617faae7da6312b626</digest>
         </file>
-        <filename><![CDATA[deck.goto.scss]]></filename>
       </item>
       <item>
         <file>
@@ -305,7 +280,6 @@
           <data>b6519768.blob</data>
           <digest>e30193867d1b1126f707948110e8b18a</digest>
         </file>
-        <filename><![CDATA[deck.status.css]]></filename>
       </item>
       <item>
         <file>
@@ -315,7 +289,6 @@
           <data>43179f8.blob</data>
           <digest>dc5cd7e00c492b45bb1b530e07d9b16c</digest>
         </file>
-        <filename><![CDATA[deck.status.html]]></filename>
       </item>
       <item>
         <file>
@@ -325,7 +298,6 @@
           <data>30eb43e6.blob</data>
           <digest>16416e4296784e31205e31bc436be4f7</digest>
         </file>
-        <filename><![CDATA[fade.css]]></filename>
       </item>
       <item>
         <file>
@@ -335,7 +307,6 @@
           <data>35f5ea6a.blob</data>
           <digest>924359b9ce1065595d5cd4d83c915d16</digest>
         </file>
-        <filename><![CDATA[fade.scss]]></filename>
       </item>
       <item>
         <file>
@@ -345,7 +316,6 @@
           <data>3c767e05.blob</data>
           <digest>bf50905139e48f43015b08dd363edcb8</digest>
         </file>
-        <filename><![CDATA[horizontal-slide.css]]></filename>
       </item>
       <item>
         <file>
@@ -355,7 +325,6 @@
           <data>aa37a3a7.blob</data>
           <digest>4b30e27a4b5deab534e00e8def81a985</digest>
         </file>
-        <filename><![CDATA[horizontal-slide.scss]]></filename>
       </item>
       <item>
         <file>
@@ -365,7 +334,6 @@
           <data>4ca688b1.blob</data>
           <digest>32dd9320b94907d60669b50302562aa7</digest>
         </file>
-        <filename><![CDATA[vertical-slide.css]]></filename>
       </item>
       <item>
         <file>
@@ -375,7 +343,6 @@
           <data>ebf5ed6.blob</data>
           <digest>3c3f4c712104a736436243ae165bd06d</digest>
         </file>
-        <filename><![CDATA[vertical-slide.scss]]></filename>
       </item>
       <item>
         <file>
@@ -385,7 +352,6 @@
           <data>49130799.blob</data>
           <digest>e90da1516f1c9c98063f881f15e0b24a</digest>
         </file>
-        <filename><![CDATA[modernizr.custom.js]]></filename>
       </item>
       <item>
         <file>
@@ -395,7 +361,6 @@
           <data>a719cdb8.blob</data>
           <digest>cf3ee666b53ffbd1eb1b3e8b9c210422</digest>
         </file>
-        <filename><![CDATA[deck.status.js]]></filename>
       </item>
       <item>
         <file>
@@ -405,7 +370,6 @@
           <data>94405f8d.blob</data>
           <digest>21cd5138855d8d9a7c43e9fd9f24e451</digest>
         </file>
-        <filename><![CDATA[deck.status.scss]]></filename>
       </item>
       <item>
         <file>
@@ -415,7 +379,6 @@
           <data>b6a60d1d.blob</data>
           <digest>01ac12479665e515b16334a60f0a4892</digest>
         </file>
-        <filename><![CDATA[neon.css]]></filename>
       </item>
       <item>
         <file>
@@ -425,7 +388,6 @@
           <data>a22ef9f6.blob</data>
           <digest>9e609f7a4b4d81e4b7473274eea5cd6d</digest>
         </file>
-        <filename><![CDATA[neon.scss]]></filename>
       </item>
       <item>
         <file>
@@ -435,7 +397,6 @@
           <data>40273f01.blob</data>
           <digest>5c00dff3aea4833c9afec7f5c31cf980</digest>
         </file>
-        <filename><![CDATA[swiss.css]]></filename>
       </item>
       <item>
         <file>
@@ -445,7 +406,6 @@
           <data>6f7ca793.blob</data>
           <digest>f123af8b71c6b2c5753bc719bf814842</digest>
         </file>
-        <filename><![CDATA[swiss.scss]]></filename>
       </item>
       <item>
         <file>
@@ -455,7 +415,6 @@
           <data>d98dd954.blob</data>
           <digest>612a57d770cea299b771ad15fdd62e42</digest>
         </file>
-        <filename><![CDATA[web-2.0.css]]></filename>
       </item>
       <item>
         <file>
@@ -465,7 +424,6 @@
           <data>360d5ed8.blob</data>
           <digest>7df99e92c8695e804c032da1621d6b2d</digest>
         </file>
-        <filename><![CDATA[web-2.0.scss]]></filename>
       </item>
       <item>
         <file>
@@ -475,7 +433,6 @@
           <data>5c88d1ba.blob</data>
           <digest>b11ced65f32fedbe9bf81ef9db0f3c94</digest>
         </file>
-        <filename><![CDATA[jquery-1.7.2.min.js]]></filename>
       </item>
       <item>
         <file>
@@ -485,7 +442,6 @@
           <data>db2d2ca2.blob</data>
           <digest>22b0866ca99bede078b30a127fcec707</digest>
         </file>
-        <filename><![CDATA[mkslides.js]]></filename>
       </item>
       <item>
         <file>
@@ -495,7 +451,6 @@
           <data>1391fbc5.blob</data>
           <digest>d6356665a1435e35055dbb44addad7ea</digest>
         </file>
-        <filename><![CDATA[brick-alone.png]]></filename>
       </item>
       <item>
         <file>
@@ -505,7 +460,6 @@
           <data>febef226.blob</data>
           <digest>ee8b30fee7cb42725c7c25877287df79</digest>
         </file>
-        <filename><![CDATA[nuxeo-webinars-for-developers.png]]></filename>
       </item>
       <item>
         <file>
@@ -515,7 +469,6 @@
           <data>985afe75.blob</data>
           <digest>517bcd26b71d7c1b03de707f2eb0ff48</digest>
         </file>
-        <filename><![CDATA[outline-background.png]]></filename>
       </item>
       <item>
         <file>
@@ -525,7 +478,6 @@
           <data>a20f893b.blob</data>
           <digest>e70280ee9ca40cc73b6dd4d91367b21c</digest>
         </file>
-        <filename><![CDATA[webinar-headset.png]]></filename>
       </item>
       <item>
         <file>
@@ -535,7 +487,6 @@
           <data>76a10704.blob</data>
           <digest>1a73dc759821d028f30f48b6548cf1e5</digest>
         </file>
-        <filename><![CDATA[nuxeo-theme.css]]></filename>
       </item>
       <item>
         <file>

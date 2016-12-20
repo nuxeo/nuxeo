@@ -55,7 +55,6 @@
       <filename>Template delivery Statement.odt</filename>
       <data>deliveryStatement.odt</data>
     </file:content>
-    <file:filename><![CDATA[Template delivery Statement .odt]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

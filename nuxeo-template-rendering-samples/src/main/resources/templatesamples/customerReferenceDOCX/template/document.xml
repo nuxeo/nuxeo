@@ -57,7 +57,6 @@
       <data>1909eea.blob</data>
       <digest>09fbf90dbe83aa4b6222449bab012e86</digest>
     </file:content>
-    <file:filename><![CDATA[Customer reference model.docx]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

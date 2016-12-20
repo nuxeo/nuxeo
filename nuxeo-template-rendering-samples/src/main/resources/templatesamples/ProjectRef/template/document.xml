@@ -23,7 +23,6 @@
     <uid:minor_version><![CDATA[0]]></uid:minor_version>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
-    <file:filename><![CDATA[ProjectRef.docx]]></file:filename>
     <file:content>
       <encoding></encoding>
       <mime-type>application/vnd.openxmlformats-officedocument.wordprocessingml.document</mime-type>

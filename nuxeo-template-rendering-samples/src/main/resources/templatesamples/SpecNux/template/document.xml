@@ -61,7 +61,6 @@
       <filename>Spec_ModelNux.odt</filename>
       <data>specNux.odt</data>
     </file:content>
-    <file:filename>Spec_ModelNux.odt</file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

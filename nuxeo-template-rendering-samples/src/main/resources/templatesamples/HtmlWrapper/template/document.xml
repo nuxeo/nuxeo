@@ -65,7 +65,6 @@
       <filename>Container.odt</filename>
       <data>Container.odt</data>
     </file:content>
-    <file:filename>Container.odt</file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

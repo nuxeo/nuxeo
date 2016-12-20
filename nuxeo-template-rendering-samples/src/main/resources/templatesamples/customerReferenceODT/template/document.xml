@@ -57,7 +57,6 @@
       <data>ca5531ef.blob</data>
       <digest>77fb8152918b1f0da235c15453740dce</digest>
     </file:content>
-    <file:filename><![CDATA[Customer Reference ODT Template.odt]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>
