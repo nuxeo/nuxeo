@@ -656,7 +656,7 @@ public class DefaultFileSystemItemFactoryFixture {
             // Save document to trigger the DublinCoreListener and update
             // dc:lastContributor to "Administrator"
             // rename the file to enable dc listener (disable if not dirty)
-            file.setPropertyValue("file:filename", "newTitle");
+            file.setPropertyValue("file:content/name", "newTitle");
             session.saveDocument(file);
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
             ensureJustModified(file, session);
