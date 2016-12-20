@@ -202,16 +202,14 @@ public class TestVersioningFileSystemItemFactory {
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
-            // Under Oracle, the READ ACL optims are not visible from the
-            // joe session while the transaction has not been committed.
-        }
-
+        // Under Oracle, the READ ACL optims are not visible from the
+        // joe session while the transaction has not been committed.
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             assertFalse(fileItem.getCanUpdate());
@@ -370,16 +368,14 @@ public class TestVersioningFileSystemItemFactory {
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
-            // Under Oracle, the READ ACL optims are not visible from the
-            // joe session while the transaction has not been committed.
-        }
-
+        // Under Oracle, the READ ACL optims are not visible from the
+        // joe session while the transaction has not been committed.
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             assertFalse(fileItem.getCanUpdate());
@@ -532,16 +528,14 @@ public class TestVersioningFileSystemItemFactory {
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
-            // Under Oracle, the READ ACL optims are not visible from the
-            // joe session while the transaction has not been committed.
-        }
-
+        // Under Oracle, the READ ACL optims are not visible from the
+        // joe session while the transaction has not been committed.
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             assertFalse(fileItem.getCanUpdate());
@@ -711,16 +705,14 @@ public class TestVersioningFileSystemItemFactory {
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
-            // Under Oracle, the READ ACL optims are not visible from the
-            // joe session while the transaction has not been committed.
-        }
-
+        // Under Oracle, the READ ACL optims are not visible from the
+        // joe session while the transaction has not been committed.
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             assertFalse(fileItem.getCanUpdate());
