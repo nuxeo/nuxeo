@@ -74,7 +74,6 @@ public class DefaultConsumer extends AbstractConsumer {
             DocumentModel doc = session.createDocumentModel(rootPath, name, getType());
 
             doc.setProperty("dublincore", "title", name);
-            doc.setProperty("file", "filename", fileName);
             doc.setProperty("file", "content", bh.getBlob());
 
             if (bh != null) {

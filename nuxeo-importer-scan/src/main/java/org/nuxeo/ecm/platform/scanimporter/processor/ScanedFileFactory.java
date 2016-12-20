@@ -149,7 +149,6 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements Im
             doc.setPathInfo(parent.getPathAsString(), name);
             doc.setProperty("dublincore", "title", node.getName());
         }
-        doc.setProperty("file", "filename", fileName);
         doc.setProperty("file", "content", bh.getBlob());
 
         if (docExists && config.isUpdate()) {

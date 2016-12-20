@@ -138,7 +138,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         }
         doc.setProperty("dublincore", "title", node.getName());
         if (blob != null && blob.getLength() > 0) {
-            doc.setProperty("file", "filename", fileName);
+            blob.setFilename(fileName);
             doc.setProperty("file", "content", blob);
         }
         doc = session.createDocument(doc);
