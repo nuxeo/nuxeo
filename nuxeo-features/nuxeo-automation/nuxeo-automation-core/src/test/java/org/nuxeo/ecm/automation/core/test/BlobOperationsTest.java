@@ -311,9 +311,9 @@ public class BlobOperationsTest {
         File tmpFile = Framework.createTempFile("test", ".txt");
         FileUtils.writeFile(tmpFile, "Content");
         Blob blob = Blobs.createBlob(tmpFile);
+        blob.setFilename("initial_name.txt");
         Framework.trackFile(tmpFile, blob);
         file.put("file", (Serializable) blob);
-        file.put("filename", "initial_name.txt");
         files.add(file);
         // Create document
         DocumentModel docFile = session.createDocumentModel(src.getPathAsString(), "blobWithName", "File");

@@ -18,7 +18,6 @@
   <xs:complexType name="file">
     <xs:sequence>
       <xs:element name="file" type="nxs:content" />
-      <xs:element name="filename" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
 

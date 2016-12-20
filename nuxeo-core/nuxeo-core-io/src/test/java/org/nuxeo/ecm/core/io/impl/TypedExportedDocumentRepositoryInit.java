@@ -64,7 +64,6 @@ public class TypedExportedDocumentRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         // file
         // -----------------------
-        doc.setProperty("file", "filename", "test_file.doc");
         Blob blob = Blobs.createBlob("My blob");
         blob.setFilename("test_file.doc");
         doc.setProperty("file", "content", blob);

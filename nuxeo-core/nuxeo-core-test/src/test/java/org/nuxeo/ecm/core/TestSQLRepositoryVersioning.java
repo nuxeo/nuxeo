@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,6 +53,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -129,7 +132,7 @@ public class TestSQLRepositoryVersioning {
 
         checkVersions(file);
 
-        file.setPropertyValue("file:filename", "A");
+        file.setPropertyValue("file:content", (Serializable) Blobs.createBlob("B", "text/plain", "UTF-8", "A"));
         file = session.saveDocument(file);
         file.checkIn(VersioningOption.MINOR, null);
         file.checkOut(); // to allow deleting last version
@@ -210,7 +213,7 @@ public class TestSQLRepositoryVersioning {
 
     private void createTrioVersions(DocumentModel file) throws Exception {
         // create a first version
-        file.setProperty("file", "filename", "A");
+        file.setProperty("file", "content", new StringBlob("A"));
         file = session.saveDocument(file);
         file.checkIn(VersioningOption.MINOR, null);
 
@@ -218,7 +221,7 @@ public class TestSQLRepositoryVersioning {
 
         // create a second version
         // make it dirty so it will be saved
-        file.setProperty("file", "filename", "B");
+        file.setProperty("file", "content", new StringBlob("B"));
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
         file.checkIn(VersioningOption.MINOR, null);
@@ -226,7 +229,7 @@ public class TestSQLRepositoryVersioning {
         checkVersions(file, "0.1", "0.2");
 
         // create a third version
-        file.setProperty("file", "filename", "C");
+        file.setProperty("file", "content", new StringBlob("C"));
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
         file.checkIn(VersioningOption.MINOR, null);
@@ -331,9 +334,8 @@ public class TestSQLRepositoryVersioning {
         session.checkOut(docRef);
         assertTrue(session.isCheckedOut(docRef));
 
-        doc.setProperty("file", "filename", "second name");
-        doc.setProperty("dc", "title", "f1");
-        doc.setProperty("dc", "description", "desc 1");
+        doc.setProperty("dublincore", "title", "f1");
+        doc.setProperty("dublincore", "description", "desc 1");
         session.saveDocument(doc);
         session.save();
 
@@ -344,7 +346,7 @@ public class TestSQLRepositoryVersioning {
         DocumentModel newDoc = session.getDocument(docRef);
         assertNotNull(newDoc);
         assertNotNull(newDoc.getRef());
-        assertEquals("second name", newDoc.getProperty("file", "filename"));
+        assertEquals("desc 1", newDoc.getProperty("dublincore", "description"));
 
         waitForFulltextIndexing();
         maybeSleepToNextSecond();
@@ -352,7 +354,7 @@ public class TestSQLRepositoryVersioning {
 
         assertNotNull(restoredDoc);
         assertNotNull(restoredDoc.getRef());
-        assertNull(restoredDoc.getProperty("file", "filename"));
+        assertNull(restoredDoc.getProperty("dublincore", "description"));
 
         waitForFulltextIndexing();
         maybeSleepToNextSecond();
@@ -360,8 +362,7 @@ public class TestSQLRepositoryVersioning {
 
         assertNotNull(restoredDoc);
         assertNotNull(restoredDoc.getRef());
-        String pr = (String) restoredDoc.getProperty("file", "filename");
-        assertEquals("second name", pr);
+        assertEquals("desc 1", restoredDoc.getProperty("dublincore", "description"));
     }
 
     @Test
@@ -457,9 +458,8 @@ public class TestSQLRepositoryVersioning {
         DocumentRef v1Ref = session.checkIn(childFile.getRef(), null, null);
         session.checkOut(childFile.getRef());
 
-        childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("dc", "title", "f1");
-        childFile.setProperty("dc", "description", "desc 1");
+        childFile.setProperty("dublincore", "title", "f1");
+        childFile.setProperty("dublincore", "description", "desc 1");
         session.saveDocument(childFile);
         session.save();
         maybeSleepToNextSecond();
@@ -468,7 +468,7 @@ public class TestSQLRepositoryVersioning {
         DocumentModel newDoc = session.getDocument(childFile.getRef());
         assertNotNull(newDoc);
         assertNotNull(newDoc.getRef());
-        assertEquals("second name", newDoc.getProperty("file", "filename"));
+        assertEquals("desc 1", newDoc.getProperty("dublincore", "description"));
 
         // restore, no snapshot as already pristine
         waitForFulltextIndexing();
@@ -477,13 +477,13 @@ public class TestSQLRepositoryVersioning {
 
         assertNotNull(restoredDoc);
         assertNotNull(restoredDoc.getRef());
-        assertNull(restoredDoc.getProperty("file", "filename"));
+        assertNull(restoredDoc.getProperty("dublincore", "description"));
 
         DocumentModel last = session.getLastDocumentVersion(childFile.getRef());
         assertNotNull(last);
         assertNotNull(last.getRef());
         assertEquals(v2Ref.reference(), last.getId());
-        assertEquals("second name", last.getProperty("file", "filename"));
+        assertEquals("desc 1", last.getProperty("dublincore", "description"));
     }
 
     // security on versions, see TestLocalAPIWithCustomVersioning

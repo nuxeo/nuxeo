@@ -78,6 +78,10 @@ public interface LiveEditConstants {
     String DEFAULT_DOCTYPE = "File";
 
     // to be deprecated once all filenames are stored in the blob itself
+    /**
+     * @deprecated since 9.1 filename is now stored in the blob itself
+     */
+    @Deprecated
     String DEFAULT_FILENAME_FIELD = "filename";
 
     String DEFAULT_BLOB_FIELD = "content";

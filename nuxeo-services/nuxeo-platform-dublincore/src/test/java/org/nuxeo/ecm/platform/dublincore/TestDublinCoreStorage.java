@@ -291,7 +291,7 @@ public class TestDublinCoreStorage {
 
         // read part of a non-initialized complex prop
         // should not mark it dirty which would cause problems on save
-        proxy.getPropertyValue("file:filename");
+        proxy.getPropertyValue("file:content");
         // write a modifiable proxy schema
         proxy.setPropertyValue("info:info", "proxyinfo");
         proxy = session.saveDocument(proxy);

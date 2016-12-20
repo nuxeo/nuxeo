@@ -58,10 +58,6 @@ public class MimetypeIconUpdater implements EventListener {
 
     public static final String MAIN_BLOB_SCHEMA = "file";
 
-    @Deprecated
-    // the filename should now be stored inside the main blob
-    public static final String MAIN_EXTERNAL_FILENAME_FIELD = "file:filename";
-
     protected static final String OCTET_STREAM_MT = "application/octet-stream";
 
     public final BlobsExtractor blobExtractor = new BlobsExtractor();
@@ -88,9 +84,6 @@ public class MimetypeIconUpdater implements EventListener {
             if (doc.hasFacet(FacetNames.IMMUTABLE)) {
                 return;
             }
-
-            // BBB: handle old filename scheme
-            updateFilename(doc);
 
             try {
                 // ensure the document main icon is not null
@@ -144,24 +137,6 @@ public class MimetypeIconUpdater implements EventListener {
         } else {
             // reset to document type icon
             updateIconField(null, doc);
-        }
-    }
-
-    /**
-     * Backward compatibility for external filename field: if edited, it might affect the main blob mimetype
-     */
-    public void updateFilename(DocumentModel doc) throws PropertyException {
-
-        if (doc.hasSchema(MAIN_BLOB_FIELD.split(":")[0])) {
-            Property filenameProperty = doc.getProperty(MAIN_EXTERNAL_FILENAME_FIELD);
-            if (filenameProperty.isDirty()) {
-                String filename = filenameProperty.getValue(String.class);
-                if (doc.getProperty(MAIN_BLOB_FIELD).getValue() != null) {
-                    Blob blob = doc.getProperty(MAIN_BLOB_FIELD).getValue(Blob.class);
-                    blob.setFilename(filename);
-                    doc.setPropertyValue(MAIN_BLOB_FIELD, (Serializable) blob);
-                }
-            }
         }
     }
 

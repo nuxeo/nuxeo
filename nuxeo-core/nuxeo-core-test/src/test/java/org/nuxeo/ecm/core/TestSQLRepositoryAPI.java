@@ -1049,7 +1049,6 @@ public class TestSQLRepositoryAPI {
 
         session.save();
 
-        childFile.setProperty("file", "filename", "second name");
         childFile.setProperty("dublincore", "title", "f1");
         childFile.setProperty("dublincore", "description", "desc 1");
 
@@ -1075,7 +1074,6 @@ public class TestSQLRepositoryAPI {
 
         assertEquals("f1", returnedDocument.getProperty("dublincore", "title"));
         assertEquals("desc 1", returnedDocument.getProperty("dublincore", "description"));
-        assertNull(returnedDocument.getProperty("file", "filename"));
 
         returnedDocument = session.getDocument(childFile.getRef());
 
@@ -1095,7 +1093,6 @@ public class TestSQLRepositoryAPI {
 
         assertEquals("f1", returnedDocument.getProperty("dublincore", "title"));
         assertEquals("desc 1", returnedDocument.getProperty("dublincore", "description"));
-        assertEquals("second name", returnedDocument.getProperty("file", "filename"));
     }
 
     @Test
@@ -1431,8 +1428,8 @@ public class TestSQLRepositoryAPI {
 
         List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
 
-        returnedChildDocs.get(1).setProperty("file", "filename", "f1");
-        returnedChildDocs.get(2).setProperty("file", "filename", "f2");
+        returnedChildDocs.get(1).setProperty("file", "content", Blobs.createBlob("blob1", "text/plain", "UTF-8", "f1"));
+        returnedChildDocs.get(2).setProperty("file", "content", Blobs.createBlob("blob1", "text/plain", "UTF-8", "f2"));
 
         session.saveDocuments(returnedChildDocs.toArray(new DocumentModel[0]));
         session.save();
@@ -1449,7 +1446,7 @@ public class TestSQLRepositoryAPI {
 
         // if we select filename, the returned docModel
         // should have both schemas "file" and "common"
-        list = session.query("SELECT filename FROM File");
+        list = session.query("SELECT content/filename FROM File");
         assertEquals(1, list.size());
         docModel = list.get(0);
         schemas = Arrays.asList(docModel.getSchemas());
@@ -1511,10 +1508,9 @@ public class TestSQLRepositoryAPI {
         assertEquals(1, returnedChildDocs.size());
 
         childFile1 = returnedChildDocs.get(0);
-        childFile1.setProperty("file", "filename", "f1");
 
         // add a blob
-        Blob blob = Blobs.createBlob("<html><head/><body>La la la!</body></html>", "text/html");
+        Blob blob = Blobs.createBlob("<html><head/><body>La la la!</body></html>", "text/html", "UTF-8", "f1");
         childFile1.setProperty("file", "content", blob);
 
         session.saveDocument(childFile1);
@@ -1776,11 +1772,10 @@ public class TestSQLRepositoryAPI {
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name, "File");
         childFile.setProperty("dublincore", "title", "f1");
         childFile.setProperty("dublincore", "description", "desc 1");
-        childFile.setProperty("file", "filename", "filename1");
 
         childFile = createChildDocument(childFile);
 
-        Property p = childFile.getProperty("/file:/filename");
+        Property p = childFile.getProperty("/dublincore:/description");
         // System.out.println(p.getPath());
 
         // TODO NXP-2514: this should be tested across sessions - when it can be done
@@ -1790,7 +1785,6 @@ public class TestSQLRepositoryAPI {
 
         assertEquals("f1", retrievedFile.getProperty("dublincore", "title"));
         assertEquals("desc 1", retrievedFile.getProperty("dublincore", "description"));
-        assertEquals("filename1", retrievedFile.getProperty("file", "filename"));
     }
 
     @Test
@@ -1824,9 +1818,9 @@ public class TestSQLRepositoryAPI {
 
         session.save();
 
-        childFile.setProperty("file", "filename", "second name");
         childFile.setProperty("dublincore", "title", "f1");
         childFile.setProperty("dublincore", "description", "desc 1");
+        childFile.setProperty("file", "content", Blobs.createBlob("b1", "text/plain", "UTF-8", "second name"));
 
         session.saveDocument(childFile);
 
@@ -1847,7 +1841,7 @@ public class TestSQLRepositoryAPI {
         assertNotNull(dm.getMap());
         assertNotNull(dm.getSchema());
         assertEquals("file", dm.getSchema());
-        assertEquals("second name", dm.getData("filename"));
+        assertEquals("second name", ((Blob) dm.getData("content")).getFilename());
     }
 
     @Test
@@ -2657,7 +2651,6 @@ public class TestSQLRepositoryAPI {
         long length = blob.getLength();
         byte[] content = blob.getByteArray();
 
-        childFile.setProperty("file", "filename", "deprectaed filename");
         childFile.setProperty("dublincore", "title", "Blob test");
         childFile.setProperty("dublincore", "description", "this is a test");
         childFile.setProperty("file", "content", blob);
@@ -2872,13 +2865,8 @@ public class TestSQLRepositoryAPI {
         doc.setProperty("dublincore", "title", "t");
         doc.setProperty("dublincore", "description", "d");
         doc.setProperty("dublincore", "subjects", new String[] { "a", "b" });
-        doc.setProperty("file", "filename", "f");
-        List<Object> files = new ArrayList<>(2);
+        List<Object> files = new ArrayList<>(1);
         Map<String, Object> f = new HashMap<>();
-        f.put("filename", "f1");
-        files.add(f);
-        f = new HashMap<>();
-        f.put("filename", "f2");
         f.put("file", Blobs.createBlob("myfile", "text/test", "UTF-8"));
         files.add(f);
         doc.setProperty("files", "files", files);
@@ -2896,14 +2884,11 @@ public class TestSQLRepositoryAPI {
         assertEquals("t", copy.getProperty("dublincore", "title"));
         assertEquals("d", copy.getProperty("dublincore", "description"));
         assertEquals(Arrays.asList("a", "b"), Arrays.asList((String[]) copy.getProperty("dublincore", "subjects")));
-        assertEquals("f", copy.getProperty("file", "filename"));
         Object fileso = copy.getProperty("files", "files");
         assertNotNull(fileso);
         List<Map<String, Object>> newfiles = (List<Map<String, Object>>) fileso;
-        assertEquals(2, newfiles.size());
-        assertEquals("f1", newfiles.get(0).get("filename"));
-        assertEquals("f2", newfiles.get(1).get("filename"));
-        Blob bb = (Blob) newfiles.get(1).get("file");
+        assertEquals(1, newfiles.size());
+        Blob bb = (Blob) newfiles.get(0).get("file");
         assertNotNull(bb);
         assertEquals("text/test", bb.getMimeType());
         assertEquals("UTF-8", bb.getEncoding());
@@ -3065,11 +3050,8 @@ public class TestSQLRepositoryAPI {
         DocumentModel doc = new DocumentModelImpl(parent.getPathAsString(), "theDoc", "File");
 
         doc.setProperty("dublincore", "title", "my title");
+        assertEquals("my title", doc.getPropertyValue("title"));
         assertEquals("my title", doc.getPropertyValue("dc:title"));
-
-        doc.setProperty("file", "filename", "the file name");
-        assertEquals("the file name", doc.getPropertyValue("filename"));
-        assertEquals("the file name", doc.getPropertyValue("file:filename"));
     }
 
     @SuppressWarnings("rawtypes")

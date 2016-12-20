@@ -545,8 +545,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
 
         document.setProperty("dublincore", "description", dublincoreMap.get("description"));
         document.setProperty("dublincore", "title", dublincoreMap.get("title"));
-        String filname = (String) fileMap.get("filename");
-        document.setProperty("file", "filename", filname);
+        String filename = (String) fileMap.get("filename");
         final byte[] contentData = Base64.decodeBase64((String) contentMap.get("data"));
         // String contentType = (String) contentMap.get("mime-type") ;
         Blob blob = Blobs.createBlob(contentData);
@@ -555,9 +554,9 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
 
         String mimetype;
         try {
-            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filname, blob, "");
+            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(filename, blob, "");
         } catch (MimetypeDetectionException e) {
-            log.error(String.format("error during mimetype detection for %s: %s", filname, e.getMessage()));
+            log.error(String.format("error during mimetype detection for %s: %s", filename, e.getMessage()));
             mimetype = "";
         }
 

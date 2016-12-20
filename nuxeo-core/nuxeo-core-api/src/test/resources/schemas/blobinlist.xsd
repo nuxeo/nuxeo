@@ -23,12 +23,7 @@
   
   <xs:complexType name="file">
     <xs:sequence>
-      <!-- old definition -->
       <xs:element name="file" type="nxs:content"/>
-      <xs:element name="filename" type="xs:string"/>
-      <!-- future definition -->
-      <!--<xs:element name="file" type="nxs:file" minOccurs="0"
-        maxOccurs="unbounded" />-->
     </xs:sequence>
   </xs:complexType>
 

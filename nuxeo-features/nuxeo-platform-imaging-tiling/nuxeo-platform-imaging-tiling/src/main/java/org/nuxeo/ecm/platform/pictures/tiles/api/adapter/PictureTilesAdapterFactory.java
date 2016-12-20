@@ -55,9 +55,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
             if (blob == null) {
                 return null;
             }
-            PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, "file:content");
-            adapter.setFileName((String) doc.getProperty("file", "filename"));
-            return adapter;
+            return new PictureTilesAdapterImpl(doc, "file:content");
         } else {
             return new PictureTilesAdapterImpl(doc);
         }
@@ -87,9 +85,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     private PictureTilesAdapter getPictureTilesAdapter(DocumentModel doc, String blobProperty) {
         Blob blob = (Blob) doc.getPropertyValue(blobProperty);
         if (blob != null) {
-            PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, blobProperty);
-            adapter.setFileName(blob.getFilename());
-            return adapter;
+            return new PictureTilesAdapterImpl(doc, blobProperty);
         }
         return null;
     }

@@ -108,7 +108,6 @@ public class CreateDocumentsAction extends AbstractMailAction {
                 if (currentFileBlob != null) {
                     Map<String, Serializable> file = new HashMap<>();
                     file.put("file", currentFileBlob);
-                    file.put("filename", currentFileBlob.getFilename());
                     files.add(file);
                 }
             }

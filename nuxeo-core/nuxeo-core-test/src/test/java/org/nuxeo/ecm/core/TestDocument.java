@@ -104,14 +104,9 @@ public class TestDocument {
         void accept(T t, U u, V v);
     }
 
-    protected final BiFunction<Document, String, Object> DocumentGetValue = (Document doc, String xpath) -> {
-        return doc.getValue(xpath);
-    };
+    protected final BiFunction<Document, String, Object> DocumentGetValue = Document::getValue;
 
-    protected final TriConsumer<Document, String, Object> DocumentSetValue = (Document doc, String xpath,
-            Object value) -> {
-        doc.setValue(xpath, value);
-    };
+    protected final TriConsumer<Document, String, Object> DocumentSetValue = Document::setValue;
 
     @Test
     public void testGetValueErrors() throws Exception {
@@ -154,7 +149,7 @@ public class TestDocument {
         Document root = session.getRootDocument();
         Document doc1 = root.addChild("doc", "TestDocument");
         Document doc2 = root.addChild("doc", "File");
-        doc1.setValue("tp:complexList", Arrays.asList(Collections.emptyMap()));
+        doc1.setValue("tp:complexList", Collections.singletonList(Collections.emptyMap()));
 
         BiConsumer<String, Object> c1 = (xpath, value) -> DocumentSetValue.accept(doc1, xpath, value);
         checkSet(c1, "tp:complexList", Long.valueOf(0),
@@ -250,15 +245,12 @@ public class TestDocument {
         Object b = doc.getValue("cmpf:attachedFile/vignettes/0/content");
         assertTrue(b instanceof Blob);
         assertEquals(content2, ((Blob) b).getString());
-        Map<String, Object> vignette2 = new HashMap<>();
-        vignette2.put("width", size1);
-        vignette2.put("content", blob);
 
         // get recursive list item
         @SuppressWarnings("unchecked")
         Map<String, Object> v0 = (Map<String, Object>) doc.getValue("cmpf:attachedFile/vignettes/0");
         assertEquals(size1, v0.get("width"));
-        b = (Blob) v0.get("content");
+        b = v0.get("content");
         assertEquals(content2, ((Blob) b).getString());
         Object v1 = doc.getValue("cmpf:attachedFile/vignettes/1");
         Map<String, Object> ev1 = new HashMap<>();
@@ -295,8 +287,9 @@ public class TestDocument {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "File");
 
-        doc.setValue("files", Arrays.asList(Collections.singletonMap("filename", "f1")));
-        assertEquals("f1", doc.getValue("files/0/filename"));
+        Blob blob = Blobs.createBlob("My content");
+        doc.setValue("files", Collections.singletonList(Collections.singletonMap("file", blob)));
+        assertEquals(blob, doc.getValue("files/0/file"));
     }
 
     @Test
@@ -308,7 +301,7 @@ public class TestDocument {
         assertTrue(list instanceof List);
         assertEquals(0, ((List<?>) list).size());
 
-        doc.setValue("tp:fileList", Arrays.asList(Blobs.createBlob("My content")));
+        doc.setValue("tp:fileList", Collections.singletonList(Blobs.createBlob("My content")));
 
         list = doc.getValue("tp:fileList");
         assertTrue(list instanceof List);
@@ -428,7 +421,7 @@ public class TestDocument {
 
         Blob blob = Blobs.createBlob("content1", "text/plain");
         doc.setValue("cmpf:attachedFile",
-                Collections.singletonMap("vignettes", Arrays.asList(Collections.singletonMap("content", blob))));
+                Collections.singletonMap("vignettes", Collections.singletonList(Collections.singletonMap("content", blob))));
 
         // simulate an obsolete Aged facet present on the document but not in the schema manager
         Map<String, CompositeType> facets = getSchemaManagerFacets();

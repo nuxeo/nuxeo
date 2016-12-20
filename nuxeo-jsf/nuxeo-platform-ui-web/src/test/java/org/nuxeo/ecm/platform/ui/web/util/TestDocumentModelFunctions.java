@@ -50,11 +50,9 @@ public class TestDocumentModelFunctions {
         Object blobVal = DocumentModelFunctions.defaultValue("files:files");
         assertTrue(blobVal instanceof HashMap);
         HashMap blobValMap = (HashMap) blobVal;
-        assertEquals(2, blobValMap.size());
+        assertEquals(1, blobValMap.size());
         assertTrue(blobValMap.containsKey("file"));
         assertNull(blobValMap.get("file"));
-        assertTrue(blobValMap.containsKey("filename"));
-        assertNull(blobValMap.get("filename"));
 
         Object stringListItemVal = DocumentModelFunctions.defaultValue("lds:listOfLists/stringListItem");
         assertTrue(stringListItemVal instanceof String);

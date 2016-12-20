@@ -185,7 +185,6 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
-        props.put("filename", blob.getFilename());
         props.put("file", blob);
         ListDiff listDiff = new ListDiff();
         listDiff.add(props);

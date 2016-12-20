@@ -71,7 +71,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
     }
 
     private ActionFilter getFilter(String name) {
-        return as.getFilterRegistry().getFilter(name);
+        return as.getFilter(name);
     }
 
     @Test

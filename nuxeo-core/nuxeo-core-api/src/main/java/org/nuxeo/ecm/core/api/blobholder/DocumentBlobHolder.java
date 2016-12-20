@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
-
 package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
@@ -41,21 +39,11 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     protected final String xPath;
 
-    protected String xPathFilename;
-
     protected List<Blob> blobList = null;
 
-    /**
-     * Constructor with filename property for compatibility (when filename was not stored on blob object)
-     */
-    public DocumentBlobHolder(DocumentModel doc, String xPath, String xPathFilename) {
+    public DocumentBlobHolder(DocumentModel doc, String xPath) {
         this.doc = doc;
         this.xPath = xPath;
-        this.xPathFilename = xPathFilename;
-    }
-
-    public DocumentBlobHolder(DocumentModel doc, String xPath) {
-        this(doc, xPath, null);
     }
 
     @Override
@@ -65,24 +53,12 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
 
     @Override
     public Blob getBlob() {
-        Blob blob = (Blob) doc.getPropertyValue(xPath);
-        if (blob != null && xPathFilename != null) {
-            String filename = blob.getFilename();
-            if (filename == null || "".equals(filename)) {
-                // compatibility when filename was not stored on blob
-                blob.setFilename((String) doc.getPropertyValue(xPathFilename));
-            }
-        }
-        return blob;
+        return(Blob) doc.getPropertyValue(xPath);
     }
 
     @Override
     public void setBlob(Blob blob) {
         doc.getProperty(xPath).setValue(blob);
-        if (xPathFilename != null) {
-            String filename = blob == null ? null : blob.getFilename();
-            doc.setPropertyValue(xPathFilename, filename);
-        }
     }
 
     @Override

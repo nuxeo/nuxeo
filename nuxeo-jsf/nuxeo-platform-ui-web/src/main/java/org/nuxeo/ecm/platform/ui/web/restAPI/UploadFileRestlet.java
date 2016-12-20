@@ -101,21 +101,18 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
         try {
 
             String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
-            String filenamePropertyName = getQueryParamValue(req, FILENAME_PROPERTY_NAME, null);
 
-            if (blobPropertyName == null || filenamePropertyName == null) {
+            if (blobPropertyName == null) {
                 // find the names of the fields from the optional request
                 // parameters with fallback to defaults if none is provided
                 String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
                 String blobFieldName = getQueryParamValue(req, BLOB_FIELD, DEFAULT_BLOB_FIELD);
-                String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
                 blobPropertyName = schemaName + ":" + blobFieldName;
-                filenamePropertyName = schemaName + ":" + filenameFieldName;
             }
 
             InputStream is = req.getEntity().getStream();
 
-            saveFileToDocument(filename, dm, blobPropertyName, filenamePropertyName, is);
+            saveFileToDocument(filename, dm, blobPropertyName, is);
         } catch (NuxeoException | IOException e) {
             handleError(res, e);
         }
@@ -127,9 +124,20 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
 
     /**
      * Save the file into the document.
+     *
+     * @deprecated since 9.1 filename is now stored in blob
      */
+    @Deprecated
     protected void saveFileToDocument(String filename, DocumentModel dm, String blobPropertyName,
             String filenamePropertyName, InputStream is) throws IOException, PropertyException {
+        saveFileToDocument(filename, dm, blobPropertyName, is);
+    }
+
+    /**
+     * Save the file into the document.
+     */
+    protected void saveFileToDocument(String filename, DocumentModel dm, String blobPropertyName,
+            InputStream is) throws IOException, PropertyException {
         // persisting the blob makes it possible to read the binary content
         // of the request stream several times (mimetype sniffing, digest
         // computation, core binary storage)
@@ -137,7 +145,6 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
         blob.setFilename(filename);
 
         dm.setPropertyValue(blobPropertyName, (Serializable) blob);
-        dm.setPropertyValue(filenamePropertyName, filename);
 
         getDocumentManager().saveDocument(dm);
         // autoversioning see https://jira.nuxeo.org/browse/NXP-5849 for more

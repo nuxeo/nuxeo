@@ -178,8 +178,6 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         Blob blob = (Blob) doc.getProperty("file", "content");
         if (blob != null) {
             created.setProperty("file", "content", blob);
-            String fname = (String) doc.getProperty("file", "filename");
-            created.setProperty("file", "filename", fname);
         }
 
         created = documentManager.saveDocument(created);

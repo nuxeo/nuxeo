@@ -63,7 +63,6 @@ public class TestPreviewAdapter {
         Map<String, Serializable> file = new HashMap<>();
         // Attach one file to the list
         file.put("file", (Serializable) blob);
-        file.put("filename", "test.txt");
         document.setPropertyValue("file:content", (Serializable) blob);
         assertEquals(true, adapter.hasBlobToPreview());
     }
@@ -79,7 +78,6 @@ public class TestPreviewAdapter {
         Map<String, Serializable> file = new HashMap<>();
         // Attach one file to the list
         file.put("file", (Serializable) blob);
-        file.put("filename", "test.txt");
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         files.add(file);
         document.setPropertyValue("files:files", files);

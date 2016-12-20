@@ -81,15 +81,14 @@ public class TestUploadFileRestlet implements LiveEditConstants {
         };
         String expectedFileName = "myfile.txt";
         String blobPropertyName = DEFAULT_SCHEMA + ":" + DEFAULT_BLOB_FIELD;
-        String filenamePropertyName = DEFAULT_SCHEMA + ":" + DEFAULT_FILENAME_FIELD;
-        restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName, filenamePropertyName,
+        restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
                 new ByteArrayInputStream("Content of the file.".getBytes("UTF-8")));
 
         // check that the upload has been done correctly
         doc = session.getDocument(doc.getRef());
-        assertEquals("The file name is", expectedFileName, doc.getProperty(DEFAULT_SCHEMA, DEFAULT_FILENAME_FIELD));
-        assertEquals("The content of the file is", "Content of the file.",
-                ((Blob) doc.getProperty(DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD)).getString());
+        Blob blob = (Blob) doc.getProperty(DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
+        assertEquals("The file name is", expectedFileName, blob.getFilename());
+        assertEquals("The content of the file is", "Content of the file.", blob.getString());
 
         // checking that no version has been created
         List<DocumentModel> versions = session.getVersions(doc.getRef());
@@ -131,15 +130,14 @@ public class TestUploadFileRestlet implements LiveEditConstants {
         };
         String expectedFileName = "myfile.txt";
         String blobPropertyName = DEFAULT_SCHEMA + ":" + DEFAULT_BLOB_FIELD;
-        String filenamePropertyName = DEFAULT_SCHEMA + ":" + DEFAULT_FILENAME_FIELD;
-        restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName, filenamePropertyName,
+        restlet.saveFileToDocument(expectedFileName, doc, blobPropertyName,
                 new ByteArrayInputStream("Content of the file.".getBytes("UTF-8")));
 
         // check that the upload has been done correctly
         doc = session.getDocument(doc.getRef());
-        assertEquals("The file name is", expectedFileName, doc.getProperty(DEFAULT_SCHEMA, DEFAULT_FILENAME_FIELD));
-        assertEquals("The content of the file is", "Content of the file.",
-                ((Blob) doc.getProperty(DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD)).getString());
+        Blob blob = (Blob) doc.getProperty(DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
+        assertEquals("The file name is", expectedFileName, blob.getFilename());
+        assertEquals("The content of the file is", "Content of the file.", blob.getString());
 
         // checking that version has been created and incremented
         List<DocumentModel> versions = session.getVersions(doc.getRef());

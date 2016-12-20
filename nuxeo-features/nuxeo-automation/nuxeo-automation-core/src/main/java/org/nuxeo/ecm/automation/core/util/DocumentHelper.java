@@ -95,7 +95,7 @@ public class DocumentHelper {
             // detect if a list of simple blobs or a list of files (blob
             // holder)
             Type ft = ((ListProperty) p).getType().getFieldType();
-            if (ft.isComplexType() && ((ComplexType) ft).getFieldsCount() == 2) {
+            if (ft.isComplexType() && ((ComplexType) ft).getFieldsCount() == 1) {
                 p.addValue(createBlobHolderMap(blob));
             } else {
                 p.addValue(blob);
@@ -106,9 +106,8 @@ public class DocumentHelper {
     }
 
     public static HashMap<String, Serializable> createBlobHolderMap(Blob blob) {
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         map.put("file", (Serializable) blob);
-        map.put("filename", blob.getFilename());
         return map;
     }
 

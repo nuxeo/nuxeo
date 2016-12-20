@@ -669,11 +669,9 @@ public class TestRenditionService {
         List<Map<String, Serializable>> files = new ArrayList<>();
         Map<String, Serializable> file = new HashMap<>();
         file.put("file", (Serializable) firstAttachedBlob);
-        file.put("filename", firstAttachedBlob.getFilename());
         files.add(file);
         file = new HashMap<>();
         file.put("file", (Serializable) secondAttachedBlob);
-        file.put("filename", secondAttachedBlob.getFilename());
         files.add(file);
 
         fileDocument.setPropertyValue(FILES_FILES_PROPERTY, (Serializable) files);

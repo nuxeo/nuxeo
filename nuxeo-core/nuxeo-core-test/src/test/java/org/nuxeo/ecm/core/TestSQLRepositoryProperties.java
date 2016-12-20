@@ -887,11 +887,12 @@ public class TestSQLRepositoryProperties {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
         List<Object> files = new ArrayList<>(2);
         Map<String, Object> f = new HashMap<>();
-        f.put("filename", "f1");
+        Blob blob = Blobs.createBlob("blob1");
+        f.put("file", blob);
         files.add(f);
         doc.setProperty("files", "files", files);
-        assertEquals("f1", doc.getPropertyValue("files/0/filename"));
-        assertEquals("f1", doc.getPropertyValue("files/item[0]/filename"));
+        assertEquals(blob, doc.getPropertyValue("files/0/file"));
+        assertEquals(blob, doc.getPropertyValue("files/item[0]/file"));
     }
 
     // other complex list

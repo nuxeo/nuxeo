@@ -132,9 +132,6 @@
       },
       "files:files": {
         "properties": {
-          "filename": {
-            "type": "string"
-          },
           "file": {
             "type" : "nested",
             "include_in_parent": true,

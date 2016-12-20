@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
@@ -86,15 +85,7 @@ public class FileService extends DefaultAdapter {
 
             String fileName = blob.getFilename();
             if (fileName == null) {
-                p = p.getParent();
-                if (p.isComplex()) { // special handling for file and files
-                    // schema
-                    try {
-                        fileName = (String) p.getValue("filename");
-                    } catch (PropertyException e) {
-                        fileName = "Unknown";
-                    }
-                }
+                fileName = "Unknown";
             }
 
             String digest = blob.getDigest();
@@ -150,19 +141,12 @@ public class FileService extends DefaultAdapter {
                     // files schema
                     // separately
                     Map<String, Serializable> map = new HashMap<String, Serializable>();
-                    map.put("filename", blob.getFilename());
                     map.put("file", (Serializable) blob);
                     p.addValue(map);
                 } else {
                     p.addValue(blob);
                 }
             } else {
-                if ("file".equals(p.getSchema().getName())) { // for
-                    // compatibility
-                    // with deprecated
-                    // filename
-                    p.getParent().get("filename").setValue(blob.getFilename());
-                }
                 p.setValue(blob);
             }
             // make snapshot

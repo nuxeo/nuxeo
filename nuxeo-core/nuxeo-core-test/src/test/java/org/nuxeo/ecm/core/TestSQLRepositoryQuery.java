@@ -228,7 +228,6 @@ public class TestSQLRepositoryQuery {
         Blob blob1 = Blobs.createBlob(content);
         blob1.setFilename(filename);
         file1.setPropertyValue("content", (Serializable) blob1);
-        file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
         file1.setPropertyValue("dc:coverage", "football");
@@ -333,7 +332,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfolder1_Title'");
         assertEquals(0, dml.size());
 
-        dml = session.query("SELECT * FROM File WHERE filename = 'testfile.txt'");
+        dml = session.query("SELECT * FROM File WHERE content/name = 'testfile.txt'");
         assertEquals(1, dml.size());
 
         dml = session.query("SELECT * FROM Note WHERE dc:title = 'testfile3_Title'");
@@ -351,10 +350,10 @@ public class TestSQLRepositoryQuery {
         assertEquals(1, dml.size());
 
         // this needs an actual LEFT OUTER JOIN
-        dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:title = 'testfile3_Title'");
+        dml = session.query("SELECT * FROM Document WHERE content/name = 'testfile.txt' OR dc:title = 'testfile3_Title'");
         assertEquals(2, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE filename = 'testfile.txt' OR dc:contributors = 'bob'");
+        dml = session.query("SELECT * FROM Document WHERE content/name = 'testfile.txt' OR dc:contributors = 'bob'");
         assertEquals(3, dml.size());
 
         // early detection of conflicting types for VCS
@@ -539,11 +538,11 @@ public class TestSQLRepositoryQuery {
         assertEquals(1, returnedChildDocs.length);
 
         childFile1 = returnedChildDocs[0];
-        childFile1.setProperty("file", "filename", "f1");
 
         // add a blob
         String s = "<html><head/><body>La la la!</body></html>";
         Blob blob = Blobs.createBlob(s, "text/html");
+        blob.setFilename("f1");
         childFile1.setProperty("file", "content", blob);
 
         session.saveDocument(childFile1);
@@ -2122,9 +2121,9 @@ public class TestSQLRepositoryQuery {
     @Test
     public void testQueryComplexTypeFiles() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
-        List<Object> files = new LinkedList<Object>();
-        Map<String, Object> f = new HashMap<String, Object>();
-        f.put("filename", "f1");
+        List<Object> files = new LinkedList<>();
+        Map<String, Object> f = new HashMap<>();
+        f.put("file", Blobs.createBlob("b1", "text/plain", "UTF-8", "f1"));
         files.add(f);
         doc.setProperty("files", "files", files);
         doc = session.createDocument(doc);

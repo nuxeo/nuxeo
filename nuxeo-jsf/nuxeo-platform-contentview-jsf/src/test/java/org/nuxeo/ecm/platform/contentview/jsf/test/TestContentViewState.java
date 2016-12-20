@@ -514,7 +514,6 @@ public class TestContentViewState {
         FileUtils.writeFile(tmpFile, "Content");
         Blob blob = Blobs.createBlob(tmpFile);
         file.put("file", (Serializable) blob);
-        file.put("filename", "initial_name.txt");
         files.add(file);
         searchDocument.setPropertyValue("files:files", files);
 
