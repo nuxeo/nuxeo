@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author ogrisel
  */
-public class StoryboardConverter extends BaseVideoConverter implements Converter {
+public class StoryboardConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(StoryboardConverter.class);
 

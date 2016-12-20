@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author ogrisel
  */
-public class ScreenshotConverter extends BaseVideoConverter implements Converter {
+public class ScreenshotConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(ScreenshotConverter.class);
 

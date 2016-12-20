@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.video.service;
 
+import static org.nuxeo.ecm.platform.video.service.Configuration.DEFAULT_CONFIGURATION;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -49,8 +50,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import static org.nuxeo.ecm.platform.video.service.Configuration.DEFAULT_CONFIGURATION;
 
 /**
  * Default implementation of {@link VideoService}.
@@ -158,12 +157,6 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    @Deprecated
-    public TranscodedVideo convert(VideoConversionId id, Video originalVideo, String conversionName) {
-        return convert(originalVideo, conversionName);
-    }
-
-    @Override
     public TranscodedVideo convert(Video originalVideo, String conversionName) {
         if (!videoConversions.registry.containsKey(conversionName)) {
             throw new NuxeoException(String.format("'%s' is not a registered video conversion.", conversionName));
@@ -177,13 +170,6 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         BlobHolder result = conversionService.convert(conversion.getConverter(), blobHolder, parameters);
         VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
         return TranscodedVideo.fromBlobAndInfo(conversionName, result.getBlob(), videoInfo);
-    }
-
-    @Override
-    @Deprecated
-    public VideoConversionStatus getProgressStatus(VideoConversionId id) {
-        DocumentLocation loc = id.getDocumentLocation();
-        return getProgressStatus(loc.getServerName(), loc.getIdRef().value, id.getConversionName());
     }
 
     @Override

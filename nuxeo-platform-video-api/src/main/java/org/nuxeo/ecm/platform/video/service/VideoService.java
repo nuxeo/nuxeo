@@ -63,28 +63,6 @@ public interface VideoService {
      */
     TranscodedVideo convert(Video originalVideo, String conversionName);
 
-    /**
-     * Convert the {@code originalVideo} using the given {@code conversionName}.
-     *
-     * @param id unique identifier of the video conversion calling this method, used for monitoring.
-     * @param originalVideo the video to convert
-     * @param conversionName the video conversion to use
-     * @return a {@code TranscodedVideo} object for the converted video.
-     * @deprecated since 5.7.3, use the API without id
-     * @see #convert(Video, String)
-     */
-    @Deprecated
-    TranscodedVideo convert(VideoConversionId id, Video originalVideo, String conversionName);
-
-    /**
-     * Returns the status of the video conversion identified by the given {@code id}.
-     *
-     * @param id unique identifier of the video conversion
-     * @deprecated since 5.7.3, use the other API with a document
-     * @see #getProgressStatus(String, String, String)
-     */
-    @Deprecated
-    VideoConversionStatus getProgressStatus(VideoConversionId id);
 
     /**
      * Returns the status of the video conversion with the given conversion name on the given document.
