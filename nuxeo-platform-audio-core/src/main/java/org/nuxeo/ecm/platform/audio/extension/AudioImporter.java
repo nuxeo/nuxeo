@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,7 +68,8 @@ public class AudioImporter extends AbstractFileImporter {
             docModel.setProperty("dublincore", "title", title);
 
             // now save the uploaded file as another new version
-            docModel = overwriteAndIncrementversion(documentManager, docModel);
+            checkIn(docModel);
+            docModel = documentManager.saveDocument(docModel);
 
         } else {
             PathSegmentService pss = Framework.getService(PathSegmentService.class);
