@@ -25,9 +25,9 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -107,7 +107,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 }
             }
         });
-        byte[] keystoreBytes = Base64.decode(keystore64Encoded);
+        byte[] keystoreBytes = Base64.decodeBase64(keystore64Encoded);
         ByteArrayInputStream byteIS = new ByteArrayInputStream(keystoreBytes);
         return getCertService().getKeyStore(byteIS, userKeystorePassword);
     }
@@ -136,7 +136,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 KeyStore keystore = getCertService().initializeUser(getUserInfo(user), userKeyPassword);
                 ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
                 getCertService().storeCertificate(keystore, byteOS, userKeyPassword);
-                String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
+                String keystore64Encoded = Base64.encodeBase64String(byteOS.toByteArray());
                 map.put("keystore", keystore64Encoded);
                 map.put("certificate", getUserCertInfo(keystore, user));
                 map.put("keypassword", userKeyPassword);

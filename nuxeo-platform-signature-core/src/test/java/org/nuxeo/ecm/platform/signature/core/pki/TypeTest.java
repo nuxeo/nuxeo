@@ -33,10 +33,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -108,7 +108,7 @@ public class TypeTest {
             KeyStore keystore = certService.initializeUser(getUserInfo(userID), USER_KEY_PASSWORD);
             ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
             keystore.store(byteOS, USER_KEYSTORE_PASSWORD.toCharArray());
-            String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
+            String keystore64Encoded = Base64.encodeBase64String(byteOS.toByteArray());
             map.put("keystore", keystore64Encoded);
 
             DocumentModel entry = sqlSession.createEntry(map);
@@ -117,7 +117,7 @@ public class TypeTest {
             // retrieve a persisted entry from the directory
             DocumentModel entryFromSession = sqlSession.getEntry(userID);
             String keystore64EncodedFromSession = (String) entryFromSession.getPropertyValue("cert:keystore");
-            byte[] keystoreBytes = Base64.decode(keystore64EncodedFromSession);
+            byte[] keystoreBytes = Base64.decodeBase64(keystore64EncodedFromSession);
             ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(keystoreBytes);
             keystore.load(keystoreByteIS, USER_KEYSTORE_PASSWORD.toCharArray());
             AliasWrapper userAlias = new AliasWrapper(userID);
