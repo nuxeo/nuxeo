@@ -132,7 +132,7 @@ public class TestAudioImporter {
 
         Blob contentBlob = (Blob) docModel.getProperty("file", "content");
         assertNotNull(contentBlob);
-        assertEquals("sample.wav", docModel.getProperty("file", "filename"));
+        assertEquals("sample.wav", contentBlob.getFilename());
 
         // check that we don't get PropertyExceptions when accessing the audio
         // schema

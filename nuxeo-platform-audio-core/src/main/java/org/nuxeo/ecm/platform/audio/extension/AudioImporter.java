@@ -54,6 +54,7 @@ public class AudioImporter extends AbstractFileImporter {
             String fullname, TypeManager typeService) throws IOException {
 
         String filename = FileManagerUtils.fetchFileName(fullname);
+        content.setFilename(filename);
 
         String title = FileManagerUtils.fetchTitle(filename);
 
@@ -83,7 +84,6 @@ public class AudioImporter extends AbstractFileImporter {
             // update known attributes, format is: schema, attribute, value
             docModel.setProperty("dublincore", "title", title);
             docModel.setProperty("file", "content", content);
-            docModel.setProperty("file", "filename", filename);
 
             // updating icon
             Type type = typeService.getType(docType);
