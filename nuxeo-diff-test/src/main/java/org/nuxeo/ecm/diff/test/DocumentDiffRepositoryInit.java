@@ -85,7 +85,6 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         // file
         // -----------------------
-        doc.setPropertyValue("file:filename", "Joe.txt");
         Blob blob = Blobs.createBlob("Joe is rich.");
         blob.setFilename("Joe.txt");
         doc.setPropertyValue("file:content", (Serializable) blob);
@@ -96,28 +95,24 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         List<Map<String, Serializable>> files = new ArrayList<>();
 
         Map<String, Serializable> file = new HashMap<>();
-        file.put("filename", "first_attachement.txt");
         blob = Blobs.createBlob("Content of the first blob");
         blob.setFilename("first_attachement.txt");
         file.put("file", (Serializable) blob);
         files.add(file);
 
         file = new HashMap<>();
-        file.put("filename", "second_attachement.txt");
         blob = Blobs.createBlob("Content of the second blob");
         blob.setFilename("second_attachement.txt");
         file.put("file", (Serializable) blob);
         files.add(file);
 
         file = new HashMap<>();
-        file.put("filename", "third_attachement.txt");
         blob = Blobs.createBlob("Content of the third blob");
         blob.setFilename("third_attachement.txt");
         file.put("file", (Serializable) blob);
         files.add(file);
 
         file = new HashMap<>();
-        file.put("filename", "fourth_attachement.txt");
         blob = Blobs.createBlob("Content of the fourth blob");
         blob.setFilename("fourth_attachement.txt");
         file.put("file", (Serializable) blob);
@@ -206,7 +201,6 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         // file
         // -----------------------
-        doc.setPropertyValue("file:filename", "Jack.txt");
         Blob blob = Blobs.createBlob("Joe is rich, Jack is not.");
         blob.setFilename("Jack.txt");
         doc.setPropertyValue("file:content", (Serializable) blob);
@@ -217,21 +211,18 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         List<Map<String, Serializable>> files = new ArrayList<>();
 
         Map<String, Serializable> file = new HashMap<>();
-        file.put("filename", "first_attachement.txt");
         blob = Blobs.createBlob("Content of the first blob");
         blob.setFilename("first_attachement.txt");
         file.put("file", (Serializable) blob);
         files.add(file);
 
         file = new HashMap<>();
-        file.put("filename", "the_file_name_is_different.txt");
         blob = Blobs.createBlob("Content of the second blob");
         blob.setFilename("the_file_name_is_different.txt");
         file.put("file", (Serializable) blob);
         files.add(file);
 
         file = new HashMap<>();
-        file.put("filename", "third_attachement.txt");
         blob = Blobs.createBlob("Different content of the third blob");
         blob.setFilename("third_attachement.txt");
         file.put("file", (Serializable) blob);

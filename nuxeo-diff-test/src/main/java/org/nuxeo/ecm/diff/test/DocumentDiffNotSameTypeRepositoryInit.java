@@ -51,8 +51,8 @@ public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositor
         // -----------------------
         // file
         // -----------------------
-        doc.setPropertyValue("file:filename", "joe.doc");
-        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("Joe is bask."));
+        doc.setPropertyValue("file:content",
+                (Serializable) Blobs.createBlob("Joe is bask.", "text/plain", "UTF-8", "joe.doc"));
 
         // -----------------------
         // simpletypes

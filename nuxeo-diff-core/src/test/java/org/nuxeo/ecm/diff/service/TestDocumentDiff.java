@@ -141,10 +141,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // ---------------------------
         // Check file schema
         // ---------------------------
-        schemaDiff = checkSchemaDiff(docDiff, "file", 2);
+        schemaDiff = checkSchemaDiff(docDiff, "file", 1);
 
-        // filename => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("filename"), PropertyType.STRING, "Joe.txt", "Jack.txt");
         // content => different
         ContentPropertyDiff expectedContentFieldDiff = new ContentPropertyDiff(DifferenceType.different);
         Blob leftBlob = (Blob) leftDoc.getPropertyValue("file:content");
@@ -166,8 +164,6 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("filename", new SimplePropertyDiff(PropertyType.STRING,
-                "second_attachement.txt", "the_file_name_is_different.txt"));
         item1ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.differentFilename,
                 new ContentProperty(null, null, "second_attachement.txt", null), new ContentProperty(null, null,
                         "the_file_name_is_different.txt", null)));
@@ -180,8 +176,6 @@ public class TestDocumentDiff extends DiffTestCase {
                         getDigest(rightBlob))));
 
         ComplexPropertyDiff item3ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item3ExpectedComplexFieldDiff.putDiff("filename", new SimplePropertyDiff(PropertyType.STRING,
-                "fourth_attachement.txt", null));
         leftBlob = (Blob) leftDoc.getPropertyValue("files:files/3/file");
         item3ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.different,
                 new ContentProperty("UTF-8", "text/plain", "fourth_attachement.txt", getDigest(leftBlob)),
@@ -363,10 +357,8 @@ public class TestDocumentDiff extends DiffTestCase {
         // ---------------------------
         // Check file schema
         // ---------------------------
-        schemaDiff = checkSchemaDiff(docDiff, "file", 2);
+        schemaDiff = checkSchemaDiff(docDiff, "file", 1);
 
-        // filename => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("filename"), PropertyType.STRING, "Jack.txt", "Joe.txt");
         // content => different
         ContentPropertyDiff expectedContentFieldDiff = new ContentPropertyDiff(DifferenceType.different);
         Blob leftBlob = (Blob) leftDoc.getPropertyValue("file:content");
@@ -388,8 +380,6 @@ public class TestDocumentDiff extends DiffTestCase {
         expectedListFieldDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
 
         ComplexPropertyDiff item1ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item1ExpectedComplexFieldDiff.putDiff("filename", new SimplePropertyDiff(PropertyType.STRING,
-                "the_file_name_is_different.txt", "second_attachement.txt"));
         item1ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.differentFilename,
                 new ContentProperty(null, null, "the_file_name_is_different.txt", null), new ContentProperty(null,
                         null, "second_attachement.txt", null)));
@@ -402,8 +392,6 @@ public class TestDocumentDiff extends DiffTestCase {
                         getDigest(rightBlob))));
 
         ComplexPropertyDiff item3ExpectedComplexFieldDiff = new ComplexPropertyDiff();
-        item3ExpectedComplexFieldDiff.putDiff("filename", new SimplePropertyDiff(PropertyType.STRING, null,
-                "fourth_attachement.txt"));
         rightBlob = (Blob) rightDoc.getPropertyValue("files:files/3/file");
         item3ExpectedComplexFieldDiff.putDiff("file", new ContentPropertyDiff(DifferenceType.different,
                 new ContentProperty(), new ContentProperty("UTF-8", "text/plain", "fourth_attachement.txt",

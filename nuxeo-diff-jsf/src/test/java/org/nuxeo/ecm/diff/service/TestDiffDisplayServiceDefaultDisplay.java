@@ -92,8 +92,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         leftDoc.setPropertyValue("dc:creator", "Joe");
         List<Map<String, Serializable>> files = new ArrayList<>();
         Map<String, Serializable> file = new HashMap<>();
-        file.put("file", (Serializable) Blobs.createBlob("Joe is not rich."));
-        file.put("filename", "Joe.txt");
+        file.put("file", (Serializable) Blobs.createBlob("Joe is not rich.", "text/plain", "UTF-8", "Joe.txt"));
         files.add(file);
         leftDoc.setPropertyValue("files:files", (Serializable) files);
         leftDoc = session.createDocument(leftDoc);
@@ -114,8 +113,8 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         rightDoc.setPropertyValue("dc:creator", "Jack");
         files = new ArrayList<>();
         file = new HashMap<>();
-        file.put("file", (Serializable) Blobs.createBlob("Joe is not rich, nor is Jack."));
-        file.put("filename", "Jack.pdf");
+        file.put("file",
+                (Serializable) Blobs.createBlob("Joe is not rich, nor is Jack.", "text/plain", "UTF-8", "Jack.pdf"));
         files.add(file);
         rightDoc.setPropertyValue("files:files", (Serializable) files);
         rightDoc = session.createDocument(rightDoc);
