@@ -199,7 +199,7 @@ public class TestVideoImporterAndListeners {
         assertEquals("sample.mpg", docModel.getTitle());
 
         assertNotNull(docModel.getProperty("file:content"));
-        assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
+        assertEquals("sample.mpg", docModel.getPropertyValue("file:content/name"));
 
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
