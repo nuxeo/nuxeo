@@ -42,9 +42,4 @@ public class FileSystemItemFactoryReloadListener implements EventListener {
         }
     }
 
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
 }
