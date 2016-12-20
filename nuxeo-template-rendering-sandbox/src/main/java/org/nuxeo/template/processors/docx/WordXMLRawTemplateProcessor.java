@@ -130,7 +130,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
         ZipUtils.zip(files, newZipFile);
 
         // clean up
-        FileUtils.deleteTree(workingDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(workingDir);
 
         Blob newBlob = Blobs.createBlob(newZipFile);
         Framework.trackFile(newZipFile, newBlob);

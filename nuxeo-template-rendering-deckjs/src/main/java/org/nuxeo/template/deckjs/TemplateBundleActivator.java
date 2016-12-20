@@ -24,10 +24,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.osgi.framework.BundleActivator;
@@ -95,7 +95,7 @@ public class TemplateBundleActivator implements BundleActivator {
     @SuppressWarnings("deprecation")
     protected static void cleanupDataDirPath() {
         if (tmpDir != null) {
-            FileUtils.deleteTree(tmpDir);
+            FileUtils.deleteQuietly(tmpDir);
             tmpDir = null;
         }
         dataDirPath = null;
@@ -132,7 +132,7 @@ public class TemplateBundleActivator implements BundleActivator {
                 if (!parent.exists()) {
                     parent.mkdirs();
                 }
-                FileUtils.copyToFile(is, f);
+                FileUtils.copyInputStreamToFile(is, f);
             } catch (IOException e) {
                 throw new NuxeoException("Failed for template: " + resourceURL, e);
             }

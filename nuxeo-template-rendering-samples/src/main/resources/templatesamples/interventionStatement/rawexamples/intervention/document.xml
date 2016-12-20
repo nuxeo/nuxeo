@@ -51,7 +51,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon/>
     <common:icon-expanded/>
-    <common:size/>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
     <file:content/>

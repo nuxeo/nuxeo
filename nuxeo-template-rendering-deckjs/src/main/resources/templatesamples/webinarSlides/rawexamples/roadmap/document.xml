@@ -405,14 +405,12 @@
           <data>6f9127b1.blob</data>
           <digest>d6a0abcc61e98c6a136b0ef246295a7c</digest>
         </file>
-        <filename><![CDATA[plumbers.png]]></filename>
       </item>
     </files:files>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/note.gif]]></common:icon>
     <common:icon-expanded><![CDATA[]]></common:icon-expanded>
-    <common:size><![CDATA[0]]></common:size>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
     <relatedtext:relatedtextresources/>

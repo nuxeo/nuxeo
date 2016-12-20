@@ -62,7 +62,6 @@
     name="common">
     <common:icon>/icons/note.gif</common:icon>
     <common:icon-expanded />
-    <common:size />
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/"
     name="relatedtext">

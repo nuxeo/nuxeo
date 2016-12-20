@@ -48,7 +48,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/odt.png]]></common:icon>
     <common:icon-expanded/>
-    <common:size><![CDATA[402159]]></common:size>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
     <file:content>

@@ -56,7 +56,6 @@
     name="common">
     <common:icon>/icons/odt.png</common:icon>
     <common:icon-expanded />
-    <common:size>116250</common:size>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/"
     name="file">

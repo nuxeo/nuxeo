@@ -61,7 +61,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/note.gif]]></common:icon>
     <common:icon-expanded><![CDATA[]]></common:icon-expanded>
-    <common:size><![CDATA[0]]></common:size>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
     <relatedtext:relatedtextresources/>

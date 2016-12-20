@@ -97,7 +97,8 @@ public class OOoArchiveModifier {
         // ZipUtils.zip(unzipDir.listFiles(), oooFile);
         mkOOoZip(unzipDir, oooFile);
 
-        FileUtils.deleteTree(unzipDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(unzipDir);
+        unzipDir.delete();
 
         return oooFile;
 

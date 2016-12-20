@@ -37,7 +37,6 @@ Your account executive will be in touch with you shortly. In the meantime, pleas
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/img/portfolio-16.png]]></common:icon>
-    <common:size/>
     <common:icon-expanded/>
   </schema>
   <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">

@@ -53,7 +53,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/image.gif]]></common:icon>
     <common:icon-expanded><![CDATA[]]></common:icon-expanded>
-    <common:size><![CDATA[56770]]></common:size>
   </schema>
   <schema xmlns:cr="http://www.nuxeo.org/ecm/project/schemas/template-module-demo/customer_reference" name="customer_reference">
     <cr:industry><![CDATA[Energy]]></cr:industry>

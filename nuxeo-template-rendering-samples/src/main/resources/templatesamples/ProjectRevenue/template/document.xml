@@ -34,7 +34,6 @@
     </file:content>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
-    <common:size><![CDATA[11063]]></common:size>
     <common:icon><![CDATA[/icons/xlsx.png]]></common:icon>
     <common:icon-expanded/>
   </schema>

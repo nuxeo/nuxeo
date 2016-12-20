@@ -61,7 +61,6 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/webtemplate.png]]></common:icon>
     <common:icon-expanded><![CDATA[]]></common:icon-expanded>
-    <common:size><![CDATA[0]]></common:size>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

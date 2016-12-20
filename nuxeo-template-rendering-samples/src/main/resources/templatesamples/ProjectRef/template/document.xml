@@ -33,7 +33,6 @@
     </file:content>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
-    <common:size><![CDATA[33278]]></common:size>
     <common:icon><![CDATA[/icons/docx.png]]></common:icon>
     <common:icon-expanded/>
   </schema>
