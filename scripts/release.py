@@ -266,7 +266,7 @@ given the path parameter.
         if next_snapshot != "auto":
             self.next_snapshot = next_snapshot
         elif self.is_final:
-            snapshot_split = re.match("(^.*)(\d+)(-SNAPSHOT$)", self.snapshot)
+            snapshot_split = re.match("(^.*HF)(\d+)(-SNAPSHOT$)", self.snapshot)
             self.next_snapshot = (
                 snapshot_split.group(1)
                 + str(int(snapshot_split.group(2)) + 1)  # increment minor
