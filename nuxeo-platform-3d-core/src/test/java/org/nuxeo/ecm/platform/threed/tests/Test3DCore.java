@@ -95,7 +95,6 @@ public class Test3DCore {
         assertEquals(doc.getType(), THREED_TYPE);
         assertTrue(doc.hasFacet(THREED_FACET));
         assertEquals(blob.getFilename(), doc.getName());
-        assertEquals(blob.getFilename(), doc.getPropertyValue("file:filename"));
         assertEquals(blob, doc.getPropertyValue("file:content"));
     }
 
