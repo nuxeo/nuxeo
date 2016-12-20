@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,12 +49,12 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -79,9 +80,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <tr>
  * <th>STEP</th>
  * <th>DF</th>
- * <th>AMV</th>
- * <th>DVF</th>
  * <th>AM+DV</th>
+ * <th>DVF</th>
+ * <th>AMV</th>
  * </tr>
  * <tr>
  * <td>1</td>
@@ -119,7 +120,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <td>2.1</td>
  * </tr>
  * <tr>
- * <td>5</td>
+ * <td>6</td>
  * <td>4.0+</td>
  * <td>0.6</td>
  * <td>4.0+</td>
@@ -131,7 +132,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
-@RandomBug.Repeat(issue = "NXP-20468")
 public class TestVersioningFileSystemItemFactory {
 
     // needs to be bigger than 1s for MySQL
@@ -237,6 +237,7 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             Blob newBlob = new StringBlob("This is a new file.");
             newBlob.setFilename("New blob.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -291,6 +292,7 @@ public class TestVersioningFileSystemItemFactory {
             // 4. Change without delay
             // ------------------------------------------------------
             newBlob.setFilename("File name modified again as draft.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -403,6 +405,7 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             Blob newBlob = new StringBlob("This is a new file.");
             newBlob.setFilename("New blob.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -457,6 +460,7 @@ public class TestVersioningFileSystemItemFactory {
             // 4. Change without delay
             // ------------------------------------------------------
             newBlob.setFilename("File name modified again as draft.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -563,6 +567,7 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             Blob newBlob = new StringBlob("This is a new file.");
             newBlob.setFilename("New blob.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -622,6 +627,7 @@ public class TestVersioningFileSystemItemFactory {
             // 4. Change without delay
             // ------------------------------------------------------
             newBlob.setFilename("File name modified again as new draft.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -740,6 +746,7 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             Blob newBlob = new StringBlob("This is a new file.");
             newBlob.setFilename("New blob.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -798,6 +805,7 @@ public class TestVersioningFileSystemItemFactory {
             // 4. Change without delay
             // ------------------------------------------------------
             newBlob.setFilename("File name modified again as draft.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -892,6 +900,16 @@ public class TestVersioningFileSystemItemFactory {
         } else {
             return ((Long) propVal).longValue();
         }
+    }
+
+    /**
+     * Ensures that the given document has just been modified to avoid a false positive when checking if versioning is
+     * needed in {@link DefaultFileSystemItemFactory#needsVersioning(DocumentModel)}.
+     */
+    protected void ensureJustModified(DocumentModel doc, CoreSession session) {
+        doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+        session.saveDocument(doc);
     }
 
 }

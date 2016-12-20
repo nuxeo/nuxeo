@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -611,6 +612,7 @@ public class DefaultFileSystemItemFactoryFixture {
             // ------------------------------------------------------
             Blob newBlob = new StringBlob("This is a new file.");
             newBlob.setFilename("New blob.txt");
+            ensureJustModified(file, session);
             fileItem.setBlob(newBlob);
             file = session.getDocument(file.getRef());
             Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -666,6 +668,7 @@ public class DefaultFileSystemItemFactoryFixture {
             file.setPropertyValue("file:filename", "newTitle");
             session.saveDocument(file);
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+            ensureJustModified(file, session);
             fileItem.rename("Renamed file.txt");
             file = session.getDocument(file.getRef());
             updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -1151,5 +1154,15 @@ public class DefaultFileSystemItemFactoryFixture {
         } finally {
             Framework.getProperties().putAll(lastProps);
         }
+    }
+
+    /**
+     * Ensures that the given document has just been modified to avoid a false positive when checking if versioning is
+     * needed in {@link DefaultFileSystemItemFactory#needsVersioning(DocumentModel)}.
+     */
+    protected void ensureJustModified(DocumentModel doc, CoreSession session) {
+        doc.setPropertyValue("dc:modified", Calendar.getInstance());
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+        session.saveDocument(doc);
     }
 }
