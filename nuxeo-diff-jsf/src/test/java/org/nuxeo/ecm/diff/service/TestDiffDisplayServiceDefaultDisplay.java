@@ -86,7 +86,6 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
         // Set properties from the "common" schema. They should be ignored in
         // the diff display since this schema is excluded.
         leftDoc.setPropertyValue("common:icon", "icons/note.gif");
-        leftDoc.setPropertyValue("common:size", 10);
         // Set other properties
         leftDoc.setPropertyValue("dc:description", "Description of my sample type.");
         leftDoc.setPropertyValue("dc:subjects", new String[] { "Art", "Architecture" });
