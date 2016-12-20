@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp.summary">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
+    <widgetType name="summary_current_document_actions">
+      <configuration>
+        <sinceVersion>8.10</sinceVersion>
+      </configuration>
+    </widgetType>
+  </extension>
+
+</component>

@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nuxeo</groupId>
+  <artifactId>nuxeo-ecm</artifactId>
+  <version>8.10-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo ECM Scripts Tests</name>
+
+  <url>http://www.nuxeo.com/en/products</url>
+  <organization>
+    <name>Nuxeo SA</name>
+    <url>http://www.nuxeo.com</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+</project>
