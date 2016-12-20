@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
  * Contributors:
  *     Thomas Roger
  */
-
 package org.nuxeo.ecm.platform.importer.properties;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -85,8 +82,7 @@ public class MetadataFile {
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromSchemas(DocumentModel doc, List<String> allPropertiesSchemas)
-            {
+    public static MetadataFile createFromSchemas(DocumentModel doc, List<String> allPropertiesSchemas) {
         return createFromSchemasAndProperties(doc, allPropertiesSchemas, Collections.<String> emptyList());
     }
 
@@ -142,10 +138,10 @@ public class MetadataFile {
                 List<String> list = (List<String>) value;
                 if (!list.isEmpty()) {
                     if (list.size() == 1) {
-                        list = new ArrayList<String>(list);
+                        list = new ArrayList<>(list);
                         list.add("");
                     }
-                    metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.LIST_SEPARATOR));
+                    metadataProperties.put(propertyKey, String.join(MetadataCollector.LIST_SEPARATOR, list));
                 }
             } catch (ClassCastException e) {
                 // do nothing
@@ -154,10 +150,10 @@ public class MetadataFile {
             List<String> list = Arrays.asList((String[]) value);
             if (!list.isEmpty()) {
                 if (list.size() == 1) {
-                    list = new ArrayList<String>(list);
+                    list = new ArrayList<>(list);
                     list.add("");
                 }
-                metadataProperties.put(propertyKey, StringUtils.join(list, MetadataCollector.ARRAY_SEPARATOR));
+                metadataProperties.put(propertyKey, String.join(MetadataCollector.ARRAY_SEPARATOR, list));
             }
         } else if (value instanceof Calendar) {
             metadataProperties.put(propertyKey, new DateType().encode(value));
