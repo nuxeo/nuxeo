@@ -303,7 +303,10 @@ public class TestService extends NXRuntimeTestCase {
 
     }
 
+    public static final String NXP21214 = "NXP-21214: GC runs are not always correct";
+
     @Test
+    @Ignore(NXP21214)
     public void testGC2() throws Exception {
         int reduceSize = 500;
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
