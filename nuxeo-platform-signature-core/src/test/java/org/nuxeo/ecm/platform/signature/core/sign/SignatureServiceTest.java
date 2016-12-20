@@ -350,7 +350,6 @@ public class SignatureServiceTest {
         Blob archivedBlob = (Blob) files.get(0).get("file");
         assertEquals("text/plain", archivedBlob.getMimeType());
         assertEquals("foo archive.txt", archivedBlob.getFilename());
-        assertEquals("foo archive.txt", files.get(0).get("filename"));
     }
 
     @Test
@@ -396,7 +395,7 @@ public class SignatureServiceTest {
                 SigningDisposition.ARCHIVE, "foo archive.pdf");
 
         assertEquals("foo.pdf", signedBlob.getFilename());
-        assertEquals(Arrays.asList("Signature1"), getSignatureNames(signedBlob));
+        assertEquals(Collections.singletonList("Signature1"), getSignatureNames(signedBlob));
         assertEquals(signedBlob, doc.getPropertyValue("file:content"));
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
@@ -404,7 +403,6 @@ public class SignatureServiceTest {
         Blob archivedBlob = (Blob) files.get(0).get("file");
         assertEquals("application/pdf", archivedBlob.getMimeType());
         assertEquals("foo archive.pdf", archivedBlob.getFilename());
-        assertEquals("foo archive.pdf", files.get(0).get("filename"));
     }
 
     @Test

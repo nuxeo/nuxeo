@@ -112,8 +112,6 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
 
     protected static final String FILES_FILE = "file";
 
-    protected static final String FILES_FILENAME = "filename";
-
     protected static final String USER_EMAIL = "user:email";
 
     protected final Map<String, SignatureDescriptor> signatureRegistryMap;
@@ -222,7 +220,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
                 if (status != UNSIGNED) {
                     String pathbase = FILES_FILES + "/" + i + "/";
                     String path = pathbase + FILES_FILE;
-                    BlobHolder bh = new DocumentBlobHolder(doc, path, pathbase + FILES_FILENAME);
+                    BlobHolder bh = new DocumentBlobHolder(doc, path);
                     return new StatusWithBlob(status, blob, bh, path);
                 }
             }
@@ -284,7 +282,6 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             originalBlob.setFilename(archiveFilename);
             map = new HashMap<>();
             map.put(FILES_FILE, (Serializable) originalBlob);
-            map.put(FILES_FILENAME, originalBlob.getFilename());
             listDiff = new ListDiff();
             listDiff.add(map);
             doc.setPropertyValue(FILES_FILES, listDiff);
@@ -295,7 +292,6 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
             // set as first attachment
             map = new HashMap<>();
             map.put(FILES_FILE, (Serializable) signedBlob);
-            map.put(FILES_FILENAME, signedBlob.getFilename());
             listDiff = new ListDiff();
             listDiff.insert(0, map);
             doc.setPropertyValue(FILES_FILES, listDiff);
