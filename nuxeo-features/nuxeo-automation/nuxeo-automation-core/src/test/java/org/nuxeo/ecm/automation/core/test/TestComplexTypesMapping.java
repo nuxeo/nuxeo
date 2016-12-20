@@ -67,14 +67,13 @@ public class TestComplexTypesMapping {
         blob.setFilename("Yo.txt");
         doc.setPropertyValue("file:content", (Serializable) blob);
 
-        List<Map<String, Object>> blobs = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> blobs = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Blob subblob = Blobs.createBlob("Yo" + i);
             subblob.setFilename("File" + i + ".txt");
 
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
             map.put("file", subblob);
-            map.put("filename", "File" + i + ".txt");
             blobs.add(map);
         }
         doc.setPropertyValue("files:files", (Serializable) blobs);
@@ -83,15 +82,15 @@ public class TestComplexTypesMapping {
 
         doc.addFacet("Addresses");
 
-        Map<String, Object> address = new HashMap<String, Object>();
+        Map<String, Object> address = new HashMap<>();
         address.put("streetNumber", "1bis");
         address.put("streetName", "whatever");
         address.put("zipCode", 75020);
         doc.setPropertyValue("addr:addressSingle", (Serializable) address);
 
-        List<Map<String, Object>> addresses = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> addresses = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            Map<String, Object> add = new HashMap<String, Object>();
+            Map<String, Object> add = new HashMap<>();
             add.put("streetNumber", "" + i);
             add.put("streetName", "whatever");
             add.put("zipCode", 75000 + i);

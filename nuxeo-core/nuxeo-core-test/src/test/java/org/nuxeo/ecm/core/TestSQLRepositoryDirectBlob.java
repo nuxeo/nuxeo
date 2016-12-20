@@ -116,9 +116,9 @@ public class TestSQLRepositoryDirectBlob {
         String filename = "doc.txt";
         long length = binary.getFile().length();
         Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, length);
+        blob.setFilename(filename);
         assertEquals("MD5", blob.getDigestAlgorithm());
         assertEquals(digest, blob.getDigest());
-        file.setProperty("file", "filename", filename);
         file.setProperty("file", "content", blob);
         session.saveDocument(file);
         session.save();

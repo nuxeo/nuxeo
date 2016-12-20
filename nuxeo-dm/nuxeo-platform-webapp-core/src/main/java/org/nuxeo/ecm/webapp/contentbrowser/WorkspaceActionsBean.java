@@ -280,8 +280,6 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
             Blob blob = (Blob) tmpWorkspace.getProperty("file", "content");
             if (blob != null) {
                 created.setProperty("file", "content", blob);
-                String fname = (String) tmpWorkspace.getProperty("file", "filename");
-                created.setProperty("file", "filename", fname);
             }
 
             created = documentManager.saveDocument(created);

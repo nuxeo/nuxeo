@@ -144,10 +144,6 @@ public class TestTypedExportedDocument {
         schemaNode = (Node) xpath.evaluate("//schema[@name='file']", document, XPathConstants.NODE);
         assertNotNull(schemaNode);
 
-        fieldNode = (Node) xpath.evaluate("//file:filename[@type='string']", document, XPathConstants.NODE);
-        assertNotNull(fieldNode);
-        assertEquals("test_file.doc", fieldNode.getTextContent());
-
         fieldNode = (Node) xpath.evaluate("//file:content[@type='content']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
 

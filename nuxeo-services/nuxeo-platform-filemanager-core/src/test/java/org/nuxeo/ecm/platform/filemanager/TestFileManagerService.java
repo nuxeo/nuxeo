@@ -107,10 +107,10 @@ public class TestFileManagerService {
                 "test-data/hello.doc");
         assertNotNull(doc);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         BinaryBlob blob = (BinaryBlob) doc.getProperty("file", "content");
         assertEquals("application/msword", blob.getMimeType());
+        assertEquals("hello.doc", blob.getFilename());
 
         // let's make the same test but this time without mime-type checking
         // because the blob already carries a mime-type that matches the file name
@@ -119,10 +119,10 @@ public class TestFileManagerService {
             "test-data/hello2.doc", true);
         assertNotNull(doc);
         assertEquals("hello2.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello2.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         blob = (BinaryBlob) doc.getProperty("file", "content");
         assertEquals("application/msword", blob.getMimeType());
+        assertEquals("hello2.doc", blob.getFilename());
     }
 
     @Test
@@ -136,20 +136,20 @@ public class TestFileManagerService {
             "test-data/hello3.doc");
         assertNotNull(doc);
         assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello3.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         BinaryBlob blob = (BinaryBlob) doc.getProperty("file", "content");
         assertEquals("application/msword", blob.getMimeType());
+        assertEquals("hello3.doc", blob.getFilename());
 
         input = Blobs.createBlob(file, "application/sometype");
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
             "test-data/hello3.doc", true);
         assertNotNull(doc);
         assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello3.doc", doc.getProperty("file", "filename"));
         assertNotNull(doc.getProperty("file", "content"));
         blob = (BinaryBlob) doc.getProperty("file", "content");
         assertEquals("application/sometype", blob.getMimeType());
+        assertEquals("hello3.doc", blob.getFilename());
     }
 
     @Test
@@ -164,8 +164,9 @@ public class TestFileManagerService {
 
         assertNotNull(doc);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello.doc", doc.getProperty("file", "filename"));
-        assertNotNull(doc.getProperty("file", "content"));
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("hello.doc", blob.getFilename());
 
         List<DocumentModel> versions = coreSession.getVersions(docRef);
         assertEquals(0, versions.size());
@@ -178,8 +179,9 @@ public class TestFileManagerService {
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello.doc", doc.getProperty("file", "filename"));
-        assertNotNull(doc.getProperty("file", "content"));
+        blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("hello.doc", blob.getFilename());
 
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());
@@ -197,8 +199,9 @@ public class TestFileManagerService {
 
         assertNotNull(doc);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello.doc", doc.getProperty("file", "filename"));
-        assertNotNull(doc.getProperty("file", "content"));
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("hello.doc", blob.getFilename());
 
         // update it with another file with same name
         doc = service.updateDocumentFromBlob(coreSession, input, workspace.getPathAsString(),
@@ -208,8 +211,9 @@ public class TestFileManagerService {
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello.doc", doc.getProperty("dublincore", "title"));
-        assertEquals("hello.doc", doc.getProperty("file", "filename"));
-        assertNotNull(doc.getProperty("file", "content"));
+        blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("hello.doc", blob.getFilename());
     }
 
     protected static final String SEPARATOR = "\n";
@@ -400,7 +404,6 @@ public class TestFileManagerService {
         DocumentModel doc = coreSession.createDocumentModel(workspace.getPathAsString(), "hello.html", "File");
         doc.setPropertyValue("dc:title", "hello.html");
         doc.setPropertyValue("file:content", (Serializable) input);
-        doc.setPropertyValue("file:filename", "hello.html");
 
         // create doc
         doc = coreSession.createDocument(doc);
@@ -409,8 +412,9 @@ public class TestFileManagerService {
 
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals("hello.html", doc.getProperty("file", "filename"));
-        assertNotNull(doc.getProperty("file", "content"));
+        Blob blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("hello.html", blob.getFilename());
         assertTrue(extractText(doc).contains("RTF"));
         assertEquals("text/rtf", getMimeType(doc));
 
@@ -426,8 +430,9 @@ public class TestFileManagerService {
 
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
-        assertEquals("hello.html", doc.getProperty("file", "filename"));
-        assertNotNull(doc.getProperty("file", "content"));
+        blob = (Blob) doc.getProperty("file", "content");
+        assertNotNull(blob);
+        assertEquals("hello.html", blob.getFilename());
         assertTrue(extractText(doc).contains("HTML"));
         assertEquals("text/html", getMimeType(doc));
 

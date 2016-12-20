@@ -101,13 +101,9 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
             } else {
                 String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
                 String blobFieldName = getQueryParamValue(req, BLOB_FIELD, DEFAULT_BLOB_FIELD);
-                String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
-                filename = (String) dm.getProperty(schemaName, filenameFieldName);
                 blob = (Blob) dm.getProperty(schemaName, blobFieldName);
-                xpath = schemaName + ':' + blobFieldName;
-            }
-            if (StringUtils.isBlank(filename)) {
                 filename = StringUtils.defaultIfBlank(blob.getFilename(), "file");
+                xpath = schemaName + ':' + blobFieldName;
             }
 
             // trigger download

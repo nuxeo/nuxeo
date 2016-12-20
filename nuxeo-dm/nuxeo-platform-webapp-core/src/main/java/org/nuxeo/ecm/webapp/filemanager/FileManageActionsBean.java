@@ -563,9 +563,8 @@ public class FileManageActionsBean implements FileManageActions {
                 for (NxUploadedFile uploadItem : nxuploadFiles) {
                     Blob blob = uploadItem.getBlob();
                     FileUtils.configureFileBlob(blob);
-                    HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
+                    HashMap<String, Object> fileMap = new HashMap<String, Object>(1);
                     fileMap.put("file", blob);
-                    fileMap.put("filename", blob.getFilename());
                     if (!files.contains(fileMap)) {
                         files.add(fileMap);
                     }

@@ -63,7 +63,6 @@ public class TestDocumentAdapter {
         blob.setFilename("TestFile.txt");
         file.setProperty("dublincore", "title", "TestFile");
         file.setProperty("file", "content", blob);
-        file.setProperty("file", "filename", "TestFile-fn.txt");
         file = session.createDocument(file);
         session.save();
 
@@ -90,8 +89,6 @@ public class TestDocumentAdapter {
         assertEquals("other.txt", b.getFilename());
         assertEquals("text/html", b.getMimeType());
         assertEquals("OtherContent", b.getString());
-        // check filename property updated as well
-        assertEquals("other.txt", file.getPropertyValue("file:filename"));
 
         // test set null blob
         bh.setBlob(null);
@@ -99,7 +96,6 @@ public class TestDocumentAdapter {
         session.save();
         b = bh.getBlob();
         assertNull(b);
-        assertNull(file.getPropertyValue("file:filename"));
     }
 
     @Test
@@ -164,17 +160,15 @@ public class TestDocumentAdapter {
         blob.setFilename("TestFile.txt");
         file.setProperty("dublincore", "title", "TestDoc");
         file.setProperty("file", "content", blob);
-        file.setProperty("file", "filename", "TestFile-fn.txt");
 
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> blobs = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             String name = "TestFile" + i + ".txt";
             Blob nblob = Blobs.createBlob("BlobContent" + i);
             nblob.setFilename(name);
 
-            Map<String, Serializable> filesEntry = new HashMap<String, Serializable>();
+            Map<String, Serializable> filesEntry = new HashMap<>();
             filesEntry.put("file", (Serializable) nblob);
-            filesEntry.put("filename", name);
             blobs.add(filesEntry);
         }
         file.setPropertyValue("files:files", (Serializable) blobs);

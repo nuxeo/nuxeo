@@ -70,7 +70,6 @@ public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         // file
         // -----------------------
-        doc.setProperty("file", "filename", "test_file.doc");
         Blob blob = Blobs.createBlob("My blob");
         blob.setFilename("test_file.doc");
         doc.setProperty("file", "content", blob);
@@ -83,7 +82,7 @@ public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
         doc.setPropertyValue("cs:origin", "Internal");
 
         // segmentVariable
-        Map<String, Serializable> segment = new HashMap<String, Serializable>();
+        Map<String, Serializable> segment = new HashMap<>();
         segment.put("name", "MySegment");
         segment.put("target", "SomeTarget");
         segment.put("variableType", "rawVariable");

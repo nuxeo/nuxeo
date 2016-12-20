@@ -210,7 +210,6 @@ public class TestSQLRepositoryFulltextQuery {
         Blob blob1 = Blobs.createBlob(content);
         blob1.setFilename(filename);
         file1.setPropertyValue("content", (Serializable) blob1);
-        file1.setPropertyValue("filename", filename);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);
         file1.setPropertyValue("dc:created", cal1);
         file1.setPropertyValue("dc:coverage", "football");

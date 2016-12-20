@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- * Nuxeo - initial API and implementation
- *
+ *   Nuxeo - initial API and implementation
  */
 package org.nuxeo.ecm.platform.mail.adapter;
 
@@ -36,18 +35,21 @@ import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
  */
 public class MailMessageBlobHolder extends DocumentBlobHolder {
 
-    protected Pattern isHtmlPattern = Pattern.compile("(.*)<(html|head|body)>(.*)", Pattern.CASE_INSENSITIVE
-            | Pattern.DOTALL);
+    protected Pattern isHtmlPattern = Pattern.compile("(.*)<(html|head|body)>(.*)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    public MailMessageBlobHolder(DocumentModel doc, String xPath, String xPathFilename) {
-        super(doc, xPath, xPathFilename);
+    private final String filename;
+
+    public MailMessageBlobHolder(DocumentModel doc, String xPath, String filename) {
+        super(doc, xPath);
+        this.filename = filename;
     }
 
     @Override
     public Blob getBlob() {
         String htmlTextProperty = (String) doc.getPropertyValue(xPath);
-        Blob blob = null;
-        if (htmlTextProperty != null && xPathFilename != null && htmlTextProperty.length() != 0) {
+        Blob blob;
+        if (htmlTextProperty != null && filename != null && htmlTextProperty.length() != 0) {
             blob = Blobs.createBlob(htmlTextProperty);
             Matcher m = isHtmlPattern.matcher(htmlTextProperty);
             if (m.matches()) {
@@ -60,11 +62,9 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
             }
             blob = Blobs.createBlob(txt);
         }
-        if (blob != null) {
-            blob.setFilename(xPathFilename);
-            // set dummy digest to avoid comparison error
-            blob.setDigest("notInBinaryStore");
-        }
+        blob.setFilename(filename);
+        // set dummy digest to avoid comparison error
+        blob.setDigest("notInBinaryStore");
         return blob;
     }
 }

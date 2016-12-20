@@ -17,14 +17,7 @@
 
   <xs:complexType name="file">
     <xs:sequence>
-      <!-- old definition -->
-      <xs:element name="file" type="nxs:content" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="filename" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
-      <!-- future definition -->
-      <!--<xs:element name="file" type="nxs:file" minOccurs="0"
-        maxOccurs="unbounded" />-->
+      <xs:element name="file" type="nxs:content" />
     </xs:sequence>
   </xs:complexType>
 

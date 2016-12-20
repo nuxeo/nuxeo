@@ -124,12 +124,11 @@ public class TestDummyVirusScanner {
         TransactionHelper.startTransaction();
         try {
 
-            List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+            List<Map<String, Serializable>> files = new ArrayList<>();
 
             for (int i = 0; i < 5; i++) {
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
+                Map<String, Serializable> map = new HashMap<>();
                 map.put("file", (Serializable) getFakeBlob(100, "Test4-" + i + ".txt"));
-                map.put("filename", "Test4-" + i + ".txt");
                 files.add(map);
             }
 
@@ -144,9 +143,8 @@ public class TestDummyVirusScanner {
 
             List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) file4.getPropertyValue("files:files");
 
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            Map<String, Serializable> map = new HashMap<>();
             map.put("file", (Serializable) getFakeBlob(100, "Test4-b.txt"));
-            map.put("filename", "Test4-b.txt");
             files.add(map);
             file4.setPropertyValue("files:files", (Serializable) files);
             file4 = session.saveDocument(file4);
@@ -163,7 +161,7 @@ public class TestDummyVirusScanner {
 
         // System.out.println(DummyVirusScanner.getProcessedFiles());
 
-        assertEquals(new HashSet<String>(Arrays.asList( //
+        assertEquals(new HashSet<>(Arrays.asList( //
                 "Test1.txt", //
                 "Test2.txt", //
                 "Test3doFail.txt", //
@@ -173,7 +171,7 @@ public class TestDummyVirusScanner {
                 "Test4-2.txt", //
                 "Test4-3.txt", //
                 "Test4-4.txt", //
-                "Test4-b.txt")), new HashSet<String>(scannedFiles));
+                "Test4-b.txt")), new HashSet<>(scannedFiles));
 
         file = session.getDocument(file.getRef());
         file2 = session.getDocument(file2.getRef());

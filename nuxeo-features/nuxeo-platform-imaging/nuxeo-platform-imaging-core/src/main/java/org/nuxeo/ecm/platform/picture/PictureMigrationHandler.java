@@ -16,6 +16,7 @@
  * Contributors:
  *     Thomas Roger
  */
+
 package org.nuxeo.ecm.platform.picture;
 
 import static org.apache.commons.logging.LogFactory.getLog;
@@ -62,8 +63,6 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
     public static final String ORIGINAL_VIEW_TITLE = "Original";
 
     public static final String FILE_CONTENT_PROPERTY = "file:content";
-
-    public static final String FILE_FILENAME_PROPERTY = "file:filename";
 
     public static final int BATCH_SIZE = 50;
 
@@ -163,7 +162,6 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
         filename = StringUtils.defaultString(filename).replaceAll("^Original_", "");
         blob.setFilename(filename);
         picture.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
-        picture.setPropertyValue(FILE_FILENAME_PROPERTY, filename);
         multiviewPicture.removeView(ORIGINAL_VIEW_TITLE);
         if (picture.isVersion()) {
             picture.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);

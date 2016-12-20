@@ -21,5 +21,5 @@ ${doc.dublincore.issued?datetime}
 <#list doc.dublincore.subjects as subject>${subject}|</#list>
 
 <#list doc.files.files as file>
-${file.filename} ${file.file.length}
+${file.file.filename} ${file.file.length}
 </#list>

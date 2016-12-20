@@ -325,10 +325,9 @@ public class TestDownloadService {
         String blobFilename = "synopsis.txt";
         blob.setFilename(blobFilename);
 
-        Map<String, Object> fileMap = new HashMap<String, Object>();
+        Map<String, Object> fileMap = new HashMap<>();
         fileMap.put("file", blob);
-        fileMap.put("filename", blob.getFilename());
-        List<Map<String, Object>> docFiles = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> docFiles = new ArrayList<>();
         docFiles.add(fileMap);
 
         doc.setProperty("files", "files", docFiles);

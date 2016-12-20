@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -144,7 +143,6 @@ public class TestPictureRenditions {
     public void shouldMakeRenditionAvailableImageToPDF() throws Exception {
         Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
         DocumentModel doc = session.createDocumentModel("/", "picture", "Picture");
-        doc.setProperty("file", "filename", source.getFilename());
         doc.setProperty("file", "content", source);
 
         Rendition imageToPDFRendition = renditionService.getRendition(doc, "imageToPDF");

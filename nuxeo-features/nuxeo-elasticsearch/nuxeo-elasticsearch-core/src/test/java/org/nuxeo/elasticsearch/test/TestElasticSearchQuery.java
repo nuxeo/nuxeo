@@ -19,6 +19,15 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
@@ -43,15 +52,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 /**
  * Test for native ES queries
@@ -121,14 +121,13 @@ public class TestElasticSearchQuery {
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         // create doc with a list of blob attachement textfile1.txt length=1,textfile2.txt length=2, ...
-        List<Map<String, Serializable>> blobs = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> blobs = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             String name = "testfile" + i + ".txt";
             Blob nblob = Blobs.createBlob(new String(new char[i]).replace('\0', 'a'));
             nblob.setFilename(name);
-            Map<String, Serializable> filesEntry = new HashMap<String, Serializable>();
+            Map<String, Serializable> filesEntry = new HashMap<>();
             filesEntry.put("file", (Serializable) nblob);
-            filesEntry.put("filename", name);
             blobs.add(filesEntry);
         }
         doc.setPropertyValue("files:files", (Serializable) blobs);
@@ -185,14 +184,11 @@ public class TestElasticSearchQuery {
         Assert.assertEquals(1, ret.totalSize());
 
         // no match for unknown user
-        CoreSession restrictedSession = getRestrictedSession("bob");
-        try {
+        try (CoreSession restrictedSession = getRestrictedSession("bob")) {
             ret = ess.query(new NxQueryBuilder(restrictedSession).nxql("SELECT * FROM Document"));
             Assert.assertEquals(0, ret.totalSize());
             ret = ess.query(new NxQueryBuilder(restrictedSession).esQuery(qb));
             Assert.assertEquals(0, ret.totalSize());
-        } finally {
-            restrictedSession.close();
         }
     }
 

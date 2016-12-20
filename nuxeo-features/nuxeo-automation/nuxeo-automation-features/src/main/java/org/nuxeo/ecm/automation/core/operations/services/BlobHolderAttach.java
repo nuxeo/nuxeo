@@ -93,7 +93,6 @@ public class BlobHolderAttach {
                 for (Blob blob : blobs) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("file", blob);
-                    map.put("filename", blob.getFilename());
                     existingBlobs.add(map);
                 }
                 currentDocument.setPropertyValue("files:files", (Serializable) existingBlobs);

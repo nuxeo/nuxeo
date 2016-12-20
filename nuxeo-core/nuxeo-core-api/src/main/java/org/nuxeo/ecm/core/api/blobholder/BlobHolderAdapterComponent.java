@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 package org.nuxeo.ecm.core.api.blobholder;
 
@@ -51,11 +50,11 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
 
     public static final String EXTERNALBLOB_ADAPTER_EP = "ExternalBlobAdapter";
 
-    protected final Map<String, BlobHolderFactory> factories = new HashMap<String, BlobHolderFactory>();
+    protected final Map<String, BlobHolderFactory> factories = new HashMap<>();
 
-    protected Map<String, BlobHolderFactory> factoriesByFacets = new HashMap<String, BlobHolderFactory>();
+    protected Map<String, BlobHolderFactory> factoriesByFacets = new HashMap<>();
 
-    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<String, ExternalBlobAdapter>();
+    protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters = new HashMap<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -94,7 +93,8 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
     /* for test */
 
     public static Set<String> getFactoryNames() {
-        return ((BlobHolderAdapterComponent) Framework.getLocalService(BlobHolderAdapterService.class)).factories.keySet();
+        return ((BlobHolderAdapterComponent) Framework.getLocalService(
+                BlobHolderAdapterService.class)).factories.keySet();
     }
 
     /* Service Interface */
@@ -136,7 +136,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
         }
 
         if (doc.hasSchema("file")) {
-            return new DocumentBlobHolder(doc, "file:content", "file:filename");
+            return new DocumentBlobHolder(doc, "file:content");
         } else if (doc.hasSchema("note")) {
             String mt = null;
             try {

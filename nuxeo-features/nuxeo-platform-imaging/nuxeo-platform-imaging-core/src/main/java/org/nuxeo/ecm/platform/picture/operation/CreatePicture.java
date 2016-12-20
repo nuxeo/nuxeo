@@ -128,7 +128,6 @@ public class CreatePicture {
                 log.warn("Unable to read Blob from properties");
             } else {
                 picture.setPropertyValue("file:content", (Serializable) blob);
-                picture.setPropertyValue("file:filename", blob.getFilename());
                 PictureResourceAdapter adapter = picture.getAdapter(PictureResourceAdapter.class);
                 adapter.fillPictureViews(blob, blob.getFilename(), picture.getTitle(), templates);
                 picture = session.saveDocument(picture);

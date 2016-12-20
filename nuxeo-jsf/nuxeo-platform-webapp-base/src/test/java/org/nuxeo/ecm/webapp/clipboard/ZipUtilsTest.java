@@ -78,7 +78,6 @@ public class ZipUtilsTest {
 
         HashMap<String, Serializable> blob = new HashMap<String, Serializable>();
         blob.put("file", (Serializable) blob2);
-        blob.put("filename", blob2.getFilename());
 
         ArrayList<HashMap<String, Serializable>> blobs = new ArrayList<HashMap<String, Serializable>>();
         blobs.add(blob);

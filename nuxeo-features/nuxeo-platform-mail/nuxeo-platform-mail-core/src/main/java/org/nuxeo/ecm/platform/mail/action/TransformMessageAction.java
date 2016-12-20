@@ -234,8 +234,8 @@ public class TransformMessageAction implements MessageAction {
         log.debug("* adding attachment: " + fileName);
         Map<String, Object> map = new HashMap<String, Object>();
         Blob fileBlob = Blobs.createBlob(inputStream);
+        fileBlob.setFilename(fileName);
         map.put("file", fileBlob);
-        map.put("filename", fileName);
         files.add(map);
     }
 

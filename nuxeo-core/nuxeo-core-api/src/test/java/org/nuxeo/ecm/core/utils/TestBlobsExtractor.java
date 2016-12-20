@@ -119,10 +119,8 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "BlobInListDocument");
         Map<String, Object> map1 = new HashMap<>();
         map1.put("file", createBlob("test1.pdf"));
-        map1.put("filename", "test1.pdf");
         Map<String, Object> map2 = new HashMap<>();
         map2.put("file", createBlob("test2.pdf"));
-        map2.put("filename", "test2.pdf");
         doc.setPropertyValue("bil:files", (Serializable) Arrays.asList(map1, map2));
         List<Property> blobs;
 

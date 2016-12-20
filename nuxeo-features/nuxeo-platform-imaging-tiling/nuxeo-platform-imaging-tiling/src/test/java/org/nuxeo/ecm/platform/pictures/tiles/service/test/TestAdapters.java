@@ -80,7 +80,6 @@ public class TestAdapters {
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
         doc.setProperty("file", "content", image);
-        doc.setProperty("file", "filename", "test.jpg");
 
         doc = session.createDocument(doc);
         session.save();
