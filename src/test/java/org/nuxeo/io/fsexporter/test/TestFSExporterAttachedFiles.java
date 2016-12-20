@@ -71,14 +71,12 @@ public class TestFSExporterAttachedFiles {
         Blob blob1 = new StringBlob("blob1");
         blob1.setFilename("blob1.txt");
         mapBlob.put("file", (Serializable) blob1);
-        mapBlob.put("filename", "blob1.txt");
         listblobs.add(mapBlob);
 
         Map<String, Serializable> mapBlob2 = new HashMap<>();
         Blob blob2 = new StringBlob("blob2");
         blob2.setFilename("blob2.txt");
         mapBlob2.put("file", (Serializable) blob2);
-        mapBlob2.put("filename", "blob2.txt");
         listblobs.add(mapBlob2);
 
         // creation of myfile
