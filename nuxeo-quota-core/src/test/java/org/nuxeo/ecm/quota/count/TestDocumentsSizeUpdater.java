@@ -62,7 +62,6 @@ import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -1661,7 +1660,6 @@ public class TestDocumentsSizeUpdater {
 
                 for (int i = 1; i < 5; i++) {
                     Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-                    files_entry.put("filename", "fakefile" + i);
                     files_entry.put("file", (Serializable) getFakeBlob(70));
                     files.add(files_entry);
                 }
@@ -1709,7 +1707,6 @@ public class TestDocumentsSizeUpdater {
 
                 for (int i = 1; i < 5; i++) {
                     Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-                    files_entry.put("filename", "fakefile" + i);
                     files_entry.put("file", (Serializable) getFakeBlob(70));
                     files.add(files_entry);
                 }

@@ -124,7 +124,6 @@ public class TestExcludedBlob {
 
                 for (int i = 1; i < 5; i++) {
                     Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-                    files_entry.put("filename", "fakefile" + i);
                     files_entry.put("file", (Serializable) getFakeBlob(70));
                     files.add(files_entry);
                 }
