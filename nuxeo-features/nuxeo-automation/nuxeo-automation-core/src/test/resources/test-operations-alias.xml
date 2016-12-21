@@ -1,0 +1,31 @@
+<component name="org.nuxeo.ecm.automation.operations.alias.test" version="1.0">
+
+  <extension point="operations"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation class="org.nuxeo.ecm.automation.core.test.ParamNameWithAliasOperation" />
+  </extension>
+
+  <extension point="chains"  target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="doc_create_chain_alias">
+      <aliases>
+        <alias>chainAlias1</alias>
+        <alias>chainAlias2</alias>
+      </aliases>
+      <operation id="OperationWithParamNameAlias">
+        <param type="string" name="paramName">Hello Chain Alias!</param>
+      </operation>
+    </chain>
+
+    <chain id="doc_create_chain_alias_with_op_alias">
+      <aliases>
+        <alias>chainAlias3</alias>
+        <alias>chainAlias4</alias>
+      </aliases>
+      <operation id="aliasOp1">
+        <param type="string" name="paramName">Hello Chain Alias!</param>
+      </operation>
+    </chain>
+
+  </extension>
+
+</component>
