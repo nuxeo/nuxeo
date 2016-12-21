@@ -369,7 +369,7 @@ class Release(object):
         - 'release_info.next_snapshot'
         - 'release_info.is_final'
         - 'release_info.auto_increment_policy'"""
-        if release_info.next_snapshot != "auto":
+        if release_info.next_snapshot is not None and release_info.next_snapshot != "auto":
             self.next_snapshot = release_info.next_snapshot
         elif release_info.is_final:
             self.next_snapshot = self.auto_increment(self.snapshot, release_info.auto_increment_policy)
