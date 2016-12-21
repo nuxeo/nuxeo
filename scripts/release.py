@@ -320,30 +320,51 @@ class Release(object):
         """Returns the next version following 'current_version' with 'policy_in' apply"""
         next_version = current_version
         policy = re.sub('_(no_zero)', '', policy_in)
-        semver = re.compile('^(?P<major>(?:0|[1-9][0-9]*))'
-                            '(?:\\.(?P<minor>(?:0|[1-9][0-9]*)))?'
-                            '(?:\\.(?P<patch>(?:0|[1-9][0-9]*)))?')
+        semver = re.compile(r"""
+                            ^
+                            (?P<major>(?:0|[1-9][0-9]*))
+                            (?:\.(?P<minor>(?:0|[1-9][0-9]*)))?
+                            (?:\.(?P<patch>(?:0|[1-9][0-9]*)))?
+                            (?:-(?P<prerelease>
+                                (?:0|[1-9A-Za-z-][0-9A-Za-z-]*)
+                                (\.(?:0|[1-9A-Za-z-][0-9A-Za-z-]*))*
+                            ))?
+                            (\+(?P<build>
+                                [0-9A-Za-z-]+
+                                (\.[0-9A-Za-z-]+)*
+                            ))?
+                            """, re.VERBOSE)
         verinfo = semver.match(current_version).groupdict()
-        for key in ['patch', 'minor', 'major']:
+        for key in ['prerelease', 'patch', 'minor', 'major']:
             if (verinfo[key] and policy == 'auto_last') or policy == 'auto_%s' % key:
-                verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
-                break
+                if 'prerelease' == key:
+                    if re.search(r'\d+', verinfo[key]):
+                        prefix, pre, suffix = re.findall(r'^(.*[^\d])(\d+)([^\d]*)$', verinfo[key])[0]
+                        verinfo[key] = prefix + str.format('{:02}', int(pre) + 1) + suffix
+                        break
+                else:
+                    verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
+                    break
+
         if verinfo['patch']:
             if policy in ['auto_minor', 'auto_major']:
                 verinfo['patch'] = 0
-            next_version = '%d.%d.%d-SNAPSHOT' % (
+            next_version = '%d.%d.%d-%s' % (
                 int(verinfo['major']),
                 int(verinfo['minor'] if verinfo['minor'] else 0),
-                int(verinfo['patch']))
+                int(verinfo['patch']),
+                verinfo['prerelease'] if verinfo['prerelease'] else 'SNAPSHOT')
         elif verinfo['minor']:
             if policy == 'auto_major':
                 verinfo['minor'] = 0 if policy_in != 'auto_major_no_zero' else 1
-            next_version = '%d.%d-SNAPSHOT' % (
+            next_version = '%d.%d-%s' % (
                 int(verinfo['major']),
-                int(verinfo['minor']))
+                int(verinfo['minor']),
+                verinfo['prerelease'] if verinfo['prerelease'] else 'SNAPSHOT')
         elif verinfo['major']:
-            next_version = '%d-SNAPSHOT' % (
-                int(verinfo['major']))
+            next_version = '%d-%s' % (
+                int(verinfo['major']),
+                verinfo['prerelease'] if verinfo['prerelease'] else 'SNAPSHOT')
         return next_version
 
     def set_maintenance_version(self, release_info):
