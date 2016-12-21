@@ -1,0 +1,8 @@
+<component name="org.nuxeo.ecm.automation.export.alias.test"
+  version="1.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.automation.export.aliases">true</property>
+  </extension>
+
+</component>

@@ -54,6 +54,7 @@ import org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.Iterables;
@@ -66,6 +67,8 @@ import com.google.common.collect.Iterables;
 public class OperationServiceImpl implements AutomationService, AutomationAdmin {
 
     private static final Log log = LogFactory.getLog(OperationServiceImpl.class);
+
+    public static final String EXPORT_ALIASES_CONFIGURATION_PARAM = "nuxeo.automation.export.aliases";
 
     protected final OperationTypeRegistry operations;
 
@@ -487,7 +490,19 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
             try {
-                result.add(ot.getDocumentation());
+                OperationDocumentation documentation = ot.getDocumentation();
+                result.add(documentation);
+
+                // we may want to add an operation documentation for each alias to be backward compatible with old
+                // automation clients
+                ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+                boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
+                String[] aliases = ot.getAliases();
+                if (exportAliases && aliases != null && aliases.length > 0) {
+                    for (String alias : aliases) {
+                        result.add(OperationDocumentation.copyForAlias(documentation, alias));
+                    }
+                }
             } catch (OperationNotFoundException e) {
                 errorBuilder.add(e);
             }

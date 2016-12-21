@@ -18,15 +18,15 @@
  */
 package org.nuxeo.ecm.automation;
 
+import java.io.Serializable;
+import java.util.Arrays;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
-
-import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -86,6 +86,29 @@ public class OperationDocumentation implements Comparable<OperationDocumentation
     // service home)
     // of the page where the operation is exposed
     public String url;
+
+    /**
+     * Returns a simple copy of an {@link OperationDocumentation} for an alias.
+     * <p>
+     * Array fields of {@code od} are shallow copied.
+     *
+     * @since 9.1
+     */
+    public static OperationDocumentation copyForAlias(OperationDocumentation od, String alias) {
+        OperationDocumentation documentation = new OperationDocumentation(alias);
+        documentation.signature = od.signature;
+        documentation.category = od.category;
+        documentation.label = od.label;
+        documentation.requires = od.requires;
+        documentation.since = od.since;
+        documentation.deprecatedSince = od.deprecatedSince;
+        documentation.addToStudio = od.addToStudio;
+        documentation.implementationClass = od.implementationClass;
+        documentation.description = od.description;
+        documentation.params = od.params;
+        documentation.widgetDefinitions = od.widgetDefinitions;
+        return documentation;
+    }
 
     public OperationDocumentation(String id) {
         this.id = id;
