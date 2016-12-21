@@ -266,30 +266,48 @@ given the path parameter.
         if next_snapshot != "auto":
             self.next_snapshot = next_snapshot
         elif self.is_final:
-            semver = re.compile(r'^(?P<major>(?:0|[1-9][0-9]*))'
-                                '(?:\.(?P<minor>(?:0|[1-9][0-9]*)))?'
-                                '(?:\.(?P<patch>(?:0|[1-9][0-9]*)))?')
+            semver = re.compile(r"""
+                            ^
+                            (?P<major>(?:0|[1-9][0-9]*))
+                            (?:\.(?P<minor>(?:0|[1-9][0-9]*)))?
+                            (?:\.(?P<patch>(?:0|[1-9][0-9]*)))?
+                            (?:-(?P<prerelease>
+                                (?:0|[1-9A-Za-z-][0-9A-Za-z-]*)
+                                (\.(?:0|[1-9A-Za-z-][0-9A-Za-z-]*))*
+                            ))?
+                            (\+(?P<build>
+                                [0-9A-Za-z-]+
+                                (\.[0-9A-Za-z-]+)*
+                            ))?
+                            """, re.VERBOSE)
+            verinfo = semver.match(self.snapshot).groupdict()
 
-            match = semver.match(self.snapshot)
-            verinfo = match.groupdict()
-
-            for key in ['patch', 'minor', 'major']:
+            for key in ['prerelease', 'patch', 'minor', 'major']:
                 if verinfo[key]:
-                    verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
-                    break
+                    if 'prerelease' == key:
+                        if re.search(r'\d+', verinfo[key]):
+                            prefix, pre, suffix = re.findall(r'^(.*[^\d])(\d+)([^\d]*)$', verinfo[key])[0]
+                            verinfo[key] = prefix + str.format('{:02}', int(pre) + 1) + suffix
+                            break
+                    else:
+                        verinfo[key] = (int(verinfo[key]) if verinfo[key] else 0) + 1
+                        break
 
             if verinfo['patch']:
-                self.next_snapshot = '%d.%d.%d-SNAPSHOT' % (
+                self.next_snapshot = '%d.%d.%d-%s' % (
                     int(verinfo['major']),
                     int(verinfo['minor'] if verinfo['minor'] else 0),
-                    int(verinfo['patch']))
+                    int(verinfo['patch']),
+                    verinfo['prerelease'] if verinfo['prerelease'] else 'SNAPSHOT')
             elif verinfo['minor']:
-                self.next_snapshot = '%d.%d-SNAPSHOT' % (
+                self.next_snapshot = '%d.%d-%s' % (
                     int(verinfo['major']),
-                    int(verinfo['minor']))
+                    int(verinfo['minor']),
+                    verinfo['prerelease'] if verinfo['prerelease'] else 'SNAPSHOT')
             elif verinfo['major']:
-                self.next_snapshot = '%d-SNAPSHOT' % (
-                    int(verinfo['major']))
+                self.next_snapshot = '%d-%s' % (
+                    int(verinfo['major']),
+                    verinfo['prerelease'] if verinfo['prerelease'] else 'SNAPSHOT')
         else:
             self.next_snapshot = self.snapshot
 
