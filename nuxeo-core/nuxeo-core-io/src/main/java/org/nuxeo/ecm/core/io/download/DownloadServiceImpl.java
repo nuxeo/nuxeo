@@ -531,16 +531,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 secure = nvh.startsWith("https");
             }
         }
-        String cacheControl;
         if (userAgent != null && userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
-            cacheControl = "max-age=15, must-revalidate";
-        } else {
-            cacheControl = "private, must-revalidate";
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
+            String cacheControl = "max-age=15, must-revalidate";
+            log.debug("Setting Cache-Control: " + cacheControl);
+            response.setHeader("Cache-Control", cacheControl);
         }
-        log.debug("Setting Cache-Control: " + cacheControl);
-        response.setHeader("Cache-Control", cacheControl);
     }
 
     protected static boolean forceNoCacheOnMSIE() {
