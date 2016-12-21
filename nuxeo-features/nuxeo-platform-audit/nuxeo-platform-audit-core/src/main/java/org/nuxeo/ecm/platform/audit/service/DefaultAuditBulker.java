@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -63,14 +64,14 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
 
     int timeout;
 
-    int size;
+    int bulksize;
 
     Thread thread;
 
     DefaultAuditBulker(AuditBackend backend, AuditBulkerDescriptor config) {
         this.backend = backend;
         timeout = config.timeout;
-        size = config.size;
+        bulksize = config.size;
     }
 
     @Override
@@ -99,6 +100,8 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
         }
     }
 
+    final AtomicInteger size = new AtomicInteger(0);
+
     final ReentrantLock lock = new ReentrantLock();
 
     final Condition isEmpty = lock.newCondition();
@@ -116,7 +119,8 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
         }
         queue.add(entry);
         queuedCount.inc();
-        if (queue.size() >= size) {
+
+        if (size.incrementAndGet() >= bulksize) {
             lock.lock();
             try {
                 isFilled.signalAll();
@@ -146,7 +150,9 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
             entries.add(queue.remove());
         }
         backend.addLogEntries(entries);
-        drainedCount.inc(entries.size());
+        int delta = entries.size();
+        size.addAndGet(-delta);
+        drainedCount.inc(delta);
         if (queue.isEmpty()) {
             lock.lock();
             try {
@@ -155,7 +161,7 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
                 lock.unlock();
             }
         }
-        return entries.size();
+        return delta;
     }
 
     class Consumer implements Runnable {
@@ -202,12 +208,12 @@ public class DefaultAuditBulker implements AuditBulkerMBean, AuditBulker {
 
     @Override
     public int getBulkSize() {
-        return size;
+        return bulksize;
     }
 
     @Override
     public void setBulkSize(int value) {
-        size = value;
+        bulksize = value;
     }
 
     @Override
