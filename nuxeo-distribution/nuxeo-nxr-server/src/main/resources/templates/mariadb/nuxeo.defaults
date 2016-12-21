@@ -11,6 +11,6 @@ nuxeo.db.user=nuxeo
 nuxeo.db.password=password
 nuxeo.db.min-pool-size=5
 nuxeo.db.jdbc.url=jdbc:mariadb://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name}
-nuxeo.db.driver=com.mariadb.jdbc.Driver
+nuxeo.db.driver=org.mariadb.jdbc.Driver
 nuxeo.db.xadatasource=org.mariadb.jdbc.MariaDbDataSource
 

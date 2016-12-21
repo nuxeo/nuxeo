@@ -171,7 +171,7 @@ public class ConfigurationGenerator {
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
-    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql", "db2");
+    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mariadb", "mssql", "db2");
 
     public static final List<String> DB_NOSQL_LIST = Arrays.asList("none", "mongodb", "marklogic");
 
