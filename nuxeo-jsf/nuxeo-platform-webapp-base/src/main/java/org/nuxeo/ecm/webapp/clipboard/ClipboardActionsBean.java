@@ -934,7 +934,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
             blob.setFilename("clipboard.zip");
 
             String key = downloadService.storeBlobs(Collections.singletonList(blob));
-            String url = BaseURL.getBaseURL() + "/" + downloadService.getDownloadUrl(key);
+            String url = BaseURL.getBaseURL() + downloadService.getDownloadUrl(key);
             ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
             context.redirect(url);
             return "";

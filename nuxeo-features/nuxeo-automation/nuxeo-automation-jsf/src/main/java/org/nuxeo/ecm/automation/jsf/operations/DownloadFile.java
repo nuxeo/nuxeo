@@ -53,7 +53,7 @@ public class DownloadFile {
         }
         DownloadService downloadService = Framework.getService(DownloadService.class);
         String key = downloadService.storeBlobs(Collections.singletonList(blob));
-        String url = BaseURL.getBaseURL() + "/" + downloadService.getDownloadUrl(key);
+        String url = BaseURL.getBaseURL()  + downloadService.getDownloadUrl(key);
 
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
