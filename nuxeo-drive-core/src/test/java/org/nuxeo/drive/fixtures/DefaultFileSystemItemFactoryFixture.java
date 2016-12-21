@@ -92,8 +92,7 @@ public class DefaultFileSystemItemFactoryFixture {
 
     private static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
-    // needs to be bigger than 1s for MySQL
-    private static final int VERSIONING_DELAY = 3000; // ms
+    private static final int VERSIONING_DELAY = 1000; // ms
 
     @Inject
     protected RuntimeHarness harness;
@@ -132,13 +131,6 @@ public class DefaultFileSystemItemFactoryFixture {
     protected DocumentModel notAFileSystemItem;
 
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
-
-    /**
-     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
-     */
-    protected void maybeSleepToNextSecond() {
-        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
-    }
 
     @Before
     public void createTestDocs() throws Exception {
@@ -641,7 +633,6 @@ public class DefaultFileSystemItemFactoryFixture {
             assertEquals("New blob.txt", versionedBlob.getFilename());
 
             // Update file with another contributor
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe.txt");
@@ -695,7 +686,6 @@ public class DefaultFileSystemItemFactoryFixture {
             assertEquals("Renamed file.txt", updatedBlob.getFilename());
 
             // Update file with another contributor
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
             fileItem.rename("File renamed by Joe.txt");

@@ -134,8 +134,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(NuxeoDriveFeature.class)
 public class TestVersioningFileSystemItemFactory {
 
-    // needs to be bigger than 1s for MySQL
-    private static final int VERSIONING_DELAY = 1500; // ms
+    private static final int VERSIONING_DELAY = 1000; // ms
 
     @Inject
     protected CoreFeature coreFeature;
@@ -156,13 +155,6 @@ public class TestVersioningFileSystemItemFactory {
     protected DocumentModel file;
 
     protected VersioningFileSystemItemFactory customFileSystemItemFactory;
-
-    /**
-     * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
-     */
-    protected void maybeSleepToNextSecond() {
-        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
-    }
 
     @Before
     public void createTestDocs() throws Exception {
@@ -309,7 +301,6 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             // 5. Change without delay with another user
             // ------------------------------------------------------
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe.txt");
@@ -333,7 +324,6 @@ public class TestVersioningFileSystemItemFactory {
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY);
 
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe again.txt");
@@ -477,7 +467,6 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             // 5. Change without delay with another user
             // ------------------------------------------------------
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe.txt");
@@ -501,7 +490,6 @@ public class TestVersioningFileSystemItemFactory {
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY);
 
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe again.txt");
@@ -644,7 +632,6 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             // 5. Change without delay with another user
             // ------------------------------------------------------
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe.txt");
@@ -672,7 +659,6 @@ public class TestVersioningFileSystemItemFactory {
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY);
 
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe again.txt");
@@ -823,7 +809,6 @@ public class TestVersioningFileSystemItemFactory {
             // ------------------------------------------------------
             // 5. Change without delay with another user
             // ------------------------------------------------------
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe.txt");
@@ -849,7 +834,6 @@ public class TestVersioningFileSystemItemFactory {
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY);
 
-            maybeSleepToNextSecond();
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) customFileSystemItemFactory.getFileSystemItem(file);
             newBlob.setFilename("File name modified by Joe again.txt");
