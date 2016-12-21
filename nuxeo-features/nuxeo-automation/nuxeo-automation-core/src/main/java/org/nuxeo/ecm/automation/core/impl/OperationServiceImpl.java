@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Iterables;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
@@ -54,6 +53,8 @@ import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.google.common.collect.Iterables;
 
 /**
  * The operation registry is thread safe and optimized for modifications at startup and lookups at runtime.
@@ -244,11 +245,11 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     protected String getChainExceptionToRun(OperationContext ctx, String operationTypeId, OperationException oe)
             throws OperationException {
         // Inject exception name into the context
-        //since 6.0-HF05 should use exceptionName and exceptionObject on the context instead of Exception
+        // since 6.0-HF05 should use exceptionName and exceptionObject on the context instead of Exception
         ctx.put("Exception", oe.getClass().getSimpleName());
         ctx.put("exceptionName", oe.getClass().getSimpleName());
         ctx.put("exceptionObject", oe);
-        
+
         ChainException chainException = getChainException(operationTypeId);
         CatchChainException catchChainException = new CatchChainException();
         for (CatchChainException catchChainExceptionItem : chainException.getCatchChainExceptions()) {
@@ -263,8 +264,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                                 catchChainExceptionItem);
                     }
                 } catch (RuntimeException e) { // TODO more specific exceptions?
-                    throw new OperationException("Cannot evaluate Automation Filter " + filter.getId()
-                            + " mvel expression.", e);
+                    throw new OperationException(
+                            "Cannot evaluate Automation Filter " + filter.getId() + " mvel expression.", e);
                 }
             } else {
                 // Check if priority for this chain exception is higher
@@ -471,8 +472,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                 ObjectMapper mapper = new ObjectMapper();
                 return (T) mapper.convertValue(toAdapt, targetType);
             }
-            throw new OperationException("No type adapter found for input: " + toAdapt.getClass() + " and output "
-                    + targetType);
+            throw new OperationException(
+                    "No type adapter found for input: " + toAdapt.getClass() + " and output " + targetType);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }
