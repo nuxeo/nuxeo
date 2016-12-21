@@ -11,6 +11,10 @@
         <li>
           <strong>nuxeo.automation.properties.value.trim</strong>: properties are expected to be of the form "key=value". You may wish to trim the potential spaces around value (e.g.: "key = value", will result in "value" and not " value").
         </li>
+        <li>
+          <strong>nuxeo.automation.export.aliases</strong>: if true, add an operation documentation for each alias of a given operation.
+          Mainly to be backward compatible with old Java Automation client.
+        </li>
       </ul>
 
       @since 8.2
@@ -18,6 +22,8 @@
 
     <!-- Note that for backward compatibility this the opposite than on master. See NXP-19170. -->
     <property name="nuxeo.automation.properties.value.trim">true</property>
+
+    <property name="nuxeo.automation.export.aliases">false</property>
 
   </extension>
 
