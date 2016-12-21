@@ -20,7 +20,7 @@ import unittest
 from mock.mock import Mock, patch
 
 from nxutils import Repository
-from release import Release
+from release import Release, ReleaseInfo
 
 
 class TestMocks(object):
@@ -61,10 +61,14 @@ class ReleaseTestCase(unittest.TestCase):
 
     def testSetNextSnapshot(self):
         self.assertNextSnapshot('1.0.19-SNAPSHOT', '1.0.20-SNAPSHOT')
+        self.assertNextSnapshot('8.10-HF01-SNAPSHOT', '8.10-HF02-SNAPSHOT')
+        self.assertNextSnapshot('8.10-HF09-SNAPSHOT', '8.10-HF10-SNAPSHOT')
+        self.assertNextSnapshot('8.10-HF19-SNAPSHOT', '8.10-HF20-SNAPSHOT')
 
         self.assertNextSnapshot('1.0.2-SNAPSHOT', '1.0.3-SNAPSHOT', policy='auto_last')
         self.assertNextSnapshot('1.2-SNAPSHOT', '1.3-SNAPSHOT', policy='auto_last')
         self.assertNextSnapshot('29-SNAPSHOT', '30-SNAPSHOT', policy='auto_last')
+        self.assertNextSnapshot('8.10-HF01-SNAPSHOT', '8.10-HF02-SNAPSHOT', policy='auto_last')
 
         self.assertNextSnapshot('1.0.2-SNAPSHOT', '1.0.3-SNAPSHOT', policy='auto_patch')
         self.assertNextSnapshot('1.2-SNAPSHOT', '1.2.1-SNAPSHOT', policy='auto_patch')
