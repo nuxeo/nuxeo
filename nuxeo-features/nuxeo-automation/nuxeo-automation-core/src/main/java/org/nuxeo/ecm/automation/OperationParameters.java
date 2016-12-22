@@ -39,15 +39,15 @@ public class OperationParameters implements Serializable {
 
     protected final String oid;
 
-    protected final Map<String, Object> params;
+    protected final Map<String, Object> params = new HashMap<>();
 
     public OperationParameters(String oid) {
-        this(oid, new HashMap<String, Object>());
+        this.oid = oid;
     }
 
     public OperationParameters(String oid, Map<String, Object> params) {
-        this.oid = oid;
-        this.params = params;
+        this(oid);
+        this.params.putAll(params);
     }
 
     /**
@@ -85,6 +85,36 @@ public class OperationParameters implements Serializable {
     public OperationParameters from(Map<String, Object> params) {
         this.params.putAll(params);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + oid.hashCode();
+        result = prime * result + params.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof OperationParameters)) {
+            return false;
+        }
+        OperationParameters other = (OperationParameters) obj;
+        if (!oid.equals(other.oid)) {
+            return false;
+        }
+        if (!params.equals(other.params)) {
+            return false;
+        }
+        return true;
     }
 
 }

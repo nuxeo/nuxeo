@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Thierry Delprat <tdelprat@nuxeo.com>
  */
-package org.nuxeo.automation.scripting.internals.operation;
+package org.nuxeo.usermapper.test;
 
-import java.util.Map;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
- * @since 7.2
+ *
+ *
+ * @since 8.10
  */
-public interface ScriptingOperationInterface {
-
-    Object run(Object input, Map<String, Object> parameters);
+@Features({PlatformFeature.class, AutomationFeature.class})
+@Deploy({ "org.nuxeo.usermapper" })
+public class UserMapperFeature extends SimpleFeature {
 
 }

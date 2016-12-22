@@ -769,6 +769,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-usermapper</artifactId>
+        <version>${nuxeo.services.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-scim-server</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
@@ -3942,7 +3948,11 @@
           </exclusion>
         </exclusions>
       </dependency>
-
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>openws</artifactId>
+        <version>1.5.1</version>
+      </dependency>
       <!-- SCIM -->
       <dependency>
         <artifactId>scim-sdk</artifactId>

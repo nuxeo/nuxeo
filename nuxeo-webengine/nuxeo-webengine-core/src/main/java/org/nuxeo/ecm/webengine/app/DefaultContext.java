@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.webengine.app;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
@@ -34,16 +35,18 @@ public class DefaultContext extends AbstractWebContext {
 
     protected HttpHeaders headers;
 
-    public DefaultContext(HttpServletRequest request) {
-        super(request);
+    public DefaultContext(HttpServletRequest request, HttpServletResponse response) {
+        super(request, response);
     }
 
+    @Override
     @Deprecated
     public HttpHeaders getHttpHeaders() {
         // throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
         return headers;
     }
 
+    @Override
     @Deprecated
     public UriInfo getUriInfo() {
         // throw new UnsupportedOperationException("Deprecated. Use @Context UriInfo to inject this object");

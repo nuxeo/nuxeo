@@ -1,1 +1,1 @@
-print(Fn.getEmail("Administrator"));
+Fn.getEmail("Administrator");

@@ -70,7 +70,7 @@ public class RunInNewTransaction {
     protected boolean rollbackGlobalOnError = false;
 
     @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
-    protected Properties chainParameters;
+    protected Properties chainParameters = new Properties();
 
     @Param(name = "timeout", required = false)
     protected Integer timeout = Integer.valueOf(60);
@@ -93,7 +93,7 @@ public class RunInNewTransaction {
         try {
             OperationContext subctx = new OperationContext(session, vars);
             subctx.setInput(ctx.getInput());
-            service.run(subctx, chainId, (Map) chainParameters);
+            service.run(subctx, chainId, chainParameters);
             ok = true;
         } catch (OperationException e) {
             if (rollbackGlobalOnError) {
@@ -104,12 +104,13 @@ public class RunInNewTransaction {
             }
         } finally {
             if (!ok) {
-                // will be logged by Automation framework
                 TransactionHelper.setTransactionRollbackOnly();
             }
             TransactionHelper.commitOrRollbackTransaction();
-            // caller expects a transaction to be started
             TransactionHelper.startTransaction();
+            if (!ok && rollbackGlobalOnError) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
         }
 
         // reconnect documents in the context

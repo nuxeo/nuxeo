@@ -5,7 +5,7 @@
              point="operations">
   <operation
           class="org.nuxeo.automation.scripting.test.operations.ContextModificationTest" />
-    <operation class="org.nuxeo.automation.scripting.test.operations.Operation1"/>
+    <operation class="org.nuxeo.automation.scripting.test.operations.TestUsername"/>
     <operation class="org.nuxeo.automation.scripting.test.operations.TestWrappers"/>
   </extension>
 
@@ -21,9 +21,8 @@
          function run(input, params) {
            if (params.lang === "fr") {
              return "Bonjour " + input;
-           } else if (params.lang == "en") {
-             return "Hello " + input;
-           }
+           } 
+           return "Hello " + input;
          }
        </script>
     </scriptedOperation>
@@ -129,9 +128,6 @@
                 }
             });
 
-            print("doc title:" + newDoc.getProperty("dc:title"));
-            print("doc title:" + newDoc["dc:title"]);
-
             var blob = Blob.AttachOnDocument(input, {
                 "document" : params.document
             });
@@ -140,8 +136,6 @@
                 "message" : "LogOperation is working so much - Blob title:"+blob.filename,
                 "level" : "info"
             });
-
-            print("title:"+blob.filename);
 
             return newDoc;
         }
@@ -269,31 +263,9 @@
       <category>Scripting</category>
       <script><![CDATA[
         function run(input, params) {
-            // Input
-            print("Root input title:" + input.getProperty("dc:title"));
-            print("Root input title:" + input["dc:title"]);
-
-            // Context wrapper
-            print("Root ctx title:" + ctx.doc.getProperty("dc:title"));
-            print("Root ctx title:" + ctx.doc["dc:title"]);
-
-            // Parameters wrapper
-            print("Root params title:" + params.doc.getProperty("dc:title"));
-            print("Root params title:" + params.doc["dc:title"]);
-
-            var result = Test.Wrappers(input, {
+            return Test.Wrappers(input, {
                 "value" : params.doc
             });
-
-            // Result
-            print("Root result title:" + result.getProperty("dc:title"));
-            print("Root result title:" + result["dc:title"]);
-
-            // Context wrapper
-            print("Root ctx title:" + ctx.doc.getProperty("dc:title"));
-            print("Root ctx title:" + ctx.doc["dc:title"]);
-
-            return result;
         }
       ]]></script>
     </scriptedOperation>
@@ -306,30 +278,11 @@
 
       <script><![CDATA[
         function run(input, params) {
-          var items = input.getPropertyValue("list:items");
-          for (var i in items) {
-            print(items[i]);
-          }
-
-          var newItems = ["newValue", "att2", "att3"];
-
-          var inputUpdated = Document.Update(input, {
+          return Document.Update(input, {
             "properties" : {
-                "list:items" : newItems
+                "list:items" : ["newValue", "att2", "att3"]
             }
           });
-
-          items = inputUpdated.getPropertyValue("list:items");
-          for (var i in items) {
-            print(items[i]);
-          }
-
-          var complex = inputUpdated.getPropertyValue("list:complexItem");
-
-          print(complex.name);
-          print(complex.description);
-
-          return inputUpdated;
         }
       ]]></script>
     </scriptedOperation>
@@ -342,8 +295,7 @@
 
       <script><![CDATA[
         function run(input, params) {
-          var username = o1(null, {});
-          print(username);
+          return Test.Username(null, {});
         }
       ]]></script>
     </scriptedOperation>
@@ -359,8 +311,7 @@
           Auth.LoginAs(input, {
             'name': "Administrator"
           });
-          var username = o1(null, {});
-          print(username);
+          return Test.Username(null, {});
         }
       ]]></script>
     </scriptedOperation>
@@ -546,7 +497,7 @@
     </chain>
 
     <chain id="my-chain-with-dashes">
-      <operation id="o1">
+      <operation id="Test.Username">
       </operation>
     </chain>
 
@@ -561,7 +512,7 @@
     <chain id="my-chain-with-loginasop">
       <operation id="Scripting.TestLoginAsOperation">
       </operation>
-      <operation id="o1">
+      <operation id="Test.Username">
       </operation>
     </chain>
 

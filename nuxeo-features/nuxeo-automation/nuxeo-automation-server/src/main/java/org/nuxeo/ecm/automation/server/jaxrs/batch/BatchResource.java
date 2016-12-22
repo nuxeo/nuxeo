@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -200,7 +201,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
     @POST
     @Produces("application/json")
     @Path("/execute")
-    public Object exec(@Context HttpServletRequest request, ExecutionRequest xreq) {
+    public Object exec(@Context HttpServletRequest request, @Context HttpServletResponse response, ExecutionRequest xreq) {
         Map<String, Object> params = xreq.getParams();
         String batchId = (String) params.get(REQUEST_BATCH_ID);
         String fileIdx = (String) params.get(REQUEST_FILE_IDX);
@@ -221,13 +222,14 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         });
 
         try {
-            OperationContext ctx = xreq.createContext(request, getCoreSession(request));
+            CoreSession session = getCoreSession(request);
+            OperationContext ctx = xreq.createContext(request, response, session);
 
             Object result;
             if (StringUtils.isEmpty(fileIdx)) {
-                result = bm.execute(batchId, operationId, getCoreSession(request), ctx, params);
+                result = bm.execute(batchId, operationId, session, ctx, params);
             } else {
-                result = bm.execute(batchId, fileIdx, operationId, getCoreSession(request), ctx, params);
+                result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
             }
             return ResponseHelper.getResponse(result, request);
         } catch (NuxeoException | MessagingException | IOException e) {

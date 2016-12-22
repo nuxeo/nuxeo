@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.automation.core.trace;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -38,9 +40,10 @@ public class TracePrinter {
 
     private static final Log log = LogFactory.getLog(TracePrinter.class);
 
+    private static final String LF = System.getProperty("line.separator");
+
     protected final BufferedWriter writer;
 
-    protected String preamble = "";
 
     public TracePrinter(Writer writer) {
         this.writer = new BufferedWriter(writer);
@@ -50,63 +53,63 @@ public class TracePrinter {
         this(new OutputStreamWriter(out));
     }
 
-    protected void printLine(String line) throws IOException {
-        writer.write(preamble + line);
+    protected void printHeading(String heading) throws IOException {
+        writer.append(LF+ LF + "****** " + heading + " ******");
     }
 
-    protected void printHeading(String heading) throws IOException {
-        printLine(System.getProperty("line.separator") + System.getProperty("line.separator") + "****** " + heading
-                + " ******");
+    protected void printCalls(List<Call> calls) throws IOException {
+        String tabs = "\t";
+        for (Call call : calls) {
+            writer.append(tabs);
+            writer.append(call.getType().getType().getName());
+            writer.append(LF);
+            tabs += "\t";
+        }
     }
 
     public void print(Trace trace) throws IOException {
-        StringBuilder sb = new StringBuilder();
         printHeading("chain");
         if (trace.error != null) {
-            sb.append(System.getProperty("line.separator"));
+            writer.append(LF);
             if (trace.getParent() != null) {
-                sb.append("Parent Chain ID: ");
-                sb.append(trace.getParent().getChainId());
-                sb.append(System.getProperty("line.separator"));
+                writer.append("Parent Chain ID: ");
+                writer.append(trace.getParent().getChainId());
+                writer.append(LF);
             }
-            sb.append("Name: ");
-            sb.append(trace.getChain().getId());
+            writer.append("Name: ");
+            writer.append(trace.getChain().getId());
             if (trace.getChain().getAliases() != null && trace.getChain().getAliases().length > 0) {
-                sb.append(System.getProperty("line.separator"));
-                sb.append("Aliases: ");
-                sb.append(Arrays.toString(trace.getChain().getAliases()));
+                writer.append(LF);
+                writer.append("Aliases: ");
+                writer.append(Arrays.toString(trace.getChain().getAliases()));
             }
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Exception: ");
-            sb.append(trace.error.getClass().getSimpleName());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Caught error: ");
-            sb.append(trace.error.getMessage());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Caused by: ");
-            sb.append(trace.error.getCause());
-            printLine(sb.toString());
+            writer.append(LF);
+            writer.append("Exception: ");
+            writer.append(trace.error.getClass().getSimpleName());
+            writer.append(LF);
+            writer.append("Caught error: ");
+            writer.append(trace.error.getMessage());
+            writer.append(LF);
+            writer.append("Caused by: ");
+            writer.append(trace.error.toString());
         } else {
-            sb.append(System.getProperty("line.separator"));
+            writer.append(LF);
             if (trace.getParent() != null) {
-                sb.append("Parent Chain ID: ");
-                sb.append(trace.getParent().getChainId());
-                sb.append(System.getProperty("line.separator"));
+                writer.append("Parent Chain ID: ");
+                writer.append(trace.getParent().getChainId());
+                writer.append(LF);
             }
-            sb.append("Name: ");
-            sb.append(trace.getChain().getId());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Produced output type: ");
-            sb.append(trace.output == null ? "Void" : trace.output.getClass().getSimpleName());
-            printLine(sb.toString());
+            writer.append("Name: ");
+            writer.append(trace.getChain().getId());
+            writer.append(LF);
+            writer.append("Produced output type: ");
+            writer.append(trace.output == null ? "Void" : trace.output.getClass().getSimpleName());
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(System.getProperty("line.separator"));
-        stringBuilder.append("****** Hierarchy calls ******");
-        stringBuilder.append(System.getProperty("line.separator"));
-        displayOperationTreeCalls(trace.operations, stringBuilder);
-        printLine(stringBuilder.toString());
-        print(trace.operations);
+        writer.append(LF);
+        writer.append("****** Hierarchy calls ******");
+        writer.append(LF);
+        printCalls(trace.calls);
+        print(trace.calls);
         writer.flush();
     }
 
@@ -122,147 +125,142 @@ public class TracePrinter {
 
     public void printCall(Call call) {
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append(System.getProperty("line.separator"));
-            sb.append(System.getProperty("line.separator"));
-            sb.append("****** " + call.getType().getId() + " ******");
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Chain ID: ");
-            sb.append(call.getChainId());
+            writer.append(LF);
+            writer.append(LF);
+            writer.append("****** " + call.getType().getId() + " ******");
+            writer.append(LF);
+            writer.append("Chain ID: ");
+            writer.append(call.getChainId());
             if (call.getAliases() != null) {
-                sb.append(System.getProperty("line.separator"));
-                sb.append("Chain Aliases: ");
-                sb.append(call.getAliases());
+                writer.append(LF);
+                writer.append("Chain Aliases: ");
+                writer.append(call.getAliases());
             }
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Class: ");
-            sb.append(call.getType().getType().getSimpleName());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Method: '");
-            sb.append(call.getMethod().getMethod().getName());
-            sb.append("' | Input Type: ");
-            sb.append(call.getMethod().getConsume());
-            sb.append(" | Output Type: ");
-            sb.append(call.getMethod().getProduce());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Input: ");
-            sb.append(call.getInput());
-            if (!call.getParmeters().isEmpty()) {
-                sb.append(System.getProperty("line.separator"));
-                sb.append("Parameters ");
-                for (String parameter : call.getParmeters().keySet()) {
-                    sb.append(" | ");
-                    sb.append("Name: ");
-                    sb.append(parameter);
-                    sb.append(", Value: ");
-                    Object value = call.getParmeters().get(parameter);
+            writer.append(LF);
+            writer.append("Class: ");
+            writer.append(call.getType().getType().getSimpleName());
+            writer.append(LF);
+            writer.append("Method: '");
+            writer.append(call.getMethod().getMethod().getName());
+            writer.append("' | Input Type: ");
+            writer.append(call.getMethod().getConsume().getName());
+            writer.append(" | Output Type: ");
+            writer.append(call.getMethod().getProduce().getName());
+            writer.append(LF);
+            writer.append("Input: ");
+            writer.append(call.getInput() == null ? "null" : call.getInput().toString());
+            if (!call.getParameters().isEmpty()) {
+                writer.append(LF);
+                writer.append("Parameters ");
+                for (String parameter : call.getParameters().keySet()) {
+                    writer.append(" | ");
+                    writer.append("Name: ");
+                    writer.append(parameter);
+                    writer.append(", Value: ");
+                    Object value = call.getParameters().get(parameter);
                     if (value instanceof Call.ExpressionParameter) {
                         value = String.format("Expr:(id=%s | value=%s)",
-                                ((Call.ExpressionParameter) call.getParmeters().get(parameter)).getParameterId(),
-                                ((Call.ExpressionParameter) call.getParmeters().get(parameter)).getParameterValue());
+                                ((Call.ExpressionParameter) call.getParameters().get(parameter)).getParameterId(),
+                                ((Call.ExpressionParameter) call.getParameters().get(parameter)).getParameterValue());
                     }
-                    sb.append(value);
+                    writer.append(value.toString());
                 }
             }
             if (!call.getVariables().isEmpty()) {
-                sb.append(System.getProperty("line.separator"));
-                sb.append("Context Variables");
+                writer.append(LF);
+                writer.append("Context Variables");
                 for (String keyVariable : call.getVariables().keySet()) {
-                    sb.append(" | ");
-                    sb.append("Key: ");
-                    sb.append(keyVariable);
-                    sb.append(", Value: ");
+                    writer.append(" | ");
+                    writer.append("Key: ");
+                    writer.append(keyVariable);
+                    writer.append(", Value: ");
                     Object variable = call.getVariables().get(keyVariable);
                     if (variable instanceof Calendar) {
-                        sb.append(((Calendar) variable).getTime());
+                        writer.append(((Calendar) variable).getTime().toString());
                     } else {
-                        sb.append(variable);
+                        writer.append(variable == null ? "null" : variable.toString());
                     }
                 }
             }
-            printLine(sb.toString());
-            sb = new StringBuilder();
             if (!call.getNested().isEmpty()) {
-                sb.append(System.getProperty("line.separator"));
+                writer.append(LF);
                 printHeading("start sub chain");
                 for (Trace trace : call.getNested()) {
                     print(trace);
                 }
-                sb.append(System.getProperty("line.separator"));
+                writer.append(LF);
                 printHeading("end sub chain");
             }
-            printLine(sb.toString());
         } catch (IOException e) {
             log.error("Nuxeo TracePrinter cannot write traces output", e);
         }
     }
 
     public void litePrint(Trace trace) throws IOException {
-        StringBuilder sb = new StringBuilder();
         printHeading("chain");
-        if (trace.error != null) {
-            sb.append(System.getProperty("line.separator"));
-            if (trace.getParent() != null) {
-                sb.append("Parent Chain ID: ");
-                sb.append(trace.getParent().getChainId());
-                sb.append(System.getProperty("line.separator"));
-            }
-            sb.append("Name: ");
-            sb.append(trace.getChain().getId());
-            if (trace.getChain().getAliases() != null && trace.getChain().getAliases().length > 0) {
-                sb.append(System.getProperty("line.separator"));
-                sb.append("Aliases: ");
-                sb.append(Arrays.toString(trace.getChain().getAliases()));
-            }
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Exception: ");
-            sb.append(trace.error.getClass().getSimpleName());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Caught error: ");
-            sb.append(trace.error.getMessage());
-            sb.append(System.getProperty("line.separator"));
-            sb.append("Caused by: ");
-            sb.append(trace.error.getCause());
+        writer.append(LF);
+        if (trace.getParent() != null) {
+            writer.append("Parent Chain ID: ");
+            writer.append(trace.getParent().getChainId());
+            writer.append(LF);
         }
-        sb.append(System.getProperty("line.separator"));
-        sb.append("****** Hierarchy calls ******");
-        printLine(sb.toString());
-        litePrintCall(trace.operations);
+        writer.append("Name: ");
+        writer.append(trace.getChain().getId());
+        if (trace.getChain().getAliases() != null && trace.getChain().getAliases().length > 0) {
+            writer.append(LF);
+            writer.append("Aliases: ");
+            writer.append(Arrays.toString(trace.getChain().getAliases()));
+        }
+        if (trace.error != null) {
+            writer.append(LF);
+            writer.append("Exception: ");
+            writer.append(trace.error.getClass().getSimpleName());
+            writer.append(LF);
+            writer.append("Caught error: ");
+            writer.append(trace.error.getMessage());
+            writer.append(LF);
+            writer.append("Caused by: ");
+            writer.append(trace.error.toString());
+        }
+        writer.append(LF);
+        writer.append("****** Hierarchy calls ******");
+        litePrintCall(trace.calls);
         writer.flush();
     }
 
     public void litePrintCall(List<Call> calls) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(System.getProperty("line.separator"));
+        writer.append(LF);
         try {
-            displayOperationTreeCalls(calls, stringBuilder);
-            printLine(stringBuilder.toString());
-            stringBuilder = new StringBuilder();
+            printCalls(calls);
             for (Call call : calls) {
                 if (!call.getNested().isEmpty()) {
-                    stringBuilder.append(System.getProperty("line.separator"));
+                    writer.append(LF);
                     printHeading("start sub chain");
                     for (Trace trace : call.getNested()) {
                         litePrint(trace);
                     }
-                    stringBuilder.append(System.getProperty("line.separator"));
+                    writer.append(LF);
                     printHeading("end sub chain");
                 }
             }
-            printLine(stringBuilder.toString());
         } catch (IOException e) {
             log.error("Nuxeo TracePrinter cannot write traces output", e);
         }
     }
 
-    private void displayOperationTreeCalls(List<Call> calls, StringBuilder stringBuilder) {
-        String tabs = "\t";
-        for (Call call : calls) {
-            stringBuilder.append(tabs);
-            stringBuilder.append(call.getType().getType().getName());
-            stringBuilder.append(System.getProperty("line.separator"));
-            tabs += "\t";
+    public static String print(Trace trace, boolean liteprint) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        TracePrinter printer = new TracePrinter(out);
+        try {
+            if (liteprint) {
+                printer.litePrint(trace);
+            } else {
+                printer.print(trace);
+            }
+        } catch (IOException cause) {
+            return "Cannot print automation trace of " + trace.chain.getId();
         }
+        return new String(out.toByteArray(), Charset.forName("UTF-8"));
     }
 
 }

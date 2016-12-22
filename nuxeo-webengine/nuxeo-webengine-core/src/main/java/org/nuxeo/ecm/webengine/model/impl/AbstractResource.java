@@ -62,6 +62,7 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
 
     protected T type;
 
+    @Override
     public Resource initialize(WebContext ctx, ResourceType type, Object... args) {
         this.ctx = ctx;
         this.type = (T) type;
@@ -92,14 +93,17 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         // do nothing
     }
 
+    @Override
     public boolean isAdapter() {
         return type.getClass() == AdapterTypeImpl.class;
     }
 
+    @Override
     public boolean isRoot() {
         return this == ctx.getRoot();
     }
 
+    @Override
     public void setRoot(boolean isRoot) {
         AbstractWebContext ctx = (AbstractWebContext) this.ctx;
         if (isRoot) {
@@ -111,10 +115,12 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         }
     }
 
+    @Override
     public boolean isInstanceOf(String type) {
         return this.type.isDerivedFrom(type);
     }
 
+    @Override
     public Response redirect(String uri) {
         try {
             if (!uri.contains("://")) {
@@ -131,68 +137,83 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         }
     }
 
+    @Override
     public AdapterResource getActiveAdapter() {
         return next != null && next.isAdapter() ? (AdapterResource) next : null;
     }
 
+    @Override
     public void dispose() {
         ctx = null;
         type = null;
         path = null;
     }
 
+    @Override
     public Set<String> getFacets() {
         return type.getFacets();
     }
 
+    @Override
     public boolean hasFacet(String facet) {
         return type.hasFacet(facet);
     }
 
+    @Override
     public T getType() {
         return type;
     }
 
+    @Override
     public WebContext getContext() {
         return ctx;
     }
 
+    @Override
     public Module getModule() {
         return ctx.getModule();
     }
 
+    @Override
     public Resource getNext() {
         return next;
     }
 
+    @Override
     public void setNext(Resource next) {
         this.next = (AbstractResource<?>) next;
     }
 
+    @Override
     public Resource getPrevious() {
         return prev;
     }
 
+    @Override
     public void setPrevious(Resource previous) {
         this.prev = (AbstractResource<?>) previous;
     }
 
+    @Override
     public String getName() {
         int e = path.endsWith("/") ? path.length() - 1 : path.length();
         int p = path.lastIndexOf('/', e - 1);
         return p > -1 ? path.substring(p + 1) : path;
     }
 
+    @Override
     public String getPath() {
         return path;
     }
 
+    @Override
     public String getTrailingPath() {
         int len = path.length();
         String urlPath = ctx.getUrlPath();
         return len < urlPath.length() ? urlPath.substring(len) : "/";
     }
 
+    @Override
     public String getNextSegment() {
         String p = getTrailingPath();
         if (p != null && !"/".equals(p)) {
@@ -207,14 +228,17 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return null;
     }
 
+    @Override
     public String getURL() {
         return ctx.getServerURL().append(path).toString();
     }
 
+    @Override
     public List<LinkDescriptor> getLinks(String category) {
         return ctx.getModule().getActiveLinks(this, category);
     }
 
+    @Override
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter == CoreSession.class) {
             return adapter.cast(ctx.getCoreSession());
@@ -230,22 +254,27 @@ public abstract class AbstractResource<T extends ResourceType> implements Resour
         return null;
     }
 
+    @Override
     public Resource newObject(String type, Object... args) {
         return ctx.newObject(type, args);
     }
 
+    @Override
     public AdapterResource newAdapter(String type, Object... args) {
         return ctx.newAdapter(this, type, args);
     }
 
+    @Override
     public Template getView(String viewId) {
         return new View(this, viewId).resolve();
     }
 
+    @Override
     public Template getTemplate(String fileName) {
         return new Template(this, getModule().getFile(fileName));
     }
 
+    @Override
     public boolean checkGuard(String guard) throws ParseException {
         return PermissionService.parse(guard).check(this);
     }

@@ -286,9 +286,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      */
     @Test
     public void testRemoteChain() throws Exception {
-        OperationDocumentation opd = session.getOperation("principals");
+        OperationDocumentation opd = session.getOperation("testchain");
         assertNotNull(opd);
-        Document doc = (Document) session.newRequest("principals").setInput(DocRef.newRef("/")).execute();
+        Document doc = (Document) session.newRequest("testchain").setInput(DocRef.newRef("/")).execute();
         assertNotNull(doc);
     }
 
@@ -956,11 +956,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             fail();
         } catch (RemoteException e) {
             assertNotNull(e);
-            assertEquals("Exception Message", e.getRemoteCause().getCause().getMessage());
             RemoteThrowable cause = (RemoteThrowable) e.getRemoteCause();
             while (cause.getCause() != null && cause.getCause() != cause) {
                 cause = (RemoteThrowable) cause.getCause();
             }
+            assertEquals("Exception Message", cause.getMessage());
             assertEquals(ExceptionTest.class.getCanonicalName(), cause.getOtherNodes().get("className").getTextValue());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {

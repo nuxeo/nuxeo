@@ -43,6 +43,8 @@ import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
+import com.sun.jersey.api.core.ResourceContext;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -82,6 +84,7 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
 
+    @Override
     public ResourceType getSuperType() {
         return superType;
     }
@@ -90,40 +93,44 @@ public abstract class AbstractResourceType implements ResourceType {
         return owner;
     }
 
+    @Override
     public Guard getGuard() {
         return guard;
     }
 
+    @Override
     public Set<String> getFacets() {
         return facets;
     }
 
+    @Override
     public boolean hasFacet(String facet) {
         return facets != null && facets.contains(facet);
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Class<Resource> getResourceClass() {
         return (Class<Resource>) clazz.get();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    public <T extends Resource> T newInstance() {
-        try {
-            return (T) clazz.get().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw WebException.wrap("Failed to instantiate web object: " + clazz, e);
-        }
+    public <T extends Resource> T newInstance(ResourceContext resources) {
+        return (T) resources.getResource(clazz.get());
     }
 
+    @Override
     public boolean isEnabled(Resource ctx) {
         return guard.check(ctx);
     }
 
+    @Override
     public boolean isDerivedFrom(String type) {
         if (type.equals(name)) {
             return true;
@@ -134,6 +141,7 @@ public abstract class AbstractResourceType implements ResourceType {
         return false;
     }
 
+    @Override
     public void flushCache() {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
     }
@@ -167,6 +175,7 @@ public abstract class AbstractResourceType implements ResourceType {
         return name + " extends " + superType + " [" + getResourceClass().getName() + "]";
     }
 
+    @Override
     public ScriptFile getView(Module module, String name) {
         ScriptFile file = findView(module, name);
         if (file == null) {

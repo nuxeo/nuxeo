@@ -120,13 +120,13 @@ public class OperationBindingTest extends BaseTest {
         Trace trace = factory.getTrace("testChain");
         assertEquals(2, trace.getCalls().size());
 
-        Map<?, ?> parameters = trace.getCalls().get(0).getParmeters();
+        Map<?, ?> parameters = trace.getCalls().get(0).getParameters();
 
         assertEquals("One", parameters.get("one"));
         assertEquals(2L, parameters.get("two"));
         assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
 
-        parameters = trace.getCalls().get(1).getParmeters();
+        parameters = trace.getCalls().get(1).getParameters();
         assertEquals(4L, parameters.get("two"));
         assertEquals("Two", parameters.get("one"));
 
