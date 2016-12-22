@@ -57,7 +57,7 @@ After installing the plugin, make sure before starting to include your DuoWeb Ke
             point="authenticators">
       <authenticationPlugin name="DUO_TWO_FACTORS_AUTH"
                             enabled="true"
-                            class="org.nuxeo.duo.factors.DuoFactorsAuthenticator">
+                            class="org.nuxeo.duoweb.factors.DuoFactorsAuthenticator">
         <loginModulePlugin>Trusting_LM</loginModulePlugin>
         <parameters>
           <parameter name="IKEY">YOUR_INTEGRATION_KEY</parameter>
