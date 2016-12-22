@@ -8,7 +8,7 @@ These translations have been contributed by the following people:
 
 Albanian: Amir Buzo, Saimir Pollogati
 Arabic: Taieb Felfel
-Basque: Jose Luis de la Rosa
+Basque: Jose Luis de la Rosa, Aritu Koop. E.
 Catalan: Jose Luis de la Rosa, Jordi Mallach 
 Chinese:
 Dutch: Bauke Roo
