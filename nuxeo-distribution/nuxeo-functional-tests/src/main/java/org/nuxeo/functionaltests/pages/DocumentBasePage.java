@@ -419,6 +419,24 @@ public class DocumentBasePage extends AbstractPage {
         Locator.waitUntilEnabledAndClick(breadcrumb.findElement(By.linkText(documentTitle)));
     }
 
+    /**
+     * Makes the publish tree usable, to workaround issues in tests when resolution is too small, see NXP-21361.
+     *
+     * @since 9.1
+     */
+    public static void makePublishTreeUsable(WebDriver driver) {
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        String id = "publishTreeForm:sectionTree";
+        try {
+            // make sure element is loaded
+            driver.findElement(By.id(id));
+            // change its zIndex
+            executor.executeScript("document.getElementById('" + id + "').style.zIndex = 100");
+        } catch (NoSuchElementException e) {
+            // ignore
+        }
+    }
+
     private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectionAction_form:nxw_addToCollectionAction_link";
 
     private static final String ADD_ALL_TO_COLLECTION_ACTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_form:nxw_addSelectedToCollectionAction_link";
