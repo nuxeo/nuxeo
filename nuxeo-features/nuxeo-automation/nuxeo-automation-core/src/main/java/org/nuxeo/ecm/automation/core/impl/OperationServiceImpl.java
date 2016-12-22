@@ -486,6 +486,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         HashSet<OperationType> ops = new HashSet<>(operations.lookup().values());
         OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
             try {
                 OperationDocumentation documentation = ot.getDocumentation();
@@ -493,8 +495,6 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
 
                 // we may want to add an operation documentation for each alias to be backward compatible with old
                 // automation clients
-                ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-                boolean exportAliases = configurationService.isBooleanPropertyTrue(EXPORT_ALIASES_CONFIGURATION_PARAM);
                 String[] aliases = ot.getAliases();
                 if (exportAliases && aliases != null && aliases.length > 0) {
                     for (String alias : aliases) {
