@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Estelle Giuy <egiuly@nuxeo.com>
  */
 package org.nuxeo.ecm.core.io.download;
 
@@ -133,6 +134,24 @@ public interface DownloadService {
      * @since 9.1
      */
     String getDownloadUrl(String storeKey);
+
+    /**
+     * Parses a string content with the URLs to use to download blobs
+     *
+     * @param content the string content to parse
+     * @return the map of details of the download URLs
+     * @since 9.1
+     */
+    List<Map<String, String>> parseDownloadUrls(String content);
+
+    /**
+     * Parses a string content with the HTML links of the URLs to use to download blobs
+     *
+     * @param content the string content to parse
+     * @return the map of details of the download URLs
+     * @since 9.1
+     */
+    List<Map<String, String>> parseDownloadUrlsInHtmlLinks(String content);
 
     /**
      * Triggers a blobs download. Once the temporary blobs are transfered from the store, they are
