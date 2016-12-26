@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.transaction.Synchronization;
 
@@ -109,7 +110,17 @@ public class SQLDirectory extends AbstractDirectory {
 
     private Map<String, Field> schemaFieldMap;
 
-    private List<String> storedFieldNames;
+    // columns to fetch when an entry is read (with the password)
+    protected List<Column> readColumnsAll;
+
+    // columns to fetch when an entry is read (excludes the password)
+    protected List<Column> readColumns;
+
+    // columns to fetch when an entry is read (with the password), as SQL
+    protected String readColumnsAllSQL;
+
+    // columns to fetch when an entry is read (excludes the password), as SQL
+    protected String readColumnsSQL;
 
     private volatile Dialect dialect;
 
@@ -188,18 +199,14 @@ public class SQLDirectory extends AbstractDirectory {
                 throw new DirectoryException("schema not found: " + getSchema());
             }
             schemaFieldMap = new LinkedHashMap<>();
-            storedFieldNames = new LinkedList<>();
+            readColumnsAll = new LinkedList<>();
+            readColumns = new LinkedList<>();
             boolean hasPrimary = false;
             for (Field f : schema.getFields()) {
                 String fieldName = f.getName().getLocalName();
                 schemaFieldMap.put(fieldName, f);
 
                 if (!isReference(fieldName)) {
-                    // list of fields that are actually stored in the table of
-                    // the current directory and not read from an external
-                    // reference
-                    storedFieldNames.add(fieldName);
-
                     boolean isId = fieldName.equals(getIdField());
                     ColumnType type = ColumnType.fromField(f);
                     if (isId && descriptor.isAutoincrementIdField()) {
@@ -214,8 +221,14 @@ public class SQLDirectory extends AbstractDirectory {
                         column.setNullable(false);
                         hasPrimary = true;
                     }
+                    readColumnsAll.add(column);
+                    if (!fieldName.equals(descriptor.passwordField)) {
+                        readColumns.add(column);
+                    }
                 }
             }
+            readColumnsAllSQL = readColumnsAll.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
+            readColumnsSQL = readColumns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
             if (!hasPrimary) {
                 throw new DirectoryException(String.format(
                         "Directory '%s' id field '%s' is not present in schema '%s'", getName(), getIdField(),
@@ -270,10 +283,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     public Map<String, Field> getSchemaFieldMap() {
         return schemaFieldMap;
-    }
-
-    public List<String> getStoredFieldNames() {
-        return storedFieldNames;
     }
 
     public Table getTable() {

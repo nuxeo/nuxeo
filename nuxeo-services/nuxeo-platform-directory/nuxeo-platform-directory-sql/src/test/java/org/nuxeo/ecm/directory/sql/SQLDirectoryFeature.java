@@ -109,6 +109,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
             }
             Map<String, Map<String, Object>> data = new HashMap<>();
             try (Session session = dir.getSession()) {
+                session.setReadAllColumns(true); // needs to fetch the password too
                 List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
                         Collections.emptyMap(), true); // fetch references
                 for (DocumentModel entry : entries) {

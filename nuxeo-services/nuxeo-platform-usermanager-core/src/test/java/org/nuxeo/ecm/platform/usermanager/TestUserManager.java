@@ -820,6 +820,43 @@ public class TestUserManager extends UserManagerTestCase {
         assertEquals(newG, g);
     }
 
+    @Test
+    public void testPasswordAuthenticate() {
+        assertTrue(userManager.checkUsernamePassword("Administrator", "Administrator"));
+    }
+
+    @Test
+    public void testPasswordChange() {
+        DocumentModel doc = userManager.getUserModel("Administrator");
+        doc.setProperty("user", "password", "newPassword123");
+        userManager.updateUser(doc);
+        // old one not valid anymore
+        assertFalse(userManager.checkUsernamePassword("Administrator", "Administrator"));
+        // new one can be used to authenticate
+        assertTrue(userManager.checkUsernamePassword("Administrator", "newPassword123"));
+    }
+
+    @Test
+    public void testPasswordNotReturned() {
+        // getPrincipal
+        NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
+        DocumentModel doc = principal.getModel();
+        String password = (String) doc.getProperty("user", "password");
+        assertNull(password);
+
+        // getUserModel
+        doc = userManager.getUserModel("Administrator");
+        password = (String) doc.getProperty("user", "password");
+        assertNull(password);
+
+        // searchUsers
+        List<DocumentModel> docs = userManager.searchUsers("Administrator");
+        assertEquals(1, docs.size());
+        doc = docs.get(0);
+        password = (String) doc.getProperty("user", "password");
+        assertNull(password);
+    }
+
     /**
      * common init method for initialising tests for the method getUsernamesForPermission.
      */

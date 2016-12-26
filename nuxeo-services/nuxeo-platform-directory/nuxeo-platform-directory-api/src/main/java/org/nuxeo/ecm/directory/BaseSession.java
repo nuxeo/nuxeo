@@ -68,12 +68,20 @@ public abstract class BaseSession implements Session {
 
     protected PermissionDescriptor[] permissions = null;
 
+    // needed for test framework to be able to do a full backup of a directory including password
+    protected boolean readAllColumns;
+
     protected BaseSession(Directory directory) {
         this.directory = directory;
     }
 
     /** To be implemented with a more specific return type. */
     public abstract Directory getDirectory();
+
+    @Override
+    public void setReadAllColumns(boolean readAllColumns) {
+        this.readAllColumns = readAllColumns;
+    }
 
     @Override
     public String getIdField() {

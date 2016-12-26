@@ -74,7 +74,6 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
                                 if (doc == null) {
                                     break;
                                 }
-                                doc.setProperty(schema, userDir.getPasswordField(), null);
                             } else {
                                 break;
                             }
