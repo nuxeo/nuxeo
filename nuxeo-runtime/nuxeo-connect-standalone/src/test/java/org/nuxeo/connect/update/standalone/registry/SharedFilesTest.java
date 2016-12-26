@@ -25,9 +25,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.PackageDef;
 import org.nuxeo.connect.update.standalone.PackageTestCase;
 import org.nuxeo.connect.update.task.update.UpdateManager;
@@ -67,8 +67,8 @@ public abstract class SharedFilesTest extends PackageTestCase {
 
     protected void createFakeBundles() throws Exception {
         // create some fake bundles
-        FileUtils.writeFile(new File(bundles, "b1-1.0.jar"), "b1-1.0.jar");
-        FileUtils.writeFile(new File(bundles, "b2-1.0.jar"), "b2-1.0.jar");
+        FileUtils.writeStringToFile(new File(bundles, "b1-1.0.jar"), "b1-1.0.jar");
+        FileUtils.writeStringToFile(new File(bundles, "b2-1.0.jar"), "b2-1.0.jar");
     }
 
     public UpdateManager getManager() throws Exception {
@@ -139,7 +139,7 @@ public abstract class SharedFilesTest extends PackageTestCase {
             assertTrue("Missing file: " + name, set.contains(name));
         }
         for (String name : names) {
-            assertEquals("Wrong file content for " + name, name, FileUtils.readFile(new File(bundles, name)));
+            assertEquals("Wrong file content for " + name, name, FileUtils.readFileToString(new File(bundles, name)));
         }
     }
 

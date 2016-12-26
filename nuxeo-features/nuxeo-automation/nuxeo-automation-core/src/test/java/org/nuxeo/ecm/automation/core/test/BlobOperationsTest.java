@@ -31,11 +31,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -149,7 +149,7 @@ public class BlobOperationsTest {
         File file = Framework.createTempFile("nx-test-blob-", ".tmp");
         try {
             CreateBlob.skipProtocolCheck = true;
-            FileUtils.writeFile(file, "blob content");
+            FileUtils.writeStringToFile(file, "blob content");
             OperationChain chain = new OperationChain("testChain");
             chain.add(FetchContextDocument.ID);
             chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
@@ -252,7 +252,7 @@ public class BlobOperationsTest {
         assertSame(blob, out);
 
         File file = new File(dir, "test-" + blob.getFilename());
-        assertEquals(blob.getString(), FileUtils.readFile(file));
+        assertEquals(blob.getString(), FileUtils.readFileToString(file));
 
         file.delete();
 
@@ -263,7 +263,7 @@ public class BlobOperationsTest {
         assertSame(blob, out);
 
         file = new File(dir, blob.getFilename());
-        assertEquals(blob.getString(), FileUtils.readFile(file));
+        assertEquals(blob.getString(), FileUtils.readFileToString(file));
         file.delete();
 
         dir.delete();
@@ -309,7 +309,7 @@ public class BlobOperationsTest {
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = Framework.createTempFile("test", ".txt");
-        FileUtils.writeFile(tmpFile, "Content");
+        FileUtils.writeStringToFile(tmpFile, "Content");
         Blob blob = Blobs.createBlob(tmpFile);
         blob.setFilename("initial_name.txt");
         Framework.trackFile(tmpFile, blob);
@@ -336,8 +336,8 @@ public class BlobOperationsTest {
     @Test
     public void testPDFMerge() throws Exception {
         // Fetch two files
-        File pdfMerge1 = FileUtils.getResourceFileFromContext("pdfMerge1.pdf");
-        File pdfMerge2 = FileUtils.getResourceFileFromContext("pdfMerge2.pdf");
+        File pdfMerge1 = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("pdfMerge1.pdf");
+        File pdfMerge2 = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("pdfMerge2.pdf");
         Blob pdf1 = Blobs.createBlob(pdfMerge1);
         Blob pdf2 = Blobs.createBlob(pdfMerge2);
         pdf1.setMimeType("application/pdf");

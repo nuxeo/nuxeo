@@ -21,7 +21,6 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import static org.junit.Assert.fail;
 import static org.mockserver.integration.ClientAndProxy.startClientAndProxy;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
@@ -38,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
@@ -53,7 +53,6 @@ import org.mockserver.model.Body;
 import org.mockserver.model.Delay;
 import org.mockserver.model.Header;
 import org.mockserver.model.JsonBody;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.automation.context.ContextService;
@@ -238,8 +237,8 @@ public class HTTPHelperTest {
     @Test
     public void testHTTPHelperGetDownloadFile() {
         try {
-            File file = FileUtils.getResourceFileFromContext("test-data/sample.jpeg");
-            byte[] answer = FileUtils.readBytes(file);
+            File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("test-data/sample.jpeg");
+            byte[] answer = FileUtils.readFileToByteArray(file);
             Body responseBody = new BinaryBody(answer);
             createMockServer("GET", SERVER_PATH + IMAGE_FILENAME, responseBody);
         } catch (IOException e) {

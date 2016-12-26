@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.test.JettyTransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -68,12 +68,9 @@ public class WebEngineFeature extends SimpleFeature implements WorkingDirectoryC
             throw new java.lang.IllegalStateException(
                     "No custom web.xml was found. " + "Check your @WebXml annotation on the test class");
         }
-        InputStream in = config.openStream();
         dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
-        try {
-            FileUtils.copyToFile(in, dest);
-        } finally {
-            in.close();
+        try (InputStream in = config.openStream()) {
+            FileUtils.copyInputStreamToFile(in, dest);
         }
     }
 

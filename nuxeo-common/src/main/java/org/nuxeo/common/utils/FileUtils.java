@@ -21,23 +21,22 @@
 package org.nuxeo.common.utils;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
@@ -46,18 +45,16 @@ import org.apache.commons.logging.LogFactory;
 
 public final class FileUtils {
 
-    private static final int BUFFER_SIZE = 1024 * 64; // 64K
-
-    private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
-
-    private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
-
     private static final Log log = LogFactory.getLog(FileUtils.class);
 
     // This is an utility class
     private FileUtils() {
     }
 
+    /**
+     * @deprecated since 9.1 seems unused
+     */
+    @Deprecated
     public static void safeClose(Closeable stream) {
         try {
             stream.close();
@@ -66,185 +63,156 @@ public final class FileUtils {
         }
     }
 
-    private static byte[] createBuffer(int preferredSize) {
-        if (preferredSize < 1) {
-            preferredSize = BUFFER_SIZE;
-        }
-        if (preferredSize > MAX_BUFFER_SIZE) {
-            preferredSize = MAX_BUFFER_SIZE;
-        } else if (preferredSize < MIN_BUFFER_SIZE) {
-            preferredSize = MIN_BUFFER_SIZE;
-        }
-        return new byte[preferredSize];
-    }
-
+    /**
+     * @deprecated since 9.1 use {@link IOUtils#copy(InputStream, OutputStream)} instead.
+     */
+    @Deprecated
     public static void copy(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = createBuffer(in.available());
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
+        IOUtils.copy(in, out);
     }
 
+    /**
+     * @deprecated since 9.1 use {@link IOUtils#toByteArray(URL)} instead.
+     */
+    @Deprecated
     public static byte[] readBytes(URL url) throws IOException {
-        return readBytes(url.openStream());
+        return IOUtils.toByteArray(url);
     }
 
+    /**
+     * @deprecated since 9.1 use {@link IOUtils#toByteArray(InputStream)} instead.
+     */
+    @Deprecated
     public static byte[] readBytes(InputStream in) throws IOException {
-        byte[] buffer = createBuffer(in.available());
-        int w = 0;
-        try {
-            int read = 0;
-            int len;
-            do {
-                w += read;
-                len = buffer.length - w;
-                if (len <= 0) { // resize buffer
-                    byte[] b = new byte[buffer.length + BUFFER_SIZE];
-                    System.arraycopy(buffer, 0, b, 0, w);
-                    buffer = b;
-                    len = buffer.length - w;
-                }
-            } while ((read = in.read(buffer, w, len)) != -1);
-        } finally {
-            in.close();
-        }
-        if (buffer.length > w) { // compact buffer
-            byte[] b = new byte[w];
-            System.arraycopy(buffer, 0, b, 0, w);
-            buffer = b;
-        }
-        return buffer;
+        return IOUtils.toByteArray(in);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#readLines(File)} instead.
+     */
+    @Deprecated
     public static String readFile(File file) throws IOException {
-        try (FileInputStream in = new FileInputStream(file)) {
-            return IOUtils.toString(in, Charsets.UTF_8);
-        }
+        return org.apache.commons.io.FileUtils.readFileToString(file, Charsets.UTF_8);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#readLines(File)} instead.
+     */
+    @Deprecated
     public static List<String> readLines(File file) throws IOException {
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-        }
-        return lines;
+        return org.apache.commons.io.FileUtils.readLines(file);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeLines(File, Collection)} instead.
+     */
+    @Deprecated
     public static void writeLines(File file, List<String> lines) throws IOException {
-        try (PrintWriter out = new PrintWriter(new FileOutputStream(file))) {
-            for (String line : lines) {
-                out.println(line);
-            }
-        }
+        org.apache.commons.io.FileUtils.writeLines(file, lines);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#readFileToByteArray(File)} instead.
+     */
+    @Deprecated
     public static byte[] readBytes(File file) throws IOException {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(file);
-            return readBytes(in);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return org.apache.commons.io.FileUtils.readFileToByteArray(file);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeByteArrayToFile(File, byte[])} instead.
+     */
+    @Deprecated
     public static void writeFile(File file, byte[] buf) throws IOException {
-        writeFile(file, buf, false);
+        org.apache.commons.io.FileUtils.writeByteArrayToFile(file, buf);
     }
 
     /**
-     * @throws IOException
      * @since 5.5
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeByteArrayToFile(File, byte[], boolean)}
+     *             instead.
      */
+    @Deprecated
     public static void writeFile(File file, byte[] buf, boolean append) throws IOException {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file, append);
-            fos.write(buf);
-        } finally {
-            if (fos != null) {
-                fos.close();
-            }
-        }
-    }
-
-    public static void writeFile(File file, String buf) throws IOException {
-        writeFile(file, buf.getBytes(), false);
+        org.apache.commons.io.FileUtils.writeByteArrayToFile(file, buf, append);
     }
 
     /**
-     * @throws IOException
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeStringToFile(File, String)} instead.
+     */
+    @Deprecated
+    public static void writeFile(File file, String buf) throws IOException {
+        org.apache.commons.io.FileUtils.writeStringToFile(file, buf);
+    }
+
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#writeStringToFile(File, String, boolean)}
+     *             instead.
      * @since 5.5
      */
+    @Deprecated
     public static void writeFile(File file, String buf, boolean append) throws IOException {
-        writeFile(file, buf.getBytes(), append);
+        org.apache.commons.io.FileUtils.writeStringToFile(file, buf, append);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#copyURLToFile(URL, File)} instead.
+     */
+    @Deprecated
     public static void download(URL url, File file) throws IOException {
-        InputStream in = url.openStream();
-        OutputStream out = new FileOutputStream(file);
-        try {
-            copy(in, out);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            out.close();
-        }
+        org.apache.commons.io.FileUtils.copyURLToFile(url, file);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link org.apache.commons.io.FileUtils#copyInputStreamToFile(InputStream, File)}
+     *             instead. <strong>Note:</strong> that proposed method close the stream, could lead to issues with some
+     *             input stream (like {@link ZipInputStream} which uses a global cursor on zip file stream when
+     *             iterating on files in it).
+     */
+    @Deprecated
     public static void copyToFile(InputStream in, File file) throws IOException {
-        try (OutputStream out = new FileOutputStream(file)) {
-            byte[] buffer = createBuffer(in.available());
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-        }
+        org.apache.commons.io.FileUtils.copyInputStreamToFile(in, file);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead. See
+     *             {@link #append(InputStream, File, boolean)} for more information.
+     */
+    @Deprecated
     public static void append(File src, File dst) throws IOException {
         append(src, dst, false);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead. See
+     *             {@link #append(InputStream, File, boolean)} for more information.
+     */
+    @Deprecated
     public static void append(File src, File dst, boolean appendNewLine) throws IOException {
-        InputStream in = null;
-        try {
-            in = new FileInputStream(src);
+        try (InputStream in = new FileInputStream(src)) {
             append(in, dst, appendNewLine);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead. See
+     *             {@link #append(InputStream, File, boolean)} for more information.
+     */
+    @Deprecated
     public static void append(InputStream in, File file) throws IOException {
         append(in, file, false);
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#copy(InputStream, OutputStream)} instead.
+     */
+    @Deprecated
     public static void append(InputStream in, File file, boolean appendNewLine) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(new FileOutputStream(file, true));
+        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(file, true))) {
             if (appendNewLine) {
                 out.write(System.getProperty("line.separator").getBytes());
             }
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
-            }
+            IOUtils.copy(in, out);
         }
     }
 
@@ -277,16 +245,7 @@ public final class FileUtils {
         if (dst.isDirectory()) {
             dst = new File(dst, src.getName());
         }
-        FileInputStream in = null;
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(dst);
-            in = new FileInputStream(src);
-            copy(in, out);
-        } finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
+        org.apache.commons.io.FileUtils.copyFile(src, dst, false);
     }
 
     /**
@@ -485,6 +444,10 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#closeQuietly(InputStream)} instead or {@link AutoCloseable} feature.
+     */
+    @Deprecated
     public static void close(InputStream in) {
         if (in != null) {
             try {
@@ -495,6 +458,10 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#closeQuietly(InputStream)} instead or {@link AutoCloseable} feature.
+     */
+    @Deprecated
     public static void close(OutputStream out) {
         if (out != null) {
             try {
@@ -523,24 +490,12 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * @deprecated since 9.1 Use {@link IOUtils#readLines(InputStream)} instead.
+     */
+    @Deprecated
     public static List<String> readLines(InputStream in) throws IOException {
-        List<String> lines = new ArrayList<>();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        return lines;
+        return IOUtils.readLines(in);
     }
 
     /**
@@ -568,8 +523,8 @@ public final class FileUtils {
     }
 
     /**
-     * Returns a safe filename, replacing unsafe characters (: \ / * ..) with "_".
-     * For instance, it turns "tmp/../2349:876398/foo.png" into "tmp___2349_876398_foo.png"
+     * Returns a safe filename, replacing unsafe characters (: \ / * ..) with "_". For instance, it turns
+     * "tmp/../2349:876398/foo.png" into "tmp___2349_876398_foo.png"
      *
      * @param filename the filename
      * @return the safe filename with underscores instead of unsafe characters

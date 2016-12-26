@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -46,7 +47,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.drivers.ChromeDriverProvider;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.drivers.RemoteFirefoxDriverProvider;
@@ -612,7 +612,7 @@ public abstract class AbstractTest {
         // Create tmp file, deleted on exit
         File tmpFile = Framework.createTempFile(filePrefix, fileSuffix);
         tmpFile.deleteOnExit();
-        FileUtils.writeFile(tmpFile, fileContent);
+        FileUtils.writeStringToFile(tmpFile, fileContent);
         assertTrue(tmpFile.exists());
 
         // Check file URI protocol

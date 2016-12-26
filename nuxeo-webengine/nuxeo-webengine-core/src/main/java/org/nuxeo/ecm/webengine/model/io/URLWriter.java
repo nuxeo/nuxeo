@@ -34,8 +34,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.webengine.WebException;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,7 +46,7 @@ public class URLWriter implements MessageBodyWriter<URL> {
     public void writeTo(URL t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         try (InputStream in = t.openStream()) {
-            FileUtils.copy(in, entityStream);
+            IOUtils.copy(in, entityStream);
             entityStream.flush();
         }
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -60,8 +60,8 @@ public abstract class CommandsTask extends AbstractTask {
 
     public CommandsTask(PackageUpdateService pus) {
         super(pus);
-        commands = new ArrayList<Command>();
-        commandLog = new LinkedList<Command>();
+        commands = new ArrayList<>();
+        commandLog = new LinkedList<>();
     }
 
     /**
@@ -165,7 +165,7 @@ public abstract class CommandsTask extends AbstractTask {
             String content = parametrizePaths(writer.toString());
             // replace '//' by '/' if any
             content = content.replace(File.separator.concat(File.separator), File.separator);
-            FileUtils.writeFile(file, content);
+            FileUtils.writeStringToFile(file, content);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);
         }

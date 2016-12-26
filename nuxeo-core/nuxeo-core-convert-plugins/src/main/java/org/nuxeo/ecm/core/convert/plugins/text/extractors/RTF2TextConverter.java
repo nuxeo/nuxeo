@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
@@ -30,7 +29,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -51,7 +50,7 @@ public class RTF2TextConverter implements Converter {
             rtfParser.read(blobHolder.getBlob().getStream(), document, 0);
             String text = document.getText(0, document.getLength());
             f = Framework.createTempFile("swing-rtf2text", ".txt");
-            FileUtils.writeFile(f, text);
+            FileUtils.writeStringToFile(f, text);
             Blob blob;
             try (InputStream in = new FileInputStream(f)) {
                 blob = Blobs.createBlob(in, "text/plain");

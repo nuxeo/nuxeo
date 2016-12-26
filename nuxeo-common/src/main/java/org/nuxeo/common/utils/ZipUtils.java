@@ -30,12 +30,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -65,7 +68,7 @@ public final class ZipUtils {
         ZipEntry zentry = new ZipEntry(entryName);
         out.putNextEntry(zentry);
         // Transfer bytes from the input stream to the ZIP file
-        FileUtils.copy(in, out);
+        IOUtils.copy(in, out);
         out.closeEntry();
     }
 
@@ -212,57 +215,34 @@ public final class ZipUtils {
     }
 
     public static void unzip(String prefix, ZipInputStream in, File dir) throws IOException {
-        dir.mkdirs();
-        ZipEntry entry;
-        while ((entry = in.getNextEntry()) != null) {
-            String entryName = entry.getName();
-            if (!entryName.startsWith(prefix) || entryName.contains("..")) {
-                continue;
-            }
-
-            File file = new File(dir, entryName.substring(prefix.length()));
-            if (entry.isDirectory()) {
-                file.mkdirs();
-            } else {
-                file.getParentFile().mkdirs();
-                FileUtils.copyToFile(in, file);
-            }
-        }
+        unzip(in, dir, entry -> entry.getName().startsWith(prefix), name -> name.substring(prefix.length()));
     }
 
     public static void unzip(ZipInputStream in, File dir) throws IOException {
+        unzip(in, dir, entry -> true, Function.identity());
+    }
+
+    private static void unzip(ZipInputStream in, File dir, Predicate<ZipEntry> filter,
+            Function<String, String> nameFormatter) throws IOException {
         dir.mkdirs();
         ZipEntry entry;
         while ((entry = in.getNextEntry()) != null) {
-            if (entry.getName().contains("..")) {
-                continue;
-            }
-
-            File file = new File(dir, entry.getName());
-            if (entry.isDirectory()) {
-                file.mkdirs();
-            } else {
-                file.getParentFile().mkdirs();
-                FileUtils.copyToFile(in, file);
+            if (!entry.getName().contains("..") && filter.test(entry)) {
+                File file = new File(dir, nameFormatter.apply(entry.getName()));
+                if (entry.isDirectory()) {
+                    file.mkdirs();
+                } else {
+                    file.getParentFile().mkdirs();
+                    try (FileOutputStream output = FileUtils.openOutputStream(file)) {
+                        IOUtils.copy(in, output);
+                    }
+                }
             }
         }
     }
 
     public static void unzipIgnoreDirs(ZipInputStream in, File dir) throws IOException {
-        dir.mkdirs();
-        ZipEntry entry = in.getNextEntry();
-        while (entry != null) {
-            String entryName = entry.getName();
-            if (!entry.isDirectory()) {
-                int p = entryName.lastIndexOf('/');
-                if (p > -1) {
-                    entryName = entryName.substring(p + 1);
-                }
-                File file = new File(dir, entryName);
-                FileUtils.copyToFile(in, file);
-            }
-            entry = in.getNextEntry();
-        }
+        unzip(in, dir, entry -> !entry.isDirectory(), Function.identity());
     }
 
     public static void unzipIgnoreDirs(InputStream zipStream, File dir) throws IOException {
@@ -280,25 +260,8 @@ public final class ZipUtils {
     public static void unzip(ZipInputStream in, File dir, PathFilter filter) throws IOException {
         if (filter == null) {
             unzip(in, dir);
-            return;
-        }
-        ZipEntry entry;
-        while ((entry = in.getNextEntry()) != null) {
-            String entryName = entry.getName();
-            if (entryName.contains("..")) {
-                continue;
-            }
-
-            if (filter.accept(new Path(entryName))) {
-                // System.out.println("Extracting "+entryName);
-                File file = new File(dir, entryName);
-                if (entry.isDirectory()) {
-                    file.mkdirs();
-                } else {
-                    file.getParentFile().mkdirs();
-                    FileUtils.copyToFile(in, file);
-                }
-            }
+        } else {
+            unzip(in, dir, toPredicate(filter), Function.identity());
         }
     }
 
@@ -311,30 +274,14 @@ public final class ZipUtils {
     public static void unzip(String prefix, ZipInputStream in, File dir, PathFilter filter) throws IOException {
         if (filter == null) {
             unzip(prefix, in, dir);
-            return;
+        } else {
+            unzip(in, dir, toPredicate(filter).and(entry -> entry.getName().startsWith(prefix)),
+                    name -> name.substring(prefix.length()));
         }
-        dir.mkdirs();
+    }
 
-        ZipEntry entry;
-        while ((entry = in.getNextEntry()) != null) {
-            String entryName = entry.getName();
-            if (entryName.contains("..")) {
-                continue;
-            }
-
-            if (filter.accept(new Path(entryName))) {
-                if (!entry.getName().startsWith(prefix)) {
-                    continue;
-                }
-                File file = new File(dir, entry.getName().substring(prefix.length()));
-                if (entry.isDirectory()) {
-                    file.mkdirs();
-                } else {
-                    file.getParentFile().mkdirs();
-                    FileUtils.copyToFile(in, file);
-                }
-            }
-        }
+    private static Predicate<ZipEntry> toPredicate(PathFilter filter) {
+        return entry -> filter.accept(new Path(entry.getName()));
     }
 
     // ________________ Entries ________________
@@ -377,7 +324,7 @@ public final class ZipUtils {
      */
     public static byte[] getEntryContentAsBytes(File file, String entryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(file, entryName)) {
-            return FileUtils.readBytes(resultStream);
+            return IOUtils.toByteArray(resultStream);
         }
     }
 
@@ -431,7 +378,7 @@ public final class ZipUtils {
 
     public static byte[] getEntryContentAsBytes(InputStream stream, String searchedEntryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(stream, searchedEntryName)) {
-            return FileUtils.readBytes(resultStream);
+            return IOUtils.toByteArray(resultStream);
         }
     }
 
@@ -466,7 +413,7 @@ public final class ZipUtils {
 
     public static byte[] getEntryContentAsBytes(URL url, String entryName) throws IOException {
         try (InputStream resultStream = getEntryContentAsStream(url, entryName)) {
-            return FileUtils.readBytes(resultStream);
+            return IOUtils.toByteArray(resultStream);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
  * Contributors:
  *     Nuxeo
  */
-
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.apache.commons.io.FileUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
@@ -30,7 +30,6 @@ import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -100,7 +99,7 @@ public class FSPublishedDocument implements PublishedDocument {
 
     public void persist(String containerPath) throws IOException {
         File output = new File(containerPath, sourceDocumentRef.toString());
-        FileUtils.writeFile(output, xmlRepresentation);
+        FileUtils.writeStringToFile(output, xmlRepresentation);
         persistPath = output.getAbsolutePath();
     }
 

@@ -30,9 +30,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -109,25 +109,19 @@ public class ResourceServlet extends HttpServlet {
 
     protected static void sendBinaryContent(ScriptFile file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
-        InputStream in = file.getInputStream();
-        try {
-            FileUtils.copy(in, out);
-        } finally {
-            in.close();
+        try (InputStream in = file.getInputStream()) {
+            IOUtils.copy(in, out);
+            out.flush();
         }
-        out.flush();
     }
 
     protected static void sendTextContent(ScriptFile file, HttpServletResponse resp) throws IOException {
         // Writer out = resp.getWriter();
         OutputStream out = resp.getOutputStream();
-        InputStream in = file.getInputStream();
-        try {
-            FileUtils.copy(in, out);
-        } finally {
-            in.close();
+        try (InputStream in = file.getInputStream()) {
+            IOUtils.copy(in, out);
+            out.flush();
         }
-        out.flush();
     }
 
 }

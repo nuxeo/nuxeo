@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
@@ -186,7 +186,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 } else {
                     String content;
                     try {
-                        content = new String(FileUtils.readBytes(url));
+                        content = new String(IOUtils.toByteArray(url));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -206,7 +206,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 } else {
                     String content;
                     try {
-                        content = new String(FileUtils.readBytes(url));
+                        content = new String(IOUtils.toByteArray(url));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

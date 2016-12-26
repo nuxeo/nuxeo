@@ -32,8 +32,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageDependency;
@@ -339,7 +337,7 @@ public class PackageBuilder {
                 for (Map.Entry<String, InputStream> stream : entries.entrySet()) {
                     entry = new ZipEntry(stream.getKey());
                     zout.putNextEntry(entry);
-                    FileUtils.copy(stream.getValue(), zout);
+                    IOUtils.copy(stream.getValue(), zout);
                     zout.closeEntry();
                 }
                 if (!installForms.isEmpty()) {
@@ -373,7 +371,7 @@ public class PackageBuilder {
         String xml = new XmlSerializer().toXML(forms);
         ZipEntry entry = new ZipEntry(path);
         zout.putNextEntry(entry);
-        FileUtils.copy(new ByteArrayInputStream(xml.getBytes()), zout);
+        IOUtils.copy(new ByteArrayInputStream(xml.getBytes()), zout);
         zout.closeEntry();
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**
@@ -82,20 +82,14 @@ public class JettyFeature extends SimpleFeature implements WorkingDirectoryConfi
         File dest = new File(workingDir, "config");
         dest.mkdirs();
 
-        InputStream in = getResource("jetty/default-web.xml").openStream();
         dest = new File(workingDir + "/config", "default-web.xml");
-        try {
-            FileUtils.copyToFile(in, dest);
-        } finally {
-            in.close();
+        try (InputStream in = getResource("jetty/default-web.xml").openStream()) {
+            FileUtils.copyInputStreamToFile(in, dest);
         }
 
-        in = getResource("jetty/jetty.xml").openStream();
         dest = new File(workingDir + "/config", "jetty.xml");
-        try {
-            FileUtils.copyToFile(in, dest);
-        } finally {
-            in.close();
+        try (InputStream in = getResource("jetty/jetty.xml").openStream()) {
+            FileUtils.copyInputStreamToFile(in, dest);
         }
     }
 

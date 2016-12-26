@@ -34,9 +34,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.webengine.WebException;
 
@@ -54,20 +54,14 @@ public class FileWriter implements MessageBodyWriter<File> {
 
     public void writeTo(File t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(t);
-            FileUtils.copy(in, entityStream);
+        try (FileInputStream in = new FileInputStream(t)) {
+            IOUtils.copy(in, entityStream);
             entityStream.flush();
         } catch (RuntimeException | IOException e) {
             if (DownloadHelper.isClientAbortError(e)) {
                 DownloadHelper.logClientAbort(e);
             } else {
                 throw WebException.wrap("Failed to render resource", e);
-            }
-        } finally {
-            if (in != null) {
-                in.close();
             }
         }
     }

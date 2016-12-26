@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.connect.update.task.Task;
 
 /**
@@ -34,7 +34,7 @@ public class TestCopyUninstallValidation extends TestCopy {
     protected void installDone(Task task, Throwable error) throws Exception {
         super.installDone(task, error);
         // modify the target file so that uninstall fails
-        FileUtils.writeFile(getTargetFile(), "modified file");
+        FileUtils.writeStringToFile(getTargetFile(), "modified file");
     }
 
     @Override
@@ -46,7 +46,7 @@ public class TestCopyUninstallValidation extends TestCopy {
         // since we modified the file the file should be still there (and not
         // deleted by the uninstall)
         assertTrue(getTargetFile().isFile());
-        assertEquals("modified file", FileUtils.readFile(getTargetFile()));
+        assertEquals("modified file", FileUtils.readFileToString(getTargetFile()));
     }
 
 }

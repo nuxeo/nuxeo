@@ -109,7 +109,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     protected void checkLayoutTypeImport(String filename, boolean isCompat) throws Exception {
         JSONObject json = null;
         try (InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename))) {
-            byte[] bytes = FileUtils.readBytes(in);
+            byte[] bytes = IOUtils.toByteArray(in);
             if (bytes.length != 0) {
                 json = JSONObject.fromObject(new String(bytes, "UTF-8"));
             }
@@ -172,7 +172,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
     protected void checkWidgetTypeImport(String filename, boolean isCompat) throws Exception {
         JSONObject json = null;
         try (InputStream in = new FileInputStream(FileUtils.getResourcePathFromContext(filename))) {
-            byte[] bytes = FileUtils.readBytes(in);
+            byte[] bytes = IOUtils.toByteArray(in);
             if (bytes.length != 0) {
                 json = JSONObject.fromObject(new String(bytes, "UTF-8"));
             }

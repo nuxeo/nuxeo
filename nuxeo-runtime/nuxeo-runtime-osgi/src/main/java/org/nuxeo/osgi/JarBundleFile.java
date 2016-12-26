@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.osgi;
 
 import java.io.File;
@@ -38,9 +35,9 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.util.EntryFilter;
 import org.osgi.framework.Constants;
@@ -87,7 +84,7 @@ public class JarBundleFile implements BundleFile {
         int len = prefix.length();
         EntryFilter filter = EntryFilter.newFilter(pattern);
         Enumeration<JarEntry> entries = jarFile.entries();
-        ArrayList<URL> result = new ArrayList<URL>();
+        ArrayList<URL> result = new ArrayList<>();
         try {
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
@@ -185,7 +182,7 @@ public class JarBundleFile implements BundleFile {
         String[] paths = StringUtils.split(cp, ',', true);
         URL base = new URL("jar:" + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
         String fileName = getFileName();
-        List<BundleFile> nested = new ArrayList<BundleFile>();
+        List<BundleFile> nested = new ArrayList<>();
         for (String path : paths) {
             if (path.equals(".")) {
                 continue; // TODO
@@ -206,27 +203,12 @@ public class JarBundleFile implements BundleFile {
     }
 
     public static void extractNestedJar(JarFile file, String path, File dest) throws IOException {
-        InputStream in = null;
-        ZipEntry entry = file.getEntry(path);
-        try {
-            in = file.getInputStream(entry);
-            FileUtils.copyToFile(in, dest);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        extractNestedJar(file, file.getEntry(path), dest);
     }
 
     public static void extractNestedJar(JarFile file, ZipEntry entry, File dest) throws IOException {
-        InputStream in = null;
-        try {
-            in = file.getInputStream(entry);
-            FileUtils.copyToFile(in, dest);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
+        try (InputStream in = file.getInputStream(entry)) {
+            FileUtils.copyInputStreamToFile(in, dest);
         }
     }
 
@@ -235,7 +217,7 @@ public class JarBundleFile implements BundleFile {
         URL base = new URL("jar:" + new File(jarFile.getName()).toURI().toURL().toExternalForm() + "!/");
         String fileName = getFileName();
         Enumeration<JarEntry> entries = jarFile.entries();
-        List<BundleFile> nested = new ArrayList<BundleFile>();
+        List<BundleFile> nested = new ArrayList<>();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
             String path = entry.getName();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.schema;
 
 import java.io.File;
@@ -37,12 +36,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeException;
-
 import org.xml.sax.SAXException;
 
 /**
@@ -358,12 +355,9 @@ public class SchemaManagerImpl implements SchemaManager {
             log.error("XSD Schema not found: " + sd.src);
             return;
         }
-        InputStream in = url.openStream();
-        try {
+        try (InputStream in = url.openStream()) {
             sd.file = new File(schemaDir, sd.name + ".xsd");
-            FileUtils.copyToFile(in, sd.file); // may overwrite
-        } finally {
-            in.close();
+            FileUtils.copyInputStreamToFile(in, sd.file); // may overwrite
         }
     }
 

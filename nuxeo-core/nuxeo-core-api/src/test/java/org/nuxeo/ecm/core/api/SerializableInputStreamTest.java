@@ -17,7 +17,6 @@
  *     Nuxeo - initial API and implementation
  *
  */
-
 package org.nuxeo.ecm.core.api;
 
 import static org.junit.Assert.assertTrue;
@@ -31,10 +30,9 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Arrays;
 
-import org.junit.Ignore;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -59,8 +57,8 @@ public class SerializableInputStreamTest {
         try (ObjectInputStream oin = new ObjectInputStream(new FileInputStream(tmp))) {
             sin = (InputStream) oin.readObject();
         }
-        byte[] bytes1 = FileUtils.readBytes(url.openStream());
-        byte[] bytes2 = FileUtils.readBytes(sin);
+        byte[] bytes1 = IOUtils.toByteArray(url.openStream());
+        byte[] bytes2 = IOUtils.toByteArray(sin);
         assertTrue(Arrays.equals(bytes1, bytes2));
         sin.close();
     }

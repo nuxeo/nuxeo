@@ -165,7 +165,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         mt = MediaType.TEXT_HTML;
 
         File file = FileUtils.getResourceFileFromContext("testTiling.html");
-        String html = FileUtils.readFile(file);
+        String html = org.apache.commons.io.FileUtils.readFileToString(file);
 
         html = html.replace("$repoId$", repoId);
         html = html.replace("$docId$", docId);

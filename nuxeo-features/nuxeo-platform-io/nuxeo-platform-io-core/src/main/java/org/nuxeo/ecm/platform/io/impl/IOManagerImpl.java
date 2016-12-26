@@ -37,10 +37,9 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -219,11 +218,8 @@ public class IOManagerImpl implements IOManager {
 
         // fill in a new stream
         File temp = Framework.createTempFile("nuxeo-import-adapters-", ".zip");
-        FileOutputStream outDocs = new FileOutputStream(temp);
-        try {
-            FileUtils.copy(zip, outDocs);
-        } finally {
-            outDocs.close();
+        try (FileOutputStream outDocs = new FileOutputStream(temp)) {
+            IOUtils.copy(zip, outDocs);
         }
         zip.closeEntry();
 

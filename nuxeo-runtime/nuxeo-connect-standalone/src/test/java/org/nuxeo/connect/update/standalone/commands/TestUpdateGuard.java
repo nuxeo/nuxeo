@@ -25,9 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.task.Task;
@@ -46,7 +46,7 @@ public class TestUpdateGuard extends AbstractCommandTest {
         super.setUp();
         File bundles = new File(Environment.getDefault().getHome(), "bundles");
         oldJar = new File(bundles, "foo-abc-1.0.jar");
-        FileUtils.writeFile(oldJar, "old JAR content");
+        FileUtils.writeStringToFile(oldJar, "old JAR content");
         expectedJar = new File(bundles, "foo-abc-1.1.jar");
         unexpectedJar = new File(bundles, "bar-def-2.0.jar");
         // pre-install an "abc-1.2.3" package in the local store

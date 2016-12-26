@@ -30,6 +30,7 @@ import java.security.MessageDigest;
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -91,7 +92,7 @@ public class TestImportModifiedZipArchive {
         byte[] expected = MessageDigest.getInstance("MD5").digest("SomeDummyContent".getBytes());
         String source = Base64.encodeBase64String(expected);
 
-        byte[] actual = MessageDigest.getInstance("MD5").digest(FileUtils.readBytes(blob.getStream()));
+        byte[] actual = MessageDigest.getInstance("MD5").digest(IOUtils.toByteArray(blob.getStream()));
         String result = Base64.encodeBase64String(actual);
 
         assertEquals(source, result);

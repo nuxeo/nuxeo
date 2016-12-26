@@ -25,7 +25,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,7 +37,7 @@ public class MemoryStore implements ResourceStore {
     protected String location;
 
     public MemoryStore() {
-        this(new HashMap<String, byte[]>());
+        this(new HashMap<>());
     }
 
     public MemoryStore(Map<String, byte[]> store) {
@@ -67,7 +67,7 @@ public class MemoryStore implements ResourceStore {
     }
 
     public void put(String name, InputStream data) throws IOException {
-        store.put(name, FileUtils.readBytes(data));
+        store.put(name, IOUtils.toByteArray(data));
     }
 
     public void put(String name, byte[] data) throws IOException {

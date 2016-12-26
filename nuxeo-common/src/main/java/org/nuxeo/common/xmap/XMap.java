@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
-
 package org.nuxeo.common.xmap;
 
 import java.io.File;
@@ -40,7 +37,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XContext;
 import org.nuxeo.common.xmap.annotation.XMemberAnnotation;
@@ -80,7 +77,7 @@ import org.xml.sax.SAXException;
 @SuppressWarnings({ "SuppressionAnnotation" })
 public class XMap {
 
-    private static final DocumentBuilderFactory initFactory() {
+    private static DocumentBuilderFactory initFactory() {
         Thread t = Thread.currentThread();
         ClassLoader cl = t.getContextClassLoader();
         t.setContextClassLoader(XMap.class.getClassLoader());
@@ -111,9 +108,9 @@ public class XMap {
      * Creates a new XMap object.
      */
     public XMap() {
-        objects = new Hashtable<Class<?>, XAnnotatedObject>();
-        roots = new Hashtable<String, XAnnotatedObject>();
-        factories = new Hashtable<Class<?>, XValueFactory>(XValueFactory.defaultFactories);
+        objects = new Hashtable<>();
+        roots = new Hashtable<>();
+        factories = new Hashtable<>(XValueFactory.defaultFactories);
     }
 
     /**
@@ -263,9 +260,7 @@ public class XMap {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             return load(ctx, document.getDocumentElement());
-        } catch (ParserConfigurationException e) {
-            throw new IOException(e);
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             throw new IOException(e);
         } finally {
             if (in != null) {
@@ -338,9 +333,7 @@ public class XMap {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             return loadAll(ctx, document.getDocumentElement());
-        } catch (ParserConfigurationException e) {
-            throw new IOException(e);
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             throw new IOException(e);
         } finally {
             if (in != null) {
@@ -404,7 +397,7 @@ public class XMap {
      * @return the list of all top level objects found
      */
     public Object[] loadAll(Context ctx, Element root) {
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         loadAll(ctx, root, result);
         return result.toArray();
     }
@@ -525,7 +518,7 @@ public class XMap {
 
     public void toXML(Object object, File file) throws IOException {
         String xml = toXML(object);
-        FileUtils.writeFile(file, xml);
+        FileUtils.writeStringToFile(file, xml);
     }
 
     public void toXML(Object object, Element root) {

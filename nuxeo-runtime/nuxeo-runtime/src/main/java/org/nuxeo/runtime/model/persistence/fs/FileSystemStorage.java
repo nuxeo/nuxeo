@@ -28,10 +28,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.DOMSerializer;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.ContributionStorage;
@@ -59,7 +59,7 @@ public class FileSystemStorage implements ContributionStorage {
 
     public static synchronized String safeRead(File file) {
         try {
-            return FileUtils.readFile(file);
+            return FileUtils.readFileToString(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +67,7 @@ public class FileSystemStorage implements ContributionStorage {
 
     public static synchronized void safeWrite(File file, String content) {
         try {
-            FileUtils.writeFile(file, content);
+            FileUtils.writeStringToFile(file, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -78,7 +78,7 @@ public class FileSystemStorage implements ContributionStorage {
             return false;
         }
         try {
-            FileUtils.writeFile(file, content);
+            FileUtils.writeStringToFile(file, content);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

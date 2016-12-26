@@ -26,7 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
@@ -149,7 +149,7 @@ public class LocalPackageImpl implements LocalPackage {
         File file = data.getEntry(LocalPackage.LICENSE);
         if (file.isFile()) {
             try {
-                return FileUtils.readFile(file);
+                return FileUtils.readFileToString(file);
             } catch (IOException e) {
                 throw new PackageException("Failed to read license.txt file for package: " + getId());
             }
@@ -330,7 +330,7 @@ public class LocalPackageImpl implements LocalPackage {
         File file = data.getEntry(LocalPackage.TERMSANDCONDITIONS);
         if (file.isFile()) {
             try {
-                return FileUtils.readFile(file);
+                return FileUtils.readFileToString(file);
             } catch (IOException e) {
                 throw new PackageException("Failed to read license.txt file for package: " + getId());
             }

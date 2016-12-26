@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.connect.update.PackageException;
 
@@ -60,7 +60,7 @@ public class ParameterizedCopy extends Copy {
     @Override
     protected String getContentToCopy(File fileToCopy, Map<String, String> prefs) throws PackageException {
         try {
-            String content = FileUtils.readFile(fileToCopy);
+            String content = FileUtils.readFileToString(fileToCopy);
             return StringUtils.expandVars(content, prefs);
         } catch (IOException e) {
             throw new PackageException("Failed to run parameterized copy for: " + fileToCopy.getName(), e);

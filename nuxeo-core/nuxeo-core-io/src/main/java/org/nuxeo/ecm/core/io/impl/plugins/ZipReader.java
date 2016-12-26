@@ -28,7 +28,7 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
@@ -100,11 +100,8 @@ public class ZipReader extends AbstractDocumentReader {
                 throw new IOException("Failed to create directory: " + file.getParent());
             }
             // write the file content
-            FileOutputStream out = new FileOutputStream(file);
-            try {
-                FileUtils.copy(in, out);
-            } finally {
-                out.close();
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                IOUtils.copy(in, out);
             }
         }
     }

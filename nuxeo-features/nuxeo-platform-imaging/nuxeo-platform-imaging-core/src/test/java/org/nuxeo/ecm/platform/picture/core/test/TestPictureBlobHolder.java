@@ -31,6 +31,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -113,7 +114,7 @@ public class TestPictureBlobHolder {
         // test blob content
         assertEquals("mysample.jpg", blob.getFilename());
         assertEquals("image/jpeg", blob.getMimeType());
-        byte[] bytes = FileUtils.readBytes(blob.getStream());
+        byte[] bytes = IOUtils.toByteArray(blob.getStream());
         assertEquals(134561, bytes.length);
         bytes = null;
     }

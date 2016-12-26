@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -73,7 +74,7 @@ public class FileResourceStore implements ResourceStore {
         InputStream in = getStream(name);
         if (in != null) {
             try {
-                return FileUtils.readBytes(in);
+                return IOUtils.toByteArray(in);
             } catch (IOException e) {
                 log.error("Failed to read file: " + name, e);
             }
@@ -94,11 +95,11 @@ public class FileResourceStore implements ResourceStore {
     }
 
     public void put(String name, byte[] data) throws IOException {
-        FileUtils.writeFile(getFile(name), data);
+        FileUtils.writeByteArrayToFile(getFile(name), data);
     }
 
     public void put(String name, InputStream data) throws IOException {
-        FileUtils.copyToFile(data, getFile(name));
+        FileUtils.copyInputStreamToFile(data, getFile(name));
     }
 
     public String getLocation() {
