@@ -16,14 +16,15 @@
  * Contributors:
  *      Estelle Giuly <egiuly@nuxeo.com>
  */
-package org.nuxeo.ecm.automation.core.operations.blob;
+package org.nuxeo.ecm.core.convert.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -31,17 +32,29 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.io" })
-public class BlobToPDFTest {
+@Features(RuntimeFeature.class)
+public class TestConversionService {
+
+    @Test
+    public void testAdjustPDFBlobName() throws IOException {
+        String filename = null;
+        Blob blob = new FileBlob("test Blob");
+
+        ConversionServiceImpl.adjustPDFBlobName(filename, blob);
+        assertEquals(MimetypeRegistry.PDF_MIMETYPE, blob.getMimeType());
+        assertTrue(blob.getFilename().startsWith("file_"));
+        assertTrue(blob.getFilename().endsWith(".pdf"));
+
+        filename = "testBlob.xml";
+        ConversionServiceImpl.adjustPDFBlobName(filename, blob);
+        assertEquals("testBlob.pdf", blob.getFilename());
+    }
 
     @Test
     public void testReplaceURLsByAbsolutePaths() throws IOException {
@@ -54,11 +67,11 @@ public class BlobToPDFTest {
         Blob blob = new StringBlob("<h1>Hello World</><img src=\"" + url + "\" />");
         blob.setMimeType("text/html");
 
-        DownloadService downloadService = mock(DownloadService.class);
-        doReturn(imageBlob).when(downloadService).resolveBlobFromDownloadUrl(url);
-
-        Path tempDirectory = Framework.createTempDirectory("blobs");
-        Blob newBlob = BlobToPDF.replaceURLsByAbsolutePaths(blob, tempDirectory, downloadService);
+        Function<String, Blob> blobResolver = u -> {
+            return url.equals(u) ? imageBlob : null;
+        };
+        Path tempDirectory = Files.createTempDirectory("blobs");
+        Blob newBlob = ConversionServiceImpl.replaceURLsByAbsolutePaths(blob, tempDirectory, blobResolver);
         String absolutePath = tempDirectory.toString() + "/" + filename;
         assertEquals("<h1>Hello World</><img src=\"" + absolutePath + "\" />", newBlob.getString());
         FileUtils.deleteQuietly(tempDirectory.toFile());

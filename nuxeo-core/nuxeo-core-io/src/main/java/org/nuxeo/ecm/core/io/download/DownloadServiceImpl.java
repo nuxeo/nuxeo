@@ -204,7 +204,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     /**
      * Gets the download path and action of the URL to use to download blobs. For instance, from the path
      * "nxfile/default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", the pair
-     * ("default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", "downloadFromDoc") is returned.
+     * ("default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png", Action.DOWNLOAD_FROM_DOC) is returned.
      *
      * @param path the path of the URL to use to download blobs
      * @return the pair download path and action

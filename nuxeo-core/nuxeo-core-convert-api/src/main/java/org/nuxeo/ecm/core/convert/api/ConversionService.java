@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,14 +8,17 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Estelle Giuly <egiuly@nuxeo.com>
  *
  */
 package org.nuxeo.ecm.core.convert.api;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 
 /**
@@ -46,6 +49,13 @@ public interface ConversionService {
      */
     BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException;
+
+    /**
+     * Converts a Blob to PDF. If the blob has inner blobs such as images, they will be correctly rendered in the PDF.
+     *
+     * @since 9.1
+     */
+    Blob convertBlobToPDF(Blob blob) throws IOException;
 
     /**
      * Returns the names of the registered converters.

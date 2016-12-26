@@ -7,23 +7,37 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
+ *     Tiry
  *     Florent Guillaume
+ *     Estelle Giuly <egiuly@nuxeo.com>
  */
 
 package org.nuxeo.ecm.core.convert.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConversionStatus;
@@ -38,6 +52,7 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -50,8 +65,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Runtime Component that also provides the POJO implementation of the {@link ConversionService}.
- *
- * @author tiry
  */
 public class ConversionServiceImpl extends DefaultComponent implements ConversionService {
 
@@ -168,6 +181,93 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         List<String> converterNames = new ArrayList<>();
         converterNames.addAll(converterDescriptors.keySet());
         return converterNames;
+    }
+
+    @Override
+    public Blob convertBlobToPDF(Blob blob) throws IOException {
+        String mimetype = blob.getMimeType();
+        String filename = blob.getFilename();
+        if (MimetypeRegistry.PDF_MIMETYPE.equals(mimetype)) {
+            return blob;
+        }
+        Blob result;
+        if (MediaType.TEXT_PLAIN.equals(mimetype)) {
+            result = convertBlobToMimeType(blob, MimetypeRegistry.PDF_MIMETYPE);
+        } else {
+            // Convert the blob to HTML
+            if (!MediaType.TEXT_HTML.equals(mimetype)) {
+                blob = convertBlobToMimeType(blob, MediaType.TEXT_HTML);
+                blob.setFilename(filename);
+            }
+            Path tempDirectory = Files.createTempDirectory("blobs");
+            try {
+                // Replace the image URLs by absolute paths
+                DownloadService downloadService = Framework.getService(DownloadService.class);
+                blob = replaceURLsByAbsolutePaths(blob, tempDirectory, downloadService::resolveBlobFromDownloadUrl);
+                // Convert the blob to PDF
+                result = convertBlobToMimeType(blob, MimetypeRegistry.PDF_MIMETYPE);
+            } finally {
+                org.apache.commons.io.FileUtils.deleteQuietly(tempDirectory.toFile());
+            }
+        }
+        if (result != null) {
+            adjustPDFBlobName(filename, result);
+        }
+        return result;
+    }
+
+    protected Blob convertBlobToMimeType(Blob blob, String destinationMimeType) {
+        BlobHolder bh = new SimpleBlobHolder(blob);
+        bh = convertToMimeType(destinationMimeType, bh, null);
+        return bh == null ? null : bh.getBlob();
+    }
+
+    protected static void adjustPDFBlobName(String filename, Blob blob) {
+        if (StringUtils.isBlank(filename)) {
+            filename = "file_" + System.currentTimeMillis();
+        } else {
+            filename = FilenameUtils.removeExtension(FilenameUtils.getName(filename));
+        }
+        blob.setFilename(filename + MimetypeRegistry.PDF_EXTENSION);
+        blob.setMimeType(MimetypeRegistry.PDF_MIMETYPE);
+    }
+
+    /**
+     * Replace the image URLs of an HTML blob by absolute local paths.
+     *
+     * @throws IOException
+     * @since 9.1
+     */
+    protected static Blob replaceURLsByAbsolutePaths(Blob blob, Path tempDirectory, Function<String, Blob> blobResolver)
+            throws IOException {
+        String initialBlobContent = blob.getString();
+        // Find images links in the blob
+        Pattern pattern = Pattern.compile("(src=([\"']))(.*?)(\\2)");
+        Matcher matcher = pattern.matcher(initialBlobContent);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            // Retrieve the image from the URL
+            String url = matcher.group(3);
+            Blob imageBlob = blobResolver.apply(url);
+            if (imageBlob == null) {
+                break;
+            }
+            // Export the image to a temporary directory in File System
+            String safeFilename = FileUtils.getSafeFilename(imageBlob.getFilename());
+            File imageFile = tempDirectory.resolve(safeFilename).toFile();
+            imageBlob.transferTo(imageFile);
+            // Replace the image URL by its absolute local path
+            matcher.appendReplacement(sb, "$1" + Matcher.quoteReplacement(imageFile.toPath().toString()) + "$4");
+        }
+        matcher.appendTail(sb);
+        String blobContentWithAbsolutePaths = sb.toString();
+        if (blobContentWithAbsolutePaths.equals(initialBlobContent)) {
+            return blob;
+        }
+        // Create a new blob with the new content
+        Blob newBlob = new StringBlob(blobContentWithAbsolutePaths, blob.getMimeType(), blob.getEncoding());
+        newBlob.setFilename(blob.getFilename());
+        return newBlob;
     }
 
     @Override
