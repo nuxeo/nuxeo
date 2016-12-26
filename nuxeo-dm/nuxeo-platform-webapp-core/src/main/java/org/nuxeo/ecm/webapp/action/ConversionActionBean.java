@@ -15,6 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Florent Bonnet <florent.bonnet@nuxeo.com>
+ *     Estelle Giuly <egiuly@nuxeo.com>
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
@@ -38,7 +40,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,15 +51,13 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
+import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_MIMETYPE;
+import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_EXTENSION;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.ThreadSafeCacheHolder;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * @author <a href="mailto:florent.bonnet@nuxeo.com">Florent BONNET</a>
- */
 @Name("conversionActions")
 @Scope(ScopeType.EVENT)
 public class ConversionActionBean implements ConversionAction {
@@ -66,10 +65,6 @@ public class ConversionActionBean implements ConversionAction {
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
     protected Map<String, ConverterCheckResult> pdfConverterForTypes;
-
-    protected static final String PDF_MIMETYPE = "application/pdf";
-
-    protected static final String PDF_EXTENSION = ".pdf";
 
     @In(create = true, required = false)
     CoreSession documentManager;
@@ -204,7 +199,7 @@ public class ConversionActionBean implements ConversionAction {
         return isSupported;
     }
 
-    public String generatePdfFileFromBlobHolder(DocumentModel doc, BlobHolder bh) {
+    public String generatePdfFileFromBlobHolder(DocumentModel doc, BlobHolder bh) throws IOException {
         // redirect to the conversion URL when available
         Blob blob = bh.getBlob();
         String url = getPDFConversionURL(blob);
@@ -220,7 +215,7 @@ public class ConversionActionBean implements ConversionAction {
             log.error("No PDF converter was found.");
             return "pdf_generation_error";
         }
-        BlobHolder result = Framework.getService(ConversionService.class).convert(pdfConverterName, bh, null);
+        Blob result = Framework.getService(ConversionService.class).convertBlobToPDF(blob);
         if (result == null) {
             log.error("Transform service didn't return any resulting documents which is not normal.");
             return "pdf_generation_error";
@@ -231,24 +226,13 @@ public class ConversionActionBean implements ConversionAction {
         } else {
             xpath = null;
         }
-        String origFilename = new Path(bh.getFilePath()).lastSegment();
-        String filename = FileUtils.getCleanFileName(origFilename);
-        if (StringUtils.isBlank(filename)) {
-            filename = "file";
-        }
-        // add pdf extension
-        int pos = filename.lastIndexOf('.');
-        if (pos > 0) {
-            filename = filename.substring(0, pos);
-        }
-        filename += ".pdf";
-        ComponentUtils.download(doc, xpath, result.getBlob(), filename, "pdfConversion");
+        ComponentUtils.download(doc, xpath, result, result.getFilename(), "pdfConversion");
         return null;
     }
 
     @Override
     @WebRemote
-    public String generatePdfFile() {
+    public String generatePdfFile() throws IOException {
         DocumentModel doc = getDocument();
         BlobHolder bh = new DocumentBlobHolder(doc, fileFieldFullName);
         return generatePdfFileFromBlobHolder(doc, bh);

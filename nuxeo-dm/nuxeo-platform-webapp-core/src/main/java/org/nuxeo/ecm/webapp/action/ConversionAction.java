@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import java.io.IOException;
+
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -32,7 +34,7 @@ public interface ConversionAction {
     boolean isFileExportableToPDF(String fieldName);
 
     @WebRemote
-    String generatePdfFile();
+    String generatePdfFile() throws IOException;
 
     void reCheckConverterAvailability();
 
