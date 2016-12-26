@@ -89,6 +89,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     private static final Log log = LogFactory.getLog(LDAPSession.class);
 
+    // set to false for debugging
+    private static final boolean HIDE_PASSWORD_IN_LOGS = true;
+
     protected final String schemaName;
 
     protected final DirContext dirContext;
@@ -200,9 +203,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
             }
 
             if (log.isDebugEnabled()) {
+                Attributes logAttrs;
+                if (HIDE_PASSWORD_IN_LOGS && attrs.get(getPasswordField()) != null) {
+                    logAttrs = (Attributes) attrs.clone();
+                    logAttrs.put(getPasswordField(), "********"); // hide password in logs
+                } else {
+                    logAttrs = attrs;
+                }
                 String idField = getIdField();
                 log.debug(String.format("LDAPSession.createEntry(%s=%s): LDAP bind dn='%s' attrs='%s' [%s]", idField,
-                        fieldMap.get(idField), dn, attrs, this));
+                        fieldMap.get(idField), dn, logAttrs, this));
             }
             dirContext.bind(dn, null, attrs);
 

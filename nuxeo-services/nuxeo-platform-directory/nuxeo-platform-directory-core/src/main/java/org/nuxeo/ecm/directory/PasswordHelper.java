@@ -96,12 +96,17 @@ public class PasswordHelper {
 
     /**
      * Verify a password against a hashed password.
+     * <p>
+     * If the hashed password is {@code null} then the verification always fails.
      *
      * @param password the password to verify
      * @param hashedPassword the hashed password
      * @return {@code true} if the password matches
      */
     public static boolean verifyPassword(String password, String hashedPassword) {
+        if (hashedPassword == null) {
+            return false;
+        }
         String digestalg;
         int len;
         if (hashedPassword.startsWith(HSSHA)) {
