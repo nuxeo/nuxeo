@@ -41,6 +41,8 @@ public interface MimetypeRegistry {
 
     String PDF_MIMETYPE = "application/pdf";
 
+    String PDF_EXTENSION = ".pdf";
+
     /**
      * Returns the mime type from a given stream.
      *

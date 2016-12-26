@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.io.download;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
 
 /**
  * This class exposes information of a blob given its download path.
@@ -57,7 +56,7 @@ public class DownloadBlobInfo {
             xpath = parts[2];
             filename = null;
         } else {
-            xpath = StringUtils.join(Arrays.asList(parts).subList(2, length - 1), "/");
+            xpath = String.join("/", Arrays.asList(parts).subList(2, length - 1));
             filename = parts[length - 1];
         }
     }

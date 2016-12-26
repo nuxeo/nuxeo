@@ -35,6 +35,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-cache</artifactId>
     </dependency>
     <dependency>
@@ -52,6 +56,11 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <!-- note that this contains all of javax.ws.rs:jsr311-api -->
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.inject</groupId>
