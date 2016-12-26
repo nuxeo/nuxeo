@@ -411,6 +411,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
         String ha1 = encodeDigestAuthPassword(username, digestAuthRealm, password);
         try (Session dir = dirService.open(digestAuthDirectory)) {
+            dir.setReadAllColumns(true); // needed to read digest password
             String schema = dirService.getDirectorySchema(digestAuthDirectory);
             DocumentModel entry = dir.getEntry(username, true);
             if (entry == null) {
@@ -1196,9 +1197,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 throw new UserAlreadyExistsException();
             }
 
-            if (mustCheckPasswordValidity()) {
-                checkPasswordValidity(userModel);
-            }
+            checkPasswordValidity(userModel);
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
             String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
@@ -1215,13 +1214,16 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     protected void checkPasswordValidity(DocumentModel userModel) throws InvalidPasswordException {
+        if (!mustCheckPasswordValidity()) {
+            return;
+        }
         String schema = dirService.getDirectorySchema(userDirectoryName);
         String passwordField = dirService.getDirectory(userDirectoryName).getPasswordField();
 
-        Property passwordProperty = userModel.getProperty(String.format("%s:%s", schema, passwordField));
+        Property passwordProperty = userModel.getPropertyObject(schema, passwordField);
 
         if (passwordProperty.isDirty()) {
-            String clearPassword = passwordProperty.getValue(String.class);
+            String clearPassword = (String) passwordProperty.getValue();
             if (StringUtils.isNotBlank(clearPassword) && !validatePassword(clearPassword)) {
                 throw new InvalidPasswordException();
             }
@@ -1239,9 +1241,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
             String schema = dirService.getDirectorySchema(userDirectoryName);
 
-            if (mustCheckPasswordValidity()) {
-                checkPasswordValidity(userModel);
-            }
+            checkPasswordValidity(userModel);
 
             String clearUsername = (String) userModel.getProperty(schema, userDir.getIdField());
             String clearPassword = (String) userModel.getProperty(schema, userDir.getPasswordField());

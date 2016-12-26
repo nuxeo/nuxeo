@@ -293,4 +293,12 @@ public interface Session extends AutoCloseable {
      */
     DocumentModel createEntry(DocumentModel entry);
 
+    /**
+     * For test framework. Changes the read/query methods to return all of the entries, including the password field.
+     *
+     * @param readAllColumns whether to read all columns
+     * @since 9.1
+     */
+    void setReadAllColumns(boolean readAllColumns);
+
 }
