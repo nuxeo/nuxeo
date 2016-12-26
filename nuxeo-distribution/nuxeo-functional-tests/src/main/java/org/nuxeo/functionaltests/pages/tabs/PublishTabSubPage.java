@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -50,8 +49,6 @@ public class PublishTabSubPage extends AbstractPage {
     }
 
     public PublishTabSubPage publish(String sectionTree, String rendtion, String sectionName) {
-        DocumentBasePage.makePublishTreeUsable(driver);
-
         selectItemInDropDownMenu(selectTree, sectionTree);
         selectItemInDropDownMenu(selectRendition, rendtion);
 
