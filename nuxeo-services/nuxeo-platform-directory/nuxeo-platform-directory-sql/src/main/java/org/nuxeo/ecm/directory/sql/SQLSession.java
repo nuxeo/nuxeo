@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.storage.sql.ColumnSpec;
@@ -76,9 +78,10 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
-    protected final Map<String, Field> schemaFieldMap;
+    // set to false for debugging
+    private static final boolean HIDE_PASSWORD_IN_LOGS = true;
 
-    protected final List<String> storedFieldNames;
+    protected final Map<String, Field> schemaFieldMap;
 
     protected final Set<String> emptySet = Collections.emptySet();
 
@@ -118,7 +121,6 @@ public class SQLSession extends BaseSession implements EntrySource {
         passwordField = config.passwordField;
         passwordHashAlgorithm = config.passwordHashAlgorithm;
         schemaFieldMap = directory.getSchemaFieldMap();
-        storedFieldNames = directory.getStoredFieldNames();
         dialect = directory.getDialect();
         sid = String.valueOf(SIDGenerator.next());
         substringMatchType = config.getSubstringMatchType();
@@ -132,6 +134,14 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public SQLDirectory getDirectory() {
         return (SQLDirectory) directory;
+    }
+
+    protected List<Column> getReadColumns() {
+        return readAllColumns ? getDirectory().readColumnsAll : getDirectory().readColumns;
+    }
+
+    protected String getReadColumnsSQL() {
+        return readAllColumns ? getDirectory().readColumnsAllSQL : getDirectory().readColumnsSQL;
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
@@ -233,7 +243,13 @@ public class SQLSession extends BaseSession implements EntrySource {
             for (Column column : columnList) {
                 String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
                 Object value = fieldMap.get(prefixField);
-                values.add(fieldValueForWrite(value, column));
+                Serializable v;
+                if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(passwordField)) {
+                    v = "********"; // hide password in logs
+                } else {
+                    v = fieldValueForWrite(value, column);
+                }
+                values.add(v);
             }
             logger.logSQL(sql, values);
         }
@@ -329,6 +345,10 @@ public class SQLSession extends BaseSession implements EntrySource {
         if (!hasPermission(SecurityConstants.READ)) {
             return null;
         }
+        if (readAllColumns) {
+            // bypass cache when reading all columns
+            return getEntryFromSource(id, fetchReferences);
+        }
         return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
@@ -368,6 +388,66 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
+    /**
+     * Internal method to read the hashed password for authentication.
+     *
+     * @since 9.1
+     */
+    protected String getPassword(String id) {
+        acquireConnection();
+
+        Select select = new Select(table);
+        select.setFrom(table.getQuotedName());
+        List<Column> whatColumns = new ArrayList<>(2);
+        whatColumns.add(table.getColumn(passwordField));
+        if (isMultiTenant()) {
+            whatColumns.add(table.getColumn(TENANT_ID_FIELD));
+        }
+        String what = whatColumns.stream().map(Column::getQuotedName).collect(Collectors.joining(", "));
+        select.setWhat(what);
+        String whereClause = table.getPrimaryColumn().getQuotedName() + " = ?";
+        whereClause = addFilterWhereClause(whereClause);
+        select.setWhere(whereClause);
+        String sql = select.getStatement();
+
+        if (logger.isLogEnabled()) {
+            List<Serializable> values = new ArrayList<>();
+            values.add(id);
+            addFilterValuesForLog(values);
+            logger.logSQL(sql, values);
+        }
+
+        try (PreparedStatement ps = sqlConnection.prepareStatement(sql)) {
+            setFieldValue(ps, 1, table.getPrimaryColumn(), id);
+            addFilterValues(ps, 2);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                if (isMultiTenant()) {
+                    // check that the entry is from the current tenant, or no tenant at all
+                    String tenantId = getCurrentTenantId();
+                    if (!StringUtils.isBlank(tenantId)) {
+                        String entryTenantId = (String) getFieldValue(rs, table.getColumn(TENANT_ID_FIELD));
+                        if (!StringUtils.isBlank(entryTenantId)) {
+                            if (!entryTenantId.equals(tenantId)) {
+                                return null;
+                            }
+                        }
+                    }
+                }
+                String password = (String) getFieldValue(rs, table.getColumn(passwordField));
+                if (logger.isLogEnabled()) {
+                    String value = HIDE_PASSWORD_IN_LOGS ? "********" : password;
+                    logger.logMap(Collections.singletonMap(passwordField, value));
+                }
+                return password;
+            }
+        } catch (SQLException e) {
+            throw new DirectoryException("getPassword failed", e);
+        }
+    }
+
     @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
         acquireConnection();
@@ -375,7 +455,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         // tableName, idField);
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());
-        select.setWhat("*");
+        select.setWhat(getReadColumnsSQL());
 
         String whereClause = table.getPrimaryColumn().getQuotedName() + " = ?";
         whereClause = addFilterWhereClause(whereClause);
@@ -396,19 +476,19 @@ public class SQLSession extends BaseSession implements EntrySource {
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
             addFilterValues(ps, 2);
 
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                return null;
-            }
-
-            // fetch the stored fields
             Map<String, Object> fieldMap = new HashMap<>();
-            for (String fieldName : storedFieldNames) {
-                Object value = getFieldValue(rs, fieldName);
-                fieldMap.put(fieldName, value);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                for (Column column : getReadColumns()) {
+                    Object value = getFieldValue(rs, column);
+                    fieldMap.put(column.getKey(), value);
+                }
+                if (logger.isLogEnabled()) {
+                    logger.logResultSet(rs, getReadColumns());
+                }
             }
-            rs.close();
 
             if (isMultiTenant()) {
                 // check that the entry is from the current tenant, or no tenant
@@ -498,7 +578,12 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (fieldName.equals(idField)) {
                 continue;
             }
-            if (!docModel.getPropertyObject(schemaName, fieldName).isDirty()) {
+            Property prop = docModel.getPropertyObject(schemaName, fieldName);
+            if (!prop.isDirty()) {
+                continue;
+            }
+            if (fieldName.equals(passwordField) && StringUtils.isEmpty((String) prop.getValue())) {
+                // null/empty password means unchanged
                 continue;
             }
             if (getDirectory().isReference(fieldName)) {
@@ -526,6 +611,9 @@ public class SQLSession extends BaseSession implements EntrySource {
                 List<Serializable> values = new ArrayList<>(storedColumnList.size());
                 for (Column column : storedColumnList) {
                     Object value = docModel.getProperty(schemaName, column.getKey());
+                    if (HIDE_PASSWORD_IN_LOGS && column.getKey().equals(passwordField)) {
+                        value = "********"; // hide password in logs
+                    }
                     values.add((Serializable) value);
                 }
                 values.add(docModel.getId());
@@ -743,6 +831,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<>(filter);
+        filterMap.remove(passwordField); // cannot filter on password
 
         if (isMultiTenant()) {
             // filter entries on the tenantId field also
@@ -838,13 +927,26 @@ public class SQLSession extends BaseSession implements EntrySource {
                     select.setWhere(where);
 
                     String countQuery = select.getStatement();
+                    if (logger.isLogEnabled()) {
+                        List<Serializable> values = new ArrayList<>(orderedColumns.size());
+                        for (Column column : orderedColumns) {
+                            Object value = filterMap.get(column.getKey());
+                            values.add((Serializable) value);
+                        }
+                        addFilterValuesForLog(values);
+                        logger.logSQL(countQuery, values);
+                    }
                     ps = sqlConnection.prepareStatement(countQuery);
                     fillPreparedStatementFields(filterMap, orderedColumns, ps);
 
-                    ResultSet rs = ps.executeQuery();
-                    rs.next();
-                    int count = rs.getInt(1);
-                    rs.close();
+                    int count;
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        count = rs.getInt(1);
+                    }
+                    if (logger.isLogEnabled()) {
+                        logger.logCount(count);
+                    }
                     if (count > queryLimitSize) {
                         trucatedResults = true;
                         limit = queryLimitSize;
@@ -864,7 +966,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             // whereClause).toString();
 
             Select select = new Select(table);
-            select.setWhat("*");
+            select.setWhat(getReadColumnsSQL());
             select.setFrom(table.getQuotedName());
 
             String where = whereClause.toString();
@@ -912,9 +1014,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 logger.logSQL(query, values);
             }
 
-            PreparedStatement ps = null;
-            try {
-                ps = sqlConnection.prepareStatement(query);
+            try (PreparedStatement ps = sqlConnection.prepareStatement(query)) {
                 fillPreparedStatementFields(filterMap, orderedColumns, ps);
 
                 // execute the query and create a documentModel list
@@ -924,9 +1024,9 @@ public class SQLSession extends BaseSession implements EntrySource {
 
                     // fetch values for stored fields
                     Map<String, Object> map = new HashMap<>();
-                    for (String fieldName : storedFieldNames) {
-                        Object o = getFieldValue(rs, fieldName);
-                        map.put(fieldName, o);
+                    for (Column column : getReadColumns()) {
+                        Object o = getFieldValue(rs, column);
+                        map.put(column.getKey(), o);
                     }
 
                     DocumentModel docModel = fieldMapToDocumentModel(map);
@@ -970,10 +1070,6 @@ public class SQLSession extends BaseSession implements EntrySource {
                     ((DocumentModelListImpl) list).setTotalSize(-2);
                 }
                 return list;
-            } finally {
-                if (ps != null) {
-                    ps.close();
-                }
             }
 
         } catch (SQLException e) {
@@ -1006,13 +1102,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         return query(filter, emptySet);
     }
 
-    private Object getFieldValue(ResultSet rs, String fieldName) throws DirectoryException {
+    private Object getFieldValue(ResultSet rs, Column column) throws DirectoryException {
         try {
-            Column column = table.getColumn(fieldName);
-            if (column == null) {
-                throw new DirectoryException(String.format("Column '%s' does not exist in table '%s'", fieldName,
-                        table.getKey()));
-            }
             int index = rs.findColumn(column.getPhysicalName());
             return column.getFromResultSet(rs, index);
         } catch (SQLException e) {
@@ -1107,11 +1198,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public boolean authenticate(String username, String password) {
-        DocumentModel entry = getEntry(username);
-        if (entry == null) {
-            return false;
-        }
-        String storedPassword = (String) entry.getProperty(schemaName, getPasswordField());
+        String storedPassword = getPassword(username);
         return PasswordHelper.verifyPassword(password, storedPassword);
     }
 
@@ -1136,7 +1223,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());
-        select.setWhat("*");
+        select.setWhat("1");
         select.setWhere(table.getPrimaryColumn().getQuotedName() + " = ?");
         String sql = select.getStatement();
 
@@ -1150,7 +1237,11 @@ public class SQLSession extends BaseSession implements EntrySource {
             ps = sqlConnection.prepareStatement(sql);
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
             rs = ps.executeQuery();
-            return rs.next();
+            boolean has = rs.next();
+            if (logger.isLogEnabled()) {
+                logger.logCount(has ? 1 : 0);
+            }
+            return has;
         } catch (SQLException e) {
             throw new DirectoryException("hasEntry failed", e);
         } finally {

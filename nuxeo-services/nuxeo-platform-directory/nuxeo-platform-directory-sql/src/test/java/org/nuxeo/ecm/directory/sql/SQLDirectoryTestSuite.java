@@ -21,6 +21,7 @@ package org.nuxeo.ecm.directory.sql;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -28,6 +29,7 @@ import static org.junit.Assert.fail;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -221,9 +224,6 @@ public abstract class SQLDirectoryTestSuite {
             assertEquals(SCHEMA, schemaNames[0]);
 
             assertEquals("user_0", dm.getProperty(SCHEMA, "username"));
-            String password = (String) dm.getProperty(SCHEMA, "password");
-            assertFalse("pass_0".equals(password));
-            assertTrue(PasswordHelper.verifyPassword("pass_0", password));
             assertEquals(Long.valueOf(5), dm.getProperty(SCHEMA, "intField"));
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 0),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
@@ -233,6 +233,8 @@ public abstract class SQLDirectoryTestSuite {
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
 
+            // password check
+            assertTrue(session.authenticate("user_0", "pass_0"));
         }
     }
 
@@ -242,8 +244,6 @@ public abstract class SQLDirectoryTestSuite {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-            // password restored through SQLDirectoryFeature is now encrypted
-            // assertEquals("pass_1", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
             assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0), (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertNull(dm.getProperty(SCHEMA, "company"));
@@ -254,7 +254,6 @@ public abstract class SQLDirectoryTestSuite {
 
             dm = session.getEntry("Administrator");
             assertEquals("Administrator", dm.getProperty(SCHEMA, "username"));
-            // assertEquals("Administrator", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
@@ -282,7 +281,6 @@ public abstract class SQLDirectoryTestSuite {
             DocumentModel dm = entryMap.get("user_1");
             assertNotNull(dm);
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-            // assertEquals("pass_1", dm.getProperty(SCHEMA, "password"));
             assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0), (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
             assertTrue((Boolean) dm.getProperty(SCHEMA, "booleanField"));
@@ -292,7 +290,6 @@ public abstract class SQLDirectoryTestSuite {
             dm = entryMap.get("Administrator");
             assertNotNull(dm);
             assertEquals("Administrator", dm.getProperty(SCHEMA, "username"));
-            // assertEquals("Administrator", dm.getProperty(SCHEMA, "password"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
@@ -337,15 +334,16 @@ public abstract class SQLDirectoryTestSuite {
         try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-            String password = (String) dm.getProperty(SCHEMA, "password");
-            assertFalse("pass_2".equals(password));
-            assertTrue(PasswordHelper.verifyPassword("pass_2", password));
+
             assertEquals(Long.valueOf(2), dm.getProperty(SCHEMA, "intField"));
             assertCalendarEquals(getCalendar(2001, 2, 3, 4, 5, 6, 7), (Calendar) dm.getProperty(SCHEMA, "dateField"));
             List<String> groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(2, groups.size());
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
+
+            // password check
+            assertTrue(session.authenticate("user_1", "pass_2"));
 
             // the user_2 username change was ignored
             assertNull(session.getEntry("user_2"));
@@ -355,10 +353,8 @@ public abstract class SQLDirectoryTestSuite {
             session.updateEntry(dm);
         }
         try (Session session = getSession()) {
-            DocumentModel dm = session.getEntry("user_1");
-            String password = (String) dm.getProperty(SCHEMA, "password");
-            assertFalse("pass_2".equals(password));
-            assertTrue(PasswordHelper.verifyPassword("pass_2", password));
+            // password check
+            assertTrue(session.authenticate("user_1", "pass_2"));
         }
     }
 
@@ -487,7 +483,7 @@ public abstract class SQLDirectoryTestSuite {
         try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
-            filter.put("password", "pass_x"); // no such password
+            filter.put("email", "nosuchemail");
             DocumentModelList list = session.query(filter);
             assertEquals(0, list.size());
         }
@@ -658,6 +654,122 @@ public abstract class SQLDirectoryTestSuite {
             if (dirtmp2 != null) {
                 dirtmp2.shutdown();
             }
+        }
+    }
+
+    @Test
+    public void testPasswordUpdate() throws Exception {
+        try (Session session = getSession()) {
+            String username = "myuser";
+            String password = "MyPassword:)";
+            String password2 = "SomeOtherPassword-";
+
+            // create entry
+            Map<String, Object> map = new HashMap<>();
+            map.put("username", username);
+            map.put("password", password);
+            session.createEntry(map);
+
+            // check authentication
+            assertTrue(session.authenticate(username, password));
+
+            // password has been hashed
+            String pw = ((SQLSession) session).getPassword(username);
+            assertFalse(StringUtils.isBlank(pw));
+            assertNotSame(password, pw); // different because hashed
+
+            // change password
+            DocumentModel dm = session.getEntry(username);
+            dm.setProperty(SCHEMA, "password", password2);
+            session.updateEntry(dm);
+
+            // check authentication with new password
+            assertTrue(session.authenticate(username, password2));
+
+            // changing other field
+            dm = session.getEntry(username);
+            dm.setProperty(SCHEMA, "company", "my company");
+            session.updateEntry(dm);
+
+            // entry was updated
+            dm = session.getEntry(username);
+            assertEquals("my company", dm.getProperty(SCHEMA, "company"));
+
+            // check authentication still works, password was not cleared
+            assertTrue(session.authenticate(username, password2));
+
+            // setting password to empty is also ignored
+            dm = session.getEntry(username);
+            dm.setProperty(SCHEMA, "company", "unemployed");
+            dm.setProperty(SCHEMA, "password", "");
+            session.updateEntry(dm);
+
+            // entry was updated
+            dm = session.getEntry(username);
+            assertEquals("unemployed", dm.getProperty(SCHEMA, "company"));
+
+            // check authentication still works, password was not cleared
+            assertTrue(session.authenticate(username, password2));
+        }
+    }
+
+    @Test
+    public void testPasswordIgnoredInQueryFilter() throws Exception {
+        try (Session session = getSession()) {
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put("username", "user_1");
+            filter.put("password", "nosuchpassword");
+            DocumentModelList list = session.query(filter);
+            // returns the result of the query filtered by username, ignoring password
+            assertEquals(1, list.size());
+        }
+    }
+
+    @Test
+    public void testPasswordNotReturned() throws Exception {
+        String username = "myuser";
+        String password = "MyPassword:)";
+        // create entry
+        try (Session session = getSession()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("username", username);
+            map.put("password", password);
+            session.createEntry(map);
+
+            // check authentication
+            assertTrue(session.authenticate(username, password));
+        }
+        try (Session session = getSession()) {
+            // password not returned by getEntry
+            DocumentModel dm = session.getEntry(username);
+            String pw = (String) dm.getProperty(SCHEMA, "password");
+            assertNull(pw);
+
+            // password not returned by query
+            List<DocumentModel> docs = session.query(Collections.singletonMap("username", username));
+            assertEquals(1, docs.size());
+            dm = docs.get(0);
+            pw = (String) dm.getProperty(SCHEMA, "password");
+            assertNull(pw);
+
+        }
+        // however is readAllColumns is set, the password is returned (used for test framework)
+        try (Session session = getSession()) {
+            session.setReadAllColumns(true);
+
+            // password returned by getEntry
+            DocumentModel dm = session.getEntry(username);
+            String pw = (String) dm.getProperty(SCHEMA, "password");
+            assertFalse(StringUtils.isBlank(pw)); // hashed password
+            PasswordHelper.verifyPassword(password, pw);
+
+            // password returned by query
+            List<DocumentModel> docs = session.query(Collections.singletonMap("username", username));
+            assertEquals(1, docs.size());
+            dm = docs.get(0);
+            pw = (String) dm.getProperty(SCHEMA, "password");
+            assertFalse(StringUtils.isBlank(pw)); // hashed password
+            PasswordHelper.verifyPassword(password, pw);
         }
     }
 
