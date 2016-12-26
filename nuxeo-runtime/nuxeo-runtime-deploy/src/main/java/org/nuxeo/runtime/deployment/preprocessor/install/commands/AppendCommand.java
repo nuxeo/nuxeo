@@ -21,19 +21,26 @@
 
 package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.runtime.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -108,7 +115,13 @@ public class AppendCommand implements Command {
             destNode.setAll(srcNode);
             m.writeValue(dstFile, destNode);
         } else {
-            FileUtils.append(srcFile, dstFile, appendNewLine);
+            try (InputStream in = new FileInputStream(srcFile);
+                    OutputStream out = new BufferedOutputStream(new FileOutputStream(dstFile, true))) {
+                if (appendNewLine) {
+                    out.write(System.getProperty("line.separator").getBytes());
+                }
+                IOUtils.copy(in, out);
+            }
         }
     }
 }

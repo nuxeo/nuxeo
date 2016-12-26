@@ -18,7 +18,6 @@
  *     Florent Guillaume
  *     Julien Carsique
  */
-
 package org.nuxeo.runtime.osgi;
 
 import java.io.BufferedInputStream;
@@ -34,20 +33,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.CryptoProperties;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -59,7 +57,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -270,12 +267,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 props.add(url);
             }
         }
-        Comparator<URL> comp = new Comparator<URL>() {
-            @Override
-            public int compare(URL o1, URL o2) {
-                return o1.getPath().compareTo(o2.getPath());
-            }
-        };
+        Comparator<URL> comp = (o1, o2) -> o1.getPath().compareTo(o2.getPath());
+
         Collections.sort(xmls, comp);
         for (URL url : props) {
             loadProperties(url);
@@ -297,15 +290,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
         File blacklistFile = new File(env.getConfig(), "blacklist");
         if (blacklistFile.isFile()) {
-            List<String> lines = FileUtils.readLines(blacklistFile);
-            Set<String> blacklist = new HashSet<>();
-            for (String line : lines) {
-                line = line.trim();
-                if (line.length() > 0) {
-                    blacklist.add(line);
-                }
-            }
-            manager.setBlacklist(new HashSet<>(lines));
+            Set<String> lines = FileUtils.readLines(blacklistFile)
+                                         .stream()
+                                         .map(String::trim)
+                                         .filter(line -> !line.isEmpty())
+                                         .collect(Collectors.toSet());
+            manager.setBlacklist(lines);
         }
 
         if (loadConfigurationFromProvider()) {
@@ -329,12 +319,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         // File dir = new File(configDir);
         String[] names = dir.list();
         if (names != null) {
-            Arrays.sort(names, new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    return o1.compareToIgnoreCase(o2);
-                }
-            });
+            Arrays.sort(names, String::compareToIgnoreCase);
             printDeploymentOrderInfo(names);
             for (String name : names) {
                 if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
@@ -372,7 +357,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         if (log.isDebugEnabled()) {
             StringBuilder buf = new StringBuilder();
             for (String fileName : fileNames) {
-                buf.append("\n\t" + fileName);
+                buf.append("\n\t").append(fileName);
             }
             log.debug("Deployment order of configuration files: " + buf.toString());
         }
@@ -383,20 +368,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         File dir = Environment.getDefault().getConfig();
         String[] names = dir.list();
         if (names != null) {
-            Arrays.sort(names, new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    return o1.compareToIgnoreCase(o2);
-                }
-            });
+            Arrays.sort(names, String::compareToIgnoreCase);
             CryptoProperties props = new CryptoProperties(System.getProperties());
             for (String name : names) {
                 if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
-                    FileInputStream in = new FileInputStream(new File(dir, name));
-                    try {
+                    try (FileInputStream in = new FileInputStream(new File(dir, name))) {
                         props.load(in);
-                    } finally {
-                        in.close();
                     }
                 }
             }
@@ -419,11 +396,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     public void loadProperties(File file) throws IOException {
-        InputStream in = new BufferedInputStream(new FileInputStream(file));
-        try {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
             loadProperties(in);
-        } finally {
-            in.close();
         }
     }
 
@@ -605,7 +579,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             return getEclipseBundleFileUsingReflection(bundle);
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
-                file = FileUtils.urlToFile(location);
+                file = org.nuxeo.common.utils.FileUtils.urlToFile(location);
             } catch (MalformedURLException e) {
                 log.error("getBundleFile: Unable to create " + " for bundle: " + name + " as URI: " + location);
                 return null;
@@ -623,7 +597,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         }
     }
 
-    public static final boolean isJBoss4(Environment env) {
+    public static boolean isJBoss4(Environment env) {
         if (env == null) {
             return false;
         }

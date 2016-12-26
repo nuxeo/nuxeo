@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
- *
  */
-
 package org.nuxeo.connect.update.task.standalone.commands;
 
 import java.io.BufferedReader;
@@ -26,7 +24,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Command;
@@ -100,7 +98,7 @@ public class UnAppend extends AbstractCommand {
                         // Maybe the line to remove, but let's check the next
                         // lines
                         found = true;
-                        linesToRemove.append(lineToCheck + newLine);
+                        linesToRemove.append(lineToCheck).append(newLine);
                         lineToRemove = brToRemove.readLine();
                     } else {
                         if (lineToRemove != null && found) {
@@ -111,7 +109,7 @@ public class UnAppend extends AbstractCommand {
                             org.apache.commons.io.IOUtils.closeQuietly(brToRemove);
                             brToRemove = new BufferedReader(new FileReader(contentToRemove));
                         }
-                        linesToKeep.append(lineToCheck + newLine);
+                        linesToKeep.append(lineToCheck).append(newLine);
                     }
                 }
                 if (lineToRemove != null) {
@@ -126,7 +124,7 @@ public class UnAppend extends AbstractCommand {
             } else {
                 bak = IOUtils.backup(task.getPackage(), contentToRemove);
             }
-            FileUtils.writeFile(fromFile, linesToKeep.toString());
+            FileUtils.writeStringToFile(fromFile, linesToKeep.toString());
             return new Append(bak, fromFile);
         } catch (PackageException e) {
             throw e;

@@ -29,11 +29,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
@@ -293,10 +293,8 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
         File file;
         try {
             file = Framework.createTempFile("NXMimetypeBean", ".bin");
-            try {
-                try (InputStream is = blob.getStream()) {
-                    FileUtils.copyToFile(is, file);
-                }
+            try (InputStream is = blob.getStream()) {
+                FileUtils.copyInputStreamToFile(is, file);
                 return getMimetypeFromFile(file);
             } finally {
                 file.delete();

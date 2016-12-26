@@ -25,15 +25,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.connect.update.util.PackageBuilder;
-import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,7 +54,7 @@ public class TestPCopy extends AbstractCommandTest {
         super.installDone(task, error);
         File dst = getTargetFile();
         assertTrue(dst.isFile());
-        assertEquals("test=my value", FileUtils.readFile(dst));
+        assertEquals("test=my value", FileUtils.readFileToString(dst));
     }
 
     @Override

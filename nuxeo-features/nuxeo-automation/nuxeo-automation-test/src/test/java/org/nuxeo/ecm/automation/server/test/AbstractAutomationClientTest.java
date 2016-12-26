@@ -41,11 +41,11 @@ import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.RemoteThrowable;
@@ -110,7 +110,7 @@ public abstract class AbstractAutomationClientTest {
 
     protected File newFile(String content) throws IOException {
         File file = Framework.createTempFile("automation-test-\u00e9\u00e1\u00f2-", ".xml");
-        FileUtils.writeFile(file, content);
+        FileUtils.writeStringToFile(file, content);
         return file;
     }
 

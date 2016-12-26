@@ -20,16 +20,21 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class TestFileUtils {
 
@@ -39,7 +44,7 @@ public class TestFileUtils {
                 3, 4, 34, 34, 24, 3, 1, 65, 67, 68, 7, 58, 7, 8, 75, 98, 7, 9, 5, 7, 45, 7, 43, 6, };
 
         final InputStream is = new ByteArrayInputStream(data);
-        final byte[] readData = FileUtils.readBytes(is);
+        final byte[] readData = IOUtils.toByteArray(is);
 
         assertEquals(data.length, readData.length);
         assertTrue(Arrays.equals(data, readData));
@@ -53,7 +58,7 @@ public class TestFileUtils {
             data[i] = (byte) (i % 256);
         }
         final InputStream is = new ByteArrayInputStream(data);
-        final byte[] readData = FileUtils.readBytes(is);
+        final byte[] readData = IOUtils.toByteArray(is);
 
         assertEquals(data.length, readData.length);
         assertTrue(Arrays.equals(data, readData));
@@ -67,7 +72,7 @@ public class TestFileUtils {
             data[i] = (byte) (i % 256);
         }
         final InputStream is = new ByteArrayInputStream(data);
-        final byte[] readData = FileUtils.readBytes(is);
+        final byte[] readData = IOUtils.toByteArray(is);
 
         assertEquals(data.length, readData.length);
         assertTrue(Arrays.equals(data, readData));
@@ -81,7 +86,7 @@ public class TestFileUtils {
             data[i] = (byte) (i % 256);
         }
         final InputStream is = new ByteArrayInputStream(data);
-        final byte[] readData = FileUtils.readBytes(is);
+        final byte[] readData = IOUtils.toByteArray(is);
 
         assertEquals(data.length, readData.length);
         assertTrue(Arrays.equals(data, readData));

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -35,7 +35,8 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Returns back the input file.", aliases = { "Blob.Post" })
+@Operation(id = PostBlob.ID, category = Constants.CAT_BLOB, label = "HTTP Post", description = "Post the input file to a target HTTP URL. Returns back the input file.", aliases = {
+        "Blob.Post" })
 public class PostBlob {
 
     public static final String ID = "Blob.PostToURL";
@@ -48,14 +49,9 @@ public class PostBlob {
         URL target = new URL(url);
         URLConnection conn = target.openConnection();
         conn.setDoOutput(true);
-        InputStream in = blob.getStream();
-        OutputStream out = conn.getOutputStream();
-        try {
-            FileUtils.copy(in, out);
+        try (InputStream in = blob.getStream(); OutputStream out = conn.getOutputStream()) {
+            IOUtils.copy(in, out);
             out.flush();
-        } finally {
-            in.close();
-            out.close();
         }
         return blob;
     }

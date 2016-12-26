@@ -38,11 +38,11 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -511,7 +511,7 @@ public class TestContentViewState {
         // Attach one file to the list
         File tmpFile = Framework.createTempFile("test", ".txt");
         Framework.trackFile(tmpFile, this);
-        FileUtils.writeFile(tmpFile, "Content");
+        FileUtils.writeStringToFile(tmpFile, "Content");
         Blob blob = Blobs.createBlob(tmpFile);
         file.put("file", (Serializable) blob);
         files.add(file);

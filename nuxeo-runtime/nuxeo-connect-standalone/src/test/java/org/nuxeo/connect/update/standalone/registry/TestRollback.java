@@ -30,10 +30,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.PackageDef;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -192,7 +192,7 @@ public class TestRollback extends SharedFilesTest {
     @Test
     public void testHotfixUninstall() throws Exception {
         final String BASEFILENAME = JARNAME + "-5.6.jar";
-        FileUtils.writeFile(new File(bundles, BASEFILENAME), BASEFILENAME);
+        FileUtils.writeStringToFile(new File(bundles, BASEFILENAME), BASEFILENAME);
         UpdateManager mgr = getManager();
         assertEquals(0, mgr.getRegistry().size());
         ensureFiles(BASEFILENAME);

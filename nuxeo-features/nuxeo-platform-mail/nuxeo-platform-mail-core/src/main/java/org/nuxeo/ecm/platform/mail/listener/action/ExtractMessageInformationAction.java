@@ -49,9 +49,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
@@ -387,7 +387,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             log.debug("Using replacing charset: " + charset);
         }
         String ret;
-        byte[] streamContent = FileUtils.readBytes(is);
+        byte[] streamContent = IOUtils.toByteArray(is);
         if ("".equals(charset)) {
             ret = new String(streamContent);
         } else {

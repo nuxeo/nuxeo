@@ -25,12 +25,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileMatcher;
 import org.nuxeo.common.utils.FileRef;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.FileVersion;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
@@ -235,13 +235,13 @@ public class Copy extends AbstractCommand {
                         rfile.close();
                     }
                 }
-                FileUtils.writeFile(dst, content, append);
+                FileUtils.writeStringToFile(dst, content, append);
             } else {
                 File tmp = new File(dst.getPath() + ".tmp");
-                FileUtils.copy(fileToCopy, tmp);
+                org.nuxeo.common.utils.FileUtils.copy(fileToCopy, tmp);
                 if (!tmp.renameTo(dst)) {
                     tmp.delete();
-                    FileUtils.copy(fileToCopy, dst);
+                    org.nuxeo.common.utils.FileUtils.copy(fileToCopy, dst);
                 }
             }
             // check whether the copied or restored file was the launcher
@@ -281,7 +281,7 @@ public class Copy extends AbstractCommand {
         }
         if (append) {
             try {
-                return FileUtils.readFile(fileToCopy);
+                return FileUtils.readFileToString(fileToCopy);
             } catch (IOException e) {
                 throw new PackageException("Couldn't read " + fileToCopy.getName(), e);
             }

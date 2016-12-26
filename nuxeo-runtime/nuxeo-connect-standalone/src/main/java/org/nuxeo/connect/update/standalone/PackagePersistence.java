@@ -33,11 +33,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
@@ -112,8 +111,7 @@ public class PackagePersistence {
                 int i = line.indexOf('=');
                 String pkgId = line.substring(0, i).trim();
                 String value = line.substring(i + 1).trim();
-                PackageState state = null;
-                state = PackageState.getByLabel(value);
+                PackageState state = PackageState.getByLabel(value);
                 if (state == PackageState.UNKNOWN) {
                     try {
                         // Kept for backward compliance with int instead of enum
@@ -135,7 +133,7 @@ public class PackagePersistence {
             buf.append(entry.getKey()).append('=').append(entry.getValue()).append("\n");
         }
         File file = new File(root, ".packages");
-        FileUtils.writeFile(file, buf.toString());
+        FileUtils.writeStringToFile(file, buf.toString());
     }
 
     public LocalPackage getPackage(String id) throws PackageException {
@@ -211,8 +209,6 @@ public class PackagePersistence {
      * <li>{@link PackageState#INSTALLED}
      * <li>{@link PackageState#STARTED}
      * </ul>
-     *
-     * @param name
      */
     public LocalPackage getActivePackage(String name) throws PackageException {
         String pkgId = getActivePackageId(name);

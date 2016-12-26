@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Julien Carsique
- *
  */
 package org.nuxeo.connect.update.standalone.commands;
 
@@ -25,21 +24,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
-import org.nuxeo.connect.update.util.PackageBuilder;
-import org.nuxeo.connect.update.xml.XmlWriter;
-import org.nuxeo.runtime.api.Framework;
 
 public class TestCopyDir extends AbstractCommandTest {
 
@@ -70,7 +64,7 @@ public class TestCopyDir extends AbstractCommandTest {
         org.apache.commons.io.FileUtils.touch(deprecatedFile);
         newFile = new File(bundles, newFilename);
         snapshotFile = new File(bundles, snapshotFilename);
-        FileUtils.writeFile(snapshotFile, "old SNAPSHOT content");
+        FileUtils.writeStringToFile(snapshotFile, "old SNAPSHOT content");
     }
 
     @Override

@@ -69,7 +69,7 @@ public class RestServiceTest extends BaseRestTest {
         json = json.replace(doc.getId(), "the-doc-id");
         json = json.replace(doc.getParentRef().toString(), "the-parent-id");
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
-        String expected = FileUtils.readFile(file);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file);
         assertEqualsJson(expected, json);
     }
 
@@ -81,7 +81,7 @@ public class RestServiceTest extends BaseRestTest {
         json = json.replace(doc.getId(), "the-doc-id");
         json = json.replace(doc.getParentRef().toString(), "the-parent-id");
         File file = FileUtils.getResourceFileFromContext("test-expected-document1.json");
-        String expected = FileUtils.readFile(file);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file);
         assertEqualsJson(expected, json);
     }
 

@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -43,7 +44,6 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -174,7 +174,7 @@ public class IOLogEntryBase {
             // the SAXReader is closing the stream so that we need to copy the
             // content somewhere
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            FileUtils.copy(in, baos);
+            IOUtils.copy(in, baos);
             return new SAXReader().read(new ByteArrayInputStream(baos.toByteArray()));
         } catch (DocumentException e) {
             IOException ioe = new IOException("Failed to read log entry " + ": " + e.getMessage());

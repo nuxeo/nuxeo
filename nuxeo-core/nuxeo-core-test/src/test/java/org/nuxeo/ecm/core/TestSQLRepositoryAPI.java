@@ -46,13 +46,13 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -2644,7 +2644,7 @@ public class TestSQLRepositoryAPI {
 
         session.save();
 
-        byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("Blob.class"));
+        byte[] bytes = IOUtils.toByteArray(Blob.class.getResourceAsStream("Blob.class"));
         Blob blob = Blobs.createBlob(bytes, "java/class", "UTF8");
         blob.setFilename("blob.txt");
         blob.setDigest("XXX");
@@ -2682,7 +2682,7 @@ public class TestSQLRepositoryAPI {
         assertEquals("manifest.mf", blob.getFilename());
         assertEquals(null, blob.getEncoding());
         assertEquals("java/manifest", blob.getMimeType());
-        assertEquals(FileUtils.readBytes(url).length, blob.getLength());
+        assertEquals(IOUtils.toByteArray(url).length, blob.getLength());
     }
 
     @Test

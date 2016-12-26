@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 package org.nuxeo.connect.download.tests;
 
@@ -24,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -49,16 +48,13 @@ public class DownloadFeature extends SimpleFeature implements WorkingDirectoryCo
         File dest = new File(workingDir, "web/root.war/WEB-INF/");
         dest.mkdirs();
 
-        InputStream in = getResource("webtest/WEB-INF/web.xml").openStream();
         dest = new File(workingDir + "/web/root.war/WEB-INF/", "web.xml");
-        try {
-            FileUtils.copyToFile(in, dest);
-        } finally {
-            in.close();
+        try (InputStream in = getResource("webtest/WEB-INF/web.xml").openStream()) {
+            FileUtils.copyInputStreamToFile(in, dest);
         }
 
         File data = new File(workingDir, "web/root.war/test.data");
-        FileUtils.writeFile(data, "TestMe");
+        FileUtils.writeStringToFile(data, "TestMe");
     }
 
     private static URL getResource(String resource) {
