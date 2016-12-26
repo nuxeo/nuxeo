@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,8 +55,7 @@ public class TestSQLDirectoryWithTSVInit {
             DocumentModel dm = session.getEntry("AdministratorTSV");
             assertNotNull(dm);
             assertEquals("AdministratorTSV", dm.getProperty(SCHEMA, "username"));
-            String hashedPassword = (String) dm.getProperty(SCHEMA, "password");
-            assertTrue(hashedPassword, PasswordHelper.verifyPassword("AdministratorTSV", hashedPassword));
+            assertTrue(session.authenticate("AdministratorTSV", "AdministratorTSV"));
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
             TestSQLDirectory.assertCalendarEquals(TestSQLDirectory.getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
