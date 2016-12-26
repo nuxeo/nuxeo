@@ -37,10 +37,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.DependencyTree;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.StringUtils;
@@ -356,7 +356,7 @@ public class DeploymentPreprocessor {
             if (td.template != null) {
                 File file = new File(td.baseDir, td.installPath);
                 file.getParentFile().mkdirs(); // make sure parents exists
-                FileUtils.writeFile(file, td.template.getText());
+                FileUtils.writeStringToFile(file, td.template.getText());
             }
         }
 

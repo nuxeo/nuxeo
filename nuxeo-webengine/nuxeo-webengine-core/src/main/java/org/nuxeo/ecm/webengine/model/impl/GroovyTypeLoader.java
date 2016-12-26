@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     bstefanescu
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.BufferedWriter;
@@ -27,9 +24,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.loader.ClassProxy;
@@ -103,10 +100,9 @@ public class GroovyTypeLoader {
         for (File file : root.listFiles()) {
             String name = file.getName();
             if (file.isDirectory() && !"skin".equals(name) && !"samples".equals(name)) {
-                scan(file, path == null ? name : new StringBuilder().append(path).append('.').append(name).toString(),
-                        cache);
+                scan(file, path == null ? name : path + '.' + name, cache);
             } else if (name.endsWith(".groovy") && Character.isUpperCase(name.charAt(0))) {
-                String className = null;
+                String className;
                 if (path == null) {
                     className = name.substring(0, name.length() - 7);
                 } else {
@@ -128,11 +124,6 @@ public class GroovyTypeLoader {
 
     /**
      * Loads a type and cache it.
-     *
-     * @param cache
-     * @param className
-     * @throws ClassNotFoundException
-     * @throws IOException
      */
     protected TypeDescriptor loadTypeAndRecord(Writer cache, String className) throws ClassNotFoundException,
             IOException {

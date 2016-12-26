@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,27 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: TestDetector.java 30392 2008-02-21 06:49:19Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.mimetype.detectors;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
-import org.nuxeo.common.utils.FileUtils;
+import org.junit.Test;
 
 public class TestDetector {
 
     private static File getFileFromTestResource(String resource) {
         // retrieves contextually the resource file and decode its path
         // returns the corresponding File Object
-        return FileUtils.getResourceFileFromContext(resource);
+        return org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(resource);
     }
 
     /* Test XML binary file */
@@ -66,7 +64,7 @@ public class TestDetector {
         XlsMimetypeSniffer sniffer = new XlsMimetypeSniffer();
 
         // by byte[]
-        byte[] data = FileUtils.readBytes(xlsFile);
+        byte[] data = FileUtils.readFileToByteArray(xlsFile);
         String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
         assertTrue(returnedByteMimetype.length > 0);
     }
@@ -114,10 +112,9 @@ public class TestDetector {
         MsoXmlMimetypeSniffer sniffer = new MsoXmlMimetypeSniffer();
 
         // by byte[]
-        String[] returnedByteMimetype = {};
         File xmlFile = getFileFromTestResource("test-data/TestWord2003AsXML.xml.txt");
-        byte[] data = FileUtils.readBytes(xmlFile);
-        returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
+        byte[] data = FileUtils.readFileToByteArray(xmlFile);
+        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy", new HashMap());
         assertEquals("application/msword", returnedByteMimetype[0]);
     }
 
@@ -199,7 +196,7 @@ public class TestDetector {
 
         // by byte[]
         File file = getFileFromTestResource("test-data/hello.odt");
-        byte[] data = FileUtils.readBytes(file);
+        byte[] data = FileUtils.readFileToByteArray(file);
         // FIXME: no need for these variables
         int dummyInt = 0;
         long dummyLong = 0;
@@ -242,7 +239,7 @@ public class TestDetector {
         PptMimetypeSniffer sniffer = new PptMimetypeSniffer();
 
         // by byte[]
-        byte[] data = FileUtils.readBytes(pptFile);
+        byte[] data = FileUtils.readFileToByteArray(pptFile);
         // FIXME: no need for these variables
         int dummyInt = 0;
         long dummyLong = 0;

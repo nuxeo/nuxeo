@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -83,7 +83,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
         File file = null;
         try {
             file = Framework.createTempFile("magicdetector", ".xml");
-            FileUtils.writeFile(file, data);
+            FileUtils.writeByteArrayToFile(file, data);
             mimetypes = guessOOo(file);
         } catch (IOException e) {
             log.error(e);
@@ -125,13 +125,13 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 String path = tempFile.getAbsolutePath();
                 path += File.separator + "mimetype";
                 File mimetypeFile = new File(path);
-                mimetype = new String[] { FileUtils.readFile(mimetypeFile) };
+                mimetype = new String[] { FileUtils.readFileToString(mimetypeFile) };
             }
         } catch (IOException e) {
             // probably not a zip file
         } finally {
             if (tempFile != null) {
-                org.apache.commons.io.FileUtils.deleteQuietly(tempFile);
+                FileUtils.deleteQuietly(tempFile);
             }
         }
 

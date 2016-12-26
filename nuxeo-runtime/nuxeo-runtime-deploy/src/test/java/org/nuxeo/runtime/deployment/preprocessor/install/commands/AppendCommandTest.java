@@ -18,24 +18,25 @@
  */
 package org.nuxeo.runtime.deployment.preprocessor.install.commands;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.Path;
-import org.nuxeo.runtime.deployment.preprocessor.install.Command;
-import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
-import org.nuxeo.runtime.deployment.preprocessor.install.CommandContextImpl;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.runtime.deployment.preprocessor.install.Command;
+import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
+import org.nuxeo.runtime.deployment.preprocessor.install.CommandContextImpl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @since 8.4
@@ -60,15 +61,15 @@ public class AppendCommandTest {
         File dest = tmp.newFile("dst.json");
         File src1 = tmp.newFile("src1.json");
 
-        FileUtils.writeFile(dest, "{}");
-        FileUtils.writeFile(src1, "{\"key1\":\"value1\"}");
+        FileUtils.writeStringToFile(dest, "{}");
+        FileUtils.writeStringToFile(src1, "{\"key1\":\"value1\"}");
         append(src1, dest);
 
         ObjectNode json = om.readValue(dest, ObjectNode.class);
         assertEquals("value1", json.get("key1").asText());
 
         File src2 = tmp.newFile("src2.JSON");
-        FileUtils.writeFile(src2, "{\"key1\":\"override\", \"key2\":\"value2\"}");
+        FileUtils.writeStringToFile(src2, "{\"key1\":\"override\", \"key2\":\"value2\"}");
         append(src2, dest);
 
         json = om.readValue(dest, ObjectNode.class);
@@ -81,8 +82,8 @@ public class AppendCommandTest {
         File dest = tmp.newFile("dst.properties");
         File src = tmp.newFile("src1.properties");
 
-        FileUtils.writeFile(dest, "key1=value1");
-        FileUtils.writeFile(src, "key2=value2");
+        FileUtils.writeStringToFile(dest, "key1=value1");
+        FileUtils.writeStringToFile(src, "key2=value2");
         append(src, dest);
 
         Properties props = new Properties();

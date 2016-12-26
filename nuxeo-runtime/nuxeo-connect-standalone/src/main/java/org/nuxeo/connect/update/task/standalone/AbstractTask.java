@@ -30,11 +30,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
@@ -198,7 +197,7 @@ public abstract class AbstractTask implements Task {
     }
 
     protected String loadParametrizedFile(File file, Map<String, String> params) throws IOException {
-        String content = FileUtils.readFile(file);
+        String content = FileUtils.readFileToString(file);
         // replace variables.
         return StringUtils.expandVars(content, createContextMap(params));
     }

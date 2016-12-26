@@ -25,7 +25,6 @@ import java.io.Serializable;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -82,7 +81,7 @@ public class BinaryProperty extends ScalarProperty {
         }
         if (toType == byte[].class && value instanceof InputStream) {
             try {
-                return (T) FileUtils.readBytes((InputStream) value);
+                return (T) IOUtils.toByteArray((InputStream) value);
             } catch (IOException e) {
                 throw new InvalidPropertyValueException("Failed to read given input stream", e);
             }

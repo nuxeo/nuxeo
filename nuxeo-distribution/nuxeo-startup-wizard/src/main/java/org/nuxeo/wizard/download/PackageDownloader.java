@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  *
  * Contributors:
  *     tdelprat
- *
  */
-
 package org.nuxeo.wizard.download;
 
 import java.io.File;
@@ -39,7 +37,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,9 +61,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
-
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -152,14 +150,11 @@ public class PackageDownloader {
             });
 
     protected ThreadPoolExecutor check_tpe = new ThreadPoolExecutor(NB_CHECK_THREADS, NB_CHECK_THREADS, 10L,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(QUEUESIZE), new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r);
-                    t.setDaemon(true);
-                    t.setName("MD5CheckThread-" + checkThreadCount.incrementAndGet());
-                    return t;
-                }
+            TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUESIZE), r -> {
+                Thread t = new Thread(r);
+                t.setDaemon(true);
+                t.setName("MD5CheckThread-" + checkThreadCount.incrementAndGet());
+                return t;
             });
 
     protected PackageDownloader() {
@@ -212,9 +207,9 @@ public class PackageDownloader {
     }
 
     protected String getSelectionDigest(List<String> ids) {
-        ArrayList<String> lst = new ArrayList<>(ids);
+        List<String> lst = new ArrayList<>(ids);
         Collections.sort(lst);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String item : lst) {
             sb.append(item);
             sb.append(":");
@@ -311,13 +306,13 @@ public class PackageDownloader {
     }
 
     protected File getRemotePackagesDescriptor() {
-        File desc = null;
+        File desc;
         HttpGet ping = new HttpGet(getBaseUrl() + PACKAGES_XML);
         try {
             HttpResponse response = httpClient.execute(ping);
             if (response.getStatusLine().getStatusCode() == 200) {
                 desc = new File(getDownloadDirectory(), PACKAGES_XML);
-                FileUtils.copyToFile(response.getEntity().getContent(), desc);
+                FileUtils.copyInputStreamToFile(response.getEntity().getContent(), desc);
             } else {
                 log.warn("Unable to download remote packages.xml, status code :"
                         + response.getStatusLine().getStatusCode() + " (" + response.getStatusLine().getReasonPhrase()
@@ -347,15 +342,9 @@ public class PackageDownloader {
 
     protected void saveSelectedPackages(List<DownloadPackage> pkgs) {
         File desc = new File(getDownloadDirectory(), PACKAGES_DEFAULT_SELECTION);
+        String defaultSelPackages = pkgs.stream().map(DownloadPackage::getId).collect(Collectors.joining(","));
         Properties props = new Properties();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < pkgs.size(); i++) {
-            if (i > 0) {
-                sb.append(",");
-            }
-            sb.append(pkgs.get(i).getId());
-        }
-        props.put(PACKAGES_DEFAULT_SELECTION_PACKAGES, sb.toString());
+        props.put(PACKAGES_DEFAULT_SELECTION_PACKAGES, defaultSelPackages);
         try {
             props.store(new FileWriter(desc), "Saved from Nuxeo SetupWizard");
         } catch (IOException e) {
@@ -473,49 +462,45 @@ public class PackageDownloader {
     protected void startDownloadPackage(final DownloadPackage pkg) {
         final PendingDownload download = new PendingDownload(pkg);
         if (pendingDownloads.addIfAbsent(download)) {
-            Runnable downloadRunner = new Runnable() {
-
-                @Override
-                public void run() {
-                    log.info("Starting download on Thread " + Thread.currentThread().getName());
-                    download.setStatus(PendingDownloadStatus.INPROGRESS);
-                    String url = pkg.getDownloadUrl();
-                    if (!url.startsWith("http")) {
-                        url = getBaseUrl() + url;
-                    }
-                    File filePkg = null;
-                    HttpGet dw = new HttpGet(url);
-                    try {
-                        HttpResponse response = httpClient.execute(dw);
-                        if (response.getStatusLine().getStatusCode() == 200) {
-                            filePkg = new File(getDownloadDirectory(), pkg.filename);
-                            Header clh = response.getFirstHeader("Content-Length");
-                            if (clh != null) {
-                                long filesize = Long.parseLong(clh.getValue());
-                                download.setFile(filesize, filePkg);
-                            }
-                            FileUtils.copyToFile(response.getEntity().getContent(), filePkg);
-                            download.setStatus(PendingDownloadStatus.COMPLETED);
-                        } else if (response.getStatusLine().getStatusCode() == 404) {
-                            log.error("Package " + pkg.filename + " not found :" + url);
-                            download.setStatus(PendingDownloadStatus.MISSING);
-                            EntityUtils.consume(response.getEntity());
-                            dw.abort();
-                            return;
-                        } else {
-                            log.error("Received StatusCode " + response.getStatusLine().getStatusCode());
-                            download.setStatus(PendingDownloadStatus.ABORTED);
-                            EntityUtils.consume(response.getEntity());
-                            dw.abort();
-                            return;
+            Runnable downloadRunner = () -> {
+                log.info("Starting download on Thread " + Thread.currentThread().getName());
+                download.setStatus(PendingDownloadStatus.INPROGRESS);
+                String url = pkg.getDownloadUrl();
+                if (!url.startsWith("http")) {
+                    url = getBaseUrl() + url;
+                }
+                File filePkg;
+                HttpGet dw = new HttpGet(url);
+                try {
+                    HttpResponse response = httpClient.execute(dw);
+                    if (response.getStatusLine().getStatusCode() == 200) {
+                        filePkg = new File(getDownloadDirectory(), pkg.filename);
+                        Header clh = response.getFirstHeader("Content-Length");
+                        if (clh != null) {
+                            long filesize = Long.parseLong(clh.getValue());
+                            download.setFile(filesize, filePkg);
                         }
-                    } catch (Exception e) {
+                        FileUtils.copyInputStreamToFile(response.getEntity().getContent(), filePkg);
+                        download.setStatus(PendingDownloadStatus.COMPLETED);
+                    } else if (response.getStatusLine().getStatusCode() == 404) {
+                        log.error("Package " + pkg.filename + " not found :" + url);
+                        download.setStatus(PendingDownloadStatus.MISSING);
+                        EntityUtils.consume(response.getEntity());
+                        dw.abort();
+                        return;
+                    } else {
+                        log.error("Received StatusCode " + response.getStatusLine().getStatusCode());
                         download.setStatus(PendingDownloadStatus.ABORTED);
-                        log.error("Error during download", e);
+                        EntityUtils.consume(response.getEntity());
+                        dw.abort();
                         return;
                     }
-                    checkPackage(download);
+                } catch (Exception e) {
+                    download.setStatus(PendingDownloadStatus.ABORTED);
+                    log.error("Error during download", e);
+                    return;
                 }
+                checkPackage(download);
             };
             download_tpe.execute(downloadRunner);
         }
@@ -523,22 +508,19 @@ public class PackageDownloader {
 
     protected void checkPackage(final PendingDownload download) {
         final File filePkg = download.getDowloadingFile();
-        Runnable checkRunner = new Runnable() {
-            @Override
-            public void run() {
-                download.setStatus(PendingDownloadStatus.VERIFICATION);
-                String expectedDigest = download.getPkg().getMd5();
-                String digest = getDigest(filePkg);
-                if (digest == null || (expectedDigest != null && !expectedDigest.equals(digest))) {
-                    download.setStatus(PendingDownloadStatus.CORRUPTED);
-                    log.error("Digest check failed: expected=" + expectedDigest + " computed=" + digest);
-                    return;
-                }
-                File newFile = new File(getDownloadDirectory(), digest);
-                filePkg.renameTo(newFile);
-                download.setStatus(PendingDownloadStatus.VERIFIED);
-                download.setFile(newFile.length(), newFile);
+        Runnable checkRunner = () -> {
+            download.setStatus(PendingDownloadStatus.VERIFICATION);
+            String expectedDigest = download.getPkg().getMd5();
+            String digest = getDigest(filePkg);
+            if (digest == null || (expectedDigest != null && !expectedDigest.equals(digest))) {
+                download.setStatus(PendingDownloadStatus.CORRUPTED);
+                log.error("Digest check failed: expected=" + expectedDigest + " computed=" + digest);
+                return;
             }
+            File newFile = new File(getDownloadDirectory(), digest);
+            filePkg.renameTo(newFile);
+            download.setStatus(PendingDownloadStatus.VERIFIED);
+            download.setFile(newFile.length(), newFile);
         };
         check_tpe.execute(checkRunner);
     }
@@ -548,7 +530,7 @@ public class PackageDownloader {
             MessageDigest md = MessageDigest.getInstance(DIGEST);
             byte[] buffer = new byte[DIGEST_CHUNK];
             InputStream stream = new FileInputStream(file);
-            int bytesRead = -1;
+            int bytesRead;
             while ((bytesRead = stream.read(buffer)) >= 0) {
                 md.update(buffer, 0, bytesRead);
             }

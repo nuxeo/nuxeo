@@ -37,12 +37,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.jaxrs.io.InputStreamDataSource;
 import org.nuxeo.ecm.automation.jaxrs.io.SharedFileInputStream;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -91,7 +89,7 @@ public class MultiPartRequestReader implements MessageBodyReader<ExecutionReques
             // javax.mail fail to receive some parts - I am not sure why -
             // perhaps the stream is no more available when javax.mail need it?
             File tmp = Framework.createTempFile("nx-automation-mp-upload-", ".tmp");
-            FileUtils.copyToFile(in, tmp);
+            FileUtils.copyInputStreamToFile(in, tmp);
             in = new SharedFileInputStream(tmp); // get the input from the saved
             // file
             try {
@@ -132,14 +130,9 @@ public class MultiPartRequestReader implements MessageBodyReader<ExecutionReques
         String fname = part.getFileName();
         InputStream pin = part.getInputStream();
         final File tmp = Framework.createTempFile("nx-automation-upload-", ".tmp");
-        FileUtils.copyToFile(pin, tmp);
+        FileUtils.copyInputStreamToFile(pin, tmp);
         Blob blob = Blobs.createBlob(tmp, ctype, null, fname);
-        RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {
-            @Override
-            public void cleanup(HttpServletRequest req) {
-                tmp.delete();
-            }
-        });
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> tmp.delete());
         return blob;
     }
 

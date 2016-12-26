@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,12 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
-import org.nuxeo.connect.update.util.PackageBuilder;
-import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -50,7 +48,7 @@ public class TestCopy extends AbstractCommandTest {
     public void setUp() throws Exception {
         super.setUp();
         goldStandardFile = new File(Environment.getDefault().getConfig(), "goldstandard.properties");
-        FileUtils.writeFile(goldStandardFile, "param1=value1");
+        FileUtils.writeStringToFile(goldStandardFile, "param1=value1");
     }
 
     @Override

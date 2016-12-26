@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.adapter.BlobPostProcessor;
@@ -85,9 +85,9 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
     }
 
     protected void updateTitleInHtml(File file) throws IOException {
-        String htmlContent = FileUtils.readFile(file);
+        String htmlContent = FileUtils.readFileToString(file);
         htmlContent = updateTitleInHtml(htmlContent);
-        FileUtils.writeFile(file, htmlContent);
+        FileUtils.writeStringToFile(file, htmlContent);
     }
 
     protected String getPreviewTitle() {

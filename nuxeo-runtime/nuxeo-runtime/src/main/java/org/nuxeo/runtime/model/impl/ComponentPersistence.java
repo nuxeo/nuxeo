@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
@@ -98,7 +98,7 @@ public class ComponentPersistence {
         root = new File(Environment.getDefault().getData(), "components");
         fileLock = new ReentrantReadWriteLock();
         sysrc = runtime.getContext();
-        persistedComponents = Collections.synchronizedSet(new HashSet<RegistrationInfo>());
+        persistedComponents = Collections.synchronizedSet(new HashSet<>());
     }
 
     public File getRoot() {
@@ -233,7 +233,7 @@ public class ComponentPersistence {
     protected void safeWriteFile(byte[] bytes, File file) throws IOException {
         fileLock.writeLock().lock();
         try {
-            FileUtils.writeFile(file, bytes);
+            FileUtils.writeByteArrayToFile(file, bytes);
         } finally {
             fileLock.writeLock().unlock();
         }
@@ -242,7 +242,7 @@ public class ComponentPersistence {
     protected byte[] safeReadFile(File file) throws IOException {
         fileLock.readLock().lock();
         try {
-            return FileUtils.readBytes(file);
+            return FileUtils.readFileToByteArray(file);
         } finally {
             fileLock.readLock().unlock();
         }

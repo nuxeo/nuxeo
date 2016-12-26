@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -114,7 +115,7 @@ public class TestBlobHolderSet {
         blob = bh.getBlob();
         assertEquals("logo.jpg", blob.getFilename());
         assertEquals("image/jpeg", blob.getMimeType());
-        byte[] bytes = FileUtils.readBytes(blob.getStream());
+        byte[] bytes = IOUtils.toByteArray(blob.getStream());
         assertEquals(2022140, bytes.length);
         bytes = null;
 

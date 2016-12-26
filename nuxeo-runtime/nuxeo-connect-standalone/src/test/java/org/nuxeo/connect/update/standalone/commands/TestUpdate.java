@@ -25,12 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.connect.update.util.PackageBuilder;
-import org.nuxeo.connect.update.xml.XmlWriter;
 
 public class TestUpdate extends AbstractCommandTest {
 
@@ -44,7 +42,7 @@ public class TestUpdate extends AbstractCommandTest {
         super.setUp();
         File bundles = new File(Environment.getDefault().getHome(), "bundles");
         oldJar = new File(bundles, "foo-1.0.jar");
-        FileUtils.writeFile(oldJar, "old JAR content");
+        FileUtils.writeStringToFile(oldJar, "old JAR content");
         expectedJar = new File(bundles, "foo-1.1.jar"); // installed by install.xml
     }
 

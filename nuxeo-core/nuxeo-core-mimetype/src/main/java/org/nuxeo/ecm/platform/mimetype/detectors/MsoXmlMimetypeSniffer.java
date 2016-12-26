@@ -24,13 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import net.sf.jmimemagic.MagicDetector;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
+
+import net.sf.jmimemagic.MagicDetector;
 
 public class MsoXmlMimetypeSniffer implements MagicDetector {
 
@@ -68,7 +67,7 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
         File file = null;
         try {
             file = Framework.createTempFile("magicdetector", ".xml");
-            FileUtils.writeFile(file, data);
+            FileUtils.writeByteArrayToFile(file, data);
             mimetypes = guessMsoXml(file);
         } catch (IOException e) {
             log.error(e);
@@ -89,7 +88,7 @@ public class MsoXmlMimetypeSniffer implements MagicDetector {
     public String[] guessMsoXml(File file) {
         String[] mimetype = {};
         try {
-            String content = FileUtils.readFile(file);
+            String content = FileUtils.readFileToString(file);
             if (content.contains("<?mso-application progid=\"Word.Document\"?>")) {
                 String[] type = { getHandledTypes()[1] };
                 mimetype = type;

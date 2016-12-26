@@ -28,12 +28,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
@@ -231,7 +231,7 @@ public class ITRemoteAutomationClientTCK {
      */
     protected File newFile(String content) throws IOException {
         File aFile = Framework.createTempFile("automation-test-", ".xml");
-        FileUtils.writeFile(aFile, content);
+        FileUtils.writeStringToFile(aFile, content);
         return aFile;
     }
 
@@ -281,7 +281,7 @@ public class ITRemoteAutomationClientTCK {
                                  .set("properties", "dc:title=My File")
                                  .execute();
         // upload file blob
-        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        File fieldAsJsonFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("creationFields.json");
         FileBlob fb = new FileBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
         session.newRequest("Blob.Attach")
@@ -322,9 +322,9 @@ public class ITRemoteAutomationClientTCK {
         creationProps.put("ds:attachments", attachments);
 
         // send the fields representation as json
-        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        File fieldAsJsonFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("creationFields.json");
         assertNotNull(fieldAsJsonFile);
-        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        String fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         creationProps.put("ds:fields", fieldsDataAsJSon);
@@ -346,8 +346,8 @@ public class ITRemoteAutomationClientTCK {
         // Send the fields representation as json
 
         // Read the json file
-        fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
-        fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldAsJsonFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("updateFields.json");
+        fieldsDataAsJSon = org.apache.commons.io.FileUtils.readFileToString(fieldAsJsonFile);
 
         // Don't forget to replace CRLF or LF
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");

@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -48,7 +48,7 @@ public class AppendOperation {
         // ctx.getBundle().getEntryPaths(path);
         File src = new File(bundleDir, path);
         if (src.isFile()) {
-            String text = FileUtils.readFile(src);
+            String text = FileUtils.readFileToString(src);
             if (appendNewLine) {
                 String crlf = System.getProperty("line.separator");
                 text = crlf + text + crlf;

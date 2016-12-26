@@ -16,7 +16,6 @@
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
  */
-
 package org.nuxeo.common.utils;
 
 import static org.junit.Assert.assertFalse;
@@ -24,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -58,9 +58,9 @@ public class TestUserAgent {
     @Test
     public void testSupportedBrowsers() throws Exception {
 
-        List<String> UAs = FileUtils
+        List<String> UAs = IOUtils
                 .readLines(this.getClass().getClassLoader().getResourceAsStream("supportedBrowsers.txt"));
-        List<String> BadUAs = FileUtils
+        List<String> BadUAs = IOUtils
                 .readLines(this.getClass().getClassLoader().getResourceAsStream("unsupportedBrowsers.txt"));
 
         for (String UA : UAs) {

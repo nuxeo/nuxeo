@@ -39,12 +39,12 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-
-import com.google.inject.Inject;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.google.inject.Inject;
 
 /**
  * @since 8.3
@@ -147,7 +147,7 @@ public class AddItemToListPropertyTest {
     protected String readPropertiesFromFile(String filename) throws IOException {
         File fieldsAsJsonFile = FileUtils.getResourceFileFromContext(filename);
         assertNotNull(fieldsAsJsonFile);
-        String fieldsDataAsJson = FileUtils.readFile(fieldsAsJsonFile);
+        String fieldsDataAsJson = org.apache.commons.io.FileUtils.readFileToString(fieldsAsJsonFile);
         fieldsDataAsJson = fieldsDataAsJson.replaceAll("\n", "");
         fieldsDataAsJson = fieldsDataAsJson.replaceAll("\r", "");
 
