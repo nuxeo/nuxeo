@@ -29,7 +29,8 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -64,10 +65,12 @@ public class OOoArchiveModifier {
 
         StringBuilder blobsManifest = new StringBuilder();
         for (Blob blob : blobs) {
-            if (blob.getMimeType().startsWith("image")) {
-                FileUtils.copyToFile(blob.getStream(), new File(pictureDirs, blob.getFilename()));
-            } else {
-                FileUtils.copyToFile(blob.getStream(), new File(contentDirs, blob.getFilename()));
+            try (InputStream in = blob.getStream()) {
+                File parentDir = contentDirs;
+                if (blob.getMimeType().startsWith("image")) {
+                    parentDir = pictureDirs;
+                }
+                FileUtils.copyInputStreamToFile(in, new File(parentDir, blob.getFilename()));
             }
 
             blobsManifest.append("<manifest:file-entry manifest:media-type=\"");
@@ -82,10 +85,10 @@ public class OOoArchiveModifier {
         }
 
         File xmlManifestFile = new File(unzipDir.getPath() + "/META-INF/manifest.xml");
-        String xmlManifest = FileUtils.readFile(xmlManifestFile);
+        String xmlManifest = FileUtils.readFileToString(xmlManifestFile);
         int idx = xmlManifest.indexOf("</manifest:manifest>");
         xmlManifest = xmlManifest.substring(0, idx) + blobsManifest.toString() + xmlManifest.substring(idx);
-        FileUtils.writeFile(xmlManifestFile, xmlManifest.getBytes());
+        FileUtils.writeByteArrayToFile(xmlManifestFile, xmlManifest.getBytes());
 
         String path = oooFile.getAbsolutePath();
 
@@ -135,17 +138,17 @@ public class OOoArchiveModifier {
         InputStream entryInputStream = new FileInputStream(fileEntry);
         zipEntry.setMethod(zipMethod);
         if (zipMethod == ZipEntry.STORED) {
-            byte[] inputBytes = FileUtils.readBytes(entryInputStream);
+            byte[] inputBytes = IOUtils.toByteArray(entryInputStream);
             CRC32 crc = new CRC32();
             crc.update(inputBytes);
             zipEntry.setCrc(crc.getValue());
             zipEntry.setSize(inputBytes.length);
             zipEntry.setCompressedSize(inputBytes.length);
             zipOutputStream.putNextEntry(zipEntry);
-            FileUtils.copy(new ByteArrayInputStream(inputBytes), zipOutputStream);
+            IOUtils.copy(new ByteArrayInputStream(inputBytes), zipOutputStream);
         } else {
             zipOutputStream.putNextEntry(zipEntry);
-            FileUtils.copy(entryInputStream, zipOutputStream);
+            IOUtils.copy(entryInputStream, zipOutputStream);
         }
         try {
             entryInputStream.close();

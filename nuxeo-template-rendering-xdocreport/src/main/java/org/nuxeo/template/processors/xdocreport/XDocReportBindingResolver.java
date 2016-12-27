@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ package org.nuxeo.template.processors.xdocreport;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.template.processors.AbstractBindingResolver;
@@ -60,7 +60,7 @@ public class XDocReportBindingResolver extends AbstractBindingResolver {
         if (blobValue == null) {
             // manage a default picture : blank one :)
             try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("blank.png")) {
-                byte[] bin = FileUtils.readBytes(is);
+                byte[] bin = IOUtils.toByteArray(is);
                 blobValue = Blobs.createBlob(bin, "image/png");
                 blobValue.setFilename("blank.png");
             } catch (IOException e) {
