@@ -4,11 +4,11 @@
 
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/nxsqldirectory" driverClassName="org.h2.Driver"
-      maxActive="20" maxIdle="5">
+      maxPoolSize="20" minPoolSize="5">
       <property name="url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
     </datasource>
   </extension>
-  
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
