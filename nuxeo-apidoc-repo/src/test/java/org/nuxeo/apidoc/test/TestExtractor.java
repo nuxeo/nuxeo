@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo
  */
-
 package org.nuxeo.apidoc.test;
 
 import static org.junit.Assert.assertNotNull;
@@ -28,9 +27,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +39,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.worker.ExtractXmlAttributesWorker;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -61,7 +61,8 @@ public class TestExtractor {
             "publicarticles", "gadget", "org.nuxeo.opensocial.gadgets.service");
 
     protected FileBlob getBlob() {
-        return new FileBlob(FileUtils.getResourceFileFromContext("apidoc-sample-fragment-contrib.xml"));
+        return new FileBlob(
+                org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("apidoc-sample-fragment-contrib.xml"));
     }
 
     @Inject
@@ -78,8 +79,9 @@ public class TestExtractor {
 
     @Test
     public void testParser() throws Exception {
-        File xmlFile = FileUtils.getResourceFileFromContext("apidoc-sample-fragment-contrib.xml");
-        String xml = FileUtils.readFile(xmlFile);
+        File xmlFile = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext(
+                "apidoc-sample-fragment-contrib.xml");
+        String xml = FileUtils.readFileToString(xmlFile);
         String html = XMLContributionParser.prettyfy(xml);
     }
 

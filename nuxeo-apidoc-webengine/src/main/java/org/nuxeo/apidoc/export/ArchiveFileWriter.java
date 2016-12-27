@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebException;
 
 @Provider
@@ -41,15 +40,12 @@ public class ArchiveFileWriter implements MessageBodyWriter<ArchiveFile> {
     @Override
     public void writeTo(ArchiveFile t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(t);
-            FileUtils.copy(in, entityStream);
+        try (FileInputStream in = new FileInputStream(t)) {
+            IOUtils.copy(in, entityStream);
             entityStream.flush();
         } catch (IOException e) {
             throw WebException.wrap("Failed to render resource", e);
         } finally {
-            IOUtils.closeQuietly(in);
             if (t != null) {
                 t.delete();
             }

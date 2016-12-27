@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +44,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 
 public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
@@ -194,7 +194,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
                 if (!file.exists()) {
                     return "Unable to locate file :" + file.getAbsolutePath();
                 }
-                xml = FileUtils.readFile(file);
+                xml = FileUtils.readFileToString(file);
             } else {
                 try (ZipFile jarArchive = new ZipFile(jar)) {
                 ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
