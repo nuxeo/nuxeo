@@ -92,7 +92,7 @@ public class PictureConversionRegistry extends ContributionFragmentRegistry<Pict
             dest.setEnabled(source.isEnabled());
         }
 
-        if (source.isDefaultSet() && source.isDefault()) {
+        if (source.isDefaultSet() && source.isDefault() != dest.isDefault()) {
             dest.setDefault(source.isDefault());
         }
 

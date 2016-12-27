@@ -5,7 +5,7 @@
     point="pictureConversions">
 
     <pictureConversion id="Original" enabled="false" />
-    <pictureConversion id="OriginalJpeg" enabled="false" />
+    <pictureConversion id="OriginalJpeg" enabled="false" default="false" />
 
     <pictureConversion id="Small" description="Small size (override)"
       maxSize="50" />
