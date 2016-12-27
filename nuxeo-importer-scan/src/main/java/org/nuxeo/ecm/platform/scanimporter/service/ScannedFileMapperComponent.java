@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -38,7 +39,6 @@ import org.dom4j.tree.DefaultElement;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.scanimporter.processor.DocumentTypeMapper;
@@ -82,7 +82,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements Scan
             return null;
         }
 
-        String xmlData = FileUtils.readFile(xmlFile);
+        String xmlData = FileUtils.readFileToString(xmlFile);
 
         Document xmlDoc;
         try {
