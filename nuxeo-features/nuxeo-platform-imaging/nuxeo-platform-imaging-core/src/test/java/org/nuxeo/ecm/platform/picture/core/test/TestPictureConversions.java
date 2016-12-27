@@ -18,8 +18,7 @@
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -71,6 +70,9 @@ public class TestPictureConversions {
 
     private static final String PICTURE_CONVERSIONS_FILTERS_COMPONENT_LOCATION = "OSGI-INF/imaging-picture-conversions-filters.xml";
 
+    protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList("Thumbnail", "Small", "Medium",
+            "OriginalJpeg");
+
     @Inject
     protected CoreSession session;
 
@@ -79,6 +81,16 @@ public class TestPictureConversions {
 
     @Inject
     protected RuntimeHarness runtimeHarness;
+
+    @Test
+    public void iHaveTheDefaultPictureConversionsRegistered() {
+        checkDefaultPictureConversionsPresence();
+    }
+
+    protected void checkDefaultPictureConversionsPresence() {
+        List<String> pictureConversionIds = getPictureConversionIds();
+        org.junit.Assert.assertTrue(pictureConversionIds.containsAll(DEFAULT_PICTURE_CONVERSIONS));
+    }
 
     protected List<String> getPictureConversionIds() {
         List<String> ids = new ArrayList<>();
@@ -102,7 +114,7 @@ public class TestPictureConversions {
     public void iHavePictureConversionsOrder() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
 
-        String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "Thumbnail",
+        String[] expectedPictureConversionsOrder = new String[] { "ThumbnailMini", "Tiny", "OriginalJpeg", "Thumbnail",
                 "Wide", "ThumbnailWide", "Small", "Medium", "FullHD" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
@@ -119,12 +131,10 @@ public class TestPictureConversions {
     public void iCanMergePictureConversions() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_COMPONENT_LOCATION);
 
+        checkDefaultPictureConversionsPresence();
+
         for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
             switch (pictureConversion.getId()) {
-            case "Original":
-            case "OriginalJpeg":
-                assertFalse(pictureConversion.getId(), pictureConversion.isEnabled());
-                break;
             case "Small":
                 assertEquals(50, (int) pictureConversion.getMaxSize());
                 assertTrue(pictureConversion.getDescription().contains("override"));
@@ -144,6 +154,8 @@ public class TestPictureConversions {
     @Test
     public void iCanMergeMorePictureConversions() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
+
+        checkDefaultPictureConversionsPresence();
 
         int count = 0;
         List<String> newPictureConversions = Arrays.asList("ThumbnailMini", "ThumbnailWide", "Tiny", "Wide");
