@@ -43,7 +43,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-io</artifactId>
+      <artifactId>nuxeo-core-test</artifactId>
       <type>test-jar</type>
       <scope>compile</scope>
     </dependency>
