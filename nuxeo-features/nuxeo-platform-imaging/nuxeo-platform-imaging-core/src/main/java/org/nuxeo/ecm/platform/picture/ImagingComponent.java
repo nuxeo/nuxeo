@@ -473,6 +473,10 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     protected boolean canApplyPictureConversion(PictureConversion pictureConversion, DocumentModel doc) {
+        if (pictureConversion.isDefault()) {
+            return true;
+        }
+
         ActionManager actionService = Framework.getService(ActionManager.class);
         return actionService.checkFilters(pictureConversion.getFilterIds(), createActionContext(doc));
     }

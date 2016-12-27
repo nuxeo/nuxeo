@@ -88,7 +88,60 @@ public class PictureConversionRegistry extends ContributionFragmentRegistry<Pict
 
     @Override
     public void merge(PictureConversion source, PictureConversion dest) {
-        dest.merge(source);
-    }
+        if (source.isEnabledSet() && source.isEnabled() != dest.isEnabled()) {
+            dest.setEnabled(source.isEnabled());
+        }
 
+        if (source.isDefaultSet() && source.isDefault()) {
+            dest.setDefault(source.isDefault());
+        }
+
+        // cannot disable default picture conversion
+        if (!dest.isEnabled() && dest.isDefault()) {
+            dest.setEnabled(true);
+            if (log.isWarnEnabled()) {
+                String message = String.format("The picture conversion '%s' is marked as default, enabling it.",
+                        dest.getId());
+                log.warn(message);
+            }
+        }
+
+        String chainId = source.getChainId();
+        if (!StringUtils.isBlank(chainId)) {
+            dest.setChainId(chainId);
+        }
+
+        String tag = source.getTag();
+        if (!StringUtils.isBlank(tag)) {
+            dest.setTag(tag);
+        }
+
+        String description = source.getDescription();
+        if (!StringUtils.isBlank(description)) {
+            dest.setDescription(description);
+        }
+
+        Integer order = source.getOrder();
+        if (order != null) {
+            dest.setOrder(order);
+        }
+
+        Integer maxSize = source.getMaxSize();
+        if (maxSize != null) {
+            dest.setMaxSize(maxSize);
+        }
+
+        List<String> newFilterIds = new ArrayList<>();
+        newFilterIds.addAll(dest.getFilterIds());
+        newFilterIds.addAll(source.getFilterIds());
+        dest.setFilterIds(newFilterIds);
+
+        if (source.isRenditionSet()) {
+            dest.setRendition(source.isRendition());
+        }
+
+        if (source.isRenditionVisibleSet()) {
+            dest.setRenditionVisible(source.isRenditionVisible());
+        }
+    }
 }
