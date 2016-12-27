@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -205,10 +206,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String awsID = getProperty(AWS_ID_PROPERTY);
         String awsSecret = getProperty(AWS_SECRET_PROPERTY);
 
-        String proxyHost = getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
-        String proxyPort = getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
-        String proxyLogin = getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
-        String proxyPassword = getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
+        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
+        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
+        String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
+        String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
 
         int maxConnections = getIntProperty(CONNECTION_MAX_PROPERTY);
         int maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
