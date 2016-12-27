@@ -21,7 +21,7 @@
   </extension>
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/repository_layoutDemo" driverClassName="org.h2.Driver"
-      maxActive="20" maxIdle="5">
+      maxPoolSize="20" minPoolSize="5">
       <property name="url">jdbc:h2:mem:layoutDemo;DB_CLOSE_DELAY=-1</property>
     </datasource>
   </extension>
