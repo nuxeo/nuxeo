@@ -262,24 +262,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
     }
 
-    /**
-     * Gets a document from a repository name and a docId.
-     *
-     * @param repository the repository name
-     * @param docId the document id
-     * @return the DocumentModel
-     * @since 9.1
-     */
-    protected DocumentModel getDownloadDocument(String repository, String docId) {
-        try (CoreSession session = CoreInstance.openCoreSession(repository)) {
-            DocumentRef docRef = new IdRef(docId);
-            if (!session.exists(docRef)) {
-                return null;
-            }
-            return session.getDocument(docRef);
-        }
-    }
-
     @Override
     public Blob resolveBlobFromDownloadUrl(String url) {
         String nuxeoUrl = Framework.getProperty("nuxeo.url");
@@ -294,11 +276,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         String downloadPath = pair.getLeft();
         try {
             DownloadBlobInfo downloadBlobInfo = new DownloadBlobInfo(downloadPath);
-            DocumentModel doc = getDownloadDocument(downloadBlobInfo.repository, downloadBlobInfo.docId);
-            if (doc == null) {
-                return null;
+            try (CoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
+                DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
+                if (!session.exists(docRef)) {
+                    return null;
+                }
+                DocumentModel doc = session.getDocument(docRef);
+                return resolveBlob(doc, downloadBlobInfo.xpath);
             }
-            return resolveBlob(doc, downloadBlobInfo.xpath);
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -348,25 +333,28 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
             String xpath = downloadBlobInfo.xpath;
             String filename = downloadBlobInfo.filename;
-            DocumentModel doc = getDownloadDocument(downloadBlobInfo.repository, downloadBlobInfo.docId);
-            if (doc == null) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
-                return;
-            }
-            if (info) {
-                Blob blob = resolveBlob(doc, xpath);
-                if (blob == null) {
-                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob found");
+            try (CoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
+                DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
+                if (!session.exists(docRef)) {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
                     return;
                 }
-                String downloadUrl = baseUrl + getDownloadUrl(doc, xpath, filename);
-                String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
-                        + downloadUrl;
-                resp.setContentType("text/plain");
-                resp.getWriter().write(result);
-                resp.getWriter().flush();
-            } else {
-                downloadBlob(req, resp, doc, xpath, null, filename, "download");
+                DocumentModel doc = session.getDocument(docRef);
+                if (info) {
+                    Blob blob = resolveBlob(doc, xpath);
+                    if (blob == null) {
+                        resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob found");
+                        return;
+                    }
+                    String downloadUrl = baseUrl + getDownloadUrl(doc, xpath, filename);
+                    String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
+                            + downloadUrl;
+                    resp.setContentType("text/plain");
+                    resp.getWriter().write(result);
+                    resp.getWriter().flush();
+                } else {
+                    downloadBlob(req, resp, doc, xpath, null, filename, "download");
+                }
             }
         } catch (NuxeoException e) {
             if (tx) {

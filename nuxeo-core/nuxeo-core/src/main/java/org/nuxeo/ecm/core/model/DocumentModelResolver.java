@@ -175,12 +175,20 @@ public class DocumentModelResolver implements ObjectResolver {
             if (ref != null) {
                 try (CoreSession session = CoreInstance.openCoreSession(ref.repo)) {
                     try {
+                        DocumentModel doc;
                         switch (mode) {
                         case ID_REF:
-                            return session.getDocument(new IdRef(ref.ref));
+                            doc = session.getDocument(new IdRef(ref.ref));
+                            break;
                         case PATH_REF:
-                            return session.getDocument(new PathRef(ref.ref));
+                            doc = session.getDocument(new PathRef(ref.ref));
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
                         }
+                        // detach because we're about to close the session
+                        doc.detach(true);
+                        return doc;
                     } catch (DocumentNotFoundException e) {
                         return null;
                     }

@@ -279,7 +279,7 @@ public class TestSQLRepositoryProperties {
         session.saveDocument(doc);
         session.save();
         nextTransaction();
-        coreFeature.reopenCoreSession();
+        session = coreFeature.reopenCoreSession();
         doc = session.getDocument(doc.getRef());
         assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
     }
