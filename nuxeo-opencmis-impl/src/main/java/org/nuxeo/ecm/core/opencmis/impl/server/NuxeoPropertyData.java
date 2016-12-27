@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.collect.Iterators;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.PropertyBoolean;
@@ -69,7 +68,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.ComplexPropertyJSONEncoder;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
@@ -82,7 +80,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -90,6 +87,8 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.collect.Iterators;
 
 /**
  * Nuxeo implementation of an object's property, backed by a property of a {@link DocumentModel}.
@@ -338,17 +337,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         if (filename == null) {
             filename = contentStream.getFileName();
         }
-        InputStream in = contentStream.getStream();
-        OutputStream out = null;
-        File file;
-        try {
-            file = Framework.createTempFile("NuxeoCMIS-", null);
-            out = new FileOutputStream(file);
+        File file = Framework.createTempFile("NuxeoCMIS-", null);
+        try (InputStream in = contentStream.getStream(); OutputStream out = new FileOutputStream(file)){
             IOUtils.copy(in, out);
             Framework.trackFile(file, in);
-        } finally {
-            FileUtils.close(in);
-            FileUtils.close(out);
         }
         return Blobs.createBlob(file, contentStream.getMimeType(), null, filename);
     }
@@ -407,7 +399,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     }
 
     public static String transcodeHexToBase64(String hexString) {
-        byte[] bytes = null;
+        byte[] bytes;
         try {
             bytes = Hex.decodeHex(hexString.toCharArray());
         } catch (DecoderException e) {
@@ -436,7 +428,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             type = ((ListType) type).getFieldType();
             Collection<Object> values;
             if (type.isComplexType()) {
-                values = (Collection) ((ListProperty) prop).getChildren();
+                values = (Collection) prop.getChildren();
             } else if (value instanceof Object[]) {
                 values = Arrays.asList((Object[]) value);
             } else if (value instanceof List<?>) {
@@ -444,7 +436,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             } else {
                 throw new CmisRuntimeException("Unknown value type: " + value.getClass().getName());
             }
-            List<Object> list = new ArrayList<Object>(values);
+            List<Object> list = new ArrayList<>(values);
             for (int i = 0; i < list.size(); i++) {
                 if (type.isComplexType()) {
                     value = (Serializable) convertComplexPropertyToCMIS((ComplexProperty) list.get(i), callContext);
@@ -628,7 +620,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             Object propValue;
             if (value instanceof List<?>) {
                 @SuppressWarnings("unchecked")
-                List<Object> list = new ArrayList<Object>((List<Object>) value);
+                List<Object> list = new ArrayList<>((List<Object>) value);
                 for (int i = 0; i < list.size(); i++) {
                     list.set(i, convertToNuxeo(list.get(i), type));
                 }
