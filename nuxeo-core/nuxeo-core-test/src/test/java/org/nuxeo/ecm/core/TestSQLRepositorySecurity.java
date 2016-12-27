@@ -791,9 +791,9 @@ public class TestSQLRepositorySecurity {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        coreFeature.reopenCoreSession();
+        session = coreFeature.reopenCoreSession();
 
-        session.getDocument(doc.getRef());
+        doc = session.getDocument(doc.getRef());
         acp = doc.getACP();
         acl = acp.getACL(ACL.LOCAL_ACL);
         assertNull(acl);
