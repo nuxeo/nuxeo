@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -73,6 +74,9 @@ public class TestPictureConversions {
     protected static final List<String> DEFAULT_PICTURE_CONVERSIONS = Arrays.asList("Thumbnail", "Small", "Medium",
             "OriginalJpeg");
 
+    protected static final List<String> DEFAULT_PICTURE_CONVERSIONS_WITHOUT_ORIGINAL_JPEG = Arrays.asList("Thumbnail",
+            "Small", "Medium");
+
     @Inject
     protected CoreSession session;
 
@@ -84,12 +88,12 @@ public class TestPictureConversions {
 
     @Test
     public void iHaveTheDefaultPictureConversionsRegistered() {
-        checkDefaultPictureConversionsPresence();
+        checkPictureConversionsPresence(DEFAULT_PICTURE_CONVERSIONS);
     }
 
-    protected void checkDefaultPictureConversionsPresence() {
+    protected void checkPictureConversionsPresence(List<String> pictureConversions) {
         List<String> pictureConversionIds = getPictureConversionIds();
-        org.junit.Assert.assertTrue(pictureConversionIds.containsAll(DEFAULT_PICTURE_CONVERSIONS));
+        org.junit.Assert.assertTrue(pictureConversionIds.containsAll(pictureConversions));
     }
 
     protected List<String> getPictureConversionIds() {
@@ -102,7 +106,8 @@ public class TestPictureConversions {
 
     @Test
     public void iHaveDefaultPictureConversionsOrder() {
-        String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "FullHD", "OriginalJpeg" };
+        String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "FullHD",
+                "OriginalJpeg" };
         List<PictureConversion> pictureConversions = imagingService.getPictureConversions();
 
         for (int i = 0; i < defaultPictureConversionsOrder.length; i++) {
@@ -131,10 +136,16 @@ public class TestPictureConversions {
     public void iCanMergePictureConversions() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_COMPONENT_LOCATION);
 
-        checkDefaultPictureConversionsPresence();
+        checkPictureConversionsPresence(DEFAULT_PICTURE_CONVERSIONS_WITHOUT_ORIGINAL_JPEG);
 
         for (PictureConversion pictureConversion : imagingService.getPictureConversions()) {
             switch (pictureConversion.getId()) {
+            case "Original":
+                assertTrue(pictureConversion.getId(), pictureConversion.isEnabled());
+                break;
+            case "OriginalJpeg":
+                assertFalse(pictureConversion.getId(), pictureConversion.isEnabled());
+                break;
             case "Small":
                 assertEquals(50, (int) pictureConversion.getMaxSize());
                 assertTrue(pictureConversion.getDescription().contains("override"));
@@ -155,7 +166,7 @@ public class TestPictureConversions {
     public void iCanMergeMorePictureConversions() throws Exception {
         deployContrib(PICTURE_CONVERSIONS_OVERRIDE_MORE_COMPONENT_LOCATION);
 
-        checkDefaultPictureConversionsPresence();
+        checkPictureConversionsPresence(DEFAULT_PICTURE_CONVERSIONS);
 
         int count = 0;
         List<String> newPictureConversions = Arrays.asList("ThumbnailMini", "ThumbnailWide", "Tiny", "Wide");
