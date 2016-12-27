@@ -189,6 +189,7 @@
 
   <profiles>
     <profile>
+      <!-- This profile is used to load dependency mangement for external connectors -->
       <id>addons</id>
       <dependencyManagement>
         <dependencies>
@@ -203,6 +204,8 @@
       </dependencyManagement>
     </profile>
     <profile>
+      <!-- This profile is used to build and load marklogic connector as backend for whole Platform tests -->
+      <!-- See StorageConfiguration#initExternal for instantiation by reflection -->
       <id>marklogic</id>
       <dependencies>
         <dependency>
