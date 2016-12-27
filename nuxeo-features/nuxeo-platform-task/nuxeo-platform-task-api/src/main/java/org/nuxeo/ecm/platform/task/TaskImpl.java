@@ -66,7 +66,7 @@ public class TaskImpl implements Task {
     }
 
     protected void followTransition(CoreSession coreSession, String transition) throws LifeCycleException {
-        if (doc.getAllowedStateTransitions().contains(transition)) {
+        if (coreSession.getAllowedStateTransitions(doc.getRef()).contains(transition)) {
             coreSession.followTransition(doc.getRef(), transition);
         } else {
             throw new LifeCycleException(
