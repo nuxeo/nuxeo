@@ -105,7 +105,7 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
 
         cs = objService.getContentStream(repositoryId, ob.getId(), "nuxeo:rendition:pdf", null, null, null);
         assertEquals("application/pdf", cs.getMimeType());
-        assertEquals("testfile.txt.pdf", cs.getFileName());
+        assertEquals("testfile.pdf", cs.getFileName());
         assertTrue(cs instanceof CacheHeaderContentStream);
         chcs = (CacheHeaderContentStream) cs;
         assertEquals(DigestUtils.md5Hex(chcs.getStream()), chcs.getETag());
