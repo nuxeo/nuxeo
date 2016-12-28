@@ -203,7 +203,7 @@ public class TestRenditionService {
         Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
-        assertEquals("dummy.txt.pdf", renditionBlob.getFilename());
+        assertEquals("dummy.pdf", renditionBlob.getFilename());
 
         // now refetch the rendition
         Rendition rendition = renditionService.getRendition(file, PDF_RENDITION_DEFINITION);
