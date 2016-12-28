@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-storage-sql-parent</artifactId>
-    <version>6.0-HF34-SNAPSHOT</version>
+    <version>6.0-HF34</version>
   </parent>
 
   <artifactId>nuxeo-core-storage-sql-ra</artifactId>
