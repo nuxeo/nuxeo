@@ -74,7 +74,7 @@ public class TestRenditionOperation {
         Blob renditionBlob = (Blob) automationService.run(ctx, GetRendition.ID, params);
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
-        assertEquals("dummy.txt.pdf", renditionBlob.getFilename());
+        assertEquals("dummy.pdf", renditionBlob.getFilename());
 
         Rendition pdfRendition = renditionService.getRendition(file, "pdf");
         assertEquals(renditionBlob.getLength(), pdfRendition.getBlob().getLength());
