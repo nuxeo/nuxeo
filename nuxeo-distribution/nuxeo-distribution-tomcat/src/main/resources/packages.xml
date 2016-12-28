@@ -1,5 +1,5 @@
 <packages>
-  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-6.0-HF34-SNAPSHOT/mp/">
+  <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-6.0-HF35-SNAPSHOT/mp/">
     <package id="nuxeo-cap" label="Content Application Platform (CAP)" color="#635959" textcolor="#FFF" shortlabel="CAP" virtual="true" desc="Content Application Platform"/>
     <package id="nuxeo-dam" label="Digital Asset Management (DAM)" color="#ffeb6d" textcolor="#333" shortlabel="DAM" desc="Digital Asset Management"/>
     <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE" desc="Drive"/>
