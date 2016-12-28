@@ -125,8 +125,22 @@ public class TestFulltextEnabled {
         Assert.assertEquals(1, coreRet.totalSize());
     }
 
+    @Test
+    public void testFulltextOnProxy() throws Exception {
+        DocumentModel doc = createFileWithBlob();
+        createSectionAndPublishFile(doc);
+        // binary fulltext is extracted and searcheable with ES
+        String nxql = "SELECT * FROM Document WHERE ecm:fulltext='search' AND ecm:isProxy = 1";
+        DocumentModelList esRet = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(1, esRet.totalSize());
 
-    protected void createFileWithBlob() throws Exception {
+        // binary fulltext is also searcheable with VCS
+        sleepForFulltext();
+        DocumentModelList coreRet = session.query(nxql);
+        Assert.assertEquals(1, coreRet.totalSize());
+    }
+
+    protected DocumentModel createFileWithBlob() throws Exception {
         startTransaction();
         // this is to prevent race condition that happen NXP-16169
         ElasticSearchInlineListener.useSyncIndexing.set(true);
@@ -144,6 +158,29 @@ public class TestFulltextEnabled {
 
         // There is one doc
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        return ret.get(0);
+    }
+
+    protected void createSectionAndPublishFile(DocumentModel doc) throws Exception {
+        // Create a Section
+        DocumentModel section = session.createDocumentModel("/", "section", "Folder");
+        section = session.createDocument(section);
+
+        // Publish Document
+        session.publishDocument(doc, section);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        // we need to wait for the async fulltext indexing
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        waitForCompletion();
+        startTransaction();
+
+        // There is one doc
+        DocumentModelList ret = ess.query(
+                new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isProxy = 1"));
         Assert.assertEquals(1, ret.totalSize());
     }
 
