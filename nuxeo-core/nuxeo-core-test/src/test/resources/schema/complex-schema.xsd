@@ -80,4 +80,3 @@
     <xs:element name="segmentVariable" type="ml:variable"/>
 
   </xs:schema>
-

@@ -478,6 +478,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-test</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-redis</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
