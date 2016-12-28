@@ -2470,7 +2470,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public Map<String, String> getBinaryFulltext(DocumentRef ref) {
         Document doc = resolveReference(ref);
         checkPermission(doc, READ);
-        return getSession().getBinaryFulltext(doc.getUUID());
+        // Use an id whether than system properties to avoid to store fulltext properties in cache
+        String id = doc.getUUID();
+        if (doc.isProxy()) {
+            id = doc.getTargetDocument().getUUID();
+        }
+        return getSession().getBinaryFulltext(id);
     }
 
 }

@@ -1500,7 +1500,9 @@ public interface CoreSession extends AutoCloseable {
             Class<T> adapterClass);
 
     /**
-     * Gets the fulltext extracted from the binary fields.
+     * Gets the fulltext extracted from the binary fields. We defined a new API for that to avoid to store in the cache
+     * the fulltext properties which could be huge. This method handle if document is a proxy or not. Historically, VCS
+     * doesn't store fulltext properties for proxies (note that DBS does).
      *
      * @param doc the document reference
      * @return the fulltext map or {@code null} if not supported.
