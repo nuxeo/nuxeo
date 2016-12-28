@@ -436,7 +436,7 @@
  - Continue to improve the infrastructure
  - Manage the complete application life-cycle
 
-#### Prepare Nuxeo Platform 6.0-HF34-SNAPSHOT
+#### Prepare Nuxeo Platform 6.0-HF35-SNAPSHOT
 
 - Prepare an infrastructure update
 
@@ -925,7 +925,7 @@
  - *Yes, there will be a 5.7!*
  - Targeting March / April
 
-#### Nuxeo Platform 6.0-HF34-SNAPSHOT
+#### Nuxeo Platform 6.0-HF35-SNAPSHOT
 
  - Will include all infrastructure changes
   - Component model, rendering, cloud, etc.
