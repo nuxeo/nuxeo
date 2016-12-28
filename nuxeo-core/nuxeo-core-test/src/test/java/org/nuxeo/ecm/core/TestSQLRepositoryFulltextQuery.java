@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -125,17 +126,14 @@ public class TestSQLRepositoryFulltextQuery {
     }
 
     protected static void assertIdSet(DocumentModelList dml, String... ids) {
-        Collection<String> expected = new HashSet<String>(Arrays.asList(ids));
-        Collection<String> actual = new HashSet<String>();
-        for (DocumentModel d : dml) {
-            actual.add(d.getId());
-        }
+        Collection<String> expected = new HashSet<>(Arrays.asList(ids));
+        Collection<String> actual = dml.stream().map(DocumentModel::getId).collect(Collectors.toSet());
         assertEquals(expected, actual);
     }
 
     protected static void assertEventSet(String... expectedEventNames) {
         List<String> list = getDummyListenerEvents();
-        Map<String, AtomicInteger> map = new HashMap<String, AtomicInteger>();
+        Map<String, AtomicInteger> map = new HashMap<>();
         for (String name : list) {
             AtomicInteger i = map.get(name);
             if (i == null) {
@@ -143,15 +141,15 @@ public class TestSQLRepositoryFulltextQuery {
             }
             i.incrementAndGet();
         }
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         for (Entry<String, AtomicInteger> es : map.entrySet()) {
             set.add(es.getKey() + '=' + es.getValue());
         }
-        assertEquals(new HashSet<String>(Arrays.asList(expectedEventNames)), set);
+        assertEquals(new HashSet<>(Arrays.asList(expectedEventNames)), set);
     }
 
     protected static List<String> getDummyListenerEvents() {
-        List<String> actual = new ArrayList<String>();
+        List<String> actual = new ArrayList<>();
         for (Event event : DummyTestListener.EVENTS_RECEIVED) {
             String eventName = event.getName();
             EventContext context = event.getContext();
@@ -874,8 +872,8 @@ public class TestSQLRepositoryFulltextQuery {
 
         // test setting and reading a map with an empty list
         doc = session.getDocument(docRef);
-        Map<String, Object> attachedFile = new HashMap<String, Object>();
-        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        Map<String, Object> attachedFile = new HashMap<>();
+        List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("name", "somename");
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -892,7 +890,7 @@ public class TestSQLRepositoryFulltextQuery {
 
         // test setting and reading a list of maps without a complex type in the
         // maps
-        Map<String, Object> vignette = new HashMap<String, Object>();
+        Map<String, Object> vignette = new HashMap<>();
         vignette.put("content", Blobs.createBlob("textblob content"));
         vignette.put("label", "vignettelabel");
         vignettes.add(vignette);
@@ -1004,6 +1002,22 @@ public class TestSQLRepositoryFulltextQuery {
         createDocs();
         waitForFulltextIndexing();
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink'");
+        assertTrue(!list.isEmpty());
+        Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
+        assertTrue(map.containsKey("binarytext"));
+        assertTrue(map.get("binarytext").contains("drink"));
+    }
+
+    @Test
+    public void testGetBinaryFulltextFromProxy() throws Exception {
+        createDocs();
+        waitForFulltextIndexing();
+        // Publish testfile1 into testfolder2
+        session.publishDocument(session.getDocument(new PathRef("/testfolder1/testfile1")),
+                session.getDocument(new PathRef("/testfolder2")));
+        waitForFulltextIndexing();
+        
+        DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink' and ecm:isProxy = 1");
         assertTrue(!list.isEmpty());
         Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
         assertTrue(map.containsKey("binarytext"));

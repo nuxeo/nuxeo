@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -46,6 +47,21 @@ public class TestFulltextDisabled extends TestFulltextEnabled {
         createFileWithBlob();
         // no binary fulltext extraction
         String nxql = "SELECT * FROM Document WHERE ecm:fulltext='search'";
+        DocumentModelList esRet = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(0, esRet.totalSize());
+
+        // fulltext search with core is not allowed
+        exception.expect(QueryParseException.class);
+        DocumentModelList coreRet = session.query(nxql);
+    }
+
+    @Override
+    @Test
+    public void testFulltextOnProxy() throws Exception {
+        DocumentModel doc = createFileWithBlob();
+        createSectionAndPublishFile(doc);
+        // no binary fulltext extraction
+        String nxql = "SELECT * FROM Document WHERE ecm:fulltext='search' AND ecm:isProxy = 1";
         DocumentModelList esRet = ess.query(new NxQueryBuilder(session).nxql(nxql));
         Assert.assertEquals(0, esRet.totalSize());
 
