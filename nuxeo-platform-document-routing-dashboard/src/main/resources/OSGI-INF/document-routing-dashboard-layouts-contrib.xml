@@ -408,7 +408,7 @@
       </widget>
     </layout>
 
-    <!--@since 5.8.0-HF41-SNAPSHOT, layouts for task resolution screen on User home, applies 
+    <!--@since 5.8.0-HF41, layouts for task resolution screen on User home, applies 
       to a Task object -->
     <layout name="routing_task_general_info">
       <templates>
