@@ -433,7 +433,7 @@
       </fields>
     </widget>
 
-    <!-- for "task_layout" @since 5.8.0-HF41-SNAPSHOT, apply to an object Task -->
+    <!-- for "task_layout" @since 5.8.0-HF42-SNAPSHOT, apply to an object Task -->
     <widget name="task_workflow_title" type="task_workflow_title">
       <labels>
         <label mode="any">label.route.task.workflowStep</label>
