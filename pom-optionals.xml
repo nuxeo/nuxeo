@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.8.0-HF41-SNAPSHOT</version>
+    <version>5.8.0-HF41</version>
     <relativePath>pom.xml</relativePath>
   </parent>
 
@@ -17,7 +17,7 @@
   <!-- dependencyManagement of optional addons must also be defined in pom.xml but
     they must use a dedicated property, not nuxeo.addons.version -->
   <properties>
-    <nuxeo.jbpm.version>5.8.0-HF41-SNAPSHOT</nuxeo.jbpm.version>
+    <nuxeo.jbpm.version>5.8.0-HF41</nuxeo.jbpm.version>
   </properties>
 
   <modules>
