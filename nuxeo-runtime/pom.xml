@@ -4,14 +4,14 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.8.0-HF41-SNAPSHOT</version>
+    <version>5.8.0-HF41</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-parent</artifactId>
   <name>Nuxeo Runtime Parent</name>
-  <version>5.8.0-HF41-SNAPSHOT</version>
+  <version>5.8.0-HF41</version>
   <packaging>pom</packaging>
   <description>Nuxeo Runtime: Parent.</description>
 

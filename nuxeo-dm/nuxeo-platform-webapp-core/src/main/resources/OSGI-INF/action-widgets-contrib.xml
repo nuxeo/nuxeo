@@ -1,7 +1,7 @@
 <component name="org.nuxeo.ecm.platform.action.widgets">
 
   <documentation>
-    @since 5.8.0-HF41-SNAPSHOT, global widgets used to render actions/tabs in
+    @since 5.8.0-HF41, global widgets used to render actions/tabs in
     default UI.
   </documentation>
 

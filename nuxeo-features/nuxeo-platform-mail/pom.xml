@@ -5,7 +5,7 @@
   <parent>
     <artifactId>nuxeo-features-parent</artifactId>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <version>5.8.0-HF41-SNAPSHOT</version>
+    <version>5.8.0-HF41</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>

@@ -5,7 +5,7 @@
     <xa-transaction/>
     <track-connection-by-tx/>
     <adapter-display-name>Nuxeo SQL Repository DataSource</adapter-display-name>
-    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.8.0-HF41-SNAPSHOT.rar</rar-name>
+    <rar-name>nuxeo.ear#nuxeo-core-storage-sql-ra-5.8.0-HF41.rar</rar-name>
     <connection-definition>org.nuxeo.ecm.core.storage.sql.Repository</connection-definition>
     <config-property name="name">default</config-property>
     <config-property name="xaDataSource" type="java.lang.String">oracle.jdbc.xa.client.OracleXADataSource</config-property>
