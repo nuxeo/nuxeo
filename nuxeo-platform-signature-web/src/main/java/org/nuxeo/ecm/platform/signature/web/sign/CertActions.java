@@ -38,7 +38,6 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
@@ -240,13 +239,11 @@ public class CertActions implements Serializable {
             throw new ValidatorException(message);
         }
 
-        String hashedUserPassword = (String) getCurrentUserModel().getPropertyValue("user:password");
-
         /*
          * If the certificate password matches the user login password an exception is thrown, as those passwords should
          * not be the same to increase security and decouple one from another to allow for reuse
          */
-        if (hashedUserPassword != null && PasswordHelper.verifyPassword(firstPassword, hashedUserPassword)) {
+        if (userManager.checkUsernamePassword(currentUser.getName(), firstPassword)) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, resourcesAccessor.getMessages().get(
                     "label.cert.password.is.login.password"), null);
             throw new ValidatorException(message);
