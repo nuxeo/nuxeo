@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.8.0-HF41-SNAPSHOT</version>
+  <version>5.8.0-HF42-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo ECM Projects</name>
   <description>Nuxeo ECM Platform and related components.</description>
@@ -115,15 +115,15 @@
     <!-- <license.useMissingFile>true</license.useMissingFile> -->
     <!-- <license.missingFile>src/main/license/THIRD-PARTY.properties</license.missingFile> -->
 
-    <nuxeo.common.version>5.8.0-HF41-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>5.8.0-HF41-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>5.8.0-HF41-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.services.version>5.8.0-HF41-SNAPSHOT</nuxeo.services.version>
-    <nuxeo.theme.version>5.8.0-HF41-SNAPSHOT</nuxeo.theme.version>
-    <nuxeo.jsf.version>5.8.0-HF41-SNAPSHOT</nuxeo.jsf.version>
-    <nuxeo.dm.version>5.8.0-HF41-SNAPSHOT</nuxeo.dm.version>
-    <nuxeo.webengine.version>5.8.0-HF41-SNAPSHOT</nuxeo.webengine.version>
-    <nuxeo.features.version>5.8.0-HF41-SNAPSHOT</nuxeo.features.version>
+    <nuxeo.common.version>5.8.0-HF42-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>5.8.0-HF42-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>5.8.0-HF42-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.services.version>5.8.0-HF42-SNAPSHOT</nuxeo.services.version>
+    <nuxeo.theme.version>5.8.0-HF42-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.jsf.version>5.8.0-HF42-SNAPSHOT</nuxeo.jsf.version>
+    <nuxeo.dm.version>5.8.0-HF42-SNAPSHOT</nuxeo.dm.version>
+    <nuxeo.webengine.version>5.8.0-HF42-SNAPSHOT</nuxeo.webengine.version>
+    <nuxeo.features.version>5.8.0-HF42-SNAPSHOT</nuxeo.features.version>
 
     <nuxeo.connect.client.version>1.4.16.1</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
@@ -166,7 +166,7 @@
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
-    <nuxeo.platform.version>5.8.0-HF41-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>5.8.0-HF42-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
     <nxseam.version>2.1.0.SP1-NX4</nxseam.version>
 

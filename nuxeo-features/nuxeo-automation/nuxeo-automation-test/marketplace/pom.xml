@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
-    <version>5.8.0-HF41-SNAPSHOT</version>
+    <version>5.8.0-HF42-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -12,8 +12,8 @@
   <name>Marketplace QA Package</name>
 
   <properties>
-    <nuxeo.distribution.version>5.8.0-HF41-SNAPSHOT</nuxeo.distribution.version>
-    <marketplace.sample.version>5.8.0-HF41-SNAPSHOT</marketplace.sample.version>
+    <nuxeo.distribution.version>5.8.0-HF42-SNAPSHOT</nuxeo.distribution.version>
+    <marketplace.sample.version>5.8.0-HF42-SNAPSHOT</marketplace.sample.version>
   </properties>
 
   <dependencies>

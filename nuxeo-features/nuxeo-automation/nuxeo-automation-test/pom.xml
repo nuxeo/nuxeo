@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
-    <version>5.8.0-HF41-SNAPSHOT</version>
+    <version>5.8.0-HF42-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-automation-test</artifactId>
@@ -11,7 +11,7 @@
   <description>Automation Tests</description>
 
   <properties>
-    <nuxeo.tested.version>5.8.0-HF41-SNAPSHOT</nuxeo.tested.version>
+    <nuxeo.tested.version>5.8.0-HF42-SNAPSHOT</nuxeo.tested.version>
   </properties>
 
   <dependencies>

@@ -1,6 +1,6 @@
-# Nuxeo platform 5.8.0-HF41-SNAPSHOT
+# Nuxeo platform 5.8.0-HF42-SNAPSHOT
 
-Welcome to the Nuxeo Platform 5.8.0-HF41-SNAPSHOT.
+Welcome to the Nuxeo Platform 5.8.0-HF42-SNAPSHOT.
 
 You can always download the latest releases of Nuxeo packages (distributions, 
 installers, virtual machine images, ...) from [http://www.nuxeo.com/en/downloads][1].
@@ -116,7 +116,7 @@ community of professional and individual contributors:
 
 ## Release Notes
 
-See See [http://nuxeo.github.io/releasenotes/5.8.0-HF41-SNAPSHOT/][25]
+See See [http://nuxeo.github.io/releasenotes/5.8.0-HF42-SNAPSHOT/][25]
 
 ## Issues
 
@@ -202,7 +202,7 @@ licenses donated by YourKit), etc.
 [22]: http://www.nuxeo.com/en/products/document-management
 [23]: http://www.nuxeo.com/en/products/dam
 [24]: http://www.nuxeo.com/en/products/case-management
-[25]: http://nuxeo.github.io/releasenotes/5.8.0-HF41-SNAPSHOT
+[25]: http://nuxeo.github.io/releasenotes/5.8.0-HF42-SNAPSHOT
 [26]: http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
 [27]: https://jira.nuxeo.org/browse/NXP/fixforversion/
 [28]: http://doc.nuxeo.com/
