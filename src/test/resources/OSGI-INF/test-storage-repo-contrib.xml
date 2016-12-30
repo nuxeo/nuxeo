@@ -44,6 +44,10 @@
         <range-element-index type="string">firstname</range-element-index>
         <range-element-index type="string">lastname</range-element-index>
         <range-element-index type="string">tst:title</range-element-index>
+        <range-element-index type="dateTime">dc:issued</range-element-index>
+        <range-element-index type="string">nt:name</range-element-index>
+        <range-element-index type="string">dc:nature</range-element-index>
+        <range-element-index type="string">nxdoc:documentationId</range-element-index>
       </range-element-indexes>
     </repository>
   </extension>
