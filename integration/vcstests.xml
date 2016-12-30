@@ -70,6 +70,16 @@
         <entry key="nuxeo.test.mongodb.dbname" value="${nuxeo.mongodb.dbname}" />
       </propertyfile>
     </nx:profile>
+    <nx:profile name="marklogic">
+      <propertyfile file="${vcsprops}">
+        <entry key="nuxeo.test.core" value="marklogic" />
+        <entry key="nuxeo.test.marklogic.host" value="${nuxeo.marklogic.host}" />
+        <entry key="nuxeo.test.marklogic.port" value="${nuxeo.marklogic.port}" />
+        <entry key="nuxeo.test.marklogic.dbname" value="${nuxeo.marklogic.dbname}" />
+        <entry key="nuxeo.test.marklogic.user" value="${nuxeo.marklogic.user}" />
+        <entry key="nuxeo.test.marklogic.password" value="${nuxeo.marklogic.pass}" />
+      </propertyfile>
+    </nx:profile>
   </target>
 
   <target name="vcs-tests-teardown">
