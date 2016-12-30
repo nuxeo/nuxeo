@@ -751,6 +751,52 @@ public class TestAutomaticIndexing {
     }
 
     @Test
+    public void shouldIndexUpdatedProxy() throws Exception {
+        startTransaction();
+        DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        folder1 = session.saveDocument(folder1);
+
+        DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
+        file1 = session.createDocument(file1);
+        file1.setPropertyValue("dc:title", "Title before proxy update");
+        file1 = session.saveDocument(file1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Create proxy
+        DocumentModel proxy = session.createProxy(file1.getRef(), folder1.getRef());
+        proxy = session.saveDocument(proxy);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // Now update it
+        proxy.setPropertyValue("dc:title", "Title after proxy update");
+        proxy = session.saveDocument(proxy);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(3, ret.totalSize());
+
+        // Check that proxy was updated in ES
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:isProxy = 1 and dc:title='Title after proxy update'"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("Title after proxy update", ret.get(0).getTitle());
+
+        // Check that live document was updated in ES
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:isProxy = 0 and dc:title='Title after proxy update'"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("Title after proxy update", ret.get(0).getTitle());
+
+    }
+
+    @Test
     public void shouldIndexComplexCase() throws Exception {
         startTransaction();
 
@@ -781,4 +827,5 @@ public class TestAutomaticIndexing {
         startTransaction();
 
     }
+
 }
