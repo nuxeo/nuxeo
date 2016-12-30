@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -109,6 +110,9 @@ public abstract class IndexingCommandsStacker {
         case DOCUMENT_TAG_UPDATED:
         case DOCUMENT_PROXY_UPDATED:
         case LifeCycleConstants.TRANSITION_EVENT:
+            if (doc.isProxy() && !doc.isImmutable()) {
+                stackCommand(doc.getCoreSession().getDocument(new IdRef(doc.getSourceId())), BEFORE_DOC_UPDATE, false);
+            }
             type = Type.UPDATE;
             break;
         case DOCUMENT_CHECKEDIN:
