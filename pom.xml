@@ -4906,6 +4906,11 @@
             <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>
             <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
             <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
+            <nuxeo.test.marklogic.host>${nuxeo.test.marklogic.host}</nuxeo.test.marklogic.host>
+            <nuxeo.test.marklogic.port>${nuxeo.test.marklogic.port}</nuxeo.test.marklogic.port>
+            <nuxeo.test.marklogic.dbname>${nuxeo.test.marklogic.dbname}</nuxeo.test.marklogic.dbname>
+            <nuxeo.test.marklogic.user>${nuxeo.test.marklogic.user}</nuxeo.test.marklogic.user>
+            <nuxeo.test.marklogic.password>${nuxeo.test.marklogic.password}</nuxeo.test.marklogic.password>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
@@ -6367,8 +6372,8 @@
       <id>marklogic</id>
        <properties>
         <nuxeo.test.core>marklogic</nuxeo.test.core>
-        <nuxeo.test.marklogic.host>localhost</nuxeo.test.marklogic.host>
-        <nuxeo.test.marklogic.port>8030</nuxeo.test.marklogic.port>
+        <nuxeo.marklogic.host.default>localhost</nuxeo.marklogic.host.default>
+        <nuxeo.marklogic.port.default>8030</nuxeo.marklogic.port.default>
       </properties>
     </profile>
 
