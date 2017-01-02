@@ -38,24 +38,19 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.model.TypeVisibility;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
-import com.sun.jersey.server.spi.component.ResourceComponentConstructor;
+import com.sun.jersey.api.core.ResourceContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected final WebEngine engine;
-
-    protected final Module owner;
-
-    protected final ResourceComponentConstructor constructor;
+    protected final ModuleImpl owner;
 
     protected final String name;
 
@@ -71,17 +66,14 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
-
-    protected AbstractResourceType(WebEngine engine, Module module, AbstractResourceType superType, String name,
-            ClassProxy clazz, ResourceComponentConstructor constructor, int visibility) {
-        this.engine = engine;
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name,
+            ClassProxy clazz, int visibility) {
+        templateCache = new ConcurrentHashMap<String, ScriptFile>();
         owner = module;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
-        this.constructor = constructor;
         this.visibility = visibility;
-        templateCache = new ConcurrentHashMap<String, ScriptFile>();
         AnnotationManager mgr = engine.getAnnotationManager();
         loadAnnotations(mgr);
     }
@@ -128,12 +120,9 @@ public abstract class AbstractResourceType implements ResourceType {
     }
 
     @Override
-    public <T extends Resource> T newInstance(Class<T> typeof, WebContext context) {
-        try {
-            return typeof.cast(constructor.construct(context.getServerHttpContext()));
-        } catch (ReflectiveOperationException e) {
-            throw WebException.wrap("Failed to instantiate web object: " + clazz, e);
-        }
+    @SuppressWarnings("unchecked")
+    public <T extends Resource> T newInstance(ResourceContext resources) {
+        return (T) resources.getResource(clazz.get());
     }
 
     @Override

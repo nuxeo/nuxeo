@@ -39,22 +39,18 @@ import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.server.impl.modelapi.annotation.IntrospectionModeller;
-import com.sun.jersey.server.spi.component.ResourceComponentConstructor;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescriptor> {
 
-    protected final WebEngine engine; // cannot use module.getEngine() since module may be null
-
-    protected final ModuleImpl module;
-
     protected final Map<String, AbstractResourceType> types;
 
     protected final Map<String, AdapterType> adapters;
+
+    protected final ModuleImpl module;
+
+    protected final WebEngine engine; // cannot use module.getEngine() since module may be null
 
     protected ClassProxy docObjectClass;
 
@@ -77,7 +73,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void registerRootType() {
-        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(ModuleRoot.class), ResourceType.ROOT_TYPE_NAME,
+        TypeDescriptor root = new TypeDescriptor(new StaticClassProxy(Resource.class), ResourceType.ROOT_TYPE_NAME,
                 null);
         registerType(root);
     }
@@ -226,8 +222,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
                     return true;
                 } catch (ClassNotFoundException e) {
                     // TODO
-                    System.err.println(
-                            "Cannot find document resource class. Automatic Core Type support will be disabled ");
+                    System.err.println("Cannot find document resource class. Automatic Core Type support will be disabled ");
                 }
             }
         }
@@ -277,9 +272,8 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installTypeContribution(String key, TypeDescriptor object) {
-        ResourceComponentConstructor constructor = new ResourceComponentConstructor(module.sic, ComponentScope.PerRequest, IntrospectionModeller.createResource(object.clazz.get()));
         AbstractResourceType type = new ResourceTypeImpl(engine, module, null, object.type, object.clazz,
-                constructor, object.visibility);
+                object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);
             assert type.superType != null; // must never be null since the object is resolved
@@ -300,8 +294,7 @@ public class TypeRegistry extends AbstractContributionRegistry<String, TypeDescr
     }
 
     protected void installAdapterContribution(String key, AdapterDescriptor object) {
-        ResourceComponentConstructor constructor = new ResourceComponentConstructor(module.sic, ComponentScope.PerRequest, IntrospectionModeller.createResource(object.clazz.get()));
-        AdapterTypeImpl type = new AdapterTypeImpl(engine, module, null, object.type, object.name, object.clazz, constructor,
+        AdapterTypeImpl type = new AdapterTypeImpl(engine, module, null, object.type, object.name, object.clazz,
                 object.visibility);
         if (object.superType != null) {
             type.superType = types.get(object.superType);

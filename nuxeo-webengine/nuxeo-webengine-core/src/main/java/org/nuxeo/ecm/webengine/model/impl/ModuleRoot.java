@@ -43,7 +43,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
+import com.sun.jersey.api.core.ResourceContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,10 +54,14 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
     protected HttpServletRequest request;
 
     @Context
-    protected ServerInjectableProviderContext sic;
+    protected ResourceContext resources;
 
     @Context
-    public void setContext(HttpContext hc) {
+    public void setContext(HttpContext context) {
+        init(context);
+    }
+
+    private void init(HttpContext context) {
         DefaultContext ctx = (DefaultContext) request.getAttribute(WebContext.class.getName());
         if (ctx == null) {
             throw new java.lang.IllegalStateException(
@@ -67,7 +71,9 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
             return;
         }
         try {
-            ctx.setJerseyContext(sic, hc);
+            ctx.setHttpHeaders(context.getRequest());
+            ctx.setUriInfo(context.getUriInfo());
+            ctx.setResourceContext(resources);
             Module module = findModule(ctx);
             ResourceType type = module.getType(getClass().getAnnotation(WebObject.class).type());
             ctx.setModule(module);
@@ -87,7 +93,7 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
         if (mc == null) {
             throw new java.lang.IllegalStateException("No module found for root resource: " + getClass());
         }
-        return mc.get(ctx);
+        return mc.get();
     }
 
     @GET

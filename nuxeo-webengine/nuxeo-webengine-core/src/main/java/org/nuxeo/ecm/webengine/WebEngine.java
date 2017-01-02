@@ -286,10 +286,10 @@ public class WebEngine implements ResourceLocator {
         return moduleMgr;
     }
 
-    public Module getModule(String name, WebContext context) {
+    public Module getModule(String name) {
         ModuleConfiguration md = getModuleManager().getModule(name);
         if (md != null) {
-            return md.get(context);
+            return md.get();
         }
         return null;
     }
@@ -379,7 +379,10 @@ public class WebEngine implements ResourceLocator {
         apps = new HashMap<String, WebEngineModule>();
         if (moduleMgr != null) { // avoid synchronizing if not needed
             for (ModuleConfiguration mc : moduleMgr.getModules()) {
-                mc.flushCache();
+                if (mc.isLoaded()) {
+                    // remove module level caches
+                    mc.get().flushCache();
+                }
             }
             moduleMgr = null;
         }

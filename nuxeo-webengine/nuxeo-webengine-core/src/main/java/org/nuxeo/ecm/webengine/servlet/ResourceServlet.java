@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Module;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
 
@@ -68,7 +67,7 @@ public class ResourceServlet extends HttpServlet {
             return;
         }
 
-        Module module = engine.getModule(moduleName, (WebContext)req.getAttribute(WebContext.class.getName()));
+        Module module = engine.getModule(moduleName);
         if (module == null) {
             resp.sendError(404);
             return;

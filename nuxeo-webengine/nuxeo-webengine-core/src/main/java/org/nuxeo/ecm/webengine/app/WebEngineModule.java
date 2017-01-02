@@ -40,14 +40,11 @@ import org.nuxeo.ecm.webengine.jaxrs.ApplicationFactory;
 import org.nuxeo.ecm.webengine.jaxrs.scan.Scanner;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultTypeLoader;
 import org.nuxeo.ecm.webengine.model.impl.ModuleConfiguration;
 import org.nuxeo.ecm.webengine.model.impl.ModuleManager;
 import org.osgi.framework.Bundle;
-
-import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,8 +56,6 @@ public class WebEngineModule extends Application implements ApplicationFactory {
     public final static String WEBOBJECT_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebObject;";
 
     public final static String WEBADAPTER_ANNO = "Lorg/nuxeo/ecm/webengine/model/WebAdapter;";
-
-    protected ServerInjectableProviderContext context;
 
     protected Bundle bundle;
 
@@ -221,8 +216,8 @@ public class WebEngineModule extends Application implements ApplicationFactory {
         return cfg;
     }
 
-    public Module getModule(WebContext context) {
-        return cfg.get(context);
+    public Module getModule() {
+        return cfg.get();
     }
 
     public Bundle getBundle() {
