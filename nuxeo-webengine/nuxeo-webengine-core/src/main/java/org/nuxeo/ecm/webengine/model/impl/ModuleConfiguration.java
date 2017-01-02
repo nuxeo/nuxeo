@@ -35,6 +35,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
 import org.nuxeo.ecm.webengine.model.Module;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 
 /**
@@ -114,6 +115,7 @@ public class ModuleConfiguration implements Cloneable {
     /**
      * @deprecated resources are deprecated - you should use a jax-rs application to declare more resources.
      */
+    @Deprecated
     @XNodeList(value = "resources/resource", type = ArrayList.class, componentType = ResourceBinding.class, nullByDefault = true)
     public List<ResourceBinding> resources;
 
@@ -164,15 +166,7 @@ public class ModuleConfiguration implements Cloneable {
         return base;
     }
 
-    /**
-     * @deprecated you should use new module definition - through {@link WebEngineModule}
-     */
-    @Deprecated
-    public String getPath() {
-        return path;
-    }
-
-    public Module get() {
+    public Module get(WebContext context) {
         if (module == null) {
             Module superModule = null;
             if (base != null) { // make sure super modules are resolved
@@ -182,11 +176,19 @@ public class ModuleConfiguration implements Cloneable {
                             + "' cannot be loaded since it's super module '" + base + "' cannot be found");
                 }
                 // force super module loading
-                superModule = superM.get();
+                superModule = superM.get(context);
             }
-            module = new ModuleImpl(engine, (ModuleImpl) superModule, this);
+            module = new ModuleImpl(engine, (ModuleImpl) superModule, this, context.getServerInjectableProviderContext());
         }
         return module;
+    }
+
+    public void flushCache() {
+        if (module == null) {
+            return;
+        }
+        module.flushCache();
+        module = null;
     }
 
     public boolean isLoaded() {

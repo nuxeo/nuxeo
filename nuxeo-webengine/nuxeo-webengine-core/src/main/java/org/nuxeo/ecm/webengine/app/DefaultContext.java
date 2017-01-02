@@ -25,40 +25,50 @@ import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.webengine.model.impl.AbstractWebContext;
 
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class DefaultContext extends AbstractWebContext {
 
-    // FIXME: these two members must be removed - they are redundant and buggy
+    // FIXME: these  members must be removed - they are redundant and buggy
     protected UriInfo info;
 
     protected HttpHeaders headers;
+
+    protected ServerInjectableProviderContext sic;
+
+    protected HttpContext hc;
 
     public DefaultContext(HttpServletRequest request, HttpServletResponse response) {
         super(request, response);
     }
 
     @Override
-    @Deprecated
     public HttpHeaders getHttpHeaders() {
-        // throw new UnsupportedOperationException("Deprecated. Use @Context HttpHeaders to inject this object");
-        return headers;
+        return hc.getRequest();
     }
 
     @Override
-    @Deprecated
     public UriInfo getUriInfo() {
-        // throw new UnsupportedOperationException("Deprecated. Use @Context UriInfo to inject this object");
-        return info;
+        return hc.getUriInfo();
     }
 
-    public void setUriInfo(UriInfo info) {
-        this.info = info;
+    @Override
+    public HttpContext getServerHttpContext() {
+        return hc;
     }
 
-    public void setHttpHeaders(HttpHeaders headers) {
-        this.headers = headers;
+    @Override
+    public ServerInjectableProviderContext getServerInjectableProviderContext() {
+        return sic;
+    }
+
+    public void setJerseyContext(ServerInjectableProviderContext sic, HttpContext hc) {
+        this.sic = sic;
+        this.hc = hc;
     }
 
 }
