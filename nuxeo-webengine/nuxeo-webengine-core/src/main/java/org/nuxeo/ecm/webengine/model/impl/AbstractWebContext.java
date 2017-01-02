@@ -59,7 +59,6 @@ import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
-import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
@@ -71,8 +70,6 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
-
-import com.sun.jersey.api.core.ResourceContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -328,18 +325,12 @@ public abstract class AbstractWebContext implements WebContext {
         return newObject(type, args);
     }
 
-    ResourceContext resources;
-
-    public void setResourceContext(ResourceContext resources) {
-        this.resources = resources;
-    }
-
     @Override
     public Resource newObject(ResourceType type, Object... args) {
-        Resource obj = type.newInstance(resources);
+        Resource obj = type.newInstance(type.getResourceClass(), this);
         try {
             obj.initialize(this, type, args);
-        } finally {
+        }  finally {
             // we must be sure the object is pushed even if an error occurred
             // otherwise we may end up with an empty object stack and we will
             // not be able to
@@ -351,18 +342,7 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public AdapterResource newAdapter(Resource ctx, String serviceName, Object... args) {
-        AdapterType st = module.getAdapter(ctx, serviceName);
-        AdapterResource service = (AdapterResource) st.newInstance(resources);
-        try {
-            service.initialize(this, st, args);
-        } finally {
-            // we must be sure the object is pushed even if an error occurred
-            // otherwise we may end up with an empty object stack and we will
-            // not be able to
-            // handle errors based on objects handleError() method
-            push(service);
-        }
-        return service;
+        return (AdapterResource)newObject(module.getAdapter(ctx, serviceName), args);
     }
 
     @Override
@@ -522,12 +502,11 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public Resource push(Resource rs) {
+        rs.setPrevious(tail);
         if (tail != null) {
             tail.setNext(rs);
-            rs.setPrevious(tail);
             tail = rs;
         } else {
-            rs.setPrevious(tail);
             head = tail = rs;
         }
         return rs;
