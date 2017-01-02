@@ -74,14 +74,23 @@ public abstract class AbstractContributionRegistry<K, T> implements Contribution
         for (AbstractContributionRegistry<K, T> p : parents) {
             p.listeners.add(this);
             for (Contribution<K, T> contrib : p.registry.values().toArray(new Contribution[p.registry.size()])) {
-                if (contrib.isResolved()) {
-                    installContribution(contrib.getId(), contrib.getValue());
-                }
+                importContribution(contrib);
             }
             p = p.parent;
         }
     }
 
+    protected void importContribution(Contribution<K,T> contrib) {
+        if (!contrib.isResolved()) {
+            return;
+        }
+        for (Contribution<K, T> dep : contrib.getDependencies()) {
+            importContribution(dep);
+        }
+        installContribution(contrib.getId(), contrib.getValue());
+    }
+
+    @Override
     public synchronized Contribution<K, T> getContribution(K primaryKey) {
         Contribution<K, T> contrib = registry.get(primaryKey);
         if (contrib == null && parent != null) {

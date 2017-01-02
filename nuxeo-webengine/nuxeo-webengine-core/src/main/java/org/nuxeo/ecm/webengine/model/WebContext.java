@@ -41,6 +41,9 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.model.Adaptable;
 
+import com.sun.jersey.api.core.HttpContext;
+import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -62,6 +65,21 @@ public interface WebContext extends Adaptable {
      * @return the web root. Cannot return null.
      */
     Module getModule();
+
+    /**
+     *
+     * Gets the jersey server injection context
+     *
+     * @since 9.1
+     */
+    ServerInjectableProviderContext getServerInjectableProviderContext();
+
+    /**
+     * Gets the jersey server http context
+     *
+     * @since 9.1
+     */
+    HttpContext getServerHttpContext();
 
     /**
      * Gets the root resource if any resource was defined as being the root

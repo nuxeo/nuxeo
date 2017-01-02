@@ -35,6 +35,8 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
+import com.sun.jersey.server.spi.component.ResourceComponentConstructor;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -48,23 +50,27 @@ public class AdapterTypeImpl extends AbstractResourceType implements AdapterType
     protected final String adapterName;
 
     public AdapterTypeImpl(WebEngine engine, ModuleImpl module, ResourceTypeImpl superType, String name,
-            String adapterName, ClassProxy clazz, int visibility) {
-        super(engine, module, superType, name, clazz, visibility);
+            String adapterName, ClassProxy clazz, ResourceComponentConstructor constructor, int visibility) {
+        super(engine, module, superType, name, clazz, constructor, visibility);
         this.adapterName = adapterName;
     }
 
+    @Override
     public String getAdapterName() {
         return adapterName;
     }
 
+    @Override
     public String getTargetType() {
         return targetType;
     }
 
+    @Override
     public String[] getTargetFacets() {
         return targetFacets;
     }
 
+    @Override
     public boolean acceptResource(Resource resource) {
         if (acceptType(resource.getType())) {
             if (targetFacets != null && targetFacets.length > 0) {
