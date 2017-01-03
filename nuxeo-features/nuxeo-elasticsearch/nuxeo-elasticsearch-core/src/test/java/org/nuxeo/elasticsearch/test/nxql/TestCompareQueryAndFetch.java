@@ -153,7 +153,7 @@ public class TestCompareQueryAndFetch {
                     // ISO 8601
                     value = String.format("%tFT%<tT.%<tL%<tz", (Calendar) value);
                 }
-                if (coreFeature.getStorageConfiguration().isDBSMongoDB()) {
+                if (coreFeature.getStorageConfiguration().isDBS()) {
                     if (key.equals("ecm:name") || key.equals("ecm:parentId")) {
                         // MongoDB has extra keys in the result set, ignore them
                         continue;
