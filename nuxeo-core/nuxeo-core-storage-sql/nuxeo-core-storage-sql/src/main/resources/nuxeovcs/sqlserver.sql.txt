@@ -936,6 +936,9 @@ BEGIN
     SELECT DISTINCT(id), 0, @@SPID FROM deleted;
 END;
 
+#IF: aclOptimizationsEnabled
+ALTER TABLE [acls] ENABLE TRIGGER nx_trig_acls_modified
+
 #IF: ! aclOptimizationsEnabled
 ALTER TABLE [acls] DISABLE TRIGGER nx_trig_acls_modified
 
@@ -949,6 +952,9 @@ BEGIN
     SELECT DISTINCT(id), 1, @@SPID FROM inserted
     WHERE isproperty = 0;
 END;
+
+#IF: aclOptimizationsEnabled
+ALTER TABLE [hierarchy] ENABLE TRIGGER nx_trig_hierarchy_insert
 
 #IF: ! aclOptimizationsEnabled
 ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_insert
@@ -964,6 +970,9 @@ BEGIN
       JOIN [inserted] NEW ON OLD.id = NEW.id
       WHERE NEW.isproperty = 0 AND OLD.parentid <> NEW.parentid;
 END;
+
+#IF: aclOptimizationsEnabled
+ALTER TABLE [hierarchy] ENABLE TRIGGER nx_trig_hierarchy_update
 
 #IF: ! aclOptimizationsEnabled
 ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_update
@@ -1005,6 +1014,8 @@ BEGIN
   END CATCH;
 END;
 
+#IF: aclOptimizationsEnabled
+ALTER TABLE [aclr] ENABLE TRIGGER nx_trig_aclr_modified
 
 #IF: ! aclOptimizationsEnabled
 ALTER TABLE [aclr] DISABLE TRIGGER nx_trig_aclr_modified
@@ -1023,6 +1034,9 @@ BEGIN
        NOT EXISTS(SELECT 1 FROM aclr AS r WHERE r.acl_id = i.acl_id)
      GROUP BY acl_id) AS NEW;
 END;
+
+#IF: aclOptimizationsEnabled
+ALTER TABLE [hierarchy_read_acl] ENABLE TRIGGER nx_trig_hier_read_acl_mod
 
 #IF: ! aclOptimizationsEnabled
 ALTER TABLE [hierarchy_read_acl] DISABLE TRIGGER nx_trig_hier_read_acl_mod
