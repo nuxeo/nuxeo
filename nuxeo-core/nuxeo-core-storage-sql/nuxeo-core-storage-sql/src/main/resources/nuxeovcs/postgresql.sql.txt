@@ -669,14 +669,28 @@ LANGUAGE plpgsql;
 
 
 #TEST:
+#SET_IF_NOT_EMPTY: has_trig_acls_modified
 SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_acls_modified'
 
-#IF: emptyResult
+#IF: has_trig_acls_modified
+#TEST:
+#SET_IF_NOT_EMPTY: disabled_trig_acls_modified
+SELECT 1 FROM pg_trigger JOIN pg_class ON pg_class.oid = pg_trigger.tgrelid
+  WHERE tgname = 'nx_trig_acls_modified' AND tgenabled = 'D'
+
+#IF: aclOptimizationsEnabled
+#IF: ! has_trig_acls_modified
 CREATE TRIGGER nx_trig_acls_modified
   AFTER INSERT OR UPDATE OR DELETE ON acls
   FOR EACH ROW EXECUTE PROCEDURE nx_log_acls_modified();
 
+#IF: aclOptimizationsEnabled
+#IF: disabled_trig_acls_modified
+ALTER TABLE acls ENABLE TRIGGER nx_trig_acls_modified;
+
 #IF: ! aclOptimizationsEnabled
+#IF: ! disabled_trig_acls_modified
+#IF: has_trig_acls_modified
 ALTER TABLE acls DISABLE TRIGGER nx_trig_acls_modified;
 
 
@@ -703,15 +717,28 @@ LANGUAGE plpgsql;
 
 
 #TEST:
+#SET_IF_NOT_EMPTY: has_trig_hierarchy_modified
 SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_hierarchy_modified'
 
-#IF: emptyResult
+#IF: has_trig_hierarchy_modified
+#TEST:
+#SET_IF_NOT_EMPTY: disabled_trig_hierarchy_modified
+SELECT 1 FROM pg_trigger JOIN pg_class ON pg_class.oid = pg_trigger.tgrelid
+  WHERE tgname = 'nx_trig_hierarchy_modified' AND tgenabled = 'D'
+
+#IF: aclOptimizationsEnabled
+#IF: ! has_trig_hierarchy_modified
 CREATE TRIGGER nx_trig_hierarchy_modified
   AFTER INSERT OR UPDATE ON hierarchy
   FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_modified();
 
+#IF: aclOptimizationsEnabled
+#IF: disabled_trig_hierarchy_modified
+ALTER TABLE hierarchy ENABLE TRIGGER nx_trig_hierarchy_modified;
 
 #IF: ! aclOptimizationsEnabled
+#IF: ! disabled_trig_hierarchy_modified
+#IF: has_trig_hierarchy_modified
 ALTER TABLE hierarchy DISABLE TRIGGER nx_trig_hierarchy_modified;
 
 
@@ -758,15 +785,28 @@ DROP TRIGGER nx_trig_read_acls_modified ON aclr;
 
 
 #TEST:
+#SET_IF_NOT_EMPTY: has_trig_aclr_modified
 SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_aclr_modified'
 
-#IF: emptyResult
+#IF: has_trig_aclr_modified
+#TEST:
+#SET_IF_NOT_EMPTY: disabled_trig_aclr_modified
+SELECT 1 FROM pg_trigger JOIN pg_class ON pg_class.oid = pg_trigger.tgrelid
+  WHERE tgname = 'nx_trig_aclr_modified' AND tgenabled = 'D'
+
+#IF: aclOptimizationsEnabled
+#IF: ! has_trig_aclr_modified
 CREATE TRIGGER nx_trig_aclr_modified
   AFTER INSERT ON aclr
   FOR EACH ROW EXECUTE PROCEDURE nx_aclr_modified();
 
+#IF: aclOptimizationsEnabled
+#IF: disabled_trig_aclr_modified
+ALTER TABLE aclr ENABLE TRIGGER nx_trig_aclr_modified;
 
 #IF: ! aclOptimizationsEnabled
+#IF: ! disabled_trig_aclr_modified
+#IF: has_trig_aclr_modified
 ALTER TABLE aclr DISABLE TRIGGER nx_trig_aclr_modified;
 
 
