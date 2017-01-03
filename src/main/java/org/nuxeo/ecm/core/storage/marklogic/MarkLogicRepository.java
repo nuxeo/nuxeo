@@ -386,7 +386,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             }
             return new PartialList<>(projections, totalSize);
         } catch (RequestException e) {
-            throw new NuxeoException("An exception happened during xcc call", e);
+            throw new NuxeoException("An exception happened during xcc call when executing '" + evaluator + "'", e);
         }
     }
 
