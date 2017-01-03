@@ -65,6 +65,7 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -694,6 +695,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
         Field field = schemaFieldMap.get(fieldName);
         Type type = field.getType();
+        if (type instanceof SimpleTypeImpl) {
+            // type with constraint
+            type = type.getSuperType();
+        }
         Object defaultValue = field.getDefaultValue();
         String typeName = type.getName();
         if (attribute == null) {
