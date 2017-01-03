@@ -355,6 +355,7 @@ public class SQLStatement {
                                 }
                             } else {
                                 for (String prop : setIfNotEmpty) {
+                                    properties.put(prop, Boolean.TRUE);
                                     logger.log("  -> " + prop + " = true");
                                 }
                             }
