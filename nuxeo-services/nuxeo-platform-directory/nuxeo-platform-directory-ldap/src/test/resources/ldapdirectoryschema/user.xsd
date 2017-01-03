@@ -22,7 +22,13 @@
   <xs:element name="firstName" type="xs:string" />
   <xs:element name="lastName" type="xs:string" />
   <xs:element name="company" type="xs:string" />
-  <xs:element name="email" type="xs:string" />
+  <xs:element name="email">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value="[^@]+@[^\.]+\..+" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
 
   <xs:element name="intField" type="xs:integer" default="0" />
   <xs:element name="dateField" type="xs:date" />
