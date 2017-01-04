@@ -63,7 +63,7 @@ public class SequenceTracer {
             return;
         }
         final String tn = getThreadName();
-        log.debug(PREFIX + tn + " -> " + tn + ": " + sanitize(message) + "\n" + PREFIX + "activate " + tn + " " +
+        log.debug(PREFIX + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX + "activate " + tn + " " +
                 color);
     }
 
@@ -82,14 +82,19 @@ public class SequenceTracer {
             return;
         }
         final String tn = getThreadName();
-        log.debug(PREFIX + callerThread + " o--> " + tn + ": Initiate\n" + PREFIX
-                + tn + " -> " + tn + ": " + sanitize(message) + "\n" + PREFIX
+        log.debug(PREFIX + sanitize(callerThread) + " o--> " + tn + ": Initiate\n" + PREFIX
+                + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX
                 + "activate " + tn + " " + color);
     }
 
-    private static String sanitize(String message) {
-        String ret = message.replace(", ", ",\\n").replace("-", "_");
+    private static String format(String message) {
+        String ret = sanitize(message).replace(", ", ",\\n");
         ret = insertNewLine(ret);
+        return ret;
+    }
+
+    private static String sanitize(String message) {
+        String ret = message.replace("-", "_").replace(":", "_");
         if (ret.length() > MESSAGE_MAX_LEN) {
             ret = ret.substring(0, MESSAGE_MAX_LEN) + "...";
         }
@@ -108,7 +113,7 @@ public class SequenceTracer {
             return;
         }
         final String tn = getThreadName();
-        log.debug(PREFIX + tn + " -> " + tn + ": " + sanitize(message) + "\n" + PREFIX + "deactivate " + tn);
+        log.debug(PREFIX + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX + "deactivate " + tn);
     }
 
     /**
@@ -119,7 +124,7 @@ public class SequenceTracer {
             return;
         }
         final String tn = getThreadName();
-        log.debug(PREFIX + tn + " -> " + tn + ": " + sanitize(message) + "\n" + PREFIX + "destroy " + tn);
+        log.debug(PREFIX + tn + " -> " + tn + ": " + format(message) + "\n" + PREFIX + "destroy " + tn);
     }
 
     /**
@@ -139,7 +144,7 @@ public class SequenceTracer {
         if (!log.isDebugEnabled()) {
             return;
         }
-        log.debug(PREFIX + source + " --> " + getThreadName() + ": " + sanitize(message));
+        log.debug(PREFIX + source + " --> " + getThreadName() + ": " + format(message));
     }
 
     /**

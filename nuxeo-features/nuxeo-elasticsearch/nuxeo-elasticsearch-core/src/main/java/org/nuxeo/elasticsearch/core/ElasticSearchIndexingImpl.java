@@ -52,6 +52,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -268,6 +269,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         try {
             request.execute().actionGet();
         } catch (VersionConflictEngineException e) {
+            SequenceTracer.addNote("Ignore indexing of doc " + cmd.getTargetDocumentId());
             log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
                     + " a more recent version has already been indexed: " + e.getMessage());
         }
