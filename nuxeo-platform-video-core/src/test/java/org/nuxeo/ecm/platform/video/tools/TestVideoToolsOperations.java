@@ -186,6 +186,43 @@ public class TestVideoToolsOperations extends BaseVideoToolsTest {
     }
 
     @Test
+    public void testSliceToolWithDuration() throws IOException, OperationException {
+        DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_SMALL));
+
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(doc);
+        OperationChain chain = new OperationChain("testSliceTool");
+        // slice the first 4 seconds of the video
+        chain.add(SliceVideo.ID).set("duration", "00:04");
+
+        Blob sliceVideo = (Blob) service.run(ctx, chain);
+
+        assertNotNull(sliceVideo);
+        assertTrue(sliceVideo.getLength() > 0);
+
+        VideoInfo videoInfo = VideoHelper.getVideoInfo(sliceVideo);
+        assertEquals(videoInfo.getDuration(), 4.0, 1.0);
+    }
+
+    @Test
+    public void testSliceToolWithStart() throws IOException, OperationException {
+        DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_SMALL));
+
+        OperationContext ctx = new OperationContext(coreSession);
+        ctx.setInput(doc);
+        OperationChain chain = new OperationChain("testSliceTool");
+        chain.add(SliceVideo.ID).set("startAt", "00:02");
+
+        Blob sliceVideo = (Blob) service.run(ctx, chain);
+
+        assertNotNull(sliceVideo);
+        assertTrue(sliceVideo.getLength() > 0);
+
+        VideoInfo videoInfo = VideoHelper.getVideoInfo(sliceVideo);
+        assertEquals(videoInfo.getDuration(), 6.0, 1.0);
+    }
+
+    @Test
     public void testSliceInPartsTool() throws IOException, OperationException {
         DocumentModel doc = createVideoDocumentFromBlob(getTestVideo(TEST_VIDEO_WITH_CC));
 

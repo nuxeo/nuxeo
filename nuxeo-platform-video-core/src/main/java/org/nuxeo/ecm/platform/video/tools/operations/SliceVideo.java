@@ -78,7 +78,9 @@ public class SliceVideo {
     public Blob run(Blob input) throws OperationException {
         try {
             VideoToolsService videoService = Framework.getService(VideoToolsService.class);
-            return videoService.slice(input, startAt, duration, encode).get(0);
+            return videoService.slice(input,
+                    StringUtils.isEmpty(startAt) ? "00:00" : startAt,
+                    duration, encode).get(0);
         } catch(NuxeoException e) {
             throw new OperationException(e);
         }
