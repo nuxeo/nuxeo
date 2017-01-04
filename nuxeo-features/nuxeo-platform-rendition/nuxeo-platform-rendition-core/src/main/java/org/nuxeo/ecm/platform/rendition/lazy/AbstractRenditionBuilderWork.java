@@ -55,6 +55,8 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     protected final String renditionName;
 
+    protected static final String CATEGORY = "renditionBuilder";
+
     protected static Log log = LogFactory.getLog(AbstractRenditionBuilderWork.class);
 
     public static final String CATEGORY = "renditionBuilder";
@@ -85,6 +87,11 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     public String getTitle() {
         return "Lazy Rendition for " + renditionName + " on " + docRef.toString()
                 + " on behalf of " + originatingUsername;
+    }
+
+    @Override
+    public String getCategory() {
+        return CATEGORY;
     }
 
     @Override
