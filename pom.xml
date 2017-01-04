@@ -111,6 +111,7 @@
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
+    <module>nuxeo-media-publishing</module>
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
@@ -868,17 +869,27 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-web</artifactId>
+        <artifactId>nuxeo-media-publishing-jsf</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-wistia</artifactId>
+        <artifactId>nuxeo-media-publishing-wistia-core</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.media.publishing</groupId>
-        <artifactId>nuxeo-media-publishing-youtube</artifactId>
+        <artifactId>nuxeo-media-publishing-wistia-jsf</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-youtube-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-youtube-jsf</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
