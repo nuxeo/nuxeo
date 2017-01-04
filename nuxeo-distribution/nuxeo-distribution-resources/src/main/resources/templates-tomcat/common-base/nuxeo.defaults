@@ -109,3 +109,5 @@ seqgen.elasticsearch.indexName=${elasticsearch.indexName}-uidgen
 audit.elasticsearch.migration=false
 # Batch size for audit logs migration, only useful with audit.elasticsearch.migration=true
 audit.elasticsearch.migration.batchSize=1000
+# Separator char to use in user/group widgets
+nuxeo.userwidget.separator.char=,
