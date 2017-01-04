@@ -9,9 +9,6 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/life-cycle-contrib.xml,
  OSGI-INF/types-contrib.xml,
  OSGI-INF/publisher-contrib.xml,
- OSGI-INF/actions-contrib.xml,
  OSGI-INF/pageprovider-contrib.xml,
- OSGI-INF/contentviews-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/operations-contrib.xml
-
