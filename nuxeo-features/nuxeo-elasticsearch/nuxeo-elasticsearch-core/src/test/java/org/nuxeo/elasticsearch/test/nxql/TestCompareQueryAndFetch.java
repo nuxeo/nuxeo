@@ -47,6 +47,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
+import org.nuxeo.elasticsearch.core.EsResultSetImpl;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -191,6 +192,18 @@ public class TestCompareQueryAndFetch {
         compareESAndCore("select ecm:uuid, dc:nature from File order by dc:nature, ecm:uuid");
         // TODO some timezone issues here...
         // compareESAndCore("select ecm:uuid, dc:issued from File order by ecm:uuid");
+    }
+
+    @Test
+    public void testIteratorWithLimit() throws Exception {
+        int LIMIT = 5;
+        EsResult esRes = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select ecm:uuid From Document").limit(LIMIT));
+        try(IterableQueryResult res = esRes.getRows()) {
+            // the number of doc in the iterator
+            Assert.assertEquals(LIMIT, res.size());
+            // the total number of docs that match for the query
+            Assert.assertEquals(15, ((EsResultSetImpl) res).totalSize());
+        }
     }
 
 }

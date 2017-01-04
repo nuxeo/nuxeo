@@ -77,8 +77,23 @@ public class EsResultSetImpl implements IterableQueryResult, Iterator<Map<String
         return false; // holds no resources
     }
 
+    /**
+     * Returns the number of results available in the iterator.
+     * Note that before 9.1 this method was returning the totalSize.
+     * 
+     * @since 9.1
+     */
     @Override
     public long size() {
+        return size;
+    }
+
+    /**
+     * Returns the total number of result that match the query.
+     *
+     * @since 9.1
+     */
+    public long totalSize() {
         return response.getHits().getTotalHits();
     }
 
