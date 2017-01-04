@@ -33,8 +33,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.video.tools.VideoToolsService;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.List;
-
 /**
  * Operation for slicing a video in parts with approximately equal duration.
  *
@@ -53,7 +51,7 @@ public class SliceVideoInParts {
     protected String xpath;
 
     @OperationMethod
-    public List<Blob> run(DocumentModel input) throws OperationException {
+    public BlobList run(DocumentModel input) throws OperationException {
         if (StringUtils.isEmpty(xpath)) {
             return run(input.getAdapter(BlobHolder.class).getBlob());
         } else {
@@ -62,10 +60,10 @@ public class SliceVideoInParts {
     }
 
     @OperationMethod
-    public List<Blob> run(Blob input) throws OperationException {
+    public BlobList run(Blob input) throws OperationException {
         try {
             VideoToolsService service = Framework.getService(VideoToolsService.class);
-            return service.slice(input, "", duration, false);
+            return new BlobList(service.slice(input, "", duration, false));
         } catch(NuxeoException e){
             throw new OperationException(e);
         }
