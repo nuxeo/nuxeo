@@ -41,6 +41,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -530,6 +531,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                             return;
                         }
                     } else {
+                        String redirectUrl = VirtualHostHelper.getRedirectUrl(httpRequest);
+                        httpRequest.getSession().setAttribute(REDIRECT_URL, redirectUrl);
                         // restore saved Starting page
                         targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
                     }
@@ -830,9 +833,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             CachableUserIdentificationInfo cachedUserInfo) throws ServletException {
         logLogout(cachedUserInfo.getUserInfo());
 
-        // invalidate Session !
-        service.invalidateSession(request);
-
         request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         Map<String, String> parameters = new HashMap<String, String>();
         String securityError = request.getParameter(SECURITY_ERROR);
@@ -866,6 +866,10 @@ public class NuxeoAuthenticationFilter implements Filter {
             redirected = Boolean.TRUE.equals(
                     logoutPlugin.handleLogout((HttpServletRequest) request, (HttpServletResponse) response));
         }
+
+        // invalidate Session !
+        service.invalidateSession(request);
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         if (!redirected && !XMLHTTP_REQUEST_TYPE.equalsIgnoreCase(httpRequest.getHeader("X-Requested-With"))) {
             String baseURL = service.getBaseURL(request);
