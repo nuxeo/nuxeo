@@ -257,7 +257,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) throws DirectoryException {
         try {
-            SearchResult result = getLdapEntry(id, true);
+            SearchResult result = getLdapEntry(id, false);
             if (result == null) {
                 return null;
             }
