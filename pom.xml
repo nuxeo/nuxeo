@@ -95,6 +95,7 @@
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-csv</module>
+    <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-drive-server</module>
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
@@ -620,8 +621,13 @@
 
       <!-- Tree snapshot -->
       <dependency>
-        <groupId>org.nuxeo.features</groupId>
-        <artifactId>nuxeo-tree-snapshot</artifactId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-tree-snapshot-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-tree-snapshot-jsf</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
