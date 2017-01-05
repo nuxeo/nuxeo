@@ -211,6 +211,24 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         assertFileAgainstString("query-expression/eq-operator-on-range-element-index-on-array.txt", query);
     }
 
+    /*
+     * NXP-21397
+     */
+    @Test
+    public void testEqOperatorWithAmpersand() throws Exception {
+        SelectClause selectClause = newSelectClause();
+
+        Expression expression = new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("bob &"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/eq-operator-with-ampersand.txt", query);
+    }
+
     @Test
     public void testEqOperatorOnArray() throws Exception {
         SelectClause selectClause = new SelectClause();

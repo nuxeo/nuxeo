@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
@@ -81,8 +82,8 @@ class MarkLogicQuerySimpleBuilder {
     private String elementRangeQuery(String key, String operator, ElementType valueType, Object... values) {
         String serializedKey = MarkLogicHelper.serializeKey(key);
         String serializedValue = serializeValues(valueType, values);
-        return String.format("cts:element-range-query(fn:QName(\"\",\"%s\"),\"%s\",%s)", serializedKey,
-                operator, serializedValue);
+        return String.format("cts:element-range-query(fn:QName(\"\",\"%s\"),\"%s\",%s)", serializedKey, operator,
+                serializedValue);
     }
 
     private String serializeValues(Object... values) {
@@ -94,13 +95,13 @@ class MarkLogicQuerySimpleBuilder {
     }
 
     private String serializeValues(Function<String, String> format, Object... values) {
+        Function<Object, String> serializeValue = MarkLogicStateSerializer::serializeValue;
+        Function<String, String> escapeXml = StringEscapeUtils::escapeXml;
+        Function<Object, String> serializer = serializeValue.andThen(escapeXml).andThen(format);
         if (values.length == 1) {
-            return format.apply(MarkLogicStateSerializer.serializeValue(values[0]));
+            return serializer.apply(values[0]);
         }
-        return Arrays.stream(values)
-                     .map(MarkLogicStateSerializer::serializeValue)
-                     .map(format)
-                     .collect(Collectors.joining(",", "(", ")"));
+        return Arrays.stream(values).map(serializer).collect(Collectors.joining(",", "(", ")"));
     }
 
     public String build() {

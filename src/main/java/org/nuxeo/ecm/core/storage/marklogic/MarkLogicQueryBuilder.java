@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -948,7 +949,7 @@ class MarkLogicQueryBuilder {
         @Override
         protected String build(String name) {
             String serializedName = serializeName(name);
-            String serializedValue = MarkLogicStateSerializer.serializeValue(getLiteralValue(literal));
+            String serializedValue = serializeValue(getLiteralValue(literal));
             return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), \"%s\", (\"exact\"))", serializedName,
                     serializedValue);
         }
@@ -1053,7 +1054,7 @@ class MarkLogicQueryBuilder {
                 }
                 escape = escapeNext;
             }
-            return mlValue.toString();
+            return serializeValue(mlValue.toString());
         }
 
     }
@@ -1075,6 +1076,7 @@ class MarkLogicQueryBuilder {
         @Override
         public String build() {
             String text = Arrays.stream(values)
+                                .map(this::serializeValue)
                                 .map(value -> '"' + value + '"')
                                 .collect(Collectors.joining(",", "(", ")"));
             String query = "cts:word-query(" + text + ", (\"case-insensitive\",\"diacritic-sensitive\","
@@ -1141,7 +1143,7 @@ class MarkLogicQueryBuilder {
             String serializedName = serializeName(name);
             Object value = getLiteralValue(literal);
             String valueType = ElementType.getType(value).get();
-            String serializedValue = MarkLogicStateSerializer.serializeValue(value);
+            String serializedValue = serializeValue(value);
             return String.format("cts:element-range-query(fn:QName(\"\",\"%s\"),\"%s\",%s(\"%s\"))", serializedName,
                     operator.getMarkLogicOperator(), valueType, serializedValue);
         }
@@ -1196,7 +1198,7 @@ class MarkLogicQueryBuilder {
             String serializedName = serializeName(name);
             String serializedValues = literals.stream()
                                               .map(this::getLiteralValue)
-                                              .map(MarkLogicStateSerializer::serializeValue)
+                                              .map(this::serializeValue)
                                               .map(s -> "\"" + s + "\"")
                                               .collect(Collectors.joining(",", "(", ")"));
             return String.format("cts:element-value-query(fn:QName(\"\", \"%s\"), %s, (\"exact\"))", serializedName,
@@ -1325,6 +1327,10 @@ class MarkLogicQueryBuilder {
 
         default String serializeName(String name) {
             return MarkLogicHelper.serializeKey(name);
+        }
+
+        default String serializeValue(Object value) {
+            return StringEscapeUtils.escapeXml(MarkLogicStateSerializer.serializeValue(value));
         }
 
     }

@@ -1,0 +1,6 @@
+cts:search(
+  fn:doc(),
+  cts:and-query((
+    cts:element-value-query(fn:QName("", "ecm__id"), "ID &amp;")
+  ))
+)
