@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-tree-snapshot</artifactId>
-  <version>8.10-HF01-SNAPSHOT</version>
   <name>Nuxeo Tree Snapshot</name>
   <packaging>pom</packaging>
 
