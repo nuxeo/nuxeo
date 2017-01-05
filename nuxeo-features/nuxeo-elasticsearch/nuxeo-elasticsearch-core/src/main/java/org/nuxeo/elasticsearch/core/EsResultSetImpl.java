@@ -67,6 +67,7 @@ public class EsResultSetImpl implements IterableQueryResult, Iterator<Map<String
         pos = -1;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isLife() {
         return !closed;
