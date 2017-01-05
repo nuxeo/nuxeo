@@ -24,6 +24,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.*;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -69,10 +71,23 @@ public final class ACE implements Serializable, Cloneable {
             return null;
         }
 
-        String[] parts = aceId.split(":");
-        if (parts.length < 3) {
-            throw new IllegalArgumentException(String.format("Invalid ACE id: %s", aceId));
+	// An ACE is composed of tokens separated with ":" caracter
+	// First 3 tokens are mandatory; following 3 tokens are optional
+        ArrayList<String> tokenList = new ArrayList<>();
+	Pattern p = Pattern.compile("^(.+):([^:]+):([^:]+):([^:]*):([^:]*):([^:]*)$");
+        Matcher m = p.matcher(aceId);
+        boolean b = m.matches();
+        if(!b) {
+	   throw new IllegalArgumentException(String.format("Invalid ACE id: %s", aceId));
+	}
+
+	for(int i=1; i <= m.groupCount(); i++) {
+		tokenList.add(m.group(i));
         }
+
+	// Turn ArrayList into an array of Strings	
+	String[] parts = new String[tokenList.size()];
+        parts = tokenList.toArray(new String[]{});
 
         String username = parts[0];
         String permission = parts[1];
