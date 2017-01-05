@@ -32,8 +32,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.webengine.core",
-        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.automation.server",
+        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.webengine.core", "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api" })
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class RepositoryElasticSearchFeature extends SimpleFeature {

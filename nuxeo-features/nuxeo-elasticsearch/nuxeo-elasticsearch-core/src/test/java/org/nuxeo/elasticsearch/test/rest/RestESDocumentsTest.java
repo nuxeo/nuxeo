@@ -75,11 +75,11 @@ import com.sun.jersey.api.client.ClientResponse;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class })
 @Jetty(port = 18090)
-@Deploy({"org.nuxeo.ecm.platform.contentview.jsf", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.core.io"})
+@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:contentviews-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:pageprovider2-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:pageprovider2-coretype-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:test-directory-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
@@ -150,7 +150,7 @@ public class RestESDocumentsTest extends BaseTest {
         ppdefinition.getProperties().put("maxResults", "1");
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                        ppdefinition, null, null, 10000L, null, props, null),
+                        ppdefinition, null, null, 10000L, null, props, (Object[]) null),
                 null);
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");
