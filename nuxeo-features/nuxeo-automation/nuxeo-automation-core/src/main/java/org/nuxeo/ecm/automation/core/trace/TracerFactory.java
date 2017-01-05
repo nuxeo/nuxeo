@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.PatternSyntaxException;
-
-import org.apache.commons.logging.Log;
+import java.util.function.Function;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -54,9 +52,9 @@ public class TracerFactory implements TracerFactoryMBean {
 
     protected static final Integer CACHE_TIMEOUT = 10;
 
-    private static final Log log = LogFactory.getLog(TracerFactory.class);
+    protected String printable;
 
-    protected String printableTraces;
+    protected Function<String,Boolean> printableAssertor;
 
     protected Cache<String, ChainTraces> tracesCache;
 
@@ -68,7 +66,7 @@ public class TracerFactory implements TracerFactoryMBean {
         tracesCache = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL)
                 .maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
         recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
-        printableTraces = Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
+        setPrintableTraces(Framework.getProperty(AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*"));
     }
 
     protected static class ChainTraces {
@@ -122,25 +120,6 @@ public class TracerFactory implements TracerFactoryMBean {
 
     public Trace newTrace(Call parent, OperationType typeof, List<Call> calls, Object output, OperationException error) {
         return new Trace(parent, typeof, calls, calls.get(0).details.input, output, error);
-    }
-
-    protected Boolean printable(String operationTypeId) {
-        if (!"*".equals(printableTraces)) {
-            try {
-                String[] printableTraces = this.printableTraces.split(",");
-                return Arrays.asList(printableTraces).contains(operationTypeId);
-            } catch (PatternSyntaxException e) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("The property ");
-                stringBuilder.append(AUTOMATION_TRACE_PRINTABLE_PROPERTY);
-                stringBuilder.append(":");
-                stringBuilder.append(printableTraces);
-                stringBuilder.append(" is wrongly set. All automation traces are printable.");
-                log.info(stringBuilder.toString(), e);
-                return true;
-            }
-        }
-        return true;
     }
 
     protected void recordTrace(Trace trace) {
@@ -208,12 +187,13 @@ public class TracerFactory implements TracerFactoryMBean {
         if (trace.error != null) {
             trace.error.addSuppressed(new Throwable(print(trace)));
         }
-        if (printable(trace.chain.getId())) {
-            LogFactory.getLog(Trace.class).info(print(trace));
+        if (!recording) {
+            return;
         }
-        if (recording) {
-            recordTrace(trace);
+        if (printableAssertor.apply(trace.chain.getId())) {
+            LogFactory.getLog(Trace.class).debug(print(trace));
         }
+        recordTrace(trace);
     }
 
     @Override
@@ -228,13 +208,21 @@ public class TracerFactory implements TracerFactoryMBean {
 
     @Override
     public String getPrintableTraces() {
-        return printableTraces;
+        return printable;
     }
 
     @Override
-    public String setPrintableTraces(String printableTraces) {
-        this.printableTraces = printableTraces;
-        return printableTraces;
+    public String setPrintableTraces(String option) {
+        if ("*".equals(option)) {
+            printableAssertor = s -> Boolean.TRUE;
+        } else {
+            List<String> patterns = Arrays.asList(option.split(","));
+            printableAssertor = s -> {
+                return Boolean.valueOf(patterns.contains(s));
+            };
+        }
+        printable = option;
+        return printable;
     }
 
     public String print(Trace trace)  {
