@@ -38,6 +38,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -95,6 +96,11 @@ public class AdapterTest {
         assertEquals(2, list.size());
         assertEquals("Source", list.get(0).getTitle());
         assertEquals("Source", list.get(1).getTitle());
+    }
+
+    @Test
+    public void souldAdaptNullValue() throws Exception {
+        assertNull(automationService.getAdaptedValue(ctx, null, Void.class));
     }
 
 }
