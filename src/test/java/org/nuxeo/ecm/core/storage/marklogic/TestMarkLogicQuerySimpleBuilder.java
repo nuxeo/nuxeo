@@ -41,6 +41,16 @@ public class TestMarkLogicQuerySimpleBuilder extends AbstractTest {
         assertFileAgainstString("query-simple/query-eq.txt", query);
     }
 
+    /*
+     * NXP-21397
+     */
+    @Test
+    public void testEqWithAmpersand() throws Exception {
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.emptyList());
+        String query = builder.eq(KEY_ID, "ID &").build();
+        assertFileAgainstString("query-simple/query-eq-with-ampersand.txt", query);
+    }
+
     @Test
     public void testEqWithList() throws Exception {
         MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(Collections.emptyList());
