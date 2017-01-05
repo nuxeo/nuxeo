@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -52,6 +54,8 @@ public final class ACE implements Serializable, Cloneable {
 
     private Map<String, Serializable> contextData = new HashMap<>();
 
+    protected static final Pattern ID_PATTERN = Pattern.compile("^(.+):([^:]+):([^:]+):([^:]*):([^:]*):([^:]*)$");
+
     /**
      * Create an ACE from an id.
      *
@@ -62,9 +66,19 @@ public final class ACE implements Serializable, Cloneable {
             return null;
         }
 
-        String[] parts = aceId.split(":");
-        if (parts.length < 3) {
+        // An ACE is composed of tokens separated with ":" caracter
+        // First 3 tokens are mandatory; following 3 tokens are optional
+        // The ":" separator is still present even if the tokens are empty
+        //   Example: jsmith:ReadWrite:true:::
+        // The first token (username) is allowed to contain embedded ":".
+        Matcher m = ID_PATTERN.matcher(aceId);
+        if (!m.matches()) {
             throw new IllegalArgumentException(String.format("Invalid ACE id: %s", aceId));
+        }
+
+        String[] parts = new String[m.groupCount()];
+        for (int i = 1; i <= m.groupCount(); i++) {
+            parts[i - 1] = m.group(i);
         }
 
         String username = parts[0];

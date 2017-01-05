@@ -146,6 +146,17 @@ public class TestACE {
         assertEquals(cal1, ace.getBegin());
         assertNull(ace.getEnd());
         assertTrue(ace.isEffective());
+
+        // Tests with a username that includes colons ":"
+        aceId = "mycorp:dep:research:project23:read:true::" + cal1.getTimeInMillis() + ":";
+        ace = ACE.fromId(aceId);
+        assertNotNull(ace);
+        assertEquals("mycorp:dep:research:project23", ace.getUsername());
+        assertEquals("read", ace.getPermission());
+        assertTrue(ace.isGranted());
+        assertEquals(cal1, ace.getBegin());
+        assertNull(ace.getEnd());
+        assertTrue(ace.isEffective());
     }
 
     @Test(expected = IllegalArgumentException.class)
