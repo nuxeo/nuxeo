@@ -41,7 +41,7 @@ import javax.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.tag" })
+@Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core" })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-mapping-contrib.xml")
 public class TestMapping {
 
