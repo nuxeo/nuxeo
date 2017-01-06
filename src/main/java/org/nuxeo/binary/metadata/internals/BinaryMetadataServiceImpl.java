@@ -199,6 +199,10 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                         && !(metadataValue.getClass().isArray())) {
                     metadataValue = metadataValue.toString();
                 }
+                if (metadataValue instanceof String) {
+                    // sanitize string for PostgreSQL textual storage
+                    metadataValue = ((String) metadataValue).replace("\u0000", "");
+                }
                 doc.setPropertyValue(metadataMapping.get(metadata), (Serializable) metadataValue);
             }
 
