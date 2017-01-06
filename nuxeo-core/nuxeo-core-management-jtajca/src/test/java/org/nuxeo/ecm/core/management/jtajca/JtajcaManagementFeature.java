@@ -28,6 +28,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -79,9 +80,12 @@ public class JtajcaManagementFeature extends SimpleFeature {
 
     CoreFeature core;
 
+    Class<?> target;
+
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         core = runner.getFeature(CoreFeature.class);
+        target = runner.getTargetTestClass();
     }
 
     @Override
@@ -109,8 +113,9 @@ public class JtajcaManagementFeature extends SimpleFeature {
         TransactionMonitor monitor;
 
         void assertNoTransactions() {
-            final long count = monitor.getActiveCount();
+            long count = monitor.getActiveCount();
             if (count == 0) {
+                LogFactory.getLog(JtajcaManagementFeature.class).debug(target + " was successful");
                 return;
             }
             throw new AssertionError(String.format("still have tx active (%d) %s", count, monitor.getActiveStatistics()));
@@ -136,7 +141,10 @@ public class JtajcaManagementFeature extends SimpleFeature {
         if (txChecker == null) {
             return;
         }
-        txChecker.assertNoTransactions();
-        txChecker = null;
+        try {
+            txChecker.assertNoTransactions();
+        } finally {
+            txChecker = null;
+        }
     }
 }
