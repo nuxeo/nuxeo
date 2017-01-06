@@ -39,6 +39,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -523,6 +524,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                             return;
                         }
                     } else {
+                        String redirectUrl = VirtualHostHelper.getRedirectUrl(httpRequest);
+                        httpRequest.getSession().setAttribute(REDIRECT_URL, redirectUrl);
                         // restore saved Starting page
                         targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
                     }
