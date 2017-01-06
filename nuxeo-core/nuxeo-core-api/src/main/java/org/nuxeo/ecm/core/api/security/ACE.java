@@ -24,8 +24,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.*;
-import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -61,6 +61,8 @@ public final class ACE implements Serializable, Cloneable {
 
     private Map<String, Serializable> contextData = new HashMap<>();
 
+    protected static final Pattern p = Pattern.compile("^(.+):([^:]+):([^:]+):([^:]*):([^:]*):([^:]*)$");
+
     /**
      * Create an ACE from an id.
      *
@@ -71,23 +73,20 @@ public final class ACE implements Serializable, Cloneable {
             return null;
         }
 
-	// An ACE is composed of tokens separated with ":" caracter
-	// First 3 tokens are mandatory; following 3 tokens are optional
-        ArrayList<String> tokenList = new ArrayList<>();
-	Pattern p = Pattern.compile("^(.+):([^:]+):([^:]+):([^:]*):([^:]*):([^:]*)$");
+        // An ACE is composed of tokens separated with ":" caracter
+        // First 3 tokens are mandatory; following 3 tokens are optional
+        // The ":" separator is still present even if the tokens are empty
+        //   Example: jsmith:ReadWrite:true:::
+        // The first token (username) is allowed to contain embedded ":".
+        String[] parts = new String[6];
         Matcher m = p.matcher(aceId);
-        boolean b = m.matches();
-        if(!b) {
-	   throw new IllegalArgumentException(String.format("Invalid ACE id: %s", aceId));
-	}
-
-	for(int i=1; i <= m.groupCount(); i++) {
-		tokenList.add(m.group(i));
+        if (!m.matches()) {
+            throw new IllegalArgumentException(String.format("Invalid ACE id: %s", aceId));
         }
 
-	// Turn ArrayList into an array of Strings	
-	String[] parts = new String[tokenList.size()];
-        parts = tokenList.toArray(new String[]{});
+        for (int i = 1; i <= m.groupCount(); i++) {
+            parts[i - 1] = m.group(i);
+        }
 
         String username = parts[0];
         String permission = parts[1];
