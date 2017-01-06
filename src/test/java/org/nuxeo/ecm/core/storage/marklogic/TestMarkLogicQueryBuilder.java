@@ -432,6 +432,21 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testIsNullOperatorOnComplex() throws Exception {
+        SelectClause selectClause = newSelectClause();
+
+        Expression expression = new Expression(new Reference("picture:info/width"), Operator.ISNULL, null);
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null,
+                false);
+
+        // Test
+        String query = new MarkLogicQueryBuilder(evaluator, null, false, Collections.emptyList()).buildQuery()
+                                                                                                 .getSearchQuery();
+        assertFileAgainstString("query-expression/is-null-operator-on-complex.txt", query);
+    }
+
+    @Test
     public void testNotOperator() throws Exception {
         SelectClause selectClause = newSelectClause();
 
