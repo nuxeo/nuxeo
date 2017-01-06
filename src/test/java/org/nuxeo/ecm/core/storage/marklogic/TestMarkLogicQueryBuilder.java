@@ -216,7 +216,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
      */
     @Test
     public void testEqOperatorWithAmpersand() throws Exception {
-        SelectClause selectClause = newSelectClause();
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
 
         Expression expression = new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("bob &"));
 
