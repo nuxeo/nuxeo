@@ -21,40 +21,40 @@
 
     <command name="exiftool-read-taglist" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -G -json #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -G -json #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
     <command name="exiftool-read" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -G -json #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -G -json #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
     <command name="exiftool-write" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -G #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -G #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
     <!-- Since 7.3 -->
     <command name="exiftool-read-taglist-noprefix" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -json #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -json #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
     <!-- Since 7.3 -->
     <command name="exiftool-read-noprefix" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m -json #{inFilePath}</parameterString>
+      <parameterString>-m -q -q -json #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
     <!-- Since 7.3 -->
     <command name="exiftool-write-noprefix" enabled="true">
       <commandLine>exiftool</commandLine>
-      <parameterString>-m #{tagList} #{inFilePath}</parameterString>
+      <parameterString>-m -q -q #{tagList} #{inFilePath}</parameterString>
       <installationDirective>You need to install exiftool</installationDirective>
     </command>
 
