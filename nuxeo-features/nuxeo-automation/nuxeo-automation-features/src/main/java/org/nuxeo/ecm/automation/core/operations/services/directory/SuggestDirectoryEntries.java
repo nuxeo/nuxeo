@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ import net.sf.json.JSONObject;
  *
  * @since 5.7.3
  */
-@Operation(id = SuggestDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.", addToStudio = false)
+@Operation(id = SuggestDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get suggested directory entries", description = "Get the entries suggestions of a directory. This is returning a blob containing a serialized JSON array. Prefix parameter is used to filter the entries.", addToStudio = false)
 public class SuggestDirectoryEntries {
 
     /**
@@ -92,7 +92,7 @@ public class SuggestDirectoryEntries {
         public JSONAdapter(Session session, Schema schema) {
             this.session = session;
             this.schema = schema;
-            children = new HashMap<String, JSONAdapter>();
+            this.children = new HashMap<>();
             // We are the root node
             this.isRoot = true;
         }
@@ -118,7 +118,8 @@ public class SuggestDirectoryEntries {
 
             }
             if (displayObsoleteEntries) {
-                if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID) && obj.getInt(SuggestConstants.OBSOLETE_FIELD_ID) > 0) {
+                if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
+                        && obj.getInt(SuggestConstants.OBSOLETE_FIELD_ID) > 0) {
                     obj.element(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
@@ -214,7 +215,7 @@ public class SuggestDirectoryEntries {
             if (children == null) {
                 return null;
             }
-            List<JSONAdapter> result = new ArrayList<JSONAdapter>(children.values());
+            List<JSONAdapter> result = new ArrayList<>(children.values());
             Collections.sort(result);
             return result;
         }
@@ -239,10 +240,11 @@ public class SuggestDirectoryEntries {
                 if (isChained) {
                     String id = getId();
                     if (id != null) {
-                        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                        filter.put(SuggestConstants.PARENT_FIELD_ID, getId());
+                        Map<String, Serializable> filter = Collections.singletonMap(SuggestConstants.PARENT_FIELD_ID,
+                                getId());
                         try {
-                            isLeaf = session.query(filter, Collections.emptySet(),  new HashMap<String, String>(), false, 1, -1).isEmpty();
+                            isLeaf = session.query(filter, Collections.emptySet(), Collections.emptyMap(), false, 1, -1)
+                                            .isEmpty();
                         } catch (DirectoryException ce) {
                             log.error("Could not retrieve children of entry", ce);
                             isLeaf = true;
@@ -472,16 +474,16 @@ public class SuggestDirectoryEntries {
                 parentDirectory = null;
             }
 
-            DocumentModelList entries = null;
             boolean postFilter = true;
 
             label = SuggestConstants.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
 
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            Map<String, Serializable> filter = new HashMap<>();
             if (!displayObsoleteEntries) {
+                // Exclude obsolete
                 filter.put(SuggestConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
-            Set<String> fullText = new TreeSet<String>();
+            Set<String> fullText = new TreeSet<>();
             if (dbl10n || !localize) {
                 postFilter = false;
                 // do the filtering at directory level
@@ -494,26 +496,10 @@ public class SuggestDirectoryEntries {
                     filter.put(label, computedPrefix);
                     fullText.add(label);
                 }
-                if (filter.isEmpty()) {
-                    // No filtering and we want the obsolete. We take all the
-                    // entries
-                    entries = session.getEntries();
-                } else {
-                    // We at least filter with prefix or/and exclude the
-                    // obsolete
-                    entries = session.query(filter, fullText,  new HashMap<String, String>(), false, limit, -1);
-                }
-            } else {
-                // Labels are translated in properties file, we have to post
-                // filter manually on all the entries
-                if (filter.isEmpty()) {
-                    // We want the obsolete. We take all the entries
-                    entries = session.getEntries();
-                } else {
-                    // We want to exclude the obsolete
-                    entries = session.query(filter, fullText,  new HashMap<String, String>(), false, limit, -1);
-                }
             }
+            // when post filtering we need to get all entries
+            DocumentModelList entries = session.query(filter, fullText, Collections.emptyMap(), false,
+                    postFilter ? -1 : limit, -1);
 
             JSONAdapter jsonAdapter = new JSONAdapter(session, schema);
 
