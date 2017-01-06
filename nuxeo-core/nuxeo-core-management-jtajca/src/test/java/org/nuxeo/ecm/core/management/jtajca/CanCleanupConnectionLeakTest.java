@@ -65,11 +65,9 @@ public class CanCleanupConnectionLeakTest {
 
     final Lock lock = new ReentrantLock();
 
-    final Condition opened = lock.newCondition();
+    final Condition timedout = lock.newCondition();
 
     final Condition killed = lock.newCondition();
-
-    final Condition aborted = lock.newCondition();
 
     abstract class Task implements Runnable {
         abstract void work() throws InterruptedException;
@@ -104,12 +102,11 @@ public class CanCleanupConnectionLeakTest {
                 NuxeoConnectionManager mgr = NuxeoContainer.getConnectionManager(monitor.getName());
                 mgr.enterActiveMonitor(1);
                 try (CoreSession session = core.openCoreSession()) {
-                    TimeUnit.MILLISECONDS.sleep(1); // not elegant but I don't have any clue
-                    opened.signal();
                     session.getDocument(new PathRef("/"));
-                    killed.await(10, TimeUnit.SECONDS);
+                    Thread.sleep(10);
+                    timedout.signal();
+                    Assertions.assertThat(killed.await(10, TimeUnit.SECONDS)).isTrue();
                     session.getDocument(new PathRef("/default-domain"));
-
                 } finally {
                     mgr.exitActiveTimedout();
                 }
@@ -123,8 +120,8 @@ public class CanCleanupConnectionLeakTest {
     class KillTask extends Task {
         @Override
         void work() throws InterruptedException {
-            opened.await(10, TimeUnit.SECONDS);
             Assertions.assertThat(monitor.getKilledActiveConnectionCount()).isEqualTo(0);
+            Assertions.assertThat(timedout.await(10,TimeUnit.SECONDS)).isTrue();
             try {
                 Assertions.assertThat(monitor.killActiveTimedoutConnections()).isEqualTo(1);
             } finally {
