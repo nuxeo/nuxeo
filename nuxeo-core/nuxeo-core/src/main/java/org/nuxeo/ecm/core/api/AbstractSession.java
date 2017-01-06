@@ -78,6 +78,7 @@ import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.filter.CharacterFilteringService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.PathComparator;
@@ -681,6 +682,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel createDocument(DocumentModel docModel) {
+
+        // Start by removing unallowed characters if filtering is enabled
+        CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
+        if (charFilteringService.isFilteringEnabled()) {
+            charFilteringService.filterChars(docModel);
+        }
+
         if (docModel.getSessionId() == null) {
             // docModel was created using constructor instead of CoreSession.createDocumentModel
             docModel.attach(getSessionId());
@@ -1439,6 +1447,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                             + "in the repository with " + "'CoreSession.createDocument(docModel)'",
                     docModel.getTitle()));
         }
+
+        // Remove unallowed characters if filtering is enabled
+        CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
+        if (charFilteringService.isFilteringEnabled()) {
+            charFilteringService.filterChars(docModel);
+        }
+
         Document doc = resolveReference(docModel.getRef());
         checkPermission(doc, WRITE_PROPERTIES);
 

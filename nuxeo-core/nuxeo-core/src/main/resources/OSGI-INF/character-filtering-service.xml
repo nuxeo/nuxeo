@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.filter.CharacterFilteringService">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.filter.CharacterFilteringService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.filter.CharacterFilteringServiceImpl" />
+
+  <documentation>
+    The character filtering service enables the filtering of unwanted characters.
+    If filtering is enabled, by default the control characters not valid in XML specification
+    will be removed from any field in document creation or update.
+  </documentation>
+
+  <extension-point name="filtering">
+    <documentation>
+      Extension point to set if filtering is enabled or disabled. Other characters can
+      be added to be filtered if present.
+
+      <code>
+        <filtering enabled="true">
+          <unallowedCharacters>
+            <character>\r</character>
+            <character>"</character>
+            <character>\</character>
+          </unallowedCharacters>
+        </filtering>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.filter.CharacterFilteringServiceDescriptor" />
+
+  </extension-point>
+</component>

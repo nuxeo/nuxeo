@@ -34,6 +34,8 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/versioning-document-adapter.xml,
   OSGI-INF/orphanVersionRemoval-listener-contrib.xml,
   OSGI-INF/document-resolver-contrib.xml,
+  OSGI-INF/character-filtering-service.xml,
+  OSGI-INF/character-filtering-service-contrib.xml,
   OSGI-INF/blobmanager-service.xml,
   OSGI-INF/uidgenerator-service.xml,
   OSGI-INF/scheduler-contrib.xml
