@@ -28,6 +28,11 @@
     <priority value="TRACE" />
     <appender-ref ref="TRACE" />
   </category>
+  
+    <category name="org.nuxeo.ecm.core.management.jtajca.JtajcaManagementFeature">
+    <priority value="TRACE" />
+    <appender-ref ref="TRACE" />
+  </category>
 
   <root>
     <priority value="INFO" />
