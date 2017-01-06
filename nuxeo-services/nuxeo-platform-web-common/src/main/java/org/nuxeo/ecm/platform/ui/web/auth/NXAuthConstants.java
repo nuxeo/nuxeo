@@ -73,6 +73,13 @@ public final class NXAuthConstants {
 
     public static final String SESSION_TIMEOUT = "nxtimeout";
 
+    /**
+     * Name of the session parameter which stores the url to be redirected when logging out
+     *
+     * @since 9.1
+     */
+    public static final String REDIRECT_URL = "redirect_url";
+
     @Deprecated
     // because of typo.
     public static final String PASSORD_KEY = "user_password";
