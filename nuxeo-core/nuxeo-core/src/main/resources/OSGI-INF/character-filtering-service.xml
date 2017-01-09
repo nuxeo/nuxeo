@@ -20,11 +20,10 @@
 
       <code>
         <filtering enabled="true">
-          <unallowedCharacters>
+          <disallowedCharacters>
             <character>\r</character>
-            <character>"</character>
-            <character>\</character>
-          </unallowedCharacters>
+            <character>\t</character>
+          </disallowedCharacters>
         </filtering>
       </code>
 
