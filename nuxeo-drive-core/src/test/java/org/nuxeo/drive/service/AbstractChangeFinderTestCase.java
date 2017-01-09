@@ -65,8 +65,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml",
-         })
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml", })
 public class AbstractChangeFinderTestCase {
 
     @Inject
@@ -181,9 +180,10 @@ public class AbstractChangeFinderTestCase {
      * Gets the document changes summary for the given user's synchronization roots using the {@link NuxeoDriveManager}
      * and updates {@link #lastEventLogId}.
      */
-    protected FileSystemChangeSummary getChangeSummary(Principal principal) throws ClientException,
-            InterruptedException {
-        Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
+    protected FileSystemChangeSummary getChangeSummary(Principal principal)
+            throws ClientException, InterruptedException {
+        Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(
+                lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
                 lastSyncActiveRootRefs, lastEventLogId);
         assertNotNull(changeSummary);
@@ -254,7 +254,8 @@ public class AbstractChangeFinderTestCase {
             this(docId, eventName, repositoryId, null);
         }
 
-        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId, String fileSystemItemId) {
+        public SimpleFileSystemItemChange(String docId, String eventName, String repositoryId,
+                String fileSystemItemId) {
             this(docId, eventName, repositoryId, fileSystemItemId, null);
         }
 
@@ -310,10 +311,14 @@ public class AbstractChangeFinderTestCase {
             SimpleFileSystemItemChange other = (SimpleFileSystemItemChange) obj;
             boolean isEqual = docId.equals(other.getDocId()) && eventName.equals(other.getEventName());
             return isEqual
-                    && (repositoryId == null || other.getRepositoryId() == null || repositoryId.equals(other.getRepositoryId()))
-                    && (lifeCycleState == null || other.getLifeCycleState() == null || lifeCycleState.equals(other.getLifeCycleState()))
-                    && (fileSystemItemId == null || other.getFileSystemItemId() == null || fileSystemItemId.equals(other.getFileSystemItemId()))
-                    && (fileSystemItemName == null || other.getFileSystemItemName() == null || fileSystemItemName.equals(other.getFileSystemItemName()));
+                    && (repositoryId == null || other.getRepositoryId() == null
+                            || repositoryId.equals(other.getRepositoryId()))
+                    && (lifeCycleState == null || other.getLifeCycleState() == null
+                            || lifeCycleState.equals(other.getLifeCycleState()))
+                    && (fileSystemItemId == null || other.getFileSystemItemId() == null
+                            || fileSystemItemId.equals(other.getFileSystemItemId()))
+                    && (fileSystemItemName == null || other.getFileSystemItemName() == null
+                            || fileSystemItemName.equals(other.getFileSystemItemName()));
         }
 
         @Override
