@@ -93,9 +93,6 @@ public class LocalBinaryManager extends AbstractBinaryManager {
             }
         }
 
-        // be sure FileTracker won't steal our files !
-        FileEventTracker.registerProtectedPath(base.getAbsolutePath());
-
         log.info("Registering binary manager '" + blobProviderId + "' using "
                 + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
                 + "binary store: " + base);
@@ -105,6 +102,9 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         tmpDir.mkdirs();
         descriptor = getDescriptor(new File(base, CONFIG_FILE));
         createGarbageCollector();
+
+        // be sure FileTracker won't steal our files !
+        FileEventTracker.registerProtectedPath(storageDir.getAbsolutePath());
     }
 
     @Override
