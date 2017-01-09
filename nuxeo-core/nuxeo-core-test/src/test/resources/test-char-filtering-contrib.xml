@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
-
-<component name="org.nuxeo.ecm.core.document.characterFiltering.contrib">
+<component name="org.nuxeo.ecm.core.document.characterFiltering.override.contrib">
 
   <extension target="org.nuxeo.ecm.core.filter.CharacterFilteringService" point="filtering">
     <filtering enabled="true">
+      <disallowedCharacters>
+        <character>\t</character>
+      </disallowedCharacters>
     </filtering>
   </extension>
 
