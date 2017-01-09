@@ -69,6 +69,7 @@
     <action id="addSelectedToCollectionAction" order="40" label="label.addToCollection"
       type="fancybox" icon="/icons/add_to_collection.png" accessKey="j">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canAddSelectedToCollection</filter-id>
       <properties>
         <property name="include">/incl/add_selection_to_collection.xhtml</property>
