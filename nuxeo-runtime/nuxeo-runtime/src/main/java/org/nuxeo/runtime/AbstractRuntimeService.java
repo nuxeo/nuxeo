@@ -122,7 +122,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         if (isStarted) {
             return;
         }
-        if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
+        if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "true"))) {
             Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
             JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
         }
