@@ -308,7 +308,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
 
             // Permission changes: deny Read
             // Deny Read to user1 on a regular doc
-            setPermissions(subFolder, new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING), ACE.BLOCK);
+            setPermissions(subFolder, new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING),
+                    ACE.BLOCK);
             // Deny Read to user1 on a sync root
             setPermissions(folder2, new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING), ACE.BLOCK);
         } finally {
@@ -320,10 +321,10 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertEquals(2, changes.size());
 
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
-            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "securityUpdated", "test", "test#"
-                    + folder2.getId(), "folder2"));
-            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test", "test#"
-                    + subFolder.getId(), "subFolder"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "securityUpdated", "test",
+                    "test#" + folder2.getId(), "folder2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test",
+                    "test#" + subFolder.getId(), "subFolder"));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
             // Changed documents are not adaptable as a FileSystemItem since no Read permission
             for (FileSystemItemChange change : changes) {
@@ -419,7 +420,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // adaptable as a FileSystemItem (not Folderish nor a BlobHolder
             // with a
             // blob) => should not be considered as a change
-            session.createDocument(session.createDocumentModel("/folder1", "notSynchronizableDoc", "NotSynchronizable"));
+            session.createDocument(
+                    session.createDocumentModel("/folder1", "notSynchronizableDoc", "NotSynchronizable"));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -520,8 +522,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             assertNotNull(changeSummary);
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
-            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId()),
+            assertEquals(
+                    new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
+                            "defaultSyncRootFolderItemFactory#test#" + folder1.getId()),
                     toSimpleFileSystemItemChange(changes.get(0)));
 
             // Check that root unregistration is detected as a deletion
@@ -555,8 +558,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             changeSummary = getChangeSummary(admin);
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
-            assertEquals(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
-                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId()),
+            assertEquals(
+                    new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
+                            "defaultSyncRootFolderItemFactory#test#" + folder1.getId()),
                     toSimpleFileSystemItemChange(changes.get(0)));
 
             // Test deletion of a root
@@ -643,10 +647,10 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             changes = getChanges(user1Principal);
             assertEquals(2, changes.size());
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
-            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "deleted", "test", "test#"
-                    + folder2.getId(), "folder2"));
-            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test", "test#"
-                    + folder1.getId(), "folder1"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder2.getId(), "deleted", "test",
+                    "test#" + folder2.getId(), "folder2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "deleted", "test",
+                    "test#" + folder1.getId(), "folder1"));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
             // Not adaptable as a FileSystemItem since unregistered
             for (FileSystemItemChange change : changes) {
@@ -711,8 +715,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         List<FileSystemItemChange> changes;
         try {
             // Create a subfolder in folder1 as Administrator
-            subFolder = session.createDocument(session.createDocumentModel(folder1.getPathAsString(), "subFolder",
-                    "Folder"));
+            subFolder = session.createDocument(
+                    session.createDocumentModel(folder1.getPathAsString(), "subFolder", "Folder"));
             // Register folder1 as a sync root for user1
             nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder1, user1Session);
             // Register folder2 as a sync root for Administrator
@@ -895,8 +899,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         List<FileSystemItemChange> changes;
         try {
             // Create a subfolder in folder1
-            subFolder = session.createDocument(session.createDocumentModel(folder1.getPathAsString(), "subFolder",
-                    "Folder"));
+            subFolder = session.createDocument(
+                    session.createDocumentModel(folder1.getPathAsString(), "subFolder", "Folder"));
             // Register subfolder as a sync root
             nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), subFolder, session);
         } finally {
@@ -925,8 +929,8 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(), "folder1"));
-            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "deleted", "test", "test#"
-                    + subFolder.getId(), "subFolder"));
+            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "deleted", "test",
+                    "test#" + subFolder.getId(), "subFolder"));
             assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -1006,8 +1010,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentProxyPublished for proxy1
             changes = getChanges();
             assertEquals(1, changes.size());
-            assertEquals(new SimpleFileSystemItemChange(proxy1.getId(), "documentProxyPublished", "test",
-                    "defaultFileSystemItemFactory#test#" + proxy1.getId(), "doc1"),
+            assertEquals(
+                    new SimpleFileSystemItemChange(proxy1.getId(), "documentProxyPublished", "test",
+                            "defaultFileSystemItemFactory#test#" + proxy1.getId(), "doc1"),
                     toSimpleFileSystemItemChange(changes.get(0)));
         } finally {
             commitAndWaitForAsyncCompletion();
@@ -1047,8 +1052,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentLocked for doc
             changes = getChanges();
             assertEquals(1, changes.size());
-            assertEquals(new SimpleFileSystemItemChange(doc.getId(), "documentLocked", "test",
-                    "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
+            assertEquals(
+                    new SimpleFileSystemItemChange(doc.getId(), "documentLocked", "test",
+                            "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
                     toSimpleFileSystemItemChange(changes.get(0)));
 
             log.trace("Unlock doc");
@@ -1062,8 +1068,9 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
             // - documentUnlocked for doc
             changes = getChanges();
             assertEquals(1, changes.size());
-            assertEquals(new SimpleFileSystemItemChange(doc.getId(), "documentUnlocked", "test",
-                    "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
+            assertEquals(
+                    new SimpleFileSystemItemChange(doc.getId(), "documentUnlocked", "test",
+                            "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
                     toSimpleFileSystemItemChange(changes.get(0)));
         } finally {
             commitAndWaitForAsyncCompletion();
