@@ -37,8 +37,8 @@ public class CharacterFilteringServiceDescriptor {
     @XNode("@enabled")
     public boolean enabled;
 
-    @XNodeList(value = "unallowedCharacters/character", type = ArrayList.class, componentType = String.class)
-    public List<String> unallowedChars;
+    @XNodeList(value = "disallowedCharacters/character", type = ArrayList.class, componentType = String.class)
+    public List<String> disallowedChars;
 
     public boolean isEnabled() {
         return enabled;
@@ -48,11 +48,11 @@ public class CharacterFilteringServiceDescriptor {
         this.enabled = enabled;
     }
 
-    public List<String> getUnallowedChars() {
-        return unallowedChars;
+    public List<String> getDisallowedChars() {
+        return disallowedChars;
     }
 
-    public void setUnallowedChars(List<String> unallowedChars) {
-        this.unallowedChars = unallowedChars;
+    public void setDisallowedChars(List<String> disallowedChars) {
+        this.disallowedChars = disallowedChars;
     }
 }
