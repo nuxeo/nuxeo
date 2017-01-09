@@ -50,9 +50,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Event listener to track events that should be mapped to file system item deletions in the the ChangeSummary
- * computation. In particular this includes <li>Synchronization root unregistration (user specific)</li> <li>Simple
- * document or root document lifecycle change to the 'deleted' state</li> <li>Simple document or root physical removal
- * from the directory.</li>
+ * computation. In particular this includes
+ * <ul>
+ * <li>Synchronization root unregistration (user specific)</li>
+ * <li>Simple document or root document lifecycle change to the 'deleted' state</li>
+ * <li>Simple document or root physical removal from the directory.</li>
+ * </ul>
  */
 public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
@@ -182,7 +185,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             extendedInfos.put("impactedUserName", logger.newExtendedInfo(impactedUserName));
         }
         // We do not serialize the whole object as it's too big to fit in a
-        // StringInfo column and
+        // StringInfo column
         extendedInfos.put("fileSystemItemId", logger.newExtendedInfo(fsItem.getId()));
         extendedInfos.put("fileSystemItemName", logger.newExtendedInfo(fsItem.getName()));
         entry.setExtendedInfos(extendedInfos);
