@@ -36,10 +36,8 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -142,7 +140,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public void writeMetadata(DocumentModel doc, CoreSession session) {
+    public void writeMetadata(DocumentModel doc) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
@@ -161,12 +159,12 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
             }
-            writeMetadata(doc, session, mappingDescriptorId);
+            writeMetadata(doc, mappingDescriptorId);
         }
     }
 
     @Override
-    public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId) {
+    public void writeMetadata(DocumentModel doc, String mappingDescriptorId) {
         // Creating mapping properties Map.
         Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
@@ -207,8 +205,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             }
 
             // document should exist if id != null
-            if (doc.getId() != null && session.exists(doc.getRef())) {
-                session.saveDocument(doc);
+            if (doc.getId() != null) {
+                doc.getCoreSession().saveDocument(doc);
             }
         }
     }
@@ -216,16 +214,15 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     /*--------------------- Event Service --------------------------*/
 
     @Override
-    public void handleSyncUpdate(DocumentModel doc, DocumentEventContext docCtx) {
-        LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc, docCtx);
+    public void handleSyncUpdate(DocumentModel doc) {
+        LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc);
         if (syncMappingDescriptors != null) {
-            handleUpdate(syncMappingDescriptors, doc, docCtx);
+            handleUpdate(syncMappingDescriptors, doc);
         }
     }
 
     @Override
-    public void handleUpdate(List<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc,
-            DocumentEventContext docCtx) {
+    public void handleUpdate(List<MetadataMappingDescriptor> mappingDescriptors, DocumentModel doc) {
         for (MetadataMappingDescriptor mappingDescriptor : mappingDescriptors) {
             Property fileProp = doc.getProperty(mappingDescriptor.getBlobXPath());
             boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
@@ -238,7 +235,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                         fileProp.setValue(newBlob);
                     } else {
                         // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
-                        writeMetadata(doc, docCtx.getCoreSession());
+                        writeMetadata(doc);
                     }
                 } else {
                     if (isDirtyMapping) {
@@ -293,7 +290,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     /**
      * @return Dirty metadata from metadata mapping contribution and handle async processes.
      */
-    public LinkedList<MetadataMappingDescriptor> getSyncMapping(DocumentModel doc, DocumentEventContext docCtx) {
+    public LinkedList<MetadataMappingDescriptor> getSyncMapping(DocumentModel doc) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
@@ -309,8 +306,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
         // Handle async rules which should be taken into account in async listener.
         if (!asyncMappingDescriptorIds.isEmpty()) {
-            docCtx.setProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, getMapping(asyncMappingDescriptorIds));
-            docCtx.setProperty(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, Boolean.TRUE);
+            doc.putContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, Boolean.TRUE);
+            doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, getMapping(asyncMappingDescriptorIds));
         }
 
         if (syncMappingDescriptorIds.isEmpty()) {

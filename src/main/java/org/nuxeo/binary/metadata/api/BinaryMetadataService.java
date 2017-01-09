@@ -21,9 +21,7 @@ import java.util.Map;
 
 import org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Read/Write binary metadata services.
@@ -121,16 +119,15 @@ public interface BinaryMetadataService {
      *
      * @param doc Nuxeo Document which metadata are written.
      */
-    public void writeMetadata(DocumentModel doc, CoreSession session);
+    public void writeMetadata(DocumentModel doc);
 
     /**
      * Apply metadata mapping and override document properties according to the contribution.
      *
      * @param doc The input document.
-     * @param session core session.
      * @param mappingDescriptorId The metadata mapping to apply on the document.
      */
-    public void writeMetadata(DocumentModel doc, CoreSession session, String mappingDescriptorId);
+    public void writeMetadata(DocumentModel doc, String mappingDescriptorId);
 
     /**
      * Handle document and blob updates according to following rules in an event context: - Define if rule should be
@@ -138,8 +135,7 @@ public interface BinaryMetadataService {
      * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
      * metadata dirty, write metadata from doc to Blob.
      */
-    void handleUpdate(List<MetadataMappingDescriptor> syncMappingDescriptors, DocumentModel doc,
-            DocumentEventContext docCtx);
+    void handleUpdate(List<MetadataMappingDescriptor> syncMappingDescriptors, DocumentModel doc);
 
     /**
      * Handle document and blob updates according to following rules in an event context: - Define if rule should be
@@ -147,6 +143,6 @@ public interface BinaryMetadataService {
      * If Blob dirty and document metadata not dirty, write metadata from Blob to doc. - If Blob not dirty and document
      * metadata dirty, write metadata from doc to Blob.
      */
-    void handleSyncUpdate(DocumentModel doc, DocumentEventContext docCtx);
+    void handleSyncUpdate(DocumentModel doc);
 
 }
