@@ -53,12 +53,13 @@ public class BinaryMetadataWorkListener implements EventListener {
         if (DOCUMENT_CREATED.equals(event.getName()) || DOCUMENT_UPDATED.equals(event.getName())) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
-            Boolean execute = (Boolean) event.getContext().getProperty(
-                    BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE);
-            LinkedList<MetadataMappingDescriptor> mappingDescriptors = (LinkedList<MetadataMappingDescriptor>) docCtx.getProperty(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
-            if (execute != null && execute && !doc.isProxy()) {
+            Boolean execute = (Boolean) doc.getContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE);
+            doc.putContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, null);
+            if (Boolean.TRUE.equals(execute) && !doc.isProxy()) {
+                LinkedList<MetadataMappingDescriptor> mappingDescriptors = (LinkedList<MetadataMappingDescriptor>) doc.getContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+                doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, null);
                 BinaryMetadataWork work = new BinaryMetadataWork(doc.getRepositoryName(), doc.getId(),
-                        mappingDescriptors, docCtx);
+                        mappingDescriptors);
                 WorkManager workManager = Framework.getLocalService(WorkManager.class);
                 workManager.schedule(work, true);
             }

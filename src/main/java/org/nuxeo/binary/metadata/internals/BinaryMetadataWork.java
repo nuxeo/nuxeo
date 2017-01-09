@@ -23,7 +23,6 @@ import java.util.LinkedList;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,16 +41,13 @@ public class BinaryMetadataWork extends AbstractWork {
 
     protected final LinkedList<MetadataMappingDescriptor> mappingDescriptors;
 
-    protected final DocumentEventContext docCtx;
-
     protected final String docId;
 
     public BinaryMetadataWork(String repositoryName, String docId,
-            LinkedList<MetadataMappingDescriptor> mappingDescriptors, DocumentEventContext docCtx) {
+            LinkedList<MetadataMappingDescriptor> mappingDescriptors) {
         super("BinaryMetadataUpdate|docId=" + docId);
         setDocument(repositoryName, docId);
         this.mappingDescriptors = mappingDescriptors;
-        this.docCtx = docCtx;
         this.docId = docId;
     }
 
@@ -76,7 +72,7 @@ public class BinaryMetadataWork extends AbstractWork {
         }
         BinaryMetadataService binaryMetadataService = Framework.getLocalService(BinaryMetadataService.class);
         DocumentModel workingDocument = session.getDocument(new IdRef(docId));
-        binaryMetadataService.handleUpdate(mappingDescriptors, workingDocument, docCtx);
+        binaryMetadataService.handleUpdate(mappingDescriptors, workingDocument);
         setStatus("Metadata Update Done");
     }
 
