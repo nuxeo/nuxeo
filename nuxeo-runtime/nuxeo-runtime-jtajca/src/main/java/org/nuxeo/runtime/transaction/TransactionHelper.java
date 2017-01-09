@@ -474,6 +474,33 @@ public class TransactionHelper {
     }
 
     /**
+     * Runs the given {@link Runnable} in a new transactional context. Will suspend and restore the transaction if one already
+     * exists.
+     *
+     * @param runnable the {@link Runnable}
+     * @since 9.1
+     */
+    public static void runInNewTransaction(Runnable runnable) {
+        runInNewTransaction(() -> { runnable.run(); return null;});
+    }
+
+    /**
+     * Calls the given {@link Supplier} in a new transactional context. Will suspend and restore the transaction if one already
+     * exists.
+     *
+     * @param supplier the {@link Supplier}
+     * @since 9.1
+     */
+    public static <R> R runInNewTransaction(Supplier<R> supplier) {
+        Transaction tx = suspendTransaction();
+        try {
+            return runInTransaction(supplier);
+        } finally {
+            resumeTransaction(tx);
+        }
+    }
+
+    /**
      * Runs the given {@link Runnable} in a transactional context. Will not start a new transaction if one already
      * exists.
      *
@@ -481,27 +508,7 @@ public class TransactionHelper {
      * @since 8.4
      */
     public static void runInTransaction(Runnable runnable) {
-        boolean startTransaction = !isTransactionActiveOrMarkedRollback();
-        if (startTransaction) {
-            if (!startTransaction()) {
-                throw new TransactionRuntimeException("Cannot start transaction");
-            }
-        }
-        boolean completedAbruptly = true;
-        try {
-            runnable.run();
-            completedAbruptly = false;
-        } finally {
-            try {
-                if (completedAbruptly) {
-                    setTransactionRollbackOnly();
-                }
-            } finally {
-                if (startTransaction) {
-                    commitOrRollbackTransaction();
-                }
-            }
-        }
+        runInTransaction(() -> {runnable.run(); return null;});
     }
 
     /**

@@ -276,7 +276,7 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * @since 5.9.3
      */
-    void connect();
+    void connect(boolean noSharing);
 
     /**
      * @since 5.9.3

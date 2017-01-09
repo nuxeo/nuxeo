@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
-
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
@@ -35,8 +34,11 @@ public class JDBCMapperConnector implements InvocationHandler {
 
     protected final Mapper mapper;
 
-    protected JDBCMapperConnector(Mapper mapper) {
+    protected final boolean noSharing;
+
+    protected JDBCMapperConnector(Mapper mapper, boolean noSharing) {
         this.mapper = mapper;
+        this.noSharing = noSharing;
     }
 
     protected Object doInvoke(Method method, Object[] args) throws Throwable {
@@ -83,22 +85,31 @@ public class JDBCMapperConnector implements InvocationHandler {
             return doInvoke(method, args);
         }
         if ("createDatabase".equals(name)) {
-            return suspendAndInvoke(method, args);
+            Transaction tx = TransactionHelper.suspendTransaction();
+            try {
+                return connectAndInvoke(method, args, true);
+            } finally {
+                TransactionHelper.resumeTransaction(tx);
+            }
         }
-        return connectAndInvoke(method, args);
+        if (noSharing) {
+            Object result = TransactionHelper.runInNewTransaction(() -> {
+                try {
+                    return connectAndInvoke(method, args, true);
+                } catch (Throwable cause) {
+                    return cause;
+                }
+            });
+            if (result instanceof Throwable) {
+                throw (Throwable)result;
+            }
+            return result;
+        }
+        return connectAndInvoke(method, args, false);
     }
 
-    protected Object suspendAndInvoke(Method method, Object[] args) throws Throwable {
-        Transaction tx = TransactionHelper.suspendTransaction();
-        try {
-            return connectAndInvoke(method, args);
-        } finally {
-            TransactionHelper.resumeTransaction(tx);
-        }
-    }
-
-    protected Object connectAndInvoke(Method method, Object[] args) throws Throwable {
-        mapper.connect();
+    protected Object connectAndInvoke(Method method, Object[] args, boolean noSharing) throws Throwable {
+        mapper.connect(noSharing);
         try {
             return doInvoke(method, args);
         } finally {
@@ -108,15 +119,15 @@ public class JDBCMapperConnector implements InvocationHandler {
         }
     }
 
-    public static Mapper newConnector(Mapper mapper) {
+    public static Mapper newConnector(Mapper mapper, boolean noSharing) {
         return (Mapper) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class<?>[] { Mapper.class }, new JDBCMapperConnector(mapper));
+                new Class<?>[] { Mapper.class }, new JDBCMapperConnector(mapper, noSharing));
     }
 
     public static Mapper unwrap(Mapper mapper) {
         if (!Proxy.isProxyClass(mapper.getClass())) {
             return mapper;
         }
-        return ((JDBCMapperConnector)Proxy.getInvocationHandler(mapper)).mapper;
+        return ((JDBCMapperConnector) Proxy.getInvocationHandler(mapper)).mapper;
     }
 }
