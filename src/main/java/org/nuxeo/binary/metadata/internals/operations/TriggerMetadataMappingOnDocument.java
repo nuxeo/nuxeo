@@ -49,6 +49,6 @@ public class TriggerMetadataMappingOnDocument {
 
     @OperationMethod
     public void run(DocumentModel document) {
-        binaryMetadataService.writeMetadata(document, operationContext.getCoreSession(), metadataMappingId);
+        binaryMetadataService.writeMetadata(document, metadataMappingId);
     }
 }

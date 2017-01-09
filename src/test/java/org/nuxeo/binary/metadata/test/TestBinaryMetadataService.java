@@ -160,7 +160,7 @@ public class TestBinaryMetadataService {
         DocumentModel pdfDoc = BinaryMetadataServerInit.getFile(1, session);
 
         // Copy into the document according to metadata mapping contribution.
-        binaryMetadataService.writeMetadata(pdfDoc, session);
+        binaryMetadataService.writeMetadata(pdfDoc);
 
         // Check if the document has been overwritten by binary metadata.
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);

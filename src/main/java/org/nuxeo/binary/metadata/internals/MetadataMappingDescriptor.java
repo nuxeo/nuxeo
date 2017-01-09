@@ -18,6 +18,7 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.1
  */
 @XObject("metadataMapping")
-public class MetadataMappingDescriptor {
+public class MetadataMappingDescriptor implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @XNode("@id")
     protected String id;
@@ -51,7 +54,9 @@ public class MetadataMappingDescriptor {
     }
 
     @XObject("metadata")
-    public static class MetadataDescriptor {
+    public static class MetadataDescriptor implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         @XNode("@name")
         protected String name;
