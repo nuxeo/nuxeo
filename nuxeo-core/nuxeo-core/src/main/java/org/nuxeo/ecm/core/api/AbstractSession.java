@@ -685,9 +685,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         // Start by removing unallowed characters if filtering is enabled
         CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
-        if (charFilteringService.isFilteringEnabled()) {
-            charFilteringService.filterChars(docModel);
-        }
+        charFilteringService.filterChars(docModel);
 
         if (docModel.getSessionId() == null) {
             // docModel was created using constructor instead of CoreSession.createDocumentModel
@@ -1448,12 +1446,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                     docModel.getTitle()));
         }
 
-        // Remove unallowed characters if filtering is enabled
-        CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
-        if (charFilteringService.isFilteringEnabled()) {
-            charFilteringService.filterChars(docModel);
-        }
-
         Document doc = resolveReference(docModel.getRef());
         checkPermission(doc, WRITE_PROPERTIES);
 
@@ -1546,6 +1538,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             DocumentRef checkedInVersionRef = new IdRef(checkedInDoc.getUUID());
             notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
         }
+
+        // Remove unallowed characters if filtering is enabled
+        CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
+        charFilteringService.filterChars(docModel);
+
         notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
         updateDocumentCount.inc();
         return docModel;
