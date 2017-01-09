@@ -37,9 +37,7 @@ public class BinaryMetadataComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataComponent.class);
 
-    protected static BinaryMetadataComponent self;
-
-    protected BinaryMetadataService metadataService = new BinaryMetadataServiceImpl();
+    protected BinaryMetadataService metadataService = new BinaryMetadataServiceImpl(this);
 
     protected final MetadataMappingRegistry mappingRegistry = new MetadataMappingRegistry();
 
@@ -54,13 +52,6 @@ public class BinaryMetadataComponent extends DefaultComponent {
                 Boolean.toString(log.isTraceEnabled())))) {
             metadataService = MetricInvocationHandler.newProxy(metadataService, BinaryMetadataService.class);
         }
-        self = this;
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        self = null;
-        super.deactivate(context);
     }
 
     @Override

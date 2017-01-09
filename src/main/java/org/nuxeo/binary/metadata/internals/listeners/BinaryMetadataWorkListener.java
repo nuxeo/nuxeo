@@ -22,7 +22,7 @@ package org.nuxeo.binary.metadata.internals.listeners;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.internals.BinaryMetadataWork;
@@ -56,7 +56,7 @@ public class BinaryMetadataWorkListener implements EventListener {
             Boolean execute = (Boolean) doc.getContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE);
             doc.putContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, null);
             if (Boolean.TRUE.equals(execute) && !doc.isProxy()) {
-                LinkedList<MetadataMappingDescriptor> mappingDescriptors = (LinkedList<MetadataMappingDescriptor>) doc.getContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
+                List<MetadataMappingDescriptor> mappingDescriptors = (List<MetadataMappingDescriptor>) doc.getContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT);
                 doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, null);
                 BinaryMetadataWork work = new BinaryMetadataWork(doc.getRepositoryName(), doc.getId(),
                         mappingDescriptors);

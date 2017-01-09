@@ -25,10 +25,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,15 +45,18 @@ import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.runtime.api.Framework;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
-
 /**
  * @since 7.1
  */
 public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     private static final Log log = LogFactory.getLog(BinaryMetadataServiceImpl.class);
+
+    protected BinaryMetadataComponent binaryMetadataComponent;
+
+    protected BinaryMetadataServiceImpl(BinaryMetadataComponent binaryMetadataComponent) {
+        this.binaryMetadataComponent = binaryMetadataComponent;
+    }
 
     @Override
     public Map<String, Object> readMetadata(String processorName, Blob blob, List<String> metadataNames,
@@ -122,7 +125,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         try {
             // Creating mapping properties Map.
             Map<String, Object> metadataMapping = new HashMap<>();
-            MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+            MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
                     mappingDescriptorId);
             for (MetadataMappingDescriptor.MetadataDescriptor metadataDescriptor : mappingDescriptor.getMetadataDescriptors()) {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
@@ -155,7 +158,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
         // For each mapping descriptors, overriding mapping document properties.
         for (String mappingDescriptorId : mappingDescriptorIds) {
-            if (!BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+            if (!binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
                 log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
@@ -169,7 +172,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Creating mapping properties Map.
         Map<String, String> metadataMapping = new HashMap<>();
         List<String> blobMetadata = new ArrayList<>();
-        MetadataMappingDescriptor mappingDescriptor = BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+        MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
                 mappingDescriptorId);
         boolean ignorePrefix = mappingDescriptor.getIgnorePrefix();
         // Extract blob from the contributed xpath
@@ -224,7 +227,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
 
     @Override
     public void handleSyncUpdate(DocumentModel doc) {
-        LinkedList<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc);
+        List<MetadataMappingDescriptor> syncMappingDescriptors = getSyncMapping(doc);
         if (syncMappingDescriptors != null) {
             handleUpdate(syncMappingDescriptors, doc);
         }
@@ -266,24 +269,17 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
      */
     protected Set<MetadataRuleDescriptor> checkFilter(final ActionContext actionContext) {
         final ActionManager actionService = Framework.getLocalService(ActionManager.class);
-        Set<MetadataRuleDescriptor> filtered = Sets.filter(BinaryMetadataComponent.self.ruleRegistry.contribs,
-                new Predicate<MetadataRuleDescriptor>() {
-
-                    @Override
-                    public boolean apply(MetadataRuleDescriptor input) {
-                        if (!input.getEnabled()) {
-                            return false;
-                        }
-                        for (String filterId : input.getFilterIds()) {
-                            if (!actionService.checkFilter(filterId, actionContext)) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-
-                });
-        return filtered;
+        return binaryMetadataComponent.ruleRegistry.contribs.stream().filter(ruleDescriptor -> {
+            if (!ruleDescriptor.getEnabled()) {
+                return false;
+            }
+            for (String filterId : ruleDescriptor.getFilterIds()) {
+                if (!actionService.checkFilter(filterId, actionContext)) {
+                    return false;
+                }
+            }
+            return true;
+        }).collect(Collectors.toSet());
     }
 
     protected ActionContext createActionContext(DocumentModel doc) {
@@ -293,13 +289,13 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     protected BinaryMetadataProcessor getProcessor(String processorId) throws NoSuchMethodException {
-        return BinaryMetadataComponent.self.processorRegistry.getProcessor(processorId);
+        return binaryMetadataComponent.processorRegistry.getProcessor(processorId);
     }
 
     /**
      * @return Dirty metadata from metadata mapping contribution and handle async processes.
      */
-    public LinkedList<MetadataMappingDescriptor> getSyncMapping(DocumentModel doc) {
+    public List<MetadataMappingDescriptor> getSyncMapping(DocumentModel doc) {
         // Check if rules applying for this document.
         ActionContext actionContext = createActionContext(doc);
         Set<MetadataRuleDescriptor> ruleDescriptors = checkFilter(actionContext);
@@ -316,7 +312,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         // Handle async rules which should be taken into account in async listener.
         if (!asyncMappingDescriptorIds.isEmpty()) {
             doc.putContextData(BinaryMetadataConstants.ASYNC_BINARY_METADATA_EXECUTE, Boolean.TRUE);
-            doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT, getMapping(asyncMappingDescriptorIds));
+            doc.putContextData(BinaryMetadataConstants.ASYNC_MAPPING_RESULT,
+                    (Serializable) getMapping(asyncMappingDescriptorIds));
         }
 
         if (syncMappingDescriptorIds.isEmpty()) {
@@ -325,16 +322,16 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         return getMapping(syncMappingDescriptorIds);
     }
 
-    protected LinkedList<MetadataMappingDescriptor> getMapping(Set<String> mappingDescriptorIds) {
+    protected List<MetadataMappingDescriptor> getMapping(Set<String> mappingDescriptorIds) {
         // For each mapping descriptors, store mapping.
-        LinkedList<MetadataMappingDescriptor> mappingResult = new LinkedList<>();
+        List<MetadataMappingDescriptor> mappingResult = new ArrayList<>();
         for (String mappingDescriptorId : mappingDescriptorIds) {
-            if (!BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
+            if (!binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().containsKey(mappingDescriptorId)) {
                 log.warn("Missing binary metadata descriptor with id '" + mappingDescriptorId
                         + "'. Or check your rule contribution with proper metadataMapping-id.");
                 continue;
             }
-            mappingResult.add(BinaryMetadataComponent.self.mappingRegistry.getMappingDescriptorMap().get(
+            mappingResult.add(binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
                     mappingDescriptorId));
         }
         return mappingResult;

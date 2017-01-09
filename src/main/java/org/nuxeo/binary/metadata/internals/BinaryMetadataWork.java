@@ -18,7 +18,7 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,12 +39,11 @@ public class BinaryMetadataWork extends AbstractWork {
 
     public static final String BINARY_METADATA_WORK_TITLE = "Binary Metadata Update Worker";
 
-    protected final LinkedList<MetadataMappingDescriptor> mappingDescriptors;
+    protected final List<MetadataMappingDescriptor> mappingDescriptors;
 
     protected final String docId;
 
-    public BinaryMetadataWork(String repositoryName, String docId,
-            LinkedList<MetadataMappingDescriptor> mappingDescriptors) {
+    public BinaryMetadataWork(String repositoryName, String docId, List<MetadataMappingDescriptor> mappingDescriptors) {
         super("BinaryMetadataUpdate|docId=" + docId);
         setDocument(repositoryName, docId);
         this.mappingDescriptors = mappingDescriptors;
