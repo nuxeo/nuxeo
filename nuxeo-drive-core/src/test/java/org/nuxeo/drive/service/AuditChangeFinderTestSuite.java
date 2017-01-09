@@ -355,6 +355,74 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
     }
 
     @Test
+    public void testSyncRootParentPermissionChange() throws Exception {
+        List<FileSystemItemChange> changes;
+        DocumentModel subFolder;
+
+        try {
+            // No sync roots
+            changes = getChanges();
+            assertTrue(changes.isEmpty());
+
+            // Create a subfolder in a sync root
+            subFolder = session.createDocumentModel("/folder1", "subFolder", "Folder");
+            subFolder = session.createDocument(subFolder);
+            // Grant READ_WRITE permission to user1 on the subfolder
+            setPermissions(subFolder, new ACE("user1", SecurityConstants.READ_WRITE));
+
+            // Mark subfolder as a sync root for user1
+            nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), subFolder, user1Session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            // Folder creation and sync root registration events
+            assertEquals(2, changes.size());
+
+            // Remove READ_WRITE permission granted to user1 on the subfolder
+            resetPermissions(subFolder, "user1");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            changes = getChanges(user1Session.getPrincipal());
+            // Expecting 1 change: securityUpdated for subFolder with a non-null FileSystemitem and FileSystemitem name
+            // since the user can still access it by inheritance
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals(
+                    new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test",
+                            "defaultSyncRootFolderItemFactory#test#" + subFolder.getId(), "subFolder"),
+                    toSimpleFileSystemItemChange(change));
+            assertNotNull(change);
+            assertEquals("subFolder", change.getFileSystemItemName());
+
+            // Remove READ_WRITE permission granted to user1 on the parent folder
+            resetPermissions(folder1, "user1");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            changes = getChanges(user1Session.getPrincipal());
+            // Expecting 1 change: securityUpdated for subFolder with a null FileSystemitem and FileSystemitem name
+            // since the user cannot access it anymore
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals(new SimpleFileSystemItemChange(subFolder.getId(), "securityUpdated", "test",
+                    "test#" + subFolder.getId(), "subFolder"), toSimpleFileSystemItemChange(change));
+            assertNull(change.getFileSystemItem());
+            assertNull(change.getFileSystemItemName());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
+    @Test
     public void testGetChangeSummary() throws Exception {
         FileSystemChangeSummary changeSummary;
         Principal admin = new NuxeoPrincipalImpl("Administrator");
