@@ -17,7 +17,8 @@
 
 package org.nuxeo.drive.listener;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -56,12 +57,16 @@ public class NuxeoDriveVirtualEventLogger implements PostCommitFilteringEventLis
                 if (ArrayUtils.isEmpty(args)) {
                     return;
                 }
-                Object arg = args[0];
-                if (!(arg instanceof LogEntry)) {
-                    return;
+                List<LogEntry> logEntries = new ArrayList<>();
+                for (int i = 0; i < args.length; i++) {
+                    Object arg = args[i];
+                    if (arg instanceof LogEntry) {
+                        logEntries.add((LogEntry) arg);
+                    }
                 }
-                LogEntry entry = (LogEntry) arg;
-                logger.addLogEntries(Collections.singletonList(entry));
+                if (!logEntries.isEmpty()) {
+                    logger.addLogEntries(logEntries);
+                }
             }
         } else {
             log.error("Can not reach AuditLogger");

@@ -22,6 +22,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -188,6 +189,20 @@ public class AbstractChangeFinderTestCase {
         }
         session.setACP(doc.getRef(), acp, true);
         commitAndWaitForAsyncCompletion();
+    }
+
+    protected void resetPermissions(DocumentModel doc, String userName) {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        Iterator<ACE> localACLIt = localACL.iterator();
+        while (localACLIt.hasNext()) {
+            ACE ace = localACLIt.next();
+            if (userName.equals(ace.getUsername())) {
+                localACLIt.remove();
+            }
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
     }
 
     protected Set<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(List<FileSystemItemChange> changes) {
