@@ -25,9 +25,11 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class JDBCMapperConnector implements InvocationHandler {
 
@@ -80,6 +82,22 @@ public class JDBCMapperConnector implements InvocationHandler {
         if ("sendInvalidations".equals(name)) {
             return doInvoke(method, args);
         }
+        if ("createDatabase".equals(name)) {
+            return suspendAndInvoke(method, args);
+        }
+        return connectAndInvoke(method, args);
+    }
+
+    protected Object suspendAndInvoke(Method method, Object[] args) throws Throwable {
+        Transaction tx = TransactionHelper.suspendTransaction();
+        try {
+            return connectAndInvoke(method, args);
+        } finally {
+            TransactionHelper.resumeTransaction(tx);
+        }
+    }
+
+    protected Object connectAndInvoke(Method method, Object[] args) throws Throwable {
         mapper.connect();
         try {
             return doInvoke(method, args);

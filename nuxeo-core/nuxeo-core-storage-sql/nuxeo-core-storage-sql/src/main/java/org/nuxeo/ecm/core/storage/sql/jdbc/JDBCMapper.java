@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,7 +59,6 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -165,17 +163,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void createDatabase(String ddlMode) {
         // some databases (SQL Server) can't create tables/indexes/etc in a transaction, so suspend it
         try {
-            boolean suspend = !connection.getAutoCommit();
-            try {
-                if (suspend) {
-                    connection.setAutoCommit(true);
-                }
-                createTables(ddlMode);
-            } finally {
-                if (suspend) {
-                    connection.setAutoCommit(false);
-                }
+            if (connection.getAutoCommit() == false) {
+                throw new NuxeoException("connection should not run in transactional mode for DDL operations");
             }
+            createTables(ddlMode);
         } catch (SQLException e) {
             throw new NuxeoException(e);
         }
@@ -1271,15 +1262,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     /*
      * ----- Locking -----
      */
-
-    protected Connection connection(boolean autocommit) {
-        try {
-            connection.setAutoCommit(autocommit);
-        } catch (SQLException e) {
-            throw new NuxeoException("Cannot set auto commit mode onto " + this + "'s connection", e);
-        }
-        return connection;
-    }
 
     /**
      * Calls the callable, inside a transaction if in cluster mode.
