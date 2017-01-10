@@ -24,6 +24,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,8 +39,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
     protected final List<IndexingCommand> cmds;
 
     public AbstractIndexingWorker(IndexingCommand cmd) {
-        this.cmds = new ArrayList<>(1);
-        this.cmds.add(cmd);
+        this.cmds = Collections.singletonList(cmd);
         this.repositoryName = cmd.getRepositoryName();
         this.docId = cmd.getTargetDocumentId();
     }

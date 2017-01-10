@@ -75,6 +75,9 @@ import com.codahale.metrics.Timer.Context;
 public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     private static final Log log = LogFactory.getLog(ElasticSearchIndexingImpl.class);
 
+    // debug curl line max size
+    private static final int MAX_CURL_LINE = 8 * 1024;
+
     private final ElasticSearchAdminImpl esa;
 
     private final Timer deleteTimer;
@@ -126,11 +129,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         // try {Thread.sleep(1000);} catch (InterruptedException e) { }
 
         processBulkDeleteCommands(cmds);
-        Context stopWatch = bulkIndexTimer.time();
-        try {
+        try (Context ignored = bulkIndexTimer.time()) {
             processBulkIndexCommands(cmds);
-        } finally {
-            stopWatch.stop();
         }
         esa.totalCommandProcessed.addAndGet(nbCommands);
         refreshIfNeeded(cmds);
@@ -140,11 +140,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
             if (cmd.getType() == Type.DELETE) {
-                Context stopWatch = deleteTimer.time();
-                try {
+                try (Context ignored = deleteTimer.time()){
                     processDeleteCommand(cmd);
-                } finally {
-                    stopWatch.stop();
                 }
             }
         }
@@ -176,9 +173,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Index %d docs in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
-                        bulkRequest.numberOfActions(), bulkRequest.request().requests().toString()));
+                logDebugMessageTruncated(String.format(
+                        "Index %d docs (%d bytes) in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
+                        bulkRequest.numberOfActions(), bulkSize,
+                        bulkRequest.request().requests().toString()), MAX_CURL_LINE);
             }
             BulkResponse response = bulkRequest.execute().actionGet();
             if (response.hasFailures()) {
@@ -229,22 +227,17 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             // the parent don't need to be indexed
             return;
         }
-        Context stopWatch = null;
-        try {
-            if (type == Type.DELETE) {
-                stopWatch = deleteTimer.time();
+        if (type == Type.DELETE) {
+            try (Context ignored = deleteTimer.time()) {
                 processDeleteCommand(cmd);
-            } else {
-                stopWatch = indexTimer.time();
+            }
+        } else {
+            try (Context ignored = indexTimer.time()) {
                 processIndexCommand(cmd);
             }
-            refreshIfNeeded(cmd);
-        } finally {
-            if (stopWatch != null) {
-                stopWatch.stop();
-            }
-            esa.totalCommandProcessed.incrementAndGet();
         }
+        refreshIfNeeded(cmd);
+        esa.totalCommandProcessed.incrementAndGet();
     }
 
     void processIndexCommand(IndexingCommand cmd) {
@@ -262,9 +255,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
+            logDebugMessageTruncated(String.format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
                     esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE, cmd.getTargetDocumentId(),
-                    request.request().toString()));
+                    request.request().toString()), MAX_CURL_LINE);
         }
         try {
             request.execute().actionGet();
@@ -272,6 +265,15 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             SequenceTracer.addNote("Ignore indexing of doc " + cmd.getTargetDocumentId());
             log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
                     + " a more recent version has already been indexed: " + e.getMessage());
+        }
+    }
+
+    void logDebugMessageTruncated(String msg, int maxSize) {
+        if (log.isTraceEnabled() || msg.length() < maxSize) {
+            // in trace mode we output the full message
+            log.debug(msg);
+        } else {
+            log.debug(msg.substring(0, maxSize) + "...");
         }
     }
 

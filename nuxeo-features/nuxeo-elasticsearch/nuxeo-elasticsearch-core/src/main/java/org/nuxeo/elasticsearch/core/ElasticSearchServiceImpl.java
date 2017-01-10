@@ -173,11 +173,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
             ret.setTotalSize(totalSize);
             return ret;
         }
-        Context stopWatch = fetchTimer.time();
-        Fetcher fetcher = queryBuilder.getFetcher(response, esa.getRepositoryMap());
-        try {
+        try (Context stopWatch = fetchTimer.time()) {
+            Fetcher fetcher = queryBuilder.getFetcher(response, esa.getRepositoryMap());
             ret = fetcher.fetchDocuments();
-        } finally {
             logMinDurationFetch(stopWatch.stop(), totalSize);
         }
         ret.setTotalSize(totalSize);
@@ -218,42 +216,33 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
-        Context stopWatch = searchTimer.time();
-        try {
+        try (Context ignored = searchTimer.time()){
             SearchType searchType = SearchType.DFS_QUERY_THEN_FETCH;
             SearchRequestBuilder request = buildEsSearchRequest(query, searchType);
             logSearchRequest(request, query, searchType);
             SearchResponse response = request.execute().actionGet();
             logSearchResponse(response);
             return response;
-        } finally {
-            stopWatch.stop();
         }
     }
 
     protected SearchResponse searchScroll(NxQueryBuilder query, SearchType searchType, long keepAlive) {
-        Context stopWatch = searchTimer.time();
-        try {
+        try (Context ignored = searchTimer.time()){
             SearchRequestBuilder request = buildEsSearchScrollRequest(query, searchType, keepAlive);
             logSearchRequest(request, query, searchType, keepAlive);
             SearchResponse response = request.execute().actionGet();
             logSearchResponse(response);
             return response;
-        } finally {
-            stopWatch.stop();
         }
     }
 
     protected SearchResponse nextScroll(String scrollId, long keepAlive) {
-        Context stopWatch = scrollTimer.time();
-        try {
+        try (Context ignored = scrollTimer.time()) {
             SearchScrollRequestBuilder request = buildEsScrollRequest(scrollId, keepAlive);
             logScrollRequest(scrollId, keepAlive);
             SearchResponse response = request.execute().actionGet();
             logSearchResponse(response);
             return response;
-        } finally {
-            stopWatch.stop();
         }
     }
 
