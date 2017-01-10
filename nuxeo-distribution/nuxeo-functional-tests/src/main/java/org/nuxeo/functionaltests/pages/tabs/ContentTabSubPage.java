@@ -24,6 +24,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
@@ -159,19 +160,30 @@ public class ContentTabSubPage extends DocumentBasePage {
      *
      * @param filter the string to filter
      * @since 5.7.2
+     * @deprecated since 9.1 use {@link ContentTabSubPage#filterDocument(String)} instead and assert in your
+     * test the expected number of results.
      */
+    @Deprecated
     public ContentTabSubPage filterDocument(final String filter, final int expectedNbOfDisplayedResult,
             final int timeout) {
+        filterDocument(filter);
+        assertEquals(expectedNbOfDisplayedResult, getChildDocumentRows().size());
+        return asPage(ContentTabSubPage.class);
+    }
+
+    /**
+     * Perform filter on the given string.
+     *
+     * @param filter the string to filter
+     * @since 9.1
+     */
+    public ContentTabSubPage filterDocument(final String filter) {
         filterInput.clear();
         filterInput.sendKeys(filter);
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         filterButton.click();
-        Locator.waitUntilGivenFunction(driver -> {
-            try {
-                return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
-            } catch (NoSuchElementException | StaleElementReferenceException e) {
-                return false;
-            }
-        });
+        arm.end();
         return asPage(ContentTabSubPage.class);
     }
 
