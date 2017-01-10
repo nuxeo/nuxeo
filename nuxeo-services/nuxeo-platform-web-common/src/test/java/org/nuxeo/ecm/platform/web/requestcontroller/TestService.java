@@ -52,7 +52,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testServiceContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.web.common.test", "OSGI-INF/web-request-controller-contrib-test.xml");
 
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);
@@ -117,7 +117,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testCorsContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.web.common.test", "OSGI-INF/web-request-controller-contrib-test.xml");
 
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);
@@ -142,7 +142,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testHeadersContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.web.common", "OSGI-INF/web-request-controller-contrib-test.xml");
+        deployContrib("org.nuxeo.ecm.platform.web.common.test", "OSGI-INF/web-request-controller-contrib-test.xml");
 
         RequestControllerManager rcm = Framework.getLocalService(RequestControllerManager.class);
         assertNotNull(rcm);
