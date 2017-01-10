@@ -37,9 +37,12 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests the {@link TokenAuthenticator}.
@@ -78,7 +81,8 @@ public class TestTokenAuthenticator {
         // Get client session using callback, should acquire a remote token,
         // store it locally and return a session as Administrator
         Session clientSession = automationClient.getSession(cb);
-        assertNotNull(cb.getLocalToken());
+        String token = cb.getLocalToken();
+        assertNotNull(token);
         assertEquals("Administrator", clientSession.getLogin().getUsername());
 
         // Check automation call
@@ -93,6 +97,27 @@ public class TestTokenAuthenticator {
         // a session as Administrator
         clientSession = automationClient.getSession(cb);
         assertEquals("Administrator", clientSession.getLogin().getUsername());
+
+        // Revoke token
+        TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(
+                TokenAuthenticationService.class);
+        tokenAuthenticationService.revokeToken(token);
+        // commit transaction
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+        // Assert that an operation will fail to error 401
+        try {
+            testDoc = (Document) clientSession.newRequest(FetchDocument.ID)
+                    .setHeader("X-NXDocumentProperties", "dublincore")
+                    .set("value", testDocId)
+                    .execute();
+            fail("Performing operation with a revoked token should throw a RemoteException with HTTP 401 status code");
+        } catch (RemoteException e) {
+            assertEquals(HttpStatus.SC_UNAUTHORIZED, e.getStatus());
+        }
     }
 
 }
