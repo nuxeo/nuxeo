@@ -532,7 +532,10 @@ public class NuxeoAuthenticationFilter implements Filter {
                         }
                     } else {
                         String redirectUrl = VirtualHostHelper.getRedirectUrl(httpRequest);
-                        httpRequest.getSession().setAttribute(REDIRECT_URL, redirectUrl);
+                        HttpSession session = httpRequest.getSession(false);
+                        if (session != null) {
+                            session.setAttribute(REDIRECT_URL, redirectUrl);
+                        }
                         // restore saved Starting page
                         targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
                     }
