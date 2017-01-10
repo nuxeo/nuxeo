@@ -18,6 +18,13 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.util.Date;
 import java.util.List;
 
@@ -25,20 +32,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * This test checks the filter feature.
@@ -93,12 +93,15 @@ public class ITSelectAndFilterTest extends AbstractTest {
         assertEquals(2, trelements.size());
 
         // Select the first document
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         Locator.findElementWaitUntilEnabledAndClick(trelements.get(0), By.xpath(CHECK_BOX_XPATH));
+        arm.end();
         boolean selectedFileName = Boolean.parseBoolean(
                 trelements.get(0).findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText());
 
         // Filter on the name of the other document
-        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName), 1, AJAX_TIMEOUT_SECONDS * 1000);
+        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName));
         Locator.waitUntilElementPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
