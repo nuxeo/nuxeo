@@ -21,7 +21,7 @@ Copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activa
 
 ## QA results
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-tree-snapshot-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-tree-snapshot-master/)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/addons_nuxeo-tree-snapshot-master)](https://qa.nuxeo.org/jenkins/job/master/job/addons_nuxeo-tree-snapshot-master/)
 
 ## Initial Tree
 
