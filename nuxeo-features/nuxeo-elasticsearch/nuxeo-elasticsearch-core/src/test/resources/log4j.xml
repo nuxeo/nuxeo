@@ -22,7 +22,7 @@
     </layout>
   </appender>
 
-  <category name="org.nuxeo.elasticsearch.core" additivity="false">
+  <category name="org.nuxeo.elasticsearch.core">
     <appender-ref ref="FILE"/>
   </category>
 

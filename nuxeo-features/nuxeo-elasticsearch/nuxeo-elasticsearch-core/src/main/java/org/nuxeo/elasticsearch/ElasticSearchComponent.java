@@ -389,9 +389,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public void indexNonRecursive(IndexingCommand cmd) {
-        List<IndexingCommand> cmds = new ArrayList<>(1);
-        cmds.add(cmd);
-        indexNonRecursive(cmds);
+        indexNonRecursive(Collections.singletonList(cmd));
     }
 
     @Override
