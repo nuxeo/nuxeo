@@ -4722,7 +4722,7 @@
                   <label mode="any">
                     The start default time, ignore if time is
                     not taken into account in the date pattern/format. Defaults
-                    to 00:00, available since 7.1.
+                    to 00:00:00, available since 7.1.
                   </label>
                 </helpLabels>
                 <fields>
@@ -4740,7 +4740,7 @@
                   <label mode="any">
                     The end default time, ignore if time is
                     not taken into account in the date pattern/format. Defaults
-                    to 23:59, available since 7.1.
+                    to 23:59:59, available since 7.1.
                   </label>
                 </helpLabels>
                 <fields>
