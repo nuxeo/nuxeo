@@ -20,10 +20,16 @@
 package org.nuxeo.elasticsearch.test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,7 +54,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
 
 /**
  * Test "on the fly" indexing via the listener system
@@ -57,7 +66,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features({ RepositoryElasticSearchFeature.class, LogCaptureFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.ws", "org.nuxeo.ecm.automation.core" })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestReindex {
@@ -83,9 +92,14 @@ public class TestReindex {
     @Inject
     protected WorkManager workManager;
 
+    @Inject
+    LogCaptureFeature.Result logCaptureResult;
+
     private boolean syncMode = false;
 
     private int commandProcessed;
+
+    private Priority consoleThresold;
 
     // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
@@ -200,6 +214,39 @@ public class TestReindex {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerName = "org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl")
+    public void shouldReindexDocumentWithSmallBulkSize() throws Exception {
+        try {
+            hideWarningFromConsoleLog();
+            System.setProperty(INDEX_BULK_MAX_SIZE_PROPERTY, "4096");
+            shouldReindexDocument();
+            List<LoggingEvent> events = logCaptureResult.getCaughtEvents();
+            Assert.assertFalse("Expecting warn message", events.isEmpty());
+            Assert.assertTrue(events.get(0).getRenderedMessage().contains("Max bulk size reached"));
+        } finally {
+            restoreConsoleLog();
+            System.clearProperty(INDEX_BULK_MAX_SIZE_PROPERTY);
+        }
+    }
+
+    protected void hideWarningFromConsoleLog() {
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleThresold = consoleAppender.getThreshold();
+        consoleAppender.setThreshold(Level.ERROR);
+    }
+
+    protected void restoreConsoleLog() {
+        if (consoleThresold == null) {
+            return;
+        }
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleAppender.setThreshold(consoleThresold);
+        consoleThresold = null;
     }
 
 }

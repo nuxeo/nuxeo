@@ -108,6 +108,8 @@ final public class ElasticSearchConstants {
 
     public static final String REINDEX_ON_STARTUP_PROPERTY = "elasticsearch.reindex.onStartup";
 
+    public static final String INDEX_BULK_MAX_SIZE_PROPERTY = "elasticsearch.index.bulkMaxSize";
+
     public static final String DISABLE_AUTO_INDEXING = "disableAutoIndexing";
 
     public static final String ES_SYNC_INDEXING_FLAG = "ESSyncIndexing";

@@ -22,10 +22,6 @@
     </layout>
   </appender>
 
-  <category name="org.nuxeo.elasticsearch.core">
-    <appender-ref ref="FILE"/>
-  </category>
-
   <!-- Remove pool warning from the console -->
   <category name="org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration" additivity="false">
     <appender-ref ref="FILE"/>
@@ -35,6 +31,7 @@
   <category name="org.elasticsearch.env" additivity="false">
     <appender-ref ref="FILE"/>
   </category>
+
 
   <root>
     <priority value="WARN" />
