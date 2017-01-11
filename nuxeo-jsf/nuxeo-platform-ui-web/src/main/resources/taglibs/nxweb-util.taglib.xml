@@ -931,8 +931,8 @@
       </p>
       Example:
       <pre>
-        &lt;nxu:inputFile value="#{document.file.content"
-          filename="#{document.file.filename}"
+        &lt;nxu:inputFile value="#{document.file.content}"
+          filename="#{document.file.content.filename}"
           editFilename="true" /&gt;
       </pre>
       ]]>

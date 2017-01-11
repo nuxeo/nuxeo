@@ -74,7 +74,7 @@ public class TestDocumentModelReader {
                 + "\"ecm:currentLifeCycleState\":\"project\",\"ecm:changeToken\":null,\"ecm:uuid\":\"56ca3935-c6c9-4cd4-ac23-d9df5ebf340a\","
                 + "\"dc:nature\":\"Nature0\",\"dc:created\":null,\"relatedtext:relatedtextresources\":[],\"dc:description\":null,"
                 + "\"dc:rights\":\"Rights0\",\"file:content\":null,\"uid:uid\":null,\"files:files\":[],"
-                + "\"ecm:acl\":[\"administrators\",\"Administrator\",\"members\"],\"dc:subjects\":[],\"file:filename\":null,"
+                + "\"ecm:acl\":[\"administrators\",\"Administrator\",\"members\"],\"dc:subjects\":[],"
                 + "\"dc:format\":null,\"dc:valid\":null,\"ecm:path\":\"/root/my/path/file0\","
                 + "\"ecm:mixinType\":[\"Downloadable\",\"Commentable\",\"Versionable\",\"Publishable\",\"HasRelatedText\"],"
                 + "\"ecm:isProxy\":false,\"ecm:isCheckedIn\":false,"
