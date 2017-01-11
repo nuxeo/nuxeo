@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.search;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,11 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
      * @since 8.4
      */
     public static final String QUICK_FILTERS = "quickFilters";
+
+    /**
+     * @since 9.1
+     */
+    public static final String HIGHLIGHT = "highlight";
 
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
@@ -190,6 +196,16 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return quickFilterList;
     }
 
+    protected List<String> getHighlights(MultivaluedMap<String, String> queryParams) {
+        String highlight = queryParams.getFirst(HIGHLIGHT);
+        List<String> highlightFields = new ArrayList<>();
+        if (!StringUtils.isBlank(highlight)) {
+            String[] fields = highlight.split(",");
+            highlightFields = Arrays.asList(fields);
+        }
+        return highlightFields;
+    }
+
     protected Properties getNamedParameters(MultivaluedMap<String, String> queryParams) {
         Properties namedParameters = new Properties();
         for (String namedParameterKey : queryParams.keySet()) {
@@ -253,7 +269,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected DocumentModelList queryByLang(String queryLanguage, MultivaluedMap<String, String> queryParams)
-        throws RestOperationException {
+            throws RestOperationException {
         if (queryLanguage == null || !EnumUtils.isValidEnum(LangParams.class, queryLanguage)) {
             throw new RestOperationException("invalid query language", HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -268,14 +284,14 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         Map<String, Serializable> props = getProperties();
 
         DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService, null,
-            namedParameters);
+                namedParameters);
 
         return queryByLang(query, pageSize, currentPageIndex, maxResults, sortInfo, parameters, props,
-            searchDocumentModel);
+                searchDocumentModel);
     }
 
     protected DocumentModelList queryByPageProvider(String pageProviderName, MultivaluedMap<String, String> queryParams)
-        throws RestOperationException {
+            throws RestOperationException {
         if (pageProviderName == null) {
             throw new RestOperationException("invalid page provider name", HttpServletResponse.SC_BAD_REQUEST);
         }
@@ -286,29 +302,30 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         Object[] parameters = getParameters(queryParams);
         List<SortInfo> sortInfo = getSortInfo(queryParams);
         List<QuickFilter> quickFilters = getQuickFilters(pageProviderName, queryParams);
+        List<String> highlights = getHighlights(queryParams);
         Map<String, Serializable> props = getProperties();
 
         DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
-            pageProviderName, namedParameters);
+                pageProviderName, namedParameters);
 
-        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, quickFilters, parameters,
-                props, searchDocumentModel);
+        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, highlights, quickFilters,
+                parameters, props, searchDocumentModel);
     }
 
     protected DocumentModelList queryByLang(String query, Long pageSize, Long currentPageIndex, Long maxResults,
-        List<SortInfo> sortInfo, Object[] parameters, Map<String, Serializable> props,
-        DocumentModel searchDocumentModel) throws RestOperationException {
+            List<SortInfo> sortInfo, Object[] parameters, Map<String, Serializable> props,
+            DocumentModel searchDocumentModel) throws RestOperationException {
         PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(
-            SearchAdapter.pageProviderName);
+                SearchAdapter.pageProviderName);
         ppdefinition.setPattern(query);
         if (maxResults != null && maxResults != -1) {
             // set the maxResults to avoid slowing down queries
             ppdefinition.getProperties().put("maxResults", maxResults.toString());
         }
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
-            (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
-                ppdefinition, searchDocumentModel, sortInfo, pageSize, currentPageIndex, props, parameters),
-            null);
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
+                        ppdefinition, searchDocumentModel, sortInfo, pageSize, currentPageIndex, props, parameters),
+                null);
 
         if (res.hasError()) {
             RestOperationException err = new RestOperationException(res.getErrorMessage());
@@ -324,9 +341,16 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     protected DocumentModelList queryByPageProvider(String pageProviderName, Long pageSize, Long currentPageIndex,
             List<SortInfo> sortInfo, List<QuickFilter> quickFilters, Object[] parameters,
             Map<String, Serializable> props, DocumentModel searchDocumentModel) throws RestOperationException {
+        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, sortInfo, null, quickFilters,
+                parameters, props, searchDocumentModel);
+    }
+
+    protected DocumentModelList queryByPageProvider(String pageProviderName, Long pageSize, Long currentPageIndex,
+            List<SortInfo> sortInfo, List<String> highlights, List<QuickFilter> quickFilters, Object[] parameters,
+            Map<String, Serializable> props, DocumentModel searchDocumentModel) throws RestOperationException {
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
-                        sortInfo, pageSize, currentPageIndex, props, quickFilters, parameters),
+                        sortInfo, pageSize, currentPageIndex, props, quickFilters, highlights, parameters),
                 null);
         if (res.hasError()) {
             RestOperationException err = new RestOperationException(res.getErrorMessage());
@@ -341,7 +365,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps, String providerName,
-        Properties namedParameters) {
+            Properties namedParameters) {
         // generate search document model if type specified on the definition
         DocumentModel searchDocumentModel = null;
         if (!StringUtils.isBlank(providerName)) {
@@ -384,10 +408,10 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         ObjectMapper mapper = new ObjectMapper();
         String message = mapper.writeValueAsString(object);
         return Response.status(status)
-            .header("Content-Length", message.getBytes("UTF-8").length)
-            .type(type + "; charset=UTF-8")
-            .entity(message)
-            .build();
+                       .header("Content-Length", message.getBytes("UTF-8").length)
+                       .type(type + "; charset=UTF-8")
+                       .entity(message)
+                       .build();
     }
 
 }

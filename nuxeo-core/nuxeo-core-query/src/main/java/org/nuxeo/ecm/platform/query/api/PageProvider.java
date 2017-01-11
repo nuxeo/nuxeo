@@ -434,4 +434,13 @@ public interface PageProvider<T> extends Serializable {
      */
     List<QuickFilter> getAvailableQuickFilters();
 
+    /**
+     * @since 9.1
+     */
+    List<String> getHighlights();
+
+    /**
+     * @since 9.1
+     */
+    void setHighlights(List<String> highlights);
 }

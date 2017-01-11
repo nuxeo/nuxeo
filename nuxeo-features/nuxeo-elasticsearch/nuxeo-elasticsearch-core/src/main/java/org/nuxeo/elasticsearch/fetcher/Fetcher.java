@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
  */
 public abstract class Fetcher {
 
+    protected static final String HIGHLIGHT_CTX_DATA = "highlight";
+
     private final CoreSession session;
 
     private final SearchResponse response;

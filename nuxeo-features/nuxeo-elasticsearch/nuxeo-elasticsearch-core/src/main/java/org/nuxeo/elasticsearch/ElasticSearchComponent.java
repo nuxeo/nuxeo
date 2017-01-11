@@ -81,8 +81,8 @@ import com.google.common.util.concurrent.MoreExecutors;
 /**
  * Component used to configure and manage ElasticSearch integration
  */
-public class ElasticSearchComponent extends DefaultComponent implements ElasticSearchAdmin, ElasticSearchIndexing,
-        ElasticSearchService {
+public class ElasticSearchComponent extends DefaultComponent
+        implements ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
 
     private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
 
@@ -142,7 +142,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             if (remoteContribution.isEnabled()) {
                 remoteConfig = remoteContribution;
                 localConfig = null;
-                log.info("Registering remote configuration: " + remoteConfig + ", loaded from " + contributor.getName());
+                log.info(
+                        "Registering remote configuration: " + remoteConfig + ", loaded from " + contributor.getName());
             } else if (remoteConfig != null) {
                 log.info("Disabling previous remote configuration, deactivated by " + contributor.getName());
                 remoteConfig = null;
@@ -174,7 +175,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             try {
                 clientInitService = clientInitDescriptor.getKlass().newInstance();
             } catch (IllegalAccessException | InstantiationException e) {
-                log.error("Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());
+                log.error(
+                        "Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());
                 throw new RuntimeException(e);
             }
             break;
@@ -347,7 +349,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     protected void initListenerThreadPool() {
-        waiterExecutorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new NamedThreadFactory()));
+        waiterExecutorService = MoreExecutors.listeningDecorator(
+                Executors.newCachedThreadPool(new NamedThreadFactory()));
     }
 
     @Override

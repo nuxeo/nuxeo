@@ -103,6 +103,12 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
+
+            List<String> highlightFields = getHighlights();
+            if (highlightFields != null && !highlightFields.isEmpty()) {
+                nxQuery.highlight(highlightFields);
+            }
+
             EsResult ret = ess.queryAndAggregate(nxQuery);
             DocumentModelList dmList = ret.getDocuments();
             currentAggregates = new HashMap<>(ret.getAggregates().size());
