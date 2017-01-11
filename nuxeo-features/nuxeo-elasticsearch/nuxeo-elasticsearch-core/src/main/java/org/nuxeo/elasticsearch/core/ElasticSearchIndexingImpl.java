@@ -23,6 +23,7 @@ package org.nuxeo.elasticsearch.core;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEX_BULK_MAX_SIZE_PROPERTY;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 import java.io.IOException;
@@ -77,6 +78,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     // debug curl line max size
     private static final int MAX_CURL_LINE = 8 * 1024;
+
+    // send the bulk indexing command when this size is reached, optimal is 5-10m
+    private static final int DEFAULT_MAX_BULK_SIZE = 5 * 1024 * 1024;
 
     private final ElasticSearchAdminImpl esa;
 
@@ -150,6 +154,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     void processBulkIndexCommands(List<IndexingCommand> cmds) {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         Set<String> docIds = new HashSet<>(cmds.size());
+        int bulkSize = 0;
+        final int maxBulkSize = getMaxBulkSize();
         for (IndexingCommand cmd : cmds) {
             if (cmd.getType() == Type.DELETE || cmd.getType() == Type.UPDATE_DIRECT_CHILDREN) {
                 continue;
@@ -161,6 +167,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             try {
                 IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
                 if (idxRequest != null) {
+                    bulkSize += idxRequest.request().source().length();
                     bulkRequest.add(idxRequest);
                 }
             } catch (ConcurrentUpdateException e) {
@@ -170,7 +177,22 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             } catch (IllegalArgumentException e) {
                 log.error("Ignore indexing command in bulk, fail to create request: " + cmd, e);
             }
+            if (bulkSize > maxBulkSize) {
+                log.warn("Max bulk size reached " + bulkSize + ", sending bulk command");
+                sendBulkCommand(bulkRequest, bulkSize);
+                bulkRequest = esa.getClient().prepareBulk();
+                bulkSize = 0;
+            }
         }
+        sendBulkCommand(bulkRequest, bulkSize);
+    }
+
+    int getMaxBulkSize() {
+        String value = Framework.getProperty(INDEX_BULK_MAX_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_BULK_SIZE));
+        return Integer.parseInt(value);
+    }
+
+    void sendBulkCommand(BulkRequestBuilder bulkRequest, int bulkSize) {
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
                 logDebugMessageTruncated(String.format(
@@ -185,7 +207,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    protected void logBulkFailure(BulkResponse response) {
+    void logBulkFailure(BulkResponse response) {
         boolean isError = false;
         StringBuilder sb = new StringBuilder();
         sb.append("Ignore indexing of some docs more recent versions has already been indexed");
@@ -205,14 +227,14 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    protected void refreshIfNeeded(List<IndexingCommand> cmds) {
+    void refreshIfNeeded(List<IndexingCommand> cmds) {
         for (IndexingCommand cmd : cmds) {
             if (refreshIfNeeded(cmd))
                 return;
         }
     }
 
-    private boolean refreshIfNeeded(IndexingCommand cmd) {
+    boolean refreshIfNeeded(IndexingCommand cmd) {
         if (cmd.isSync()) {
             esa.refresh();
             return true;
