@@ -3,3 +3,4 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Snapshot Manager (Web UI)
 Bundle-SymbolicName: org.nuxeo.snapshot.web.ui;singleton:=true
 Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/nuxeo-tree-snapshot-webresources-contrib.xml

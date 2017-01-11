@@ -1,0 +1,76 @@
+<!--
+(C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+  Estelle Giuly <egiuly@nuxeo.com>
+-->
+
+<!--
+`nuxeo-snapshot-folder-button`
+@group Nuxeo UI
+@element nuxeo-snapshot-folder-button
+-->
+<dom-module id="nuxeo-snapshot-folder-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+      paper-dialog {
+        width: 100%;
+        height: 100%;
+        min-width: 480px;
+      }
+    </style>
+
+    <nuxeo-operation id="op" op="Document.CreateTreeSnapshot" input="[[document.uid]]"></nuxeo-operation>
+
+    <template is="dom-if" if="[[_isAvailable(document)]]">
+      <paper-icon-button icon="[[icon]]" on-tap="_toggle" noink></paper-icon-button>
+      <paper-tooltip>[[i18n('snapshotButton.tooltip')]]</paper-tooltip>
+    </template>
+
+    <paper-toast id="toast"></paper-toast>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-snapshot-folder-button',
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+      properties: {
+        document: Object,
+        icon: {
+          type: String,
+          value: 'icons:line-style'
+        }
+      },
+      _isAvailable: function(document) {
+        return document;
+      },
+      _toast: function(text) {
+        this.$.toast.hide();
+        this.$.toast.text = text;
+        this.$.toast.open();
+      },
+      _toggle: function() {
+        return this.$.op.execute().then(function() {
+          this._toast(this.i18n('app.document.snapshotCreated'));
+        }.bind(this));
+      }
+    });
+  </script>
+
+</dom-module>

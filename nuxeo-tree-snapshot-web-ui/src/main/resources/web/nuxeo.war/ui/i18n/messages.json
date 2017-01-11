@@ -1,3 +1,5 @@
 {
-  "label.document.type.snapshotablefolder": "Versionable Folder"
+  "app.document.snapshotCreated": "The folder has been versioned.",
+  "label.document.type.snapshotablefolder": "Versionable Folder",
+  "snapshotButton.tooltip": "Snapshot the folder"
 }
