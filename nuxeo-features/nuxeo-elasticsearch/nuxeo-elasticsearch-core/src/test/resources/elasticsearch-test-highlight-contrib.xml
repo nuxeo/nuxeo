@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.contrib">
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
+    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="mmapfs"
+      httpEnabled="true" />
+  </extension>
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
+    <elasticSearchIndex name="nxutest" type="doc" repository="test">
+      <settings>
+        {
+          "number_of_shards" : 1,
+          "number_of_replicas" : 0,
+          "analysis" : {
+            "filter" : {
+              "en_stem_filter" : {
+                "name" : "minimal_english",
+                "type" : "stemmer"
+              },
+              "en_stop_filter" : {
+                "stopwords" : [
+                  "_english_"
+                ],
+                "type" : "stop"
+              },
+              "word_delimiter_filter" : {
+                "type" : "word_delimiter",
+                "preserve_original" : true
+              }
+            },
+            "analyzer" : {
+              "en_analyzer" : {
+                "alias" : "fulltext",
+                "filter" : [
+                  "word_delimiter_filter",
+                  "lowercase",
+                  "en_stop_filter",
+                  "en_stem_filter",
+                  "asciifolding"
+                ],
+                "type" : "custom",
+                "tokenizer" : "standard"
+              }
+            }
+          }
+        }
+      </settings>
+      <mapping>
+        {
+          "_all" : {
+            "analyzer" : "fulltext"
+          },
+          "properties" : {
+            "dc:title" : {
+              "type" : "multi_field",
+              "fields" : {
+                "dc:title" : {
+                  "index" : "no",
+                  "include_in_all" : true,
+                  "type" : "string"
+                },
+                "fulltext" : {
+                  "type": "string",
+                  "analyzer" : "fulltext"
+                }
+              }
+            },
+            "ecm:binarytext" : {
+              "index" : "no",
+              "include_in_all" : true,
+              "type" : "string",
+              "analyzer" : "fulltext"
+            }
+          }
+        }
+      </mapping>
+    </elasticSearchIndex>
+  </extension>
+</component>
