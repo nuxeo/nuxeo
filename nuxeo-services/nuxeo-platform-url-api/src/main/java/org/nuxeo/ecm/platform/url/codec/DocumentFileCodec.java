@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: DocumentFileCodec.java 29556 2008-01-23 00:59:39Z jcarsique $
  */
-
 package org.nuxeo.ecm.platform.url.codec;
 
 import java.io.UnsupportedEncodingException;
@@ -28,8 +25,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -53,8 +48,6 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     public static final String FILENAME_PROPERTY_PATH_KEY = "FILENAME_PROPERTY_PATH";
 
     public static final String FILENAME_KEY = "FILENAME";
-
-    private static final Log log = LogFactory.getLog(DocumentFileCodec.class);
 
     // nxdoc/server/docId/property_path/filename/?requestParams
     public static final String URLPattern = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9/:\\-\\.\\]\\[]*))+(/([^\\?]*))+(\\?)?(.*)?";
@@ -83,7 +76,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
             buf.append("/");
             buf.append(URIUtils.quoteURIPathToken(filename));
             String uri = buf.toString();
-            Map<String, String> requestParams = new HashMap<String, String>(docView.getParameters());
+            Map<String, String> requestParams = new HashMap<>(docView.getParameters());
             requestParams.remove(FILE_PROPERTY_PATH_KEY);
             requestParams.remove(FILENAME_KEY);
             return URIUtils.addParametersToURIQuery(uri, requestParams);
@@ -112,7 +105,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
                 // get other parameters
 
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<>();
                 if (m.groupCount() >= 4) {
                     String filePropertyPath = m.group(4);
                     params.put(FILE_PROPERTY_PATH_KEY, filePropertyPath);
