@@ -2860,7 +2860,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         Properties props = createProperties("dc:title", "newtitle");
         byte[] bytes = "foo-bar".getBytes("UTF-8");
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        ContentStream cs = new ContentStreamImpl("test.pdf", BigInteger.valueOf(bytes.length), "application/pdf", in);
+        ContentStream cs = new ContentStreamImpl("test.txt", BigInteger.valueOf(bytes.length), "text/plain", in);
 
         Holder<String> idHolder = new Holder<>(id);
         harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/comment-listener-contrib.xml");
@@ -2885,9 +2885,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // check changes applied
         checkValue("dc:title", "newtitle", ver);
         ContentStream cs2 = objService.getContentStream(repositoryId, ver.getId(), null, null, null, null);
-        assertEquals("application/pdf", cs2.getMimeType());
+        assertEquals("text/plain", cs2.getMimeType());
         assertEquals(bytes.length, cs2.getLength());
-        assertEquals("test.pdf", cs2.getFileName());
+        assertEquals("test.txt", cs2.getFileName());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         IOUtils.copy(cs2.getStream(), os);
         assertEquals("foo-bar", os.toString("UTF-8"));
