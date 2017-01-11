@@ -16,15 +16,15 @@
  * Contributors:
  *     Olivier Grisel <ogrisel@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Mincong Huang <mhuang@nuxeo.com>
  */
 package org.nuxeo.drive.service;
-
-import java.io.Serializable;
 
 /**
  * Core event related constants for Nuxeo Drive.
  *
  * @author Antoine Taillefer
+ * @author Mincong Huang
  */
 public final class NuxeoDriveEvents {
 
@@ -42,7 +42,7 @@ public final class NuxeoDriveEvents {
 
     public static final String IMPACTED_USERNAME_PROPERTY = "impactedUserName";
 
-    public static final Serializable EVENT_CATEGORY = "NuxeoDrive";
+    public static final String EVENT_CATEGORY = "NuxeoDrive";
 
     public static final String VIRTUAL_EVENT_CREATED = "virtualEventCreated";
 
