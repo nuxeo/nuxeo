@@ -102,8 +102,7 @@ public final class FileManagerUtils {
      */
     public static DocumentModel getExistingDocByFileName(CoreSession documentManager, String path, String filename) {
         // We must use the "file:content/name" sub-property which is the only
-        // one on which we can rely (and not "file:filename" which can possibly
-        // not be set), see https://jira.nuxeo.com/browse/NXP-10565
+        // one on which we can rely
         // Note that the "file:content" property is handled in a particular way
         // by NXQL, so we must use "content/name" instead of
         // "file:content/name".

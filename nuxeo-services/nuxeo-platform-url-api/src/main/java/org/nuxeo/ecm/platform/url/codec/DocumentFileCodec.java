@@ -41,12 +41,6 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
     public static final String FILE_PROPERTY_PATH_KEY = "FILE_PROPERTY_PATH";
 
-    /**
-     * @deprecated soon will be part of the file property, passed as parameter for now
-     */
-    @Deprecated
-    public static final String FILENAME_PROPERTY_PATH_KEY = "FILENAME_PROPERTY_PATH";
-
     public static final String FILENAME_KEY = "FILENAME";
 
     // nxdoc/server/docId/property_path/filename/?requestParams
@@ -146,10 +140,10 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         String filename = docView.getParameter(FILENAME_KEY);
         if (filename == null) {
             // try to get it from document
-            String propertyPath = docView.getParameter(FILENAME_PROPERTY_PATH_KEY);
+            String propertyPath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
             String propertyName = DocumentModelUtils.decodePropertyName(propertyPath);
             if (propertyName != null) {
-                filename = (String) DocumentModelUtils.getPropertyValue(doc, propertyName);
+                filename = (String) DocumentModelUtils.getPropertyValue(doc, propertyName + "/filename");
             }
         }
         return filename;

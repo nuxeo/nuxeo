@@ -170,7 +170,7 @@
       <translated>true</translated>
       <fields>
         <field>file:content</field>
-        <field>file:filename</field>
+        <field>file:content/filename</field>
       </fields>
     </widget>
 

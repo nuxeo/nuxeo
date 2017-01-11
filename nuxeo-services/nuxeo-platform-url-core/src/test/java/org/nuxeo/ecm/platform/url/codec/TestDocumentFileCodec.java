@@ -21,12 +21,13 @@
 
 package org.nuxeo.ecm.platform.url.codec;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -150,25 +151,6 @@ public class TestDocumentFileCodec {
         assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
         assertEquals("my [doc]? \u00e9.odt", params.get(DocumentFileCodec.FILENAME_KEY));
         assertEquals("bar", params.get("foo"));
-    }
-
-    // do the same with filename property path
-    @Test
-    public void testGetDocumentViewFromUrlNoViewId() {
-        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
-        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt?FILENAME_PROPERTY_PATH=file:filename";
-        DocumentView docView = codec.getDocumentViewFromUrl(url);
-
-        DocumentLocation docLoc = docView.getDocumentLocation();
-        assertEquals("demo", docLoc.getServerName());
-        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"), docLoc.getDocRef());
-        assertNull(docView.getViewId());
-        assertNull(docView.getSubURI());
-
-        Map<String, String> params = docView.getParameters();
-        assertEquals("file:content", params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
-        assertEquals("mydoc.odt", params.get(DocumentFileCodec.FILENAME_KEY));
-        assertEquals("file:filename", params.get(DocumentFileCodec.FILENAME_PROPERTY_PATH_KEY));
     }
 
 }
