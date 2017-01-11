@@ -120,6 +120,26 @@ public interface PageProviderService extends Serializable {
             List<QuickFilter> quickFilters, Object... parameters);
 
     /**
+     * Returns an instance of page provider with given name.
+     *
+     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
+     * @since 9.1
+     */
+    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
+            List<String> highlights, Object... parameters);
+
+    /**
+     * Returns an instance of page provider with given name.
+     *
+     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
+     * @since 9.1
+     */
+    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
+            List<QuickFilter> quickFilters, List<String> highlights, Object... parameters);
+
+    /**
      * @since 6.0
      */
     void registerPageProviderDefinition(PageProviderDefinition desc);
