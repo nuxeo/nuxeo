@@ -271,8 +271,9 @@ public class DBSCachingRepository implements DBSRepository {
     private void invalidateAll(Collection<String> ids) {
         cache.invalidateAll(ids);
         if (clusterInvalidator != null) {
-            DBSInvalidations invalidations = new DBSInvalidations();
-            invalidations.addAll(ids);
+            synchronized (invalidations) {
+                invalidations.addAll(ids);
+            }
         }
     }
 
