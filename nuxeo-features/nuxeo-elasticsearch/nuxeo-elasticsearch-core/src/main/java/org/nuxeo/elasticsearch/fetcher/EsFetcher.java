@@ -18,10 +18,16 @@
  */
 package org.nuxeo.elasticsearch.fetcher;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.highlight.HighlightField;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -44,6 +50,18 @@ public class EsFetcher extends Fetcher {
         for (SearchHit hit : getResponse().getHits()) {
             // TODO: this does not work on multi repo
             doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid).getDocumentModel();
+            // Add highlight if it exists
+            Map<String, HighlightField> esHighlights = hit.highlightFields();
+            if (!esHighlights.isEmpty()) {
+                Map<String, List<String>> fields = new HashMap<>();
+                for (String field : esHighlights.keySet()) {
+                    fields.put(field, new ArrayList<>());
+                    for (Text fragment : esHighlights.get(field).getFragments()) {
+                        fields.get(field).add(fragment.toString());
+                    }
+                }
+                doc.putContextData(HIGHLIGHT_CTX_DATA, (Serializable) fields);
+            }
             ret.add(doc);
         }
         return ret;

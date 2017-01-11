@@ -120,6 +120,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      */
     protected List<QuickFilter> quickFilters;
 
+    protected List<String> highlights;
+
     protected String errorMessage;
 
     protected Throwable error;
@@ -414,6 +416,16 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             SortInfo sortInfo = new SortInfo(sortColumn, sortAscending);
             return sortInfos.indexOf(sortInfo);
         }
+    }
+
+    @Override
+    public List<String> getHighlights() {
+        return highlights;
+    }
+
+    @Override
+    public void setHighlights(List<String> highlights) {
+        this.highlights = highlights;
     }
 
     @Override

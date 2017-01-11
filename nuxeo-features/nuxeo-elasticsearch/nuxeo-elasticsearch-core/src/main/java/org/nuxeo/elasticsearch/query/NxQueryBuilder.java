@@ -93,6 +93,8 @@ public class NxQueryBuilder {
 
     private boolean esOnly = false;
 
+    private List<String> highlightFields;
+
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
         repositories.add(coreSession.getRepositoryName());
@@ -193,6 +195,14 @@ public class NxQueryBuilder {
         if (aggregates != null && !aggregates.isEmpty()) {
             this.aggregates.addAll(aggregates);
         }
+        return this;
+    }
+
+    /**
+     * @since 9.1
+     */
+    public NxQueryBuilder highlight(List<String> highlightFields) {
+        this.highlightFields = highlightFields;
         return this;
     }
 
@@ -327,7 +337,16 @@ public class NxQueryBuilder {
         if (aggFilter != null) {
             request.setPostFilter(aggFilter);
         }
-        // Fields selection
+
+        // Add highlighting
+        if (highlightFields != null && !highlightFields.isEmpty()) {
+            for (String field : highlightFields) {
+                request.addHighlightedField(field);
+            }
+            request.setHighlighterRequireFieldMatch(false);
+        }
+
+       // Fields selection
         if (!isFetchFromElasticsearch()) {
             request.addFields(getSelectFields());
         }
