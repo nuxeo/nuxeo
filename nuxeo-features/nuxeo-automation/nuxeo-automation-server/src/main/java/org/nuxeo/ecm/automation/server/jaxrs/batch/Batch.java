@@ -78,7 +78,7 @@ public class Batch {
 
         uploadInProgress.incrementAndGet();
         try {
-            File tmp = new File(new Path(baseDir).append(name).toString());
+            File tmp = new File(new Path(baseDir).append(String.valueOf(System.nanoTime())).toString());
             FileUtils.copyToFile(is, tmp);
             FileBlob blob = new FileBlob(tmp);
             if (mime != null) {
