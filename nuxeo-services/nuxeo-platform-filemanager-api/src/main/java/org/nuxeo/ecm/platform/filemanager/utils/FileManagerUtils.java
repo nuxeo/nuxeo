@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
 package org.nuxeo.ecm.platform.filemanager.utils;
 
 import java.io.File;
@@ -103,8 +100,7 @@ public final class FileManagerUtils {
     /**
      * Looks if an existing Document with the same filename exists.
      */
-    public static DocumentModel getExistingDocByFileName(CoreSession documentManager, String path, String filename)
-            {
+    public static DocumentModel getExistingDocByFileName(CoreSession documentManager, String path, String filename) {
         // We must use the "file:content/name" sub-property which is the only
         // one on which we can rely (and not "file:filename" which can possibly
         // not be set), see https://jira.nuxeo.com/browse/NXP-10565
@@ -117,8 +113,7 @@ public final class FileManagerUtils {
     /**
      * Looks if an existing Document with the same title exists.
      */
-    public static DocumentModel getExistingDocByTitle(CoreSession documentManager, String path, String title)
-            {
+    public static DocumentModel getExistingDocByTitle(CoreSession documentManager, String path, String title) {
         return getExistingDocByPropertyName(documentManager, path, title, "dc:title");
     }
 
@@ -131,8 +126,8 @@ public final class FileManagerUtils {
         DocumentModel existing = null;
         String parentId = documentManager.getDocument(new PathRef(path)).getId();
         String query = "SELECT * FROM Document WHERE ecm:parentId = '" + parentId + "' AND " + propertyName + " = '"
-                + value.replace("'", "\\\'") + "' AND ecm:currentLifeCycleState != '"
-                + LifeCycleConstants.DELETED_STATE + "'";
+                + value.replace("'", "\\\'") + "' AND ecm:currentLifeCycleState != '" + LifeCycleConstants.DELETED_STATE
+                + "'";
         DocumentModelList docs = documentManager.query(query, 1);
         if (docs.size() > 0) {
             existing = docs.get(0);
