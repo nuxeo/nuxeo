@@ -100,9 +100,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/rest_document_link_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/rest_document_link_action_template.xhtml
       </property>
       <property name="dev_template">
