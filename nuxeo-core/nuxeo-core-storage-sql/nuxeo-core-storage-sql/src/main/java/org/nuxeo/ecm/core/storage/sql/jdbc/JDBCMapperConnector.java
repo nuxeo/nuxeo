@@ -23,25 +23,35 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.transaction.SystemException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class JDBCMapperConnector implements InvocationHandler {
 
     protected final Mapper mapper;
 
-    protected JDBCMapperConnector(Mapper mapper) {
+    protected final boolean noSharing;
+
+    protected final Function<Supplier<Object>,Object> defaultRunner;
+
+    protected JDBCMapperConnector(Mapper mapper, boolean noSharing) {
         this.mapper = mapper;
+        this.noSharing = noSharing;
+        defaultRunner = noSharing ? TransactionHelper::runInNewTransaction : TransactionHelper::runInTransaction;
     }
 
     protected Object doInvoke(Method method, Object[] args) throws Throwable {
         try {
             return method.invoke(mapper, args);
         } catch (InvocationTargetException cause) {
-            throw cause.getTargetException();
+            return cause.getTargetException();
         }
     }
 
@@ -80,25 +90,50 @@ public class JDBCMapperConnector implements InvocationHandler {
         if ("sendInvalidations".equals(name)) {
             return doInvoke(method, args);
         }
-        mapper.connect();
-        try {
-            return doInvoke(method, args);
-        } finally {
-            if (mapper.isConnected()) {
-                mapper.disconnect();
-            }
-        }
+        return doConnectAndInvoke(runnerOf(name), method, args);
     }
 
-    public static Mapper newConnector(Mapper mapper) {
+    protected Function<Supplier<Object>,Object> runnerOf(String name) {
+        if ("createDatabase".equals(name)) {
+            return TransactionHelper::runWithoutTransaction;
+        }
+        return defaultRunner;
+    }
+
+    protected Object doConnectAndInvoke(Function<Supplier<Object>, Object> runner, Method method, Object[] args)
+            throws Throwable {
+        Object result = runner.apply(() -> {
+            mapper.connect(noSharing);
+            try {
+                try {
+                    return doInvoke(method, args);
+                } catch (Throwable cause) {
+                    return cause;
+                }
+            } finally {
+                if (mapper.isConnected()) {
+                    mapper.disconnect();
+                }
+            }
+        });
+        if (result instanceof Throwable) {
+            if (result instanceof Exception) {
+                ExceptionUtils.checkInterrupt((Exception) result);
+            }
+            throw (Throwable) result;
+        }
+        return result;
+    }
+
+    public static Mapper newConnector(Mapper mapper, boolean noSharing) {
         return (Mapper) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class<?>[] { Mapper.class }, new JDBCMapperConnector(mapper));
+                new Class<?>[] { Mapper.class }, new JDBCMapperConnector(mapper, noSharing));
     }
 
     public static Mapper unwrap(Mapper mapper) {
         if (!Proxy.isProxyClass(mapper.getClass())) {
             return mapper;
         }
-        return ((JDBCMapperConnector)Proxy.getInvocationHandler(mapper)).mapper;
+        return ((JDBCMapperConnector) Proxy.getInvocationHandler(mapper)).mapper;
     }
 }

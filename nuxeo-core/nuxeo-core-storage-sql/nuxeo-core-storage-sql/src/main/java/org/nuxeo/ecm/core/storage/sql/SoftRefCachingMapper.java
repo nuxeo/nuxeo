@@ -229,8 +229,8 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void connect() {
-        mapper.connect();
+    public void connect(boolean noSharing) {
+        mapper.connect(noSharing);
     }
 
     @Override
