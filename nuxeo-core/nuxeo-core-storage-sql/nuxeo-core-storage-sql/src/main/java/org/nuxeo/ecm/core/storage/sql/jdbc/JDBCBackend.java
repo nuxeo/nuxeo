@@ -143,14 +143,11 @@ public class JDBCBackend implements RepositoryBackend {
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
         ClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
-        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, noSharing, repository);
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, repository);
         if (isPooledDataSource) {
-            mapper = JDBCMapperConnector.newConnector(mapper);
-            if (noSharing) {
-                mapper = JDBCMapperTxSuspender.newConnector(mapper);
-            }
+            mapper = JDBCMapperConnector.newConnector(mapper, noSharing);
         } else {
-            mapper.connect();
+            mapper.connect(false);
         }
         String repositoryName = repository.getName();
         if (FALSE.equals(initialized)) {

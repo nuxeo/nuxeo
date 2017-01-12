@@ -66,9 +66,6 @@ public class JDBCConnection {
 
     protected XAResource xaresource = new XAResourceConnectionAdapter(this);
 
-    /** Whether this connection must never be shared (long-lived). */
-    protected final boolean noSharing;
-
     // for tests
     public boolean countExecutes;
 
@@ -93,10 +90,9 @@ public class JDBCConnection {
      * @param sqlInfo the sql info
      * @param noSharing whether to use no-sharing mode for the connection
      */
-    public JDBCConnection(Model model, SQLInfo sqlInfo, boolean noSharing) {
+    public JDBCConnection(Model model, SQLInfo sqlInfo) {
         this.model = model;
         this.sqlInfo = sqlInfo;
-        this.noSharing = noSharing;
         dialect = sqlInfo.dialect;
         setClientInfo = Boolean.parseBoolean(Framework.getProperty(SET_CLIENT_INFO_PROP, SET_CLIENT_INFO_DEFAULT));
     }
@@ -108,7 +104,6 @@ public class JDBCConnection {
      */
     public JDBCConnection() {
         sqlInfo = null;
-        noSharing = false;
         model = null;
         dialect = null;
     }
@@ -136,9 +131,9 @@ public class JDBCConnection {
         return "repository_" + repositoryName;
     }
 
-    protected void openConnections() {
+    protected void openConnections(boolean noSharing) {
         try {
-            openBaseConnection();
+            openBaseConnection(noSharing);
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             dialect.performPostOpenStatements(connection);
         } catch (SQLException cause) {
@@ -146,7 +141,7 @@ public class JDBCConnection {
         }
     }
 
-    protected void openBaseConnection() throws SQLException {
+    protected void openBaseConnection(boolean noSharing) throws SQLException {
         String dataSourceName = getDataSourceName(getRepositoryName());
         connection = ConnectionHelper.getConnection(dataSourceName, noSharing);
         if (setClientInfo) {
