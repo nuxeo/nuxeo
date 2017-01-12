@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import static java.lang.Boolean.TRUE;
-import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
@@ -50,12 +49,12 @@ import javax.resource.spi.ConnectionManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -79,6 +78,8 @@ import com.marklogic.xcc.ContentFactory;
 import com.marklogic.xcc.ContentSource;
 import com.marklogic.xcc.ContentSourceFactory;
 import com.marklogic.xcc.ModuleInvoke;
+import com.marklogic.xcc.RequestOptions;
+import com.marklogic.xcc.ResultItem;
 import com.marklogic.xcc.ResultSequence;
 import com.marklogic.xcc.SecurityOptions;
 import com.marklogic.xcc.Session;
@@ -97,14 +98,14 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     public static final String DB_DEFAULT = "nuxeo";
 
-    protected static final String NOSCROLL_ID = "noscroll";
-
     protected ContentSource xccContentSource;
 
     /** Last value used from the in-memory sequence. Used by unit tests. */
     protected long sequenceLastValue;
 
     protected final List<MarkLogicRangeElementIndexDescriptor> rangeElementIndexes;
+
+    protected final CursorService<ResultSequence, ResultItem> cursorService = new CursorService<>();
 
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
@@ -163,6 +164,12 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     protected synchronized Long getNextSequenceId() {
         sequenceLastValue++;
         return Long.valueOf(sequenceLastValue);
+    }
+
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        cursorService.clear();
     }
 
     @Override
@@ -408,19 +415,21 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public ScrollResult scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveInSecond) {
-        // Not yet implemented, return all result in one shot for now
+        cursorService.checkForTimedOutScroll();
         MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator, null, false, rangeElementIndexes);
         String query = builder.buildQuery().getSearchQuery();
-        // Run query
-        try (Session session = xccContentSource.newSession()) {
-            AdhocQuery request = session.newAdhocQuery(query);
+        // Don't auto-close the session as we need to keep it open for next scroll
+        try {
+            Session session = xccContentSource.newSession();
+            // Build option to scroll results and not buffer them
+            RequestOptions options = new RequestOptions();
+            options.setCacheResult(false);
+            AdhocQuery request = session.newAdhocQuery(query, options);
             // ResultSequence will be closed by Session close
             ResultSequence rs = session.submitRequest(request);
-            return Arrays.stream(rs.asStrings())
-                         .map(MarkLogicStateDeserializer::deserialize)
-                         .map(state -> state.get(KEY_ID).toString())
-                         .collect(Collectors.collectingAndThen(Collectors.toList(),
-                                 ids -> new ScrollResultImpl(NOSCROLL_ID, ids)));
+            String scrollId = cursorService.registerCursorResult(
+                    new MarkLogicCursorResult(session, rs, batchSize, keepAliveInSecond));
+            return scroll(scrollId);
         } catch (RequestException e) {
             throw new NuxeoException("An exception happened during xcc call", e);
         }
@@ -428,11 +437,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public ScrollResult scroll(String scrollId) {
-        if (NOSCROLL_ID.equals(scrollId)) {
-            // there is only one batch
-            return emptyResult();
-        }
-        throw new NuxeoException("Unknown or timed out scrollId");
+        return cursorService.scroll(scrollId, item -> {
+            State state = MarkLogicStateDeserializer.deserialize(item.asInputStream());
+            return state.get(KEY_ID).toString();
+        });
     }
 
     @Override
