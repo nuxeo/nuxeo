@@ -269,10 +269,10 @@ public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
                     Object[] state = (Object[]) actualMap.get(idInActualMap);
                     Object[] restoredState = new Object[2];
 
-                    restoredState[0] = state[0];
-                    restoredState[1] = state[1];
-
                     if (state != null) {
+                        restoredState[0] = state[0];
+                        restoredState[1] = state[1];
+
                         RequestStateManager.set(ctx, RequestStateManager.ACTUAL_VIEW_MAP, idInActualMap);
                         if (state.length == 2 && state[1] != null) {
                             restoredState[1] = handleRestoreState(state[1]);
