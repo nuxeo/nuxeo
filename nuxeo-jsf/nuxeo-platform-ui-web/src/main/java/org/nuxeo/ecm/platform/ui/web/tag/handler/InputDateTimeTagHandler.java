@@ -21,11 +21,14 @@ package org.nuxeo.ecm.platform.ui.web.tag.handler;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRule;
 import javax.faces.view.facelets.MetaRuleset;
 import javax.faces.view.facelets.Metadata;
+import javax.faces.view.facelets.MetadataTarget;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 
@@ -73,7 +76,8 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         // showsTime is not configurable anymore
         m.ignore("showsTime");
         // locale ok
-        // timeZone ok
+        // timeZone ok, just need to convert string to a TimeZone instance
+        m.addRule(new TimeZoneMetaRule());
         // do not bind styleClass to inputClass anymore: styleClass can be
         // taken into account but the datetime widget itself, see NXP-14963.
         // m.alias("styleClass", "inputClass");
@@ -95,6 +99,28 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 
     }
 
+    class TimeZoneMetaRule extends MetaRule {
+
+        public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
+            if (!"timeZone".equals(name)) {
+                return null;
+            }
+            return new Metadata() {
+                @Override
+                public void applyMetadata(FaceletContext ctx, Object instance) {
+                    Object tz = attribute.getObject(ctx);
+                    if (tz instanceof TimeZone) {
+                        ((UICalendar) instance).setTimeZone((TimeZone) tz);
+                    } else if (tz instanceof String) {
+                        ((UICalendar) instance).setTimeZone(TimeZone.getTimeZone((String) tz));
+                    } else {
+                        throw new IllegalArgumentException("Invalid timezone: " + tz);
+                    }
+                }
+            };
+        }
+    }
+
     class TagMetaData extends Metadata {
 
         public TagMetaData() {
@@ -108,7 +134,11 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
                 return;
             }
             UICalendar c = (UICalendar) instance;
-            c.setTimeZone(TimeZoneSelector.instance().getTimeZone());
+            TimeZone tz = c.getTimeZone();
+            if (tz == null) {
+                // set default timezone only if not already specified in the component
+                c.setTimeZone(TimeZoneSelector.instance().getTimeZone());
+            }
             c.setLocale(LocaleSelector.instance().getLocale());
         }
     }
@@ -126,7 +156,6 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     }
 
     protected void setDefaultTime(UICalendar instance) {
-        UICalendar c = instance;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         format.setTimeZone(instance.getTimeZone());
         Date date;
@@ -135,6 +164,6 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         } catch (ParseException e) {
             return;
         }
-        c.setDefaultTime(date);
+        instance.setDefaultTime(date);
     }
 }
