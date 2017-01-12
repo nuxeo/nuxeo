@@ -76,12 +76,19 @@ OmniFaces.FixViewState = (function(window, document) {
       var form = document.forms[i];
       var viewStateElement = form[VIEW_STATE_PARAM];
 
-      if (form.method == "post" && !viewStateElement) {
-        // This POST form doesn't have a view state. This isn't right. Create it.
-        createViewStateElement(form, viewStateValue);
+      if (form.method == "post") {
+        if (!viewStateElement) {
+          // This POST form doesn't have a view state. This isn't right. Create it.
+          createViewStateElement(form, viewStateValue);
+        }
+        // https://jira.nuxeo.com/browse/NXP-19524
+        else if (!/.+:.+/.exec(viewStateElement.value)) {
+          viewStateElement.value = viewStateValue;
+        }
+
       }
     }
-  }
+  };
 
   // Private static functions ---------------------------------------------------------------------------------------
 
