@@ -99,7 +99,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 
     class TimeZoneMetaRule extends MetaRule {
 
-        public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
+        public Metadata applyRule(String name, final TagAttribute attribute, MetadataTarget meta) {
             if (!"timeZone".equals(name)) {
                 return null;
             }
