@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,7 +49,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.xa.XAException;
@@ -60,7 +58,6 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -137,8 +134,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param repository the repository
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
-            boolean noSharing, RepositoryImpl repository) {
-        super(model, sqlInfo, clusterInvalidator, repository.getInvalidationsPropagator(), noSharing);
+            RepositoryImpl repository) {
+        super(model, sqlInfo, clusterInvalidator, repository.getInvalidationsPropagator());
         this.pathResolver = pathResolver;
         this.repository = repository;
         clusteringEnabled = clusterInvalidator != null;
@@ -165,17 +162,10 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void createDatabase(String ddlMode) {
         // some databases (SQL Server) can't create tables/indexes/etc in a transaction, so suspend it
         try {
-            boolean suspend = !connection.getAutoCommit();
-            try {
-                if (suspend) {
-                    connection.setAutoCommit(true);
-                }
-                createTables(ddlMode);
-            } finally {
-                if (suspend) {
-                    connection.setAutoCommit(false);
-                }
+            if (connection.getAutoCommit() == false) {
+                throw new NuxeoException("connection should not run in transactional mode for DDL operations");
             }
+            createTables(ddlMode);
         } catch (SQLException e) {
             throw new NuxeoException(e);
         }
@@ -1272,68 +1262,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- Locking -----
      */
 
-    protected Connection connection(boolean autocommit) {
-        try {
-            connection.setAutoCommit(autocommit);
-        } catch (SQLException e) {
-            throw new NuxeoException("Cannot set auto commit mode onto " + this + "'s connection", e);
-        }
-        return connection;
-    }
-
-    /**
-     * Calls the callable, inside a transaction if in cluster mode.
-     * <p>
-     * Called under {@link #serializationLock}.
-     */
-    protected Lock callInTransaction(LockCallable callable, boolean tx) {
-        boolean ok = false;
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug("callInTransaction setAutoCommit " + !tx);
-            }
-            connection.setAutoCommit(!tx);
-        } catch (SQLException e) {
-            throw new NuxeoException("Cannot set auto commit mode onto " + this + "'s connection", e);
-        }
-        try {
-            Lock result = callable.call();
-            ok = true;
-            return result;
-        } finally {
-            if (tx) {
-                try {
-                    try {
-                        if (ok) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("callInTransaction commit");
-                            }
-                            connection.commit();
-                        } else {
-                            if (log.isDebugEnabled()) {
-                                log.debug("callInTransaction rollback");
-                            }
-                            connection.rollback();
-                        }
-                    } finally {
-                        // restore autoCommit=true
-                        if (log.isDebugEnabled()) {
-                            log.debug("callInTransaction restoring autoCommit=true");
-                        }
-                        connection.setAutoCommit(true);
-                    }
-                } catch (SQLException e) {
-                    throw new NuxeoException(e);
-                }
-            }
-        }
-    }
-
-    public interface LockCallable extends Callable<Lock> {
-        @Override
-        Lock call();
-    }
-
     @Override
     public Lock getLock(Serializable id) {
         if (log.isDebugEnabled()) {
@@ -1354,32 +1282,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (log.isDebugEnabled()) {
             log.debug("setLock " + id + " owner=" + lock.getOwner());
         }
-        SetLock call = new SetLock(id, lock);
-        return callInTransaction(call, clusteringEnabled);
-    }
-
-    protected class SetLock implements LockCallable {
-        protected final Serializable id;
-
-        protected final Lock lock;
-
-        protected SetLock(Serializable id, Lock lock) {
-            super();
-            this.id = id;
-            this.lock = lock;
+        Lock oldLock = getLock(id);
+        if (oldLock == null) {
+            Row row = new Row(Model.LOCK_TABLE_NAME, id);
+            row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
+            row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
+            insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
         }
-
-        @Override
-        public Lock call() {
-            Lock oldLock = getLock(id);
-            if (oldLock == null) {
-                Row row = new Row(Model.LOCK_TABLE_NAME, id);
-                row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
-                row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-                insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
-            }
-            return oldLock;
-        }
+        return oldLock;
     }
 
     @Override
@@ -1387,42 +1297,21 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (log.isDebugEnabled()) {
             log.debug("removeLock " + id + " owner=" + owner + " force=" + force);
         }
-        RemoveLock call = new RemoveLock(id, owner, force);
-        return callInTransaction(call, !force);
-    }
-
-    protected class RemoveLock implements LockCallable {
-        protected final Serializable id;
-
-        protected final String owner;
-
-        protected final boolean force;
-
-        protected RemoveLock(Serializable id, String owner, boolean force) {
-            super();
-            this.id = id;
-            this.owner = owner;
-            this.force = force;
-        }
-
-        @Override
-        public Lock call() {
-            Lock oldLock = force ? null : getLock(id);
-            if (!force && owner != null) {
-                if (oldLock == null) {
-                    // not locked, nothing to do
-                    return null;
-                }
-                if (!LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
-                    // existing mismatched lock, flag failure
-                    return new Lock(oldLock, true);
-                }
+        Lock oldLock = force ? null : getLock(id);
+        if (!force && owner != null) {
+            if (oldLock == null) {
+                // not locked, nothing to do
+                return null;
             }
-            if (force || oldLock != null) {
-                deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
+            if (!LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
+                // existing mismatched lock, flag failure
+                return new Lock(oldLock, true);
             }
-            return oldLock;
         }
+        if (force || oldLock != null) {
+            deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
+        }
+        return oldLock;
     }
 
     @Override
@@ -1563,8 +1452,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void connect() {
-        openConnections();
+    public void connect(boolean noSharing) {
+        openConnections(noSharing);
     }
 
     @Override
