@@ -1323,7 +1323,7 @@
   <mimetype>application/msword</mimetype>
   <extension>doc</extension>
   <description>%s</description>
-  <test offset="2080" type="string" comparator="=">Microsoft Word 6.0-HF35-SNAPSHOT Document</test>
+  <test offset="2080" type="string" comparator="=">Microsoft Word 6.0-HF36-SNAPSHOT Document</test>
 </match>
 <match>
   <mimetype>application/msword</mimetype>
@@ -1346,7 +1346,7 @@
 <match>
   <mimetype>application/msword</mimetype>
   <extension>doc</extension>
-  <description>Microsoft Word 6.0-HF35-SNAPSHOT Document</description>
+  <description>Microsoft Word 6.0-HF36-SNAPSHOT Document</description>
   <test offset="0" type="string" comparator="=">PO^Q`</test>
 </match>
 <match>
