@@ -23,10 +23,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -36,16 +39,19 @@ public class JDBCMapperConnector implements InvocationHandler {
 
     protected final boolean noSharing;
 
+    protected final Function<Supplier<Object>,Object> defaultRunner;
+
     protected JDBCMapperConnector(Mapper mapper, boolean noSharing) {
         this.mapper = mapper;
         this.noSharing = noSharing;
+        defaultRunner = noSharing ? TransactionHelper::runInNewTransaction : TransactionHelper::runInTransaction;
     }
 
     protected Object doInvoke(Method method, Object[] args) throws Throwable {
         try {
             return method.invoke(mapper, args);
         } catch (InvocationTargetException cause) {
-            throw cause.getTargetException();
+            return cause.getTargetException();
         }
     }
 
@@ -84,39 +90,39 @@ public class JDBCMapperConnector implements InvocationHandler {
         if ("sendInvalidations".equals(name)) {
             return doInvoke(method, args);
         }
+        return doConnectAndInvoke(runnerOf(name), method, args);
+    }
+
+    protected Function<Supplier<Object>,Object> runnerOf(String name) {
         if ("createDatabase".equals(name)) {
-            Transaction tx = TransactionHelper.suspendTransaction();
-            try {
-                return connectAndInvoke(method, args, true);
-            } finally {
-                TransactionHelper.resumeTransaction(tx);
-            }
+            return TransactionHelper::runWithoutTransaction;
         }
-        if (noSharing) {
-            Object result = TransactionHelper.runInNewTransaction(() -> {
+        return defaultRunner;
+    }
+
+    protected Object doConnectAndInvoke(Function<Supplier<Object>, Object> runner, Method method, Object[] args)
+            throws Throwable {
+        Object result = runner.apply(() -> {
+            mapper.connect(noSharing);
+            try {
                 try {
-                    return connectAndInvoke(method, args, true);
+                    return doInvoke(method, args);
                 } catch (Throwable cause) {
                     return cause;
                 }
-            });
-            if (result instanceof Throwable) {
-                throw (Throwable)result;
+            } finally {
+                if (mapper.isConnected()) {
+                    mapper.disconnect();
+                }
             }
-            return result;
-        }
-        return connectAndInvoke(method, args, false);
-    }
-
-    protected Object connectAndInvoke(Method method, Object[] args, boolean noSharing) throws Throwable {
-        mapper.connect(noSharing);
-        try {
-            return doInvoke(method, args);
-        } finally {
-            if (mapper.isConnected()) {
-                mapper.disconnect();
+        });
+        if (result instanceof Throwable) {
+            if (result instanceof Exception) {
+                ExceptionUtils.checkInterrupt((Exception) result);
             }
+            throw (Throwable) result;
         }
+        return result;
     }
 
     public static Mapper newConnector(Mapper mapper, boolean noSharing) {
