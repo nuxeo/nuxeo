@@ -18,9 +18,12 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -57,9 +60,17 @@ final class MarkLogicStateDeserializer {
     }
 
     public static State deserialize(String s) {
+        try (InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))) {
+            return deserialize(is);
+        } catch (IOException ioe) {
+            throw new NuxeoException("Error during deserialization", ioe);
+        }
+    }
+
+    public static State deserialize(InputStream is) {
         XMLEventReader xmler = null;
         try {
-            xmler = xmlInputFactory.createXMLEventReader(new StringReader(s));
+            xmler = xmlInputFactory.createXMLEventReader(is);
             XMLEvent event;
             while (xmler.hasNext()) {
                 event = xmler.nextEvent();
