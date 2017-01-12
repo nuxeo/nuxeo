@@ -130,7 +130,10 @@ Templating zones that can be filled when useAjaxForm is set to true:
         disableMultipartForm="#{disableMultipartForm}"
         styleClass="#{formStyleClass}"
         disableDoubleClickShield="#{disableDoubleClickShield}">
-        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+        <nxu:set var="useAjaxForm"
+          value="#{useAjaxForm and supportAjax}">
+          <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+        </nxu:set>
       </nxu:form>
     </nxu:set>
     </nxu:set>
