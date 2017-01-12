@@ -474,6 +474,34 @@ public class TransactionHelper {
     }
 
     /**
+     * Runs the given {@link Runnable} without a  transactional context. Will suspend and restore the transaction if one already
+     * exists.
+     *
+     * @param runnable the {@link Runnable}
+     * @since 9.1
+     */
+    public static void runWithoutTransaction(Runnable runnable) {
+        runWithoutTransaction(() -> { runnable.run(); return null; });
+    }
+
+
+    /**
+     * Calls the given {@link Supplier} without a transactional context. Will suspend and restore the transaction if one already
+     * exists.
+     *
+     * @param supplier the {@link Supplier}
+     * @since 9.1
+     */
+    public static <R> R runWithoutTransaction(Supplier<R> supplier) {
+        Transaction tx = suspendTransaction();
+        try {
+            return supplier.get();
+        } finally {
+            resumeTransaction(tx);
+        }
+    }
+
+    /**
      * Runs the given {@link Runnable} in a new transactional context. Will suspend and restore the transaction if one already
      * exists.
      *
