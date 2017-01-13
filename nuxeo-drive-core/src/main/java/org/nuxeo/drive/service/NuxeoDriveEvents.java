@@ -36,7 +36,7 @@ public final class NuxeoDriveEvents {
 
     public static final String ROOT_REGISTERED = "rootRegistered";
 
-    public static final String ABOUT_TO_UNREGISTER_ROOT = "aboutToUnRegisterRoot";
+    public static final String ABOUT_TO_UNREGISTER_ROOT = "aboutToUnregisterRoot";
 
     public static final String ROOT_UNREGISTERED = "rootUnregistered";
 
