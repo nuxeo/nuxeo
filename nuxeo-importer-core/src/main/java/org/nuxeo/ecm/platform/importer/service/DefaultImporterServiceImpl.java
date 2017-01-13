@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.importer.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
@@ -139,15 +140,16 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     protected ImporterDocumentModelFactory getDocumentModelFactory() {
-        if (documentModelFactory == null) {
-            if (docModelFactoryClass != null
-                    && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
-                try {
-                    setDocumentModelFactory(docModelFactoryClass.getConstructor(String.class, String.class).newInstance(
-                            getFolderishDocType(), getLeafDocType()));
-                } catch (ReflectiveOperationException e) {
-                    log.error(e, e);
+        if (documentModelFactory == null && docModelFactoryClass != null) {
+            try {
+                if (DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
+                    setDocumentModelFactory(
+                        docModelFactoryClass.getConstructor(String.class, String.class).newInstance(getFolderishDocType(), getLeafDocType()));
+                } else {
+                    setDocumentModelFactory(docModelFactoryClass.getConstructor().newInstance());
                 }
+            } catch (ReflectiveOperationException e) {
+                throw new NuxeoException(e);
             }
         }
         return documentModelFactory;
