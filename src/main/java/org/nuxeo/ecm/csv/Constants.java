@@ -27,4 +27,6 @@ public class Constants {
 
     public static String CSV_TYPE_COL = "type";
 
+    public static String CSV_UID_COL = "uid";
+
 }

@@ -21,6 +21,7 @@ package org.nuxeo.ecm.csv;
 import static org.nuxeo.ecm.csv.CSVImportLog.Status.ERROR;
 import static org.nuxeo.ecm.csv.Constants.CSV_NAME_COL;
 import static org.nuxeo.ecm.csv.Constants.CSV_TYPE_COL;
+import static org.nuxeo.ecm.csv.Constants.CSV_UID_COL;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -239,7 +241,7 @@ public class CSVImporterWork extends AbstractWork {
             logError(0, "No header line, empty file?", LABEL_CSV_IMPORTER_EMPTY_FILE);
             return;
         }
-        if (!header.containsKey(CSV_NAME_COL) || !header.containsKey(CSV_TYPE_COL)) {
+        if ( (!header.containsKey(CSV_NAME_COL) || !header.containsKey(CSV_TYPE_COL)) && !header.containsKey(CSV_UID_COL) ) {
             logError(0, "Missing 'name' or 'type' column", LABEL_CSV_IMPORTER_MISSING_NAME_OR_TYPE_COLUMN);
             return;
         }
@@ -293,11 +295,27 @@ public class CSVImporterWork extends AbstractWork {
      * @since 6.0
      */
     protected boolean importRecord(CSVRecord record, Map<String, Integer> header) {
+        if (record.isSet(CSV_UID_COL) && !StringUtils.isBlank(record.get(CSV_UID_COL))) {
+
+            DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(record.get(CSV_TYPE_COL));
+            if (docType == null) {
+                logError(record.getRecordNumber(), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE, record.get(CSV_TYPE_COL));
+                return false;
+            }
+            Map<String, Serializable> values = computePropertiesMap(record, docType, header);
+            if (values == null) {
+                // skip this line
+                return false;
+            }
+            return updateDocumentByUID(record.getRecordNumber(), record.get(CSV_UID_COL), docType, values);
+        }
+
         final String name = record.get(CSV_NAME_COL);
         final String type = record.get(CSV_TYPE_COL);
-        if (StringUtils.isBlank(name)) {
-            log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
-            logError(record.getRecordNumber(), "Missing 'name' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
+
+        if (StringUtils.isBlank(name) ) {
+            //log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
+            logError(record.getRecordNumber(), "Missing 'name' or 'uid' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
             return false;
         }
         if (StringUtils.isBlank(type)) {
@@ -316,8 +334,10 @@ public class CSVImporterWork extends AbstractWork {
             // skip this line
             return false;
         }
+
         return createOrUpdateDocument(record.getRecordNumber(), name, type, values);
     }
+
 
     /**
      * @since 6.0
@@ -329,7 +349,7 @@ public class CSVImporterWork extends AbstractWork {
             String lineValue = record.get(headerValue);
             lineValue = lineValue.trim();
             String fieldName = headerValue;
-            if (!CSV_NAME_COL.equals(headerValue) && !CSV_TYPE_COL.equals(headerValue)) {
+            if (!CSV_NAME_COL.equals(headerValue) && !CSV_TYPE_COL.equals(headerValue) && !CSV_UID_COL.equals(headerValue)) {
                 if (AUTHORIZED_HEADERS.contains(headerValue) && !StringUtils.isBlank(lineValue)) {
                     values.put(headerValue, lineValue);
                 } else {
@@ -498,6 +518,16 @@ public class CSVImporterWork extends AbstractWork {
                     LABEL_CSV_IMPORTER_DOCUMENT_ALREADY_EXISTS));
         }
         return false;
+    }
+
+    protected boolean updateDocumentByUID(long recordNumber, String uid, DocumentType docType, Map<String, Serializable> values) {
+        DocumentRef docRef = new IdRef(uid);
+        if (session.exists(docRef)) {
+            return updateDocument(recordNumber, docRef, values);
+        } else {
+            logError(recordNumber, "Document with UID '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_FILE, uid);
+            return false;
+        }
     }
 
     protected void logError(long lineNumber, String message, String localizedMessage, String... params) {
