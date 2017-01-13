@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Olivier Grisel <ogrisel@nuxeo.com>
+ *     Mincong Huang <mhuang@nuxeo.com>
  */
 package org.nuxeo.drive.listener;
 
@@ -216,7 +217,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         LogEntry entry = logger.newLogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
-        entry.setCategory((String) NuxeoDriveEvents.EVENT_CATEGORY);
+        entry.setCategory(NuxeoDriveEvents.EVENT_CATEGORY);
         entry.setDocUUID(docId);
         entry.setDocPath(docPath);
         entry.setPrincipalName(principal);

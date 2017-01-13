@@ -35,7 +35,7 @@
       <event>lifecycle_transition_event</event>
       <event>aboutToRemove</event>
       <event>beforeDocumentSecurityModification</event>
-      <event>aboutToUnRegisterRoot</event>
+      <event>aboutToUnregisterRoot</event>
       <event>beforeRemovedFromCollection</event>
     </listener>
 
