@@ -18,8 +18,10 @@ package org.nuxeo.ecm.platform.importer.queue.manager;/*
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -68,4 +70,9 @@ public class BQManager extends AbstractQueuesManager {
         queues.get(queue).put(node);
     }
 
+    @Override
+    public void close() {
+        queues.stream().filter(Objects::nonNull).forEach(BlockingQueue::clear);
+        queues.clear();
+    }
 }

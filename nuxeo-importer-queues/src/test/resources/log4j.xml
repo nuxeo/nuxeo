@@ -6,7 +6,7 @@
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
-    <param name="Threshold" value="INFO" />
+    <param name="Threshold" value="WARN" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m%n" />
     </layout>
@@ -16,23 +16,34 @@
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="File" value="target/trace.log" />
     <param name="Append" value="false" />
+    <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
     </layout>
   </appender>
 
-  <category name="org.nuxeo.ecm.platform.importer.queue" additivity="false">
-    <priority value="DEBUG" />
-    <appender-ref ref="FILE"/>
+  <category name="org.apache">
+    <priority value="WARN" />
   </category>
 
-  <category name="org.nuxeo.ecm.platform.importer.queue" additivity="false">
-    <priority value="INFO" />
-    <appender-ref ref="CONSOLE"/>
+  <category name="org.quartz">
+    <priority value="WARN" />
+  </category>
+
+  <!-- in debug mode to debug chronicle queue -->
+  <category name="net.openhft.chronicle">
+    <priority value="WARN" />
+  </category>
+
+  <category name="org.nuxeo">
+    <priority value="WARN" />
+  </category>
+
+  <category name="org.nuxeo.ecm.platform.importer.queue">
+    <priority value="DEBUG" />
   </category>
 
   <root>
-    <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
     <appender-ref ref="FILE" />
   </root>

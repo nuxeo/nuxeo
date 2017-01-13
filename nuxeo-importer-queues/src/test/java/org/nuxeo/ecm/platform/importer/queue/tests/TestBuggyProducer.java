@@ -38,6 +38,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -59,15 +61,15 @@ public class TestBuggyProducer {
         QueueImporter importer = new QueueImporter(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
-        BQManager qm = new BQManager(logger, 5, 42);
 
         // Given a producer that fail at node 20
         Producer producer = new BuggyNodeProducer(logger, 100, 0, 0, 0, 80);
         ConsumerFactory fact = new BuggyConsumerFactory(100);
 
         // When consumer are slow
-        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
-
+        try (final BQManager qm = new BQManager(logger, 5, 42)) {
+            importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
+        }
         // Commit for visibility with repeatable read isolation (mysql)
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

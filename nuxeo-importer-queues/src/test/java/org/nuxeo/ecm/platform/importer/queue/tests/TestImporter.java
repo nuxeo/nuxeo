@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.io.registry.context.DepthValues.root;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,14 +62,14 @@ public class TestImporter {
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
 
-        BQManager qm = new BQManager(logger, 2, 100);
-
         RandomTextSourceNode root = RandomTextSourceNode.init(1000, 1, true);
 
         Producer producer = new SourceNodeProducer(root, logger);
 
         ConsumerFactory fact = new ConsumerFactoryImpl();
-        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 5, fact);
+        try (BQManager qm = new BQManager(logger, 2, 100)) {
+            importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 5, fact);
+        }
         assertTrue(importer.getCreatedDocsCounter() > 1000);
 
     }

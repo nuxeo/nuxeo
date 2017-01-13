@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.importer.queue.tests;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -30,7 +31,12 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.xml.transform.Source;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -44,14 +50,36 @@ public class TestCQManager {
         //ImporterLogger logger = mock(ImporterLogger.class);
         // To get logs
         ImporterLogger logger = new BufferredLogger(log);
-        CQManager qm = new CQManager(logger, 5);
         SourceNode node = new BuggySourceNode(1, false, false);
-        qm.put(1, node);
-        qm.put(1, node);
-
-        SourceNode node1 = qm.poll(1);
-        System.out.println(node1.getName());
+        SourceNode node1;
+        try (final CQManager qm = new CQManager(logger, 5)) {
+            qm.put(1, node);
+            qm.put(1, node);
+            node1 = qm.poll(1);
+        }
+        // System.out.println(node1.getName());
         assertEquals(node.getName(), node1.getName());
+    }
+
+    @Test
+    public void testAutoCloseable() throws Exception {
+        ImporterLogger logger = new BufferredLogger(log);
+        SourceNode node = new BuggySourceNode(1, false, false);
+        CQManager qm = new CQManager(logger, 5);
+        qm.put(1, node);
+        qm.close();
+        try {
+            qm.poll(1);
+            fail("Not allowed to use a closed queues maanger");
+        } catch (IndexOutOfBoundsException e) {
+            // expected
+        }
+
+        try (final CQManager qm2 = new CQManager(logger, 5, true)) {
+            // reopen but at end
+            SourceNode node2 = qm2.poll(1, 5, TimeUnit.MILLISECONDS);
+            assertEquals(null, node2);
+        }
     }
 
 }

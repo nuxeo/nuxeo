@@ -22,6 +22,12 @@ This means that to work efficiently:
 When a consumer get an unexpeced error it stops processing nodes but it drains the queue to rejected nodes. This prevents to
 block the producer.
 
+
+## Warning
+
+This module is under developpent and still experimental, interfaces and implementations will change until it is announced as a stable module.
+
+
 ## TODO
 
 - Clean stats, add a retry counter

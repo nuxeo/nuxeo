@@ -16,27 +16,25 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * This interface should be renamed into CompoundQueues or simply MultiQueues
  *
  * @since 8.3
  */
-public interface QueuesManager {
+public interface QueuesManager extends AutoCloseable {
 
     /**
-     * Returns the number of queues
+     * Returns the number of queues.
      */
     int count();
 
     /**
-     * Put a node into a queue
+     * Put a node into a queue.
      *
-     * @throws InterruptedException
      */
     void put(int queue, SourceNode node) throws InterruptedException;
 
@@ -49,7 +47,6 @@ public interface QueuesManager {
     /**
      * Get a node from a queue, with a timeout.
      *
-     * @throws InterruptedException
      */
     SourceNode poll(int queue, long timeout, TimeUnit unit) throws InterruptedException;
 

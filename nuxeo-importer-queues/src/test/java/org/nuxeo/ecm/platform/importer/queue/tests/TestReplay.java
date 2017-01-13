@@ -74,16 +74,16 @@ public class TestReplay {
         QueueImporter importer = new QueueImporter(logger);
         ImporterFilter filter = new EventServiceConfiguratorFilter(true, false, true, false, true);
         importer.addFilter(filter);
-        BQManager qm = new BQManager(logger, 5, 42);
 
         // Given a producer that generate some buggy nodes.
         // index-0, index-30, index-50, index-60 and index-90 should not be created
         Producer producer = new BuggyNodeProducer(logger, 100, 30, 50, producerDelayMs, 0);
         ConsumerFactory fact = new BuggyConsumerFactory(consumerDelayMs);
 
-        // When the importer launches the import
-        importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
-
+        try (BQManager qm = new BQManager(logger, 5, 42)) {
+            // When the importer launches the import
+            importer.importDocuments(producer, qm, "/", session.getRepositoryName(), 9, fact);
+        }
         // Commit for visibility with repeatable read isolation (mysql)
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

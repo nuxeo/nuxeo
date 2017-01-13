@@ -57,4 +57,17 @@ public class BuggySourceNode implements SourceNode, Serializable {
         return exceptionBuggy;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof BuggySourceNode) {
+            BuggySourceNode other = (BuggySourceNode) obj;
+            return other.getName().equals(this.getName())  &&
+                    other.isExceptionBuggy() == this.isExceptionBuggy() &&
+                    other.isTransactionBuggy() == this.isTransactionBuggy();
+        }
+        return super.equals(obj);
+    }
 }

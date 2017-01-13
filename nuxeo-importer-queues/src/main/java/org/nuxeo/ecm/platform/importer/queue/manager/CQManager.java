@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
@@ -43,29 +44,36 @@ public class CQManager extends AbstractQueuesManager {
     final List<ExcerptTailer> tailers;
 
     public CQManager(ImporterLogger logger, int queuesNb) {
+        this(logger, queuesNb, false);
+    }
+
+    public CQManager(ImporterLogger logger, int queuesNb, boolean append) {
+        this(new File(System.getProperty("java.io.tmpdir"), "CQ"), logger, queuesNb, append);
+    }
+
+    public CQManager(File basePath, ImporterLogger logger, int queuesNb, boolean append) {
         super(logger, queuesNb);
         queues = new ArrayList<>(queuesNb);
         appenders = new ArrayList<>(queuesNb);
         tailers = new ArrayList<>(queuesNb);
-
-        // Create a path for the queue
-        File basePath = new File(System.getProperty("java.io.tmpdir"), "CQ");
-        basePath.mkdirs();
-        logger.debug("Use chronicle queue base: " + basePath);
-        for (int i = 0; i < queuesNb; i++) {
-            File path = new File(basePath, "Q" + i);
+        if (!append) {
             try {
-                deleteDirectory(path);
+                logger.info("Clearing previous queues in: " + basePath);
+                deleteDirectory(basePath);
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
             }
-            try (ChronicleQueue queue = SingleChronicleQueueBuilder.binary(path).build()) {
-                appenders.add(queue.acquireAppender());
-                tailers.add(queue.createTailer().toEnd());
-            }
+        }
+        logger.info("Using chronicle queues in: " + basePath);
+        basePath.mkdirs();
+
+        for (int i = 0; i < queuesNb; i++) {
+            File path = new File(basePath, "Q" + i);
+            ChronicleQueue queue = SingleChronicleQueueBuilder.binary(path).build();
+            appenders.add(queue.acquireAppender());
+            tailers.add(queue.createTailer().toEnd());
         }
     }
-
 
     @Override
     public void put(int queue, SourceNode node) throws InterruptedException {
@@ -87,7 +95,8 @@ public class CQManager extends AbstractQueuesManager {
     private SourceNode get(int queue) {
         final SourceNode[] ret = new SourceNode[1];
         if (tailers.get(queue).readDocument(w -> {
-            ret[0] = (SourceNode) w.read("node").object();})) {
+            ret[0] = (SourceNode) w.read("node").object();
+        })) {
             return ret[0];
         }
         return null;
@@ -100,7 +109,7 @@ public class CQManager extends AbstractQueuesManager {
             return ret;
         }
         final long deadline = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeout, unit);
-        while(ret == null && System.currentTimeMillis() < deadline) {
+        while (ret == null && System.currentTimeMillis() < deadline) {
             Thread.sleep(100);
             ret = get(queue);
         }
@@ -109,7 +118,7 @@ public class CQManager extends AbstractQueuesManager {
 
     @Override
     public boolean isEmpty(int queue) {
-        return ! tailers.get(queue).readingDocument().isPresent();
+        return !tailers.get(queue).readingDocument().isPresent();
     }
 
     @Override
@@ -117,4 +126,11 @@ public class CQManager extends AbstractQueuesManager {
         return 0;
     }
 
+    @Override
+    public void close() {
+        queues.stream().filter(Objects::nonNull).forEach(ChronicleQueue::close);
+        appenders.clear();
+        tailers.clear();
+        queues.clear();
+    }
 }
