@@ -81,8 +81,8 @@ import com.google.common.util.concurrent.MoreExecutors;
 /**
  * Component used to configure and manage ElasticSearch integration
  */
-public class ElasticSearchComponent extends DefaultComponent
-        implements ElasticSearchAdmin, ElasticSearchIndexing, ElasticSearchService {
+public class ElasticSearchComponent extends DefaultComponent implements ElasticSearchAdmin, ElasticSearchIndexing,
+        ElasticSearchService {
 
     private static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
 

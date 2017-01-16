@@ -121,4 +121,11 @@ final public class ElasticSearchConstants {
 
     public static final String EPOCH_MILLIS_FORMAT = "epoch_millis";
 
+    /**
+     * Highlight context data property name. Used to store highlights in document context data when fetching ES results
+     * 
+     * @since 9.1
+     */
+    public static final String HIGHLIGHT_CTX_DATA = "highlight";
+
 }

@@ -102,7 +102,7 @@ public interface PageProviderService extends Serializable {
     /**
      * Returns an instance of page provider with given name.
      *
-     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
+     * @see #getPageProvider(String, DocumentModel, List, Long, Long, Map, Object...)
      * @since 8.4
      */
     PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
@@ -122,12 +122,22 @@ public interface PageProviderService extends Serializable {
     /**
      * Returns an instance of page provider with given name.
      *
-     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
+     * @see #getPageProvider(String, List, Long, Long, Map, Object...)
+     * @since 9.1
+     */
+    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
+            Object... parameters);
+
+    /**
+     * Returns an instance of page provider with given name.
+     *
+     * @see #getPageProvider(String, DocumentModel, List, Long, Long, Map, Object...)
      * @since 9.1
      */
     PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
-            List<String> highlights, Object... parameters);
+            Long currentPage, Map<String, Serializable> properties, List<String> highlights,
+            List<QuickFilter> quickFilters, Object... parameters);
 
     /**
      * Returns an instance of page provider with given name.
@@ -137,7 +147,7 @@ public interface PageProviderService extends Serializable {
      */
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            List<QuickFilter> quickFilters, List<String> highlights, Object... parameters);
+            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters);
 
     /**
      * @since 6.0

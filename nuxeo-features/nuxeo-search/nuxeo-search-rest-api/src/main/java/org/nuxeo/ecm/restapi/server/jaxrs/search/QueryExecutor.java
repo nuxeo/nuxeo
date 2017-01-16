@@ -350,7 +350,7 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
             Map<String, Serializable> props, DocumentModel searchDocumentModel) throws RestOperationException {
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
                 (PageProvider<DocumentModel>) pageProviderService.getPageProvider(pageProviderName, searchDocumentModel,
-                        sortInfo, pageSize, currentPageIndex, props, quickFilters, highlights, parameters),
+                        sortInfo, pageSize, currentPageIndex, props, highlights, quickFilters, parameters),
                 null);
         if (res.hasError()) {
             RestOperationException err = new RestOperationException(res.getErrorMessage());
