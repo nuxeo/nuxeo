@@ -83,7 +83,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
 
     @Before
     public void setUp() throws IOException {
-        assumeTrue("Cannot set Unlimited JCE Policy", setUnlimitedJCEPolicy());
+        //assumeTrue("Cannot set Unlimited JCE Policy", setUnlimitedJCEPolicy());
         binaryManager = getBinaryManager();
         removeObjects();
     }
