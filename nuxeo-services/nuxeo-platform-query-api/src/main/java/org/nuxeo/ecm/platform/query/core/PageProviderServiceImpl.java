@@ -74,7 +74,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            List<QuickFilter> quickFilters, List<String> highlights, Object... parameters) {
+            List<String> highlights, List<QuickFilter> quickFilters, Object... parameters) {
 
         if (desc == null) {
             return null;
@@ -133,8 +133,16 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             List<QuickFilter> quickFilters, Object... parameters) {
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null, null,
-                parameters);
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null,
+                quickFilters, parameters);
+    }
+
+    @Override
+    public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, List<String> highlights, List<QuickFilter> quickFilters,
+            Object... parameters) {
+        return getPageProvider(name, (DocumentModel) null, sortInfos, pageSize, currentPage, properties, highlights,
+                quickFilters, parameters);
     }
 
     @Override
@@ -142,7 +150,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
             Object... parameters) {
 
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null,
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null, null,
                 parameters);
     }
 
@@ -196,19 +204,20 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         if (desc == null) {
             throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
         }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, parameters);
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, null, null,
+                parameters);
     }
 
     @Override
     public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage, Map<String, Serializable> properties, List<QuickFilter> quickFilters,
-            List<String> highlights, Object... parameters) {
+            Long pageSize, Long currentPage, Map<String, Serializable> properties, List<String> highlights,
+            List<QuickFilter> quickFilters, Object... parameters) {
         PageProviderDefinition desc = providerReg.getPageProvider(name);
         if (desc == null) {
             throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
         }
-        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, quickFilters,
-                highlights, parameters);
+        return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, highlights,
+                quickFilters, parameters);
     }
 
     @Override

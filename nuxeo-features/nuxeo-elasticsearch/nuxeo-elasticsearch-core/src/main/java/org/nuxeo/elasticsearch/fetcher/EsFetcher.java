@@ -18,6 +18,8 @@
  */
 package org.nuxeo.elasticsearch.fetcher;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.HIGHLIGHT_CTX_DATA;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,11 +56,13 @@ public class EsFetcher extends Fetcher {
             Map<String, HighlightField> esHighlights = hit.highlightFields();
             if (!esHighlights.isEmpty()) {
                 Map<String, List<String>> fields = new HashMap<>();
-                for (String field : esHighlights.keySet()) {
-                    fields.put(field, new ArrayList<>());
-                    for (Text fragment : esHighlights.get(field).getFragments()) {
-                        fields.get(field).add(fragment.toString());
+                for (Map.Entry<String, HighlightField> entry : esHighlights.entrySet()) {
+                    String field = entry.getKey();
+                    List<String> list = new ArrayList<>();
+                    for (Text fragment : entry.getValue().getFragments()) {
+                        list.add(fragment.toString());
                     }
+                    fields.put(field, list);
                 }
                 doc.putContextData(HIGHLIGHT_CTX_DATA, (Serializable) fields);
             }

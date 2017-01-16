@@ -22,6 +22,7 @@ package org.nuxeo.ecm.automation.core.operations.services;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,8 +168,8 @@ public class DocumentPageProviderOperation {
     /**
      * @since 6.0
      */
-    @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
-            ASC, DESC })
+    @Param(name = "sortOrder", required = false, description = "Sort order, "
+            + "ASC or DESC", widget = Constants.W_OPTION, values = { ASC, DESC })
     protected String sortOrder;
 
     /**
@@ -176,6 +177,12 @@ public class DocumentPageProviderOperation {
      */
     @Param(name = "quickFilters", required = false, description = "Quick filter " + "properties (separated by comma)")
     protected String quickFilters;
+
+    /**
+     * @since 9.1
+     */
+    @Param(name = "highlights", required = false, description = "Highlight properties (separated by comma)")
+    protected String highlight;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
@@ -205,7 +212,8 @@ public class DocumentPageProviderOperation {
                 }
                 for (int i = 0; i < sorts.length; i++) {
                     String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
+                    boolean sortAscending = (orders != null && orders.length > i
+                            && "asc".equals(orders[i].toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -246,6 +254,12 @@ public class DocumentPageProviderOperation {
             targetPageSize = pageSize.longValue();
         }
 
+        List<String> targetHighlights = null;
+        if (highlight != null) {
+            String[] highlights = highlight.split(",");
+            targetHighlights = Arrays.asList(highlights);
+        }
+
         DocumentModel searchDocumentModel = getSearchDocumentModel(session, ppService, providerName, namedParameters);
 
         PaginableDocumentModelListImpl res;
@@ -259,7 +273,8 @@ public class DocumentPageProviderOperation {
                 desc.getProperties().put("maxResults", maxResults);
             }
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider("", desc,
-                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, parameters);
+                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, targetHighlights, null,
+                    parameters);
             res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         } else {
             PageProviderDefinition pageProviderDefinition = ppService.getPageProviderDefinition(providerName);
@@ -280,7 +295,8 @@ public class DocumentPageProviderOperation {
 
             parameters = resolveParameters(parameters);
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(providerName,
-                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, quickFilterList, parameters);
+                    searchDocumentModel, sortInfos, targetPageSize, targetPage, props, targetHighlights,
+                    quickFilterList, parameters);
             res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
         }
         if (res.hasError()) {
