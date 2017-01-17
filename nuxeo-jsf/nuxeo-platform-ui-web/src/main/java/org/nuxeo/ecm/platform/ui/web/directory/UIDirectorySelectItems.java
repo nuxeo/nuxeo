@@ -35,6 +35,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * Component that deals with a list of select items from a directory.
@@ -48,7 +49,7 @@ public class UIDirectorySelectItems extends UISelectItems {
     public static final String COMPONENT_TYPE = UIDirectorySelectItems.class.getName();
 
     protected enum DirPropertyKeys {
-        directoryName, keySeparator, itemOrdering, allValues,
+        directoryName, keySeparator, itemOrdering, allValues, notDisplayDefaultOption,
         //
         displayAll, displayObsoleteEntries, filter, localize, dbl10n;
     }
@@ -115,6 +116,14 @@ public class UIDirectorySelectItems extends UISelectItems {
         getStateHelper().put(DirPropertyKeys.filter, filter);
     }
 
+    public boolean isNotDisplayDefaultOption() {
+        return (Boolean) getStateHelper().eval(DirPropertyKeys.notDisplayDefaultOption, Boolean.TRUE);
+    }
+
+    public void setNotDisplayDefaultOption(boolean notDisplayDefaultOption) {
+        getStateHelper().put(DirPropertyKeys.notDisplayDefaultOption, notDisplayDefaultOption);
+    }
+
     @Override
     @SuppressWarnings("boxing")
     public boolean isLocalize() {
@@ -164,6 +173,11 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
+            protected boolean isNotDisplayDefaultOption() {
+                return UIDirectorySelectItems.this.isNotDisplayDefaultOption();
+            }
+
+            @Override
             protected String getFilter() {
                 return UIDirectorySelectItems.this.getFilter();
             }
@@ -203,6 +217,14 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (!StringUtils.isBlank(ordering)) {
             Collections.sort(items, new DirectorySelectItemComparator(ordering, Boolean.valueOf(caseSensitive)));
         }
+
+        if (!isNotDisplayDefaultOption()) {
+            String defaultLabel = ComponentUtils.translate(getFacesContext(), "label.vocabulary.selectValue");
+            DirectorySelectItem defaultValue = new DirectorySelectItem("", defaultLabel);
+            // If isNotDisplayDefault is put to false, add a default select item to the top of the list
+            items.add(0, defaultValue);
+        }
+
         DirectorySelectItem[] res = items.toArray(new DirectorySelectItem[0]);
         if (isDisplayAll()) {
             setAllValues(res);
