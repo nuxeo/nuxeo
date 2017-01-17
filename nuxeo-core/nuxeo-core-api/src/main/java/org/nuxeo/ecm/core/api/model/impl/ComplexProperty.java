@@ -149,7 +149,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     public Property get(String name) throws PropertyNotFoundException {
         Field field = getType().getField(name);
         if (field == null) {
-            return null;
+            return computeRemovedProperty(name);
         }
         return getChild(field);
     }
@@ -226,6 +226,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
             }
             property.setValue(entry.getValue());
         }
+        setValueDeprecation(value, false);
     }
 
     @Override

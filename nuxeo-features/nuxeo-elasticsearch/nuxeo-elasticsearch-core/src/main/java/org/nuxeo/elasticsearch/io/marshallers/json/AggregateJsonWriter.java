@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -122,17 +124,21 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
 
     protected void writeBuckets(String fieldName, List<Bucket> buckets, Field field, JsonGenerator jg)
             throws IOException, JsonGenerationException {
+        // prepare document part in order to use property
+        Schema schema = field.getDeclaringType().getSchema();
+        DocumentPartImpl part = new DocumentPartImpl(schema);
+        // write data
         jg.writeArrayFieldStart(fieldName);
         for (Bucket bucket : buckets) {
             jg.writeStartObject();
 
             jg.writeObjectField("key", bucket.getKey());
 
-            Property prop = PropertyFactory.createProperty(null, field, Property.NONE);
+            Property prop = PropertyFactory.createProperty(part, field, Property.NONE);
             if (prop.isList()) {
                 ListType t = (ListType) prop.getType();
                 t.getField();
-                prop = PropertyFactory.createProperty(null, t.getField(), Property.NONE);
+                prop = PropertyFactory.createProperty(part, t.getField(), Property.NONE);
             }
             log.debug(String.format("Writing %s for field %s resolved to %s", fieldName, field.getName().toString(),
                     prop.getName()));

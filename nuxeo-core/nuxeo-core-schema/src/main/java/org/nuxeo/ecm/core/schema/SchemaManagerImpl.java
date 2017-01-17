@@ -294,10 +294,6 @@ public class SchemaManagerImpl implements SchemaManager {
         fields.clear(); // re-filled lazily
     }
 
-    /*
-     * ===== Configuration =====
-     */
-
     protected void recomputeConfiguration() {
         if (allConfigurations.isEmpty()) {
             prefetchInfo = null;

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/deprecated/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/deprecated/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:simpleType name="scalars">
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" />
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
+  <xs:complexType name="complex">
+    <xs:sequence>
+      <xs:element name="scalar" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- properties without fallback -->
+  <xs:element name="scalar" type="xs:string" />
+  <xs:element name="scalars" type="nxs:scalars" />
+  <xs:element name="complex" type="nxs:complex" />
+  <xs:element name="complexDep" type="nxs:complex" />
+
+  <!-- properties with fallback -->
+  <xs:element name="scalar2scalar" type="xs:string" />
+  <xs:element name="scalar2complex" type="xs:string" />
+  <xs:element name="complex2complex" type="nxs:complex" />
+
+  <!-- fallback properties -->
+  <xs:element name="scalarfallback" type="xs:string" />
+  <xs:element name="complexfallback" type="nxs:complex" />
+
+</xs:schema>

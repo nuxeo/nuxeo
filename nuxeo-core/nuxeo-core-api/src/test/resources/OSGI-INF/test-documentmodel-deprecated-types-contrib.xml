@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.tests.repo.core-types">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="core-types" src="schemas/core-types.xsd" />
+    <schema name="common" src="schemas/common.xsd" />
+    <schema name="file" src="schemas/file.xsd" />
+    <schema name="deprecated" src="schemas/deprecated.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="File" extends="Document">
+      <schema name="common" />
+      <schema name="file" />
+      <schema name="deprecated" />
+    </doctype>
+  </extension>
+
+</component>
