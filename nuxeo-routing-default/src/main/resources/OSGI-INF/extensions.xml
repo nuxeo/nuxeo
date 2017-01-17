@@ -115,9 +115,9 @@ WorkflowVariables["initiatorComment"]= NodeVariables["comment"];}</param>
     </chain>
     <chain id="logInAudit">
       <operation id="Audit.Log">
-        <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"Document refused":"Document validated"</param>
+        <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"chain.document.refused":"chain.document.validated"</param>
         <param type="string" name="category">Review workflow</param>
-        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["comment"]}</param>
+        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"chain.document.refused":"chain.document.validated"} the document with the following comment: @{NodeVariables["comment"]}</param>
       </operation>
     </chain>
     <chain id="nextAssignee">
