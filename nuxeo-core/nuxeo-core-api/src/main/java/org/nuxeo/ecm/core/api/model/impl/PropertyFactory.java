@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.model.impl;
 
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.deprecation.RemovedProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BinaryProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BooleanProperty;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.StringProperty;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.RemovedType;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -74,6 +76,8 @@ public class PropertyFactory {
             return new BlobProperty(parent, field, flags);
         case TypeConstants.EXTERNAL_CONTENT:
             return new ExternalBlobProperty(parent, field, flags);
+        case RemovedType.ID:
+            return new RemovedProperty(parent, field, flags);
         }
         if (type.isSimpleType()) {
             return new ScalarProperty(parent, field, flags);

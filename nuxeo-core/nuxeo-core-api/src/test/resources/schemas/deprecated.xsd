@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/deprecated/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/deprecated/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:complexType name="complex">
+    <xs:sequence>
+      <xs:element name="scalar" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="scalarfallback" type="xs:string" />
+  <xs:element name="complexfallback" type="nxs:complex" />
+
+</xs:schema>

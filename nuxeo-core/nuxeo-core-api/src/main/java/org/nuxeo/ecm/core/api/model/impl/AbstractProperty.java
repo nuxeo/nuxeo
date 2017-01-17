@@ -31,8 +31,11 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolverImpl;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+
+import com.google.common.base.Strings;
 
 public abstract class AbstractProperty implements Property {
 
@@ -303,6 +306,12 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public void setValue(Object value) throws PropertyException {
+        // 1. check if it's a deprecated property with a fallback property
+        Field field = getField();
+        if (field.isDeprecated() && !Strings.isNullOrEmpty(field.getFallbackXpath())) {
+            setValue('/' + field.getFallbackXpath(), value);
+            return;
+        }
         // 1. check the read only flag
         if (isReadOnly()) {
             throw new ReadOnlyPropertyException(getPath());
@@ -343,7 +352,9 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public Serializable getValue() throws PropertyException {
-        if (isPhantom() || isRemoved()) {
+        if (!(this instanceof DocumentPart) && getField().isDeprecated() && !Strings.isNullOrEmpty(getField().getFallbackXpath())) {
+            return getValue('/' + getField().getFallbackXpath());
+        } else if (isPhantom() || isRemoved()) {
             return getDefaultValue();
         }
         return internalGetValue();
@@ -420,6 +431,8 @@ public abstract class AbstractProperty implements Property {
                 if (property == null) {
                     throw new PropertyNotFoundException(path.toString(), "segment " + segments[i]
                             + " cannot be resolved");
+                } else if (property.getField().isDeprecated() && !Strings.isNullOrEmpty(property.getField().getFallbackXpath())) {
+                    property = resolvePath('/' + property.getField().getFallbackXpath());
                 }
             } else {
                 property = property.get(index);

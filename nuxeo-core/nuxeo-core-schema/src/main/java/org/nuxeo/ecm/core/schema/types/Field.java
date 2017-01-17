@@ -35,6 +35,8 @@ public interface Field extends Serializable {
 
     int CONSTANT = 2;
 
+    int DEPRECATED = 3;
+
     /**
      * Gets the field name.
      *
@@ -83,6 +85,14 @@ public interface Field extends Serializable {
     boolean isConstant();
 
     /**
+     * Checks whether this field is deprecated.
+     *
+     * @return true if the field is deprecated false otherwise
+     * @since 9.1
+     */
+    boolean isDeprecated();
+
+    /**
      * Sets the default value of this field.
      *
      * @param value the value to set
@@ -102,6 +112,13 @@ public interface Field extends Serializable {
      * @param isConstant
      */
     void setConstant(boolean isConstant);
+
+    /**
+     * Sets the deprecated flag.
+     *
+     *  @since 9.1
+     */
+    void setDeprecated(boolean isDeprecated);
 
     /**
      * Gets the maximum number this field may occurs in the owner type.
@@ -156,5 +173,20 @@ public interface Field extends Serializable {
      * @since 7.1
      */
     Set<Constraint> getConstraints();
+
+    /**
+     * Used when field is marked as deprecated.
+     *
+     * @return the fallback xpath to get/set property.
+     * @since 9.1
+     */
+    String getFallbackXpath();
+
+    /**
+     * Used when field is marked as deprecated.
+     *
+     * @since 9.1
+     */
+    void setFallbackXpath(String fallbackXpath);
 
 }

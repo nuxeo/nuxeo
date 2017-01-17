@@ -33,8 +33,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.QName;
+import org.nuxeo.ecm.core.schema.types.RemovedType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeException;
@@ -280,12 +283,56 @@ public class SchemaManagerImpl implements SchemaManager {
         recomputeFacets(); // depend on schemas
         recomputeDocumentTypes(); // depend on schemas and facets
         recomputeProxies(); // depend on schemas
+        recomputeDeprecatedFields(); // depend on schemas
         fields.clear(); // re-filled lazily
     }
 
     /*
      * ===== Configuration =====
      */
+
+    protected void recomputeDeprecatedFields() {
+        int step = 2;
+        if (step == 1) {
+            // First step, declare them manually
+            // Removed property
+            Schema commonSchema = schemas.get("common");
+            commonSchema.addField("size", RemovedType.INSTANCE, null, Field.DEPRECATED, null);
+            // Removed property with fallback
+            Schema fileSchema = schemas.get("file");
+            fileSchema.addField("filename", RemovedType.INSTANCE, null, Field.DEPRECATED, null);
+            // Deprecated property with fallback
+
+        } else if (step == 2) {
+            // Second step, declare them as a list
+            List<String> properties = Arrays.asList("common:size", "file:filename", "deprecated:scalar2scalar", "deprecated:scalar2complex", "deprecated:complex");
+            Map<String, List<String>> propertiesBySchema = properties.stream().collect(
+                    Collectors.groupingBy(p -> p.substring(0, p.indexOf(':')),
+                            Collectors.mapping(p -> p.substring(p.indexOf(':') + 1), Collectors.toList())));
+            for (Entry<String, List<String>> entry : propertiesBySchema.entrySet()) {
+                // First try to locate the deprecated property
+                Schema schema = schemas.get(entry.getKey());
+                // TODO do we handle schema deprecation ? or just throw an exception
+                for (String fieldName : entry.getValue()) {
+                    Field field = schema.getField(fieldName);
+                    if (field == null) {
+                        field = schema.addField(fieldName, RemovedType.INSTANCE, null, Field.DEPRECATED, null);
+                    } else {
+                        field.setDeprecated(true);
+                    }
+                    if ("scalar2scalar".equals(fieldName)) {
+                        field.setFallbackXpath("scalarfallback");
+                    } else if ("scalar2complex".equals(fieldName)) {
+                        field.setFallbackXpath("complexfallback/scalar");
+                    } else if ("complex".equals(fieldName)) {
+                        field.setFallbackXpath("complexfallback");
+                    } else if ("filename".equals(fieldName)) {
+                        field.setFallbackXpath("content/name");
+                    }
+                }
+            }
+        }
+    }
 
     protected void recomputeConfiguration() {
         if (allConfigurations.isEmpty()) {
