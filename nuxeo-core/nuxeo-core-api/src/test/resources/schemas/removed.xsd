@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/deprecated/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/deprecated/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:complexType name="complex">
+    <xs:sequence>
+      <xs:element name="scalar" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="complex2">
+    <xs:sequence>
+      <xs:element name="renamed" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="list">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complex" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complex" type="nxs:complex2" />
+  <xs:element name="list" type="nxs:list" />
+  <xs:element name="blobfallback" type="nxs:content" />
+
+  <!-- fallback properties -->
+  <xs:element name="scalarfallback" type="xs:string" />
+  <xs:element name="complexfallback" type="nxs:complex" />
+
+</xs:schema>

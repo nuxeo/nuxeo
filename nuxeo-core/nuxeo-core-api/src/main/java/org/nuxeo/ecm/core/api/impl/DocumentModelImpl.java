@@ -1311,6 +1311,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                     return schema.getName();
                 }
             }
+            // no property found, maybe it's a removed property
+            // search for the first matching removed property
+            // as removed schema is not yet support we can rely on docSchemas
+            for (String schemaName : docSchemas) {
+                if (schemaManager.isPropertyRemoved(schemaName, prop)) {
+                    if (returnName != null) {
+                        returnName[0] = prop;
+                    }
+                    return schemaName;
+                }
+            }
             return null;
         }
     }

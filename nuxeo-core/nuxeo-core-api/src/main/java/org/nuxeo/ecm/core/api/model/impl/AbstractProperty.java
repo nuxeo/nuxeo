@@ -20,9 +20,16 @@
 package org.nuxeo.ecm.core.api.model.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -38,6 +45,12 @@ public abstract class AbstractProperty implements Property {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(AbstractProperty.class);
+
+    protected final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
+            + "\\[(-?\\d+)\\]" // index in brackets - could be -1 if element is new to list
+    );
+
     /**
      * Whether or not this property is read only.
      */
@@ -51,6 +64,29 @@ public abstract class AbstractProperty implements Property {
     public boolean forceDirty = false;
 
     protected int flags;
+
+    protected static final Map<String, Map<String, String>> DEPRECATED_PROPERTIES = new HashMap<>();
+
+    static {
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("scalar", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("scalars", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("complexDep", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("complex/scalar", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("scalar2scalar", "scalarfallback");
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("scalar2complex", "complexfallback/scalar");
+        DEPRECATED_PROPERTIES.computeIfAbsent("deprecated", key -> new HashMap<>()).put("complex2complex", "complexfallback");
+        DEPRECATED_PROPERTIES.computeIfAbsent("removed", key -> new HashMap<>()).put("scalar", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("removed", key -> new HashMap<>()).put("complexRem", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("removed", key -> new HashMap<>()).put("complex/scalar", null);
+        DEPRECATED_PROPERTIES.computeIfAbsent("removed", key -> new HashMap<>()).put("scalar2scalar", "scalarfallback");
+        DEPRECATED_PROPERTIES.computeIfAbsent("removed", key -> new HashMap<>()).put("scalar2complex", "complexfallback/scalar");
+        DEPRECATED_PROPERTIES.computeIfAbsent("removed", key -> new HashMap<>()).put("complex2complex", "complexfallback");
+        DEPRECATED_PROPERTIES.computeIfAbsent("file", key -> new HashMap<>()).put("filename", "content/name");
+    }
+
+    protected Boolean isDeprecated;
+
+    protected Property deprecatedFallback;
 
     protected AbstractProperty(Property parent) {
         this.parent = parent;
@@ -115,7 +151,8 @@ public abstract class AbstractProperty implements Property {
             list.remove(this);
         } else if (!isPhantom()) { // remove from map is easier -> mark the
             // field as removed and remove the value
-            // do not remove the field if the previous value was null, except if its a property from a SimpleDocumentModel (forceDirty mode)
+            // do not remove the field if the previous value was null, except if its a property from a
+            // SimpleDocumentModel (forceDirty mode)
             Serializable previous = internalGetValue();
             init(null);
             if (previous != null || isForceDirty()) {
@@ -154,6 +191,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
+    @Deprecated
     public String getPath() {
         Path path = collectPath(new Path("/"));
         return path.toString();
@@ -319,6 +357,38 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    protected boolean isDeprecated() {
+        if (isDeprecated == null) {
+            boolean deprecated = false;
+            // compute the deprecated state
+            // first check if this property is a child of a deprecated property
+            if (parent instanceof AbstractProperty) {
+                AbstractProperty absParent = (AbstractProperty) parent;
+                deprecated = absParent.isDeprecated();
+                Property parentDeprecatedFallback = absParent.deprecatedFallback;
+                if (deprecated && parentDeprecatedFallback != null) {
+                    deprecatedFallback = parentDeprecatedFallback.resolvePath(getName());
+                }
+            }
+            if (!deprecated) {
+                // check if this property is deprecated
+                String name = getXPath();
+                String schema = getSchema().getName();
+                Map<String, String> deprecatedPropertiesForSchema = DEPRECATED_PROPERTIES.get(schema);
+                deprecated = deprecatedPropertiesForSchema != null && deprecatedPropertiesForSchema.containsKey(name);
+                if (deprecated) {
+                    // get the possible fallback
+                    String fallback = deprecatedPropertiesForSchema.get(name);
+                    if (fallback != null) {
+                        deprecatedFallback = resolvePath('/' + fallback);
+                    }
+                }
+            }
+            isDeprecated = Boolean.valueOf(deprecated);
+        }
+        return isDeprecated.booleanValue();
+    }
+
     @Override
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
@@ -338,10 +408,37 @@ public abstract class AbstractProperty implements Property {
         if (!isSameValue(normalizedValue, current) || isForceDirty()) {
             // 3. set the normalized value and
             internalSetValue(normalizedValue);
-            // 4. update flags
+            // 4. set also value to fallback if this property is deprecated and has one
+            setValueDeprecation(normalizedValue, true);
+            // 5. update flags
             setIsModified();
         } else {
             removePhantomFlag();
+        }
+    }
+
+    /**
+     * If this property is deprecated and has a fallback, set value to fallback.
+     */
+    protected void setValueDeprecation(Object value, boolean setFallback) throws PropertyException {
+        if (isDeprecated()) {
+            // First check if we need to set the fallback value
+            if (setFallback && deprecatedFallback != null) {
+                deprecatedFallback.setValue(value);
+            }
+            // Second check if we need to log deprecation message
+            if (log.isWarnEnabled()) {
+                StringBuilder msg = newDeprecatedMessage();
+                msg.append("Set value to deprecated property");
+                if (deprecatedFallback != null) {
+                    msg.append(" and to fallback property '").append(deprecatedFallback.getXPath()).append("'");
+                }
+                if (log.isTraceEnabled()) {
+                    log.warn(msg, new NuxeoException("debug stack trace"));
+                } else {
+                    log.warn(msg);
+                }
+            }
         }
     }
 
@@ -369,7 +466,63 @@ public abstract class AbstractProperty implements Property {
         if (isPhantom() || isRemoved()) {
             return getDefaultValue();
         }
-        return internalGetValue();
+        Serializable fallbackValue = getValueDeprecation();
+        return fallbackValue == null ? internalGetValue() : fallbackValue;
+    }
+
+    /**
+     * @return the fallback value if this property is deprecated and has a fallback, otherwise return null
+     */
+    protected Serializable getValueDeprecation() {
+        if (isDeprecated()) {
+            // Check if we need to log deprecation message
+            if (log.isWarnEnabled()) {
+                StringBuilder msg = newDeprecatedMessage();
+                if (deprecatedFallback == null) {
+                    msg.append("Return value from deprecated property");
+                } else {
+                    msg.append("Return value from '").append(deprecatedFallback.getXPath()).append(
+                            "' if not null, from deprecated property otherwise");
+                }
+                if (log.isTraceEnabled()) {
+                    log.warn(msg, new NuxeoException());
+                } else {
+                    log.warn(msg);
+                }
+            }
+            if (deprecatedFallback != null) {
+                return deprecatedFallback.getValue();
+            }
+        }
+        return null;
+    }
+
+    protected StringBuilder newDeprecatedMessage() {
+        StringBuilder builder = new StringBuilder().append("Property '")
+                                                   .append(getXPath())
+                                                   .append("' is marked as deprecated from '")
+                                                   .append(getSchema().getName())
+                                                   .append("' schema");
+        Property deprecatedParent = getDeprecatedParent();
+        if (deprecatedParent != this) {
+            builder.append(" because property '")
+                   .append(deprecatedParent.getXPath())
+                   .append("' is marked as deprecated");
+        }
+        return builder.append(", don't use it anymore. ");
+    }
+
+    /**
+     * @return the higher deprecated parent.
+     */
+    protected AbstractProperty getDeprecatedParent() {
+        if (parent instanceof AbstractProperty) {
+            AbstractProperty absParent = (AbstractProperty) parent;
+            if (absParent.isDeprecated()) {
+                return absParent.getDeprecatedParent();
+            }
+        }
+        return this;
     }
 
     @Override
@@ -426,8 +579,8 @@ public abstract class AbstractProperty implements Property {
         for (int i = start; i < segments.length; i++) {
             String segment = segments[i];
             if (property.isScalar()) {
-                throw new PropertyNotFoundException(path.toString(), "segment " + segment
-                        + " points to a scalar property");
+                throw new PropertyNotFoundException(path.toString(),
+                        "segment " + segment + " points to a scalar property");
             }
             String index = null;
             if (segment.endsWith("]")) {
@@ -436,19 +589,60 @@ public abstract class AbstractProperty implements Property {
                     throw new PropertyNotFoundException(path.toString(), "Parse error: no matching '[' was found");
                 }
                 index = segment.substring(p + 1, segment.length() - 1);
-                segment = segment.substring(0, p);
             }
             if (index == null) {
                 property = property.get(segment);
                 if (property == null) {
-                    throw new PropertyNotFoundException(path.toString(), "segment " + segments[i]
-                            + " cannot be resolved");
+                    throw new PropertyNotFoundException(path.toString(), "segment " + segment + " cannot be resolved");
                 }
             } else {
                 property = property.get(index);
             }
         }
         return property;
+    }
+
+    /**
+     * Returns the {@link RemovedProperty} if it is a removed property or null otherwise.
+     *
+     * @since 9.2
+     */
+    protected Property computeRemovedProperty(String name) {
+        String schema = getSchema().getName();
+        // name is only the property name we try to get, build its path in order to check it against configuration
+        String originalXpath = collectPath(new Path("/")).append(name).toString().substring(1);
+        String xpath;
+        // replace all something[..] in a path by *, for example files/item[2]/filename -> files/*/filename
+        if (originalXpath.indexOf('[') != -1) {
+            xpath = NON_CANON_INDEX.matcher(originalXpath).replaceAll("*");
+        } else {
+            xpath = originalXpath;
+        }
+        Map<String, String> deprecatedPropertiesForSchema = DEPRECATED_PROPERTIES.get(
+                getSchema().getName());
+        if (deprecatedPropertiesForSchema == null || !deprecatedPropertiesForSchema.containsKey(xpath)) {
+            return null;
+        }
+        String fallback = deprecatedPropertiesForSchema.get(xpath);
+        if (fallback == null) {
+            return new RemovedProperty(this, name);
+        }
+
+        // Retrieve fallback property
+        Matcher matcher = NON_CANON_INDEX.matcher(originalXpath);
+        while (matcher.find()) {
+            fallback = fallback.replaceFirst("\\*", matcher.group(0));
+        }
+        Property fallbackProperty;
+        // Handle creation of complex property in a list ie: xpath contains [-1]
+        int i = fallback.lastIndexOf("[-1]");
+        if (i != -1) {
+            // skip [-1]/ to get next property
+            fallbackProperty = get(fallback.substring(i + 5));
+        } else {
+            fallbackProperty = resolvePath('/' + fallback);
+        }
+        return new RemovedProperty(this, name, fallbackProperty);
     }
 
     @Override

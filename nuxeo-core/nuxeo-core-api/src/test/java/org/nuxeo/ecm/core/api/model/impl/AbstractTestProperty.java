@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.api.model.impl;
 
 import java.util.HashSet;
 
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
@@ -28,7 +29,14 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class })
+@Deploy("org.nuxeo.ecm.core.schema")
 public abstract class AbstractTestProperty {
 
     protected ScalarProperty getScalarProperty() {
