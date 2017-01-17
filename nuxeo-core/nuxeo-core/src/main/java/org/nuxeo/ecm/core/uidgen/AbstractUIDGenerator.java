@@ -47,13 +47,17 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         this.sequencer = sequencer;
     }
 
-    protected int getNext(final DocumentModel document) {
-        if (null == sequencer) {
+    protected int getNext(DocumentModel document) {
+        return (int) getNextLong(document);
+    }
+
+    protected long getNextLong(DocumentModel document) {
+        if (sequencer == null) {
             throw new IllegalStateException("sequencer not defined");
         }
         final String key = getSequenceKey(document);
         assert key != null;
-        return sequencer.getNext(key);
+        return sequencer.getNextLong(key);
     }
 
     @Override
