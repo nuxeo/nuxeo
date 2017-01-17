@@ -54,6 +54,8 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     protected abstract boolean isDisplayObsoleteEntries();
 
+    protected abstract boolean isNotDisplayDefaultOption();
+
     protected abstract DirectorySelectItem createSelectItem(String label, Long ordering);
 
     protected abstract String[] retrieveSelectEntryId();
