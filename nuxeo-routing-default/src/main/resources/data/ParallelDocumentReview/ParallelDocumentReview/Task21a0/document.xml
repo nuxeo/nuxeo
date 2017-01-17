@@ -48,7 +48,7 @@
     <rnode:taskNotificationTemplate/>
     <rnode:transitions>
       <transition>
-        <chain/>
+        <chain><![CDATA[]]></chain>
         <condition><![CDATA[true]]></condition>
         <name><![CDATA[automatic_transitionTask21a0]]></name>
         <targetId><![CDATA[Task2556]]></targetId>

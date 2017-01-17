@@ -33,5 +33,5 @@
     </xs:sequence> 
   </xs:complexType>  
   <xs:element name="participants" type="nxs:stringList"/>
-  <xs:element name="validationOrReview" type="xs:string" default="validation"/>
+  <xs:element name="validationOrReview" type="xs:string"/>
 </xs:schema>
