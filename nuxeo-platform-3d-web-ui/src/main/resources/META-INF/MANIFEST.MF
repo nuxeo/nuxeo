@@ -4,6 +4,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Version: 1.0.0
 Bundle-Name: org.nuxeo.ecm.platform.threed.web.ui
-Nuxeo-Component: OSGI-INF/nuxeothreed-webresources-contrib.xml
+Nuxeo-Component: OSGI-INF/threed-webresources-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.platform.threed.web.ui;singleton:=true

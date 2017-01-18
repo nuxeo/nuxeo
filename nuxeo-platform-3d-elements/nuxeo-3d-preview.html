@@ -64,7 +64,7 @@ Example - Load a ThreeD document:
         </nuxeo-3d-viewer>
       </template>
       <template is="dom-if" if="{{!_hasItems(document.properties.threed:transmissionFormats)}}">
-        <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable']]</p>
+        <p>[[i18n('threeDViewLayout.transmissionFormats.notAvailable')]]</p>
       </template>
     </template>
     <template is="dom-if" if="{{!document.properties.file:content}}">

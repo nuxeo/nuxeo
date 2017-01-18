@@ -8,12 +8,16 @@
     <resource name="nuxeo-threed.html" type="import" shrinkable="false">
       <uri>/ui/nuxeo-threed/nuxeo-threed.html</uri>
     </resource>
+    <resource name="threed.svg" type="import" shrinkable="false">
+      <uri>/ui/images/doctypes/threed.svg</uri>
+    </resource>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
     <bundle name="web-ui">
       <resources append="true">
         <resource>nuxeo-threed.html</resource>
+        <resource>threed.svg</resource>
       </resources>
     </bundle>
   </extension>
