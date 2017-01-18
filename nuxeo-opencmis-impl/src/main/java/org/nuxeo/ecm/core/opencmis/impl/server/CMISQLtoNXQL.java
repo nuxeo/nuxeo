@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ public class CMISQLtoNXQL {
 
     // list of SQL column where NULL (missing value) should be treated as
     // Boolean.FALSE in a query result
-    protected static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(Arrays.asList(NXQL.ECM_ISVERSION,
+    protected static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<>(Arrays.asList(NXQL.ECM_ISVERSION,
             NXQL.ECM_ISLATESTVERSION, NXQL.ECM_ISLATESTMAJORVERSION, NXQL.ECM_ISCHECKEDIN));
 
     protected final boolean supportsProxies;
@@ -138,7 +138,7 @@ public class CMISQLtoNXQL {
     protected Map<String, String> realColumns = new LinkedHashMap<>();
 
     /** The non-real-columns we'll return as well. */
-    protected Map<String, ColumnReference> virtualColumns = new LinkedHashMap<String, ColumnReference>();
+    protected Map<String, ColumnReference> virtualColumns = new LinkedHashMap<>();
 
     public CMISQLtoNXQL(boolean supportsProxies) {
         this.supportsProxies = supportsProxies;
@@ -189,7 +189,7 @@ public class CMISQLtoNXQL {
 
         addSystemColumns();
 
-        List<String> whereClauses = new ArrayList<String>();
+        List<String> whereClauses = new ArrayList<>();
 
         // what to select (result columns)
 
@@ -206,12 +206,12 @@ public class CMISQLtoNXQL {
             }
         } else {
             nxqlFrom = NXQL_DOCUMENT;
-            List<String> types = new ArrayList<String>();
+            List<String> types = new ArrayList<>();
             if (fromType.getParentTypeId() != null) {
                 // don't add abstract root types
                 types.add(fromType.getId());
             }
-            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<TypeDefinitionContainer>();
+            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<>();
             typesTodo.addAll(typeManager.getTypeDescendants(fromType.getId(), -1, Boolean.TRUE));
             // recurse to get all subtypes
             TypeDefinitionContainer tc;
@@ -268,7 +268,7 @@ public class CMISQLtoNXQL {
 
         // ORDER BY clause
 
-        List<String> orderbys = new ArrayList<String>();
+        List<String> orderbys = new ArrayList<>();
         for (SortSpec spec : query.getOrderBys()) {
             String orderby;
             CmisSelector sel = spec.getSelector();
@@ -344,7 +344,7 @@ public class CMISQLtoNXQL {
                 for (PropertyDefinition<?> pd : fromType.getPropertyDefinitions().values()) {
                     String id = pd.getId();
                     if ((pd.getCardinality() == Cardinality.SINGLE //
-                            && Boolean.TRUE.equals(pd.isQueryable()))
+                            && Boolean.TRUE.equals(pd.isQueryable())) //
                             || id.equals(PropertyIds.BASE_TYPE_ID)) {
                         ColumnReference c = new ColumnReference(null, id);
                         c.setTypeDefinition(id, fromType);
@@ -394,8 +394,8 @@ public class CMISQLtoNXQL {
         // fetch column and associate it to the selector
         String column = getColumn(col);
         if (!isFacetsColumn(col.getPropertyId()) && column == null) {
-            throw new QueryParseException("Cannot use column in " + clauseType + " clause: "
-                    + col.getPropertyQueryName());
+            throw new QueryParseException(
+                    "Cannot use column in " + clauseType + " clause: " + col.getPropertyQueryName());
         }
         col.setInfo(column);
 
@@ -656,8 +656,8 @@ public class CMISQLtoNXQL {
         protected void walkAny(Tree colNode, String op, Tree exprNode) {
             ColumnReference col = getColumnReference(colNode);
             if (col.getPropertyDefinition().getCardinality() != Cardinality.MULTI) {
-                throw new QueryParseException("Cannot use " + op + " ANY with single-valued property: "
-                        + col.getPropertyQueryName());
+                throw new QueryParseException(
+                        "Cannot use " + op + " ANY with single-valued property: " + col.getPropertyQueryName());
             }
             String nxqlCol = (String) col.getInfo();
             buf.append(nxqlCol);
@@ -720,7 +720,8 @@ public class CMISQLtoNXQL {
                     indexName += '_' + statement.substring(0, firstColumnIdx);
                     statement = statement.substring(firstColumnIdx + 1);
                 } else {
-                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'", indexName));
+                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'",
+                            indexName));
                 }
             }
             // CMIS syntax to NXQL syntax
@@ -828,8 +829,8 @@ public class CMISQLtoNXQL {
      * IterableQueryResult wrapping the one from the NXQL query to turn values into CMIS ones.
      */
     // static to avoid keeping the whole QueryMaker in the returned object
-    public static class NXQLtoCMISIterableQueryResult implements IterableQueryResult,
-            Iterator<Map<String, Serializable>> {
+    public static class NXQLtoCMISIterableQueryResult
+            implements IterableQueryResult, Iterator<Map<String, Serializable>> {
 
         protected IterableQueryResult it;
 
@@ -943,7 +944,7 @@ public class CMISQLtoNXQL {
                     continue;
                 }
                 if (datas == null) {
-                    datas = new HashMap<String, NuxeoObjectData>(2);
+                    datas = new HashMap<>(2);
                 }
                 NuxeoObjectData data = datas.get(qual);
                 if (data == null) {
@@ -958,8 +959,8 @@ public class CMISQLtoNXQL {
                         // TODO constructing the DocumentModel (in
                         // NuxeoObjectData) is expensive, try to get value
                         // directly
-                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null,
-                                null, null, null, null, null, null);
+                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null, null,
+                                null, null, null, null, null);
                     } catch (CmisRuntimeException e) {
                         log.error("Cannot get document: " + id, e);
                     }

@@ -76,7 +76,6 @@ import java.util.EnumSet;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -799,11 +798,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ob = getObject(ob.getId());
         assertEquals("new title", getString(ob, "dc:title"));
 
-        Holder<String>[] changeTokenHolders = new Holder[] { new Holder<>(null), new Holder<>("bogusChangeToken") };
-        for (int i = 0; i < changeTokenHolders.length; i++) {
+        List<Holder<String>> changeTokenHolders = Arrays.asList(new Holder<>(null), new Holder<>("bogusChangeToken"));
+        for (Holder<String> ctHolder : changeTokenHolders) {
             try {
-                objService.updateProperties(repositoryId, objectIdHolder, changeTokenHolders[i], props, null);
-                fail(String.format("updateProperties with '%s' cmis:changeToken should fail", changeTokenHolders[i]));
+                objService.updateProperties(repositoryId, objectIdHolder, ctHolder, props, null);
+                fail(String.format("updateProperties with '%s' cmis:changeToken should fail", ctHolder));
             } catch (CmisUpdateConflictException e) {
                 // ok
             }
@@ -901,12 +900,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, changeTokenHolder, cs, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
-        Holder<String>[] changeTokenHolders = new Holder[] { new Holder<>(null), new Holder<>("bogusChangeToken") };
-        for (int i = 0; i < changeTokenHolders.length; i++) {
+        List<Holder<String>> changeTokenHolders = Arrays.asList(new Holder<>(null), new Holder<>("bogusChangeToken"));
+        for (Holder<String> ctHolder : changeTokenHolders) {
             try {
-                objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE,
-                        changeTokenHolders[i], cs, null);
-                fail(String.format("setContentStream with '%s' cmis:changeToken should fail", changeTokenHolders[i]));
+                objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, ctHolder, cs, null);
+                fail(String.format("setContentStream with '%s' cmis:changeToken should fail", ctHolder));
             } catch (CmisUpdateConflictException e) {
                 // ok
             }
@@ -925,10 +923,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         changeTokenHolder = getChangeTokenHolder(ob);
         objService.deleteContentStream(repositoryId, objectIdHolder, changeTokenHolder, null);
 
-        for (int i = 0; i < changeTokenHolders.length; i++) {
+        for (Holder<String> ctHolder : changeTokenHolders) {
             try {
-                objService.deleteContentStream(repositoryId, objectIdHolder, changeTokenHolders[i], null);
-                fail(String.format("deleteContentStream with '%s' cmis:changeToken should fail", changeTokenHolders[i]));
+                objService.deleteContentStream(repositoryId, objectIdHolder, ctHolder, null);
+                fail(String.format("deleteContentStream with '%s' cmis:changeToken should fail", ctHolder));
             } catch (CmisUpdateConflictException e) {
                 // ok
             }
@@ -967,8 +965,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
             return null;
         }
         List<String> r = new LinkedList<>();
-        for (Iterator<ObjectInFolderContainer> it = tree.iterator(); it.hasNext();) {
-            ObjectInFolderContainer child = it.next();
+        for (ObjectInFolderContainer child : tree) {
             String name = getString(child.getObject().getObject(), PropertyIds.NAME);
             String elem = name;
             List<String> sub = flatTree(child.getChildren());
@@ -1377,7 +1374,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
-                + " WHERE dc:title = 'testfile1_Title'" + " AND dc:description <> 'argh'"
+                + " WHERE dc:title = 'testfile1_Title' AND dc:description <> 'argh'"
                 + " AND dc:coverage <> 'zzzzz'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
@@ -1667,11 +1664,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // but it is nevertheless possible to perform explicit queries on the
         // lifecycle state
-        statement = "SELECT cmis:name FROM File" + " WHERE nuxeo:lifecycleState = 'project'";
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'project'";
         res = query(statement);
         assertEquals(initiallyQueryableFilesCount - 1, res.getNumItems().intValue());
 
-        statement = "SELECT cmis:name FROM File" + " WHERE nuxeo:lifecycleState = 'deleted'" + " ORDER BY cmis:name";
+        statement = "SELECT cmis:name FROM File WHERE nuxeo:lifecycleState = 'deleted' ORDER BY cmis:name";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
         assertEquals("testfile1_Title",
@@ -1760,7 +1757,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // it is however possible to fetch only the archived versions using the
         // nuxeo:isVersion system property
-        statement = "SELECT cmis:name, nuxeo:isVersion FROM File" + " WHERE nuxeo:isVersion = true ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File WHERE nuxeo:isVersion = true ORDER BY cmis:name";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
@@ -1776,7 +1773,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // conversely one can select only live documents by negating this
         // predicate
-        statement = "SELECT cmis:name, nuxeo:isVersion FROM File" + " WHERE nuxeo:isVersion = false ORDER BY cmis:name";
+        statement = "SELECT cmis:name, nuxeo:isVersion FROM File WHERE nuxeo:isVersion = false ORDER BY cmis:name";
         res = query(statement);
         assertEquals(initialFileCount, res.getNumItems().intValue());
         checkValue(PropertyIds.NAME, "testfile1_Title", res.getObjects().get(0));
@@ -1858,7 +1855,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // the latest major version is still the archived version, not the
         // checkouted document
-        statement = "SELECT * FROM File WHERE cmis:isLatestVersion = true" + " AND cmis:name = 'testfile1_Title'";
+        statement = "SELECT * FROM File WHERE cmis:isLatestVersion = true AND cmis:name = 'testfile1_Title'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
@@ -1868,7 +1865,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // is also possible to query for versions that are not the latests, in
         // this case we only get the checkouted document
-        statement = "SELECT * FROM File" + " WHERE cmis:isLatestVersion = false" + " AND cmis:name = 'testfile1_Title'";
+        statement = "SELECT * FROM File WHERE cmis:isLatestVersion = false AND cmis:name = 'testfile1_Title'";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         first = res.getObjects().get(0);
@@ -1923,12 +1920,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         waitForIndexing();
 
-        statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NULL";
+        statement = "SELECT cmis:objectId FROM cmis:document WHERE dc:subjects IS NULL";
         res = query(statement);
         assertEquals(supportsProxies() ? 6 : 5, res.getNumItems().intValue()); // 4 docs, 1 version, 1 proxy
 
         // with qualifier
-        statement = "SELECT A.cmis:objectId FROM cmis:document A" + " WHERE A.dc:subjects IS NULL";
+        statement = "SELECT A.cmis:objectId FROM cmis:document A WHERE A.dc:subjects IS NULL";
         res = query(statement);
         assertEquals(supportsProxies() ? 6 : 5, res.getNumItems().intValue()); // 4 docs, 1 version, 1 proxy
     }
@@ -1937,7 +1934,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testQueryIsNotNullMuti() throws Exception {
         waitForIndexing();
 
-        String statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NOT NULL";
+        String statement = "SELECT cmis:objectId FROM cmis:document WHERE dc:subjects IS NOT NULL";
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
     }
@@ -2143,7 +2140,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("testfile4_Title", getString(res.getObjects().get(0), PropertyIds.NAME));
 
         try {
-            statement = "SELECT cmis:name FROM File" + " WHERE IN_TREE(g, 'abc')"; // invalid qual
+            statement = "SELECT cmis:name FROM File WHERE IN_TREE(g, 'abc')"; // invalid qual
             query(statement);
             fail("should fail");
         } catch (CmisInvalidArgumentException e) {
@@ -2151,7 +2148,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         }
 
         try {
-            statement = "SELECT cmis:name FROM File f" + " WHERE IN_TREE(g, 'abc')"; // invalid qual
+            statement = "SELECT cmis:name FROM File f WHERE IN_TREE(g, 'abc')"; // invalid qual
             query(statement);
             fail("should fail");
         } catch (CmisInvalidArgumentException e) {
@@ -2236,7 +2233,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(1, res.getNumItems().intValue());
         assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        statement = "SELECT cmis:name FROM File" + " WHERE CONTAINS('description1')";
+        statement = "SELECT cmis:name FROM File WHERE CONTAINS('description1')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
         assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
@@ -2244,11 +2241,11 @@ public class TestCmisBinding extends TestCmisBindingBase {
         if (supportsMultipleFulltextIndexes()) {
             // specific query for title index (the description token do not
             // match)
-            statement = "SELECT cmis:name FROM File" + " WHERE CONTAINS('nx:title:description1')";
+            statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:description1')";
             res = query(statement);
             assertEquals(0, res.getNumItems().intValue());
 
-            statement = "SELECT cmis:name FROM File" + " WHERE CONTAINS('nx:title:title1')";
+            statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:title1')";
             res = query(statement);
             assertEquals(1, res.getNumItems().intValue());
             assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
@@ -2681,7 +2678,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         waitForIndexing();
 
         ObjectList res;
-        String statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE cmis:name = 'testfile1_Title'";
+        String statement = "SELECT cmis:objectId FROM cmis:document WHERE cmis:name = 'testfile1_Title'";
 
         // search all versions
         res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
@@ -2701,7 +2698,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         waitForIndexing();
 
-        String statement = "SELECT cmis:objectId FROM cmis:folder" + " WHERE cmis:name = 'testfolder2_Title'";
+        String statement = "SELECT cmis:objectId FROM cmis:folder WHERE cmis:name = 'testfolder2_Title'";
 
         searchAllVersions = Boolean.TRUE;
         res = discService.query(repositoryId, statement, searchAllVersions, null, null, null, null, null, null);
@@ -3347,7 +3344,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // normal user has security applied to its queries
         reSetUp("john");
 
-        statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId FROM cmis:document A"
                 + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
                 + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
@@ -3358,14 +3355,14 @@ public class TestCmisBinding extends TestCmisBindingBase {
         reSetUp("bob");
 
         // no security check on relationship itself
-        statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId FROM cmis:document A"
                 + " JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
                 + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
 
         // with LEFT JOIN on relation
-        statement = "SELECT A.cmis:objectId, B.cmis:objectId" + " FROM cmis:document A"
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId FROM cmis:document A"
                 + " LEFT JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
                 + " LEFT JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,16 +121,17 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     // list of SQL column where NULL (missing value) should be treated as
     // Boolean.FALSE
-    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(Arrays.asList(Model.HIER_TABLE_NAME
-            + " " + Model.MAIN_IS_VERSION_KEY, Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_KEY,
-            Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_MAJOR_KEY, Model.HIER_TABLE_NAME + " "
-                    + Model.MAIN_CHECKED_IN_KEY));
+    public static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<>(
+            Arrays.asList(Model.HIER_TABLE_NAME + " " + Model.MAIN_IS_VERSION_KEY,
+                    Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_KEY,
+                    Model.VERSION_TABLE_NAME + " " + Model.VERSION_IS_LATEST_MAJOR_KEY,
+                    Model.HIER_TABLE_NAME + " " + Model.MAIN_CHECKED_IN_KEY));
 
     /**
      * These mixins never match an instance mixin when used in a clause nuxeo:secondaryObjectTypeIds = 'foo'
      */
-    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(Arrays.asList(
-            FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
+    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<>(
+            Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
 
     protected Database database;
 
@@ -150,33 +151,33 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected FulltextMatchInfo fulltextMatchInfo;
 
-    protected Set<String> lifecycleWhereClauseQualifiers = new HashSet<String>();
+    protected Set<String> lifecycleWhereClauseQualifiers = new HashSet<>();
 
-    protected Set<String> mixinTypeWhereClauseQualifiers = new HashSet<String>();
+    protected Set<String> mixinTypeWhereClauseQualifiers = new HashSet<>();
 
     /** Qualifier to type. */
-    protected Map<String, String> qualifierToType = new HashMap<String, String>();
+    protected Map<String, String> qualifierToType = new HashMap<>();
 
     /** Qualifier to canonical qualifier (correlation name). */
-    protected Map<String, String> canonicalQualifier = new HashMap<String, String>();
+    protected Map<String, String> canonicalQualifier = new HashMap<>();
 
     /** Map of qualifier -> fragment -> table */
-    protected Map<String, Map<String, Table>> allTables = new HashMap<String, Map<String, Table>>();
+    protected Map<String, Map<String, Table>> allTables = new HashMap<>();
 
     /** All qualifiers used (includes virtual columns) */
-    protected Set<String> allQualifiers = new HashSet<String>();
+    protected Set<String> allQualifiers = new HashSet<>();
 
     /** The qualifiers which correspond to versionable types. */
-    protected Set<String> versionableQualifiers = new HashSet<String>();
+    protected Set<String> versionableQualifiers = new HashSet<>();
 
     /** The columns we'll actually request from the database. */
-    protected List<SqlColumn> realColumns = new LinkedList<SqlColumn>();
+    protected List<SqlColumn> realColumns = new LinkedList<>();
 
     /** Parameters for above (for SCORE expressions on some databases) */
-    protected List<String> realColumnsParams = new LinkedList<String>();
+    protected List<String> realColumnsParams = new LinkedList<>();
 
     /** The non-real-columns we'll return as well. */
-    protected Map<String, ColumnReference> virtualColumns = new HashMap<String, ColumnReference>();
+    protected Map<String, ColumnReference> virtualColumns = new HashMap<>();
 
     /** Type info returned to caller. */
     protected Map<String, PropertyDefinition<?>> typeInfo = null;
@@ -185,7 +186,7 @@ public class CMISQLQueryMaker implements QueryMaker {
     protected boolean searchLatestVersion = false;
 
     /** used for diagnostic when using DISTINCT */
-    protected List<String> virtualColumnNames = new LinkedList<String>();
+    protected List<String> virtualColumnNames = new LinkedList<>();
 
     /**
      * Column corresponding to a returned value computed from an actual SQL expression.
@@ -336,7 +337,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 qms.append("?");
             }
             String primaryTypeClause = String.format("%s IN (%s)",
-                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(), qms);
+                    qualHierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(), qms);
 
             // table this join is about
 
@@ -434,7 +435,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             // lifecycle not deleted filter
 
             if (skipDeleted) {
-                ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
+                ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);
                 Column lscol = getTable(database.getTable(propertyInfo.fragmentName), qual).getColumn(
                         propertyInfo.fragmentKey);
                 String lscolName = lscol.getFullQuotedName();
@@ -447,8 +448,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             boolean versionable = versionableQualifiers.contains(qual);
             if (searchLatestVersion && versionable) {
                 // add islatestversion = true
-                Table ver = getTable(database.getTable(model.VERSION_TABLE_NAME), qual);
-                Column latestvercol = ver.getColumn(model.VERSION_IS_LATEST_KEY);
+                Table ver = getTable(database.getTable(Model.VERSION_TABLE_NAME), qual);
+                Column latestvercol = ver.getColumn(Model.VERSION_IS_LATEST_KEY);
                 String latestvercolName = latestvercol.getFullQuotedName();
                 whereClauses.add(String.format("(%s = ?)", latestvercolName));
                 whereParams.add(Boolean.TRUE);
@@ -619,8 +620,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             // check CMISQL transformer (new @since 5.7.2)
             if (!policy.isExpressibleInQuery(repositoryId, TYPE)) {
-                throw new CmisRuntimeException("Security policy " + policy.getClass().getName()
-                        + " prevents CMISQL execution");
+                throw new CmisRuntimeException(
+                        "Security policy " + policy.getClass().getName() + " prevents CMISQL execution");
             }
             QueryTransformer transformer = policy.getQueryTransformer(repositoryId, TYPE);
             statement = transformer.transform(principal, statement);
@@ -683,7 +684,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             if (skipDeleted || lifecycleWhereClauseQualifiers.contains(qual)) {
                 // add lifecycle state column
-                ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
+                ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);
                 Table table = getTable(database.getTable(propertyInfo.fragmentName), qual);
                 recordFragment(qual, table);
             }
@@ -700,8 +701,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         } else {
             if (!addedSystemColumns.isEmpty()) {
                 if (!virtualColumnNames.isEmpty()) {
-                    throw new QueryParseException("Cannot use DISTINCT with virtual columns: "
-                            + StringUtils.join(virtualColumnNames, ", "));
+                    throw new QueryParseException(
+                            "Cannot use DISTINCT with virtual columns: " + StringUtils.join(virtualColumnNames, ", "));
                 }
                 if (addSystemColumns) {
                     throw new QueryParseException("Cannot use DISTINCT without explicit " + PropertyIds.OBJECT_ID);
@@ -762,8 +763,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 for (PropertyDefinition<?> pd : type.getPropertyDefinitions().values()) {
                     String id = pd.getId();
                     if ((pd.getCardinality() == Cardinality.SINGLE //
-                            && Boolean.TRUE.equals(pd.isQueryable()))
-                            || id.equals(PropertyIds.BASE_TYPE_ID)) {
+                            && Boolean.TRUE.equals(pd.isQueryable())) || id.equals(PropertyIds.BASE_TYPE_ID)) {
                         ColumnReference c = new ColumnReference(qual, id);
                         c.setTypeDefinition(id, type);
                         recordSelectSelector(c);
@@ -820,8 +820,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         // fetch column and associate it to the selector
         Column column = getColumn(col);
         if (!isFacetsColumn(col.getPropertyId()) && column == null) {
-            throw new QueryParseException("Cannot use column in " + clauseType + " clause: "
-                    + col.getPropertyQueryName());
+            throw new QueryParseException(
+                    "Cannot use column in " + clauseType + " clause: " + col.getPropertyQueryName());
         }
         col.setInfo(column);
         String qual = canonicalQualifier.get(col.getQualifier());
@@ -855,7 +855,7 @@ public class CMISQLQueryMaker implements QueryMaker {
         String fragment = table.getKey();
         Map<String, Table> tablesByFragment = allTables.get(qual);
         if (tablesByFragment == null) {
-            allTables.put(qual, tablesByFragment = new HashMap<String, Table>());
+            allTables.put(qual, tablesByFragment = new HashMap<>());
         }
         tablesByFragment.put(fragment, table);
         allQualifiers.add(qual);
@@ -866,7 +866,7 @@ public class CMISQLQueryMaker implements QueryMaker {
      */
     protected void resolveQualifiers() {
         Map<String, String> types = query.getTypes();
-        Map<String, AtomicInteger> typeCount = new HashMap<String, AtomicInteger>();
+        Map<String, AtomicInteger> typeCount = new HashMap<>();
         for (Entry<String, String> en : types.entrySet()) {
             String qual = en.getKey();
             String typeQueryName = en.getValue();
@@ -916,7 +916,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             ModelProperty propertyInfo = model.getPropertyInfo(id);
             boolean multi = propertyInfo.propertyType.isArray();
             Table table = database.getTable(propertyInfo.fragmentName);
-            String key = multi ? model.COLL_TABLE_VALUE_KEY : propertyInfo.fragmentKey;
+            String key = multi ? Model.COLL_TABLE_VALUE_KEY : propertyInfo.fragmentKey;
             column = getTable(table, qual).getColumn(key);
         }
         return column;
@@ -935,41 +935,41 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected Column getSystemColumn(String id) {
         if (id.equals(PropertyIds.OBJECT_ID)) {
-            return hierTable.getColumn(model.MAIN_KEY);
+            return hierTable.getColumn(Model.MAIN_KEY);
         }
         if (id.equals(PropertyIds.PARENT_ID)) {
-            return hierTable.getColumn(model.HIER_PARENT_KEY);
+            return hierTable.getColumn(Model.HIER_PARENT_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_PARENT_ID)) {
-            return hierTable.getColumn(model.HIER_PARENT_KEY);
+            return hierTable.getColumn(Model.HIER_PARENT_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_PATH_SEGMENT)) {
-            return hierTable.getColumn(model.HIER_CHILD_NAME_KEY);
+            return hierTable.getColumn(Model.HIER_CHILD_NAME_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_POS)) {
-            return hierTable.getColumn(model.HIER_CHILD_POS_KEY);
+            return hierTable.getColumn(Model.HIER_CHILD_POS_KEY);
         }
         if (id.equals(PropertyIds.OBJECT_TYPE_ID)) {
             // joinedHierTable
-            return hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+            return hierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
         }
         if (id.equals(PropertyIds.VERSION_LABEL)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(model.VERSION_LABEL_KEY);
+            return database.getTable(Model.VERSION_TABLE_NAME).getColumn(Model.VERSION_LABEL_KEY);
         }
         if (id.equals(PropertyIds.IS_LATEST_MAJOR_VERSION)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(model.VERSION_IS_LATEST_MAJOR_KEY);
+            return database.getTable(Model.VERSION_TABLE_NAME).getColumn(Model.VERSION_IS_LATEST_MAJOR_KEY);
         }
         if (id.equals(PropertyIds.IS_LATEST_VERSION)) {
-            return database.getTable(model.VERSION_TABLE_NAME).getColumn(model.VERSION_IS_LATEST_KEY);
+            return database.getTable(Model.VERSION_TABLE_NAME).getColumn(Model.VERSION_IS_LATEST_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_ISVERSION)) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(model.MAIN_IS_VERSION_KEY);
+            return database.getTable(Model.HIER_TABLE_NAME).getColumn(Model.MAIN_IS_VERSION_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_ISCHECKEDIN)) {
-            return database.getTable(model.HIER_TABLE_NAME).getColumn(model.MAIN_CHECKED_IN_KEY);
+            return database.getTable(Model.HIER_TABLE_NAME).getColumn(Model.MAIN_CHECKED_IN_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_LIFECYCLE_STATE)) {
-            ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
+            ModelProperty propertyInfo = model.getPropertyInfo(Model.MISC_LIFECYCLE_STATE_PROP);
             return database.getTable(propertyInfo.fragmentName).getColumn(propertyInfo.fragmentKey);
         }
         if (id.equals(PropertyIds.NAME)) {
@@ -1053,7 +1053,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Map<String, Serializable> makeMap(ResultSet rs) throws SQLException {
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            Map<String, Serializable> map = new HashMap<>();
 
             // get values from result set
             int i = 1;
@@ -1097,7 +1097,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     continue;
                 }
                 if (datas == null) {
-                    datas = new HashMap<String, NuxeoObjectData>(2);
+                    datas = new HashMap<>(2);
                 }
                 NuxeoObjectData data = datas.get(qual);
                 if (data == null) {
@@ -1112,8 +1112,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                         // TODO constructing the DocumentModel (in
                         // NuxeoObjectData) is expensive, try to get value
                         // directly
-                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null,
-                                null, null, null, null, null, null);
+                        data = (NuxeoObjectData) service.getObject(service.getNuxeoRepository().getId(), id, null, null,
+                                null, null, null, null, null);
                     } catch (CmisRuntimeException e) {
                         log.error("Cannot get document: " + id, e);
                     }
@@ -1178,7 +1178,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                         throw new QueryParseException("No such fulltext index: " + requestedIndexName);
                     }
                 } else {
-                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'", indexName));
+                    log.warn(String.format("fail to microparse custom fulltext index:" + " fallback to '%s'",
+                            indexName));
                 }
             }
             // CMIS syntax to our internal google-like internal syntax
@@ -1374,16 +1375,16 @@ public class CMISQLQueryMaker implements QueryMaker {
             ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
             PropertyDefinition<?> pd = col.getPropertyDefinition();
             if (pd.getCardinality() != Cardinality.MULTI) {
-                throw new QueryParseException("Cannot use " + op + " ANY with single-valued property: "
-                        + col.getPropertyQueryName());
+                throw new QueryParseException(
+                        "Cannot use " + op + " ANY with single-valued property: " + col.getPropertyQueryName());
             }
             Column column = (Column) col.getInfo();
             String qual = canonicalQualifier.get(col.getQualifier());
             // we need the real table and column in the subquery
             Table realTable = column.getTable().getRealTable();
             Column realColumn = realTable.getColumn(column.getKey());
-            Column hierMainColumn = getTable(hierTable, qual).getColumn(model.MAIN_KEY);
-            Column multiMainColumn = realTable.getColumn(model.MAIN_KEY);
+            Column hierMainColumn = getTable(hierTable, qual).getColumn(Model.MAIN_KEY);
+            Column multiMainColumn = realTable.getColumn(Model.MAIN_KEY);
 
             whereBuf.append("EXISTS (SELECT 1 FROM ");
             whereBuf.append(realTable.getQuotedName());
@@ -1420,8 +1421,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Column column = (Column) col.getInfo();
                 String qual = canonicalQualifier.get(col.getQualifier());
                 Table realTable = column.getTable().getRealTable();
-                Column hierMainColumn = getTable(hierTable, qual).getColumn(model.MAIN_KEY);
-                Column multiMainColumn = realTable.getColumn(model.MAIN_KEY);
+                Column hierMainColumn = getTable(hierTable, qual).getColumn(Model.MAIN_KEY);
+                Column multiMainColumn = realTable.getColumn(Model.MAIN_KEY);
                 if (isNull) {
                     whereBuf.append("NOT ");
                 }
@@ -1577,7 +1578,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 mixins = Collections.singleton(value);
             } else if (opType == CmisQlStrictLexer.IN_ANY || opType == CmisQlStrictLexer.NOT_IN_ANY) {
                 include = opType == CmisQlStrictLexer.IN_ANY;
-                mixins = new TreeSet<String>();
+                mixins = new TreeSet<>();
                 for (int i = 0; i < literalNode.getChildCount(); i++) {
                     mixins.add(super.walkString(literalNode.getChild(i)).toString());
                 }
@@ -1590,12 +1591,12 @@ public class CMISQLQueryMaker implements QueryMaker {
              */
             Set<String> types;
             if (include) {
-                types = new HashSet<String>();
+                types = new HashSet<>();
                 for (String mixin : mixins) {
                     types.addAll(model.getMixinDocumentTypes(mixin));
                 }
             } else {
-                types = new HashSet<String>(model.getDocumentTypes());
+                types = new HashSet<>(model.getDocumentTypes());
                 for (String mixin : mixins) {
                     types.removeAll(model.getMixinDocumentTypes(mixin));
                 }
@@ -1604,7 +1605,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             /*
              * Instance mixins
              */
-            Set<String> instanceMixins = new HashSet<String>();
+            Set<String> instanceMixins = new HashSet<>();
             for (String mixin : mixins) {
                 if (!MIXINS_NOT_PER_INSTANCE.contains(mixin)) {
                     instanceMixins.add(mixin);

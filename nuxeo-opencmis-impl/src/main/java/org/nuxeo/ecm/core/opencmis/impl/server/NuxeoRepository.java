@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_U
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_VIEW_CONTENT_OBJECT;
 
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
