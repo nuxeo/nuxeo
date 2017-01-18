@@ -650,9 +650,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel createDocument(DocumentModel docModel) {
 
-        // Start by removing unallowed characters if filtering is enabled
+        // start by removing disallowed characters
         CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
-        charFilteringService.filterChars(docModel);
+        charFilteringService.filter(docModel);
 
         if (docModel.getSessionId() == null) {
             // docModel was created using constructor instead of CoreSession.createDocumentModel
@@ -1444,9 +1444,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                     throw new DocumentValidationException(report);
                 }
             }
-            // remove disallowed characters if filtering is enabled
+            // remove disallowed characters
             CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
-            charFilteringService.filterChars(docModel);
+            charFilteringService.filter(docModel);
         }
 
         options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
