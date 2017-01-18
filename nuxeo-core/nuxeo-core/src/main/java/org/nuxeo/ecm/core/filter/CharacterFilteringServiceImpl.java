@@ -22,7 +22,9 @@ package org.nuxeo.ecm.core.filter;
 
 import com.google.common.base.CharMatcher;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
@@ -33,8 +35,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -80,11 +80,13 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
     @Override
     public void filterChars(DocumentModel docModel) {
         if (desc.isEnabled()) {
-            String[] schemas = docModel.getSchemas();
-            for (String schema : schemas) {
-                DocumentPart part = docModel.getPart(schema);
-                Collection<Property> properties = (part == null) ? Collections.emptyList() : part.getChildren();
-                for (Property prop : properties) {
+            // check only loaded datamodels to find the dirty ones
+            for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
+                if (!dm.isDirty()) {
+                    continue;
+                }
+                DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
+                for (Property prop : part.getChildren()) {
                     filterProperty(prop, docModel);
                 }
             }
@@ -92,6 +94,9 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
     }
 
     private void filterProperty(Property prop, DocumentModel docModel) {
+        if (!prop.isDirty()) {
+            return;
+        }
         if (prop instanceof StringProperty) {
             String p = (String) prop.getValue();
             if (p != null && charsToRemove.matchesAnyOf(p)) {
