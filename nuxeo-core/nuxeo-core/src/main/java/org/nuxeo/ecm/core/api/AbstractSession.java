@@ -1436,12 +1436,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         boolean dirty = docModel.isDirty();
 
-        // document validation
-        if (dirty && getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
-            DocumentValidationReport report = getValidationService().validate(docModel, true);
-            if (report.hasError()) {
-                throw new DocumentValidationException(report);
+        if (dirty) {
+            // document validation
+            if (getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+                DocumentValidationReport report = getValidationService().validate(docModel, true);
+                if (report.hasError()) {
+                    throw new DocumentValidationException(report);
+                }
             }
+            // remove disallowed characters if filtering is enabled
+            CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
+            charFilteringService.filterChars(docModel);
         }
 
         options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
@@ -1510,10 +1515,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             DocumentRef checkedInVersionRef = new IdRef(checkedInDoc.getUUID());
             notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
         }
-
-        // Remove unallowed characters if filtering is enabled
-        CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
-        charFilteringService.filterChars(docModel);
 
         notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
         updateDocumentCount.inc();
