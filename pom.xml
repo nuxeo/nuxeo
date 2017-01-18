@@ -102,13 +102,12 @@
       <scope>test</scope>
     </dependency>
 
-
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-rest-api-test</artifactId>
       <scope>test</scope>
     </dependency>
-  <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-url-api</artifactId>
       <scope>test</scope>
