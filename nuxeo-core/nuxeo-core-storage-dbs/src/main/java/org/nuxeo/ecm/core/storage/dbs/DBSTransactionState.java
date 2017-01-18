@@ -222,6 +222,16 @@ public class DBSTransactionState {
         }
         // fetch from repository
         State state = repository.readChildState(parentId, name, Collections.emptySet());
+        if (state == null) {
+            return null;
+        }
+        String id = (String) state.get(KEY_ID);
+        if (transientStates.containsKey(id)) {
+            // found transient, even though we already checked
+            // that means that in-memory it's not a child, but in-database it's a child (was moved)
+            // -> ignore the database state
+            return null;
+        }
         return newTransientState(state);
     }
 
@@ -254,6 +264,13 @@ public class DBSTransactionState {
         // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
         for (State state : states) {
+            String id = (String) state.get(KEY_ID);
+            if (transientStates.containsKey(id)) {
+                // found transient, even though we passed an exclusion list for known children
+                // that means that in-memory it's not a child, but in-database it's a child (was moved)
+                // -> ignore the database state
+                continue;
+            }
             docStates.add(newTransientState(state));
         }
         return docStates;
@@ -274,7 +291,14 @@ public class DBSTransactionState {
         // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
         for (State state : states) {
-            children.add((String) state.get(KEY_ID));
+            String id = (String) state.get(KEY_ID);
+            if (transientStates.containsKey(id)) {
+                // found transient, even though we passed an exclusion list for known children
+                // that means that in-memory it's not a child, but in-database it's a child (was moved)
+                // -> ignore the database state
+                continue;
+            }
+            children.add(id);
         }
         return new ArrayList<String>(children);
     }
