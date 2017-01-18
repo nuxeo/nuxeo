@@ -485,7 +485,12 @@
       <!-- Multi Tenant Management -->
       <dependency>
         <groupId>org.nuxeo.multi.tenant</groupId>
-        <artifactId>nuxeo-multi-tenant</artifactId>
+        <artifactId>nuxeo-multi-tenant-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.multi.tenant</groupId>
+        <artifactId>nuxeo-multi-tenant-jsf</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
