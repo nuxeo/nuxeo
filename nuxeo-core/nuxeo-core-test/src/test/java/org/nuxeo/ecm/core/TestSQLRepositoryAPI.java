@@ -47,6 +47,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -2600,6 +2601,64 @@ public class TestSQLRepositoryAPI {
         // move with null dest (rename)
         DocumentModel newFile3 = session.move(file.getRef(), null, "file3");
         assertEquals("file3", newFile3.getName());
+    }
+
+    @Test
+    public void testMoveConcurrentWithGetChild() throws Exception {
+        prepareDocsForMoveConcurrentWithGetChildren();
+        try {
+            session.getChild(new PathRef("/folder"), "doc");
+            fail("should not find child moved under /folder in another transaction");
+        } catch (DocumentNotFoundException e) {
+            assertEquals("doc", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testMoveConcurrentWithGetChildren() throws Exception {
+        prepareDocsForMoveConcurrentWithGetChildren();
+        // should not find child moved under /folder in another transaction
+        DocumentModelList children = session.getChildren(new PathRef("/folder"));
+        assertEquals(0, children.size());
+    }
+
+    @Test
+    public void testMoveConcurrentWithGetChildrenRefs() throws Exception {
+        prepareDocsForMoveConcurrentWithGetChildren();
+        // should not find child moved under /folder in another transaction
+        List<DocumentRef> children = session.getChildrenRefs(new PathRef("/folder"), null);
+        assertEquals(0, children.size());
+    }
+
+    protected void prepareDocsForMoveConcurrentWithGetChildren() throws Exception {
+        // create folder
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        // create doc outside of folder
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        nextTransaction();
+        // load doc as DBS transient
+        session.getDocument(doc.getRef());
+
+        // in other thread, move doc into folder
+        MutableObject<RuntimeException> me = new MutableObject<>();
+        Thread thread = new Thread(() -> {
+            TransactionHelper.runInTransaction(() -> {
+                try (CoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                    session2.move(new PathRef("/doc"), new PathRef("/folder"), null);
+                    session2.save();
+                } catch (RuntimeException e) {
+                    me.setValue(e);
+                }
+            });
+        });
+        thread.start();
+        thread.join();
+        if (me.getValue() != null) {
+            throw new RuntimeException(me.getValue());
+        }
     }
 
     // TODO NXP-2514: fix this test
