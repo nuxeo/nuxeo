@@ -23,20 +23,27 @@ package org.nuxeo.ecm.core.filter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * This service enables the filtering of unwanted characters in document properties
- * 
+ * This service filters disallowed characters in strings and document properties.
+ * <p>
+ * Disallowed characters are control characters that could prevent XML validation or in some cases database writes.
+ *
  * @since 9.1
  */
 public interface CharacterFilteringService {
 
     /**
-     * Remove all disallowed characters from input value
+     * Removes all disallowed characters from the input value.
+     *
+     * @param value the value to filter
+     * @return the filtered value
      */
     String filter(String value);
 
     /**
-     * By default, remove all invalid control characters that prevent XML validation if filtering is enabled.
+     * Removes all disallowed characters from the dirty document properties.
+     *
+     * @param docModel the document to filter
      */
-    void filterChars(DocumentModel docModel);
+    void filter(DocumentModel docModel);
 
 }

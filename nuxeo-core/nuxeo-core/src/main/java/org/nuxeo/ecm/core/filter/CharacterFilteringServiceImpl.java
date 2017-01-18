@@ -78,7 +78,7 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
     }
 
     @Override
-    public void filterChars(DocumentModel docModel) {
+    public void filter(DocumentModel docModel) {
         if (desc.isEnabled()) {
             // check only loaded datamodels to find the dirty ones
             for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
