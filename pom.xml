@@ -104,7 +104,6 @@
     <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
-    <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
     <module>nuxeo-logs-viewer</module>
@@ -733,13 +732,6 @@
         <groupId>org.nuxeo.io</groupId>
         <artifactId>nuxeo-fsexporter</artifactId>
         <version>${nuxeo.fsexporter.version}</version>
-      </dependency>
-
-      <!-- Audit Web Access -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-web-access</artifactId>
-        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- DuoWeb Authentication -->
