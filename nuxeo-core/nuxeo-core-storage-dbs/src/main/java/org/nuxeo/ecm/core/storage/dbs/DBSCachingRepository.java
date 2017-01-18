@@ -278,8 +278,8 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     protected void sendInvalidationsToOther() {
-        if (!invalidations.isEmpty()) {
-            synchronized (invalidations) {
+        synchronized (invalidations) {
+            if (!invalidations.isEmpty()) {
                 if (clusterInvalidator != null) {
                     clusterInvalidator.sendInvalidations(invalidations);
                 }
