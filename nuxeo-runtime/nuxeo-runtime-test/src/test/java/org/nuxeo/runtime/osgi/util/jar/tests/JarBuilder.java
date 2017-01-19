@@ -122,7 +122,7 @@ public class JarBuilder {
     }
 
     protected void writeEntry(JarOutputStream output, File file) throws IOException {
-        output.putNextEntry(new ZipEntry(file.getPath()));
+        output.putNextEntry(new ZipEntry(file.getPath().replace('\\', '/')));
         InputStream input = new FileInputStream(new File(bindir, file.getPath()));
         try {
             while (input.available() > 0) {
