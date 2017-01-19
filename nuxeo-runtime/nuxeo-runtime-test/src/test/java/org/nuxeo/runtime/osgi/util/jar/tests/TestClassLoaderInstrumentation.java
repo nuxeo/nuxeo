@@ -102,7 +102,6 @@ public class TestClassLoaderInstrumentation {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-16567: temporarily deactivate test under Windows")
     public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, SecurityException,
             URLJarFileIntrospectionError {
         URL firstURL = jarBuilder.buildFirst();
