@@ -17,6 +17,21 @@
     <module>nuxeo-multi-tenant-jsf</module>
   </modules>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.multi.tenant</groupId>
+        <artifactId>nuxeo-multi-tenant-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.multi.tenant</groupId>
+        <artifactId>nuxeo-multi-tenant-jsf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <repositories>
     <repository>
       <id>public</id>
