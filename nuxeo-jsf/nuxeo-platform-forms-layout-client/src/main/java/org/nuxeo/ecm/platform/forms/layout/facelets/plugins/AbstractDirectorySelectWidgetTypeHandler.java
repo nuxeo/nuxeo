@@ -19,15 +19,19 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
+import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItem;
 import org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItems;
 
@@ -84,6 +88,31 @@ public abstract class AbstractDirectorySelectWidgetTypeHandler extends AbstractS
             props.put(DirectoryPropertyMappings.displayAll.name(), Boolean.FALSE);
         }
         return props;
+    }
+
+    /**
+     * Get tag attributes for a specific mode.
+     * @param widget The widget to generate tag attributes for.
+     * @param mode The given mode like PLAIN, CSV.
+     * @param helper An instance of FaceletHandlerHelper.
+     * @param widgetId The widget id.
+     * @return
+     *
+     * @since 9.3
+     */
+    protected TagAttributes getTagAttributesForMode(Widget widget, String mode, FaceletHandlerHelper helper,
+            String widgetId) {
+        TagAttributes result;
+        if (BuiltinWidgetModes.isLikePlainMode(mode)) {
+            // use attributes without id and with
+            List<String> excludedProperties = new ArrayList<String>();
+            // In case of plain mode css style attributes are to be excluded
+            excludedProperties.add("styleClass");
+            result = helper.getTagAttributes(widget, excludedProperties, true);
+        } else {
+            result = helper.getTagAttributes(widgetId, widget);
+        }
+        return result;
     }
 
 }
