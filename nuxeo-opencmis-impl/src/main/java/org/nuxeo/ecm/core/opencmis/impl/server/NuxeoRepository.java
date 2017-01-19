@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Mincong Huang
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
@@ -123,6 +124,19 @@ public class NuxeoRepository {
     public static final String SUPPORTS_PROXIES_PROP = "org.nuxeo.cmis.proxies";
 
     public static final String ELASTICSEARCH_PROP = "org.nuxeo.cmis.elasticsearch";
+
+    /**
+     * Key of the configuration property {@code "org.nuxeo.cmis.relaxSpec"}, default to {@code false}. Setting this
+     * property to {@code true} allows users to relax the CMIS specification 1.1 and use customized CMISQL. Please be
+     * aware the risk of doing so. It will potentially cause query parsing error.
+     * <p>
+     * The relax mode does not follow the CMIS specification 1.1, section 2.1.14.2.4.4, where at most one
+     * {@code CONTAINS()} function MUST be included in a single query statement. Currently, such mode only works for
+     * CMIS query having no {@code JOIN} predicate.
+     *
+     * @see https://jira.nuxeo.com/browse/NXP-19858
+     */
+    public static final String RELAX_CMIS_SPEC = "org.nuxeo.cmis.relaxSpec";
 
     private static final String NUXEO_CONTEXT_PATH_PROP = "org.nuxeo.ecm.contextPath";
 
