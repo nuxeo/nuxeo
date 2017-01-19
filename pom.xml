@@ -90,6 +90,7 @@
     <module>nuxeo-exalead-connector</module>
     <module>nuxeo-signature</module>
     <module>nuxeo-rating</module>
+    <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
