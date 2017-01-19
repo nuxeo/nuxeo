@@ -61,13 +61,7 @@ public class DirectorySelectOneWidgetTypeHandler extends AbstractDirectorySelect
         FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         String widgetId = widget.getId();
         String widgetTagConfigId = widget.getTagConfigId();
-        TagAttributes attributes;
-        if (BuiltinWidgetModes.isLikePlainMode(mode)) {
-            // use attributes without id
-            attributes = helper.getTagAttributes(widget);
-        } else {
-            attributes = helper.getTagAttributes(widgetId, widget);
-        }
+        TagAttributes attributes = getTagAttributesForMode(widget, mode, helper, widgetId);
         ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                 DirectoryEntryOutputComponent.COMPONENT_TYPE, null);
         if (BuiltinWidgetModes.PDF.equals(mode)) {
