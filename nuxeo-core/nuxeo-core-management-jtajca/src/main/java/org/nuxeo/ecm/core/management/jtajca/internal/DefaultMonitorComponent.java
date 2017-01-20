@@ -123,6 +123,8 @@ public class DefaultMonitorComponent extends DefaultComponent {
         if (!installed) {
             return;
         }
+        // temporary log to help diagnostics
+        log.warn("Total commits during server life: " + transactionMonitor.getTotalCommits());
         installed = false;
         NuxeoContainer.removeListener(cmUpdater);
         for (ConnectionPoolMonitor storage : poolConnectionMonitors.values()) {
