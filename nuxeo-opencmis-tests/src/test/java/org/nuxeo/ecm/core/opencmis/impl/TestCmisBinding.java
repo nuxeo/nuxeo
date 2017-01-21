@@ -2276,6 +2276,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-relax-cmis-spec.xml")
     public void testQueryMultiContainsRelaxingSpec() throws Exception {
 
+        assumeFalse("DBS does not support multiple CONTAINS", coreFeature.getStorageConfiguration().isDBS());
         // when using JOINs, we use the CMISQLQueryMaker which hasn't been updated to allow multiple CONTAINs
         assumeFalse("JOINs are not supported", supportsJoins());
 
