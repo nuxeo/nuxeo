@@ -23,6 +23,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.portal;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +34,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
-import com.noelios.restlet.util.Base64;
-
 public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
 
-    private static final String SECRET_KEY_NAME = "secret";
+    public static final String SECRET_KEY_NAME = "secret";
 
-    private static final String MAX_AGE_KEY_NAME = "maxAge";
+    public static final String MAX_AGE_KEY_NAME = "maxAge";
 
     private static final String TS_HEADER = "NX_TS";
 
@@ -100,7 +99,7 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         return false;
     }
 
-    private Boolean validateToken(String ts, String random, String token, String userName) {
+    protected Boolean validateToken(String ts, String random, String token, String userName) {
         // reconstruct the token
         String clearToken = ts + TOKEN_SEP + random + TOKEN_SEP + secret + TOKEN_SEP + userName;
 
@@ -110,7 +109,7 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         } catch (NoSuchAlgorithmException e) {
             return false;
         }
-        String base64HashedToken = Base64.encodeBytes(hashedToken);
+        String base64HashedToken = Base64.getEncoder().encodeToString(hashedToken);
 
         // check that tokens are the same => that we have the same shared key
         if (!base64HashedToken.equals(token)) {
