@@ -245,7 +245,10 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         boolean started = false;
         boolean ok = false;
         try {
-            started = TransactionHelper.startTransaction();
+            if (!TransactionHelper.isTransactionActive()) {
+                TransactionHelper.startTransaction();
+                started = true;
+            }
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 new UnrestrictedSessionRunner(repositoryName) {
