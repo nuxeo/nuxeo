@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.core.CoreService" version="1.0">
   <documentation>
-  The core service provides a way to register version removal policies
+  The core service provides a way to register orphan version removal policies.
   </documentation>
 
   <implementation class="org.nuxeo.ecm.core.CoreService"/>
@@ -13,8 +12,10 @@
 
   <extension-point name="versionRemovalPolicy">
     <documentation>
-      Used to register the version removal policy, which must implement
+      Used to register the orphan version removal policy, which must implement
       VersionRemovalPolicy.
+      Note that registering explicit policies makes document removal slower. It's better to just
+      use the versionProperties extension point.
       <code>
         <policy class="..."/>
       </code>
@@ -25,13 +26,27 @@
 
   <extension-point name="orphanVersionRemovalFilter">
     <documentation>
-      Used to register filter that are used by the default VersionRemovalPolicy implementation to check asynchronously what versions can really be removed.
+      Used to register filter used by org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy,
+      to check asynchronously what versions can really be removed.
       <code>
         <filter class="..."/>
       </code>
     </documentation>
     <object
       class="org.nuxeo.ecm.core.CoreServiceOrphanVersionRemovalFilterDescriptor" />
+  </extension-point>
+
+  <extension-point name="versionProperties">
+    <documentation>
+      Used to register properties which hold a list of version ids and whose presence must prevent the versions from being
+      considered orphan.
+      These properties are only used if the default orphan removal policy is used, i.e., if no custom policy has been registered.
+      <code>
+        <property>my:prop</property>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.core.CoreServiceVersionPropertyDescriptor" />
   </extension-point>
 
 </component>

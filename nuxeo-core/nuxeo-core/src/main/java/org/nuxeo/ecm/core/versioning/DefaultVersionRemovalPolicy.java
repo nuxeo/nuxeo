@@ -46,6 +46,8 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
 
     private static final Log log = LogFactory.getLog(DefaultVersionRemovalPolicy.class);
 
+    public static final DefaultVersionRemovalPolicy INSTANCE = new DefaultVersionRemovalPolicy();
+
     public static final String ORPHAN_VERSION_REMOVE = "orphan_versions_to_remove";
 
     @Override

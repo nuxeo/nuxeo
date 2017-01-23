@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.versioning.VersioningService.test">
 
+ <!-- register the compat contrib for the filter to be used -->
+ <extension target="org.nuxeo.ecm.core.CoreService" point="versionRemovalPolicy">
+  <policy class="org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy"/>
+ </extension>
+
  <extension target="org.nuxeo.ecm.core.CoreService" point="orphanVersionRemovalFilter">
   <filter class="org.nuxeo.ecm.core.version.test.OrphanVersionRemovalOnlyFileFilter"/>
  </extension>

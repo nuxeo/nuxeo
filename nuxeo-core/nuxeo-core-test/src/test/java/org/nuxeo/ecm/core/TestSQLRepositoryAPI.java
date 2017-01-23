@@ -3924,7 +3924,12 @@ public class TestSQLRepositoryAPI {
     public void testVersionParent() {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
+        // create a version
         DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+        // also create a proxy so that removing the live document
+        // doesn't immediately remove the version as orphan
+        session.createProxy(verRef, new PathRef("/"));
+
         DocumentRef parentRef = session.getParentDocumentRef(verRef);
         assertNotNull(parentRef);
         assertEquals(session.getRootDocument().getRef(), parentRef);

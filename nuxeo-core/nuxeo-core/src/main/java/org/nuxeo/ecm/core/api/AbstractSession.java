@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1258,7 +1259,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         for (Document child : children) {
             if (child.isProxy()) {
                 if (hasPermission(child, REMOVE)) {
-                    removeNotifyOneDoc(child);
+                    doRemoveDocument(child, true);
                 }
             }
         }
@@ -1266,7 +1267,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         for (Document child : children) {
             if (!child.isProxy()) {
                 if (hasPermission(child, REMOVE)) {
-                    removeNotifyOneDoc(child);
+                    doRemoveDocument(child, true);
                 }
             }
         }
@@ -1325,14 +1326,25 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected void removeDocument(Document doc) {
-        try {
-            String reason = canRemoveDocument(doc);
-            if (reason != null) {
-                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID() + ", "
-                        + reason);
-            }
-            removeNotifyOneDoc(doc);
+        String reason = canRemoveDocument(doc);
+        if (reason != null) {
+            throw new DocumentSecurityException(
+                    "Permission denied: cannot remove document " + doc.getUUID() + ", " + reason);
+        }
+        doRemoveDocument(doc, true);
+    }
 
+    /**
+     * Removes a document without doing any security check or high-level sanity check (assumes they've already been
+     * done).
+     *
+     * @param doc the document to remove
+     * @param removeOrphanVersions whether to check for and remove orphan versions
+     * @since 9.1
+     */
+    protected void doRemoveDocument(Document doc, boolean removeOrphanVersions) {
+        try {
+            doRemoveDocument0(doc, removeOrphanVersions);
         } catch (ConcurrentUpdateException e) {
             e.addInfo("Failed to remove document " + doc.getUUID());
             throw e;
@@ -1340,21 +1352,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         deleteDocumentCount.inc();
     }
 
-    protected void removeNotifyOneDoc(Document doc) {
-        // XXX notify with options if needed
+    protected void doRemoveDocument0(Document doc, boolean removeOrphanVersions) {
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<>();
-        if (docModel != null) {
-            options.put("docTitle", docModel.getTitle());
-        }
+        options.put("docTitle", docModel.getTitle());
         String versionLabel = "";
         Document sourceDoc = null;
-        // notify different events depending on wether the document is a
-        // version or not
+        // notify different events depending on whether the document is a version or not
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options, null, null, true, true);
-            CoreService coreService = Framework.getLocalService(CoreService.class);
-            coreService.getVersionRemovalPolicy().removeVersions(getSession(), doc, this);
+            if (removeOrphanVersions) {
+                // remove orphan versions, if any
+                CoreService coreService = Framework.getService(CoreService.class);
+                if (coreService.useDefaultOrphanVersionRemovalPolicy()) {
+                    // use fast non-pluggable code path
+                    removeOrphanVersions(doc);
+                } else {
+                    // use pluggable policies
+                    coreService.removeOrphanVersions(doc, this);
+                }
+            }
         } else {
             versionLabel = docModel.getVersionLabel();
             sourceDoc = doc.getSourceDocument();
@@ -1366,9 +1383,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (sourceDoc != null) {
                 DocumentModel sourceDocModel = readModel(sourceDoc);
                 if (sourceDocModel != null) {
-                    options.put("comment", versionLabel); // to be used by
-                                                          // audit
-                    // service
+                    options.put("comment", versionLabel); // to be used by audit service
                     notifyEvent(DocumentEventTypes.VERSION_REMOVED, sourceDocModel, options, null, null, false, false);
                     options.remove("comment");
                 }
@@ -1376,6 +1391,106 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
         }
         notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, options, null, null, false, false);
+    }
+
+    /**
+     * Removes the orphan versions associated to the document.
+     * <p>
+     * A version stays referenced, and therefore is not removed, if any proxy points to a version in the version
+     * history, or in the case of tree snapshot if there is a snapshot containing a version in the version history.
+     *
+     * @param doc the document (a live document or a proxy, but not a version)
+     * @since 9.1
+     */
+    protected void removeOrphanVersions(Document doc) {
+        // check if there are proxies referencing the versions
+        Collection<Document> proxies = getSession().getProxies(doc, null);
+        if (doc.isProxy()) {
+            // if doc is a proxy it should not be considered in the list of remaining proxies
+            // as we're about to remove it
+            proxies.remove(doc);
+            if (proxies.isEmpty()) {
+                // removal of last proxy
+                Document source = doc.getSourceDocument();
+                if (source.isVersion()) {
+                    // get live doc from version
+                    try {
+                        source = source.getSourceDocument();
+                    } catch (DocumentNotFoundException e) {
+                        // live already removed
+                        source = null;
+                    }
+                } // else doc is a live proxy
+                if (source != null) {
+                    // there is a live document remaining: don't remove orphans
+                    if (log.isDebugEnabled()) {
+                        log.debug("No orphan versions removal, live document " + source.getUUID()
+                                + " still exists after removal of proxy " + doc.getUUID());
+                    }
+                    return;
+                }
+            }
+        }
+        if (!proxies.isEmpty()) {
+            // there is a proxy to one of the versions: don't remove orphans
+            if (log.isDebugEnabled()) {
+                log.debug("No orphan versions removal, proxy " + proxies.iterator().next().getUUID()
+                        + " still references a version of " + doc.getUUID());
+            }
+            return;
+        }
+
+        // do we have any orphan version to potentially remove?
+        List<String> versionsIds = doc.getVersionsIds();
+        if (versionsIds.isEmpty()) {
+            log.debug("No orphan versions to remove");
+            return;
+        }
+
+        // check if there are other properties referencing the versions
+        List<String> props = Framework.getService(CoreService.class).getVersionsProperties();
+        if (!props.isEmpty()) {
+            // build a NXQL query to find potential references
+            StringBuilder nxql = new StringBuilder("SELECT ecm:uuid FROM Document WHERE ");
+            for (Iterator<String> propIt = props.iterator(); propIt.hasNext();) {
+                String prop = propIt.next();
+                nxql.append(prop + "/* IN (");
+                for (Iterator<String> verIt = versionsIds.iterator(); verIt.hasNext();) {
+                    nxql.append('\'');
+                    nxql.append(verIt.next());
+                    nxql.append('\'');
+                    if (verIt.hasNext()) {
+                        nxql.append(',');
+                    }
+                }
+                nxql.append(')');
+                if (propIt.hasNext()) {
+                    nxql.append(" OR ");
+                }
+            }
+
+            try (IterableQueryResult result = getSession().queryAndFetch(nxql.toString(), NXQL.NXQL, QueryFilter.EMPTY,
+                    false, new Object[0])) {
+                Iterator<Map<String, Serializable>> it = result.iterator();
+                if (it.hasNext()) {
+                    // there are some things referencing one of the versions: don't remove orphans
+                    if (log.isDebugEnabled()) {
+                        log.debug("No orphan versions removal, document " + it.next().get(NXQL.ECM_UUID)
+                                + " still references a version of " + doc.getUUID());
+                    }
+                    return;
+                }
+            }
+        }
+
+        // remove orphan versions
+        if (log.isDebugEnabled()) {
+            log.debug("Removing " + versionsIds.size() + " orphan versions for " + doc.getUUID());
+        }
+        for (String id : versionsIds) {
+            doRemoveDocument(resolveReference(new IdRef(id)), false);
+            // we don't use removeDocuments() as it needs paths
+        }
     }
 
     /**
@@ -1850,7 +1965,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         List<String> removedProxyIds = new ArrayList<>(otherProxies.size());
         for (Document otherProxy : otherProxies) {
             removedProxyIds.add(otherProxy.getUUID());
-            removeNotifyOneDoc(otherProxy);
+            doRemoveDocument(otherProxy, false);
         }
         return removedProxyIds;
     }
