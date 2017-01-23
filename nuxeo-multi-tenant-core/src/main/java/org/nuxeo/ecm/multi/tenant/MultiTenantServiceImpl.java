@@ -242,13 +242,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        boolean started = false;
-        boolean ok = false;
-        try {
-            if (!TransactionHelper.isTransactionActive()) {
-                TransactionHelper.startTransaction();
-                started = true;
-            }
+        TransactionHelper.runInTransaction(() -> {
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 new UnrestrictedSessionRunner(repositoryName) {
@@ -260,18 +254,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
                     }
                 }.runUnrestricted();
             }
-            ok = true;
-        } finally {
-            if (started) {
-                try {
-                    if (!ok) {
-                        TransactionHelper.setTransactionRollbackOnly();
-                    }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
-            }
-        }
+        });
     }
 
     @Override
