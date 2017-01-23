@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.multi.tenant;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,9 +36,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
+@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.default.config" })
+@LocalDeploy({ "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
+        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml" })
 public class TestMultiTenantHelper {
 
     @Inject protected CoreSession session;
