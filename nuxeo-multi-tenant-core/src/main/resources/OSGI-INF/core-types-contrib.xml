@@ -3,8 +3,6 @@
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <require>org.nuxeo.ecm.directory.types</require>
-  <require>org.nuxeo.ecm.platform.types.local.configuration</require>
-  <require>org.nuxeo.ecm.platform.content.view.local.configuration</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
       point="schema">
@@ -26,8 +24,6 @@
     <doctype name="Domain" extends="Folder">
       <schema name="domain" />
       <facet name="SuperSpace" />
-      <facet name="UITypesLocalConfiguration" />
-      <facet name="ContentViewLocalConfiguration" />
       <facet name="SearchConfiguration" />
       <subtypes>
         <type>WorkspaceRoot</type>

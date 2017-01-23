@@ -80,7 +80,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common" })
+@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.default.config" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml" })
 public class TestMultiTenantService {
