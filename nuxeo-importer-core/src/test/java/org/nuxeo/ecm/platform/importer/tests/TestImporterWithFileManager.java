@@ -30,11 +30,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,9 +45,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ 
-    "org.nuxeo.ecm.platform.content.template", 
-    "org.nuxeo.ecm.platform.importer.core", 
+@Deploy({
+    "org.nuxeo.ecm.platform.content.template",
+    "org.nuxeo.ecm.platform.importer.core",
     "org.nuxeo.ecm.platform.filemanager.core",
     "org.nuxeo.ecm.platform.types.core",
     "org.nuxeo.ecm.platform.video.core",
@@ -55,9 +55,12 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
     "org.nuxeo.ecm.platform.picture.core"
 })
 @LocalDeploy({
-    "org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml" 
+    "org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml"
 })
 public class TestImporterWithFileManager {
+
+    @Inject
+    TransactionalFeature txFeature;
 
     @Inject
     protected CoreSession session;
@@ -78,6 +81,7 @@ public class TestImporterWithFileManager {
         File source = FileUtils.getResourceFileFromContext("filemanager");
         importerService.importDocuments("/default-domain/workspaces/ws1", source.getPath(), false, 5, 5);
         session.save();
+        txFeature.nextTransaction();
 
         DocumentModel file = session.getDocument(new PathRef("/default-domain/workspaces/ws1/filemanager/cat.gif"));
         assertNotNull(file);
