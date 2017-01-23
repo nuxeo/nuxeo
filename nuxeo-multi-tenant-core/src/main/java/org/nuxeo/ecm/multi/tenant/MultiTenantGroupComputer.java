@@ -47,14 +47,9 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
         final List<String> groups = new ArrayList<String>();
         final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue("user:tenantId");
         if (!StringUtils.isBlank(tenantId)) {
-            String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class).getDefaultRepositoryName();
-
-            boolean transactionStarted = false;
-            if (!TransactionHelper.isTransactionActive()) {
-                TransactionHelper.startTransaction();
-                transactionStarted = true;
-            }
-            try {
+            String defaultRepositoryName = Framework.getLocalService(RepositoryManager.class)
+                                                    .getDefaultRepositoryName();
+            TransactionHelper.runInTransaction(() -> {
                 new UnrestrictedSessionRunner(defaultRepositoryName) {
                     @Override
                     public void run() {
@@ -73,11 +68,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                         }
                     }
                 }.runUnrestricted();
-            } finally {
-                if (transactionStarted) {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
-            }
+            });
         }
         return groups;
     }
