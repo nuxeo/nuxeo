@@ -15,30 +15,37 @@
  *
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
- *     slacoin <slacoin@nuxeo.com>
  */
 
-package org.nuxeo.ecm.automation;
+package org.nuxeo.ecm.automation.core.trace;
 
 import java.util.Map;
 
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
-import org.nuxeo.ecm.automation.core.trace.Trace;
 
 /**
+ * Automation tracer recording lightweight automation execution traces when mode deactivated.
+ *
  * @since 5.7.3
  */
-public interface OperationCallback {
+public class TracerLite extends Tracer {
 
-    void onChain(OperationType chain);
+    protected TracerLite(TracerFactory factory) {
+        super(factory, true);
+    }
 
-    void onOperation(OperationContext context, OperationType type, InvokableMethod method, Map<String, Object> parms);
+    @Override
+    public void onOperation(OperationContext context, OperationType type, InvokableMethod method,
+            Map<String, Object> parms) {
+        if (type instanceof ChainTypeImpl) {
+            pushContext(type);
+            return;
+        }
+        Call call = new Call(chain, null, type, null, null);
+        calls.add(call);
+    }
 
-    void onError(OperationException error);
-
-    void onOutput(Object output);
-
-    Trace getTrace();
-
-    String getFormattedText();
 }

@@ -14,31 +14,32 @@
  * limitations under the License.
  *
  * Contributors:
- *     vpasquier <vpasquier@nuxeo.com>
- *     slacoin <slacoin@nuxeo.com>
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-
 package org.nuxeo.ecm.automation;
 
-import java.util.Map;
-
-import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
-import org.nuxeo.ecm.automation.core.trace.Trace;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
  */
-public interface OperationCallback {
+public class TraceException extends OperationException {
 
-    void onChain(OperationType chain);
+    private static final long serialVersionUID = 1L;
 
-    void onOperation(OperationContext context, OperationType type, InvokableMethod method, Map<String, Object> parms);
+    TracerFactory traceFactory = Framework.getLocalService(TracerFactory.class);
 
-    void onError(OperationException error);
+    public TraceException(OperationCallback tracer, Throwable cause) {
+        super(tracer.getFormattedText(), cause);
+    }
 
-    void onOutput(Object output);
+    public TraceException(String message) {
+        super(message);
+    }
 
-    Trace getTrace();
+    public TraceException(Throwable cause) {
+        super(cause);
+    }
 
-    String getFormattedText();
 }
