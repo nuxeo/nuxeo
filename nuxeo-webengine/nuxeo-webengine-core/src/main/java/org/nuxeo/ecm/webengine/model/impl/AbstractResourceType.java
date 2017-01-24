@@ -82,7 +82,6 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
 
-    @Override
     public ResourceType getSuperType() {
         return superType;
     }
@@ -91,33 +90,27 @@ public abstract class AbstractResourceType implements ResourceType {
         return owner;
     }
 
-    @Override
     public Guard getGuard() {
         return guard;
     }
 
-    @Override
     public Set<String> getFacets() {
         return facets;
     }
 
-    @Override
     public boolean hasFacet(String facet) {
         return facets != null && facets.contains(facet);
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Class<Resource> getResourceClass() {
         return (Class<Resource>) clazz.get();
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends Resource> T newInstance() {
         try {
@@ -127,12 +120,10 @@ public abstract class AbstractResourceType implements ResourceType {
         }
     }
 
-    @Override
     public boolean isEnabled(Resource ctx) {
         return guard.check(ctx);
     }
 
-    @Override
     public boolean isDerivedFrom(String type) {
         if (type.equals(name)) {
             return true;
@@ -143,7 +134,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return false;
     }
 
-    @Override
     public void flushCache() {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
     }
@@ -177,7 +167,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return name + " extends " + superType + " [" + getResourceClass().getName() + "]";
     }
 
-    @Override
     public ScriptFile getView(Module module, String name) {
         ScriptFile file = findView(module, name);
         if (file == null) {

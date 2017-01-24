@@ -144,7 +144,7 @@ public class PermissionAutomationTest {
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        automationService.run(ctx, BlockPermissionInheritance.ID);
+        automationService.run(ctx, BlockPermissionInheritance.ID, null);
         src.refresh();
         acp = src.getACP();
         assertEquals(Access.DENY, acp.getAccess("members", READ));
@@ -158,7 +158,7 @@ public class PermissionAutomationTest {
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        automationService.run(ctx, UnblockPermissionInheritance.ID);
+        automationService.run(ctx, UnblockPermissionInheritance.ID, null);
         src.refresh();
         acp = src.getACP();
         assertEquals(Access.GRANT, acp.getAccess("members", READ));

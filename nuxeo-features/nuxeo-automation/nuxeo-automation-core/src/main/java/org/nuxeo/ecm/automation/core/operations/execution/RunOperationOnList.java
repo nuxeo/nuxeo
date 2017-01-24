@@ -70,7 +70,7 @@ public class RunOperationOnList {
 
     @Param(name = "parameters", description = "Accessible in the subcontext " + "ChainParameters. For instance, "
             + "@{ChainParameters['parameterKey']}.", required = false)
-    protected Properties chainParameters = new Properties();
+    protected Properties chainParameters;
 
     /**
      * @since 6.0 Define if the chain in parameter should be executed in new transaction.
@@ -93,6 +93,7 @@ public class RunOperationOnList {
     protected boolean rollbackGlobalOnError = true;
 
     @OperationMethod
+    @SuppressWarnings("unchecked")
     public void run() throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(ctx.getVars()) : ctx.getVars();
@@ -113,7 +114,7 @@ public class RunOperationOnList {
             if (newTx) {
                 service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
             } else {
-                service.run(subctx, chainId, chainParameters);
+                service.run(subctx, chainId, (Map) chainParameters);
             }
         }
 

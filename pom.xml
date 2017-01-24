@@ -3931,11 +3931,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>org.opensaml</groupId>
-        <artifactId>openws</artifactId>
-        <version>1.5.1</version>
-      </dependency>
+
       <!-- SCIM -->
       <dependency>
         <artifactId>scim-sdk</artifactId>
