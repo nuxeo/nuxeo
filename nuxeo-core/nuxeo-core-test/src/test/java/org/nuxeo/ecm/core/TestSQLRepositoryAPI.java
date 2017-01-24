@@ -2602,6 +2602,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testMoveConcurrentWithGetChild() throws Exception {
+        assumeTrue("VCS read-committed semantics cannot enforce this", isDBS());
         prepareDocsForMoveConcurrentWithGetChildren();
         try {
             session.getChild(new PathRef("/folder"), "doc");
@@ -2613,6 +2614,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testMoveConcurrentWithGetChildren() throws Exception {
+        assumeTrue("VCS read-committed semantics cannot enforce this", isDBS());
         prepareDocsForMoveConcurrentWithGetChildren();
         // should not find child moved under /folder in another transaction
         DocumentModelList children = session.getChildren(new PathRef("/folder"));
@@ -2621,6 +2623,7 @@ public class TestSQLRepositoryAPI {
 
     @Test
     public void testMoveConcurrentWithGetChildrenRefs() throws Exception {
+        assumeTrue("VCS read-committed semantics cannot enforce this", isDBS());
         prepareDocsForMoveConcurrentWithGetChildren();
         // should not find child moved under /folder in another transaction
         List<DocumentRef> children = session.getChildrenRefs(new PathRef("/folder"), null);
