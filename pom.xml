@@ -16,6 +16,7 @@
     <module>nuxeo-csv-core</module>
     <module>nuxeo-csv-jsf</module>
     <module>nuxeo-csv-core-dependencies</module>
+    <module>nuxeo-csv-web-ui</module>
   </modules>
 
   <properties>

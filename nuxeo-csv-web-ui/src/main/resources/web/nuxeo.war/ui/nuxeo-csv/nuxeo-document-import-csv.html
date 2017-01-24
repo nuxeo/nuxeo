@@ -1,0 +1,500 @@
+<!--
+(C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+<!--
+`nuxeo-document-import-csv`
+@group Nuxeo UI
+@element nuxeo-document-import-csv
+-->
+<dom-module id="nuxeo-document-import-csv">
+  <template>
+
+    <style is="custom-style">
+
+      .description {
+        margin: 16px 32px;
+        color: var(--nuxeo-text-light);
+      }
+
+      :host {
+        display: block;
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+      }
+
+      paper-button[disabled] {
+        display: none;
+      }
+
+      paper-dialog {
+        height: 80vh;
+      }
+
+      nuxeo-path-suggestion {
+        --nuxeo-path-suggestion-results: {
+           z-index: 200;
+         };
+         --paper-input-container-underline: {
+           display: none;
+         };
+         --paper-input-container-underline-focus: {
+           display: none;
+         };
+      }
+
+      paper-spinner-lite {
+        --paper-spinner-color: var(--default-primary-color);
+      }
+
+      .suggester {
+        margin: 16px 32px;
+      }
+
+      .file-to-import {
+        min-height: 3em;
+        margin: 0 .3em .8em;
+        width: calc(50% - 3em);
+        padding: .8em 1em;
+        background-color: white;
+        border: 1px solid var(--divider-color);
+        position: relative;
+      }
+
+      .typeDropdown {
+        width: 100%;
+      }
+
+      paper-progress {
+        width: 100%;
+      }
+
+      ::content label {
+        @apply(--nuxeo-label);
+        padding-top: 8px;
+      }
+
+      ::content paper-dropdown-menu {
+        width: 100%;
+      }
+
+      div[name='customize'] #blobEditor span {
+        width: 200px;
+      }
+
+      #dropzone {
+        padding: 1em;
+        position: relative;
+        border: 2px dashed var(--divider-color);
+        border-radius: 4px;
+        background-color: #F7F6F6;
+        min-height: 100px;
+        margin: 1em 2em 5em;
+      }
+
+      .drop-scrollable {
+        overflow: auto;
+      }
+
+      #form {
+        padding: 0 32px;
+      }
+
+      #document-import {
+        margin-bottom: 2.5em;
+      }
+
+      #submitButton {
+        display: none;
+      }
+
+      #blobEditor {
+        overflow-y: auto;
+      }
+
+      #blobList .file-overview:first-of-type {
+        margin-top: 32px;
+      }
+
+      .sidePanel {
+        overflow-y: scroll;
+        background: var(--nuxeo-page-background);
+      }
+
+      .blobCheck {
+        display: block;
+        width: 16px;
+        height: 16px;
+      }
+
+      .blobCheck.checked {
+        color: var(--nuxeo-validated);
+      }
+
+      .blobCheck.unchecked {
+        color: var(--nuxeo-text-light);
+      }
+
+      .blobCheck.hidden {
+        visibility: hidden;
+      }
+
+      .file-overview {
+        border: 1px solid var(--divider-color);
+        border-radius: 1px;
+        background-color: white;
+        padding: 16px 14px 1px 14px;
+        margin: 8px;
+        font-weight: bold;
+        text-transform: none;
+        color: var(--secondary-text-color);
+      }
+
+      .file-overview:hover {
+        @apply(--nuxeo-block-hover);
+      }
+
+      .file-overview.selected {
+        @apply(--nuxeo-block-selected);
+      }
+
+      .file-overview iron-icon {
+        margin-top: 0.1em;
+      }
+
+      .typePicker {
+        padding: 0 32px;
+      }
+
+      .name {
+        font-weight: bold;
+        word-break: break-word;
+        font-size: 1.1em;
+      }
+
+      .size {
+        font-size: .75em;
+        color: var(--nuxeo-text-light, #aaa);
+        padding: .1em .5em;
+        white-space: nowrap;
+      }
+
+      .wrap.baseline {
+        align-items: baseline;
+      }
+
+      .complete {
+        background-color: var(--nuxeo-validated);
+        border-radius: 2em;
+        width: 1.5em;
+        color: #fff;
+        position: absolute;
+        right: 1.5em;
+        top: .8em;
+        text-align: center;
+      }
+
+      .complete iron-icon  {
+        width: 1.2em;
+        height: 1.3em;
+      }
+
+      .provider {
+        color: blue;
+      }
+
+      .dropzone-label {
+        cursor: pointer;
+        margin: 16px 0 48px 0;
+      }
+
+      .dropzone-heading {
+        font-weight: bold;
+        margin: 4px 8px;
+        padding: 4px 8px;
+        width: 100%;
+      }
+
+      .disclaimer {
+        display: block;
+        font-weight: normal;
+        font-size: .7em;
+        color: var(--nuxeo-text-light);
+      }
+
+      .clear {
+        width: 3em;
+        visibility: hidden;
+        background-color: #fff;
+        text-align: right;
+      }
+
+      .clear paper-icon-button {
+        padding: 0 0 1em .5em;
+      }
+
+      .file-to-import:hover .clear {
+        visibility: visible;
+        z-index: 1;
+      }
+
+      .file-to-import:last-of-type {
+        margin-bottom: 3em;
+      }
+
+      .disclaimer.checked,
+      .disclaimer.hidden {
+        visibility: hidden;
+      }
+
+      .add-more {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        border-top: 1px solid var(--nuxeo-border);
+        background-color: rgba(255,255,255,0.8);
+        padding: .5em;
+      }
+
+      .buttons {
+        @apply(--buttons-bar);
+      }
+
+      .add-more .importActions {
+        margin-left: 8px;
+      }
+
+      .importActions > *,
+      .importActions::content > * {
+        margin-left: 8px;
+      }
+
+      .importActions > *:first-child,
+      .importActions > nuxeo-slot,
+      .importActions::content > *:first-child,
+      .importActions::content > nuxeo-slot {
+        margin-left: 0;
+      }
+
+      @media (max-width: 1024px) {
+        .file-to-import {
+          width: calc(100% - 2em);
+        }
+      }
+
+      .error {
+        color: var(--nuxeo-warn-text);
+      }
+
+      .importing-label {
+        margin-right: 8px;
+      }
+    </style>
+
+    <nuxeo-connection id="nx"></nuxeo-connection>
+
+
+    <div class="description">[[i18n('csv.import.description')]]</div>
+
+    <div class="suggester">
+      <nuxeo-path-suggestion id="pathSuggesterUpload"
+                             label="[[i18n('documentImportForm.location')]]"
+                             value="{{targetPath}}"
+                             parent="{{suggesterParent}}"
+                             children="{{suggesterChildren}}"
+                             disabled
+                             always-float-label></nuxeo-path-suggestion>
+      <span class="error">&#8203;[[targetLocationError]]</span>
+    </div>
+
+    <div id="dropzone" class="vertical layout flex">
+      <input hidden id="uploadFiles" type="file" on-change="_fileChanged">
+      <template is="dom-if" if="[[!hasFile]]">
+        <div class="vertical layout center center-justified flex">
+          <div class="dropzone-label horizontal layout center center-justified">
+            <a href="javascript:undefined" on-tap="_showUploadDialog">
+              [[i18n('csv.import.clickOrDrop')]]</a>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[hasFile]]">
+        <div class="drop-scrollable">
+          <div class="vertical layout flex">
+            <div class="horizontal layout wrap baseline">
+              <div class="file-to-import horizontal layout">
+                <div class="vertical layout flex">
+                  <div class="horizontal layout">
+                    <div class="name">
+                      [[file.name]]
+                    </div>
+                    <span class="size">
+                      [[formatSize(file.size)]]
+                    </span>
+                  </div>
+                  <template is="dom-if" if="[[file.providerName]]">
+                    <div class="provider">
+                      [[file.providerName]]
+                    </div>
+                  </template>
+                  <template is="dom-if" if="[[file.complete]]">
+                    <div class="complete">
+                      <iron-icon icon="icons:check"></iron-icon>
+                    </div>
+                  </template>
+                  <template is="dom-if" if="[[!file.complete]]">
+                    <paper-progress indeterminate></paper-progress>
+                  </template>
+                </div>
+                <div class="clear">
+                  <paper-icon-button icon="icons:clear" on-tap="_removeBlob"></paper-icon-button>
+                  <paper-tooltip>[[i18n('command.remove')]]</paper-tooltip>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-document-import-csv',
+
+      behaviors: [Nuxeo.I18nBehavior, Polymer.IronResizableBehavior, Nuxeo.UploaderBehavior, Nuxeo.DocumentCreationBehavior],
+
+      properties: {
+        parent: {
+          type: Object
+        },
+        hasFile: {
+          type: Boolean,
+          value: false
+        },
+        file: {
+          type: Object
+        },
+        _importDocTypes: {
+          type: Array,
+          computed: '_computeImportDocTypes(subtypes)'
+        },
+        visible: {
+          type: Boolean
+        }
+      },
+
+      ready: function() {
+        this.connection = this.$.nx;
+        this.setupDropZone(this.$.dropzone);
+        this._clear();
+      },
+
+      observers: [
+        '_observeFiles(files.*)'
+      ],
+
+      listeners: {
+        'batchFinished': '_batchReady',
+        'nx-document-creation-parent-validated': '_parentValidated'
+      },
+      observers: [
+        '_observeFiles(files.*)',
+        '_visibleOnStage(visible,stage)'
+      ],
+
+      _computeImportDocTypes: function() {
+        if (this.subtypes) {
+          return this.subtypes.filter(this._filterImportDocTypes);
+        }
+      },
+
+      _filterImportDocTypes: function(type) {
+        return window.nuxeo.importBlacklist.indexOf(type.type) === -1;
+      },
+
+      _observeFiles: function(changeRecord) {
+        if (changeRecord) {
+          if (changeRecord.path === 'files.splices' && changeRecord.value && changeRecord.value.indexSplices) {
+            changeRecord.value.indexSplices.forEach(function(s) {
+              for (var i = 0; i < s.addedCount; i++) {
+                var index = s.index + i;
+                this.push('localFiles', this.files[index]);
+              }
+            }, this);
+            this.hasLocalFiles = this.localFiles && this.localFiles.length > 0;
+            this.hasLocalFilesUploaded = false;
+          } else if (changeRecord.path.match(/files\.#\d+\.index/gi)) {
+            this.hasLocalFilesUploaded = this.hasLocalFiles && this.files && this.files.every(function(file) {
+              return !file || file.complete;
+            });
+            // hack: refresh complete on the dom repeat
+            var i = this.localFiles.findIndex(function(f) {
+              return f.index === this.get(changeRecord.path.replace('.index', '')).index;
+            }.bind(this));
+            this.set(['localFiles', i, 'complete'].join('.'), true);
+          }
+        }
+      },
+
+      _showUploadDialog: function() {
+        this.$.uploadFiles.click();
+      },
+
+      _fileChanged: function(e) {
+        this.uploadFiles(e.target.files);
+        this.hasFile = true;
+      },
+
+      _batchReady: function(data) {
+        data.stopPropagation();
+        this.properties = [];
+        for (var i = 0; i < this.localFiles.length; i++) {
+          this.properties.push({});
+        }
+      },
+
+      _parentValidated: function() {
+        if (this.canCreate && this._importDocTypes && this._importDocTypes.length === 0) {
+          this.set('canCreate', false);
+          this.set('targetLocationError', this.i18n('documentImport.error.cannotImport'));
+        }
+      },
+
+      _visibleOnStage: function() {
+        this.$.pathSuggesterUpload.disabled = !this.visible || this.stage !== 'upload';
+      },
+
+      _clear: function() {
+        this.stage = 'upload';
+        this.files = [];
+        this.localFiles = [];
+        this.remoteFiles = [];
+        this.hasLocalFileUploaded = false;
+        this.hasLocalFile = false;
+        this.properties = [];
+        this.docIdx = -1;
+        this._doNotCreate = false;
+        this._docProperties = {};
+        this._creating = false;
+      }
+
+    });
+  </script>
+
+</dom-module>

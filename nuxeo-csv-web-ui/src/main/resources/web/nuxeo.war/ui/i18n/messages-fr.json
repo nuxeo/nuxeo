@@ -1,0 +1,5 @@
+{
+  "csv.import" : "CSV",
+  "csv.import.description" : "Import de documents en masse dans la plateforme Nuxeo à partir d'un fichier CSV",
+  "csv.import.clickOrDrop": "Cliquer pour sélectionner un fichier csv ou déposer le téléverser."
+}
