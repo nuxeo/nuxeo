@@ -67,7 +67,7 @@ public class ITMenuTest extends AbstractTest {
         get(HomePage.URL, HomePage.class);
         assertNotNull(driver.findElementByLinkText(title));
         assertTrue(driver.findElementByLinkText(title).isDisplayed());
-        driver.findElementByLinkText(title).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.linkText(title));
         // ensure navigation did not crash, and menu item is open
         checkNoCrash(title);
         assertTrue(driver.findElementByLinkText(boxTitle).isDisplayed());

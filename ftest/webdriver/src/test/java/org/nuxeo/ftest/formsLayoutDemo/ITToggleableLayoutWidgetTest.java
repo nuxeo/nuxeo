@@ -144,7 +144,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         assertEquals("Save", saveAction.getAttribute("value"));
         arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        saveAction.click();
+        Locator.scrollAndForceClick(saveAction);
         arm.waitForAjaxRequests();
         Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
