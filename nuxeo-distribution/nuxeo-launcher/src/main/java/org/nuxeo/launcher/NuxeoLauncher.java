@@ -54,8 +54,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import javax.json.Json;
@@ -731,7 +733,7 @@ public abstract class NuxeoLauncher {
     protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
         List<String> startCommand = new ArrayList<>();
         startCommand.add(getJavaExecutable().getPath());
-        startCommand.addAll(getJavaOptsPropertyAsList());
+        startCommand.addAll(getJavaOptsProperty(opt -> StrSubstitutor.replace(opt, configurationGenerator.getUserConfig())));
         startCommand.add("-cp");
         startCommand.add(getClassPath());
         startCommand.addAll(getNuxeoProperties());
@@ -780,21 +782,12 @@ public abstract class NuxeoLauncher {
      *
      * @return the java options string.
      */
-    protected String getJavaOptsProperty() {
-        String ret = System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT);
-        ret = StrSubstitutor.replace(ret, configurationGenerator.getUserConfig());
-        return ret;
-    }
-
-    /**
-     * @return Java OPTS split on spaces followed by an even number of quotes
-     *         (or zero)
-     * @since 7.10
-     */
-    protected List<String> getJavaOptsPropertyAsList() {
-        String javaOptsProperty = getJavaOptsProperty();
-        log.debug("JAVA OPTS:" + javaOptsProperty);
-        return Arrays.asList(javaOptsProperty.split("[ ]+(?=([^\"]*\"[^\"]*\")*[^\"]*$)"));
+    protected List<String> getJavaOptsProperty(Function<String,String> mapper) {
+        return Arrays
+                .stream(System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT)
+                        .split("[ ]+(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
+                .map(mapper)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -847,29 +840,41 @@ public abstract class NuxeoLauncher {
      * @return wrapped command depending on the OS
      */
     private List<String> getOSCommand(List<String> roughCommand) {
-        ArrayList<String> osCommand = new ArrayList<>();
-        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
-            String linearizedCommand = new String();
-            for (String commandToken : roughCommand) {
-                if (StringUtils.isBlank(commandToken)) {
-                    continue;
-                }
-                if (commandToken.contains(" ")) {
-                    commandToken = commandToken.replaceAll(" ", "\\\\ ");
-                }
-                linearizedCommand += " " + commandToken;
-            }
-            osCommand.add("/bin/sh");
-            osCommand.add("-c");
-            osCommand.add(linearizedCommand);
-        } else {
-            for (String commandToken : roughCommand) {
-                if (StringUtils.isBlank(commandToken)) {
-                    continue;
-                }
-                osCommand.add(commandToken);
-            }
+        if (SystemUtils.IS_OS_UNIX) {
+            return getUnixCommand(roughCommand);
         }
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return getWindowsCommand(roughCommand);
+        }
+        throw new IllegalStateException("Unkown os, can't launch server");
+    }
+
+    private List<String> getWindowsCommand(List<String> roughCommand) {
+        ArrayList<String> osCommand = new ArrayList<>();
+        for (String commandToken : roughCommand) {
+            if (StringUtils.isBlank(commandToken)) {
+                continue;
+            }
+            osCommand.add("\"" + commandToken + "\"");
+        }
+        return osCommand;
+    }
+
+    private List<String> getUnixCommand(List<String> roughCommand) {
+        ArrayList<String> osCommand = new ArrayList<>();
+        String linearizedCommand = new String();
+        for (String commandToken : roughCommand) {
+            if (StringUtils.isBlank(commandToken)) {
+                continue;
+            }
+            if (commandToken.contains(" ")) {
+                commandToken = commandToken.replaceAll(" ", "\\\\ ");
+            }
+            linearizedCommand += " " + commandToken;
+        }
+        osCommand.add("/bin/sh");
+        osCommand.add("-c");
+        osCommand.add(linearizedCommand);
         return osCommand;
     }
 
@@ -1845,7 +1850,7 @@ public abstract class NuxeoLauncher {
             configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED, "true");
             List<String> startCommand = new ArrayList<>();
             startCommand.add(getJavaExecutable().getPath());
-            startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
+            startCommand.addAll(getJavaOptsProperty(Function.<String>identity()));
             startCommand.add("-cp");
             String classpath = getClassPath();
             classpath = addToClassPath(classpath, "bin" + File.separator + "nuxeo-launcher.jar");
