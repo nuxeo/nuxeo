@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
@@ -50,6 +51,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "packageListingProvider")
 public class PackageListingProvider extends DefaultObject {
+
+    public String getConnectBaseUrl() {
+        return ConnectUrlConfig.getBaseUrl();
+    }
 
     @GET
     @Produces("text/html")
