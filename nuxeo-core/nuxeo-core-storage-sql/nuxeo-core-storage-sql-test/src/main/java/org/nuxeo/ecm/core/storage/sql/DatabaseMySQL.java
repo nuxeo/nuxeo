@@ -42,24 +42,28 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-mysql-contrib.xml";
 
-    private static final String DRIVER = DEF_KIND.equals("mysql") ? "com.mysql.jdbc.Driver" : "org.mariadb.jdbc.Driver";
+    private static final String DRIVER_MYSQL = "com.mysql.jdbc.Driver";
+
+    private static final String DRIVER_MARIADB = "org.mariadb.jdbc.Driver";
 
     private void setProperties() {
-        setProperty(URL_PROPERTY, DEF_URL);
+        String url = setProperty(URL_PROPERTY, DEF_URL);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
-        setProperty(DRIVER_PROPERTY, DRIVER);
+        String driver = url.startsWith("jdbc:mariadb:") ? DRIVER_MARIADB : DRIVER_MYSQL;
+        setProperty(DRIVER_PROPERTY, driver);
     }
 
     @Override
     public void setUp() throws SQLException {
         super.setUp();
+        setProperties();
+        String driver = Framework.getProperty(DRIVER_PROPERTY);
         try {
-            Class.forName(DRIVER);
+            Class.forName(driver);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-        setProperties();
         Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY),
                 Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null, null, "DROP TABLE `%s` CASCADE");
