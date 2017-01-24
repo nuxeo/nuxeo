@@ -397,9 +397,6 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt, Class<?> targetType) throws OperationException {
-        if (toAdapt == null) {
-            return null;
-        }
         // handle primitive types
         Class<?> toAdaptClass = toAdapt == null ? Void.class : toAdapt.getClass();
         if (targetType.isPrimitive()) {
@@ -424,7 +421,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                 return (T) ctx;
             }
             throw new OperationException(
-                    "No type adapter found for input: " + toAdaptClass + " and output " + targetType);
+                    "No type adapter found for input: " + toAdapt.getClass() + " and output " + targetType);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }
