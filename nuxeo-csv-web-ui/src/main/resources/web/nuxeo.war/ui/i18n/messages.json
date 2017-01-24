@@ -1,0 +1,16 @@
+{
+  "csv.import" : "CSV",
+  "csv.import.description" : "Bulk import of documents in the Nuxeo Platform using a CSV file",
+  "csv.import.clickOrDrop": "Click to select a csv file or drag it to upload.",
+  "csv.import.option.emailReport": "Receive the import report by email.",
+  "csv.import.option.useImportMode": "Enable document import mode.",
+  "csv.import.progress.statusWithTotal": "Importing entry #{0} out of {1}",
+  "csv.import.progress.statusWithoutTotal": "Importing entry #{0}",
+  "csv.import.error": "An error occured while importing the csv file.",
+  "csv.import.success": "Your process is complete",
+  "csv.import.report.successLine": "Successfully imported entries",
+  "csv.import.report.skippedLine": "Skipped entries",
+  "csv.import.report.errorLine": "Failed entries",
+  "csv.import.report.notify": "An email has been sent to your mailbox. If you don't receive it, contact your administrator.",
+  "csv.import.new" : "New CSV Import"
+}
