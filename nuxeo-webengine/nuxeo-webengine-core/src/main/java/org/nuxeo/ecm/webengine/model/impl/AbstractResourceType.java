@@ -43,8 +43,6 @@ import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
 
-import com.sun.jersey.api.core.ResourceContext;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -121,8 +119,12 @@ public abstract class AbstractResourceType implements ResourceType {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Resource> T newInstance(ResourceContext resources) {
-        return (T) resources.getResource(clazz.get());
+    public <T extends Resource> T newInstance() {
+        try {
+            return (T) clazz.get().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw WebException.wrap("Failed to instantiate web object: " + clazz, e);
+        }
     }
 
     @Override

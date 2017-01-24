@@ -19,57 +19,45 @@
 package org.nuxeo.ecm.automation.server.jaxrs;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationResource extends ExecutableResource {
+// Seems useless
+public class ChainResource extends ExecutableResource {
 
-    protected OperationType type;
+    protected final String chainId;
 
-    public OperationResource(AutomationService service, OperationType type) {
+    public ChainResource(AutomationService service, String chainId) {
         super(service);
-        this.type = type;
+        this.chainId = chainId;
     }
 
     @GET
-    public Object doGet() throws OperationException {
-        return type.getDocumentation();
-    }
-
-    @GET
-    @Path("yaml")
-    @Produces("application/yaml")
-    public Object doGetYaml() throws OperationException {
-        return type.getDocumentation();
+    public Object doGet() { // TODO
+        return null;
     }
 
     @Override
     public Object execute(ExecutionRequest xreq) throws OperationException {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
-        return service.run(ctx, type.getId(), xreq.getParams());
-    }
-
-    protected static String entityType(Class<?> clazz) {
-        return clazz.getSimpleName().toLowerCase();
+        // Copy params in the Chain context
+        ctx.putAll(xreq.getParams());
+        return service.run(ctx, chainId);
     }
 
     @Override
     public String getId() {
-        return type.getId();
+        return chainId;
     }
 
     @Override
     public boolean isChain() {
-        return false;
+        return true;
     }
-
 }

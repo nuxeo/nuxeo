@@ -26,8 +26,6 @@ import java.util.Set;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 
-import com.sun.jersey.api.core.ResourceContext;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -45,7 +43,7 @@ public interface ResourceType {
 
     Class<? extends Resource> getResourceClass();
 
-    <T extends Resource> T newInstance(ResourceContext resources);
+    <T extends Resource> T newInstance();
 
     ResourceType getSuperType();
 
