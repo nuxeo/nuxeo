@@ -72,8 +72,8 @@ public abstract class AbstractWidgetPageTest extends AbstractTest {
     }
 
     protected String getEditWidgetMessage() {
-        WebElement message = driver.findElement(By.id(pageId + "Layout_edit_form:nxl_" + pageId + "Layout:nxw_"
-                + pageId + "_message"));
+        WebElement message = Locator.findElementAndWaitUntilEnabled(
+                By.id(pageId + "Layout_edit_form:nxl_" + pageId + "Layout:nxw_" + pageId + "_message"));
         if (message != null) {
             return message.getText();
         }
