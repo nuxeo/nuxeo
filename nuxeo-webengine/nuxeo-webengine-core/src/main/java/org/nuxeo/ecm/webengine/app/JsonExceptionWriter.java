@@ -19,10 +19,7 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+import org.nuxeo.ecm.webengine.WebException;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -30,8 +27,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-
-import org.nuxeo.ecm.webengine.WebException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * @since 6.0

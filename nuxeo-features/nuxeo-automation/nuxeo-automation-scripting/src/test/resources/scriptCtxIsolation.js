@@ -1,8 +1,2 @@
-
-function alterAndReturn() {
-    var pfouh = Repository;
-    Repository="toto";
-    return pfouh;
-}
-
-alterAndReturn()
+print(Repository);
+Repository="toto";

@@ -22,6 +22,8 @@
 package org.nuxeo.ecm.webengine.model.impl;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +32,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.app.DefaultContext;
@@ -42,40 +47,55 @@ import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.server.impl.inject.ServerInjectableProviderContext;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ModuleRoot extends DefaultObject implements ModuleResource {
 
-    @Context
     protected HttpServletRequest request;
 
-    @Context
-    protected ServerInjectableProviderContext sic;
+    protected UriInfo uriInfo;
+
+    protected HttpHeaders httpHeaders;
 
     @Context
-    public void setContext(HttpContext hc) {
+    public void setUriInfo(UriInfo info) {
+        this.uriInfo = info;
+        if (request != null && httpHeaders != null) {
+            init();
+        }
+    }
+
+    @Context
+    public void setHttpHeaders(HttpHeaders headers) {
+        this.httpHeaders = headers;
+        if (request != null && uriInfo != null) {
+            init();
+        }
+    }
+
+    @Context
+    public void setHttpRequest(HttpServletRequest request) {
+        this.request = request;
+        if (uriInfo != null && httpHeaders != null) {
+            init();
+        }
+    }
+
+    private void init() {
         DefaultContext ctx = (DefaultContext) request.getAttribute(WebContext.class.getName());
         if (ctx == null) {
             throw new java.lang.IllegalStateException(
                     "No WebContext found in http request! You should install the WebEngineFilter");
         }
-        if (ctx.getModule() != null) { // just a resource, not a module root
-            return;
-        }
-        try {
-            ctx.setJerseyContext(sic, hc);
-            Module module = findModule(ctx);
-            ResourceType type = module.getType(getClass().getAnnotation(WebObject.class).type());
-            ctx.setModule(module);
-            initialize(ctx, type);
-            setRoot(true);
-        } finally {
-            ctx.push(this);
-        }
+        ctx.setHttpHeaders(httpHeaders);
+        ctx.setUriInfo(uriInfo);
+        Module module = findModule(ctx);
+        ResourceType type = module.getType(getClass().getAnnotation(WebObject.class).type());
+        ctx.setModule(module);
+        initialize(ctx, type);
+        setRoot(true);
+        ctx.push(this);
     }
 
     private Module findModule(DefaultContext ctx) {
@@ -87,7 +107,7 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
         if (mc == null) {
             throw new java.lang.IllegalStateException("No module found for root resource: " + getClass());
         }
-        return mc.get(ctx);
+        return mc.get();
     }
 
     @GET
@@ -120,12 +140,10 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
      * @param doc the document
      * @return the link corresponding to that object
      */
-    @Override
     public String getLink(DocumentModel doc) {
         return new StringBuilder().append(getPath()).append("/@nxdoc/").append(doc.getId()).toString();
     }
 
-    @Override
     public Object handleError(WebApplicationException e) {
         return e;
     }

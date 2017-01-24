@@ -40,7 +40,6 @@ import java.util.MissingResourceException;
 import javax.script.ScriptException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -59,6 +58,7 @@ import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.login.WebEngineFormAuthenticator;
 import org.nuxeo.ecm.webengine.model.AdapterResource;
+import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
@@ -93,8 +93,6 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected final HttpServletRequest request;
 
-    protected final HttpServletResponse response;
-
     protected final Map<String, Object> vars;
 
     protected Resource head;
@@ -111,11 +109,10 @@ public abstract class AbstractWebContext implements WebContext {
 
     private String repoName;
 
-    protected AbstractWebContext(HttpServletRequest request, HttpServletResponse response) {
+    protected AbstractWebContext(HttpServletRequest request) {
         engine = Framework.getLocalService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();
         this.request = request;
-        this.response = response;
         vars = new HashMap<String, Object>();
     }
 
@@ -189,10 +186,6 @@ public abstract class AbstractWebContext implements WebContext {
     @Override
     public HttpServletRequest getRequest() {
         return request;
-    }
-
-    public HttpServletResponse getResponse() {
-        return response;
     }
 
     @Override
@@ -327,10 +320,10 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public Resource newObject(ResourceType type, Object... args) {
-        Resource obj = type.newInstance(type.getResourceClass(), this);
+        Resource obj = type.newInstance();
         try {
             obj.initialize(this, type, args);
-        }  finally {
+        } finally {
             // we must be sure the object is pushed even if an error occurred
             // otherwise we may end up with an empty object stack and we will
             // not be able to
@@ -342,7 +335,18 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public AdapterResource newAdapter(Resource ctx, String serviceName, Object... args) {
-        return (AdapterResource)newObject(module.getAdapter(ctx, serviceName), args);
+        AdapterType st = module.getAdapter(ctx, serviceName);
+        AdapterResource service = (AdapterResource) st.newInstance();
+        try {
+            service.initialize(this, st, args);
+        } finally {
+            // we must be sure the object is pushed even if an error occurred
+            // otherwise we may end up with an empty object stack and we will
+            // not be able to
+            // handle errors based on objects handleError() method
+            push(service);
+        }
+        return service;
     }
 
     @Override
@@ -502,11 +506,12 @@ public abstract class AbstractWebContext implements WebContext {
 
     @Override
     public Resource push(Resource rs) {
-        rs.setPrevious(tail);
         if (tail != null) {
             tail.setNext(rs);
+            rs.setPrevious(tail);
             tail = rs;
         } else {
+            rs.setPrevious(tail);
             head = tail = rs;
         }
         return rs;

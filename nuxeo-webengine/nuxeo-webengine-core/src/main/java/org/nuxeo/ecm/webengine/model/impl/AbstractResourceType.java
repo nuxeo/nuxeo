@@ -38,24 +38,17 @@ import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TemplateNotFoundException;
 import org.nuxeo.ecm.webengine.model.TypeVisibility;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.annotations.AnnotationManager;
-
-import com.sun.jersey.server.spi.component.ResourceComponentConstructor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractResourceType implements ResourceType {
 
-    protected final WebEngine engine;
-
-    protected final Module owner;
-
-    protected final ResourceComponentConstructor constructor;
+    protected final ModuleImpl owner;
 
     protected final String name;
 
@@ -71,17 +64,14 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected volatile ConcurrentMap<String, ScriptFile> templateCache;
 
-
-    protected AbstractResourceType(WebEngine engine, Module module, AbstractResourceType superType, String name,
-            ClassProxy clazz, ResourceComponentConstructor constructor, int visibility) {
-        this.engine = engine;
+    protected AbstractResourceType(WebEngine engine, ModuleImpl module, AbstractResourceType superType, String name,
+            ClassProxy clazz, int visibility) {
+        templateCache = new ConcurrentHashMap<String, ScriptFile>();
         owner = module;
         this.superType = superType;
         this.name = name;
         this.clazz = clazz;
-        this.constructor = constructor;
         this.visibility = visibility;
-        templateCache = new ConcurrentHashMap<String, ScriptFile>();
         AnnotationManager mgr = engine.getAnnotationManager();
         loadAnnotations(mgr);
     }
@@ -92,7 +82,6 @@ public abstract class AbstractResourceType implements ResourceType {
 
     protected abstract void loadAnnotations(AnnotationManager annoMgr);
 
-    @Override
     public ResourceType getSuperType() {
         return superType;
     }
@@ -101,47 +90,40 @@ public abstract class AbstractResourceType implements ResourceType {
         return owner;
     }
 
-    @Override
     public Guard getGuard() {
         return guard;
     }
 
-    @Override
     public Set<String> getFacets() {
         return facets;
     }
 
-    @Override
     public boolean hasFacet(String facet) {
         return facets != null && facets.contains(facet);
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Class<Resource> getResourceClass() {
         return (Class<Resource>) clazz.get();
     }
 
-    @Override
-    public <T extends Resource> T newInstance(Class<T> typeof, WebContext context) {
+    @SuppressWarnings("unchecked")
+    public <T extends Resource> T newInstance() {
         try {
-            return typeof.cast(constructor.construct(context.getServerHttpContext()));
+            return (T) clazz.get().newInstance();
         } catch (ReflectiveOperationException e) {
             throw WebException.wrap("Failed to instantiate web object: " + clazz, e);
         }
     }
 
-    @Override
     public boolean isEnabled(Resource ctx) {
         return guard.check(ctx);
     }
 
-    @Override
     public boolean isDerivedFrom(String type) {
         if (type.equals(name)) {
             return true;
@@ -152,7 +134,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return false;
     }
 
-    @Override
     public void flushCache() {
         templateCache = new ConcurrentHashMap<String, ScriptFile>();
     }
@@ -186,7 +167,6 @@ public abstract class AbstractResourceType implements ResourceType {
         return name + " extends " + superType + " [" + getResourceClass().getName() + "]";
     }
 
-    @Override
     public ScriptFile getView(Module module, String name) {
         ScriptFile file = findView(module, name);
         if (file == null) {

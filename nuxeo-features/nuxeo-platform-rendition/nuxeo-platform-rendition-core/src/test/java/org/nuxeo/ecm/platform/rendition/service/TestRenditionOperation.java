@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -89,7 +90,7 @@ public class TestRenditionOperation {
         return session.createDocument(file);
     }
 
-    @Test(expected = OperationException.class)
+    @Test(expected = TraceException.class)
     public void shouldThroughTraceExceptionForNonExistingRendition() throws OperationException {
         DocumentModel file = createDummyFile();
 

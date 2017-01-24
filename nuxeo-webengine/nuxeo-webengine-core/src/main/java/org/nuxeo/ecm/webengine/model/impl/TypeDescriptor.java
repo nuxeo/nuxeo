@@ -30,6 +30,7 @@ import org.nuxeo.ecm.webengine.model.Protected;
 import org.nuxeo.ecm.webengine.model.Public;
 import org.nuxeo.ecm.webengine.model.ResourceType;
 import org.nuxeo.ecm.webengine.model.TypeVisibility;
+import org.nuxeo.ecm.webengine.model.Utils;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -90,43 +91,19 @@ public class TypeDescriptor implements Cloneable {
         return visibility;
     }
 
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((fragment == null) ? 0 : fragment.hashCode());
-        return result;
-    }
-
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (obj == this) {
             return true;
         }
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof TypeDescriptor)) {
-            return false;
+        if (obj instanceof TypeDescriptor) {
+            TypeDescriptor td = (TypeDescriptor) obj;
+            return type.equals(td.type) && Utils.streq(fragment, td.fragment);
         }
-        TypeDescriptor other = (TypeDescriptor) obj;
-        if (type == null) {
-            if (other.type != null) {
-                return false;
-            }
-        } else if (!type.equals(other.type)) {
-            return false;
-        }
-        if (fragment == null) {
-            if (other.fragment != null) {
-                return false;
-            }
-        } else if (!fragment.equals(other.fragment)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
     @Override

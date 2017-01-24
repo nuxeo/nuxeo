@@ -93,9 +93,8 @@ public class InvokableIteratorMethod extends InvokableMethod {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected Object doInvoke(OperationContext ctx, Map<String, Object> args) throws OperationException,
+    protected Object doInvoke(OperationContext ctx, Map<String, Object> args, Object input) throws OperationException,
             ReflectiveOperationException {
-        Object input = ctx.getInput();
         if (!(input instanceof Iterable)) {
             throw new IllegalStateException("An iterable method was called in a non iterable context");
         }
@@ -106,7 +105,7 @@ public class InvokableIteratorMethod extends InvokableMethod {
             Object in = it.next();
             // update context to use as input the current entry
             ctx.setInput(in);
-            list.collect(ctx, super.doInvoke(ctx, args));
+            list.collect(ctx, super.doInvoke(ctx, args, in));
         }
         return list.getOutput();
     }

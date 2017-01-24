@@ -23,46 +23,24 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.inject.Inject;
-
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.nuxeo.automation.scripting.AutomationScriptingFeature;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@RunWith(FeaturesRunner.class)
-@Features(AutomationScriptingFeature.class)
-public class TestAutomationMapper {
+public class TestWrapperHelper {
 
-    @Inject
-    private CoreSession session;
-
-    private AutomationMapper mapper;
-
-    @Before
-    public void injectMapper() {
-        mapper = new AutomationMapper(new OperationContext(session));
-    }
+    private CoreSession session = mock(CoreSession.class);
 
     @Test
     public void testWrap() {
         // Run test
-        Object result = DocumentScriptingWrapper.wrap("string", mapper);
+        Object result = WrapperHelper.wrap("string", session);
 
         // Assert
         assertEquals("string", result);
@@ -74,7 +52,7 @@ public class TestAutomationMapper {
         DocumentModel doc = mock(DocumentModel.class);
 
         // Run test
-        Object result = DocumentScriptingWrapper.wrap(doc, mapper);
+        Object result = WrapperHelper.wrap(doc, session);
 
         // Assert
         assertTrue(result instanceof DocumentScriptingWrapper);
@@ -89,7 +67,7 @@ public class TestAutomationMapper {
         docList.add(doc);
 
         // Run test
-        Object result = DocumentScriptingWrapper.wrap(docList, mapper);
+        Object result = WrapperHelper.wrap(docList, session);
 
         // Assert
         assertTrue(result instanceof List<?>);
@@ -104,24 +82,20 @@ public class TestAutomationMapper {
 
     @Test
     public void testUnwrapDocumentScriptingWrapper() {
-        DocumentModel doc = new DocumentModelImpl("dummy");
-        doc = Mockito.spy(doc);
-        Mockito.when(doc.getSchemas()).thenReturn(new String[] { "foo" });
-        Map<String,Object> properties = new HashMap<>();
-        properties.put("key", "value");
-        Mockito.when(doc.getProperties("foo")).thenReturn(properties);
+        // Init parameters
+        DocumentModel doc = mock(DocumentModel.class);
 
         // Run test
-        Map<String,Object> result = DocumentScriptingWrapper.unwrap(new DocumentScriptingWrapper(mapper, doc));
+        Object result = WrapperHelper.unwrap(new DocumentScriptingWrapper(session, doc));
 
         // Assert
-        assertEquals(properties, result);
+        assertEquals(doc, result);
     }
 
     @Test
     public void testUnwrapDocumentModelList() {
         // Run test
-        Object result = DocumentScriptingWrapper.unwrap(new DocumentModelListImpl());
+        Object result = WrapperHelper.unwrap(new DocumentModelListImpl());
 
         // Assert
         assertTrue(result instanceof DocumentModelListImpl);
@@ -130,7 +104,7 @@ public class TestAutomationMapper {
     @Test
     public void testUnwrapBlobList() {
         // Run test
-        Object result = DocumentScriptingWrapper.unwrap(new BlobList());
+        Object result = WrapperHelper.unwrap(new BlobList());
 
         // Assert
         assertTrue(result instanceof BlobList);
@@ -144,7 +118,7 @@ public class TestAutomationMapper {
         docList.add(doc);
 
         // Run test
-        Object result = DocumentScriptingWrapper.unwrap(docList);
+        Object result = WrapperHelper.unwrap(docList);
 
         // Assert
         assertTrue(result instanceof DocumentModelList);
@@ -159,7 +133,7 @@ public class TestAutomationMapper {
         blobList.add(blob);
 
         // Run test
-        Object result = DocumentScriptingWrapper.unwrap(blobList);
+        Object result = WrapperHelper.unwrap(blobList);
 
         // Assert
         assertTrue(result instanceof BlobList);
@@ -171,10 +145,10 @@ public class TestAutomationMapper {
         // Init parameters
         List<DocumentScriptingWrapper> docList = new ArrayList<>();
         DocumentModel doc = mock(DocumentModel.class);
-        docList.add(new DocumentScriptingWrapper(mapper, doc));
+        docList.add(new DocumentScriptingWrapper(session, doc));
 
         // Run test
-        Object result = DocumentScriptingWrapper.unwrap(docList);
+        Object result = WrapperHelper.unwrap(docList);
 
         // Assert
         assertTrue(result instanceof DocumentModelList);

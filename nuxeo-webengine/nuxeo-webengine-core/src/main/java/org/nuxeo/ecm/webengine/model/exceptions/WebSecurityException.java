@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.webengine.model.exceptions;
 
 import javax.ws.rs.core.Response;
-
 import org.nuxeo.ecm.webengine.WebException;
 
 /**

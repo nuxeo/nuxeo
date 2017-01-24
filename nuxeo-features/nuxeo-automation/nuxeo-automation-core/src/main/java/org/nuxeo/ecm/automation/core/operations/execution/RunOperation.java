@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -51,12 +53,12 @@ public class RunOperation {
     protected boolean isolate = false;
 
     @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
-    protected Properties chainParameters = new Properties();
+    protected Properties chainParameters;
 
     @OperationMethod
     public void run() throws OperationException {
         OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
-        service.run(subctx, chainId, chainParameters);
+        service.run(subctx, chainId, (Map) chainParameters);
     }
 
 }

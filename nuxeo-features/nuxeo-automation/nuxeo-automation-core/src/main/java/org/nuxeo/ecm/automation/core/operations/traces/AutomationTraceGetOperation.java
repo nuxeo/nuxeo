@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.automation.core.operations.traces;
 
-import java.io.IOException;
-
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -56,7 +54,7 @@ public class AutomationTraceGetOperation {
     }
 
     @OperationMethod
-    public String run() throws IOException {
+    public String run() {
 
         if (!canManageTraces()) {
             return null;
@@ -67,14 +65,14 @@ public class AutomationTraceGetOperation {
         if (traceKey == null) {
             Trace trace = tracerFactory.getLastErrorTrace();
             if (trace != null) {
-                return tracerFactory.print(trace);
+                return trace.getFormattedText();
             } else {
                 return "no previous error trace found";
             }
         } else {
             Trace trace = tracerFactory.getTrace(traceKey);
             if (trace != null) {
-                return tracerFactory.print(trace);
+                return trace.getFormattedText();
             } else {
                 return "no trace found";
             }

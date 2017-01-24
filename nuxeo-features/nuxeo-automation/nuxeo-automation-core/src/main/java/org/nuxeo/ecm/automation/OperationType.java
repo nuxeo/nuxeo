@@ -21,7 +21,6 @@ package org.nuxeo.ecm.automation;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
@@ -49,11 +48,9 @@ public interface OperationType {
      *
      * @since 7.4
      */
-    default String getInputType() {
-        return null;
-    }
+    String getInputType();
 
-    Object newInstance(OperationContext ctx, Map<String, ?> args) throws OperationException;
+    Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException;
 
     /**
      * Gets the service that registered that type.
@@ -75,15 +72,4 @@ public interface OperationType {
      * @since 5.7.2
      */
     public List<InvokableMethod> getMethods();
-
-    @Override
-    int hashCode();
-
-    @Override
-    boolean equals(Object obj);
-
-    static OperationType typeof(OperationChain chain, boolean replace) {
-        return ChainTypeImpl.typeof(chain, replace);
-    }
-
 }

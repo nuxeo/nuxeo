@@ -23,20 +23,22 @@ package org.nuxeo.ecm.automation;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.core.trace.Trace;
 
 /**
  * @since 5.7.3
  */
 public interface OperationCallback {
 
-    void onChainEnter(OperationType chain);
+    void onChain(OperationType chain);
 
-    void onChainExit();
+    void onOperation(OperationContext context, OperationType type, InvokableMethod method, Map<String, Object> parms);
 
-    void onOperationEnter(OperationContext context, OperationType type, InvokableMethod method, Map<String, Object> parms);
+    void onError(OperationException error);
 
-    void onOperationExit(Object output);
+    void onOutput(Object output);
 
-    OperationException onError(OperationException error);
+    Trace getTrace();
 
+    String getFormattedText();
 }

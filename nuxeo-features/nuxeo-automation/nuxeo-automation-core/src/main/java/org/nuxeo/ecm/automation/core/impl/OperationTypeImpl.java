@@ -60,29 +60,29 @@ public class OperationTypeImpl implements OperationType {
     /**
      * The service that registered the operation
      */
-    protected final AutomationService service;
+    protected AutomationService service;
 
     /**
      * The operation ID - used for lookups.
      */
-    protected final String id;
+    protected String id;
 
     /**
      * The operation ID Aliases array.
      *
      * @since 7.1
      */
-    protected final String[] aliases;
+    protected String[] aliases;
 
     /**
      * The operation type
      */
-    protected final Class<?> type;
+    protected Class<?> type;
 
     /**
      * Injectable parameters. a map between the parameter name and the Field object
      */
-    protected final Map<String, Field> params;
+    protected Map<String, Field> params;
 
     /**
      * Invocable methods
@@ -122,20 +122,26 @@ public class OperationTypeImpl implements OperationType {
             List<WidgetDefinition> widgetDefinitionList) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
-            throw new IllegalArgumentException(
-                    "Invalid operation class: " + type + ". No @Operation annotation found on class.");
+            throw new IllegalArgumentException("Invalid operation class: " + type
+                    + ". No @Operation annotation found on class.");
         }
         this.service = service;
         this.type = type;
         this.widgetDefinitionList = widgetDefinitionList;
         this.contributingComponent = contributingComponent;
-        id = anno.id().length() == 0 ? type.getName() : anno.id();
+        id = anno.id();
+        if (id.length() == 0) {
+            id = type.getName();
+        }
         aliases = anno.aliases();
         params = new HashMap<String, Field>();
         methods = new ArrayList<InvokableMethod>();
         injectableFields = new ArrayList<Field>();
         initMethods();
         initFields();
+    }
+
+    public OperationTypeImpl() {
     }
 
     static class Match implements Comparable<Match> {
@@ -218,7 +224,7 @@ public class OperationTypeImpl implements OperationType {
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, ?> args) throws OperationException {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         Object obj;
         try {
             obj = type.newInstance();
@@ -232,7 +238,7 @@ public class OperationTypeImpl implements OperationType {
     /**
      * @since 5.9.2
      */
-    protected Object resolveObject(final OperationContext ctx, final String key, Map<String, ?> args) {
+    protected Object resolveObject(final OperationContext ctx, final String key, Map<String, Object> args) {
         Object obj = args.get(key);
         if (obj instanceof Expression) {
             obj = ((Expression) obj).eval(ctx);
@@ -241,15 +247,13 @@ public class OperationTypeImpl implements OperationType {
         // find it
         if (obj == null) {
             if (ctx.containsKey(Constants.VAR_RUNTIME_CHAIN)) {
-                @SuppressWarnings("unchecked")
-                final Map<String, ?> params = (Map<String, ?>) ctx.get(Constants.VAR_RUNTIME_CHAIN);
-                obj = params.get(key);
+                obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(key);
             }
         }
         return obj;
     }
 
-    public void inject(OperationContext ctx, Map<String, ?> args, Object target) throws OperationException {
+    public void inject(OperationContext ctx, Map<String, Object> args, Object target) throws OperationException {
         for (Map.Entry<String, Field> entry : params.entrySet()) {
             Object obj = resolveObject(ctx, entry.getKey(), args);
             if (obj == null) {

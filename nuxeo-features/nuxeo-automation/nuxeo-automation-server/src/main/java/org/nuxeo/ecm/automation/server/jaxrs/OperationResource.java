@@ -22,23 +22,22 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
-import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@WebObject(type = "operation")
 public class OperationResource extends ExecutableResource {
 
     protected OperationType type;
 
-    @Override
-    protected void initialize(Object... args) {
-        type = (OperationType) args[0];
+    public OperationResource(AutomationService service, OperationType type) {
+        super(service);
+        this.type = type;
     }
 
     @GET
@@ -55,7 +54,8 @@ public class OperationResource extends ExecutableResource {
 
     @Override
     public Object execute(ExecutionRequest xreq) throws OperationException {
-        return service.run(createContext(xreq), type.getId(), xreq.getParams());
+        OperationContext ctx = xreq.createContext(request, getCoreSession());
+        return service.run(ctx, type.getId(), xreq.getParams());
     }
 
     protected static String entityType(Class<?> clazz) {
@@ -69,7 +69,7 @@ public class OperationResource extends ExecutableResource {
 
     @Override
     public boolean isChain() {
-        return type instanceof ChainTypeImpl;
+        return false;
     }
 
 }
