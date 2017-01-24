@@ -49,8 +49,6 @@ import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -109,14 +107,12 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.IgnoreWindows;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -134,8 +130,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml" })
 public class TestSQLRepositoryAPI {
-
-    private static final Log log = LogFactory.getLog(TestSQLRepositoryAPI.class);
 
     @Inject
     protected CoreFeature coreFeature;
@@ -4331,16 +4325,6 @@ public class TestSQLRepositoryAPI {
         nextTransaction();
         reopenSession();
         doc = session.getDocument(doc.getRef());
-        if (!token.equals(doc.getChangeToken())) {
-            // XXX debug
-            for (String prop : Arrays.asList( //
-                    DatabaseHelper.DRIVER_PROPERTY, //
-                    DatabaseHelper.URL_PROPERTY, //
-                    DatabaseHelper.SERVER_PROPERTY, //
-                    DatabaseHelper.PORT_PROPERTY)) {
-                log.error("DEBUG: " + prop + " = " + Framework.getProperty(prop));
-            }
-        }
         assertEquals(token, doc.getChangeToken());
     }
 
