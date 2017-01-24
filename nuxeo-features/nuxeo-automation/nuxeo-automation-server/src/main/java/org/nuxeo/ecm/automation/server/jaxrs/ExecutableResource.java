@@ -70,7 +70,10 @@ public abstract class ExecutableResource extends DefaultObject {
             }
             Object result = execute(xreq);
             int customHttpStatus = xreq.getRestOperationContext().getHttpStatus();
-            return ResponseHelper.getResponse(result, request, customHttpStatus);
+            if (customHttpStatus >= 100) {
+                return ResponseHelper.getResponse(result, request, customHttpStatus);
+            }
+            return ResponseHelper.getResponse(result, request);
         } catch (OperationException | NuxeoException | SecurityException | MessagingException | IOException cause) {
             if (cause instanceof ConflictOperationException) {
                 throw WebException.newException("Failed to invoke operation: " + getId(), cause,
