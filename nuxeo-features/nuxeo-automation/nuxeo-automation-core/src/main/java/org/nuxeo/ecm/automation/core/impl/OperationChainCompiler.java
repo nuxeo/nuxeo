@@ -29,17 +29,17 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 
-public class OperationChainCompiler {
+class OperationChainCompiler {
 
-    protected final AutomationService service;
+    final AutomationService service;
 
-    protected final Map<Key, CompiledChainImpl> cache = new ConcurrentHashMap<>();
+    final Map<Key, CompiledChainImpl> cache = new ConcurrentHashMap<>();
 
-    protected OperationChainCompiler(AutomationService service) {
+    OperationChainCompiler(AutomationService service) {
         this.service = service;
     }
 
-    protected CompiledChain compile(ChainTypeImpl typeof, Class<?> typein) throws OperationException {
+    CompiledChain compile(ChainTypeImpl typeof, Class<?> typein) throws OperationException {
         Key key = new Key(typeof, typein);
         if (!cache.containsKey(key)) {
             cache.put(key, compile(key));
@@ -47,7 +47,7 @@ public class OperationChainCompiler {
         return cache.get(key);
     }
 
-    protected CompiledChainImpl compile(Key key) throws OperationException {
+    CompiledChainImpl compile(Key key) throws OperationException {
         OperationMethod head = null;
         OperationMethod prev = null;
         for (OperationParameters params : key.typeof.chain.getOperations()) {
@@ -70,7 +70,7 @@ public class OperationChainCompiler {
      *
      * @throws InvalidChainException
      */
-    protected void initializePath(OperationMethod element, Class<?> in) throws InvalidChainException {
+    void initializePath(OperationMethod element, Class<?> in) throws InvalidChainException {
         InvokableMethod[] methods = element.typeof.getMethodsMatchingInput(in);
         if (methods == null) {
             throw new InvalidChainException(
@@ -99,18 +99,18 @@ public class OperationChainCompiler {
                         + element.typeof.getId() + "' and for first input type '" + in.getName() + "'");
     }
 
-    protected class Key {
-        protected final ChainTypeImpl typeof;
-        protected final Class<?> typein;
-        protected final int hashcode;
+    class Key {
+        final ChainTypeImpl typeof;
+        final Class<?> typein;
+        final int hashcode;
 
-        protected Key(ChainTypeImpl typeof, Class<?> typein) {
+        Key(ChainTypeImpl typeof, Class<?> typein) {
             this.typeof = typeof;
             this.typein = typein;
             hashcode = hashcode(typeof, typein);
         }
 
-        protected int hashcode(OperationType typeof, Class<?> typein) {
+        int hashcode(OperationType typeof, Class<?> typein) {
             int prime = 31;
             int result = 1;
             result = prime * result + typeof.hashCode();
@@ -145,25 +145,24 @@ public class OperationChainCompiler {
         }
     }
 
-    protected static class OperationMethod {
+    static class OperationMethod {
 
-        protected final OperationType typeof;
+        final OperationType typeof;
 
-        protected final Map<String, Object> args = new HashMap<>();
+        final Map<String, Object> args = new HashMap<>();
 
-        protected InvokableMethod method;
+        InvokableMethod method;
 
-        protected OperationMethod prev;
+        OperationMethod prev;
+        OperationMethod next;
 
-        protected OperationMethod next;
-
-        protected OperationMethod(OperationType typeof, Map<String, ?> args, OperationMethod prev) {
+        OperationMethod(OperationType typeof, Map<String, ?> args, OperationMethod prev) {
             this.typeof = typeof;
             this.args.putAll(args);
             this.prev = prev;
         }
 
-        protected Object invoke(OperationContext context) throws OperationException {
+        Object invoke(OperationContext context) throws OperationException {
             context.getCallback().onOperationEnter(context, typeof, method, args);
             Object output = method.invoke(context, args);
             context.getCallback().onOperationExit(output);
@@ -176,13 +175,13 @@ public class OperationChainCompiler {
     }
 
 
-    protected class CompiledChainImpl implements CompiledChain {
+    class CompiledChainImpl implements CompiledChain {
 
-        protected final Key key;
+        final Key key;
 
-        protected final OperationMethod head;
+        final OperationMethod head;
 
-        protected CompiledChainImpl(Key key, OperationMethod head) {
+        CompiledChainImpl(Key key, OperationMethod head) {
             this.key = key;
             this.head = head;
         }

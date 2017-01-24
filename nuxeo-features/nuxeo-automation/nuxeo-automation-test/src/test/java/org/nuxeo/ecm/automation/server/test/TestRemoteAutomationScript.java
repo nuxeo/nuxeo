@@ -21,9 +21,14 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.client.Session;
@@ -52,12 +57,27 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestRemoteAutomationScript {
 
+    ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
+    private PrintStream outStream;
+
     @Inject
     Session session;
 
     @Inject
     HttpAutomationClient client;
 
+    @Before
+    public void setUpStreams() {
+        outStream = System.out;
+        System.setOut(new PrintStream(outContent));
+    }
+
+    @After
+    public void cleanUpStreams() throws IOException {
+        outContent.close();
+        System.setOut(outStream);
+    }
 
     protected Documents getDocuments() throws IOException {
         // Create a simple document
@@ -81,7 +101,7 @@ public class TestRemoteAutomationScript {
                                               .setInput(getDocuments().get(0))
                                               .execute();
         assertNotNull(document);
-        assertEquals("Simple", document.getTitle());
+        assertEquals("Simple" + System.lineSeparator(), outContent.toString());
     }
 
     @Test
@@ -90,7 +110,6 @@ public class TestRemoteAutomationScript {
                                                  .setInput(getDocuments())
                                                  .execute();
         assertNotNull(documents);
-        assertEquals(2, documents.size());
-        assertEquals("Simple", documents.get(0).getTitle());
+        assertEquals("Simple" + System.lineSeparator(), outContent.toString());
     }
 }

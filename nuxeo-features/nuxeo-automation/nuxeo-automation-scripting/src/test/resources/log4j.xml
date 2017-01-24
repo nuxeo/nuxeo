@@ -34,10 +34,6 @@
     <priority value="WARN" />
     <appender-ref ref="CHECKER"/>
   </category>
-  
-    <category name="jdk.nashorn" additivity="false">
-    <priority value="TRACE" />
-  </category>
 
   <root>
     <priority value="DEBUG" />

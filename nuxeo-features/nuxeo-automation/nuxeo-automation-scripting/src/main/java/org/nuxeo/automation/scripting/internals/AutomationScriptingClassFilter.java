@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Contributors:
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.automation.scripting.internals;
 
-import java.util.stream.Stream;
-
-import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationDescriptor;
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
+import jdk.nashorn.api.scripting.ClassFilter;
 
 /**
+ * Class filter to restrict access to java/nuxeo api from Nashorn.
  *
- *
- * @since TODO
+ * @since 7.3
  */
-public class AutomationScriptingRegistry extends SimpleContributionRegistry<ScriptingOperationDescriptor> {
+public class AutomationScriptingClassFilter implements ClassFilter {
 
     @Override
-    public String getContributionId(ScriptingOperationDescriptor contrib) {
-        return contrib.getId();
-    }
-
-    public Stream<ScriptingOperationDescriptor> stream() {
-        return currentContribs.values().stream();
+    public boolean exposeToScripts(String s) {
+        return false;
     }
 
 }
