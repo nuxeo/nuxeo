@@ -95,7 +95,7 @@ limitations under the License.
         width: 200px;
       }
 
-      #dropzone {
+      #dropzone, #summary {
         padding: 1em;
         position: relative;
         border: 2px dashed var(--divider-color);
@@ -307,69 +307,103 @@ limitations under the License.
     </style>
 
     <nuxeo-connection id="nx"></nuxeo-connection>
-
+    <nuxeo-resource id="csvImportRes"></nuxeo-resource>
+    <nuxeo-operation id="cvsImportOp" op="CSV.Import"></nuxeo-operation>
 
     <div class="description">[[i18n('csv.import.description')]]</div>
 
-    <div class="suggester">
-      <nuxeo-path-suggestion id="pathSuggesterUpload"
-                             label="[[i18n('documentImportForm.location')]]"
-                             value="{{targetPath}}"
-                             parent="{{suggesterParent}}"
-                             children="{{suggesterChildren}}"
-                             disabled
-                             always-float-label></nuxeo-path-suggestion>
-      <span class="error">&#8203;[[targetLocationError]]</span>
-    </div>
+    <iron-pages selected="[[stage]]" attr-for-selected="name" class="vertical layout flex">
 
-    <div id="dropzone" class="vertical layout flex">
-      <input hidden id="uploadFiles" type="file" on-change="_fileChanged">
-      <template is="dom-if" if="[[!hasFile]]">
-        <div class="vertical layout center center-justified flex">
-          <div class="dropzone-label horizontal layout center center-justified">
-            <a href="javascript:undefined" on-tap="_showUploadDialog">
-              [[i18n('csv.import.clickOrDrop')]]</a>
-          </div>
+      <!--Stage: allow the user to upload files-->
+      <div name="upload" class="upload vertical layout flex">
+        <div class="suggester">
+          <nuxeo-path-suggestion id="pathSuggesterUpload"
+                                 label="[[i18n('documentImportForm.location')]]"
+                                 value="{{targetPath}}"
+                                 parent="{{suggesterParent}}"
+                                 children="{{suggesterChildren}}"
+                                 disabled
+                                 always-float-label></nuxeo-path-suggestion>
+          <span class="error">&#8203;[[targetLocationError]]</span>
         </div>
-      </template>
-      <template is="dom-if" if="[[hasFile]]">
-        <div class="drop-scrollable">
-          <div class="vertical layout flex">
-            <div class="horizontal layout wrap baseline">
-              <div class="file-to-import horizontal layout">
-                <div class="vertical layout flex">
-                  <div class="horizontal layout">
-                    <div class="name">
-                      [[file.name]]
+
+
+        <div id="dropzone" class="vertical layout flex">
+          <input hidden id="uploadFiles" type="file" on-change="_fileChanged">
+          <template is="dom-if" if="[[!hasFile]]">
+            <div class="vertical layout center center-justified flex">
+              <div class="dropzone-label horizontal layout center center-justified">
+                <a href="javascript:undefined" on-tap="_showUploadDialog">
+                  [[i18n('csv.import.clickOrDrop')]]</a>
+              </div>
+            </div>
+          </template>
+          <template is="dom-if" if="[[hasFile]]">
+            <div class="drop-scrollable">
+              <div class="vertical layout flex">
+                <div class="horizontal layout wrap baseline">
+                  <div class="file-to-import horizontal layout">
+                    <div class="vertical layout flex">
+                      <div class="horizontal layout">
+                        <div class="name">
+                          [[file.name]]
+                        </div>
+                        <span class="size">
+                          [[formatSize(file.size)]]
+                        </span>
+                      </div>
+                      <template is="dom-if" if="[[file.providerName]]">
+                        <div class="provider">
+                          [[file.providerName]]
+                        </div>
+                      </template>
+                      <template is="dom-if" if="[[complete]]">
+                        <div class="complete">
+                          <iron-icon icon="icons:check"></iron-icon>
+                        </div>
+                      </template>
+                      <template is="dom-if" if="[[!complete]]">
+                        <paper-progress indeterminate></paper-progress>
+                      </template>
                     </div>
-                    <span class="size">
-                      [[formatSize(file.size)]]
-                    </span>
+                    <div class="clear">
+                      <paper-icon-button icon="icons:clear" on-tap="_removeBlob"></paper-icon-button>
+                      <paper-tooltip>[[i18n('command.remove')]]</paper-tooltip>
+                    </div>
                   </div>
-                  <template is="dom-if" if="[[file.providerName]]">
-                    <div class="provider">
-                      [[file.providerName]]
-                    </div>
-                  </template>
-                  <template is="dom-if" if="[[file.complete]]">
-                    <div class="complete">
-                      <iron-icon icon="icons:check"></iron-icon>
-                    </div>
-                  </template>
-                  <template is="dom-if" if="[[!file.complete]]">
-                    <paper-progress indeterminate></paper-progress>
-                  </template>
-                </div>
-                <div class="clear">
-                  <paper-icon-button icon="icons:clear" on-tap="_removeBlob"></paper-icon-button>
-                  <paper-tooltip>[[i18n('command.remove')]]</paper-tooltip>
                 </div>
               </div>
             </div>
+          </template>
+        </div>
+
+        <div class="buttons horizontal end-justified layout">
+          <div class="flex start-justified">
+            <paper-button dialog-dismiss
+                          on-tap="_cancel"
+                          disabled$="[[_creating]]">[[i18n('command.cancel')]]</paper-button>
+          </div>
+          <paper-button noink
+                        class="primary"
+                        on-tap="_import"
+                        disabled$="[[!_canImport(_creating,hasFile)]]">
+                        [[i18n('command.create')]]
+                      </paper-button>
+          <div class="horizontal layout" hidden$="[[!_creating]]">
+            <span class="importing-label">[[i18n('documentImport.importing')]]</span>
+            <paper-spinner-lite active></paper-spinner-lite>
           </div>
         </div>
-      </template>
-    </div>
+      </div>
+
+      <div name="summary" class="vertical layout flex">
+        <div class="horizontal layout flex">
+        TODO
+        </div>
+      </div>
+    </iron-pages>
+
+    <paper-toast id="toast"></paper-toast>
 
   </template>
 
@@ -390,13 +424,32 @@ limitations under the License.
         file: {
           type: Object
         },
+        complete: {
+          type: Boolean,
+          value: false
+        },
         _importDocTypes: {
           type: Array,
           computed: '_computeImportDocTypes(subtypes)'
         },
         visible: {
           type: Boolean
+        },
+        _creating: {
+          type: Boolean,
+          value: false
+        },
+        _importReport: {
+          type: Object
+        },
+        stage: {
+          type: String,
+          value: 'upload'
         }
+      },
+
+      _canImport: function() {
+        return this.hasFile && !this._creating;
       },
 
       ready: function() {
@@ -410,13 +463,21 @@ limitations under the License.
       ],
 
       listeners: {
-        'batchFinished': '_batchReady',
         'nx-document-creation-parent-validated': '_parentValidated'
       },
       observers: [
         '_observeFiles(files.*)',
         '_visibleOnStage(visible,stage)'
       ],
+
+      _removeBlob: function(e) {
+        this.$.csvImportRes.path = 'upload/' + this.batchId + '/' + e.model.file.index;
+        this.$.csvImportRes.remove().then(function() {
+          this.file = {};
+          this.hasFile = false;
+          this.$.uploadFiles.value = '';
+        }.bind(this), this._handleError.bind(this));
+      },
 
       _computeImportDocTypes: function() {
         if (this.subtypes) {
@@ -429,25 +490,17 @@ limitations under the License.
       },
 
       _observeFiles: function(changeRecord) {
+        console.log('_observeFiles');
         if (changeRecord) {
           if (changeRecord.path === 'files.splices' && changeRecord.value && changeRecord.value.indexSplices) {
-            changeRecord.value.indexSplices.forEach(function(s) {
-              for (var i = 0; i < s.addedCount; i++) {
-                var index = s.index + i;
-                this.push('localFiles', this.files[index]);
-              }
-            }, this);
-            this.hasLocalFiles = this.localFiles && this.localFiles.length > 0;
-            this.hasLocalFilesUploaded = false;
-          } else if (changeRecord.path.match(/files\.#\d+\.index/gi)) {
-            this.hasLocalFilesUploaded = this.hasLocalFiles && this.files && this.files.every(function(file) {
-              return !file || file.complete;
-            });
-            // hack: refresh complete on the dom repeat
-            var i = this.localFiles.findIndex(function(f) {
-              return f.index === this.get(changeRecord.path.replace('.index', '')).index;
-            }.bind(this));
-            this.set(['localFiles', i, 'complete'].join('.'), true);
+            if (this.files && this.files.length > 0) {
+              this.file = this.files[0];
+              this.hasFile = true;
+              this._creating = true;
+            }
+          } else if (changeRecord.path.match(/files\.#\d+\.complete/gi)) {
+            this.complete = true;
+            this._creating = false;
           }
         }
       },
@@ -459,14 +512,6 @@ limitations under the License.
       _fileChanged: function(e) {
         this.uploadFiles(e.target.files);
         this.hasFile = true;
-      },
-
-      _batchReady: function(data) {
-        data.stopPropagation();
-        this.properties = [];
-        for (var i = 0; i < this.localFiles.length; i++) {
-          this.properties.push({});
-        }
       },
 
       _parentValidated: function() {
@@ -483,16 +528,78 @@ limitations under the License.
       _clear: function() {
         this.stage = 'upload';
         this.files = [];
-        this.localFiles = [];
-        this.remoteFiles = [];
-        this.hasLocalFileUploaded = false;
-        this.hasLocalFile = false;
-        this.properties = [];
-        this.docIdx = -1;
-        this._doNotCreate = false;
-        this._docProperties = {};
+        this.file = {};
+        this.hasFile = false;
         this._creating = false;
-      }
+        this._importReport = {};
+      },
+
+      _handleError: function(error) {
+        this._toast('ERROR: ' + error.message);
+      },
+
+      _toast: function(msg) {
+        this.$.toast.text = msg;
+        this.$.toast.open();
+      },
+
+      _cancel: function() {
+      if (this.batchId) {
+          this.cancelBatch();
+        }
+        this._clear();
+        this.stage = 'upload';
+        this.fire('nx-creation-wizard-show-tabs');
+      },
+
+      _import: function() {
+        this.$.csvImportRes.path = 'upload/' + this.batchId + '/0/execute/CSV.Import';
+        this.$.csvImportRes.data = {
+          params: {
+            path: this.targetPath
+          }
+        };
+        this.$.csvImportRes.post().then(function(res) {
+          console.log('_import');
+          console.log(res);
+          this.$.cvsImportOp.input = res.value;
+          this.$.cvsImportOp.params = {
+            path: this.targetPath
+          };
+          this.$.cvsImportOp.execute().then(function(res) {
+            console.log('report');
+            console.log(res);
+            this.stage = 'summary'
+          }.bind(this), this._handleError.bind(this))
+
+        }.bind(this), this._handleError.bind(this));
+      },
+
+      _handleSuccess: function(response) {
+/*        if (this.customizing) {
+          this.cancelBatch();
+        } else {
+          this.batchId = null;
+          this.uploader = null;
+        }
+        this._clear();
+        this._notify(response);
+        // store creation data
+        if (response.entries && Array.isArray(response.entries)) {
+          response.entries.forEach(function(f) {
+            // XXX remove this to lower as soon as we get type information from the server
+            this.$.creationStats.storeType(f.type.toLowerCase());
+          }.bind(this));
+        } else if (response.type) {
+          this.$.creationStats.storeType(response.type);
+        }
+        if (!response.entries || response.entries.length === 1) {
+          page('/browse' + (response.entries ? response.entries[0] : response).path);
+        } else {
+          this.fire('document-updated');
+          page('/browse' + this.targetPath);
+        }*/
+      },
 
     });
   </script>
