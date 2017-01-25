@@ -152,6 +152,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -2190,6 +2191,64 @@ public class TestCmisBinding extends TestCmisBindingBase {
             } catch (CmisInvalidArgumentException e) {
                 assertTrue(e.getMessage(), e.getMessage().contains("No such fulltext index: borked"));
             }
+        }
+    }
+
+    /**
+     * Test the relax mode having multiple {@code CONTAINS()}s in CMISQL. The relax mode does not follow the CMIS
+     * specification 1.1 where at most one {@code CONTAINS()} function MUST be included in a single query statement
+     * (section 2.1.14.2.4.4). {@code JOIN}s are not supported yet.
+     *
+     * @see https://jira.nuxeo.com/browse/NXP-19858
+     */
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/test-relax-cmis-spec.xml")
+    public void testQueryMultiContainsRelaxingSpec() throws Exception {
+
+        assumeFalse("DBS does not support multiple CONTAINS", coreFeature.getStorageConfiguration().isDBS());
+        // when using JOINs, we use the CMISQLQueryMaker which hasn't been updated to allow multiple CONTAINs
+        assumeFalse("JOINs are not supported", supportsJoins());
+
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        assertTrue(configService.isBooleanPropertyTrue(NuxeoRepository.RELAX_CMIS_SPEC));
+
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
+        objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
+
+        sleepForFulltext();
+        waitForIndexing();
+        ObjectList res;
+
+        res = query("SELECT cmis:name FROM File WHERE CONTAINS('title1') OR CONTAINS('anotherTitle')");
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+
+        res = query("SELECT cmis:name FROM File WHERE CONTAINS('description1') OR CONTAINS('anotherDescription')");
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+    }
+
+    @Test
+    public void testQueryMultiConainsFollowingSpec() throws Exception {
+
+        ConfigurationService configService = Framework.getService(ConfigurationService.class);
+        assertFalse(configService.isBooleanPropertyTrue(NuxeoRepository.RELAX_CMIS_SPEC));
+
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        String statement = "SELECT cmis:name FROM File WHERE CONTAINS('testfile1_Title') OR CONTAINS('anotherTitle')";
+        try {
+            query(statement);
+            fail();
+        } catch (CmisInvalidArgumentException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("At most one CONTAINS() is allowed"));
         }
     }
 

@@ -79,6 +79,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Transformer of CMISQL queries into real SQL queries for the actual database.
@@ -1154,7 +1155,8 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
-            if (hasContains) {
+            if (hasContains && Framework.getService(ConfigurationService.class)
+                                        .isBooleanPropertyFalse(NuxeoRepository.RELAX_CMIS_SPEC)) {
                 throw new QueryParseException("At most one CONTAINS() is allowed");
             }
             hasContains = true;
