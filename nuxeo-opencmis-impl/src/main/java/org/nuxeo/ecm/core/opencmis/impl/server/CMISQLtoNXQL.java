@@ -71,6 +71,8 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Transformer of CMISQL queries into NXQL queries.
@@ -526,7 +528,8 @@ public class CMISQLtoNXQL {
 
         @Override
         public Boolean walkContains(Tree opNode, Tree qualNode, Tree queryNode) {
-            if (hasContains) {
+            if (hasContains && Framework.getService(ConfigurationService.class)
+                                        .isBooleanPropertyFalse(NuxeoRepository.RELAX_CMIS_SPEC)) {
                 throw new QueryParseException("At most one CONTAINS() is allowed");
             }
             hasContains = true;
