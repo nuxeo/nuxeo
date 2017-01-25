@@ -36,6 +36,9 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import org.nuxeo.ecm.core.convert.plugins.text.extractors.Html2TextConverter;
+
+import static javax.ws.rs.core.MediaType.TEXT_HTML;
 
 public class UTF8CharsetConverter implements Converter {
 
@@ -53,14 +56,14 @@ public class UTF8CharsetConverter implements Converter {
         String path = blobHolder.getFilePath();
         Blob transcodedBlob;
         try {
-            transcodedBlob = convert(originalBlob);
+            transcodedBlob = convert(originalBlob, parameters);
         } catch (IOException | ConversionException e) {
             throw new ConversionException("Cannot transcode " + path + " to UTF-8", e);
         }
         return new SimpleBlobHolder(transcodedBlob);
     }
 
-    protected Blob convert(Blob blob) throws IOException, ConversionException {
+    protected Blob convert(Blob blob, Map<String, Serializable> parameters) throws IOException, ConversionException {
         String mimetype = blob.getMimeType();
         if (mimetype == null || !mimetype.startsWith(TEXT_PREFIX)) {
             return blob;
@@ -70,7 +73,15 @@ public class UTF8CharsetConverter implements Converter {
             return blob;
         }
         if (StringUtils.isEmpty(encoding)) {
-            try (InputStream in = blob.getStream()) {
+            Blob unencodedBlob = blob;
+            if (mimetype.equals(TEXT_HTML)) {
+                // extract text from the html file to mitigate inaccurate encoding detection
+                BlobHolder blobHolder = new SimpleBlobHolder(blob);
+                Html2TextConverter html2TextConverter = new Html2TextConverter();
+                blobHolder = html2TextConverter.convert(blobHolder, parameters);
+                unencodedBlob = blobHolder.getBlob();
+            }
+            try (InputStream in = unencodedBlob.getStream()) {
                 encoding = detectEncoding(in);
             }
         }
