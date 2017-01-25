@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.platform.threed.tests;
 
 import com.google.inject.Inject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +44,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import java.io.IOException;
@@ -49,6 +52,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -97,6 +101,11 @@ public class TestThreeDRenditions {
 
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
+
+    public static final String NXP21450 = "NXP-21450: Fix random " +
+        "tests failure on ThreeDConvertersTest.testColladaConverterX3d";
+
+    private static final Log log = LogFactory.getLog(TestThreeDRenditions.class);
 
     @Before
     public void setUp() {
@@ -159,6 +168,7 @@ public class TestThreeDRenditions {
     }
 
     @Test
+    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void shouldExposeOnlyExposedAsRenditions() throws Exception {
         ThreeD threeD = getTestThreeD();
@@ -168,10 +178,17 @@ public class TestThreeDRenditions {
                 "OSGI-INF/threed-service-contrib-override.xml");
 
         assertEquals(0, getThreeDRenditionDefinitions(doc).size());
-
+        Date timeBefore = new Date();
         updateThreeDDocument(doc, threeD);
 
         List<RenditionDefinition> renditionDefinitions = getThreeDRenditionDefinitions(doc);
+        long timeDelta = (new Date()).getTime() - timeBefore.getTime();
+        if (renditionDefinitions.size() == 0) {
+            log.warn(String.format("[NXP-21450] memory max: %dMB", Runtime.getRuntime().maxMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] memory total: %dMB", Runtime.getRuntime().totalMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
+        }
         assertEquals(8, renditionDefinitions.size());
         for (RenditionDefinition definition : renditionDefinitions) {
             assertTrue(OVERRIDDEN_RENDITION_DEFINITION_NAMES.contains(definition.getName()));

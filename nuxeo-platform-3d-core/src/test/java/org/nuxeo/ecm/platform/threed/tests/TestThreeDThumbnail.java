@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.threed.tests;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import javax.inject.Inject;
@@ -48,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,6 +86,11 @@ public class TestThreeDThumbnail {
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
 
+    public static final String NXP21450 = "NXP-21450: Fix random " +
+        "tests failure on ThreeDConvertersTest.testColladaConverterX3d";
+
+    private static final Log log = LogFactory.getLog(TestThreeDThumbnail.class);
+
     private static File getFileFromPath(String path) {
         return FileUtils.getResourceFileFromContext(path);
     }
@@ -100,6 +109,7 @@ public class TestThreeDThumbnail {
     }
 
     @Test
+    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testPictureThumbnail() throws Exception {
         DocumentModel threed = session.createDocumentModel("/", "threed", "ThreeD");
@@ -108,12 +118,20 @@ public class TestThreeDThumbnail {
         Blob blob = Blobs.createBlob(getFileFromPath("test-data/suzanne.obj"), "image/gif", null, "suzanne.obj");
         runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
             "OSGI-INF/threed-service-contrib-override.xml");
+        Date timeBefore = new Date();
         updateThreeDDocument(threed, new ThreeD(blob, null, null));
+        long timeDelta = (new Date()).getTime() - timeBefore.getTime();
         session.saveDocument(threed);
         session.save();
 
         // Thumbnail service should return the default picture thumbnail
         ThumbnailAdapter pictureThumbnail = threed.getAdapter(ThumbnailAdapter.class);
+        if (threed.getProperty(RENDER_VIEWS_PROPERTY).size() == 0) {
+            log.warn(String.format("[NXP-21450] memory max: %dMB", Runtime.getRuntime().maxMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] memory total: %dMB", Runtime.getRuntime().totalMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
+        }
         Blob pictureUsualThumbnail = (Blob) threed.getPropertyValue(RENDER_VIEWS_PROPERTY + "/0/thumbnail");
         assertEquals(pictureUsualThumbnail.getFilename(), pictureThumbnail.getThumbnail(session).getFilename());
         runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",

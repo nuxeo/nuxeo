@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.threed.convert;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +85,8 @@ public class ThreeDConvertersTest {
     public static final String NXP21450 = "NXP-21450: Fix random " +
         "tests failure on ThreeDConvertersTest.testColladaConverterX3d";
 
+    private static final Log log = LogFactory.getLog(ThreeDConvertersTest.class);
+
     @Inject
     protected ConversionService cs;
 
@@ -122,8 +127,23 @@ public class ThreeDConvertersTest {
         assertNotNull(cs.getRegistredConverters().contains(converter));
         Map<String, Serializable> params = new HashMap<>();
         params.put(RENDER_IDS_PARAMETER, renderId1 + " " + renderId2);
+        Date timeBefore = new Date();
         BlobHolder result = cs.convert(converter, blobs, params);
+        long timeDelta = (new Date()).getTime() - timeBefore.getTime();
         assertNotNull(result);
+        if (result.getBlobs().size() == 0) {
+            log.warn(String.format("[NXP-21450] memory max: %dMB", Runtime.getRuntime().maxMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] memory total: %dMB", Runtime.getRuntime().totalMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] memory free: %dMB", Runtime.getRuntime().freeMemory() / 1024 / 1024));
+            log.warn(String.format("[NXP-21450] duration: %dms", timeDelta));
+            log.warn(String.format("[NXP-21450] converter: %s", converter));
+            for (Blob blob : blobs.getBlobs()) {
+                log.warn(String.format("[NXP-21450] blob: %s (%s)", blob.getFilename(), blob.getDigest()));
+            }
+            for (Map.Entry<String, Serializable> entry : params.entrySet()) {
+                log.warn(String.format("[NXP-21450] param: %s -> %s", entry.getKey(), entry.getValue()));
+            }
+        }
         return result;
     }
 
