@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,10 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(
         id = CSVImportOperation.ID,
         category = Constants.CAT_DOCUMENT,
-        label = "Import"
+        label = "CSVImport"
 )
 public class CSVImportOperation {
+
     public static final String ID = "CSV.Import";
 
     @Context
