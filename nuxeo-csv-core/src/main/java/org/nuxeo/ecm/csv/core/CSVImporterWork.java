@@ -20,6 +20,30 @@
  */
 package org.nuxeo.ecm.csv.core;
 
+import static org.nuxeo.ecm.csv.core.CSVImportLog.Status.ERROR;
+import static org.nuxeo.ecm.csv.core.Constants.CSV_NAME_COL;
+import static org.nuxeo.ecm.csv.core.Constants.CSV_TYPE_COL;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -32,7 +56,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -66,6 +89,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -74,30 +98,6 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.nuxeo.ecm.csv.core.CSVImportLog.Status.ERROR;
-import static org.nuxeo.ecm.csv.core.Constants.CSV_NAME_COL;
-import static org.nuxeo.ecm.csv.core.Constants.CSV_TYPE_COL;
 
 ;
 
@@ -161,6 +161,8 @@ public class CSVImporterWork extends TransientStoreWork {
 
     public static final String CONTENT_FILED_TYPE_NAME = "content";
 
+    private static final long COMPUTE_TOTAL_THRESHOLD_KB = 1000;
+
     /**
      * CSV headers that won't be checked if the field exists on the document type.
      *
@@ -186,6 +188,12 @@ public class CSVImporterWork extends TransientStoreWork {
 
     protected ArrayList<CSVImportLog> importLogs = new ArrayList<>();
 
+    protected boolean computeTotal = false;
+
+    protected long total = -1L;
+
+    protected long docsCreatedCount = 0;
+
     public CSVImporterWork(String id) {
         super(id);
     }
@@ -198,6 +206,9 @@ public class CSVImporterWork extends TransientStoreWork {
         this.parentPath = parentPath;
         this.username = username;
         this.csvFile = csvFile;
+        if (this.csvFile.length() / 1024 < COMPUTE_TOTAL_THRESHOLD_KB) {
+            this.computeTotal = true;
+        }
         this.csvFileName = csvFileName;
         this.options = options;
         startDate = new Date();
@@ -220,7 +231,6 @@ public class CSVImporterWork extends TransientStoreWork {
     @Override
     public void work() {
         TransientStore store = getStore();
-        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.RUNNING));
         setStatus("Importing");
         openUserSession();
         CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withEscape(options.getEscapeCharacter()).withCommentMarker(
@@ -244,7 +254,7 @@ public class CSVImporterWork extends TransientStoreWork {
         try {
             super.cleanUp(ok, e);
         } finally {
-            getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.COMPLETED));
+            getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.COMPLETED, total, total));
         }
     }
 
@@ -252,12 +262,10 @@ public class CSVImporterWork extends TransientStoreWork {
 
     String launch() {
         WorkManager works = Framework.getLocalService(WorkManager.class);
-        String queueId = works.getCategoryQueueId(CATEGORY_CSV_IMPORTER);
 
         TransientStore store = getStore();
         store.putParameter(id, "logs", EMPTY_LOGS);
-        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0,
-                works.getMetrics(queueId).scheduled.intValue()));
+        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.SCHEDULED));
         works.schedule(this, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         return id;
     }
@@ -301,8 +309,17 @@ public class CSVImporterWork extends TransientStoreWork {
 
         try {
             int batchSize = options.getBatchSize();
-            long docsCreatedCount = 0;
-            for (CSVRecord record : parser) {
+            Iterable<CSVRecord> it = parser;
+            if (computeTotal) {
+                try {
+                    List<CSVRecord> l = parser.getRecords();
+                    total = l.size();
+                    it = l;
+                } catch (IOException e) {
+                    log.warn("Could not compute total number of document to be imported");
+                }
+            }
+            for (CSVRecord record : it) {
                 if (record.size() == 0) {
                     // empty record
                     importLogs.add(new CSVImportLog(record.getRecordNumber(), Status.SKIPPED, "Empty record",
@@ -312,6 +329,8 @@ public class CSVImporterWork extends TransientStoreWork {
                 try {
                     if (importRecord(record, header)) {
                         docsCreatedCount++;
+                        getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.RUNNING,
+                                docsCreatedCount, total));
                         if (docsCreatedCount % batchSize == 0) {
                             commitOrRollbackTransaction();
                             startTransaction();
@@ -570,6 +589,8 @@ public class CSVImporterWork extends TransientStoreWork {
         String lineMessage = String.format("Line %d", lineNumber);
         String errorMessage = String.format(message, (Object[]) params);
         log.error(String.format("%s: %s", lineMessage, errorMessage));
+        getStore().putParameter(id, "status",
+                new CSVImportStatus(CSVImportStatus.State.ERROR, docsCreatedCount, docsCreatedCount));
     }
 
     protected void sendMail() {

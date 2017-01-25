@@ -4,6 +4,8 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
         <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportStatusOperation"/>
+        <operation class="org.nuxeo.ecm.csv.core.operation.CSVImportResultOperation"/>
   </extension>
 
 </component>

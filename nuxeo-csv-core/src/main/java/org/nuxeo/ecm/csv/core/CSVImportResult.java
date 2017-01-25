@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.csv.core;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class CSVImportResult {
+public class CSVImportResult implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected final long totalLineCount;
 
