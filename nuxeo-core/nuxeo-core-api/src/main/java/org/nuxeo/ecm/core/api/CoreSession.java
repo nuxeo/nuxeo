@@ -167,6 +167,13 @@ public interface CoreSession extends AutoCloseable {
     boolean hasPermission(Principal principal, DocumentRef docRef, String permission);
 
     /**
+     * Filters the supplied permissions based on whether they are granted to a given principal for a given document.
+     *
+     * @since 9.1
+     */
+    Collection<String> filterGrantedPermissions(Principal principal, DocumentRef docRef, Collection<String> permissions);
+
+    /**
      * Gets the root document of this repository.
      *
      * @return the root document. cannot be null
