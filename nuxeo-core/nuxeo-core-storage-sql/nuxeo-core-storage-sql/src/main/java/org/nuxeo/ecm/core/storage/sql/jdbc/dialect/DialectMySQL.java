@@ -399,23 +399,23 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public boolean isConcurrentUpdateException(Throwable t) {
-        while (t.getCause() != null) {
+        do {
+            if (t instanceof SQLException) {
+                String sqlState = ((SQLException) t).getSQLState();
+                if ("23000".equals(sqlState)) {
+                    // Integrity constraint violation: 1452 Cannot add or update a child row:
+                    // a foreign key constraint fails
+                    return true;
+                }
+                if ("40001".equals(sqlState)) {
+                    // com.mysql.jdbc.exceptions.jdbc4.MySQLTransactionRollbackException:
+                    // java.sql.SQLTransactionRollbackException for MariaDB:
+                    // Deadlock found when trying to get lock; try restarting transaction
+                    return true;
+                }
+            }
             t = t.getCause();
-        }
-        if (t instanceof SQLException) {
-            String sqlState = ((SQLException) t).getSQLState();
-            if ("23000".equals(sqlState)) {
-                // Integrity constraint violation: 1452 Cannot add or update a
-                // child row: a foreign key constraint fails
-                return true;
-            }
-            if ("40001".equals(sqlState)) {
-                // com.mysql.jdbc.exceptions.jdbc4.MySQLTransactionRollbackException:
-                // Deadlock found when trying to get lock; try restarting
-                // transaction
-                return true;
-            }
-        }
+        } while (t != null);
         return false;
     }
 
