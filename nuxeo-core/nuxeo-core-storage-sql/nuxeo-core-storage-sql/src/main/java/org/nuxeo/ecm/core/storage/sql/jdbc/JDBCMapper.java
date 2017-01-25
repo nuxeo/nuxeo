@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -801,7 +802,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             List<Serializable> ids = new LinkedList<Serializable>();
             int rowNum = 0;
             while (available && (limit != 0)) {
-                Serializable id = column.getFromResultSet(rs, 1);
+                Serializable id;
+                try {
+                    id = column.getFromResultSet(rs, 1);
+                } catch (SQLDataException e) {
+                    // actually no data available, MariaDB Connector/J lied, stop now
+                    available = false;
+                    break;
+                }
                 ids.add(id);
                 rowNum = rs.getRow();
                 available = rs.next();
