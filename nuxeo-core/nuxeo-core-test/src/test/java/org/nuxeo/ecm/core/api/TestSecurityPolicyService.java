@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
@@ -28,7 +29,9 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -98,7 +101,11 @@ public class TestSecurityPolicyService {
 
             // test permission for 'foo' user using hasPermission
             Principal fooUser = new UserPrincipal("foo", new ArrayList<String>(), false, false);
-            assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
+            assertFalse(session.hasPermission(fooUser, folderRef, READ));
+            assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
+            setTestPermissions(fooUser.getName(), READ);
+            assertTrue(session.hasPermission(fooUser, folderRef, READ));
+            assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)), Arrays.asList(READ));
         }
 
         // open session as anonymous and set access on user info

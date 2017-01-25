@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -153,6 +154,40 @@ public class SecurityService extends DefaultComponent {
         access = acp.getAccess(additionalPrincipals, resolvedPermissions);
 
         return access.toBoolean();
+    }
+
+    /**
+     * Filters the supplied permissions based on whether they are granted to a given principal for a given document.
+     *
+     * @since 9.1
+     */
+    public Collection<String> filterGrantedPermissions(Document doc, Principal principal, Collection<String> permissions) {
+        String username = principal.getName();
+
+        if (SecurityConstants.SYSTEM_USERNAME.equals(username)) {
+            return permissions;
+        }
+
+        if (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator()) {
+            return permissions;
+        }
+
+        String[] additionalPrincipals = getPrincipalsToCheck(principal);
+        ACP acp = doc.getSession().getMergedACP(doc);
+
+        List<String> result = new ArrayList<>();
+        for(String permission : permissions) {
+            String[] resolvedPermissions = getPermissionsToCheck(permission);
+            Access access = securityPolicyService.checkPermission(doc, acp, principal, permission, resolvedPermissions,
+                additionalPrincipals);
+            if (access == null || Access.UNKNOWN.equals(access)) {
+                access = acp == null ? null : acp.getAccess(additionalPrincipals, resolvedPermissions);
+            }
+            if (access != null && access.toBoolean()) {
+                result.add(permission);
+            }
+        }
+        return result;
     }
 
     /**
