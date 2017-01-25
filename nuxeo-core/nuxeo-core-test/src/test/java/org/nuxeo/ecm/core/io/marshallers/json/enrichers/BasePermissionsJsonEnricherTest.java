@@ -48,7 +48,8 @@ public class BasePermissionsJsonEnricherTest extends
         JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("permissions").get());
         json = json.has("contextParameters").isObject();
         json.properties(1);
-        json = json.has("permissions").contains("Read", "Write", "Everything");
+        json = json.has("permissions").contains("Read", "Write", "Everything",
+            "AddChildren", "ReadChildren", "RemoveChildren", "ReadWrite");
     }
 
 }

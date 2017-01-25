@@ -309,6 +309,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return hasPermission(doc, permission);
     }
 
+    @Override
+    public Collection<String> filterGrantedPermissions(Principal principal, DocumentRef docRef, Collection<String> permissions) {
+        Document doc = resolveReference(docRef);
+        return getSecurityService().filterGrantedPermissions(doc, principal, permissions);
+    }
+
     protected final boolean hasPermission(Document doc, String permission) {
         // TODO: optimize this - usually ACP is already available when calling
         // this method.
