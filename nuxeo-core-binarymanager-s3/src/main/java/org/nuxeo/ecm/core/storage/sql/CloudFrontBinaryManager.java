@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.nuxeo.runtime.api.Framework.isBooleanPropertyTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,6 +53,8 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
 
     public static final String PROTOCOL_PROPERTY = BASE_PROP + "protocol";
 
+    public static final String ENABLE_CF_ENCODING_FIX = "org.nuxeo.s3storage.cloudfront.fix.encoding";
+
     protected String distributionDomain;
 
     protected Protocol protocol;
@@ -77,9 +81,6 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
 
     @Override
     protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
-        Date expiration = new Date();
-        expiration.setTime(expiration.getTime() + directDownloadExpire * 1000);
-
         try {
             URIBuilder uriBuilder = new URIBuilder(buildResourcePath(bucketNamePrefix + digest));
             if (blob != null) {
@@ -88,68 +89,47 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
                         getContentDispositionHeader(blob, servletRequest));
             }
 
-            String uri;
-            if (privKey != null) {
-                uri = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(uriBuilder.build().toString(), privKeyId,
-                        privKey, expiration);
-            } else {
-                uri = uriBuilder.build().toString();
+            if (isBooleanPropertyTrue(ENABLE_CF_ENCODING_FIX)) {
+                String trimmedChars = " ";
+                uriBuilder.getQueryParams().stream().filter(s -> s.getValue().contains(trimmedChars)).forEach(
+                        s -> uriBuilder.setParameter(s.getName(), s.getValue().replace(trimmedChars, "")));
             }
 
-            return new URI(uri);
+            URI uri = uriBuilder.build();
+            if (privKey == null) {
+                return uri;
+            }
+
+            Date expiration = new Date();
+            expiration.setTime(expiration.getTime() + directDownloadExpire * 1000);
+
+            String signedURL = CloudFrontUrlSigner.getSignedURLWithCannedPolicy(uri.toString(), privKeyId, privKey,
+                    expiration);
+            return new URI(signedURL);
         } catch (URISyntaxException e) {
             throw new IOException(e);
         }
     }
 
-    protected String buildResourcePath(String s3ObjectKey) {
+    private String buildResourcePath(String s3ObjectKey) {
         return protocol != CloudFrontUrlSigner.Protocol.http && protocol != CloudFrontUrlSigner.Protocol.https
                 ? s3ObjectKey : protocol + "://" + distributionDomain + "/" + s3ObjectKey;
     }
 
-    /**
-     * Originally from CloudFrontUrlSigner.loadPrivateKey()
-     */
-    static PrivateKey loadPrivateKey(String privateKeyPath) throws InvalidKeySpecException, IOException {
+    private static PrivateKey loadPrivateKey(String privateKeyPath) throws InvalidKeySpecException, IOException {
         if (privateKeyPath == null) {
             return null;
         }
 
-        File privateKeyFile = new File(privateKeyPath);
-
-        FileInputStream is;
-        PrivateKey var2;
-        if (privateKeyFile.getAbsolutePath().toLowerCase().endsWith(".pem")) {
-            is = new FileInputStream(privateKeyFile);
-
-            try {
-                var2 = PEM.readPrivateKey(is);
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException var19) {
-                    ;
-                }
-
+        try (FileInputStream is = new FileInputStream(new File(privateKeyPath))) {
+            if (privateKeyPath.toLowerCase().endsWith(".pem")) {
+                return PEM.readPrivateKey(is);
             }
 
-            return var2;
-        } else if (privateKeyFile.getAbsolutePath().toLowerCase().endsWith(".der")) {
-            is = new FileInputStream(privateKeyFile);
-
-            try {
-                var2 = RSA.privateKeyFromPKCS8(IOUtils.toByteArray(is));
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException var20) {
-                    ;
-                }
-
+            if (privateKeyPath.toLowerCase().endsWith(".der")) {
+                return RSA.privateKeyFromPKCS8(IOUtils.toByteArray(is));
             }
 
-            return var2;
-        } else {
             throw new AmazonClientException("Unsupported file type for private key");
         }
     }
