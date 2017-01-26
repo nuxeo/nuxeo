@@ -95,7 +95,7 @@ limitations under the License.
         width: 200px;
       }
 
-      #dropzone, #summary {
+      .step {
         padding: 1em;
         position: relative;
         border: 2px dashed var(--divider-color);
@@ -308,9 +308,8 @@ limitations under the License.
 
     <nuxeo-connection id="nx"></nuxeo-connection>
     <nuxeo-resource id="csvImportRes"></nuxeo-resource>
-    <nuxeo-operation id="cvsImportOp" op="CSV.Import"></nuxeo-operation>
-
-    <div class="description">[[i18n('csv.import.description')]]</div>
+    <nuxeo-operation id="cvsImportStatus" op="CSV.ImportStatus"></nuxeo-operation>
+    <nuxeo-operation id="cvsImportResultOp" op="CSV.ImportResult"></nuxeo-operation>
 
     <iron-pages selected="[[stage]]" attr-for-selected="name" class="vertical layout flex">
 
@@ -328,7 +327,7 @@ limitations under the License.
         </div>
 
 
-        <div id="dropzone" class="vertical layout flex">
+        <div id="dropzone" class="vertical layout flex step">
           <input hidden id="uploadFiles" type="file" on-change="_fileChanged">
           <template is="dom-if" if="[[!hasFile]]">
             <div class="vertical layout center center-justified flex">
@@ -396,9 +395,22 @@ limitations under the License.
         </div>
       </div>
 
+      <div name="progress" class="vertical layout flex">
+        <div id="progress" class="horizontal layout flex step">
+          <div class="name">Import in progress: [[_count]] over [[_total]] documents</div>
+          <paper-progress id="importProgress" value="[[_count]]" min="0" max="[[_total]]" class="red" indeterminate>
+          </paper-progress>
+        </div>
+
+        <div class="buttons horizontal end-justified layout">
+          <paper-button dialog-dismiss
+                        class="primary">[[i18n('command.close')]]</paper-button>
+        </div>
+      </div>
+
       <div name="summary" class="vertical layout flex">
-        <div class="horizontal layout flex">
-        TODO
+        <div id="summary" class="horizontal layout flex step">
+          TODO
         </div>
       </div>
     </iron-pages>
@@ -439,12 +451,20 @@ limitations under the License.
           type: Boolean,
           value: false
         },
-        _importReport: {
+        _importResult: {
           type: Object
         },
         stage: {
           type: String,
           value: 'upload'
+        },
+        _count: {
+          type: Number,
+          value: 0
+        },
+        _total: {
+          type: Number,
+          value: 0
         }
       },
 
@@ -531,7 +551,10 @@ limitations under the License.
         this.file = {};
         this.hasFile = false;
         this._creating = false;
-        this._importReport = {};
+        this._importResult = {};
+        this._total = 0;
+        this._count = 0;
+        this.$.importProgress.indeterminate = true;
       },
 
       _handleError: function(error) {
@@ -560,46 +583,37 @@ limitations under the License.
           }
         };
         this.$.csvImportRes.post().then(function(res) {
-          console.log('_import');
-          console.log(res);
-          this.$.cvsImportOp.input = res.value;
-          this.$.cvsImportOp.params = {
-            path: this.targetPath
-          };
-          this.$.cvsImportOp.execute().then(function(res) {
-            console.log('report');
-            console.log(res);
-            this.stage = 'summary'
-          }.bind(this), this._handleError.bind(this))
-
+          this.stage = 'progress';
+          window.setTimeout(this._waitForProgress.bind(this), 500, res);
         }.bind(this), this._handleError.bind(this));
       },
 
-      _handleSuccess: function(response) {
-/*        if (this.customizing) {
-          this.cancelBatch();
-        } else {
-          this.batchId = null;
-          this.uploader = null;
-        }
-        this._clear();
-        this._notify(response);
-        // store creation data
-        if (response.entries && Array.isArray(response.entries)) {
-          response.entries.forEach(function(f) {
-            // XXX remove this to lower as soon as we get type information from the server
-            this.$.creationStats.storeType(f.type.toLowerCase());
-          }.bind(this));
-        } else if (response.type) {
-          this.$.creationStats.storeType(response.type);
-        }
-        if (!response.entries || response.entries.length === 1) {
-          page('/browse' + (response.entries ? response.entries[0] : response).path);
-        } else {
-          this.fire('document-updated');
-          page('/browse' + this.targetPath);
-        }*/
-      },
+      _waitForProgress: function(importId) {
+        this.$.cvsImportStatus.input = importId;
+        this.$.cvsImportStatus.execute().then(function(res) {
+            console.log('report');
+            console.log(res);
+            var status = res.value;
+            this._total = status.totalNumberOfDocument;
+            if (this._total >= 0) {
+              this.$.importProgress.indeterminate = false;
+            }
+            if (status.state === 'RUNNING' || status.state === 'SCHEDULED') {
+              this._count = status.numberOfProcessedDocument;
+
+              window.setTimeout(this._waitForProgress.bind(this), 1000, importId);
+            } else if (status.state === 'COMPLETED') {
+              this._count = status.numberOfProcessedDocument;
+              this.$.cvsImportResultOp.input = importId;
+              this.$.cvsImportResultOp.execute().then(function(res) {
+                this.stage = 'summary';
+              });
+            } else {
+              // TODO handle unexpected state
+            }
+
+          }.bind(this), this._handleError.bind(this))
+      }
 
     });
   </script>
