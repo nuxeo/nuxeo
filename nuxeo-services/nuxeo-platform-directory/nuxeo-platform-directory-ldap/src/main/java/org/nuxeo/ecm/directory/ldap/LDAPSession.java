@@ -173,7 +173,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
             for (String fieldId : fieldMap.keySet()) {
                 String backendFieldId = getDirectory().getFieldMapper().getBackendField(fieldId);
-                if (backendFieldId.equals(getPasswordField())) {
+                if (fieldId.equals(getPasswordField())) {
                     attr = new BasicAttribute(backendFieldId);
                     String password = (String) fieldMap.get(fieldId);
                     password = PasswordHelper.hashPassword(password, passwordHashAlgorithm);
