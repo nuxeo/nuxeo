@@ -28,9 +28,10 @@ dependency-tree.log
 .pydevproject
 *.rej
 .settings
+maven-eclipse.xml
+.externalToolBuilders
 target
 marketplace
 nuxeo-webengine/nuxeo-webengine-gwt/war/
-nuxeo-opensocial-features/maven-eclipse.xml
-nuxeo-opensocial-container/war/
-nuxeo-opensocial-container/.gwt
+nuxeo-features/nuxeo-opensocial/nuxeo-opensocial-container/war/
+nuxeo-features/nuxeo-opensocial/nuxeo-opensocial-container/.gwt
