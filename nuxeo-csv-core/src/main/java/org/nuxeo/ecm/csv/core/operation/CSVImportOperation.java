@@ -62,12 +62,4 @@ public class CSVImportOperation {
         return csvImporter.launchImport(mSession, mPath, blob.getFile(), blob.getFilename(), options);
     }
 
-    @OperationMethod
-    public String getStatus(String importID) {
-        if (importID == null || importID.isEmpty()) {
-            return null;
-        }
-        CSVImporter csvImporter = Framework.getService(CSVImporter.class);
-        return csvImporter.getImportStatus(importID).toString();
-    }
 }
