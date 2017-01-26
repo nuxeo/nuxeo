@@ -63,9 +63,9 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.csv.core:OSGI-INF/test-ui-types-contrib.xml" })
 public class TestImportOperation {
 
-    private static final int TIMEOUT_SECONDS = 10;
+    private static final int TIMEOUT_SECONDS = 20;
 
-    private static final String DOCS_OK_CSV = "docs_ok_simple.csv";
+    private static final String DOCS_OK_CSV = "docs_ok_big.csv";
 
     @Inject
     private CoreSession session;
@@ -138,7 +138,7 @@ public class TestImportOperation {
         assertNotNull(result);
         assertEquals(0, result.getErrorLineCount());
         assertEquals(0, result.getSkippedLineCount());
-        assertEquals(2, result.getSuccessLineCount());
-        assertEquals(2, result.getTotalLineCount());
+        assertEquals(336, result.getSuccessLineCount());
+        assertEquals(336, result.getTotalLineCount());
     }
 }

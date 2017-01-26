@@ -34,7 +34,7 @@ import org.nuxeo.ecm.csv.core.CSVImportResult;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class CSVImportResultJsonWriter extends ExtensibleEntityJsonWriter<CSVImportResult> {
 
-    public static final String ENTITY_TYPE = "csvImportStatus";
+    public static final String ENTITY_TYPE = "csvImportResult";
 
     public CSVImportResultJsonWriter() {
         super(ENTITY_TYPE, CSVImportResult.class);

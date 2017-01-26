@@ -42,9 +42,9 @@ public class CSVImportStatusJsonWriter extends ExtensibleEntityJsonWriter<CSVImp
 
     @Override
     protected void writeEntityBody(CSVImportStatus entity, JsonGenerator jg) throws IOException {
-        jg.writeNumberField("queueSize", entity.getQueueSize());
-        jg.writeStringField("state", entity.getState().name());
-        jg.writeNumberField("positionInQueue", entity.getPositionInQueue());
+        jg.writeStringField("state", entity.getState().name().toLowerCase());
+        jg.writeNumberField("numberOfProcessedDocument", entity.getNumberOfProcessedDocument());
+        jg.writeNumberField("totalNumberOfDocument", entity.getTotalNumberOfDocument());
     }
 
 }
