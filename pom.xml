@@ -9,7 +9,6 @@
 
   <groupId>org.nuxeo.multi.tenant</groupId>
   <artifactId>nuxeo-multi-tenant</artifactId>
-  <version>8.10-HF01-SNAPSHOT</version>
   <name>Nuxeo Multi Tenant Parent</name>
   <packaging>pom</packaging>
 
