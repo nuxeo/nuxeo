@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.orphanVersionsCleanup">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="orphanVersionsCleanup">
+      <!-- cleanup every day at 1:30 AM -->
+      <cronExpression>0 30 1 * * ?</cronExpression>
+      <event>orphanVersionsCleanup</event>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="orphanVersionsCleanup" async="true" postCommit="true"
+      class="org.nuxeo.ecm.core.versioning.OrphanVersionCleanupListener">
+      <event>orphanVersionsCleanup</event>
+    </listener>
+  </extension>
+
+</component>
