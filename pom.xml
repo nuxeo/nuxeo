@@ -4825,6 +4825,26 @@
         <classifier>test</classifier>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>net.openhft</groupId>
+        <artifactId>chronicle-queue</artifactId>
+        <version>4.5.19</version>
+      </dependency>
+      <dependency>
+        <groupId>net.openhft</groupId>
+        <artifactId>chronicle-core</artifactId>
+        <version>1.7.9</version>
+      </dependency>
+      <dependency>
+        <groupId>net.openhft</groupId>
+        <artifactId>chronicle-wire</artifactId>
+        <version>1.7.19</version>
+      </dependency>
+      <dependency>
+        <groupId>net.jodah</groupId>
+        <artifactId>failsafe</artifactId>
+        <version>1.0.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
