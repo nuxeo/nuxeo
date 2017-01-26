@@ -29,6 +29,8 @@ dependency-tree.log
 *.rej
 .settings
 target
+nuxeo-patches
+.nuxeo-patch
 marketplace
 nuxeo-webengine/nuxeo-webengine-gwt/war/
 nashorn_code_cache/
