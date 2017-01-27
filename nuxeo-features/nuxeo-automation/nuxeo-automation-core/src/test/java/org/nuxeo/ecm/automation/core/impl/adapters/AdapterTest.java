@@ -103,4 +103,8 @@ public class AdapterTest {
         assertNull(automationService.getAdaptedValue(ctx, null, Void.class));
     }
 
+    @Test
+    public void souldAdaptContext() throws Exception {
+        assertEquals(ctx, automationService.getAdaptedValue(ctx, null, OperationContext.class));
+    }
 }

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
+import org.nuxeo.ecm.automation.core.operations.login.Logout;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -86,18 +87,20 @@ public class LoginAsTest {
     public void testLoginAs() throws Exception {
         // change the user inside an operation chain.
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-        String origPrincipal = ctx.getPrincipal().getName();
-        System.out.println(origPrincipal);
-        OperationChain chain = new OperationChain("testloginas");
-        chain.add(FetchContextDocument.ID);
-        chain.add(LoginAs.ID).set("name", "Foo");
-        chain.add(CreateDocument.ID).set("type", "Folder").set("name", "myfolder");
-        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(src);
+            String origPrincipal = ctx.getPrincipal().getName();
+            OperationChain chain = new OperationChain("testloginas");
+            chain.add(FetchContextDocument.ID);
+            chain.add(LoginAs.ID).set("name", "Foo");
+            chain.add(CreateDocument.ID).set("type", "Folder").set("name", "myfolder");
+            chain.add(Logout.ID);
 
-        Assert.assertEquals(origPrincipal, ctx.getPrincipal().getName());
-        Assert.assertEquals("Foo", doc.getPropertyValue("dc:creator"));
+            DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+
+            Assert.assertEquals(origPrincipal, ctx.getPrincipal().getName());
+            Assert.assertEquals("Foo", doc.getPropertyValue("dc:creator"));
+        }
     }
 
 }

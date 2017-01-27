@@ -155,8 +155,6 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         return 0;
     }
 
-    OperationServiceImpl service;
-
     protected Object doInvoke(OperationContext ctx, Map<String, Object> args) throws OperationException,
             ReflectiveOperationException {
         Object target = op.newInstance(ctx, args);

@@ -42,7 +42,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -218,7 +217,7 @@ public class OperationTypeImpl implements OperationType {
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, ?> args) throws OperationException {
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException {
         Object obj;
         try {
             obj = type.newInstance();
@@ -234,19 +233,10 @@ public class OperationTypeImpl implements OperationType {
      */
     protected Object resolveObject(final OperationContext ctx, final String key, Map<String, ?> args) {
         Object obj = args.get(key);
-        if (obj instanceof Expression) {
-            obj = ((Expression) obj).eval(ctx);
+        if (obj != null) {
+            return ctx.resolve(obj);
         }
-        // Trying to fallback on Chain Parameters sub context if cannot
-        // find it
-        if (obj == null) {
-            if (ctx.containsKey(Constants.VAR_RUNTIME_CHAIN)) {
-                @SuppressWarnings("unchecked")
-                final Map<String, ?> params = (Map<String, ?>) ctx.get(Constants.VAR_RUNTIME_CHAIN);
-                obj = params.get(key);
-            }
-        }
-        return obj;
+        return ctx.get(key);
     }
 
     public void inject(OperationContext ctx, Map<String, ?> args, Object target) throws OperationException {

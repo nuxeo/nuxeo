@@ -56,7 +56,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.core:test-providers.xml", "org.nuxeo.ecm.automation.core:test-operations.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.automation.core:test-providers.xml",
+        "org.nuxeo.ecm.automation.core:test-operations.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class CoreProviderTest {
 
@@ -94,151 +95,157 @@ public class CoreProviderTest {
     @Test
     public void testSimplePageProvider() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
+        try (OperationContext ctx = new OperationContext(session)) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<String, Object>();
 
-        String providerName = "simpleProviderTest1";
+            String providerName = "simpleProviderTest1";
 
-        params.put("providerName", providerName);
+            params.put("providerName", providerName);
 
-        OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            OperationChain chain = new OperationChain("fakeChain");
+            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(2, result.getNumberOfPages());
-        assertTrue(result.getProvider().isNextPageAvailable());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(2, result.getNumberOfPages());
+            assertTrue(result.getProvider().isNextPageAvailable());
 
-        // change page size
-        chain = new OperationChain("fakeChain");
-        params.put("pageSize", 4);
-        oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            // change page size
+            chain = new OperationChain("fakeChain");
+            params.put("pageSize", 4);
+            oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
-        assertEquals(4, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
+            result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            assertEquals(4, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+        }
 
     }
 
     @Test
     public void testSimplePageProviderWithParams() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
+        try (OperationContext ctx = new OperationContext(session)) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<String, Object>();
 
-        String providerName = "simpleProviderTest2";
+            String providerName = "simpleProviderTest2";
 
-        params.put("providerName", providerName);
-        params.put("queryParams", "WS1");
+            params.put("providerName", providerName);
+            params.put("queryParams", "WS1");
 
-        OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            OperationChain chain = new OperationChain("fakeChain");
+            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
 
-        providerName = "simpleProviderTest3";
+            providerName = "simpleProviderTest3";
 
-        params.put("providerName", providerName);
-        params.put("queryParams", "WS1,WS2");
+            params.put("providerName", providerName);
+            params.put("queryParams", "WS1,WS2");
 
-        chain = new OperationChain("fakeChain");
-        oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            chain = new OperationChain("fakeChain");
+            oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(2, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(2, result.size());
+        }
 
     }
 
     @Test
     public void testDirectNXQL() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
+        try (OperationContext ctx = new OperationContext(session)) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("query", "select * from Document");
-        params.put("pageSize", 2);
+            params.put("query", "select * from Document");
+            params.put("pageSize", 2);
 
-        OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            OperationChain chain = new OperationChain("fakeChain");
+            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(2, result.getNumberOfPages());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(2, result.getNumberOfPages());
+        }
 
     }
 
     @Test
     public void testDirectNXQLWithDynUser() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
+        try (OperationContext ctx = new OperationContext(session)) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("query", "select * from Document where dc:contributors = ?");
-        params.put("pageSize", 2);
-        params.put("queryParams", "$currentUser");
+            params.put("query", "select * from Document where dc:contributors = ?");
+            params.put("pageSize", 2);
+            params.put("queryParams", "$currentUser");
 
-        OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            OperationChain chain = new OperationChain("fakeChain");
+            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        assertEquals(1, result.size());
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+        }
 
     }
 
     @Test
     public void testRunOnPageProviderOperation() throws Exception {
-        OperationContext context = new OperationContext(session);
-        service.run(context, "runOnProviderTestchain");
-        DocumentModelList list = (DocumentModelList) context.get("result");
-        assertEquals(3, list.size());
+        try (OperationContext context = new OperationContext(session)) {
+            service.run(context, "runOnProviderTestchain");
+            DocumentModelList list = (DocumentModelList) context.get("result");
+            assertEquals(3, list.size());
+        }
     }
 
     @Test
     public void testDirectNXQLWithMaxResults() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
+        try (OperationContext ctx = new OperationContext(session)) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("query", "select * from Document");
-        params.put("pageSize", 2);
-        params.put("maxResults", "2");
+            params.put("query", "select * from Document");
+            params.put("pageSize", 2);
+            params.put("maxResults", "2");
 
-        OperationChain chain = new OperationChain("fakeChain");
-        OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
-        chain.add(oparams);
+            OperationChain chain = new OperationChain("fakeChain");
+            OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, params);
+            chain.add(oparams);
 
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        assertEquals(2, result.getPageSize());
-        // number of pages should not be set !!!
-        assertEquals(0, result.getNumberOfPages());
+            assertEquals(2, result.getPageSize());
+            // number of pages should not be set !!!
+            assertEquals(0, result.getNumberOfPages());
+        }
 
     }
 
@@ -247,10 +254,11 @@ public class CoreProviderTest {
      */
     @Test
     public void testParameterType() throws Exception {
-        OperationContext context = new OperationContext(session);
-        service.run(context, "testChainParameterType");
-        DocumentModelList list = (DocumentModelList) context.get("result");
-        assertEquals(3, list.size());
+        try (OperationContext context = new OperationContext(session)) {
+            service.run(context, "testChainParameterType");
+            DocumentModelList list = (DocumentModelList) context.get("result");
+            assertEquals(3, list.size());
+        }
     }
 
     protected Map<String, Object> getNamedParamsProps(String providerName, String propName, String propValue) {
@@ -270,15 +278,16 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParameters() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = getNamedParamsProps("namedParamProvider", "parameter1", "WS1");
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                DocumentPageProviderOperation.ID, params);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = getNamedParamsProps("namedParamProvider", "parameter1", "WS1");
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                    DocumentPageProviderOperation.ID, params);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
+        }
     }
 
     /**
@@ -286,15 +295,16 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParametersInvalid() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = getNamedParamsProps("namedParamProviderInvalid", null, null);
-        try {
-            service.run(ctx, DocumentPageProviderOperation.ID, params);
-            fail("Should have raised an OperationException");
-        } catch (OperationException e) {
-            assertNotNull(e.getMessage());
-            assertTrue(e.getMessage().contains(
-                    "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = getNamedParamsProps("namedParamProviderInvalid", null, null);
+            try {
+                service.run(ctx, DocumentPageProviderOperation.ID, params);
+                fail("Should have raised an OperationException");
+            } catch (OperationException e) {
+                assertNotNull(e.getMessage());
+                assertTrue(e.getMessage().contains(
+                        "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
+            }
         }
     }
 
@@ -303,15 +313,16 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParametersAndDoc() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithDoc", "np:title", "WS1");
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                DocumentPageProviderOperation.ID, params);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = getNamedParamsProps("namedParamProviderWithDoc", "np:title", "WS1");
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                    DocumentPageProviderOperation.ID, params);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
+        }
     }
 
     /**
@@ -319,15 +330,16 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParametersAndDocInvalid() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithDocInvalid", "np:title", "WS1");
-        try {
-            service.run(ctx, DocumentPageProviderOperation.ID, params);
-            fail("Should have raised an OperationException");
-        } catch (OperationException e) {
-            assertNotNull(e.getMessage());
-            assertTrue(e.getMessage().contains(
-                    "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = getNamedParamsProps("namedParamProviderWithDocInvalid", "np:title", "WS1");
+            try {
+                service.run(ctx, DocumentPageProviderOperation.ID, params);
+                fail("Should have raised an OperationException");
+            } catch (OperationException e) {
+                assertNotNull(e.getMessage());
+                assertTrue(e.getMessage().contains(
+                        "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
+            }
         }
     }
 
@@ -336,24 +348,25 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParametersInWhereClause() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClause", "parameter1", "WS1");
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                DocumentPageProviderOperation.ID, params);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClause", "parameter1", "WS1");
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                    DocumentPageProviderOperation.ID, params);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
 
-        // retry without params
-        params = getNamedParamsProps("namedParamProviderWithWhereClause", null, null);
-        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+            // retry without params
+            params = getNamedParamsProps("namedParamProviderWithWhereClause", null, null);
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(2, result.getNumberOfPages());
-        assertEquals(2, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(2, result.getNumberOfPages());
+            assertEquals(2, result.size());
+        }
     }
 
     /**
@@ -361,24 +374,26 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParametersInWhereClauseWithDoc() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", "np:title", "WS1");
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                DocumentPageProviderOperation.ID, params);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", "np:title",
+                    "WS1");
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                    DocumentPageProviderOperation.ID, params);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
 
-        // retry without params
-        params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", null, null);
-        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+            // retry without params
+            params = getNamedParamsProps("namedParamProviderWithWhereClauseWithDoc", null, null);
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
 
-        // test page size
-        assertEquals(2, result.getPageSize());
-        assertEquals(2, result.getNumberOfPages());
-        assertEquals(2, result.size());
+            // test page size
+            assertEquals(2, result.getPageSize());
+            assertEquals(2, result.getNumberOfPages());
+            assertEquals(2, result.size());
+        }
     }
 
     /**
@@ -386,43 +401,44 @@ public class CoreProviderTest {
      */
     @Test
     public void testPageProviderWithNamedParametersComplex() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("providerName", "namedParamProviderComplex");
-        Map<String, String> namedParameters = new HashMap<>();
-        namedParameters.put("parameter1", "WS1");
-        namedParameters.put("np:isCheckedIn", Boolean.FALSE.toString());
-        namedParameters.put("np:dateMin", "2007-01-30 01:02:03+04:00");
-        namedParameters.put("np:dateMax", "2007-03-23 01:02:03+04:00");
-        Properties namedProperties = new Properties(namedParameters);
-        params.put("namedParameters", namedProperties);
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                DocumentPageProviderOperation.ID, params);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("providerName", "namedParamProviderComplex");
+            Map<String, String> namedParameters = new HashMap<>();
+            namedParameters.put("parameter1", "WS1");
+            namedParameters.put("np:isCheckedIn", Boolean.FALSE.toString());
+            namedParameters.put("np:dateMin", "2007-01-30 01:02:03+04:00");
+            namedParameters.put("np:dateMax", "2007-03-23 01:02:03+04:00");
+            Properties namedProperties = new Properties(namedParameters);
+            params.put("namedParameters", namedProperties);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                    DocumentPageProviderOperation.ID, params);
 
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
 
-        // remove filter on dates
-        namedParameters.remove("np:dateMin");
-        namedParameters.remove("np:dateMax");
-        namedProperties = new Properties(namedParameters);
-        params.put("namedParameters", namedProperties);
-        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+            // remove filter on dates
+            namedParameters.remove("np:dateMin");
+            namedParameters.remove("np:dateMax");
+            namedProperties = new Properties(namedParameters);
+            params.put("namedParameters", namedProperties);
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
 
-        assertEquals(2, result.getPageSize());
-        assertEquals(1, result.getNumberOfPages());
-        assertEquals(1, result.size());
+            assertEquals(2, result.getPageSize());
+            assertEquals(1, result.getNumberOfPages());
+            assertEquals(1, result.size());
 
-        // remove filter on title
-        namedParameters.remove("parameter1");
-        namedProperties = new Properties(namedParameters);
-        params.put("namedParameters", namedProperties);
-        result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
+            // remove filter on title
+            namedParameters.remove("parameter1");
+            namedProperties = new Properties(namedParameters);
+            params.put("namedParameters", namedProperties);
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPageProviderOperation.ID, params);
 
-        assertEquals(2, result.getPageSize());
-        assertEquals(2, result.getNumberOfPages());
-        assertEquals(2, result.size());
+            assertEquals(2, result.getPageSize());
+            assertEquals(2, result.getNumberOfPages());
+            assertEquals(2, result.size());
+        }
     }
 
     /**
@@ -430,15 +446,16 @@ public class CoreProviderTest {
      */
     @Test
     public void canUseINOperatorWithQueryParams() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("providerName", "searchWithInOperatorAndQueryParams");
-        StringList list = new StringList();
-        list.add("\"Art/Architecture\", \"Art/Culture\"");
-        params.put("queryParams", list);
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
-                DocumentPageProviderOperation.ID, params);
-        assertEquals(1, result.size());
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("providerName", "searchWithInOperatorAndQueryParams");
+            StringList list = new StringList();
+            list.add("\"Art/Architecture\", \"Art/Culture\"");
+            params.put("queryParams", list);
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                    DocumentPageProviderOperation.ID, params);
+            assertEquals(1, result.size());
+        }
     }
 
     /**
@@ -446,8 +463,9 @@ public class CoreProviderTest {
      */
     @Test
     public void canUseDateWrapperIntoNamedParameter() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, "dateWrapper", null);
-        assertNotNull(result);
+        try (OperationContext ctx = new OperationContext(session)) {
+            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, "dateWrapper");
+            assertNotNull(result);
+        }
     }
 }
