@@ -4783,24 +4783,24 @@
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>0.10.0.1</version>
+        <version>0.10.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>0.10.0.1</version>
+        <version>0.10.1.0</version>
         <classifier>test</classifier>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka_2.11</artifactId>
-        <version>0.10.0.1</version>
+        <version>0.10.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka_2.11</artifactId>
-        <version>0.10.0.1</version>
+        <version>0.10.1.0</version>
         <classifier>test</classifier>
         <scope>test</scope>
       </dependency>
