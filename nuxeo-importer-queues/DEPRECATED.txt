@@ -1,0 +1,11 @@
+This experimental module is DEPRECATED since 9.1.
+
+It has been refactored, enhanced and superseded by the nuxeo-mqueues addon.
+
+Visit: 
+
+- https://github.com/nuxeo/nuxeo-mqueues
+- https://github.com/nuxeo/marketplace-mqueues
+- https://jira.nuxeo.com/browse/NXP-21459
+
+for more information.

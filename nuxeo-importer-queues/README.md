@@ -1,6 +1,10 @@
 nuxeo-importer-queue
 ======================
 
+## WARNING
+
+This experimental module is *DEPRECATED* since 9.1, superseded by [nuxeo-mqueues](https://github.com/nuxeo/nuxeo-mqueues).
+
 ## About
 
 This module implements a single producer, multi consumers importer pattern.
