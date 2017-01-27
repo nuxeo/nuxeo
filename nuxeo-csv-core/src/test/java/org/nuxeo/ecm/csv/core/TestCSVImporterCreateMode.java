@@ -19,27 +19,11 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.transientstore.test.TransientStoreFeature;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,10 +34,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
+import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -408,12 +410,12 @@ public class TestCSVImporterCreateMode {
     }
 
     @Test
-    public void shouldNotImportCSVFileWithInitialCommentByDefault() throws InterruptedException {
+    public void shouldNotImportCSVFileWithInitialCommentByDefault() throws InterruptedException, IOException {
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
         TransactionHelper.commitOrRollbackTransaction();
 
-        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_INTERSPERSED_COMMENTS_CSV),
-                DOCS_WITH_INTERSPERSED_COMMENTS_CSV, options);
+        String importId = csvImporter.launchImport(session, "/",
+                Blobs.createBlob(getCSVFile(DOCS_WITH_INTERSPERSED_COMMENTS_CSV)), options);
 
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();

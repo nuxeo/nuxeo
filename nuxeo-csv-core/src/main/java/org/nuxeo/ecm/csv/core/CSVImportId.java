@@ -19,15 +19,13 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * Helper class to compute a unique id for an import task.
@@ -42,24 +40,20 @@ public class CSVImportId {
         // utility class
     }
 
-    public static String create(String repositoryName, String path, File csvFile) {
-        return create(repositoryName, path, computeDigest(csvFile));
+    public static String create(String repositoryName, String path, Blob blob) {
+        return create(repositoryName, path, computeDigest(blob));
     }
 
     public static String create(String repositoryName, String path, String csvBlobDigest) {
         return repositoryName + ':' + path + ":csvImport:" + csvBlobDigest;
     }
 
-    protected static String computeDigest(File file) {
-        InputStream in = null;
-        try {
-            in = new FileInputStream(file);
-            return DigestUtils.md5Hex(in);
+    protected static String computeDigest(Blob blob) {
+        try (InputStream in = blob.getStream()) {
+            return DigestUtils.md5Hex(blob.getStream());
         } catch (IOException e) {
             log.error(e, e);
             return "";
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 
