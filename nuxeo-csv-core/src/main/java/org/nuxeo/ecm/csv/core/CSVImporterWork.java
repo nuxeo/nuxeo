@@ -588,6 +588,7 @@ public class CSVImporterWork extends TransientStoreWork {
         String lineMessage = String.format("Line %d", lineNumber);
         String errorMessage = String.format(message, (Object[]) params);
         log.error(String.format("%s: %s", lineMessage, errorMessage));
+        getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.ERROR, total, total));
     }
 
     protected void sendMail() {

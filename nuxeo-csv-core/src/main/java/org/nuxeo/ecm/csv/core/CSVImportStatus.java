@@ -28,7 +28,11 @@ import java.io.Serializable;
 public class CSVImportStatus implements Serializable {
 
     public enum State {
-        SCHEDULED, RUNNING, COMPLETED
+        SCHEDULED, RUNNING, COMPLETED,
+        /**
+         * @since 9.1
+         */
+        ERROR
     }
 
     private static final long serialVersionUID = 1L;
