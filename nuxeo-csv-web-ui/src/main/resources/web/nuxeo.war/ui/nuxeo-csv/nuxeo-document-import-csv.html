@@ -60,7 +60,7 @@ limitations under the License.
         --paper-spinner-color: var(--default-primary-color);
       }
 
-      .suggester {
+      .suggester, .options {
         margin: 16px 32px;
       }
 
@@ -102,7 +102,7 @@ limitations under the License.
         border-radius: 4px;
         background-color: #F7F6F6;
         min-height: 100px;
-        margin: 1em 2em 5em;
+        margin: 1em 2em 1em;
       }
 
       .drop-scrollable {
@@ -304,6 +304,11 @@ limitations under the License.
       .importing-label {
         margin-right: 8px;
       }
+
+      .status {
+        margin: 1em;
+      }
+
     </style>
 
     <nuxeo-connection id="nx"></nuxeo-connection>
@@ -376,6 +381,13 @@ limitations under the License.
           </template>
         </div>
 
+        <div class="options">
+          <div class="layout vertical">
+            <paper-toggle-button checked="{{receiveEmailReport}}">[[i18n('csv.import.option.emailReport')]]</paper-toggle-button>
+            <paper-toggle-button checked="{{applyDcMeta}}">[[i18n('csv.import.option.dcMeta')]]</paper-toggle-button>
+          </div>
+        </div>
+
         <div class="buttons horizontal end-justified layout">
           <div class="flex start-justified">
             <paper-button dialog-dismiss
@@ -396,10 +408,15 @@ limitations under the License.
       </div>
 
       <div name="progress" class="vertical layout flex">
-        <div id="progress" class="horizontal layout flex step">
-          <div class="name">Import in progress: [[_count]] over [[_total]] documents</div>
-          <paper-progress id="importProgress" value="[[_count]]" min="0" max="[[_total]]" class="red" indeterminate>
-          </paper-progress>
+        <div id="progress" class="layout flex step">
+          <div hidden$="[[_error]]">
+            <div class="name status">[[i18n('csv.import.progress.status', _count, _total)]]</div>
+            <div class="status">
+              <paper-progress id="importProgress" value="[[_count]]" min="0" max="[[_total]]" class="blue" indeterminate>
+              </paper-progress>
+            </div>
+          </div>
+          <span class="error" hidden$="[[!_error]]">[[i18n('csv.import.error')]]</span>
         </div>
 
         <div class="buttons horizontal end-justified layout">
@@ -465,6 +482,19 @@ limitations under the License.
         _total: {
           type: Number,
           value: 0
+        },
+        _error: {
+          type: Boolean,
+          value: false
+        },
+
+        receiveEmailReport: {
+          type: Boolean,
+          value: false
+        },
+        applyDcMeta: {
+          type: Boolean,
+          value: false
         }
       },
 
@@ -487,8 +517,15 @@ limitations under the License.
       },
       observers: [
         '_observeFiles(files.*)',
-        '_visibleOnStage(visible,stage)'
+        '_visibleOnStage(visible,stage)',
+        '_observeVisible(visible)'
       ],
+
+      _observeVisible: function() {
+        if (this.visible) {
+          this._clear();
+        }
+      },
 
       _removeBlob: function(e) {
         this.$.csvImportRes.path = 'upload/' + this.batchId + '/' + e.model.file.index;
@@ -555,6 +592,8 @@ limitations under the License.
         this._total = 0;
         this._count = 0;
         this.$.importProgress.indeterminate = true;
+        this._error = false;
+        this.$.uploadFiles.value = '';
       },
 
       _handleError: function(error) {
@@ -579,12 +618,14 @@ limitations under the License.
         this.$.csvImportRes.path = 'upload/' + this.batchId + '/0/execute/CSV.Import';
         this.$.csvImportRes.data = {
           params: {
-            path: this.targetPath
+            path: this.targetPath,
+            sendReport: this.receiveEmailReport,
+            documentMode: this.applyDcMeta
           }
         };
         this.$.csvImportRes.post().then(function(res) {
           this.stage = 'progress';
-          window.setTimeout(this._waitForProgress.bind(this), 500, res);
+          window.setTimeout(this._waitForProgress.bind(this), 1000, res);
         }.bind(this), this._handleError.bind(this));
       },
 
@@ -598,16 +639,21 @@ limitations under the License.
             if (this._total >= 0) {
               this.$.importProgress.indeterminate = false;
             }
-            if (status.state === 'RUNNING' || status.state === 'SCHEDULED') {
+            if(status.state === 'ERROR') {
+              this._error = true;
+            } else if (status.state === 'RUNNING' || status.state === 'SCHEDULED') {
               this._count = status.numberOfProcessedDocument;
-
-              window.setTimeout(this._waitForProgress.bind(this), 1000, importId);
+              window.setTimeout(this._waitForProgress.bind(this), 200, importId);
             } else if (status.state === 'COMPLETED') {
               this._count = status.numberOfProcessedDocument;
-              this.$.cvsImportResultOp.input = importId;
-              this.$.cvsImportResultOp.execute().then(function(res) {
-                this.stage = 'summary';
-              });
+              if (this._count < 0) {
+                this._error = true;
+              } else {
+                this.$.cvsImportResultOp.input = importId;
+                this.$.cvsImportResultOp.execute().then(function(res) {
+                  this.stage = 'summary';
+                });
+              }
             } else {
               // TODO handle unexpected state
             }
