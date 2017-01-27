@@ -34,6 +34,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -72,8 +73,9 @@ public class BasePermissionsJsonEnricher extends AbstractJsonEnricher<DocumentMo
 
     public static final String NAME = "permissions";
 
-    private final List<String> availablePermissions = Arrays.asList("Read", "Write", "Everything",
-        "AddChildren", "ReadChildren", "RemoveChildren");
+    private final List<String> availablePermissions = Arrays.asList(SecurityConstants.READ, SecurityConstants.WRITE,
+        SecurityConstants.EVERYTHING, SecurityConstants.ADD_CHILDREN, SecurityConstants.READ_CHILDREN,
+        SecurityConstants.REMOVE_CHILDREN);
 
     public BasePermissionsJsonEnricher() {
         super(NAME);
