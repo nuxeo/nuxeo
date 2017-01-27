@@ -513,7 +513,7 @@ public abstract class NuxeoLauncher {
             + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
             + "        pack\t\t\tBuild a static archive.\n"
             + "        showconf\t\tDisplay the instance configuration.\n"
-            + "        connect-report\t\tDump a json report about the running server.\n"
+            + "        connect-report\t\tDump a JSON report about the running server (which being used by Nuxeo support).\n"
             + "        mp-list\t\t\tList local Nuxeo Packages.\n"
             + "        mp-listall\t\tList all Nuxeo Packages.\n"
             + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n"
@@ -538,6 +538,7 @@ public abstract class NuxeoLauncher {
             + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
             + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
             + "\"mp-reset\".\n"
+            + "\nThe following commands can only be executed on a running server: \"connect-report\"\n"
             + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
 
     private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [options] [--] [command parameters]\n\n";
@@ -567,6 +568,7 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n\n"
             + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n\n"
             + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
+            + "        nuxeoctl connect-report [--output <file>|--gzip <*true|false|yes|no>|--pretty-print <true|*false|yes|no>]\n\n"
             + "OPTIONS";
 
     private static final String OPTION_HELP_FOOTER =
