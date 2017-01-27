@@ -98,11 +98,14 @@ limitations under the License.
       .step {
         padding: 1em;
         position: relative;
-        border: 2px dashed var(--divider-color);
-        border-radius: 4px;
-        background-color: #F7F6F6;
         min-height: 100px;
         margin: 1em 2em 1em;
+      }
+
+      #dropzone {
+        background-color: #F7F6F6;
+        border: 2px dashed var(--divider-color);
+        border-radius: 4px;
       }
 
       .drop-scrollable {
@@ -309,6 +312,37 @@ limitations under the License.
         margin: 1em;
       }
 
+      .success {
+        background-color: #d1f5c7;
+        color: #569150;
+        border-radius: 3px;
+        display: inline-block;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin: 0.3em 0.5em 0.3em 0;
+        padding: 0.8em 1em 1em 2.2em;
+      }
+
+      .report {
+        margin: 2em 0;
+      }
+
+      .line {
+        @apply(--layout-horizontal);
+      }
+
+      .line label {
+        min-width: 200px;
+      }
+
+      .successful {
+        color: #569150;
+      }
+
+      .failed {
+        color: orange;
+      }
+
     </style>
 
     <nuxeo-connection id="nx"></nuxeo-connection>
@@ -409,27 +443,47 @@ limitations under the License.
 
       <div name="progress" class="vertical layout flex">
         <div id="progress" class="layout flex step">
-          <div hidden$="[[_error]]">
-            <div class="name status">[[i18n('csv.import.progress.status', _count, _total)]]</div>
-            <div class="status">
-              <paper-progress id="importProgress" value="[[_count]]" min="0" max="[[_total]]" class="blue" indeterminate>
-              </paper-progress>
+          <div hidden$="[[_hasResult]]">
+            <div hidden$="[[_error]]">
+              <div class="name status">[[i18n('csv.import.progress.status', _count, _total)]]</div>
+              <div class="status">
+                <paper-progress id="importProgress" value="[[_count]]" min="0" max="[[_total]]" class="blue" indeterminate>
+                </paper-progress>
+              </div>
             </div>
           </div>
           <span class="error" hidden$="[[!_error]]">[[i18n('csv.import.error')]]</span>
+          <div hidden$="[[!_hasResult]]">
+            <div class="success"><iron-icon icon="icons:check"></iron-icon>[[i18n('csv.import.success')]]</div>
+            <div class="report layout vertical flex">
+              <div class="line successful layout flex">
+                <label>[[i18n('csv.import.report.successLine')]]</label>
+                <div class="count">[[_importResult.successLineCount]] / [[_importResult.totalLineCount]]</div>
+              </div>
+              <div class="line skipped layout flex">
+                <label>[[i18n('csv.import.report.skippedLine')]]</label>
+                <div class="count">[[_importResult.skippedLineCount]] / [[_importResult.totalLineCount]]</div>
+              </div>
+              <div class="line failed layout flex">
+                <label>[[i18n('csv.import.report.errorLine')]]</label>
+                <div class="count">[[_importResult.errorLineCount]] / [[_importResult.totalLineCount]]</div>
+              </div>
+            </div>
+            <div class="brief">[[i18n('csv.import.report.notify')]]</div>
+          </div>
         </div>
 
         <div class="buttons horizontal end-justified layout">
+         <paper-button noink
+                        on-tap="_clear"
+                        disabled$="[[!_hasResult]]">
+                        [[i18n('csv.import.new')]]
+          </paper-button>
           <paper-button dialog-dismiss
                         class="primary">[[i18n('command.close')]]</paper-button>
         </div>
       </div>
 
-      <div name="summary" class="vertical layout flex">
-        <div id="summary" class="horizontal layout flex step">
-          TODO
-        </div>
-      </div>
     </iron-pages>
 
     <paper-toast id="toast"></paper-toast>
@@ -443,6 +497,10 @@ limitations under the License.
       behaviors: [Nuxeo.I18nBehavior, Polymer.IronResizableBehavior, Nuxeo.UploaderBehavior, Nuxeo.DocumentCreationBehavior],
 
       properties: {
+        accept: {
+          type: String,
+          value: 'csv'
+        },
         parent: {
           type: Object
         },
@@ -470,6 +528,10 @@ limitations under the License.
         },
         _importResult: {
           type: Object
+        },
+        _hasResult: {
+          type: Boolean,
+          value: false
         },
         stage: {
           type: String,
@@ -594,6 +656,7 @@ limitations under the License.
         this.$.importProgress.indeterminate = true;
         this._error = false;
         this.$.uploadFiles.value = '';
+        this._hasResult = false;
       },
 
       _handleError: function(error) {
@@ -651,8 +714,9 @@ limitations under the License.
               } else {
                 this.$.cvsImportResultOp.input = importId;
                 this.$.cvsImportResultOp.execute().then(function(res) {
-                  this.stage = 'summary';
-                });
+                  this._importResult = res.value;
+                  this._hasResult = true;
+                }.bind(this));
               }
             } else {
               // TODO handle unexpected state

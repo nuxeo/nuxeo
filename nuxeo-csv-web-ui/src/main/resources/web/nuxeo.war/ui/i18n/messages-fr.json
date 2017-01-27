@@ -5,5 +5,11 @@
   "csv.import.option.emailReport": "Recevoir un rapport de l'import par email.",
   "csv.import.option.dcMeta": "Appliquer date, auteur et autres dublin core metadata",
   "csv.import.progress.status": "Import de l'entrée #{0} sur {1}",
-  "csv.import.error": "Un erreur s'est produite pendant l'import csv."
+  "csv.import.error": "Un erreur s'est produite pendant l'import csv.",
+  "csv.import.success": "Import terminé",
+  "csv.import.report.successLine": "Entrées importées",
+  "csv.import.report.skippedLine": "Entrées ignorées",
+  "csv.import.report.errorLine": "Entrées en erreur",
+  "csv.import.report.notify": "Un email vous a été envoyé. Si vous ne le recevez pas, contacter votre administrateur.",
+  "csv.import.new" : "Nouveau Import CSV"
 }
