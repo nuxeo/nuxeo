@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -225,6 +226,7 @@ public class TestDocumentAuditPageProvider {
     DocumentHistoryReader history;
 
     @Test
+    @Ignore("NXP-21530")
     public void testDocumentHistoryReader() throws Exception {
 
         List<LogEntry> entries = history.getDocumentHistory(pfouh.versions.get(1), 0, 20);
