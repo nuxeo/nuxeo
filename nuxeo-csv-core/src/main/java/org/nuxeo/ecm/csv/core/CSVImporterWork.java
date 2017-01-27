@@ -26,8 +26,6 @@ import static org.nuxeo.ecm.csv.core.Constants.CSV_TYPE_COL;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,6 +63,7 @@ import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -174,10 +173,6 @@ public class CSVImporterWork extends TransientStoreWork {
 
     protected String username;
 
-    protected File csvFile;
-
-    protected String csvFileName;
-
     protected CSVImporterOptions options;
 
     protected transient DateFormat dateformat;
@@ -196,21 +191,21 @@ public class CSVImporterWork extends TransientStoreWork {
         super(id);
     }
 
-    public CSVImporterWork(String repositoryName, String parentPath, String username, File csvFile, String csvFileName,
+    public CSVImporterWork(String repositoryName, String parentPath, String username, Blob csvBlob,
             CSVImporterOptions options) {
-        super(CSVImportId.create(repositoryName, parentPath, csvFile));
+        super(CSVImportId.create(repositoryName, parentPath, csvBlob));
+        getStore().putBlobs(id, Collections.singletonList(csvBlob));
         setDocument(repositoryName, null);
         setOriginatingUsername(username);
         this.parentPath = parentPath;
         this.username = username;
-        this.csvFile = csvFile;
-        if (this.csvFile.length() / 1024 < COMPUTE_TOTAL_THRESHOLD_KB) {
+        if (csvBlob.getLength() >= 0 && csvBlob.getLength() / 1024 < COMPUTE_TOTAL_THRESHOLD_KB) {
             this.computeTotal = true;
         }
-        this.csvFileName = csvFileName;
         this.options = options;
         startDate = new Date();
     }
+
 
     @Override
     public String getCategory() {
@@ -233,7 +228,7 @@ public class CSVImporterWork extends TransientStoreWork {
         openUserSession();
         CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withEscape(options.getEscapeCharacter()).withCommentMarker(
                 options.getCommentMarker());
-        try (Reader in = newReader(csvFile); CSVParser parser = csvFormat.parse(in)) {
+        try (Reader in = newReader(getBlob()); CSVParser parser = csvFormat.parse(in)) {
             doImport(parser);
         } catch (IOException e) {
             logError(0, "Error while doing the import: %s", LABEL_CSV_IMPORTER_ERROR_DURING_IMPORT, e.getMessage());
@@ -286,14 +281,15 @@ public class CSVImporterWork extends TransientStoreWork {
     }
 
     /**
+     * @throws IOException
      * @since 7.3
      */
-    protected BufferedReader newReader(File file) throws FileNotFoundException {
-        return new BufferedReader(new InputStreamReader(new BOMInputStream(new FileInputStream(file))));
+    protected BufferedReader newReader(Blob blob) throws IOException {
+        return new BufferedReader(new InputStreamReader(new BOMInputStream(blob.getStream())));
     }
 
     protected void doImport(CSVParser parser) {
-        log.info(String.format("Importing CSV file: %s", csvFileName));
+        log.info(String.format("Importing CSV file: %s", getBlob().getFilename()));
         Map<String, Integer> header = parser.getHeaderMap();
         if (header == null) {
             logError(0, "No header line, empty file?", LABEL_CSV_IMPORTER_EMPTY_FILE);
@@ -356,7 +352,7 @@ public class CSVImporterWork extends TransientStoreWork {
             commitOrRollbackTransaction();
             startTransaction();
         }
-        log.info(String.format("Done importing CSV file: %s", csvFileName));
+        log.info(String.format("Done importing CSV file: %s", getBlob().getFilename()));
     }
 
     /**
@@ -609,7 +605,7 @@ public class CSVImporterWork extends TransientStoreWork {
         List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(getId(), Status.SKIPPED, Status.ERROR);
         ctx.put("importResult", importResult);
         ctx.put("skippedAndErrorImportLogs", skippedAndErrorImportLogs);
-        ctx.put("csvFilename", csvFileName);
+        ctx.put("csvFilename", getBlob().getFilename());
         ctx.put("startDate", DateFormat.getInstance().format(startDate));
         ctx.put("username", username);
 
@@ -621,7 +617,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
         StringList to = buildRecipientsList(email);
         Expression from = Scripting.newExpression("Env[\"mail.from\"]");
-        String subject = "CSV Import result of " + csvFileName;
+        String subject = "CSV Import result of " + getBlob().getFilename();
         String message = loadTemplate(TEMPLATE_IMPORT_RESULT);
 
         try {
@@ -635,11 +631,19 @@ public class CSVImporterWork extends TransientStoreWork {
             Framework.getLocalService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
-            log.error(String.format("Unable to notify user '%s' for import result of '%s': %s", username, csvFileName,
+            log.error(String.format("Unable to notify user '%s' for import result of '%s': %s", username,
+                    getBlob().getFilename(),
                     e.getMessage()));
             log.debug(e, e);
             throw ExceptionUtils.runtimeException(e);
         }
+    }
+
+    /**
+     * @since 9.1
+     */
+    private Blob getBlob() {
+        return getStore().getBlobs(id).get(0);
     }
 
     protected String getDocumentUrl(DocumentModel doc) {

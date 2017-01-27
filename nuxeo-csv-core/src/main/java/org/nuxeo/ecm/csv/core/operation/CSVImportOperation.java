@@ -57,9 +57,8 @@ public class CSVImportOperation {
         CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(mSendReport)
                                                                      .importMode(importMode)
                                                                      .build();
-
         CSVImporter csvImporter = Framework.getService(CSVImporter.class);
-        return csvImporter.launchImport(mSession, mPath, blob.getFile(), blob.getFilename(), options);
+        return csvImporter.launchImport(mSession, mPath, blob, options);
     }
 
 }

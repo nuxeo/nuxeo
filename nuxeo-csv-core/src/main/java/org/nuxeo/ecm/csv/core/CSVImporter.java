@@ -19,11 +19,12 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
-import org.nuxeo.ecm.core.api.CoreSession;
-
 import java.io.File;
 import java.util.List;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -31,8 +32,14 @@ import java.util.List;
  */
 public interface CSVImporter {
 
+    @Deprecated
     String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
             CSVImporterOptions options);
+
+    /**
+     * @since 9.1
+     */
+    String launchImport(CoreSession session, String parentPath, Blob blob, CSVImporterOptions options);
 
     CSVImportStatus getImportStatus(String id);
 

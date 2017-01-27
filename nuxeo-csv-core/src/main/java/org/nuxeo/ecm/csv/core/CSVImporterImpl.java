@@ -19,24 +19,43 @@
 
 package org.nuxeo.ecm.csv.core;
 
-import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
-import org.nuxeo.ecm.core.api.CoreSession;
-
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
 
 /**
  * @since 5.7
  */
 public class CSVImporterImpl implements CSVImporter {
 
+    private static final Log log = LogFactory.getLog(CSVImporterImpl.class);
+
     @Override
+    @Deprecated
     public String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
             CSVImporterOptions options) {
-        return new CSVImporterWork(session.getRepositoryName(), parentPath, session.getPrincipal().getName(), csvFile,
-                csvFileName, options).launch();
+        try {
+            return new CSVImporterWork(session.getRepositoryName(), parentPath, session.getPrincipal().getName(),
+                    Blobs.createBlob(csvFile), options).launch();
+        } catch (IOException e) {
+            log.error("Cannot launch csv import work.", e);
+            return "";
+        }
+    }
+
+    @Override
+    public String launchImport(CoreSession session, String parentPath, Blob blob, CSVImporterOptions options) {
+        return new CSVImporterWork(session.getRepositoryName(), parentPath, session.getPrincipal().getName(), blob,
+                options).launch();
     }
 
     @Override
