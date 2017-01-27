@@ -94,10 +94,13 @@ public class RunOperationOnListInNewTransaction {
             TransactionHelper.startTransaction();
             boolean completedAbruptly = true;
             try {
-                OperationContext subctx = new OperationContext(session, vars);
-                subctx.setInput(ctx.getInput());
-                subctx.put(itemName, value);
-                service.run(subctx, chainId);
+                OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
+                subctx.push(itemName, value);
+                try {
+                    service.run(subctx, chainId);
+                } finally {
+                    subctx.pop(itemName);
+                }
                 completedAbruptly = false;
             } finally {
                 if (completedAbruptly) {

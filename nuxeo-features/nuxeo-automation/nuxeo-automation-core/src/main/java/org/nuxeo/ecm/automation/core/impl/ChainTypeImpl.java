@@ -74,12 +74,6 @@ public class ChainTypeImpl implements OperationType {
      */
     protected OperationChainContribution contribution;
 
-
-    /**
-     * A method of operation type
-     */
-    protected InvokableMethod method;
-
     public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution) {
         this.service = service;
         this.contribution = contribution;
@@ -95,7 +89,7 @@ public class ChainTypeImpl implements OperationType {
     }
 
     @Override
-    public Object newInstance(OperationContext ctx, Map<String, ?> args) throws OperationException,
+    public Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException,
             InvalidChainException {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();

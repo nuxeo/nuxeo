@@ -95,6 +95,7 @@ public class Scripting {
         Map<String, Object> map = new HashMap<>(ctx);
         map.put("CurrentDate", new DateWrapper());
         map.put("Context", ctx);
+        map.put(Constants.VAR_RUNTIME_CHAIN, ctx);
         if (ctx.get(Constants.VAR_WORKFLOW) != null) {
             map.put(Constants.VAR_WORKFLOW, ctx.get(Constants.VAR_WORKFLOW));
         }

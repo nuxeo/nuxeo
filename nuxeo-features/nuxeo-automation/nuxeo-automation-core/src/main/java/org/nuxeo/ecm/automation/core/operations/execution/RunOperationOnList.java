@@ -108,12 +108,16 @@ public class RunOperationOnList {
             throw new UnsupportedOperationException(ctx.get(listName).getClass() + " is not a Collection");
         }
         for (Object value : list) {
-            subctx.put(itemName, value);
+            subctx.push(itemName, value);
             // Running chain/operation
-            if (newTx) {
-                service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
-            } else {
-                service.run(subctx, chainId, chainParameters);
+            try {
+                if (newTx) {
+                    service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
+                } else {
+                    service.run(subctx, chainId, chainParameters);
+                }
+            } finally {
+                subctx.pop(itemName);
             }
         }
 

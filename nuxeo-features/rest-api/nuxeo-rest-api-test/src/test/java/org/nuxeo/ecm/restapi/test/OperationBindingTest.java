@@ -31,7 +31,6 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
@@ -97,7 +96,7 @@ public class OperationBindingTest extends BaseTest {
         Trace trace = factory.getTrace("testOp");
         assertEquals(1, trace.getCalls().size());
 
-        Map<?, ?> parameters = (Map<?, ?>) trace.getCalls().get(0).getVariables().get(Constants.VAR_RUNTIME_CHAIN);
+        Map<?, ?> parameters = trace.getCalls().get(0).getVariables();
 
         assertEquals("1", parameters.get("one"));
         assertEquals(2, parameters.get("two"));

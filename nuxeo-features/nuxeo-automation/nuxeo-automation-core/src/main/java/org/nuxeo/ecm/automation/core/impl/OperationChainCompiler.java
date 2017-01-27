@@ -16,95 +16,44 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.ExitException;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.scripting.Expression;
 
 public class OperationChainCompiler {
 
     protected final AutomationService service;
 
-    protected final Map<Key, CompiledChainImpl> cache = new ConcurrentHashMap<>();
+    protected final Map<Connector, OperationMethod> cache = new ConcurrentHashMap<>();
 
     protected OperationChainCompiler(AutomationService service) {
         this.service = service;
     }
 
-    protected CompiledChain compile(ChainTypeImpl typeof, Class<?> typein) throws OperationException {
-        Key key = new Key(typeof, typein);
-        if (!cache.containsKey(key)) {
-            cache.put(key, compile(key));
+    public CompiledChain compile(ChainTypeImpl typeof, Class<?> typein) throws OperationException {
+        Connector connector = new Connector(typeof, typein);
+        if (!cache.containsKey(connector)) {
+            cache.put(connector, connector.connect());
         }
-        return cache.get(key);
+        return new CompiledChainImpl(typeof, typein, cache.get(connector));
     }
 
-    protected CompiledChainImpl compile(Key key) throws OperationException {
-        OperationMethod head = null;
-        OperationMethod prev = null;
-        for (OperationParameters params : key.typeof.chain.getOperations()) {
-            OperationMethod next = new OperationMethod(service.getOperation(params.id()), params.map(), prev);
-            if (prev != null) {
-                prev.next = next;
-            }
-            if (next.prev == null) {
-                head = next;
-            }
-            prev = next;
-        }
-        initializePath(head, key.typein);
-        return new CompiledChainImpl(key, head);
-    }
+    protected class Connector {
 
-    /**
-     * Compute the best matching path to perform the chain of operations. The path is computed using a backtracking
-     * algorithm.
-     *
-     * @throws InvalidChainException
-     */
-    protected void initializePath(OperationMethod element, Class<?> in) throws InvalidChainException {
-        InvokableMethod[] methods = element.typeof.getMethodsMatchingInput(in);
-        if (methods == null) {
-            throw new InvalidChainException(
-                    "Cannot find any valid path in operation chain - no method found for operation '"
-                            + element.typeof.getId() + "' and for first input type '" + in.getName() + "'");
-        }
-        if (element.next == null) {
-            element.method = methods[0];
-            return;
-        }
-        for (InvokableMethod m : methods) {
-            Class<?> nextIn = m.getOutputType();
-            if (nextIn == Void.TYPE || nextIn.equals(Object.class)) {
-                nextIn = in; // preserve last input
-            }
-            try {
-                initializePath(element.next, nextIn);
-                element.method = m;
-                return;
-            } catch (InvalidChainException cause) {
-                ;
-            }
-        }
-        throw new InvalidChainException(
-                "Cannot find any valid path in operation chain - no method found for operation '"
-                        + element.typeof.getId() + "' and for first input type '" + in.getName() + "'");
-    }
-
-    protected class Key {
         protected final ChainTypeImpl typeof;
         protected final Class<?> typein;
         protected final int hashcode;
 
-        protected Key(ChainTypeImpl typeof, Class<?> typein) {
+        protected Connector(ChainTypeImpl typeof, Class<?> typein) {
             this.typeof = typeof;
             this.typein = typein;
             hashcode = hashcode(typeof, typein);
@@ -131,25 +80,36 @@ public class OperationChainCompiler {
             if (obj == null) {
                 return false;
             }
-            if (!(obj instanceof Key)) {
+            if (!(obj instanceof Connector)) {
                 return false;
             }
-            Key other = (Key) obj;
-            if (!typein.equals(other.typein)) {
-                return false;
+            Connector other = (Connector) obj;
+            return hashcode == other.hashcode;
+        }
+
+        protected OperationMethod connect() throws OperationException {
+            OperationMethod head = null;
+            OperationMethod prev = null;
+            for (OperationParameters params : typeof.chain.getOperations()) {
+                OperationMethod next = new OperationMethod(params, prev);
+                if (prev != null) {
+                    prev.next = next;
+                }
+                if (next.prev == null) {
+                    head = next;
+                }
+                prev = next;
             }
-            if (!typeof.equals(other.typeof)) {
-                return false;
-            }
-            return true;
+            head.solve(typein);
+            return head;
         }
     }
 
-    protected static class OperationMethod {
+    protected class OperationMethod {
 
         protected final OperationType typeof;
 
-        protected final Map<String, Object> args = new HashMap<>();
+        protected final OperationParameters params;
 
         protected InvokableMethod method;
 
@@ -157,15 +117,18 @@ public class OperationChainCompiler {
 
         protected OperationMethod next;
 
-        protected OperationMethod(OperationType typeof, Map<String, ?> args, OperationMethod prev) {
-            this.typeof = typeof;
-            this.args.putAll(args);
+        protected OperationMethod(OperationParameters params, OperationMethod prev) throws OperationNotFoundException {
+            typeof = service.getOperation(params.id());
+            this.params = params;
             this.prev = prev;
         }
 
         protected Object invoke(OperationContext context) throws OperationException {
-            context.getCallback().onOperationEnter(context, typeof, method, args);
-            Object output = method.invoke(context, args);
+            context.getCallback().onOperationEnter(context, typeof, method, params.map());
+            Object output = method.invoke(context, params.map());
+            if (output instanceof Expression) {
+                output = ((Expression) output).eval(context);
+            }
             context.getCallback().onOperationExit(output);
             context.setInput(output);
             if (next != null) {
@@ -173,38 +136,80 @@ public class OperationChainCompiler {
             }
             return output;
         }
-    }
 
+        /**
+         * Compute the best matching path to perform the chain of operations. The path is computed using a backtracking
+         * algorithm.
+         *
+         * @throws InvalidChainException
+         */
+        void solve(Class<?> in) throws InvalidChainException {
+            InvokableMethod[] methods = typeof.getMethodsMatchingInput(in);
+            if (methods == null) {
+                throw new InvalidChainException(
+                        "Cannot find any valid path in operation chain - no method found for operation '"
+                                + typeof.getId() + "' and for first input type '" + in.getName() + "'");
+            }
+            if (next == null) {
+                method = methods[0];
+                return;
+            }
+            for (InvokableMethod m : methods) {
+                Class<?> nextIn = m.getOutputType();
+                if (nextIn == Void.TYPE || nextIn.equals(Object.class)) {
+                    nextIn = in; // preserve last input
+                }
+                try {
+                    next.solve(nextIn);
+                    method = m;
+                    return;
+                } catch (InvalidChainException cause) {
+                    ;
+                }
+            }
+            throw new InvalidChainException(
+                    "Cannot find any valid path in operation chain - no method found for operation '" + typeof.getId()
+                            + "' and for first input type '" + in.getName() + "'");
+        }
+    }
 
     protected class CompiledChainImpl implements CompiledChain {
 
-        protected final Key key;
+        protected final ChainTypeImpl typeof;
+
+        protected final Class<?> typein;
 
         protected final OperationMethod head;
 
-        protected CompiledChainImpl(Key key, OperationMethod head) {
-            this.key = key;
+        protected CompiledChainImpl(ChainTypeImpl typeof, Class<?> typein, OperationMethod head) {
+            this.typeof = typeof;
+            this.typein = typein;
             this.head = head;
         }
 
         @Override
         public Object invoke(OperationContext ctx) throws OperationException {
-            ctx.getCallback().onChainEnter(key.typeof);
+            ctx.push(typeof.getChainParameters());
             try {
-                return head.invoke(ctx);
-            } catch (ExitException e) {
-                if (e.isRollback()) {
-                    ctx.setRollback();
+                ctx.getCallback().onChainEnter(typeof);
+                try {
+                    return head.invoke(ctx);
+                } catch (ExitException e) {
+                    if (e.isRollback()) {
+                        ctx.setRollback();
+                    }
+                    return ctx.getInput();
+                } finally {
+                    ctx.getCallback().onChainExit();
                 }
-                return ctx.getInput();
             } finally {
-                ctx.getCallback().onChainExit();
+                ctx.pop(typeof.getChainParameters());
             }
         }
 
         @Override
         public String toString() {
-            return "CompiledChainImpl [op=" + key.typeof + "," + "input=" + key.typein + "]";
+            return "CompiledChainImpl [op=" + typeof + "," + "input=" + typein + "]";
         }
 
     }

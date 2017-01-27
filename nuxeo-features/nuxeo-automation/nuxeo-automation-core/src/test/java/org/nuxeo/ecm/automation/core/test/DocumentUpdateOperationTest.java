@@ -89,13 +89,13 @@ public class DocumentUpdateOperationTest {
     @Test
     public void shouldUpdateProperties() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(session.getRootDocument());
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(session.getRootDocument());
 
-        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
-        assertNotNull(doc);
-        assertEquals("Test", doc.getTitle());
-        assertNotNull(doc.getPropertyValue("dc:issued"));
-        // System.out.println(doc.getPropertyValue("dc:issued"));
+            DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+            assertNotNull(doc);
+            assertEquals("Test", doc.getTitle());
+            assertNotNull(doc.getPropertyValue("dc:issued"));
+        }
     }
 }
