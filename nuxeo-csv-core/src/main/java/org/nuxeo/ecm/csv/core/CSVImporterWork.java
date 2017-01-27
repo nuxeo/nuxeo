@@ -160,7 +160,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
     public static final String CONTENT_FILED_TYPE_NAME = "content";
 
-    private static final long COMPUTE_TOTAL_THRESHOLD_KB = 100;
+    private static final long COMPUTE_TOTAL_THRESHOLD_KB = 1000;
 
     /**
      * CSV headers that won't be checked if the field exists on the document type.
@@ -186,6 +186,8 @@ public class CSVImporterWork extends TransientStoreWork {
     protected boolean computeTotal = false;
 
     protected long total = -1L;
+
+    protected long docsCreatedCount = 0;
 
     public CSVImporterWork(String id) {
         super(id);
@@ -303,7 +305,6 @@ public class CSVImporterWork extends TransientStoreWork {
 
         try {
             int batchSize = options.getBatchSize();
-            long docsCreatedCount = 0;
             Iterable<CSVRecord> it = parser;
             if (computeTotal) {
                 try {
@@ -584,7 +585,8 @@ public class CSVImporterWork extends TransientStoreWork {
         String lineMessage = String.format("Line %d", lineNumber);
         String errorMessage = String.format(message, (Object[]) params);
         log.error(String.format("%s: %s", lineMessage, errorMessage));
-        getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.ERROR, total, total));
+        getStore().putParameter(id, "status",
+                new CSVImportStatus(CSVImportStatus.State.ERROR, docsCreatedCount, docsCreatedCount));
     }
 
     protected void sendMail() {
