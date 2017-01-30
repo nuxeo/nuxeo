@@ -17,11 +17,11 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
+public class TestVersioningRemovalPolicy extends TXSQLRepositoryTestCase {
 
     @Before
     public void setUp() throws Exception {
@@ -33,6 +33,19 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         closeSession();
         super.tearDown();
+    }
+
+    @Override
+    public void waitForAsyncCompletion() {
+        nextTransaction();
+        super.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected DocumentModelList getVersion() {
@@ -79,8 +92,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(doc.getRef());
         session.save();
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         // version should not be found
         vs = getVersion();
@@ -100,7 +112,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(doc.getRef());
         session.save();
         waitForAsyncCompletion();
-        session.save();
+
         DocumentModelList vs = getVersion();
         assertEquals(1, vs.size()); // 1 version remains due to proxu
 
@@ -108,7 +120,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(proxy.getRef());
         session.save();
         waitForAsyncCompletion();
-        session.save();
+
         vs = getVersion();
         assertEquals(0, vs.size()); // version deleted through last proxy
     }
@@ -223,7 +235,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(proxy.getRef());
         session.save();
         waitForAsyncCompletion();
-        session.save();
+
         DocumentModelList vs = getVersion();
         assertEquals(1, vs.size()); // version not deleted
     }
@@ -260,8 +272,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(doc.getRef());
         session.save();
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         vs = getVersion();
         assertEquals(1, vs.size());
@@ -316,8 +327,7 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
         session.removeDocument(note.getRef());
         session.save();
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save();
+        waitForAsyncCompletion();
 
         vs = getVersion();
         assertEquals(1, vs.size());
