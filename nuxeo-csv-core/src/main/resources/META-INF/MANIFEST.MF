@@ -6,7 +6,6 @@ Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.nuxeo.ecm.csv.core;singleton=true
 Nuxeo-Component: OSGI-INF/csv-workmanager-contrib.xml,
  OSGI-INF/csv-importer-service.xml,
- OSGI-INF/csv-marshallers-contrib.xml,
  OSGI-INF/csv-operation-contrib.xml
 Import-Package: org.nuxeo.ecm.core,
  org.nuxeo.common,
