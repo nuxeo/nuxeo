@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
@@ -28,6 +30,8 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 public abstract class AbstractS3BinaryTest<T extends S3BinaryManager> extends AbstractTestCloudBinaryManager<T> {
+
+    protected static Map<String, String> PROPERTIES = Collections.emptyMap();
 
     @Override
     protected Set<String> listObjects() {

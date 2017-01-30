@@ -77,10 +77,11 @@ See http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.htm
 
 # Enable CloudFront Direct Download
 
-First, create a CloudFront distribution domain bound to your S3 repository. Doing this allow anyone to access your objects, so we have to enable the `restriction viewer access`, then each generated URL must be signed to allow access.
+Please, read carefully the [CloudFront documentation](https://aws.amazon.com/fr/documentation/cloudfront/) to understand how you bind a CloudFront distribution to a S3 bucket.
+After you created a CloudFront distribution domain bound to your S3 repository. Accessing your objects is not restricted per default. You have to enable the `restriction viewer access` (Look at [Serving Private Content throught CloudFront](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html)), then each distribution URL must be signed to access the target object.
 
 ## Mandatory Parameters
-All S3 parameters (except `nuxeo.core.binarymanager`) are still mandatory; and will be used during the Blob storing process. We need some other parameters:
+S3 parameters (except `nuxeo.core.binarymanager`) are mandatory, additionally CloudFront requires some new ones:
 
  - `nuxeo.core.binarymanager=org.nuxeo.ecm.core.storage.sql.CloudFrontBinaryManager`
  - `nuxeo.s3storage.cloudfront.privKey`: the absolute path of the private key file (`.pem` or `.der`). Read: [Creating CloudFront Key Pairs for Your Trusted Signers](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-creating-cloudfront-key-pairs) 

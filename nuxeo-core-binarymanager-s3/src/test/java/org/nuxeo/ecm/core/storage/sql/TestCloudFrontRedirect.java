@@ -30,9 +30,7 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPE
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,12 +44,10 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 /**
  * Test ignored as it requires lots of file and tokens. Manually executed
  */
-@Ignore
+@Ignore("It requires lots of file and tokens. Only manually executed")
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 public class TestCloudFrontRedirect extends AbstractS3BinaryTest<CloudFrontBinaryManager> {
-    protected static Map<String, String> PROPERTIES = Collections.emptyMap();
-
     @BeforeClass
     public static void beforeClass() {
         PROPERTIES = new HashMap<>();

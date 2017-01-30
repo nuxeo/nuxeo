@@ -41,6 +41,9 @@ import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner.Protocol;
 import com.amazonaws.util.IOUtils;
 
+/**
+ * @since 9.1
+ */
 public class CloudFrontBinaryManager extends S3BinaryManager {
 
     private static final String BASE_PROP = "cloudfront.";
@@ -53,7 +56,7 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
 
     public static final String PROTOCOL_PROPERTY = BASE_PROP + "protocol";
 
-    public static final String ENABLE_CF_ENCODING_FIX = "org.nuxeo.s3storage.cloudfront.fix.encoding";
+    public static final String ENABLE_CF_ENCODING_FIX = "nuxeo.s3storage.cloudfront.fix.encoding";
 
     protected String distributionDomain;
 

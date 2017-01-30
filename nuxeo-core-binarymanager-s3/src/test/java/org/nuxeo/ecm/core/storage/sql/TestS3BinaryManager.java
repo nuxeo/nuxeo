@@ -69,8 +69,6 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 @Features(RuntimeFeature.class)
 public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
-    protected static Map<String, String> PROPERTIES = Collections.emptyMap();
-
     @BeforeClass
     public static void beforeClass() {
         PROPERTIES = new HashMap<>();
