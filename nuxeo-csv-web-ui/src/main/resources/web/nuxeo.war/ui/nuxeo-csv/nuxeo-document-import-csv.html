@@ -359,6 +359,7 @@ limitations under the License.
                                  label="[[i18n('documentImportForm.location')]]"
                                  value="{{targetPath}}"
                                  parent="{{suggesterParent}}"
+                                 enrichers="permissions, subtypes"
                                  children="{{suggesterChildren}}"
                                  disabled
                                  always-float-label></nuxeo-path-suggestion>
@@ -501,9 +502,6 @@ limitations under the License.
           type: String,
           value: 'csv'
         },
-        parent: {
-          type: Object
-        },
         hasFile: {
           type: Boolean,
           value: false
@@ -594,6 +592,14 @@ limitations under the License.
         }
       },
 
+      _parentValidated: function() {
+        if (this.canCreate) {
+          this.set('targetLocationError', '');
+        } else {
+          this.set('targetLocationError', this.i18n('documentImport.error.cannotImport'));
+        }
+      },
+
       _removeBlob: function(e) {
         this.$.csvImportRes.path = 'upload/' + this.batchId + '/' + e.model.file.index;
         this.$.csvImportRes.remove().then(function() {
@@ -635,13 +641,6 @@ limitations under the License.
       _fileChanged: function(e) {
         this.uploadFiles(e.target.files);
         this.hasFile = true;
-      },
-
-      _parentValidated: function() {
-        if (this.canCreate && this._importDocTypes && this._importDocTypes.length === 0) {
-          this.set('canCreate', false);
-          this.set('targetLocationError', this.i18n('documentImport.error.cannotImport'));
-        }
       },
 
       _visibleOnStage: function() {
@@ -693,44 +692,44 @@ limitations under the License.
         };
         this.$.csvImportRes.post().then(function(res) {
           this.stage = 'progress';
-          window.setTimeout(this._waitForProgress.bind(this), 1000, res);
+          window.setTimeout(this._waitForProgress.bind(this), 500, res);
         }.bind(this), this._handleError.bind(this));
       },
 
       _waitForProgress: function(importId) {
         this.$.cvsImportStatus.input = importId;
         this.$.cvsImportStatus.execute().then(function(res) {
-            var status = res.value;
-            this._total = status.totalNumberOfDocument;
+          var status = res.value;
+          this._total = status.totalNumberOfDocument;
+          if (this._total >= 0) {
+            this.$.importProgress.indeterminate = false;
+          }
+          if(status.state === 'ERROR') {
+            this._error = true;
+          } else if (status.state === 'RUNNING' || status.state === 'SCHEDULED') {
+            this._count = status.numberOfProcessedDocument;
             if (this._total >= 0) {
-              this.$.importProgress.indeterminate = false;
-            }
-            if(status.state === 'ERROR') {
-              this._error = true;
-            } else if (status.state === 'RUNNING' || status.state === 'SCHEDULED') {
-              this._count = status.numberOfProcessedDocument;
-              if (this._total >= 0) {
-                this.progressLabel = this.i18n('csv.import.progress.statusWithTotal', this._count, this._total);
-              } else {
-                this.progressLabel = this.i18n('csv.import.progress.statusWithoutTotal', this._count);
-              }
-              window.setTimeout(this._waitForProgress.bind(this), 200, importId);
-            } else if (status.state === 'COMPLETED') {
-              this._count = status.numberOfProcessedDocument;
-              if (this._count < 0) {
-                this._error = true;
-              } else {
-                this.$.cvsImportResultOp.input = importId;
-                this.$.cvsImportResultOp.execute().then(function(res) {
-                  this._importResult = res.value;
-                  this._hasResult = true;
-                }.bind(this));
-              }
+              this.progressLabel = this.i18n('csv.import.progress.statusWithTotal', this._count, this._total);
             } else {
-              // TODO handle unexpected state
+              this.progressLabel = this.i18n('csv.import.progress.statusWithoutTotal', this._count);
             }
+            window.setTimeout(this._waitForProgress.bind(this), 800, importId);
+          } else if (status.state === 'COMPLETED') {
+            this._count = status.numberOfProcessedDocument;
+            if (this._count < 0) {
+              this._error = true;
+            } else {
+              this.$.cvsImportResultOp.input = importId;
+              this.$.cvsImportResultOp.execute().then(function(res) {
+                this._importResult = res.value;
+                this._hasResult = true;
+              }.bind(this));
+            }
+          } else {
+            this._handleError({message: 'Error while processing: unknown status.'})
+          }
 
-          }.bind(this), this._handleError.bind(this))
+        }.bind(this), this._handleError.bind(this))
       }
 
     });
