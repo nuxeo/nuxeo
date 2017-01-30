@@ -445,7 +445,7 @@ limitations under the License.
         <div id="progress" class="layout flex step">
           <div hidden$="[[_hasResult]]">
             <div hidden$="[[_error]]">
-              <div class="name status">[[i18n('csv.import.progress.status', _count, _total)]]</div>
+              <div class="name status">[[progressLabel]]</div>
               <div class="status">
                 <paper-progress id="importProgress" value="[[_count]]" min="0" max="[[_total]]" class="blue" indeterminate>
                 </paper-progress>
@@ -469,7 +469,7 @@ limitations under the License.
                 <div class="count">[[_importResult.errorLineCount]] / [[_importResult.totalLineCount]]</div>
               </div>
             </div>
-            <div class="brief">[[i18n('csv.import.report.notify')]]</div>
+            <div class="brief" hidden$="[[!receiveEmailReport]]">[[i18n('csv.import.report.notify')]]</div>
           </div>
         </div>
 
@@ -557,6 +557,11 @@ limitations under the License.
         applyDcMeta: {
           type: Boolean,
           value: false
+        },
+
+        progressLabel: {
+          type: String,
+          value: ''
         }
       },
 
@@ -609,7 +614,6 @@ limitations under the License.
       },
 
       _observeFiles: function(changeRecord) {
-        console.log('_observeFiles');
         if (changeRecord) {
           if (changeRecord.path === 'files.splices' && changeRecord.value && changeRecord.value.indexSplices) {
             if (this.files && this.files.length > 0) {
@@ -657,6 +661,7 @@ limitations under the License.
         this._error = false;
         this.$.uploadFiles.value = '';
         this._hasResult = false;
+        this.progressLabel = '';
       },
 
       _handleError: function(error) {
@@ -695,8 +700,6 @@ limitations under the License.
       _waitForProgress: function(importId) {
         this.$.cvsImportStatus.input = importId;
         this.$.cvsImportStatus.execute().then(function(res) {
-            console.log('report');
-            console.log(res);
             var status = res.value;
             this._total = status.totalNumberOfDocument;
             if (this._total >= 0) {
@@ -706,6 +709,11 @@ limitations under the License.
               this._error = true;
             } else if (status.state === 'RUNNING' || status.state === 'SCHEDULED') {
               this._count = status.numberOfProcessedDocument;
+              if (this._total >= 0) {
+                this.progressLabel = this.i18n('csv.import.progress.statusWithTotal', this._count, this._total);
+              } else {
+                this.progressLabel = this.i18n('csv.import.progress.statusWithoutTotal', this._count);
+              }
               window.setTimeout(this._waitForProgress.bind(this), 200, importId);
             } else if (status.state === 'COMPLETED') {
               this._count = status.numberOfProcessedDocument;
