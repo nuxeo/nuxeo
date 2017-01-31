@@ -4841,6 +4841,11 @@
         <version>1.7.19</version>
       </dependency>
       <dependency>
+        <groupId>net.openhft</groupId>
+        <artifactId>chronicle-bytes</artifactId>
+        <version>1.7.24</version>
+      </dependency>
+      <dependency>
         <groupId>net.jodah</groupId>
         <artifactId>failsafe</artifactId>
         <version>1.0.1</version>
