@@ -804,7 +804,9 @@ public class DBSDocument implements Document {
                     // array
                     Serializable object = state.get(name);
                     Object[] array;
-                    if (object instanceof Object[]) {
+                    if (object == null) {
+                        array = null;
+                    } else if (object instanceof Object[]) {
                         array = (Object[]) object;
                     } else {
                         // data migration not done in database, return an array anyway

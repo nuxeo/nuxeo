@@ -151,7 +151,7 @@ public class ScalarProperty extends AbstractProperty {
     public String toString() {
         return getClass().getSimpleName() + '(' + getPath().substring(1)
                 + (isDirty() ? "*" : "") + "="
-                + (value == null ? "[null]" : value) + ')';
+                + String.valueOf(value) + ')';
     }
 
 }

@@ -1,4 +1,3 @@
-package org.nuxeo.ecm.core.storage.mem;
 /*
  * Copyright (c) 2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -10,9 +9,12 @@ package org.nuxeo.ecm.core.storage.mem;
  * Contributors:
  *     Florent Guillaume
  */
+package org.nuxeo.ecm.core.storage.mem;
+
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,6 +49,7 @@ public class TestMemRepositoryMigration extends MemRepositoryTestCase {
         doc = session.getDocument(doc.getRef());
         assertEquals(Arrays.asList("a"), Arrays.asList((Object[]) doc.getPropertyValue("dc:subjects")));
         assertEquals("aa", doc.getPropertyValue("dc:title"));
+        assertEquals(Collections.emptyList(), Arrays.asList((Object[]) doc.getPropertyValue("dc:contributors")));
     }
 
     // change data in the database to make it like we just migrated the fields from different types
