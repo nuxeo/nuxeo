@@ -611,6 +611,12 @@
         <artifactId>nuxeo-csv-jsf</artifactId>
         <version>${nuxeo.csv.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.csv</groupId>
+        <artifactId>nuxeo-csv-web-ui</artifactId>
+        <version>${nuxeo.csv.version}</version>
+      </dependency>
+
 
       <!-- Tree snapshot -->
       <dependency>
