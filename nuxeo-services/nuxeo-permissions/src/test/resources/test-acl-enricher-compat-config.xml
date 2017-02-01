@@ -1,0 +1,7 @@
+<component name="org.nuxeo.ecm.permissions.operations.properties.test" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.permissions.acl.enricher.compatibility">true</property>
+  </extension>
+
+</component>

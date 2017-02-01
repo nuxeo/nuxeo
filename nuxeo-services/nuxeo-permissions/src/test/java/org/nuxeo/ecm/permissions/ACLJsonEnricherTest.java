@@ -51,6 +51,11 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(FeaturesRunner.class)
 @Features(SQLDirectoryFeature.class)
@@ -78,10 +83,7 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         Map<String, Serializable> contextData = new HashMap<>();
         contextData.put(Constants.NOTIFY_KEY, false);
         contextData.put(Constants.COMMENT_KEY, "sample comment");
-        ace1 = ACE.builder("Administrator", "Read")
-                .creator("Administrator")
-                .contextData(contextData)
-                .build();
+        ace1 = ACE.builder("Administrator", "Read").creator("Administrator").contextData(contextData).build();
         ace2 = new ACE("joe", "Read");
         acp.addACE(ACL.LOCAL_ACL, ace1);
         acp.addACE(ACL.LOCAL_ACL, ace2);
@@ -105,6 +107,7 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json.properties(1);
         json = json.has("acls").length(1).has(0);
         json.has("name").isEquals("local");
+        json.hasNot("ace");
         json.has("aces").isArray();
         json = json.has("aces").get(0);
         json.has("username").isText();
@@ -114,8 +117,7 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     @Test
     public void testUsersFetching() throws IOException {
         DocumentModel root = session.getDocument(new PathRef("/"));
-        JsonAssert json = jsonAssert(
-                root,
+        JsonAssert json = jsonAssert(root,
                 CtxBuilder.enrichDoc("acls")
                           .fetch("acls", "username")
                           .fetch("acls", "creator")
@@ -145,7 +147,6 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json.has("comment").isEquals("sample comment");
     }
 
-
     @Test
     public void testExtendedFetchingAsRegularUser() throws Exception {
         CoreSession systemSession = session;
@@ -162,4 +163,22 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         }
     }
 
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.permissions:test-acl-enricher-compat-config.xml")
+    public void testCompatibility() throws Exception {
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        JsonAssert json = jsonAssert(root, CtxBuilder.enrichDoc("acls").get());
+        json = json.has("contextParameters").isObject();
+        json.properties(1);
+        json = json.has("acls").length(1).has(0);
+        json.has("name").isEquals("local");
+        json.has("aces").isArray();
+        JsonAssert aces = json.has("ace").get(0);
+        aces.has("username").isText();
+        aces.has("creator").isNull();
+        json.has("ace").isArray();
+        JsonAssert ace = json.has("ace").get(0);
+        ace.has("username").isText();
+        ace.has("creator").isNull();
+    }
 }
