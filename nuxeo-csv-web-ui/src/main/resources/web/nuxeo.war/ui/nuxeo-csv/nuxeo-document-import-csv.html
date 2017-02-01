@@ -419,7 +419,7 @@ limitations under the License.
         <div class="options">
           <div class="layout vertical">
             <paper-toggle-button checked="{{receiveEmailReport}}">[[i18n('csv.import.option.emailReport')]]</paper-toggle-button>
-            <paper-toggle-button checked="{{applyDcMeta}}">[[i18n('csv.import.option.dcMeta')]]</paper-toggle-button>
+            <paper-toggle-button checked="{{enableImportMode}}">[[i18n('csv.import.option.useImportMode')]]</paper-toggle-button>
           </div>
         </div>
 
@@ -552,7 +552,7 @@ limitations under the License.
           type: Boolean,
           value: false
         },
-        applyDcMeta: {
+        enableImportMode: {
           type: Boolean,
           value: false
         },
@@ -687,7 +687,7 @@ limitations under the License.
           params: {
             path: this.targetPath,
             sendReport: this.receiveEmailReport,
-            documentMode: this.applyDcMeta
+            documentMode: this.enableImportMode
           }
         };
         this.$.csvImportRes.post().then(function(res) {
