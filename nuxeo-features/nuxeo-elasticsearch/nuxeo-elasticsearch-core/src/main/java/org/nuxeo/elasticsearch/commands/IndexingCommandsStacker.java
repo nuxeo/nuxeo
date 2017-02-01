@@ -83,7 +83,7 @@ public abstract class IndexingCommandsStacker {
             return sync;
         }
         // 2. look at document context
-        sync = (Boolean) doc.getContextData().get(ElasticSearchConstants.ES_SYNC_INDEXING_FLAG);
+        sync = (Boolean) doc.getContextData(ElasticSearchConstants.ES_SYNC_INDEXING_FLAG);
         if (sync != null) {
             return sync;
         }

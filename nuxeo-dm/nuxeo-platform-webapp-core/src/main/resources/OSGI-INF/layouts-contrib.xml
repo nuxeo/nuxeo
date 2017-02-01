@@ -482,7 +482,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>contextData['request/bulk_collections']</field>
+        <field>contextData['bulk_collections']</field>
       </fields>
       <properties widgetMode="any">
         <property name="minChars">0</property>
@@ -502,7 +502,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>contextData['request/bulk_tags']</field>
+        <field>contextData['bulk_tags']</field>
       </fields>
       <properties widgetMode="edit">
         <property name="canSelectNewTag">true</property>

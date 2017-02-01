@@ -36,7 +36,7 @@
             &lt;label mode="any"&gt;&lt;/label&gt;
             &lt;/labels&gt;
             &lt;fields&gt;
-            &lt;field&gt;contextData['request/lifeCycleTransition']&lt;/field&gt;
+            &lt;field&gt;contextData['lifeCycleTransition']&lt;/field&gt;
             &lt;/fields&gt;
             &lt;properties widgetMode="edit"&gt;
             &lt;property
@@ -238,7 +238,7 @@
         <label mode="any">label.life.cycle.changeFor</label>
       </labels>
       <fields>
-        <field>contextData['request/lifeCycleTransition']</field>
+        <field>contextData['lifeCycleTransition']</field>
       </fields>
       <widgetModes>
         <mode value="create">hidden</mode>

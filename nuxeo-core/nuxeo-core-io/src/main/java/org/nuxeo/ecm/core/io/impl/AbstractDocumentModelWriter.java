@@ -32,7 +32,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.nuxeo.common.collections.PrimitiveArrays;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -141,7 +140,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
         if (doc.hasSchema("uid")) {
-            doc.putContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING, true);
+            doc.putContextData(VersioningService.SKIP_VERSIONING, true);
         }
 
         beforeCreateDocument(doc);

@@ -89,7 +89,7 @@ public class ShallowDocumentModel implements DocumentModel {
         isVersion = doc.isVersion();
         isProxy = doc.isProxy();
         isImmutable = doc.isImmutable();
-        contextData = doc.getContextData();
+        contextData = new ScopedMap(doc.getContextData());
         facets = doc.getFacets();
         if (doc.isLifeCycleLoaded()) {
             lifecycleState = doc.getCurrentLifeCycleState();
@@ -99,8 +99,8 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     public ShallowDocumentModel(String id, String repoName, String name, Path path, String type, boolean isFolder,
-            boolean isVersion, boolean isProxy, boolean isImmutable, ScopedMap contextData, Set<String> facets,
-            String lifecycleState) {
+            boolean isVersion, boolean isProxy, boolean isImmutable, Map<String, Serializable> contextData,
+            Set<String> facets, String lifecycleState) {
         this.id = id;
         this.repoName = repoName;
         this.name = name;
@@ -110,7 +110,7 @@ public class ShallowDocumentModel implements DocumentModel {
         this.isVersion = isVersion;
         this.isProxy = isProxy;
         this.isImmutable = isImmutable;
-        this.contextData = contextData;
+        this.contextData = new ScopedMap(contextData);
         this.facets = facets;
         this.lifecycleState = lifecycleState;
     }
@@ -228,10 +228,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public Serializable getContextData(ScopeType scope, String key) {
-        if (contextData == null) {
-            return null;
-        }
-        return contextData.getScopedValue(scope, key);
+        return getContextData(key);
     }
 
     @Override
@@ -522,7 +519,7 @@ public class ShallowDocumentModel implements DocumentModel {
         if (contextData == null) {
             return null;
         }
-        return contextData.getScopedValue(key);
+        return contextData.get(key);
     }
 
     @Override

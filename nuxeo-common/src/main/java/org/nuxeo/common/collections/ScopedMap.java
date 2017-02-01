@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -35,14 +35,24 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * Used to store context data and invalidate some data given its scope. Implements Map for easier use from interface.
  *
+ * @deprecated since 9.1, use a regular {@link HashMap} instead
  * @see ScopeType
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
+@Deprecated
 public class ScopedMap extends HashMap<String, Serializable> {
 
     private static final Log log = LogFactory.getLog(ScopedMap.class);
 
-    private static final long serialVersionUID = -616031057117818344L;
+    private static final long serialVersionUID = 1L;
+
+    public ScopedMap() {
+        super();
+    }
+
+    public ScopedMap(Map<String, Serializable> map) {
+        super(map);
+    }
 
     /**
      * Gets value for given scope and given key.

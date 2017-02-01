@@ -53,7 +53,6 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -2495,8 +2494,7 @@ public class TestSQLRepositoryAPI {
 
         // version the note
         note.setProperty("dublincore", "title", "blah");
-        ScopedMap context = note.getContextData();
-        context.putScopedValue(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        note.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         session.saveDocument(note);
         session.save();
 
@@ -2532,8 +2530,7 @@ public class TestSQLRepositoryAPI {
 
         // version the note
         note.setProperty("dublincore", "title", "blah");
-        ScopedMap context = note.getContextData();
-        context.putScopedValue(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        note.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         session.saveDocument(note);
         session.save();
 

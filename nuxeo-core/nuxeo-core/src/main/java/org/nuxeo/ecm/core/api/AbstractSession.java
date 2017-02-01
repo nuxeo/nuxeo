@@ -57,8 +57,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
@@ -217,11 +215,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     protected Map<String, Serializable> getContextMapEventInfo(DocumentModel doc) {
         Map<String, Serializable> options = new HashMap<>();
         if (doc != null) {
-            ScopedMap ctxData = doc.getContextData();
-            if (ctxData != null) {
-                options.putAll(ctxData.getDefaultScopeValues());
-                options.putAll(ctxData.getScopeValues(ScopeType.REQUEST));
-            }
+            options.putAll(doc.getContextData());
         }
         return options;
     }
@@ -709,7 +703,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // init document with data from doc model
         docModel = writeModel(doc, docModel);
 
-        if (!Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING))) {
+        if (!Boolean.TRUE.equals(docModel.getContextData(VersioningService.SKIP_VERSIONING))) {
             // during remote publishing we want to skip versioning
             // to avoid overwriting the version number
             getVersioningService().doPostCreate(doc, options);
@@ -1955,7 +1949,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param options an option map than can be used by callers to pass additional params
      * @since 5.9.3
      */
-    private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options)
+    private boolean followTransition(DocumentRef docRef, String transition, Map<String, Serializable> options)
             throws LifeCycleException {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
@@ -1977,7 +1971,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
-        String comment = (String) options.getScopedValue("comment");
+        String comment = (String) options.get("comment");
         DocumentModel docModel = readModel(doc);
         notifyEvent(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT, docModel, eventOptions,
                 DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
@@ -1994,7 +1988,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public boolean followTransition(DocumentRef docRef, String transition) throws LifeCycleException {
-        return followTransition(docRef, transition, new ScopedMap());
+        return followTransition(docRef, transition, Collections.emptyMap());
     }
 
     @Override

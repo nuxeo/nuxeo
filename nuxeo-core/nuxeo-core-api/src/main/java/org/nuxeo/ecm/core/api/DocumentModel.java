@@ -647,14 +647,20 @@ public interface DocumentModel extends Serializable {
 
     /**
      * Gets the context data associated to this document.
+     * <p>
+     * NOTE since 9.1 the {@link ScopedMap} return type is deprecated, use {@code java.util.Map<String, Serializable>}
+     * instead
      *
-     * @return serializable map of context data.
+     * @return a map of context data
      */
     ScopedMap getContextData();
 
     /**
      * Gets the context data associated to this document for given scope and given key.
+     *
+     * @deprecated since 9.1, scope is unused, use {@link #getContextData(String)} instead
      */
+    @Deprecated
     Serializable getContextData(ScopeType scope, String key);
 
     /**
@@ -662,7 +668,10 @@ public interface DocumentModel extends Serializable {
      * <p>
      * Context data is like a request map set on the document model to pass additional information to components
      * interacting with the document model (events processing for instance).
+     *
+     * @deprecated since 9.1, scope is unused, use {@link #putContextData(String, Serializable)} instead
      */
+    @Deprecated
     void putContextData(ScopeType scope, String key, Serializable value);
 
     /**

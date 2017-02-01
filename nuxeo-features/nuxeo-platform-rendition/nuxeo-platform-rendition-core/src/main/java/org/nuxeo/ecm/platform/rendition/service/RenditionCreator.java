@@ -192,7 +192,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         }
 
         rendition.copyContent(sourceDocument);
-        rendition.getContextData().putScopedValue(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
+        rendition.putContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME,
                 sourceDocument.getCurrentLifeCycleState());
 
         rendition.addFacet(RENDITION_FACET);

@@ -44,7 +44,6 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -326,7 +325,7 @@ public class TagActionsBean implements Serializable {
     @SuppressWarnings("unchecked")
     @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
     public void addTagsOnEvent(List<DocumentModel> documents, DocumentModel docModel) {
-        List<String> tags = (List<String>) docModel.getContextData(ScopeType.REQUEST, "bulk_tags");
+        List<String> tags = (List<String>) docModel.getContextData("bulk_tags");
         if (tags != null && !tags.isEmpty()) {
             TagService tagService = Framework.getLocalService(TagService.class);
             String username = documentManager.getPrincipal().getName();
