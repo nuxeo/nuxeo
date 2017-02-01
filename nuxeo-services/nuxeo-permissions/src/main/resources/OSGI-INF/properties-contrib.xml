@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.permissions.properties" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <documentation>
+      This contribution is the default contribution for permissions properties.
+
+      Here are more details about some of them:
+      <ul>
+        <li>
+          <strong>nuxeo.permissions.acl.enricher.compatibility</strong>: if true, make the ACLJsonEnricher output compatible
+          with the Nuxeo 6.0 'acls' enricher output. It duplicates the 'aces' array in the 'ace' field.
+        </li>
+      </ul>
+
+      @since 9.1
+    </documentation>
+
+    <property name="nuxeo.permissions.acl.enricher.compatibility">false</property>
+
+  </extension>
+
+</component>

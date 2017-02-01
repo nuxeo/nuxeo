@@ -8,4 +8,5 @@ Nuxeo-Component: OSGI-INF/directories-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/notifications-contrib.xml,
  OSGI-INF/marshallers-contrib.xml,
- OSGI-INF/operations-contrib.xml
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/properties-contrib.xml
