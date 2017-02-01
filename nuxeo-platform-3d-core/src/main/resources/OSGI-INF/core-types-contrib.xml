@@ -23,5 +23,24 @@
       <facet name="Publishable"/>
       <facet name="ThreeD"/>
     </doctype>
+
+    <doctype name="Folder" append="true">
+      <subtypes>
+        <type>ThreeD</type>
+      </subtypes>
+    </doctype>
+    <doctype name="OrderedFolder" append="true">
+      <subtypes>
+        <type>ThreeD</type>
+      </subtypes>
+    </doctype>
+    <doctype name="Workspace" append="true">
+      <subtypes>
+        <type>ThreeD</type>
+      </subtypes>
+    </doctype>
   </extension>
+
+
+
 </component>

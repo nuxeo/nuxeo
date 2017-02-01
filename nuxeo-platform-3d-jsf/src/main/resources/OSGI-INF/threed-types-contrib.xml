@@ -22,23 +22,7 @@
         <layout>dublincore</layout>
       </layouts>
     </type>
-
-    <type id="Folder">
-      <subtypes>
-        <type>ThreeD</type>
-      </subtypes>
-    </type>
-    <type id="OrderedFolder">
-      <subtypes>
-        <type>ThreeD</type>
-      </subtypes>
-    </type>
-    <type id="Workspace">
-      <subtypes>
-        <type>ThreeD</type>
-      </subtypes>
-    </type>
-
+    
   </extension>
 
 </component>
