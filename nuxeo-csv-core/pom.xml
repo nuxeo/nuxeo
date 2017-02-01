@@ -33,10 +33,6 @@
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-features</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-base</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>commons-io</groupId>
@@ -45,11 +41,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.richfaces</groupId>
-      <artifactId>richfaces</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

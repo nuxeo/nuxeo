@@ -89,12 +89,11 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
+import org.nuxeo.ecm.platform.ec.notification.NotificationEventListener;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.types.TypeManager;
-import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -653,12 +652,22 @@ public class CSVImporterWork extends TransientStoreWork {
     }
 
     protected String getUserUrl() {
-        NotificationService notificationService = NotificationServiceHelper.getNotificationService();
-        Map<String, String> params = new HashMap<>();
-        params.put("username", username);
-        DocumentView docView = new DocumentViewImpl(null, null, params);
-        URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
-        return urlPolicyService.getUrlFromDocumentView("user", docView, notificationService.getServerUrlPrefix());
+        DocumentViewCodecManager codecService = Framework.getService(DocumentViewCodecManager.class);
+        DocumentViewCodec codec = codecService.getCodec(NotificationEventListener.NOTIFICATION_DOCUMENT_ID_CODEC_NAME);
+        boolean isNotificationCodec = codec != null;
+        boolean isJSFUI = isNotificationCodec
+                && NotificationEventListener.JSF_NOTIFICATION_DOCUMENT_ID_CODEC_PREFIX.equals(codec.getPrefix());
+        StringBuilder userUrl = new StringBuilder();
+        if (isNotificationCodec) {
+
+            userUrl.append(NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
+            if (!isJSFUI) {
+                userUrl.append("ui/");
+                userUrl.append("#!/");
+            }
+            userUrl.append("user/").append(username);
+        }
+        return userUrl.toString();
     }
 
     protected StringList buildRecipientsList(String userEmail) {
