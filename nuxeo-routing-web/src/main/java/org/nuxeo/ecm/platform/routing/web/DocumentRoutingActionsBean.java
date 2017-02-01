@@ -47,7 +47,6 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -611,10 +610,9 @@ public class DocumentRoutingActionsBean implements Serializable {
         // will alter whatever type we set
         typesTool.setSelectedType(docType);
         DocumentModel changeableDocument = documentManager.createDocumentModel(typeName);
-        ScopedMap context = changeableDocument.getContextData();
-        context.put(CoreEventConstants.PARENT_PATH, parentPath);
-        context.put(SOURCE_DOC_NAME, sourceDocName);
-        context.put(ROUTE_DOCUMENT_REF, routeRef);
+        changeableDocument.putContextData(CoreEventConstants.PARENT_PATH, parentPath);
+        changeableDocument.putContextData(SOURCE_DOC_NAME, sourceDocName);
+        changeableDocument.putContextData(ROUTE_DOCUMENT_REF, routeRef);
         navigationContext.setChangeableDocument(changeableDocument);
         return "create_route_element";
     }
@@ -718,9 +716,9 @@ public class DocumentRoutingActionsBean implements Serializable {
             log.debug("Document " + newDocument.getName() + " already created");
             return navigationContext.navigateToDocument(newDocument, "after-create");
         }
-        String parentDocumentPath = (String) newDocument.getContextData().get(CoreEventConstants.PARENT_PATH);
-        String sourceDocumentName = (String) newDocument.getContextData().get(SOURCE_DOC_NAME);
-        DocumentRef routeDocRef = (DocumentRef) newDocument.getContextData().get(ROUTE_DOCUMENT_REF);
+        String parentDocumentPath = (String) newDocument.getContextData(CoreEventConstants.PARENT_PATH);
+        String sourceDocumentName = (String) newDocument.getContextData(SOURCE_DOC_NAME);
+        DocumentRef routeDocRef = (DocumentRef) newDocument.getContextData(ROUTE_DOCUMENT_REF);
         try {
             getDocumentRoutingService().addRouteElementToRoute(new PathRef(parentDocumentPath), sourceDocumentName,
                     newDocument.getAdapter(DocumentRouteElement.class), documentManager);
