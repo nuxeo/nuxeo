@@ -215,7 +215,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
                     }
                     saveParams(params, save);
                 }
-                getAdaptedDoc().getContextData().put(TemplateSourceDocument.INIT_DONE_FLAG, true);
+                getAdaptedDoc().putContextData(TemplateSourceDocument.INIT_DONE_FLAG, true);
             }
         }
     }

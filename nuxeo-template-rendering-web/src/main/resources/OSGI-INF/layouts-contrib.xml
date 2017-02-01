@@ -15,7 +15,7 @@
       <fields>
         <field>file:content</field>
         <field>file:filename</field>
-        <field>contextData['request/templateId']</field>
+        <field>contextData['templateId']</field>
       </fields>
       <widgetModes>
         <mode value="create">create</mode>

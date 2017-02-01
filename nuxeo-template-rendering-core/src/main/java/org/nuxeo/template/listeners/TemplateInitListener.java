@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -93,8 +92,7 @@ public class TemplateInitListener implements EventListener {
                         // or template selection as main file
                         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
-                        String targetTemplateUid = (String) targetDoc.getContextData().getScopedValue(
-                                ScopeType.REQUEST, "templateId");
+                        String targetTemplateUid = (String) targetDoc.getContextData("templateId");
                         if ("none".equals(targetTemplateUid)) {
                             targetTemplateUid = null;
                         }
