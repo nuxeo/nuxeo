@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -237,7 +236,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("without versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with minor versioning");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "MINOR");
+        doc.putContextData("snapshotVersioningOption", "MINOR");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
@@ -245,7 +244,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("with minor versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with major versioning");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "MAJOR");
+        doc.putContextData("snapshotVersioningOption", "MAJOR");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
@@ -253,7 +252,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("with major versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with none versioning");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "NONE");
+        doc.putContextData("snapshotVersioningOption", "NONE");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
@@ -261,7 +260,7 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         assertEquals("with none versioning", doc.getPropertyValue("dc:title"));
 
         doc.setPropertyValue("dc:title", "with non existing versioning value");
-        doc.putContextData(ScopeType.REQUEST, "snapshotVersioningOption", "NON_EXISTING VALUE");
+        doc.putContextData("snapshotVersioningOption", "NON_EXISTING VALUE");
         doc = session.saveDocument(doc);
         session.save();
         doc = session.getDocument(doc.getRef());
