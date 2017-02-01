@@ -5269,7 +5269,7 @@
       </helpLabels>
       <translated>true</translated>
       <fields>
-        <field>contextData['request/comment']</field>
+        <field>contextData['comment']</field>
       </fields>
       <widgetModes>
         <mode value="create">hidden</mode>
@@ -5323,7 +5323,7 @@
       <subWidgets>
         <widget name="versioning_options" type="selectOneRadio">
           <fields>
-            <field>contextData['default/VersioningOption']</field>
+            <field>contextData['VersioningOption']</field>
           </fields>
           <properties widgetMode="edit">
             <property name="defaultValue">

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -26,9 +26,11 @@ package org.nuxeo.common.collections;
  * <p>
  * Only request and default scopes are defined for now, but others may be added.
  *
+ * @deprecated since 9.1
  * @see ScopedMap
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
+@Deprecated
 public enum ScopeType {
     DEFAULT, REQUEST;
 

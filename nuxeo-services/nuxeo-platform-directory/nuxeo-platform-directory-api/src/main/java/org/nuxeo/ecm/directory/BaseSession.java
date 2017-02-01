@@ -31,8 +31,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -284,8 +282,7 @@ public abstract class BaseSession implements Session {
      * @since 5.3.1
      */
     public static boolean isReadOnlyEntry(DocumentModel entry) {
-        ScopedMap contextData = entry.getContextData();
-        return contextData.getScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG) == Boolean.TRUE;
+        return entry.getContextData(READONLY_ENTRY_FLAG) == Boolean.TRUE;
     }
 
     /**
@@ -294,8 +291,7 @@ public abstract class BaseSession implements Session {
      * @since 5.3.2
      */
     public static void setReadOnlyEntry(DocumentModel entry) {
-        ScopedMap contextData = entry.getContextData();
-        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG, Boolean.TRUE);
+        entry.putContextData(READONLY_ENTRY_FLAG, Boolean.TRUE);
     }
 
     /**
@@ -304,8 +300,7 @@ public abstract class BaseSession implements Session {
      * @since 5.3.2
      */
     public static void setReadWriteEntry(DocumentModel entry) {
-        ScopedMap contextData = entry.getContextData();
-        contextData.putScopedValue(ScopeType.REQUEST, READONLY_ENTRY_FLAG, Boolean.FALSE);
+        entry.putContextData(READONLY_ENTRY_FLAG, Boolean.FALSE);
     }
 
     /**

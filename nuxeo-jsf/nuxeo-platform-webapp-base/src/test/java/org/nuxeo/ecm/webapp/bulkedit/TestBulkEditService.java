@@ -32,7 +32,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
@@ -96,11 +95,10 @@ public class TestBulkEditService {
         sourceDoc.setProperty("dublincore", "description", "new description");
         sourceDoc.setPropertyValue("dublincore:creator", "new creator");
         sourceDoc.setPropertyValue("dc:source", "new source");
-        ScopedMap map = sourceDoc.getContextData();
-        map.put(BulkEditService.BULK_EDIT_PREFIX + "dc:title", true);
-        map.put(BulkEditService.BULK_EDIT_PREFIX + "dc:description", false);
-        map.put(BulkEditService.BULK_EDIT_PREFIX + "dc:creator", true);
-        map.put(BulkEditService.BULK_EDIT_PREFIX + "dc:source", false);
+        sourceDoc.putContextData(BulkEditService.BULK_EDIT_PREFIX + "dc:title", true);
+        sourceDoc.putContextData(BulkEditService.BULK_EDIT_PREFIX + "dc:description", false);
+        sourceDoc.putContextData(BulkEditService.BULK_EDIT_PREFIX + "dc:creator", true);
+        sourceDoc.putContextData(BulkEditService.BULK_EDIT_PREFIX + "dc:source", false);
         return sourceDoc;
     }
 

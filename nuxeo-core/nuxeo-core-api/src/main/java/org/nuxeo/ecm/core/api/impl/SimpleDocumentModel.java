@@ -163,30 +163,27 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public Serializable getContextData(ScopeType scope, String key) {
-        return contextData.getScopedValue(scope, key);
+        return getContextData(key);
     }
 
     @Override
     public void putContextData(ScopeType scope, String key, Serializable value) {
-        contextData.putScopedValue(scope, key, value);
+        putContextData(key, value);
     }
 
     @Override
     public Serializable getContextData(String key) {
-        return contextData.getScopedValue(key);
+        return contextData.get(key);
     }
 
     @Override
     public void putContextData(String key, Serializable value) {
-        contextData.putScopedValue(key, value);
+        contextData.put(key, value);
     }
 
     @Override
     public void copyContextData(DocumentModel otherDocument) {
-        ScopedMap otherMap = otherDocument.getContextData();
-        if (otherMap != null) {
-            contextData.putAll(otherMap);
-        }
+        contextData.putAll(otherDocument.getContextData());
     }
 
     @Override

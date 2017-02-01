@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -651,7 +650,7 @@ public class NXQLQueryBuilder {
             }
         } catch (PropertyNotFoundException e) {
             // fall back on named parameters if any
-            Map<String, Object> params = (Map<String, Object>) model.getContextData().getScopedValue(ScopeType.DEFAULT,
+            Map<String, Object> params = (Map<String, Object>) model.getContextData(
                     PageProviderService.NAMED_PARAMETERS);
             if (params != null) {
                 if (xpath != null) {

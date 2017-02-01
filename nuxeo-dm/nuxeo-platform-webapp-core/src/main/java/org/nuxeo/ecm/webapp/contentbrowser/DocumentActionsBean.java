@@ -42,7 +42,6 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -349,7 +348,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     // Send the comment of the update to the Core
     private void throwUpdateComments(DocumentModel changeableDocument) {
         if (comment != null && !"".equals(comment)) {
-            changeableDocument.getContextData().put("comment", comment);
+            changeableDocument.putContextData("comment", comment);
         }
     }
 
@@ -371,8 +370,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     @Override
     @Observer(EventNames.BEFORE_DOCUMENT_CHANGED)
     public void followTransition(DocumentModel changedDocument) {
-        String transitionToFollow = (String) changedDocument.getContextData(ScopeType.REQUEST,
-                LIFE_CYCLE_TRANSITION_KEY);
+        String transitionToFollow = (String) changedDocument.getContextData(LIFE_CYCLE_TRANSITION_KEY);
         if (transitionToFollow != null) {
             documentManager.followTransition(changedDocument.getRef(), transitionToFollow);
             documentManager.save();

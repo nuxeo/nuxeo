@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,7 +80,7 @@ public class ExtensibleDocumentWriter extends DocumentModelWriter {
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
         if (doc.hasSchema("uid")) {
-            doc.putContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING, true);
+            doc.putContextData(VersioningService.SKIP_VERSIONING, true);
         }
 
         String uuid = xdoc.getId();
@@ -102,26 +101,26 @@ public class ExtensibleDocumentWriter extends DocumentModelWriter {
                 String created = version.elementText(IMPORT_VERSION_CREATED.substring(4));
 
                 if (label != null) {
-                    doc.putContextData(ScopeType.REQUEST, IMPORT_VERSION_LABEL, label);
+                    doc.putContextData(IMPORT_VERSION_LABEL, label);
                 }
                 if (sourceId != null) {
-                    doc.putContextData(ScopeType.REQUEST, IMPORT_VERSION_VERSIONABLE_ID, sourceId);
+                    doc.putContextData(IMPORT_VERSION_VERSIONABLE_ID, sourceId);
                 }
                 if (desc != null) {
-                    doc.putContextData(ScopeType.REQUEST, IMPORT_VERSION_DESCRIPTION, desc);
+                    doc.putContextData(IMPORT_VERSION_DESCRIPTION, desc);
                 }
                 if (created != null) {
-                    doc.putContextData(ScopeType.REQUEST, IMPORT_VERSION_CREATED,
+                    doc.putContextData(IMPORT_VERSION_CREATED,
                             (Serializable) new DateType().decode(created));
                 }
                 doc.setPathInfo(null, name);
                 ((DocumentModelImpl) doc).setIsVersion(true);
 
-                doc.putContextData(ScopeType.REQUEST, CoreSession.IMPORT_VERSION_MAJOR,
+                doc.putContextData(CoreSession.IMPORT_VERSION_MAJOR,
                         doc.getPropertyValue("uid:major_version"));
-                doc.putContextData(ScopeType.REQUEST, CoreSession.IMPORT_VERSION_MINOR,
+                doc.putContextData(CoreSession.IMPORT_VERSION_MINOR,
                         doc.getPropertyValue("uid:minor_version"));
-                doc.putContextData(ScopeType.REQUEST, CoreSession.IMPORT_IS_VERSION, true);
+                doc.putContextData(CoreSession.IMPORT_IS_VERSION, true);
             }
         }
 

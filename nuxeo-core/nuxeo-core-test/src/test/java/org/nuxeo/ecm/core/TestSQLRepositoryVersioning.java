@@ -41,7 +41,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -953,8 +952,7 @@ public class TestSQLRepositoryVersioning {
         // save document with auto-increment should produce version 3.0
         doc = session.getDocument(co);
         assertEquals(doc.getVersionLabel(), "1.0");
-        doc.getContextData().putScopedValue(ScopeType.DEFAULT, VersioningService.VERSIONING_OPTION,
-                VersioningOption.MAJOR);
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
         // mark as dirty - must change the value
         doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title") + " dirty");
         doc = session.saveDocument(doc);
@@ -1109,8 +1107,7 @@ public class TestSQLRepositoryVersioning {
         String v3 = doc.getVersionLabel();
 
         // when I update the doc though a event listener
-        doc.getContextData().putScopedValue(ScopeType.DEFAULT,
-                DummyUpdateBeforeModificationListener.PERDORM_UPDATE_FLAG, true);
+        doc.putContextData(DummyUpdateBeforeModificationListener.PERDORM_UPDATE_FLAG, true);
         doc = session.saveDocument(doc);
         // then the version change
         doc = session.getDocument(doc.getRef());

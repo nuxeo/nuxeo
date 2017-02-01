@@ -109,7 +109,7 @@ public class TestDocumentAuditPageProvider {
             // do some updates
             for (int i = 0; i < 5; i++) {
                 doc.setPropertyValue("dc:description", "Update " + i);
-                doc.getContextData().put("comment", "Update " + i);
+                doc.putContextData("comment", "Update " + i);
                 doc = session.saveDocument(doc);
                 session.save();
                 sleep(10);
@@ -124,7 +124,7 @@ public class TestDocumentAuditPageProvider {
             // do some more updates
             for (int i = 5; i < 10; i++) {
                 doc.setPropertyValue("dc:description", "Update " + i);
-                doc.getContextData().put("comment", "Update " + i);
+                doc.putContextData("comment", "Update " + i);
                 doc = session.saveDocument(doc);
                 session.save();
                 sleep(10);
@@ -137,7 +137,7 @@ public class TestDocumentAuditPageProvider {
             // do some more updates
             for (int i = 10; i < 15; i++) {
                 doc.setPropertyValue("dc:description", "Update " + i);
-                doc.getContextData().put("comment", "Update " + i);
+                doc.putContextData("comment", "Update " + i);
                 doc = session.saveDocument(doc);
                 session.save();
                 sleep(10);
