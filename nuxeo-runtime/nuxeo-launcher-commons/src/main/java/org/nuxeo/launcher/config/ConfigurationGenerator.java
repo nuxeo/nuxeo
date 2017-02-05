@@ -1133,8 +1133,8 @@ public class ConfigurationGenerator {
                 log.warn(String.format("Missing value for %s, using %s", paramTemplateDbType, dbTemplate));
                 userConfig.setProperty(paramTemplateDbType, dbTemplate);
             } else {
-                log.error(String.format("Inconsistent values between %s (%s) and %s (%s)", paramTemplateDbName,
-                        dbTemplate, paramTemplateDbType, dbType));
+                log.debug(String.format("Different values between %s (%s) and %s (%s)", paramTemplateDbName, dbTemplate,
+                        paramTemplateDbType, dbType));
             }
         }
         if (dbTemplate == null) {
