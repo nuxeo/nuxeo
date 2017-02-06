@@ -593,11 +593,17 @@ limitations under the License.
       },
 
       _parentValidated: function() {
-        if (this.canCreate) {
-          this.set('targetLocationError', '');
-        } else {
-          this.set('targetLocationError', this.i18n('documentImport.error.cannotImport'));
+        if (this.isValidTargetPath) {
+          if (this.suggesterParent && this.suggesterParent.contextParameters && this.suggesterParent.contextParameters.permissions) {
+            // NXP-21408: prior to 8.10-HF01 the permissions enricher wouldn't return AddChildren, so we had to rely on Write.
+            if (this.suggesterParent.contextParameters.permissions.indexOf('Write') > -1 ||
+                   this.suggesterParent.contextParameters.permissions.indexOf('AddChildren') > -1) {
+              this.set('targetLocationError', '');
+              return;
+            }
+          }
         }
+        this.set('targetLocationError', this.i18n('documentImport.error.cannotImport'));
       },
 
       _removeBlob: function(e) {
