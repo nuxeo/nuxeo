@@ -480,7 +480,7 @@ limitations under the License.
                         disabled$="[[!_hasResult]]">
                         [[i18n('csv.import.new')]]
           </paper-button>
-          <paper-button dialog-dismiss
+          <paper-button dialog-dismiss on-tap="_close"
                         class="primary">[[i18n('command.close')]]</paper-button>
         </div>
       </div>
@@ -736,6 +736,13 @@ limitations under the License.
           }
 
         }.bind(this), this._handleError.bind(this))
+      },
+
+      _close: function() {
+        if (this.stage === 'progress' && this._count > 0) {
+          this.fire('document-updated');
+          page('/browse' + this.targetPath);
+        }
       }
 
     });
