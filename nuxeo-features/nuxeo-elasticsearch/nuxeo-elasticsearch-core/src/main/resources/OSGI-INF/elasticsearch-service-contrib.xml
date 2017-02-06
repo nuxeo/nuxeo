@@ -5,8 +5,4 @@
     <writer class="org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter"/>
   </extension>
 
-  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
-    <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl"/>
-  </extension>
-
 </component>
