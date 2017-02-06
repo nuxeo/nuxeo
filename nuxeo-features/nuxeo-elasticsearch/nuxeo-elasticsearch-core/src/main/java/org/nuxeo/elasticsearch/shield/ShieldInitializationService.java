@@ -22,35 +22,20 @@ package org.nuxeo.elasticsearch.shield;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.shield.ShieldPlugin;
-import org.nuxeo.elasticsearch.api.ESClientInitializationService;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 9.1
  */
 public class ShieldInitializationService extends ESClientInitializationServiceImpl {
 
-    /**
-     * Administrator username property for Shield initialization
-     */
-    public static final String ES_SHIELD_ADMIN_USERNAME = "elasticsearch.shield.admin.username";
-
-    /**
-     * Administrator password property for Shield initialization
-     */
-    public static final String ES_SHIELD_ADMIN_PASSWORD = "elasticsearch.shield.admin.password";
-
     @Override
     protected Settings.Builder initializeSettingsBuilder(ElasticSearchRemoteConfig config) {
 
-        String shieldAdminName = Framework.getProperty(ES_SHIELD_ADMIN_USERNAME, "Administrator");
-        String shieldAdminPasswd = Framework.getProperty(ES_SHIELD_ADMIN_PASSWORD, "Administrator");
-
         Settings.Builder builder = super.initializeSettingsBuilder(config);
 
-        builder.put("shield.user", shieldAdminName + ":" + shieldAdminPasswd);
+        builder.put("shield.user", getUsername() + ":" + getPassword());
 
         return builder;
     }

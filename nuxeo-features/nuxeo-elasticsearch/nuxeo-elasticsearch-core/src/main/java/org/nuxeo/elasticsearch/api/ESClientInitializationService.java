@@ -46,4 +46,32 @@ public interface ESClientInitializationService {
      */
     TransportClient initializeClient(Settings settings);
 
+    /**
+     * Get username if authentication is required
+     * 
+     * @return the username
+     */
+    String getUsername();
+
+    /**
+     * Set username for authentication
+     * 
+     * @param username the username
+     */
+    void setUsername(String username);
+
+    /**
+     * Get password if authentication is required
+     * 
+     * @return the password
+     */
+    String getPassword();
+
+    /**
+     * Set password for authentication
+     * 
+     * @param password the password
+     */
+    void setPassword(String password);
+
 }

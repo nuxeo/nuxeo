@@ -23,6 +23,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -173,8 +174,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             ESClientInitializationDescriptor clientInitDescriptor = (ESClientInitializationDescriptor) contribution;
             try {
                 clientInitService = clientInitDescriptor.getKlass().newInstance();
+                clientInitService.setUsername(clientInitDescriptor.getUsername());
+                clientInitService.setPassword(clientInitDescriptor.getPassword());
             } catch (IllegalAccessException | InstantiationException e) {
-                log.error("Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());
+                log.error(
+                        "Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());
                 throw new RuntimeException(e);
             }
             break;
