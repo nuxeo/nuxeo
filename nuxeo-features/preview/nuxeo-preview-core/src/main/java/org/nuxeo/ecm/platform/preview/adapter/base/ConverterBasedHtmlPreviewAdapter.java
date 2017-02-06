@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.preview.adapter.base;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -28,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -108,7 +110,12 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
 
     @Override
     public boolean hasPreview(String xpath) {
-        String srcMT = getMimeType(xpath);
+        String srcMT;
+        try {
+            srcMT = getMimeType(xpath);
+        } catch (NothingToPreviewException e) {
+            return false;
+        }
         if ("application/zip".equals(srcMT)
                 && !Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(ALLOW_ZIP_PREVIEW)) {
             return false;
@@ -120,7 +127,12 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     @Override
     public List<Blob> getPreviewBlobs(String xpath) throws PreviewException {
         BlobHolder blobHolder2preview = getBlobHolder2preview(xpath);
-        Blob blob2Preview = getBlob2preview(blobHolder2preview);
+        Blob blob2Preview;
+        try {
+            blob2Preview = getBlob2preview(blobHolder2preview);
+        } catch (NothingToPreviewException e) {
+            return Collections.emptyList();
+        }
 
         String srcMT = getMimeType(xpath);
         log.debug("Source type for HTML preview =" + srcMT);
@@ -150,7 +162,12 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
      * @since 5.7.3
      */
     private Blob getBlob2preview(BlobHolder blobHolder2preview) throws PreviewException {
-        Blob blob2Preview = blobHolder2preview.getBlob();
+        Blob blob2Preview;
+        try {
+            blob2Preview = blobHolder2preview.getBlob();
+        } catch (PropertyNotFoundException e) {
+            blob2Preview = null;
+        }
         if (blob2Preview == null) {
             throw new NothingToPreviewException("Can not preview a document without blob");
         } else {
