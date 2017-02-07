@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
 
 /**
@@ -48,7 +49,7 @@ public class CSVImporterImpl implements CSVImporter {
                     Blobs.createBlob(csvFile), options).launch();
         } catch (IOException e) {
             log.error("Cannot launch csv import work.", e);
-            return "";
+            throw new NuxeoException("Cannot launch csv import work.", e);
         }
     }
 

@@ -32,6 +32,9 @@ import org.nuxeo.ecm.csv.core.CSVImportLog.Status;
  */
 public interface CSVImporter {
 
+    /**
+     * @deprecated since 9.1 use {@link #launchImport(CoreSession, String, Blob, CSVImporterOptions)} instead.
+     */
     @Deprecated
     String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
             CSVImporterOptions options);

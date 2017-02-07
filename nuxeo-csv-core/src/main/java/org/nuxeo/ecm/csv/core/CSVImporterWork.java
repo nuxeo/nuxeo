@@ -186,7 +186,7 @@ public class CSVImporterWork extends TransientStoreWork {
 
     protected long total = -1L;
 
-    protected long docsCreatedCount = 0;
+    protected long docsCreatedCount;
 
     public CSVImporterWork(String id) {
         super(id);
