@@ -39,10 +39,16 @@ public class CSVImportStatus implements Serializable {
 
     private final State state;
 
+    /**
+     * @deprecated since 9.1
+     */
     @Deprecated
     private int positionInQueue;
 
     @Deprecated
+    /**
+     * @deprecated since 9.1
+     */
     private int queueSize;
 
     private long totalNumberOfDocument;
@@ -53,6 +59,9 @@ public class CSVImportStatus implements Serializable {
         this(state, -1L, -1L);
     }
 
+    /**
+     * @deprecated since 9.1
+     */
     @Deprecated
     public CSVImportStatus(State state, int positionInQueue, int queueSize) {
         this.state = state;
@@ -74,7 +83,7 @@ public class CSVImportStatus implements Serializable {
     }
 
     /**
-     * @Deprecated meaningless use {@link #getNumberOfProcessedDocument()} instead.
+     * @deprecated since 9.1, meaningless use {@link #getNumberOfProcessedDocument()} instead.
      */
     @Deprecated
     public int getPositionInQueue() {
@@ -82,7 +91,7 @@ public class CSVImportStatus implements Serializable {
     }
 
     /**
-     * @Deprecated meaningless use {@link #getTotalNumberOfDocument()} instead.
+     * @deprecated since 9.1, meaningless use {@link #getTotalNumberOfDocument()} instead.
      */
     @Deprecated
     public int getQueueSize() {
