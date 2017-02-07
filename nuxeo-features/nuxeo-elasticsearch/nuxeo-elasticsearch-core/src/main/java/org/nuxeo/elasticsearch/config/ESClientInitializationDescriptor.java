@@ -36,8 +36,22 @@ public class ESClientInitializationDescriptor implements Serializable {
     @XNode("@class")
     protected Class<ESClientInitializationService> klass;
 
+    @XNode("username")
+    protected String username;
+
+    @XNode("password")
+    protected String password;
+
     public Class<ESClientInitializationService> getKlass() {
         return klass;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
 }

@@ -29,6 +29,10 @@ import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
  */
 public class ESClientInitializationServiceImpl implements ESClientInitializationService {
 
+    protected String username;
+
+    protected String password;
+
     @Override
     public Settings initializeSettings(ElasticSearchRemoteConfig config) {
         return initializeSettingsBuilder(config).build();
@@ -37,6 +41,26 @@ public class ESClientInitializationServiceImpl implements ESClientInitialization
     @Override
     public TransportClient initializeClient(Settings settings) {
         return initializeClientBuilder().settings(settings).build();
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     protected Settings.Builder initializeSettingsBuilder(ElasticSearchRemoteConfig config) {
