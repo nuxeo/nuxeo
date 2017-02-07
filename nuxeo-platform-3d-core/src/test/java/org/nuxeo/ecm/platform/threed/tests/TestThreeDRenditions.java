@@ -44,7 +44,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import java.io.IOException;
@@ -101,9 +100,6 @@ public class TestThreeDRenditions {
 
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
-
-    public static final String NXP21450 = "NXP-21450: Fix random " +
-        "tests failure on ThreeDConvertersTest.testColladaConverterX3d";
 
     private static final Log log = LogFactory.getLog(TestThreeDRenditions.class);
 
@@ -168,7 +164,6 @@ public class TestThreeDRenditions {
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void shouldExposeOnlyExposedAsRenditions() throws Exception {
         ThreeD threeD = getTestThreeD();

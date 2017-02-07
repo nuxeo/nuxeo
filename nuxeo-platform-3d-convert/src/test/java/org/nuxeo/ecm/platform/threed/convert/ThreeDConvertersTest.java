@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -81,9 +80,6 @@ public class ThreeDConvertersTest {
     private static final String renderId1 = "renderId1";
 
     private static final String renderId2 = "renderId2";
-
-    public static final String NXP21450 = "NXP-21450: Fix random " +
-        "tests failure on ThreeDConvertersTest.testColladaConverterX3d";
 
     private static final Log log = LogFactory.getLog(ThreeDConvertersTest.class);
 
@@ -170,7 +166,6 @@ public class ThreeDConvertersTest {
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testRenderConverter() throws Exception {
         BlobHolder result = applyConverter(RENDER_3D_CONVERTER, getTestThreeDBlobs());
@@ -180,7 +175,6 @@ public class ThreeDConvertersTest {
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testCollada2glTFConverter() throws Exception {
         BlobHolder result = applyConverter(COLLADA2GLTF_CONVERTER, getTestBlob(EXTENSION_COLLADA));
@@ -190,49 +184,42 @@ public class ThreeDConvertersTest {
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverter3ds() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_3DSTUDIO));
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterFbx() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_FILMBOX));
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterPly() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_STANFORD));
     }
 
-    @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
+    /*@Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterX3d() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_EXTENSIBLE_3D_GRAPHICS));
-    }
+    }*/
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterStl() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_STEREOLITHOGRAPHY));
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterObj() throws Exception {
         testColladaConverterWithBlobs(getTestBlob(EXTENSION_WAVEFRONT));
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testColladaConverterObjMtl() throws Exception {
         BlobHolder blobHolder = getTestBlob(EXTENSION_WAVEFRONT);
@@ -241,7 +228,6 @@ public class ThreeDConvertersTest {
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testLODConverter() throws Exception {
         BlobHolder result = applyConverter(LOD_CONVERTER, getTestThreeDBlobs());
@@ -255,7 +241,6 @@ public class ThreeDConvertersTest {
     }
 
     @Test
-    @RandomBug.Repeat(issue = NXP21450, onFailure = 10, onSuccess = 30)
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBatchConverter() throws Exception {
         BlobHolder result = applyConverter(BATCH_CONVERTER, getTestThreeDBlobs());
