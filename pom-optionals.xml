@@ -16,6 +16,7 @@
   <modules>
     <module>nuxeo-api-playground</module>
     <module>nuxeo-webengine-features</module>
+    <module>nuxeo-mongodb-ext</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
