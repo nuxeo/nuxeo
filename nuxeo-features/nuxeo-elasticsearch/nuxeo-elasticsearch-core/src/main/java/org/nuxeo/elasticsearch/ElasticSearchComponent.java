@@ -174,6 +174,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             ESClientInitializationDescriptor clientInitDescriptor = (ESClientInitializationDescriptor) contribution;
             try {
                 clientInitService = clientInitDescriptor.getKlass().newInstance();
+                clientInitService.setUsername(clientInitDescriptor.getUsername());
+                clientInitService.setPassword(clientInitDescriptor.getPassword());
             } catch (IllegalAccessException | InstantiationException e) {
                 log.error(
                         "Can not instantiate ES Client initialization service from " + clientInitDescriptor.getKlass());

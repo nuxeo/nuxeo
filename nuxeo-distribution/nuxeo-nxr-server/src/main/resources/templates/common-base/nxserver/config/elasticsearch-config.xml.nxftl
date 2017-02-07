@@ -26,6 +26,18 @@
       clientTransportNodesSamplerInterval="5s" />
   </extension>
 </#if>
+<#if (elasticsearch.shield.enabled)?? && "${elasticsearch.shield.enabled}" == "true">
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
+    <clientInitialization class="org.nuxeo.elasticsearch.shield.ShieldInitializationService">
+      <username>${elasticsearch.shield.username}</username>
+      <password>${elasticsearch.shield.password}</password>
+    </clientInitialization>
+</extension>
+<#else>
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchClientInitialization">
+    <clientInitialization class="org.nuxeo.elasticsearch.core.ESClientInitializationServiceImpl"/>
+  </extension>
+</#if>
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
