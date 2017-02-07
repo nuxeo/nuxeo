@@ -20,10 +20,13 @@
 package org.nuxeo.ecm.platform.preview.tests.adapter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -38,6 +41,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
+import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -52,13 +56,15 @@ public class TestPreviewAdapter {
 
     @Inject
     CoreSession session;
-    
+
     @Test
-    public void testFileDocument() {
+    public void testFileDocument() throws Exception {
         DocumentModel document = session.createDocumentModel("File");
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         assertEquals(false, adapter.hasBlobToPreview());
-        
+        List<Blob> blobs = adapter.getFilePreviewBlobs();
+        assertEquals(Collections.emptyList(), blobs);
+
         Blob blob = new StringBlob("test");
         Map<String, Serializable> file = new HashMap<>();
         // Attach one file to the list
@@ -66,15 +72,19 @@ public class TestPreviewAdapter {
         file.put("filename", "test.txt");
         document.setPropertyValue("file:content", (Serializable) blob);
         assertEquals(true, adapter.hasBlobToPreview());
+        blobs = adapter.getFilePreviewBlobs();
+        assertEquals(1, blobs.size());
+        String preview = blobs.get(0).getString();
+        assertTrue(preview, preview.contains("<pre>test</pre>"));
     }
-    
+
     @Test
-    public void testCustomDocumentWithFilesSchema() {
+    public void testCustomDocumentWithFilesSchema() throws Exception {
         DocumentModel document = session.createDocumentModel("CustomDoc");
-        
+
         // no preview adapter should be found in this case (empty files property)
         assertEquals(null, document.getAdapter(HtmlPreviewAdapter.class));
-        
+
         Blob blob = new StringBlob("test");
         Map<String, Serializable> file = new HashMap<>();
         // Attach one file to the list
@@ -85,6 +95,10 @@ public class TestPreviewAdapter {
         document.setPropertyValue("files:files", files);
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         assertEquals(true, adapter.hasBlobToPreview());
+        List<Blob> blobs = adapter.getFilePreviewBlobs();
+        assertEquals(1, blobs.size());
+        String preview = blobs.get(0).getString();
+        assertTrue(preview, preview.contains("<pre>test</pre>"));
     }
-    
+
 }
