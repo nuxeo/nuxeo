@@ -27,7 +27,7 @@ public class StringToDocModel implements TypeAdapter {
     public DocumentModel getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         try {
             String value = (String) objectToAdapt;
-            return ctx.getCoreSession().getDocument(TypeAdapterHelper.createRef(ctx, value));
+            return TypeAdapterHelper.createDocumentModel(ctx, value);
         } catch (TypeAdaptException e) {
             throw e;
         } catch (NuxeoException e) {

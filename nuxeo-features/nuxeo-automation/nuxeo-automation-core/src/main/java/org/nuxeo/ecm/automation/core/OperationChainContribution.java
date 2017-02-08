@@ -203,12 +203,12 @@ public class OperationChainContribution {
                         break;
                     case 'd':
                         if (T_DOCUMENT.equals(type)) {
-                            val = TypeAdapterHelper.createRef(param.value);
+                            val = TypeAdapterHelper.createDocumentRefOrExpression(param.value);
                         } else if (T_DOCUMENTS.equals(type)) {
                             String[] ar = StringUtils.split(param.value, ',', true);
                             DocumentRefListImpl result = new DocumentRefListImpl(ar.length);
                             for (String ref : ar) {
-                                result.add(TypeAdapterHelper.createRef(ref));
+                                result.add(TypeAdapterHelper.createDocumentRef(ref));
                             }
                             val = result;
                         } else if (T_DATE.equals(type)) {

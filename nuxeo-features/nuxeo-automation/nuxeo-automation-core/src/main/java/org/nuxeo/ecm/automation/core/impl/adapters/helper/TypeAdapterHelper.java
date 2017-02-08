@@ -37,14 +37,27 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class TypeAdapterHelper {
 
     /**
+     * Create document reference from its path
+     *
+     * @param value the document path
+     * @return the document reference
+     */
+    public static DocumentRef createDocumentRef(String value) {
+        return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
+    }
+
+    /**
      * Create a document reference from its path
      * 
      * @param value the document path
      * @return the document reference
-     * @throws TypeAdaptException
      */
-    public static DocumentRef createRef(String value) throws TypeAdaptException {
-        return createRef(null, value);
+    public static Object createDocumentRefOrExpression(String value) {
+        if (value.startsWith(".")) {
+            return Scripting.newExpression("Document.resolvePathAsRef(\"" + value + "\")");
+        } else {
+            return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
+        }
     }
 
     /**
@@ -53,11 +66,12 @@ public class TypeAdapterHelper {
      * @param ctx the operation context
      * @param value the document path
      * @return the document reference
-     * @throws TypeAdaptException
      */
-    public static DocumentRef createRef(OperationContext ctx, String value) throws TypeAdaptException {
-        if (value.startsWith(".")) {
-            Object obj = Scripting.newExpression("Document.resolvePathAsRef(\"" + value + "\")");
+    public static DocumentRef createDocumentRef(OperationContext ctx, String value) throws TypeAdaptException {
+        Object obj = createDocumentRefOrExpression(value);
+        if (obj instanceof DocumentRef) {
+            return (DocumentRef) obj;
+        } else if (obj instanceof Expression) {
             if (ctx != null) {
                 obj = ((Expression) obj).eval(ctx);
             }
@@ -67,7 +81,20 @@ public class TypeAdapterHelper {
                 return (DocumentRef) obj;
             }
             throw new TypeAdaptException(String.format("Cannot adapt value '%s' to a DocumentRef instance", value));
+        } else {
+            throw new RuntimeException(String.format("Unhandled value: %s", value));
         }
-        return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
+    }
+
+    /**
+     * Create a document model from its path
+     *
+     * @param ctx the operation context
+     * @param value the document path
+     * @return the document model
+     */
+    public static DocumentModel createDocumentModel(OperationContext ctx, String value) throws TypeAdaptException {
+        DocumentRef docRef = createDocumentRef(ctx, value);
+        return ctx.getCoreSession().getDocument(docRef);
     }
 }
