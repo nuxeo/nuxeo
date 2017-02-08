@@ -42,7 +42,7 @@ public class StringToDocModelList implements TypeAdapter {
         DocumentModelList result = new DocumentModelListImpl(array.length);
         try {
             for (String val : array) {
-                result.add(ctx.getCoreSession().getDocument(TypeAdapterHelper.createRef(ctx, val)));
+                result.add(TypeAdapterHelper.createDocumentModel(ctx, val));
             }
         } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
