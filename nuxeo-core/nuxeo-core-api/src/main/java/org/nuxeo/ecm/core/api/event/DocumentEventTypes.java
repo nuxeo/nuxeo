@@ -55,6 +55,8 @@ public final class DocumentEventTypes {
 
     public static final String DOCUMENT_REMOVED = "documentRemoved";
 
+    public static final String DOCUMENT_REMOVAL_CANCELED = "documentRemovalCanceled";
+
     public static final String ABOUT_TO_REMOVE_VERSION = "aboutToRemoveVersion";
 
     public static final String VERSION_REMOVED = "versionRemoved";
