@@ -54,6 +54,7 @@ public class ResourceRenderer extends AbstractResourceRenderer {
             }
             url = getUrlWithParams(context, component,
                     resolveNuxeoResourceUrl(context, component, resolveNuxeoResourcePath(resource)));
+            url = resolveUrlWithTimestamp(component, url);
         }
         ResponseWriter writer = context.getResponseWriter();
         if (ResourceType.css.matches(resource)) {
