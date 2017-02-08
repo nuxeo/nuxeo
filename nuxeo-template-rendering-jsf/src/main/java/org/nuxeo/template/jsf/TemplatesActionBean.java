@@ -16,7 +16,7 @@
  * Contributors:
  *     Thierry Delprat
  */
-package org.nuxeo.template.web;
+package org.nuxeo.template.jsf;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
@@ -222,11 +222,11 @@ public class TemplatesActionBean extends BaseTemplateAction {
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         if (template != null) {
             List<String> uuids = new ArrayList<>();
-            uuids.add(currentDocument.getId());
+            uuids.add("\"" + currentDocument.getId() + "\"");
 
             if (showVersions) {
                 for (DocumentModel version : documentManager.getVersions(currentDocument.getRef())) {
-                    uuids.add(version.getId());
+                    uuids.add("\"" + version.getId() + "\"");
                 }
             }
             return uuids;

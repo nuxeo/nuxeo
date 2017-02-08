@@ -10,7 +10,13 @@
       <translateTitle>true</translateTitle>
       <showTitle>true</showTitle>
 
-      <coreQueryPageProvider>
+      <pageProvider name="template_based">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{templateActions.templateAndVersionsUUIDs}</parameter>
+        <parameter>#{templateActions.checkedInVersion}</parameter>
+      </pageProvider>
+
+      <!--<coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <pattern>
           SELECT * FROM Document WHERE ecm:mixinType = 'TemplateBased' AND
@@ -21,7 +27,7 @@
         <parameter>#{templateActions.checkedInVersion}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
-      </coreQueryPageProvider>
+      </coreQueryPageProvider>-->
 
       <showFilterForm>false</showFilterForm>
 

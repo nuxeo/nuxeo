@@ -16,7 +16,7 @@
  * Contributors:
  *     Thierry Delprat
  */
-package org.nuxeo.template.web;
+package org.nuxeo.template.jsf;
 
 import java.io.IOException;
 import java.util.ArrayList;

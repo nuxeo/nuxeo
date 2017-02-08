@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="documenttemplate-removalcanceled" async="false"
+      postCommit="false" priority="500"
+      class="org.nuxeo.template.listeners.DocRemovalCanceledListener">
+      <event>aboutToRemove</event>
+    </listener>
+
+  </extension>
+</component>

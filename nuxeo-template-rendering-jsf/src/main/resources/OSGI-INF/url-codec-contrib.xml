@@ -8,7 +8,7 @@
     target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
     point="codecs">
     <documentViewCodec name="template" enabled="true"
-      prefix="nxtemplate" class="org.nuxeo.template.web.url.TemplateRenderCodec" />
+      prefix="nxtemplate" class="org.nuxeo.template.jsf.url.TemplateRenderCodec" />
   </extension>
 
 
