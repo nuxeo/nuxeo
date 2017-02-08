@@ -181,7 +181,12 @@
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayStringToDocModelList"
              accept="[Ljava.lang.String;"
              produce="org.nuxeo.ecm.core.api.DocumentModelList" />
-
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToDocModelList"
+             accept="java.lang.String"
+             produce="org.nuxeo.ecm.core.api.DocumentModelList" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayListToDocModelList"
+             accept="java.util.ArrayList"
+             produce="org.nuxeo.ecm.core.api.DocumentModelList" />
   </extension>
 
 
