@@ -57,7 +57,6 @@ import org.nuxeo.theme.styling.service.palettes.PaletteParser;
 import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
 import org.nuxeo.theme.styling.service.registries.NegotiationRegistry;
 import org.nuxeo.theme.styling.service.registries.PageRegistry;
-import org.nuxeo.theme.styling.service.registries.StyleRegistry;
 
 /**
  * Default implementation for the {@link ThemeStylingService}
@@ -74,8 +73,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     protected FlavorRegistry flavorReg;
 
-    protected StyleRegistry styleReg;
-
     protected NegotiationRegistry negReg;
 
     // Runtime Component API
@@ -85,7 +82,6 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         super.activate(context);
         pageReg = new PageRegistry();
         flavorReg = new FlavorRegistry();
-        styleReg = new StyleRegistry();
         negReg = new NegotiationRegistry();
     }
 
