@@ -2300,8 +2300,9 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testEqualsTimeWithMilliseconds() throws Exception {
-        assumeTrue("SQL Server does not have millisecond DATETIME accuracy",
-                !coreFeature.getStorageConfiguration().isVCSSQLServer());
+		assumeTrue("SQL Server and MySQL do not have millisecond DATETIME accuracy",
+				!coreFeature.getStorageConfiguration().isVCSSQLServer()
+						&& !coreFeature.getStorageConfiguration().isVCSMySQL());
 
         Date currentDate = setupDocTest();
         String testQuery = String.format(
