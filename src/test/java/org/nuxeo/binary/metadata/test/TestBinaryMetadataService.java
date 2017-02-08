@@ -21,6 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,9 +39,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -53,7 +59,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-disable-listener.xml",
-        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
+        "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml",
+        "org.nuxeo.binary.metadata:binary-metadata-contrib-lists.xml"})
 @RepositoryConfig(cleanup = Granularity.METHOD, init = BinaryMetadataServerInit.class)
 public class TestBinaryMetadataService {
 
@@ -92,6 +99,52 @@ public class TestBinaryMetadataService {
         PSDMetadata.add("EXIF:Software");
         PSDMetadata.add("IPTC:Keywords");
         PSDMetadata.add("EXIF:DateTimeOriginal");
+    }
+
+    @Test
+    public void itShouldExtractSingleKeywordToStringList() throws PropertyException, IOException {
+        // Get the document with One KW attached
+    	File binary = FileUtils.getResourceFileFromContext("data/iptc_one_keyword.jpg");
+
+    	DocumentModel doc = session.createDocumentModel("/folder", "file_1000", "File");
+        doc.setPropertyValue("dc:title", "file_1000");
+        doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
+        //doc = session.createDocument(doc);
+        binaryMetadataService.writeMetadata(doc, "IPTC-ONE-KW");
+        String[] subjects = (String[]) doc.getPropertyValue("dc:subjects");
+        assertEquals(1, subjects.length);
+
+    }
+
+    @Test
+    public void itShouldExtractKeywordListToStringList() throws PropertyException, IOException {
+        // Get the document with One KW attached
+    	File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
+
+    	DocumentModel doc = session.createDocumentModel("/folder", "file_2000", "File");
+        doc.setPropertyValue("dc:title", "file_2000");
+        doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
+        //doc = session.createDocument(doc);
+        binaryMetadataService.writeMetadata(doc, "EXCEL-TITLES-OF-PARTS-TO-SUBJECTS");
+        String[] subjects = (String[]) doc.getPropertyValue("dc:subjects");
+        assertEquals(4, subjects.length);
+        assertEquals("Example", subjects[0]); // ["Example","Hop","Sheet2","Chart Data"]
+
+    }
+
+    @Test
+    public void itShouldExtractKeywordListToString() throws PropertyException, IOException {
+        // Get the document with One KW attached
+    	File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
+
+    	DocumentModel doc = session.createDocumentModel("/folder", "file_3000", "File");
+        doc.setPropertyValue("dc:title", "file_3000");
+        doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
+        //doc = session.createDocument(doc);
+        binaryMetadataService.writeMetadata(doc, "EXCEL-TITLES-OF-PARTS-TO-FORMAT");
+        String format = (String) doc.getPropertyValue("dc:format");
+        assertNotNull(format);
+
     }
 
     @Test

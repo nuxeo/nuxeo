@@ -19,6 +19,7 @@ package org.nuxeo.binary.metadata.internals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -195,15 +197,32 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             // Write doc properties from outputs.
             for (String metadata : blobMetadataOutput.keySet()) {
                 Object metadataValue = blobMetadataOutput.get(metadata);
-                if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection)
-                        && !(metadataValue.getClass().isArray())) {
+                boolean metadataIsArray = metadataValue.getClass().isArray() || metadataValue instanceof ArrayList;
+                String property = metadataMapping.get(metadata);
+                if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection) && !(metadataIsArray)) {
                     metadataValue = metadataValue.toString();
                 }
                 if (metadataValue instanceof String) {
                     // sanitize string for PostgreSQL textual storage
                     metadataValue = ((String) metadataValue).replace("\u0000", "");
                 }
-                doc.setPropertyValue(metadataMapping.get(metadata), (Serializable) metadataValue);
+                try {
+                    if (doc.getProperty(property).isList()) {
+                        if (!metadataIsArray) {
+                            metadataValue = Arrays.asList(metadataValue);
+                        }
+                    } else {
+                        if (metadataIsArray) {
+                            metadataValue = metadataValue.toString();
+                        }
+                    }
+                    doc.setPropertyValue(property, (Serializable) metadataValue);
+                } catch (PropertyException e) {
+                    log.warn(String.format(
+                            "Failed to set property '%s' to value %s from metadata '%s' in '%s' in document '%s' ('%s')",
+                            property, metadataValue, metadata, mappingDescriptor.getBlobXPath(), doc.getId(),
+                            doc.getPath()));
+                }
             }
 
             // document should exist if id != null
