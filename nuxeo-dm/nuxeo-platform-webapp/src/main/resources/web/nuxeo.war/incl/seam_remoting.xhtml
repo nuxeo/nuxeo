@@ -2,7 +2,10 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<h:outputScript src="/seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}" target="#{pageJsTarget}" />
+<h:outputScript
+  src="/seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}"
+  includeTimestamp="false"
+  target="#{pageJsTarget}" />
 <h:outputScript target="#{pageJsTarget}">
   // set the conversation id before doing any call
   Seam.Remoting.getContext().setConversationId(currentConversationId);
