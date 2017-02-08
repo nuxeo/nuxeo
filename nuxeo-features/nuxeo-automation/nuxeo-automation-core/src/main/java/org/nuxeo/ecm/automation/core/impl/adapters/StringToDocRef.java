@@ -34,7 +34,7 @@ public class StringToDocRef implements TypeAdapter {
     public DocumentRef getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         try {
             String value = (String) objectToAdapt;
-            return TypeAdapterHelper.createRef(ctx, value);
+            return TypeAdapterHelper.createDocumentRef(ctx, value);
         } catch (TypeAdaptException e) {
             throw e;
         } catch (NuxeoException e) {
@@ -43,15 +43,10 @@ public class StringToDocRef implements TypeAdapter {
     }
 
     /**
-     * @deprecated since 9.1, see {@link TypeAdapterHelper#createRef(String)} instead
+     * @deprecated since 9.1, see {@link TypeAdapterHelper#createDocumentRef(String)} instead
      */
     @Deprecated
     public static DocumentRef createRef(String value) {
-        try {
-            DocumentRef docRef = TypeAdapterHelper.createRef(value);
-            return docRef;
-        } catch (TypeAdaptException e) {
-            return null;
-        }
+        return TypeAdapterHelper.createDocumentRef(value);
     }
 }

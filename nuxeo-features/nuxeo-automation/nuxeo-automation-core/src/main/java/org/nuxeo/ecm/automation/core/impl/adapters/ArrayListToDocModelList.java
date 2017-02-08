@@ -41,7 +41,7 @@ public class ArrayListToDocModelList implements TypeAdapter {
         DocumentModelList result = new DocumentModelListImpl(list.size());
         try {
             for (String val : list) {
-                result.add(ctx.getCoreSession().getDocument(TypeAdapterHelper.createRef(ctx, val)));
+                result.add(TypeAdapterHelper.createDocumentModel(ctx, val));
             }
         } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
