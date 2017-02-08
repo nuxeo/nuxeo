@@ -244,6 +244,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         }
         resourceBundles.addContribution(bundle);
         log.info(String.format("Done registering resource bundle '%s'", bundle.getName()));
+        setModifiedNow();
     }
 
     @Override
@@ -251,6 +252,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         log.info(String.format("Removing resource bundle '%s'", bundle.getName()));
         resourceBundles.removeContribution(bundle);
         log.info(String.format("Done removing resource bundle '%s'", bundle.getName()));
+        setModifiedNow();
     }
 
     @Override
@@ -258,6 +260,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         log.info(String.format("Register resource '%s'", resource.getName()));
         resources.addContribution(resource);
         log.info(String.format("Done registering resource '%s'", resource.getName()));
+        setModifiedNow();
     }
 
     @Override
@@ -265,6 +268,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         log.info(String.format("Removing resource '%s'", resource.getName()));
         resources.removeContribution(resource);
         log.info(String.format("Done removing resource '%s'", resource.getName()));
+        setModifiedNow();
     }
 
 }

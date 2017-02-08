@@ -75,6 +75,8 @@ public class PageResourceHandler extends MetaTagHandler {
 
     protected final TagAttribute target;
 
+    protected final TagAttribute includeTimestamp;
+
     protected final TagAttribute[] vars;
 
     protected final ResourceType[] handledTypesArray = { ResourceType.css, ResourceType.js, ResourceType.jsfcss,
@@ -87,6 +89,7 @@ public class PageResourceHandler extends MetaTagHandler {
         type = getAttribute("type");
         flavor = getAttribute("flavor");
         target = getAttribute("target");
+        includeTimestamp = getAttribute("includeTimestamp");
         vars = tag.getAttributes().getAll();
     }
 
@@ -128,6 +131,11 @@ public class PageResourceHandler extends MetaTagHandler {
             targetValue = target.getValue(ctx);
         }
 
+        String includeTimestampValue = null;
+        if (includeTimestamp != null) {
+            includeTimestampValue = includeTimestamp.getValue(ctx);
+        }
+
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         LeafFaceletHandler leaf = new LeafFaceletHandler();
         if (rtype == ResourceType.any) {
@@ -155,29 +163,33 @@ public class PageResourceHandler extends MetaTagHandler {
                 }
             }
             // first include handlers that match JSF resources
-            applyPage(ctx, parent, wrm, page, ResourceType.jsfcss, flavorValue, cssTarget, leaf);
-            applyPage(ctx, parent, wrm, page, ResourceType.jsfjs, flavorValue, jsTarget, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.jsfcss, flavorValue, cssTarget, includeTimestampValue, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.jsfjs, flavorValue, jsTarget, includeTimestampValue, leaf);
             // then include xhtmlfirst templates
-            applyPage(ctx, parent, wrm, page, ResourceType.xhtmlfirst, flavorValue, null, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.xhtmlfirst, flavorValue, null, includeTimestampValue, leaf);
             // then let other resources (css, js, html) be processed by the component at render time
-            applyPage(ctx, parent, wrm, page, ResourceType.css, flavorValue, cssTarget, nextHandler);
-            applyPage(ctx, parent, wrm, page, ResourceType.js, flavorValue, jsTarget, nextHandler);
-            applyPage(ctx, parent, wrm, page, ResourceType.html, flavorValue, htmlTarget, nextHandler);
+            applyPage(ctx, parent, wrm, page, ResourceType.css, flavorValue, cssTarget, includeTimestampValue,
+                    nextHandler);
+            applyPage(ctx, parent, wrm, page, ResourceType.js, flavorValue, jsTarget, includeTimestampValue,
+                    nextHandler);
+            applyPage(ctx, parent, wrm, page, ResourceType.html, flavorValue, htmlTarget, includeTimestampValue,
+                    nextHandler);
             // then include xhtml templates
-            applyPage(ctx, parent, wrm, page, ResourceType.xhtml, flavorValue, null, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.xhtml, flavorValue, null, includeTimestampValue, leaf);
         } else {
-            applyPage(ctx, parent, wrm, page, rtype, flavorValue, targetValue, leaf);
+            applyPage(ctx, parent, wrm, page, rtype, flavorValue, targetValue, includeTimestampValue, leaf);
         }
     }
 
     protected void applyPage(FaceletContext ctx, UIComponent parent, WebResourceManager wrm, PageDescriptor page,
-            ResourceType type, String flavor, String targetValue, FaceletHandler nextHandler) throws IOException {
+            ResourceType type, String flavor, String targetValue, String includeTimestamp, FaceletHandler nextHandler)
+                    throws IOException {
         switch (type) {
         case jsfjs:
             for (Resource r : retrieveResources(wrm, page, type)) {
                 String rtarget = r.getTarget();
                 ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Script",
-                        rtarget == null ? targetValue : rtarget, nextHandler);
+                        rtarget == null ? targetValue : rtarget, includeTimestamp, nextHandler);
                 new ScriptResourceHandler(config).apply(ctx, parent);
             }
             break;
@@ -185,7 +197,7 @@ public class PageResourceHandler extends MetaTagHandler {
             for (Resource r : retrieveResources(wrm, page, type)) {
                 String rtarget = r.getTarget();
                 ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Stylesheet",
-                        rtarget == null ? targetValue : rtarget, nextHandler);
+                        rtarget == null ? targetValue : rtarget, includeTimestamp, nextHandler);
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
             break;
@@ -196,14 +208,14 @@ public class PageResourceHandler extends MetaTagHandler {
             includeXHTML(ctx, parent, retrieveResources(wrm, page, type), nextHandler);
             break;
         case js:
-            includePageResource(ctx, parent, page.getName(), type, flavor, targetValue, nextHandler);
+            includePageResource(ctx, parent, page.getName(), type, flavor, targetValue, includeTimestamp, nextHandler);
             break;
         case css:
-            includePageResource(ctx, parent, page.getName(), type, flavor, targetValue, nextHandler);
+            includePageResource(ctx, parent, page.getName(), type, flavor, targetValue, includeTimestamp, nextHandler);
             break;
         case html:
             for (String bundle : page.getResourceBundles()) {
-                includeResourceBundle(ctx, parent, bundle, type, flavor, targetValue, nextHandler);
+                includeResourceBundle(ctx, parent, bundle, type, flavor, targetValue, includeTimestamp, nextHandler);
             }
             break;
         default:
@@ -254,7 +266,7 @@ public class PageResourceHandler extends MetaTagHandler {
     }
 
     protected ComponentConfig getJSFResourceComponentConfig(Resource resource, String rendererType, String target,
-            FaceletHandler nextHandler) {
+            String includeTimestamp, FaceletHandler nextHandler) {
         String componentType = UIOutput.COMPONENT_TYPE;
         String uri = resource.getURI();
         String resourceName;
@@ -274,6 +286,9 @@ public class PageResourceHandler extends MetaTagHandler {
         }
         if (!StringUtils.isBlank(target)) {
             attrs.add(getTagAttribute("target", target));
+        }
+        if (!StringUtils.isBlank(includeTimestamp)) {
+            attrs.add(getTagAttribute("includeTimestamp", includeTimestamp));
         }
         TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
         ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,
@@ -299,7 +314,7 @@ public class PageResourceHandler extends MetaTagHandler {
     }
 
     protected void includeResourceBundle(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
-            String flavor, String target, FaceletHandler nextHandler) throws IOException {
+            String flavor, String target, String includeTimestamp, FaceletHandler nextHandler) throws IOException {
         String componentType = UIOutput.COMPONENT_TYPE;
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         attrs.add(getTagAttribute("name", name));
@@ -309,6 +324,9 @@ public class PageResourceHandler extends MetaTagHandler {
         }
         if (!StringUtils.isBlank(flavor)) {
             attrs.add(getTagAttribute("flavor", flavor));
+        }
+        if (!StringUtils.isBlank(includeTimestamp)) {
+            attrs.add(getTagAttribute("includeTimestamp", includeTimestamp));
         }
         TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
         ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,
@@ -317,7 +335,7 @@ public class PageResourceHandler extends MetaTagHandler {
     }
 
     protected void includePageResource(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
-            String flavor, String target, FaceletHandler nextHandler) throws IOException {
+            String flavor, String target, String includeTimestamp, FaceletHandler nextHandler) throws IOException {
         String componentType = UIOutput.COMPONENT_TYPE;
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         attrs.add(getTagAttribute("name", name));
@@ -327,6 +345,9 @@ public class PageResourceHandler extends MetaTagHandler {
         }
         if (!StringUtils.isBlank(flavor)) {
             attrs.add(getTagAttribute("flavor", flavor));
+        }
+        if (!StringUtils.isBlank(includeTimestamp)) {
+            attrs.add(getTagAttribute("includeTimestamp", includeTimestamp));
         }
         TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
         ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,

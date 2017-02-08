@@ -24,13 +24,14 @@ import org.nuxeo.ecm.web.resources.api.Processor;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 import org.nuxeo.ecm.web.resources.api.ResourceContext;
+import org.nuxeo.runtime.service.TimestampedService;
 
 /**
  * Service for web resources retrieval.
  *
  * @since 7.3
  */
-public interface WebResourceManager {
+public interface WebResourceManager extends TimestampedService {
 
     /**
      * Returns a registered resource with given name, or null if not found.
