@@ -89,7 +89,7 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
         Object includeTimestamp = component.getAttributes().get("includeTimestamp");
         if (includeTimestamp instanceof String) {
             if (!StringUtils.isBlank((String) includeTimestamp)) {
-                doIncludeTimestamp = Boolean.valueOf((String) includeTimestamp);
+                doIncludeTimestamp = Boolean.parseBoolean((String) includeTimestamp);
             }
         }
         if (doIncludeTimestamp) {
