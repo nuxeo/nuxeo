@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
- *
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ *  
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -14,31 +14,39 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     Funsho David
+ *
  */
+
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.impl.adapters.helper.TypeAdapterHelper;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+
+import java.util.Collection;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @since 9.1
  */
-public class StringToDocModel implements TypeAdapter {
+public class ArrayListToDocModelList implements TypeAdapter {
 
     @Override
-    public DocumentModel getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
+    public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
+        Collection<String> list = (Collection<String>) objectToAdapt;
+        DocumentModelList result = new DocumentModelListImpl(list.size());
         try {
-            String value = (String) objectToAdapt;
-            return ctx.getCoreSession().getDocument(TypeAdapterHelper.createRef(ctx, value));
-        } catch (TypeAdaptException e) {
-            throw e;
-        } catch (NuxeoException e) {
+            for (String val : list) {
+                result.add(ctx.getCoreSession().getDocument(TypeAdapterHelper.createRef(ctx, val)));
+            }
+        } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
         }
+        return result;
     }
+
 }
