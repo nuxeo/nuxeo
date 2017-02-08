@@ -419,7 +419,10 @@ public class StorageConfiguration {
 
     private long convertToStoredTimestamp(long timestamp) {
         if (isVCSMySQL()) {
-            return timestamp / 1000 * 1000;
+            long div = timestamp / 1000;
+            long modulo = timestamp % 1000;
+            // round to the closest second
+            return 1000 * (div + (modulo < 500 ? 0 : 1));
         } else if (isVCSSQLServer()) {
             // as datetime in SQL Server are rounded to increments of .000, .003, or .007 seconds
             // see https://msdn.microsoft.com/en-us/library/aa258277(SQL.80).aspx
