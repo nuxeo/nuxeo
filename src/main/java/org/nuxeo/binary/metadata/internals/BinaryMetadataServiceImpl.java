@@ -21,6 +21,7 @@ package org.nuxeo.binary.metadata.internals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -196,9 +197,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             // Write doc properties from outputs.
             for (String metadata : blobMetadataOutput.keySet()) {
                 Object metadataValue = blobMetadataOutput.get(metadata);
+                boolean metadataIsArray = metadataValue.getClass().isArray() || metadataValue instanceof ArrayList;
                 String property = metadataMapping.get(metadata);
-                if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection)
-                        && !(metadataValue.getClass().isArray())) {
+                if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection) && !(metadataIsArray)) {
                     metadataValue = metadataValue.toString();
                 }
                 if (metadataValue instanceof String) {
@@ -206,6 +207,15 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                     metadataValue = ((String) metadataValue).replace("\u0000", "");
                 }
                 try {
+                    if (doc.getProperty(property).isList()) {
+                        if (!metadataIsArray) {
+                            metadataValue = Arrays.asList(metadataValue);
+                        }
+                    } else {
+                        if (metadataIsArray) {
+                            metadataValue = metadataValue.toString();
+                        }
+                    }
                     doc.setPropertyValue(property, (Serializable) metadataValue);
                 } catch (PropertyException e) {
                     log.warn(String.format(
