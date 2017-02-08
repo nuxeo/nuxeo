@@ -19,11 +19,9 @@ package org.nuxeo.ecm.automation.core.impl.adapters;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.automation.core.impl.adapters.helper.TypeAdapterHelper;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 /**
@@ -37,16 +35,12 @@ public class ArrayStringToDocModelList implements TypeAdapter {
         DocumentModelList result = new DocumentModelListImpl();
         try {
             for (String value : content) {
-                result.add(ctx.getCoreSession().getDocument(createRef(value)));
+                result.add(ctx.getCoreSession().getDocument(TypeAdapterHelper.createRef(ctx, value)));
             }
         } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
         }
         return result;
-    }
-
-    public DocumentRef createRef(String value) {
-        return value.startsWith("/") ? new PathRef(value) : new IdRef(value);
     }
 
 }
