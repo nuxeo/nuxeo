@@ -1,0 +1,20 @@
+<component name="org.nuxeo.binary.metadata.contribs.tests.lists">
+
+  <extension target="org.nuxeo.binary.metadata"
+             point="metadataMappings">
+    <metadataMapping id="IPTC-ONE-KW" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="IPTC:Keywords" xpath="dc:subjects"/>
+    </metadataMapping>
+    <metadataMapping id="EXCEL-TITLES-OF-PARTS-TO-SUBJECTS" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="XML:TitlesOfParts" xpath="dc:subjects"/>
+    </metadataMapping>
+    <metadataMapping id="EXCEL-TITLES-OF-PARTS-TO-FORMAT" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="XML:TitlesOfParts" xpath="dc:format"/>
+    </metadataMapping>
+    
+  </extension>
+
+</component>
