@@ -41,7 +41,9 @@ public class ResourceImportRenderer extends HTMLImportRenderer {
         if (name != null) {
             Resource r = resolveNuxeoResource(context, component, name);
             if (r != null) {
-                return getUrlWithParams(context, component, r.getURI());
+                String url = getUrlWithParams(context, component, r.getURI());
+                url = resolveUrlWithTimestamp(component, url);
+                return url;
             }
         }
         return null;
