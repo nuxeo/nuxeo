@@ -62,6 +62,16 @@
         "form".
       </description>
     </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
   </tag>
 
   <tag>
@@ -159,6 +169,16 @@
         attribute value).
       </description>
     </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
   </tag>
 
   <tag>
@@ -246,6 +266,16 @@
       <description>
         Specific target for HTML resources (optional, defaults to target
         attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
       </description>
     </attribute>
   </tag>
@@ -339,6 +369,16 @@
         "form".
       </description>
     </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
+      </description>
+    </attribute>
   </tag>
 
   <tag>
@@ -389,6 +429,16 @@
         rendered at the same point in the view where the tag is located.
         Currently supported values for this attribute are "head", "body", and
         "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>includeTimestamp</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean indicating whether the generated URL will include a timestamp
+        to workaround caching issues when the resource changes server side.
+        Available since 9.1, defaults to true.
       </description>
     </attribute>
   </tag>

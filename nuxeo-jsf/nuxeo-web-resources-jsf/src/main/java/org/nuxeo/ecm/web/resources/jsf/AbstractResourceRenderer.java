@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -30,6 +31,7 @@ import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
@@ -78,6 +80,23 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
             String name = (String) attributes.get("name");
             String library = (String) attributes.get("library");
             url = resolveResourceUrl(context, component, library, name);
+        }
+        return resolveUrlWithTimestamp(component, url);
+    }
+
+    protected String resolveUrlWithTimestamp(UIComponent component, String url) {
+        boolean doIncludeTimestamp = true;
+        Object includeTimestamp = component.getAttributes().get("includeTimestamp");
+        if (includeTimestamp instanceof String) {
+            if (!StringUtils.isBlank((String) includeTimestamp)) {
+                doIncludeTimestamp = Boolean.valueOf((String) includeTimestamp);
+            }
+        }
+        if (doIncludeTimestamp) {
+            Long timestamp = Framework.getService(WebResourceManager.class).getLastModified();
+            if (timestamp != null) {
+                return URIUtils.addParametersToURIQuery(url, Collections.singletonMap("ts", String.valueOf(timestamp)));
+            }
         }
         return url;
     }
