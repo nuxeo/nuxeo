@@ -18,13 +18,12 @@
  */
 package org.nuxeo.template.listeners;
 
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -47,11 +46,8 @@ public class TemplateDeletionGuard implements EventListener {
                     if (templateDoc.getTemplateBasedDocuments().size() > 0) {
                         TransactionHelper.setTransactionRollbackOnly();
                         event.cancel();
-                        // XXX should do better
-                        FacesMessages.instance().clearGlobalMessages();
-                        FacesMessages.instance().addFromResourceBundleOrDefault(StatusMessage.Severity.WARN,
-                                "label.template.canNotDeletedATemplateInUse",
-                                "Can not delete a template that is still in use.");
+                        docCtx.newEvent(DocumentEventTypes.DOCUMENT_REMOVAL_CANCELED);
+                        Framework.getService(EventProducer.class).fireEvent(event);
                     }
                 }
             }

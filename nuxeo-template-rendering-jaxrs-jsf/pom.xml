@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.template.rendering</groupId>
+    <artifactId>nuxeo-template-rendering-parent</artifactId>
+    <version>9.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.template.rendering</groupId>
+  <artifactId>nuxeo-template-rendering-jaxrs-jsf</artifactId>
+  <name>Template Rendering JAXRS Binding JSF</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
+    </dependency>
+  </dependencies>
+</project>

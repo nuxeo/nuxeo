@@ -22,11 +22,13 @@
     <module>nuxeo-template-rendering-jxls</module>
     <module>nuxeo-template-rendering-jod</module>
     <module>nuxeo-template-rendering-sandbox</module>
-    <module>nuxeo-template-rendering-web</module>
+    <module>nuxeo-template-rendering-jsf</module>
     <module>nuxeo-template-rendering-jaxrs</module>
+    <module>nuxeo-template-rendering-jaxrs-jsf</module>
     <module>nuxeo-template-rendering-samples</module>
     <module>nuxeo-template-rendering-deckjs</module>
     <module>nuxeo-template-rendering-core-dependencies</module>
+    <module>nuxeo-template-rendering-jsf-dependencies</module>
   </modules>
 
   <dependencyManagement>

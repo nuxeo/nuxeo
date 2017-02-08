@@ -28,7 +28,7 @@ API module containing all interfaces.
 
 Component, extension points and service implementation. This modules only contains template processors for FreeMarker and XSLT.
 
-**nuxeo-template-rendering-web**
+**nuxeo-template-rendering-jsf**
 
 Contribute UI level extensions: Layouts, Widgets, Views, Url bindings ...
 

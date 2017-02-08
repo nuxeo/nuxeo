@@ -16,7 +16,7 @@
  * Contributors:
  *     Thierry Delprat
  */
-package org.nuxeo.template.web.url;
+package org.nuxeo.template.jsf.url;
 
 import org.nuxeo.ecm.platform.rendition.url.RenditionBasedCodec;
 
