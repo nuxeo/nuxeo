@@ -78,6 +78,7 @@ public class ResourceBundleRenderer extends AbstractResourceRenderer {
     protected void encodeEnd(FacesContext context, UIComponent component, ResourceType type, String base)
             throws IOException {
         String url = resolveNuxeoResourceUrl(context, component, base);
+        url = resolveUrlWithTimestamp(component, url);
         ResponseWriter writer = context.getResponseWriter();
         if (ResourceType.css.equals(type)) {
             writer.startElement("link", component);
