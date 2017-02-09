@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.impl.adapters.helper.TypeAdapterHelper;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 import java.util.Collection;
@@ -37,11 +38,16 @@ public class ArrayListToDocModelList implements TypeAdapter {
 
     @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
-        Collection<String> list = (Collection<String>) objectToAdapt;
+        Collection<Object> list = (Collection<Object>) objectToAdapt;
         DocumentModelList result = new DocumentModelListImpl(list.size());
         try {
-            for (String val : list) {
-                result.add(TypeAdapterHelper.createDocumentModel(ctx, val));
+            for (Object val : list) {
+                if(val instanceof String) {
+                    result.add(TypeAdapterHelper.createDocumentModel(ctx, (String) val));
+                }
+                else if (val instanceof DocumentRef) {
+                    result.add(TypeAdapterHelper.createDocumentModel(ctx, (DocumentRef) val));
+                }
             }
         } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
