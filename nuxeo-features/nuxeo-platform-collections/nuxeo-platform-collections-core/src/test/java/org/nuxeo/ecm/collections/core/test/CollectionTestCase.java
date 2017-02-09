@@ -73,7 +73,7 @@ public class CollectionTestCase {
 
     protected static final int MAX_CARDINALITY = (int) ((2 * CollectionAsynchrnonousQuery.MAX_RESULT) + 1);
 
-    protected static final int WORK_TIME_OUT_MS = 5000;
+    protected static final int WORK_TIME_OUT_MS = 30000;
 
     protected DocumentModel testWorkspace;
 
