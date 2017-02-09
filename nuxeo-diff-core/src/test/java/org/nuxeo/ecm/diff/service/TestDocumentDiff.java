@@ -79,7 +79,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
     @Before
     public void init() {
-        dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'", Locale.ENGLISH);
+        dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
         dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
