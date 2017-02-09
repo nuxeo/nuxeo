@@ -152,6 +152,9 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             mustSnapshot = true;
         } else {
             String[] existingUUIds = (String[]) doc.getPropertyValue(CHILDREN_PROP);
+            if (existingUUIds == null) {
+                existingUUIds = new String[0];
+            }
             if (doc.hasFacet(FacetNames.ORDERABLE)) {
                 // ordered, exact comparison
                 if (!Arrays.equals(vuuids, existingUUIds)) {
