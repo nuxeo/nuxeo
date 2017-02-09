@@ -100,7 +100,7 @@ public class TestTypedExportedDocument {
 
         fieldNode = (Node) xpath.evaluate("//dc:created[@type='date']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
-        assertEquals("2011-12-29T11:24:25.00Z", fieldNode.getTextContent());
+        assertEquals("2011-12-29T11:24:25.000Z", fieldNode.getTextContent());
 
         fieldNode = (Node) xpath.evaluate("//dc:creator[@type='string']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
@@ -108,7 +108,7 @@ public class TestTypedExportedDocument {
 
         fieldNode = (Node) xpath.evaluate("//dc:modified[@type='date']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);
-        assertEquals("2011-12-29T11:24:25.00Z", fieldNode.getTextContent());
+        assertEquals("2011-12-29T11:24:25.000Z", fieldNode.getTextContent());
 
         fieldNode = (Node) xpath.evaluate("//dc:lastContributor[@type='string']", document, XPathConstants.NODE);
         assertNotNull(fieldNode);

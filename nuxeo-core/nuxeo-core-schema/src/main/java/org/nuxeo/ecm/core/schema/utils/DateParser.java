@@ -27,7 +27,7 @@ public class DateParser {
     /**
      * @since 8.2
      */
-    public static final String W3C_DATE_FORMAT = "%04d-%02d-%02dT%02d:%02d:%02d.%02dZ";
+    public static final String W3C_DATE_FORMAT = "%04d-%02d-%02dT%02d:%02d:%02d.%03dZ";
 
     public static Calendar parse(String str) throws ParseException {
         if (str == null) {
@@ -86,7 +86,7 @@ public class DateParser {
     }
 
     /**
-     * 2011-10-23T12:00:00.00Z
+     * 2011-10-23T12:00:00.000Z
      *
      * @param date
      * @return
@@ -101,7 +101,7 @@ public class DateParser {
     }
 
     /**
-     * 2011-10-23T12:00:00.00Z
+     * 2011-10-23T12:00:00.000Z
      *
      * @param calendar
      * @return
@@ -116,7 +116,7 @@ public class DateParser {
                 calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DATE),
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND),
-                calendar.get(Calendar.MILLISECOND) / 10);
+                calendar.get(Calendar.MILLISECOND));
     }
 
     private final static int readYear(Calendar cal, String str, int off) throws ParseException {
