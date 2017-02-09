@@ -24,7 +24,7 @@
 ##   -Dnuxeo.conf="/path/to/nuxeo/bin/nuxeo.conf"
 ##   -Dnuxeo.log.dir="/path/to/nuxeo/log"
 
-MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
+MAX_FD_LIMIT_HELP_URL="https://doc.nuxeo.com/nxdoc/java.net.SocketException-too-many-open-files/"
 
 NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0); cd ../nuxeo-server-tomcat/target/nuxeo-server-9.1-SNAPSHOT-tomcat; pwd -P)}
 

@@ -20,7 +20,7 @@
 ## Shell script calling a multi-OS Nuxeo Java launcher.
 ## Using explicitely bash to avoid dash which is not POSIX.
 ##
-MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
+MAX_FD_LIMIT_HELP_URL="https://doc.nuxeo.com/nxdoc/java.net.SocketException-too-many-open-files/"
 
 : ${NUXEO_HOME:=$(cd "$(dirname "$0")"/..; pwd -P)}
 : ${NUXEO_CONF:="$NUXEO_HOME"/bin/nuxeo.conf}
