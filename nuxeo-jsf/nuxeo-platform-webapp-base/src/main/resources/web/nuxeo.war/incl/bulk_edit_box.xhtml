@@ -25,10 +25,12 @@
       <h:commandButton styleClass="button primary"
         onclick="document.getElementById('#{fancyboxFormId}_waiter').className = '';"
         action="#{bulkEditActions.bulkEditSelection}"
+        id="update"
         value="#{messages['command.update']}"/>
       <a4j:commandButton styleClass="button"
         immediate="true" execute="@this"
         action="#{bulkEditActions.cancel}"
+        id="cancel"
         value="#{messages['command.cancel']}"
         oncomplete="jQuery.fancybox.close();"/>
       <span class="displayN" id="#{fancyboxFormId}_waiter">
