@@ -1293,7 +1293,7 @@ public class CmisSuiteSession {
         Map<String, Object> inputMap = new HashMap<>();
         inputMap.put("stringProp", "testString1");
         Long dateAsLong = Long.valueOf(1234500000000L);
-        String dateAsString = "2009-02-13T04:40:00.00Z";
+        String dateAsString = "2009-02-13T04:40:00.000Z";
 
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(PropertyIds.OBJECT_TYPE_ID, "ComplexFile");
