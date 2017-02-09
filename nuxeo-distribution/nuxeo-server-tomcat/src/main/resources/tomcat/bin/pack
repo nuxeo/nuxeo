@@ -19,7 +19,7 @@
 
 echo 'DEPRECATED - You should use "nuxeoctl pack <target> [options]"'
 
-MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
+MAX_FD_LIMIT_HELP_URL="https://doc.nuxeo.com/nxdoc/java.net.SocketException-too-many-open-files/"
 
 # Helper functions
 
