@@ -239,41 +239,61 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testStringArray() throws Exception {
-        assertNotNull(doc.getPropertyValue("tp:stringArray"));
+        assertNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { "foo", "bar" };
         doc.setPropertyValue("tp:stringArray", values);
         doc = session.saveDocument(doc);
         assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
+        // set back to null
+        doc.setPropertyValue("tp:stringArray", null);
+        doc = session.saveDocument(doc);
+        assertNull(doc.getPropertyValue("tp:stringArray"));
+        // set to empty array also reads back as null
+        doc.setPropertyValue("tp:stringArray", new String[0]);
+        doc = session.saveDocument(doc);
+        assertNull(doc.getPropertyValue("tp:stringArray"));
     }
 
-    // NXP-2454
     @Test
     public void testDateArray() throws Exception {
-        assertNotNull(doc.getPropertyValue("tp:dateArray"));
+        assertNull(doc.getPropertyValue("tp:dateArray"));
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
         Calendar[] values = { cal };
         doc.setPropertyValue("tp:dateArray", values);
         doc = session.saveDocument(doc);
-        // currently returning long[] instead of Calendar[]
         assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:dateArray")));
+        // set back to null
+        doc.setPropertyValue("tp:dateArray", null);
+        doc = session.saveDocument(doc);
+        assertNull(doc.getPropertyValue("tp:dateArray"));
+        // set to empty array also reads back as null
+        doc.setPropertyValue("tp:dateArray", new Calendar[0]);
+        doc = session.saveDocument(doc);
+        assertNull(doc.getPropertyValue("tp:dateArray"));
     }
 
-    // NXP-2454
     @Test
     public void testIntArray() throws Exception {
-        assertNotNull(doc.getPropertyValue("tp:intArray"));
+        assertNull(doc.getPropertyValue("tp:intArray"));
         Long[] values = { 1L, 2L, 3L };
         doc.setPropertyValue("tp:intArray", values);
         doc = session.saveDocument(doc);
-        // currently returning long[], maybe this is the wanted behaviour (?)
         assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:intArray")));
+        // set back to null
+        doc.setPropertyValue("tp:intArray", null);
+        doc = session.saveDocument(doc);
+        assertNull(doc.getPropertyValue("tp:intArray"));
+        // set to empty array also reads back as null
+        doc.setPropertyValue("tp:intArray", new Long[0]);
+        doc = session.saveDocument(doc);
+        assertNull(doc.getPropertyValue("tp:intArray"));
     }
 
     @Test
     public void testArrayWithNullFirst() throws Exception {
         assumeTrue("MarkLogic repository doesn't handle null values", !isDBSMarkLogic());
-        assertNotNull(doc.getPropertyValue("tp:stringArray"));
+        assertNull(doc.getPropertyValue("tp:stringArray"));
         String[] values = { null, "bar" };
         doc.setPropertyValue("tp:stringArray", values);
         session.saveDocument(doc);
@@ -1306,7 +1326,7 @@ public class TestSQLRepositoryProperties {
         doc = session.getDocument(doc.getRef());
         assertEquals(Arrays.asList("a"), Arrays.asList((Object[]) doc.getPropertyValue("dc:subjects")));
         assertEquals("aa", doc.getPropertyValue("dc:title"));
-        assertEquals(Collections.emptyList(), Arrays.asList((Object[]) doc.getPropertyValue("dc:contributors")));
+        assertNull(doc.getPropertyValue("dc:contributors"));
     }
 
     // change data in the database to make it like we just migrated the fields from different types
@@ -1333,7 +1353,8 @@ public class TestSQLRepositoryProperties {
         List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
         assertEquals(1, list.size());
         Map<String, Serializable> map = list.get(0);
-        assertEquals(0, ((String[]) map.get("array")).length);
+        Object[] array = (Object[]) map.get("array");
+        assertNull(array);
     }
 
     @Test
@@ -1354,7 +1375,8 @@ public class TestSQLRepositoryProperties {
         List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
         assertEquals(1, list.size());
         Map<String, Serializable> map = list.get(0);
-        assertEquals(0, ((String[]) map.get("array")).length);
+        Object[] array = (Object[]) map.get("array");
+        assertNull(array);
     }
 
     @Test

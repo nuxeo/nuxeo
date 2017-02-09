@@ -75,8 +75,8 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public void init(Serializable value) throws PropertyException {
-        if (value == null) { // IGNORE null values - properties will be
-            // considered PHANTOMS
+        if (value == null || (value instanceof Object[] && ((Object[]) value).length == 0)) {
+            // ignore null or empty values, properties will be considered phantoms
             return;
         }
         internalSetValue(value);

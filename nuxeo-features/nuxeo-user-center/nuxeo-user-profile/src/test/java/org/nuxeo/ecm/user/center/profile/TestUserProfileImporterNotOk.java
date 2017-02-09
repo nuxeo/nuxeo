@@ -68,8 +68,7 @@ public class TestUserProfileImporterNotOk extends AbstractUserProfileImporterTes
                     Assert.assertFalse(propertyName + " property value should be false",
                             (Boolean) propertyValue);
                 } else if (propertyType.isListType()) {
-                    Assert.assertEquals(propertyName + "property list should be empty",
-                            0, ((String[]) propertyValue).length);
+                    Assert.assertNull(propertyName + "property list should be empty", propertyValue);
                 } else {
                     assertNull(propertyName + " property value should be null", propertyValue);
                 }

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -73,9 +72,7 @@ public class DocWithDefaultValuesTest extends BaseTest {
     }
 
     @Test
-    @Ignore
-    // FIXME: NXP-19466 - default value lifecycle is not correctly managed
-    public void testScalarSetOnNullDontSetDefaultValueAgain() throws Exception {
+    public void testScalarSetOnNullSetsDefaultValueAgain() throws Exception {
         // given a doc saved with a property with a default value set to null
         getResponse(RequestType.POST, "path/", createDocumentJSON("\"dv:simpleWithDefault\": null"));
 
@@ -83,9 +80,9 @@ public class DocWithDefaultValuesTest extends BaseTest {
         fetchInvalidations();
         DocumentModel doc = session.getDocument(new PathRef("/doc1"));
 
-        // then the property should remain null
+        // then the default value must be set
         doc = session.getDocument(doc.getRef());
-        assertNull(doc.getPropertyValue("dv:simpleWithDefault"));
+        assertEquals("value", doc.getPropertyValue("dv:simpleWithDefault"));
     }
 
     @Test
@@ -98,14 +95,12 @@ public class DocWithDefaultValuesTest extends BaseTest {
         DocumentModel doc = session.getDocument(new PathRef("/doc1"));
 
         // then the default value must be set
-        assertEquals(0, ((String[]) doc.getPropertyValue("dv:multiWithoutDefault")).length);
+        assertNull(doc.getPropertyValue("dv:multiWithoutDefault"));
         assertArrayEquals(new String[] { "value1", "value2" }, (String[]) doc.getPropertyValue("dv:multiWithDefault"));
     }
 
     @Test
-    @Ignore
-    // FIXME: NXP-19466 - default value lifecycle is not correctly managed
-    public void testMultiSetOnNullDontSetDefaultValueAgain() throws Exception {
+    public void testMultiSetOnNullSetsDefaultValueAgain() throws Exception {
         // given a doc saved with a property with a default value set to null
         getResponse(RequestType.POST, "path/", createDocumentJSON("\"dv:multiWithDefault\": null"));
 
@@ -113,9 +108,9 @@ public class DocWithDefaultValuesTest extends BaseTest {
         fetchInvalidations();
         DocumentModel doc = session.getDocument(new PathRef("/doc1"));
 
-        // then the property should remain null
+        // then the default value must be set
         doc = session.getDocument(doc.getRef());
-        assertEquals(0, ((String[]) doc.getPropertyValue("dv:multiWithDefault")).length);
+        assertArrayEquals(new String[] { "value1", "value2" }, (String[]) doc.getPropertyValue("dv:multiWithDefault"));
     }
 
 }
