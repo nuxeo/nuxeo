@@ -86,7 +86,7 @@ public class TestDocUpdateWithDepotData {
 
         ref = new PathRef("/Workspace-1/odj.pdf");
         doc = session.getDocument(ref);
-        Assert.assertEquals("File odj.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
+        Assert.assertNull("File odj.pdf should have 0 subjects", doc.getPropertyValue("dc:subjects"));
         Assert.assertEquals("File odj.pdf should have 2 Actors", 2, ((ArrayList<?>) doc.getPropertyValue("complx:Actors")).size());
 
         ref = new PathRef("/Workspace-1/pvcomplet.pdf");
@@ -96,7 +96,7 @@ public class TestDocUpdateWithDepotData {
 
         ref = new PathRef("/Workspace-1/Acte-38/DECISION.pdf");
         doc = session.getDocument(ref);
-        Assert.assertEquals("File DECISION.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
+        Assert.assertNull("File DECISION.pdf should have 0 subjects", doc.getPropertyValue("dc:subjects"));
         Assert.assertEquals("File DECISION.pdf should have 5 contributors", 5, ((String[]) doc.getPropertyValue("dc:contributors")).length);
         Boolean b = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors")).contains("Waldo King");
         Assert.assertFalse("File DECISION.pdf should NOT contain a contributor named Waldo King",b);
@@ -120,7 +120,7 @@ public class TestDocUpdateWithDepotData {
 
         ref = new PathRef("/Workspace-1/odj.pdf");
         doc = session.getDocument(ref);
-        Assert.assertEquals("File odj.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
+        Assert.assertNull("File odj.pdf should have 0 subjects", doc.getPropertyValue("dc:subjects"));
         Assert.assertEquals("File odj.pdf should have 3 Actors", 3, ((ArrayList<?>) doc.getPropertyValue("complx:Actors")).size());
 
         ref = new PathRef("/Workspace-1/pv.pdf");
@@ -130,7 +130,7 @@ public class TestDocUpdateWithDepotData {
 
         ref = new PathRef("/Workspace-1/pvcomplet.pdf");
         doc = session.getDocument(ref);
-        Assert.assertEquals("File pvcomplet.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
+        Assert.assertNull("File pvcomplet.pdf should have 0 subjects", doc.getPropertyValue("dc:subjects"));
         Assert.assertEquals("File pvcomplet.pdf should have 2 contributors", 2, ((String[]) doc.getPropertyValue("dc:contributors")).length);
         b = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors")).contains("Eddie Murphy");
         Assert.assertTrue("File pvcomplet.pdf should contain a contributor named Eddie Murphy",b);
@@ -139,7 +139,7 @@ public class TestDocUpdateWithDepotData {
 
         ref = new PathRef("/Workspace-1/Acte-38/DECISION.pdf");
         doc = session.getDocument(ref);
-        Assert.assertEquals("File DECISION.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
+        Assert.assertNull("File DECISION.pdf should have 0 subjects", doc.getPropertyValue("dc:subjects"));
         Assert.assertEquals("File DECISION.pdf should have 6 contributors", 6, ((String[]) doc.getPropertyValue("dc:contributors")).length);
         b = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors")).contains("Waldo King");
         Assert.assertTrue("File DECISION.pdf should contain a contributor named Waldo King",b);

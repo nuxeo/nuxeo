@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -315,17 +314,17 @@ public class XMLImporterServiceImpl {
                 value = (Serializable) resolveAndEvaluateXmlNode(el, conf.getSingleXpath());
                 if (value != null) {
                     Object values = property.getValue();
-                    if (values instanceof List) {
-                        ((List) values).add(value);
-                        property.setValue(values);
+                    if (values == null) {
+                        property.setValue(new Object[] { value });
                     } else if (values instanceof Object[]) {
-                        List<Object> valuesList = new ArrayList<>();
-                        Collections.addAll(valuesList, (Object[]) property.getValue());
-                        valuesList.add(value);
-                        property.setValue(valuesList.toArray());
+                        int len = ((Object[]) values).length;
+                        Object[] newValues = new Object[len + 1];
+                        System.arraycopy(values, 0, newValues, 0, len);
+                        newValues[len] = value;
+                        property.setValue(newValues);
                     } else {
                         log.error("Simple multi value property " + targetDocProperty
-                                + " is neither a List nor an Array");
+                                + " is not an Array");
                     }
                 }
             } else {
