@@ -87,12 +87,15 @@ public class ContentTabSubPage extends DocumentBasePage {
         super(driver);
     }
 
-    protected ContentViewElement getElement() {
+    /**
+     * @since 9.1
+     */
+    public ContentViewElement getContentViewElement() {
         return AbstractTest.getWebFragment(By.id("cv_document_content_0_panel"), ContentViewElement.class);
     }
 
     public List<WebElement> getChildDocumentRows() {
-        return getElement().getItems();
+        return getContentViewElement().getItems();
     }
 
     /**
@@ -101,7 +104,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param documentTitle the document title
      */
     public DocumentBasePage goToDocument(String documentTitle) {
-        getElement().clickOnItemTitle(documentTitle);
+        getContentViewElement().clickOnItemTitle(documentTitle);
         return asPage(DocumentBasePage.class);
     }
 
@@ -123,21 +126,21 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     public DocumentBasePage removeDocument(String documentTitle) {
-        getElement().checkByTitle(documentTitle);
+        getContentViewElement().checkByTitle(documentTitle);
         deleteSelectedDocuments();
         return asPage(DocumentBasePage.class);
     }
 
     protected void deleteSelectedDocuments() {
-        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(DELETE));
+        waitUntilEnabledAndClick(getContentViewElement().getSelectionActionByTitle(DELETE));
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.accept();
     }
 
     public DocumentBasePage addToWorkList(String documentTitle) {
-        getElement().checkByTitle(documentTitle);
-        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(ADD_TO_WORKLIST));
+        getContentViewElement().checkByTitle(documentTitle);
+        waitUntilEnabledAndClick(getContentViewElement().getSelectionActionByTitle(ADD_TO_WORKLIST));
         return asPage(DocumentBasePage.class);
     }
 
@@ -145,7 +148,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * Removes all documents visible on current page.
      */
     public ContentTabSubPage removeAllDocuments() {
-        ContentViewElement cv = getElement();
+        ContentViewElement cv = getContentViewElement();
         if (cv.getItems().size() == 0) {
             // no document to remove
             return this;
@@ -221,7 +224,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 8.1
      */
     public ContentTabSubPage selectByIndex(int... indexes) {
-        getElement().checkByIndex(indexes);
+        getContentViewElement().checkByIndex(indexes);
         return asPage(ContentTabSubPage.class);
     }
 
@@ -242,7 +245,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 8.1
      */
     public ContentTabSubPage selectByTitle(String... titles) {
-        getElement().checkByTitle(titles);
+        getContentViewElement().checkByTitle(titles);
         return asPage(ContentTabSubPage.class);
     }
 
@@ -253,8 +256,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage copyByIndex(int... indexes) {
-        getElement().checkByIndex(indexes);
-        getElement().getSelectionActionByTitle(COPY).click();
+        getContentViewElement().checkByIndex(indexes);
+        getContentViewElement().getSelectionActionByTitle(COPY).click();
         return asPage(ContentTabSubPage.class);
     }
 
@@ -265,8 +268,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage copyByTitle(String... titles) {
-        getElement().checkByTitle(titles);
-        getElement().getSelectionActionByTitle(COPY).click();
+        getContentViewElement().checkByTitle(titles);
+        getContentViewElement().getSelectionActionByTitle(COPY).click();
         return asPage(ContentTabSubPage.class);
     }
 
@@ -276,7 +279,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {
-        getElement().getSelectionActionByTitle(PASTE).click();
+        getContentViewElement().getSelectionActionByTitle(PASTE).click();
         return asPage(ContentTabSubPage.class);
     }
 
