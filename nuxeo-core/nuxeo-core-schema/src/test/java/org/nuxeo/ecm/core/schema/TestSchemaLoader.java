@@ -29,7 +29,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -135,7 +134,6 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("schema1", "schema2"), Arrays.asList(docType.getSchemaNames()));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testSequence() throws Exception {
         URL url = getResource("schema/testList.xsd");
@@ -148,14 +146,10 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals(0, type.getMinCount());
         assertEquals("stringSequence", type.getName());
 
-        List<String> defaultValue = (List<String>) field.getDefaultValue();
-        assertEquals(3, defaultValue.size());
-        assertEquals("titi", defaultValue.get(0));
-        assertEquals("toto", defaultValue.get(1));
-        assertEquals("tata", defaultValue.get(2));
+        String[] defaultValue = (String[]) field.getDefaultValue();
+        assertEquals(Arrays.asList("titi", "toto", "tata"), Arrays.asList(defaultValue));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testList() throws Exception {
         URL url = getResource("schema/testList.xsd");
@@ -169,11 +163,8 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals(0, type.getMinCount());
         assertEquals("stringList", type.getName());
 
-        List<String> defaultValue = (List<String>) field.getDefaultValue();
-        assertEquals(3, defaultValue.size());
-        assertEquals("titi", defaultValue.get(0));
-        assertEquals("toto", defaultValue.get(1));
-        assertEquals("tata", defaultValue.get(2));
+        String[] defaultValue = (String[]) field.getDefaultValue();
+        assertEquals(Arrays.asList("titi", "toto", "tata"), Arrays.asList(defaultValue));
     }
 
     @Test
