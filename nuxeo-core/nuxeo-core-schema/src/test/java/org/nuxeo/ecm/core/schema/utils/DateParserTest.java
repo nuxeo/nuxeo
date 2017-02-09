@@ -47,6 +47,16 @@ public class DateParserTest {
     }
 
     @Test
+    public void testFormatDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        cal.setTimeInMillis(0);
+        assertEquals("1970-01-01T00:00:00.000Z", DateParser.formatW3CDateTime(cal));
+        cal.setTimeInMillis(1486660428314L);
+        assertEquals("2017-02-09T17:13:48.314Z", DateParser.formatW3CDateTime(cal));
+    }
+
+    @Test
     public void testReverseParsingDate() throws Exception {
         // NXP-19153: force time zone
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
