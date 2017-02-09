@@ -150,6 +150,8 @@ public class TestGetChangeSummary {
         DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5", "File");
         doc5.setPropertyValue("file:content", new StringBlob("The content of file 5."));
         doc5 = session.createDocument(doc5);
+        // Ensure the rounded modification date will not be equal to the truncated sync date
+        Thread.sleep(1000);
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
