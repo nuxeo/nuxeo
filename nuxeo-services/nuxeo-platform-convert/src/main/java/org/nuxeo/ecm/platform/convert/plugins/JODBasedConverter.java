@@ -182,8 +182,10 @@ public class JODBasedConverter implements ExternalConverter {
         OfficeDocumentConverter documentConverter = newDocumentConverter();
         // This plugin do deal only with one input source.
         String sourceMimetype = inputBlob.getMimeType();
-
-        boolean pdfa1 = parameters != null && Boolean.TRUE.toString().equals(parameters.get(PDFA1_PARAM));
+        
+        boolean pdfa1 = parameters != null && Boolean.TRUE.equals(
+        		(parameters.get(PDFA1_PARAM) instanceof Boolean)
+        			|| ((parameters.get(PDFA1_PARAM) instanceof String) && Boolean.parseBoolean((String)parameters.get(PDFA1_PARAM))));
 
         File sourceFile = null;
         File outFile = null;
