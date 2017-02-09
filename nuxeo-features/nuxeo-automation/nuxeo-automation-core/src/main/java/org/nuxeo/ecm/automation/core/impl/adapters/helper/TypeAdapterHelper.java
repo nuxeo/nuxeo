@@ -97,4 +97,15 @@ public class TypeAdapterHelper {
         DocumentRef docRef = createDocumentRef(ctx, value);
         return ctx.getCoreSession().getDocument(docRef);
     }
+
+    /**
+     * Create a document model from its reference
+     *
+     * @param ctx the operation context
+     * @param docRef the document reference
+     * @return the document model
+     */
+    public static DocumentModel createDocumentModel(OperationContext ctx, DocumentRef docRef) throws TypeAdaptException {
+        return ctx.getCoreSession().getDocument(docRef);
+    }
 }
