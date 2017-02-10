@@ -95,22 +95,4 @@
     </dependency>
   </dependencies>
 
-  <developers>
-    <developer>
-      <name>Thierry Delprat</name>
-      <email>tdelprat@nuxeo.com</email>
-      <organization>Nuxeo SA</organization>
-    </developer>
-    <developer>
-      <name>Alexandre Russel</name>
-      <email>arussel@nuxeo.com</email>
-      <organization>Nuxeo SA</organization>
-    </developer>
-    <developer>
-      <name>Thomas Roger</name>
-      <email>troger@nuxeo.com</email>
-      <organization>Nuxeo SA</organization>
-    </developer>
-  </developers>
-
 </project>
