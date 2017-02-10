@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -64,6 +65,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy("org.nuxeo.drive.operations:OSGI-INF/test-nuxeodrive-change-finder-contrib.xml")
 @Jetty(port = 18080)
 public class TestGetChangeSummary {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -151,7 +155,9 @@ public class TestGetChangeSummary {
         doc5.setPropertyValue("file:content", new StringBlob("The content of file 5."));
         doc5 = session.createDocument(doc5);
         // Ensure the rounded modification date will not be equal to the truncated sync date
-        Thread.sleep(1000);
+        if (coreFeature.getStorageConfiguration().isVCSMySQL()) {
+            Thread.sleep(1000);
+        }
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();

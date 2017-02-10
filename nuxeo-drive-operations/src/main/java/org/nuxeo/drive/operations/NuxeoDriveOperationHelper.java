@@ -57,9 +57,7 @@ public final class NuxeoDriveOperationHelper {
     }
 
     public static Blob asJSONBlob(Object value) throws JsonGenerationException, JsonMappingException, IOException {
-        StringBlob stringBlob = new StringBlob(new ObjectMapper().writeValueAsString(value), "application/json");
-        System.out.println(stringBlob.getString());
-        return stringBlob;
+        return new StringBlob(new ObjectMapper().writeValueAsString(value), "application/json");
     }
 
 }
