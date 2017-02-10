@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><templates><template autoinsert="false" context="filecomment_context" deleted="false" description="Comment for created Java files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/*
- * (C) Copyright ${year} Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright ${year} Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
