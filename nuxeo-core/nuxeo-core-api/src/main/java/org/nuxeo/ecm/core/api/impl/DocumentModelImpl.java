@@ -189,7 +189,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected String sourceId;
 
-    protected final ScopedMap contextData = new ScopedMap();
+    protected ScopedMap contextData = new ScopedMap();
 
     // public for unit tests
     public Prefetch prefetch;
@@ -1372,7 +1372,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         // they are not
         // immutable
         // context data is keeping contextual info so it is reset
-        dm.contextData.clear();
+        dm.contextData = new ScopedMap();
 
         // copy parts
         dm.dataModels = new HashMap<>();
