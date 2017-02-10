@@ -8,8 +8,7 @@
 
 # About the Nuxeo Platform
 
-
-The [Nuxeo Platform](http://www.nuxeo.com/products/content-management-platform/) is an open source customizable and extensible content management platform for building business applications. It provides the foundation for developing [document management](http://www.nuxeo.com/solutions/document-management/), [digital asset management](http://www.nuxeo.com/solutions/digital-asset-management/), [case management application](http://www.nuxeo.com/solutions/case-management/) and [knowledge management](http://www.nuxeo.com/solutions/advanced-knowledge-base/). You can easily add features using ready-to-use addons or by extending the platform using its extension point system.
+Nuxeo provides a [Hyperscale Digital Asset Platform](https://www.nuxeo.com/products/content-management-platform/) that helps enterprise organizations unlock the full value of their digital assets to grow revenue, improve performance, and maximize investments. Leading organizations use Nuxeo for [digital asset management](https://www.nuxeo.com/solutions/digital-asset-management/), [document management](https://www.nuxeo.com/solutions/document-management/), [knowledge management](https://www.nuxeo.com/solutions/advanced-knowledge-base/), and other content-centric business applications.
 
 The Nuxeo Platform is developed and supported by Nuxeo, with contributions from the community.
 
