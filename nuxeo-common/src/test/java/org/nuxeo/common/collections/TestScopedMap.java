@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -32,14 +32,14 @@ public class TestScopedMap {
     @Test
     public void testGetScopedValueWithScope() {
         ScopedMap map = new ScopedMap();
-        map.put("default/foo", "bar");
+        map.superPut("default/foo", "bar");
         assertEquals("bar", map.getScopedValue(ScopeType.DEFAULT, "foo"));
     }
 
     @Test
     public void testGetScopedValue() {
         ScopedMap map = new ScopedMap();
-        map.put("default/foo", "bar");
+        map.superPut("default/foo", "bar");
         assertEquals("bar", map.getScopedValue("foo"));
     }
 
@@ -47,31 +47,45 @@ public class TestScopedMap {
     public void testPutScopedValueWithScope() {
         ScopedMap map = new ScopedMap();
         map.putScopedValue(ScopeType.REQUEST, "foo", "bar");
-        assertEquals("bar", map.get("request/foo"));
+        assertEquals("bar", map.superGet("request/foo"));
     }
 
     @Test
     public void testPutScopedValue() {
         ScopedMap map = new ScopedMap();
         map.putScopedValue("foo", "bar");
-        assertEquals("bar", map.get("default/foo"));
+        assertEquals("bar", map.superGet("default/foo"));
     }
 
     @Test
     public void testClearScope() {
         ScopedMap map = new ScopedMap();
         map.putScopedValue(ScopeType.REQUEST, "foo1", "bar1");
-        assertEquals("bar1", map.get("request/foo1"));
+        assertEquals("bar1", map.superGet("request/foo1"));
         map.putScopedValue(ScopeType.REQUEST, "foo2", "bar2");
-        assertEquals("bar2", map.get("request/foo2"));
+        assertEquals("bar2", map.superGet("request/foo2"));
         map.putScopedValue(ScopeType.DEFAULT, "foo3", "bar3");
-        assertEquals("bar3", map.get("default/foo3"));
+        assertEquals("bar3", map.superGet("default/foo3"));
         assertEquals(3, map.size());
 
         map.clearScope(ScopeType.REQUEST);
 
         assertEquals(1, map.size());
-        assertEquals("bar3", map.get("default/foo3"));
+        assertEquals("bar3", map.superGet("default/foo3"));
+    }
+
+    @Test
+    public void testCompatForPutAndGet() {
+        ScopedMap map = new ScopedMap();
+        map.put("foo1", "bar1");
+        assertEquals("bar1", map.get("foo1"));
+        assertEquals("bar1", map.get("default/foo1"));
+        assertEquals("bar1", map.get("request/foo1"));
+        map = new ScopedMap();
+        map.put("default/foo1", "bar1");
+        assertEquals("bar1", map.get("foo1"));
+        assertEquals("bar1", map.get("default/foo1"));
+        assertEquals("bar1", map.get("request/foo1"));
     }
 
 }
