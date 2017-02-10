@@ -5,7 +5,7 @@ Bundle-ClassPath: .
 Manifest-Version: 1.0
 Bundle-Name: Nuxeo Core Test Framework
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-Vendor: Nuxeo SAS
+Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Bundle-ManifestVersion: 2
 Bundle-Description: Nuxeo Core: Testing framewok

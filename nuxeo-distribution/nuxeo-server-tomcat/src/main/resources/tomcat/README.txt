@@ -124,7 +124,7 @@ More specifically:
 
 ## Licenses
 
-The Nuxeo Platform is copyright 2006-2015 Nuxeo SA. It is released under the Apache License, Version 2.0.
+The Nuxeo Platform is copyright 2006-2017 Nuxeo. It is released under the Apache License, Version 2.0.
 The Nuxeo Platform includes third-party libraries, licensed under compatible open source licenses.
 
 ## Acknowledgments
