@@ -19,11 +19,14 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.types;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
@@ -63,6 +66,19 @@ public class SchemaJsonWriterTest extends AbstractJsonWriterTest.Local<SchemaJso
         json.has("subjects").isEquals("string[]");
         json.has("title").isEquals("string");
         json.has("valid").isEquals("date");
+    }
+
+    /**
+     * @since 9.1
+     */
+    @Test
+    public void testWithFetchFields() throws IOException {
+        Schema schema = schemaManager.getSchema("dublincore");
+        JsonAssert json = jsonAssert(schema,
+                CtxBuilder.fetch(SchemaJsonWriter.ENTITY_TYPE, SchemaJsonWriter.FETCH_FIELDS).get());
+        json = json.has("fields").properties(schema.getFieldsCount());
+        json.has("contributors").get("type").isEquals("string[]");
+        json.has("contributors").get("constraints").isArray();
     }
 
     @Test
