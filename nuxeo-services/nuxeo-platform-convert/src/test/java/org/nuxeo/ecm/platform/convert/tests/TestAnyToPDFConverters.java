@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class TestAnyToPDFConverters extends BaseConverterTest {
 
     protected void doTestPDFConverter(String srcMT, String fileName) throws Exception {
-    	doTestPDFConverter(srcMT, fileName, false, Boolean.FALSE); // normal PDF
+        doTestPDFConverter(srcMT, fileName, false, Boolean.FALSE); // normal PDF
         doTestPDFConverter(srcMT, fileName, false, null); // normal PDF
         doTestPDFConverter(srcMT, fileName, false, "falSe"); // normal PDF
         doTestPDFConverter(srcMT, fileName, false, "ceiozrunizer"); // normal PDF
@@ -48,11 +48,11 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         doTestPDFConverter(srcMT, fileName, true, "TRUE"); // PDF/A-1
     }
 
-    protected String doTestPDFConverter(String srcMT, String fileName, boolean pdfa, Serializable pdfaValue) throws Exception {
-        return doTestPDFConverter(srcMT, fileName, pdfa, false, pdfaValue);
+    protected String doTestPDFConverter(String srcMT, String fileName, boolean expectPDFA, Serializable pdfaValue) throws Exception {
+        return doTestPDFConverter(srcMT, fileName, expectPDFA, false, pdfaValue);
     }
 
-    protected String doTestPDFConverter(String srcMT, String fileName, boolean pdfa, boolean updateIndex, Serializable pdfaValue)
+    protected String doTestPDFConverter(String srcMT, String fileName, boolean expectPDFA, boolean updateIndex, Serializable pdfaValue)
             throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
@@ -70,7 +70,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
         Map<String, Serializable> parameters = new HashMap<>();
-        if (pdfa) {
+        if (expectPDFA) {
             parameters.put(JODBasedConverter.PDFA1_PARAM, pdfaValue);
         }
         if (updateIndex) {
@@ -85,9 +85,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
             result.getBlob().transferTo(pdfFile);
             text = readPdfText(pdfFile);
             assertTrue(text.contains("Hello") || text.contains("hello"));
-            if (pdfa) {
-                assertTrue("Output is not PDF/A", isPDFA(pdfFile));
-            }
+            assertEquals("PDF mode", expectPDFA, isPDFA(pdfFile));
             return text;
         } finally {
             pdfFile.delete();

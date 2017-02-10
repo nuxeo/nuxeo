@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jempbox.xmp.XMPMetadata;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.After;
 import org.junit.Before;
@@ -101,8 +102,11 @@ public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
     public static boolean isPDFA(File pdfFile) throws Exception {
         PDDocument pddoc = PDDocument.load(pdfFile);
-        XMPMetadata xmp = pddoc.getDocumentCatalog().getMetadata().exportXMPMetadata();
-        Document doc = xmp.getXMPDocument();
+        PDMetadata pdmd = pddoc.getDocumentCatalog().getMetadata();
+        if (pdmd == null) {
+            return false;
+        }
+        Document doc = pdmd.exportXMPMetadata().getXMPDocument();
         // <rdf:Description xmlns:pdfaid="http://www.aiim.org/pdfa/ns/id/"
         // rdf:about="">
         // <pdfaid:part>1</pdfaid:part>
