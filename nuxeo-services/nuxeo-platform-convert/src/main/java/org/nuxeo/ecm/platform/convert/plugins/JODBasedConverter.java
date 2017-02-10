@@ -187,7 +187,7 @@ public class JODBasedConverter implements ExternalConverter {
         if (parameters != null) {
             Serializable pdfa1Val = parameters.get(PDFA1_PARAM);
             if (pdfa1Val instanceof Boolean) {
-                pdfa1 = (Boolean) pdfa1Val;
+                pdfa1 = ((Boolean) pdfa1Val).booleanValue();
             } else if (pdfa1Val instanceof String) {
                 pdfa1 = Boolean.parseBoolean((String) pdfa1Val);
             }

@@ -70,9 +70,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
         Map<String, Serializable> parameters = new HashMap<>();
-        if (expectPDFA) {
-            parameters.put(JODBasedConverter.PDFA1_PARAM, pdfaValue);
-        }
+        parameters.put(JODBasedConverter.PDFA1_PARAM, pdfaValue);
         if (updateIndex) {
             parameters.put(JODBasedConverter.UPDATE_INDEX_PARAM, Boolean.TRUE);
         }
