@@ -55,8 +55,10 @@
   background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white }
 
 .workflow_node_suspended {
-  background-color: #e1f0ff;
-  font-weight: bold }
+  background-color: #3c9ae2;
+  font-weight: bold
+  color: #e1f0ff;
+  box-shadow: 2px 2px 2px #555 }
 
 .workflow_connection_label {
   background-color: white;
