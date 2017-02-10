@@ -17,19 +17,6 @@
     <module>nuxeo-platform-audio-jsf</module>
   </modules>
 
-  <developers>
-    <developer>
-      <name>Olivier Grisel</name>
-      <email>ogrisel@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
-    </developer>
-    <developer>
-      <name>Peter Di Lorenzo</name>
-      <email>pdilorenzo@nuxeo.com</email>
-      <organization>Nuxeo SAS</organization>
-    </developer>
-  </developers>
-
   <repositories>
     <repository>
       <id>public</id>
