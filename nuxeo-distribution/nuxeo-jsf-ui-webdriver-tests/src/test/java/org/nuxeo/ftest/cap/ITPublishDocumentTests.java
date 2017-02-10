@@ -177,7 +177,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         login(READER_USERNAME, READER_USERNAME);
         open(TEST_SECTION_URL);
         // The document is not visible until approved
-        assertTrue(driver.getPageSource().contains("This folder contains no document"));
+        assertTrue(driver.getPageSource().contains("This folder contains no documents"));
         logout();
     }
 
