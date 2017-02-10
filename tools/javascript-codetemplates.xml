@@ -5,7 +5,7 @@
  */</template><template autoinsert="true" context="org.eclipse.jsdt.constructorcomment_context" deleted="false" description="Comment for created constructors" enabled="true" id="org.eclipse.wst.jsdt.ui.text.codetemplates.constructorcomment" name="constructorcomment">/**
  * ${tags}
  */</template><template autoinsert="false" context="org.eclipse.jsdt.filecomment_context" deleted="false" description="Comment for created JavaScript files" enabled="true" id="org.eclipse.wst.jsdt.ui.text.codetemplates.filecomment" name="filecomment">/**
- * (C) Copyright ${year} Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright ${year} Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
