@@ -75,6 +75,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -405,10 +406,12 @@ public class TestSQLRepositoryProperties {
 
         // change data
         StateDiff diff = new StateDiff();
+        State state = new State();
+        state.put("string", "bar");
         diff.put("tp:complexList",
                 (Serializable) Arrays.asList( //
                         null, // null as first element of the list
-                        Collections.singletonMap("string", "bar")));
+                        state));
         changeDoc(id, diff);
 
         // check that we don't crash on read
