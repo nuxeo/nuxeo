@@ -183,8 +183,16 @@ public class JODBasedConverter implements ExternalConverter {
         // This plugin do deal only with one input source.
         String sourceMimetype = inputBlob.getMimeType();
 
-        boolean pdfa1 = parameters != null && Boolean.TRUE.equals(parameters.get(PDFA1_PARAM));
-
+        boolean pdfa1 = false;
+        if (parameters != null) {
+            Serializable pdfa1Val = parameters.get(PDFA1_PARAM);
+            if (pdfa1Val instanceof Boolean) {
+                pdfa1 = ((Boolean) pdfa1Val).booleanValue();
+            } else if (pdfa1Val instanceof String) {
+                pdfa1 = Boolean.parseBoolean((String) pdfa1Val);
+            }
+        }
+        
         File sourceFile = null;
         File outFile = null;
         File[] files = null;

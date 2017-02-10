@@ -37,15 +37,22 @@ import static org.junit.Assert.*;
 public class TestAnyToPDFConverters extends BaseConverterTest {
 
     protected void doTestPDFConverter(String srcMT, String fileName) throws Exception {
-        doTestPDFConverter(srcMT, fileName, false); // normal PDF
-        doTestPDFConverter(srcMT, fileName, true); // PDF/A-1
+        doTestPDFConverter(srcMT, fileName, false, Boolean.FALSE); // normal PDF
+        doTestPDFConverter(srcMT, fileName, false, null); // normal PDF
+        doTestPDFConverter(srcMT, fileName, false, "falSe"); // normal PDF
+        doTestPDFConverter(srcMT, fileName, false, "ceiozrunizer"); // normal PDF
+        doTestPDFConverter(srcMT, fileName, false, ""); // normal PDF
+        doTestPDFConverter(srcMT, fileName, true, Boolean.TRUE); // PDF/A-1
+        doTestPDFConverter(srcMT, fileName, true, "trUe"); // PDF/A-1
+        doTestPDFConverter(srcMT, fileName, true, "true"); // PDF/A-1
+        doTestPDFConverter(srcMT, fileName, true, "TRUE"); // PDF/A-1
     }
 
-    protected String doTestPDFConverter(String srcMT, String fileName, boolean pdfa) throws Exception {
-        return doTestPDFConverter(srcMT, fileName, pdfa, false);
+    protected String doTestPDFConverter(String srcMT, String fileName, boolean expectPDFA, Serializable pdfaValue) throws Exception {
+        return doTestPDFConverter(srcMT, fileName, expectPDFA, false, pdfaValue);
     }
 
-    protected String doTestPDFConverter(String srcMT, String fileName, boolean pdfa, boolean updateIndex)
+    protected String doTestPDFConverter(String srcMT, String fileName, boolean expectPDFA, boolean updateIndex, Serializable pdfaValue)
             throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
@@ -63,9 +70,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
         Map<String, Serializable> parameters = new HashMap<>();
-        if (pdfa) {
-            parameters.put(JODBasedConverter.PDFA1_PARAM, Boolean.TRUE);
-        }
+        parameters.put(JODBasedConverter.PDFA1_PARAM, pdfaValue);
         if (updateIndex) {
             parameters.put(JODBasedConverter.UPDATE_INDEX_PARAM, Boolean.TRUE);
         }
@@ -78,9 +83,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
             result.getBlob().transferTo(pdfFile);
             text = readPdfText(pdfFile);
             assertTrue(text.contains("Hello") || text.contains("hello"));
-            if (pdfa) {
-                assertTrue("Output is not PDF/A", isPDFA(pdfFile));
-            }
+            assertEquals("PDF mode", expectPDFA, isPDFA(pdfFile));
             return text;
         } finally {
             pdfFile.delete();
@@ -124,12 +127,12 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
                         check.getErrorMessage()), check.isAvailable());
 
         // generate without TOC
-        String textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, false);
+        String textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, false, Boolean.FALSE);
         // check that there is no TOC generated
         assertFalse(textContent.contains("..........."));
 
         // generate with TOC
-        textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, true);
+        textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, true, Boolean.FALSE);
         assertTrue(textContent.contains("..........."));
 
     }
