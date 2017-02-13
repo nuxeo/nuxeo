@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 
@@ -43,11 +44,13 @@ import org.nuxeo.ecm.automation.core.operations.document.UnblockPermissionInheri
 import org.nuxeo.ecm.automation.core.operations.document.ReplacePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -78,6 +81,10 @@ public class PermissionAutomationTest {
     @Inject
     AutomationService automationService;
 
+    @Mock
+    @RuntimeService
+    private UserManager userManager;
+
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Folder");
@@ -86,16 +93,17 @@ public class PermissionAutomationTest {
         session.save();
         src = session.getDocument(src.getRef());
 
+        when(userManager.getUserModel("existingUser")).thenReturn(new DocumentModelImpl("user"));
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
     }
 
     @Test
-    public void canAddPermission() throws OperationException {
+    public void canAddPermissionForExistingUser() throws OperationException {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         Map<String, Object> params = new HashMap<>();
-        params.put("user", "members");
+        params.put("user", "existingUser");
         params.put("permission", "Write");
         GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
         params.put("begin", begin);
@@ -109,7 +117,31 @@ public class PermissionAutomationTest {
         assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
 
         // Tear down
-        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "members");
+        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "existingUser");
+    }
+
+    @Test
+    public void cannotAddPermissionForNonExistentUser() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        Map<String, Object> params = new HashMap<>();
+        params.put("user", "nonExistentUser");
+        params.put("permission", "Write");
+        GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
+        params.put("begin", begin);
+
+        GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+        params.put("end", end);
+
+        assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
+        try {
+            automationService.run(ctx, AddPermission.ID, params);
+            fail();
+        } catch (OperationException e) {
+            String expectedMsg = "Failed to invoke operation Document.AddPermission with aliases [Document.AddACL]";
+            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
+        }
+        assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
     }
 
     @Test
@@ -119,15 +151,15 @@ public class PermissionAutomationTest {
 
         // Add permission
         Map<String, Object> params = new HashMap<>();
-        params.put("user", "members");
+        params.put("user", "existingUser");
         params.put("permission", "Write");
         automationService.run(ctx, AddPermission.ID, params);
         ctx.setInput(src);
 
         // Replace permission
-        params.put("user", "members");
+        params.put("user", "existingUser");
         params.put("permission", "Everything");
-        params.put("id", "members:Write:true:Administrator::");
+        params.put("id", "existingUser:Write:true:Administrator::");
 
         assertEquals("Write", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
         automationService.run(ctx, ReplacePermission.ID, params);
@@ -135,7 +167,7 @@ public class PermissionAutomationTest {
         assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
 
         // Tear down
-        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "members");
+        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "existingUser");
     }
 
     @Test
