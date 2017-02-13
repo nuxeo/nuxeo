@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.collections.core.automation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -53,15 +54,12 @@ public class GetDocumentsFromCollectionOperation {
 
     @OperationMethod
     public PaginableDocumentModelListImpl run(DocumentModel collection) throws OperationException {
-        Map<String, Object> vars = ctx.getVars();
+        OperationChain chain = new OperationChain("operation");
+        Map<String, Object> vars = new HashMap<>();
         vars.put("searchTerm", collection.getId());
         vars.put("providerName", CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);
-
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
-
-        OperationChain chain = new OperationChain("operation");
         OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
-        return (PaginableDocumentModelListImpl) service.run(subctx, chain);
+        return (PaginableDocumentModelListImpl) service.run(ctx, chain);
     }
 }
