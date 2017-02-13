@@ -96,41 +96,44 @@ public class BlobToFileTest {
 
     @Test
     public void testExportBlobToFS() throws Exception {
-        OperationContext ctx = buildCtx(session);
-        targetDirectory = createAllowedTargetDirectory();
-        Map<String, Object> params = buildParams(targetDirectory);
-        Blob outputBlob = (Blob) automationService.run(ctx, BlobToFile.ID, params);
-        assertNotNull(outputBlob);
-        assertEquals(pdfFile, outputBlob.getFile());
-        File[] directoryContent = FileUtils.convertFileCollectionToFileArray(
-                FileUtils.listFiles(targetDirectory, null, false));
-        assertEquals(1, directoryContent.length);
-        assertEquals(new File(targetDirectory.getAbsolutePath(), PDF_NAME), directoryContent[0]);
+        try (OperationContext ctx = buildCtx(session)) {
+            targetDirectory = createAllowedTargetDirectory();
+            Map<String, Object> params = buildParams(targetDirectory);
+            Blob outputBlob = (Blob) automationService.run(ctx, BlobToFile.ID, params);
+            assertNotNull(outputBlob);
+            assertEquals(pdfFile, outputBlob.getFile());
+            File[] directoryContent = FileUtils
+                    .convertFileCollectionToFileArray(FileUtils.listFiles(targetDirectory, null, false));
+            assertEquals(1, directoryContent.length);
+            assertEquals(new File(targetDirectory.getAbsolutePath(), PDF_NAME), directoryContent[0]);
+        }
     }
 
     @Test
     public void testNotAllowedWhenNotAdmin() throws Exception {
-        CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
-        OperationContext ctx = buildCtx(notAdminSession);
-        targetDirectory = createAllowedTargetDirectory();
-        Map<String, Object> params = buildParams(targetDirectory);
-        String errorMessage = "Not allowed. You must be administrator";
-        testNotAllowed(ctx, BlobToFile.ID, params, errorMessage);
-        for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
-            testNotAllowed(ctx, alias, params, errorMessage);
+        try (CoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(), DEFAULT_USER_ID)) {
+            try (OperationContext ctx = buildCtx(notAdminSession)) {
+                targetDirectory = createAllowedTargetDirectory();
+                Map<String, Object> params = buildParams(targetDirectory);
+                String errorMessage = "Not allowed. You must be administrator";
+                testNotAllowed(ctx, BlobToFile.ID, params, errorMessage);
+                for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
+                    testNotAllowed(ctx, alias, params, errorMessage);
+                }
+            }
         }
-        notAdminSession.close();
     }
 
     @Test
     public void testNotAllowedWhenForbiddenTargetDirectory() throws Exception {
-        OperationContext ctx = buildCtx(session);
-        targetDirectory = createForbiddenTargetDirectory();
-        Map<String, Object> params = buildParams(targetDirectory);
-        String errorMessage = "Not allowed. The target directory is forbidden";
-        testNotAllowed(ctx, BlobToFile.ID, params, errorMessage);
-        for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
-            testNotAllowed(ctx, alias, params, errorMessage);
+        try (OperationContext ctx = buildCtx(session)) {
+            targetDirectory = createForbiddenTargetDirectory();
+            Map<String, Object> params = buildParams(targetDirectory);
+            String errorMessage = "Not allowed. The target directory is forbidden";
+            testNotAllowed(ctx, BlobToFile.ID, params, errorMessage);
+            for (String alias : automationService.getOperation(BlobToFile.ID).getAliases()) {
+                testNotAllowed(ctx, alias, params, errorMessage);
+            }
         }
     }
 

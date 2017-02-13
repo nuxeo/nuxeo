@@ -55,8 +55,9 @@ public class RunOperation {
 
     @OperationMethod
     public void run() throws OperationException {
-        OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
-        service.run(subctx, chainId, chainParameters);
+        try (OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput())) {
+            service.run(subctx, chainId, chainParameters);
+        }
     }
 
 }

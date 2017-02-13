@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -86,27 +85,30 @@ public class CreateDocumentsFromAutomationChainAction extends AbstractMailAction
 
         AutomationService as = Framework.getService(AutomationService.class);
 
-        OperationContext automationCtx = new OperationContext(session);
-        automationCtx.putAll(context);
+        try (OperationContext automationCtx = new OperationContext(session)) {
+            automationCtx.putAll(context);
 
-        ExecutionContext initialContext = context.getInitialContext();
-        String parentPath = (String) initialContext.get(PARENT_PATH_KEY);
-        DocumentModel mailFolder = session.getDocument(new PathRef(parentPath));
-        automationCtx.put("mailFolder", mailFolder);
-        automationCtx.put("executionContext", initialContext);
-        String subject = (String) context.get(SUBJECT_KEY);
-        automationCtx.put("mailDocumentName", generateMailName(subject));
+            ExecutionContext initialContext = context.getInitialContext();
+            String parentPath = (String) initialContext.get(PARENT_PATH_KEY);
+            DocumentModel mailFolder = session.getDocument(new PathRef(parentPath));
+            automationCtx.put("mailFolder", mailFolder);
+            automationCtx.put("executionContext", initialContext);
+            String subject = (String) context.get(SUBJECT_KEY);
+            automationCtx.put("mailDocumentName", generateMailName(subject));
 
-        @SuppressWarnings("unchecked")
-        List<FileBlob> attachments = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
-        if (attachments == null) {
-            automationCtx.put(ATTACHMENTS_KEY, Collections.EMPTY_LIST);
-        }
+            @SuppressWarnings("unchecked")
+            List<FileBlob> attachments = (List<FileBlob>) context.get(ATTACHMENTS_KEY);
+            if (attachments == null) {
+                automationCtx.put(ATTACHMENTS_KEY, Collections.EMPTY_LIST);
+            }
 
-        try {
-            as.run(automationCtx, getChainName());
-        } catch (OperationException e) {
-            throw new NuxeoException(e);
+            try {
+                as.run(automationCtx, getChainName());
+            } catch (OperationException e) {
+                throw new NuxeoException(e);
+            }
+        } catch (Exception cause) {
+            throw new NuxeoException(cause);
         }
 
         return true;

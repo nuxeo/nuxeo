@@ -97,7 +97,7 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
     }
 
     @Test
-    public void testIllegalSwapMembers() {
+    public void testIllegalSwapMembers() throws OperationException {
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         collectionAdapter.getCollectedDocumentIds();
 
@@ -105,29 +105,29 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         chain.add(MoveCollectionMemberOperation.ID);
         // missing param
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
-
-        try {
-            service.run(ctx, chain);
-        } catch (OperationException e) {
-            // Expected, let's keep testing
-
-            chain = new OperationChain("test-chain");
-            chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(0)).set("member2",
-                    listDocs.get(NB_FILES - 1));
-
-            ctx = new OperationContext(session);
-            // Wrong input
-            ctx.setInput(null);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
 
             try {
                 service.run(ctx, chain);
-            } catch (OperationException ex) {
-                // expected
-                return;
+            } catch (OperationException e) {
+                // Expected, let's keep testing
+
+                chain = new OperationChain("test-chain");
+                chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(0)).set("member2",
+                        listDocs.get(NB_FILES - 1));
+
+                // Wrong input
+                ctx.setInput(null);
+
+                try {
+                    service.run(ctx, chain);
+                } catch (OperationException ex) {
+                    // expected
+                    return;
+                }
+                fail(MoveCollectionMemberOperation.ID + " should have failed because of missing input");
             }
-            fail(MoveCollectionMemberOperation.ID + " should have failed because of missing input");
         }
 
         fail(MoveCollectionMemberOperation.ID + " should have failed because of missing param");
@@ -145,12 +145,13 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(0)).set("member2",
                 listDocs.get(NB_FILES - 1));
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
 
-        boolean result = (boolean) service.run(ctx, chain);
+            boolean result = (boolean) service.run(ctx, chain);
 
-        assertTrue(result);
+            assertTrue(result);
+        }
 
         collection = session.getDocument(collection.getRef());
         collectionAdapter = collection.getAdapter(Collection.class);
@@ -179,12 +180,13 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(NB_FILES - 1));
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
 
-        boolean result = (boolean) service.run(ctx, chain);
+            boolean result = (boolean) service.run(ctx, chain);
 
-        assertTrue(result);
+            assertTrue(result);
+        }
 
         collection = session.getDocument(collection.getRef());
         collectionAdapter = collection.getAdapter(Collection.class);
@@ -215,12 +217,13 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
                 listDocs.get(index + 1));
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
 
-        boolean result = (boolean) service.run(ctx, chain);
+            boolean result = (boolean) service.run(ctx, chain);
 
-        assertTrue(result);
+            assertTrue(result);
+        }
 
         collection = session.getDocument(collection.getRef());
         collectionAdapter = collection.getAdapter(Collection.class);
@@ -255,12 +258,13 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(index)).set("member2",
                 listDocs.get(index - 1));
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
 
-        boolean result = (boolean) service.run(ctx, chain);
+            boolean result = (boolean) service.run(ctx, chain);
 
-        assertTrue(result);
+            assertTrue(result);
+        }
 
         collection = session.getDocument(collection.getRef());
         collectionAdapter = collection.getAdapter(Collection.class);
@@ -292,12 +296,13 @@ public class MoveCollectionMemberTest extends CollectionOperationsTestCase {
         chain = new OperationChain("test-chain");
         chain.add(MoveCollectionMemberOperation.ID).set("member1", listDocs.get(0)).set("member2", notInCollection);
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(collection);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(collection);
 
-        boolean result = (boolean) service.run(ctx, chain);
+            boolean result = (boolean) service.run(ctx, chain);
 
-        assertFalse(result);
+            assertFalse(result);
+        }
 
         collection = session.getDocument(collection.getRef());
         collectionAdapter = collection.getAdapter(Collection.class);

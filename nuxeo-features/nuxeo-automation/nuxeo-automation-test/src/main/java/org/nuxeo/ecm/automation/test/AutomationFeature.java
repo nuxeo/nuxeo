@@ -114,6 +114,9 @@ public class AutomationFeature extends SimpleFeature {
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
         AutomationScope.INSTANCE.exit();
+        if (context != null) {
+            context.close();
+        }
         context = null;
         tracer = null;
         tracerFactory.clearTraces();

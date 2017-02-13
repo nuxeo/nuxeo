@@ -115,10 +115,9 @@ public class AutomationRenderer {
             session = doc.getCoreSession();
         }
         AutomationService as = Framework.getLocalService(AutomationService.class);
-        OperationContext oc = new OperationContext(session);
-        oc.push(Constants.O_DOCUMENT, doc);
+        try (OperationContext oc = new OperationContext(session)) {
+            oc.push(Constants.O_DOCUMENT, doc);
 
-        try {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {
                 try {
@@ -147,8 +146,8 @@ public class AutomationRenderer {
             return blobs;
 
         } catch (Exception e) {
-            throw new NuxeoException("Exception while running the operation chain: "
-                    + definition.getOperationChain(), e);
+            throw new NuxeoException("Exception while running the operation chain: " + definition.getOperationChain(),
+                    e);
         }
     }
 
