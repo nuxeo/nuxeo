@@ -100,7 +100,7 @@ public class AsyncEventExecutor {
                 for (Event event : events) {
                     connectedBundle.push(event);
                     CoreSession session = event.getContext().getCoreSession();
-                    if (!(sessions.keySet().contains(session.getRepositoryName()))) {
+                    if (session != null && !(sessions.keySet().contains(session.getRepositoryName()))) {
                         sessions.put(session.getRepositoryName(), session);
                     }
                 }
