@@ -16,6 +16,7 @@
  * Contributors:
  *     dmetzler
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ *     Mincong Huang <mhuang@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -33,12 +34,15 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Operation that adds a permission to a given ACL for a given user.
@@ -109,9 +113,17 @@ public class AddPermission {
             throw new IllegalParameterException("'end' parameter must be set when adding a permission for an 'email'");
         }
 
-        String username = user;
-        if (username == null) {
+        String username;
+        if (user == null) {
+            // share a document with someone not registered in Nuxeo, by using only an email
             username = NuxeoPrincipal.computeTransientUsername(email);
+        } else {
+            username = user;
+            UserManager userManager = Framework.getService(UserManager.class);
+            if (userManager.getUserModel(username) == null && userManager.getGroupModel(username) == null) {
+                String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
+                throw new NuxeoException(errorMsg);
+            }
         }
 
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
