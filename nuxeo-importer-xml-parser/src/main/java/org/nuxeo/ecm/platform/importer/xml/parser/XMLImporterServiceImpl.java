@@ -47,7 +47,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -547,12 +546,15 @@ public class XMLImporterServiceImpl {
             if (createConf != null) {
                 String chain = createConf.getAutomationChain();
                 if (chain != null && !"".equals(chain.trim())) {
-                    OperationContext ctx = new OperationContext(session, mvelCtx);
-                    ctx.setInput(docsStack.peek());
-                    try {
+                    try (OperationContext ctx = new OperationContext(session)) {
+                        ctx.putAll(mvelCtx);
+                        ctx.setInput(docsStack.peek());
                         getAutomationService().run(ctx, chain);
-                    } catch (OperationException e) {
-                        throw new NuxeoException(e);
+                    } catch (Exception cause) {
+                        if (cause instanceof NuxeoException) {
+                            throw (NuxeoException)cause;
+                        }
+                        throw new NuxeoException(cause);
                     }
                 }
             }
