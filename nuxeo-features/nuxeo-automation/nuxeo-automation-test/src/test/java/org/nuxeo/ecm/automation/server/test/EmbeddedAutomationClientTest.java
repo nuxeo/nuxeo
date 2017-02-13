@@ -100,6 +100,7 @@ import org.nuxeo.ecm.automation.test.helpers.ExceptionTest;
 import org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -132,6 +133,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
     @Inject
     UserManager userManager;
+
+    @Inject
+    private TransactionalFeature txFeature;
 
     @BeforeClass
     public static void setupCodecs() throws Exception {
@@ -1001,22 +1005,56 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     /**
-     * @since 7.4
+     * @since 8.10
      */
     @Test
-    public void canSendCalendarParameters() throws IOException {
+    public void cannotSendCalendarParametersIfUserNotFound() throws IOException {
         Document root = (Document) super.session.newRequest(FetchDocument.ID).set("value", "/").execute();
         OperationRequest request = session.newRequest(AddPermission.ID);
         GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
         GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        request.setInput(root)
-               .set("username", "members")
-               .set("permission", "Write")
-               .set("begin", begin)
-               .set("end", end)
-               .execute();
-        // TODO NXP-17232 to use context parameters in json payload response with automation and automation client.
-        // Once NXP-17232 resolved: assertions possible to get related doc ACLs.
+        try {
+            request.setInput(root)
+                   .set("username", "nonExistentMembers")
+                   .set("permission", "Write")
+                   .set("begin", begin)
+                   .set("end", end)
+                   .execute();
+        } catch (RemoteException e) {
+            String expectedMsg = "Failed to invoke operation: Document.AddPermission";
+            assertEquals(e.getMessage(), expectedMsg, e.getMessage());
+        }
+    }
+
+    /**
+     * @since 7.4
+     */
+    @Test
+    public void canSendCalendarParameters() throws IOException {
+        // Setup
+        DocumentModel testUser = userManager.getBareUserModel();
+        testUser.setProperty("user", "username", "existingMembers");
+        testUser = userManager.createUser(testUser);
+        assertNotNull(testUser.getId());
+        txFeature.nextTransaction();
+
+        try {
+            Document root = (Document) super.session.newRequest(FetchDocument.ID).set("value", "/").execute();
+            OperationRequest request = session.newRequest(AddPermission.ID);
+            GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
+            GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+            request.setInput(root)
+                   .set("username", "existingMembers")
+                   .set("permission", "Write")
+                   .set("begin", begin)
+                   .set("end", end)
+                   .execute();
+            // TODO NXP-17232 to use context parameters in json payload response with automation and automation client.
+            // Once NXP-17232 resolved: assertions possible to get related doc ACLs.
+        } finally {
+            // Tear down
+            userManager.deleteUser(testUser.getId());
+        }
     }
 
     /**
