@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.debug;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -43,7 +44,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Access;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -63,8 +63,17 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
         xmap.register(OperationChainContribution.class);
     }
 
+    @Inject
+    AutomationService service;
+
+    @Inject
+    OperationContext ctx;
+
+    @Inject
+    CoreSession session;
+
     public AutomationService getOperationService() {
-        return Framework.getLocalService(AutomationService.class);
+        return service;
     }
 
     public String getOperationsListAsJson() throws OperationException, IOException {
@@ -102,7 +111,6 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
 
     @POST
     public Response doPost(@FormParam("input") String input, @FormParam("chain") String chainXml) {
-        CoreSession session = SessionFactory.getSession();
         if (!((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
             return Response.status(403).build();
         }
@@ -110,7 +118,6 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
             ByteArrayInputStream in = new ByteArrayInputStream(chainXml.getBytes());
             OperationChainContribution contrib = (OperationChainContribution) xmap.load(in);
             OperationChain chain = contrib.toOperationChain(Framework.getRuntime().getContext().getBundle());
-            OperationContext ctx = new OperationContext(session);
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chain);
             return Response.ok("Operation Done.").build();
@@ -124,7 +131,6 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
     @Path("{chainId}")
     public Response doChainIdPost(@FormParam("input") String input, @FormParam("chainId") String chainId) {
         try {
-            OperationContext ctx = new OperationContext(SessionFactory.getSession());
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chainId);
             return Response.ok("Operation Done.").build();

@@ -168,6 +168,8 @@ public class CreateTask {
         TaskService.createTask(coreSession, (NuxeoPrincipal) pal, document, taskName, prefixedActorIds,
                 createOneTaskPerActor, directive, comment, dueDate, taskVariables, null);
 
+        coreSession.save();
+
         return document;
     }
 

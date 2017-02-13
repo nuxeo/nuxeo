@@ -303,7 +303,7 @@ public class ImportActions implements Serializable {
             return Collections.emptyList();
         }
 
-        try {
+        try (OperationContext ctx = new OperationContext(documentManager)) {
             List<Blob> blobs = new ArrayList<>();
             for (NxUploadedFile uploadItem : uploadedFiles) {
                 Blob blob = uploadItem.getBlob();
@@ -311,7 +311,6 @@ public class ImportActions implements Serializable {
                 blobs.add(blob);
             }
 
-            OperationContext ctx = new OperationContext(documentManager);
             ctx.setInput(new BlobList(blobs));
             ctx.putAll(contextParams);
 
@@ -338,6 +337,7 @@ public class ImportActions implements Serializable {
             }
             uploadedFiles = null;
         }
+
     }
 
     public void cancel() {

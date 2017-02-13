@@ -47,7 +47,7 @@ import static org.junit.Assert.assertNull;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class})
+@Features({ CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 public class GetLastDocumentVersionTest {
 
@@ -154,16 +154,18 @@ public class GetLastDocumentVersionTest {
 
     /**
      * Runs the operation for the different document models of the test.
+     *
      * @param input
      * @return
      * @throws OperationException
      */
     protected DocumentModel runOperation(DocumentModel input) throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(input);
-        OperationChain chain = new OperationChain("testGetLastVersion");
-        chain.add(GetLastDocumentVersion.ID);
-        return (DocumentModel) service.run(ctx, chain);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(input);
+            OperationChain chain = new OperationChain("testGetLastVersion");
+            chain.add(GetLastDocumentVersion.ID);
+            return (DocumentModel) service.run(ctx, chain);
+        }
     }
 
 }

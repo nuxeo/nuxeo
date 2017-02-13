@@ -99,14 +99,14 @@ public class TaskAutomationTest {
 
     @Test
     public void testCreateSingleTaskChain() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(document);
 
         List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
-
-        automationService.run(ctx, "createSingleTaskChain");
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(document);
+            automationService.run(ctx, "createSingleTaskChain");
+        }
 
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
@@ -181,14 +181,15 @@ public class TaskAutomationTest {
 
     @Test
     public void testCreateSingleTaskChainWithoutActors() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(document);
 
         List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
-        automationService.run(ctx, "createSingleTaskChainWithoutActors");
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(document);
+            automationService.run(ctx, "createSingleTaskChainWithoutActors");
+        }
 
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(0, tasks.size());
@@ -196,14 +197,15 @@ public class TaskAutomationTest {
 
     @Test
     public void testCreateSeveralTasksChain() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(document);
 
         List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
-        automationService.run(ctx, "createSeveralTasksChain");
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(document);
+            automationService.run(ctx, "createSeveralTasksChain");
+        }
 
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         Collections.sort(tasks, new TaskInstanceComparator());
@@ -292,14 +294,15 @@ public class TaskAutomationTest {
 
     @Test
     public void testCreateSingleTaskAndRunOperationChain() throws Exception {
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(document);
 
         List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
-        automationService.run(ctx, "createSingleTaskAndRunOperationChain");
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(document);
+            automationService.run(ctx, "createSingleTaskAndRunOperationChain");
+        }
 
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
@@ -319,7 +322,11 @@ public class TaskAutomationTest {
         assertEquals("This document has been accepted", document.getPropertyValue("dc:description"));
 
         // run another time, and this time reject
-        automationService.run(ctx, "createSingleTaskAndRunOperationChain");
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(document);
+            automationService.run(ctx, "createSingleTaskAndRunOperationChain");
+        }
+
         tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, coreSession);
         assertEquals(1, tasks.size());
         taskService.rejectTask(coreSession, (NuxeoPrincipal) coreSession.getPrincipal(), tasks.get(0),

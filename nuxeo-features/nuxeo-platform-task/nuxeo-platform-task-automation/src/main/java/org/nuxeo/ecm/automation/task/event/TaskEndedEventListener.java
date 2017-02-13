@@ -66,10 +66,10 @@ public class TaskEndedEventListener implements EventListener {
         }
 
         if (!StringUtils.isEmpty(chain)) {
-            try {
+            try (OperationContext ctx = new OperationContext(eventContext.getCoreSession())) {
                 // run the given operation
                 AutomationService os = Framework.getService(AutomationService.class);
-                OperationContext ctx = new OperationContext(eventContext.getCoreSession());
+
                 if (eventContext instanceof DocumentEventContext) {
                     ctx.setInput(((DocumentEventContext) eventContext).getSourceDocument());
                     ctx.put(OperationTaskVariableName.taskDocument.name(), task.getDocument());

@@ -89,21 +89,29 @@ public class EventHandlerRegistry {
         if (handlers == null || handlers.isEmpty()) {
             return false;
         }
-        EventContext ectx = event.getContext();
-        OperationContext ctx;
-        if (ectx instanceof DocumentEventContext) {
-            ctx = new OperationContext(ectx.getCoreSession());
-            ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
-        } else {
-            ctx = new OperationContext();
-        }
-        ctx.put("Event", event);
-        for (EventHandler handler : handlers) {
-            if (handler.isEnabled(ctx, ectx, true)) {
-                return true;
+
+        try (OperationContext ctx = open(event)) {
+            EventContext ectx = event.getContext();
+            ctx.put("Event", event);
+            for (EventHandler handler : handlers) {
+                if (handler.isEnabled(ctx, ectx, true)) {
+                    return true;
+                }
             }
+            return false;
+        } catch (OperationException cause) {
+            throw new NuxeoException(cause);
         }
-        return false;
+    }
+
+    protected OperationContext open(Event event) {
+        EventContext ectx = event.getContext();
+        if (ectx instanceof DocumentEventContext) {
+            OperationContext ctx = new OperationContext(ectx.getCoreSession());
+            ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
+            return ctx;
+        }
+        return new OperationContext();
     }
 
     // TODO: impl remove handlers method? or should refactor runtime to be able
@@ -115,18 +123,10 @@ public class EventHandlerRegistry {
         }
 
         EventContext ectx = event.getContext();
-        OperationContext ctx = null;
         for (EventHandler handler : handlers) {
-            if (ectx instanceof DocumentEventContext) {
-                ctx = new OperationContext(ectx.getCoreSession());
-                ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
-            } else { // not a document event .. the chain must begin with void
-                // operation - session is not available.
-                ctx = new OperationContext();
-            }
-            ctx.put("Event", event);
-            ctx.setCommit(saveSession); // avoid reentrant events
-            try {
+            try (OperationContext ctx = getContext(ectx)) {
+                ctx.put("Event", event);
+                ctx.setCommit(saveSession); // avoid reentrant events
                 if (handler.isEnabled(ctx, ectx, false)) {
                     // TODO this will save the session at each iteration!
                     svc.run(ctx, handler.getChainId());
@@ -135,6 +135,17 @@ public class EventHandlerRegistry {
                 log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
             }
         }
+    }
+
+    protected OperationContext getContext(EventContext ectx) {
+        if (ectx instanceof DocumentEventContext) {
+            OperationContext ctx = new OperationContext(ectx.getCoreSession());
+            ctx.setInput(((DocumentEventContext) ectx).getSourceDocument());
+            return ctx;
+        }
+        // not a document event .. the chain must begin with void
+        // operation - session is not available.
+        return new OperationContext();
     }
 
 }

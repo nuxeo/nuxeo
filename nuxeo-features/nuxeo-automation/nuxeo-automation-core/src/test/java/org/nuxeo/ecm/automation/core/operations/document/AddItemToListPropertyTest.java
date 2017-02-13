@@ -103,14 +103,15 @@ public class AddItemToListPropertyTest {
         String fieldsDataAsJson = readPropertiesFromFile("creationFields.json");
 
         // Add first fields
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(doc);
-        OperationChain chain = new OperationChain("testAddItemToPropertyChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJson);
-
-        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
-        List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
-        assertEquals(5, dbFields.size());
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(doc);
+            OperationChain chain = new OperationChain("testAddItemToPropertyChain");
+            chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties",
+                    fieldsDataAsJson);
+            DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+            List<?> dbFields = (List<?>) resultDoc.getPropertyValue("ds:fields");
+            assertEquals(5, dbFields.size());
+        }
 
     }
 
@@ -120,14 +121,16 @@ public class AddItemToListPropertyTest {
         String fieldsDataAsJson = readPropertiesFromFile("newFields.json");
 
         // ADD new fields
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(doc);
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties", fieldsDataAsJson);
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(doc);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(AddItemToListProperty.ID).set("xpath", "ds:fields").set("complexJsonProperties",
+                    fieldsDataAsJson);
 
-        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
-        List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
-        assertEquals(2, dbFields.size());
+            DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+            List dbFields = (List) resultDoc.getPropertyValue("ds:fields");
+            assertEquals(2, dbFields.size());
+        }
     }
 
     @Test(expected = OperationException.class)
@@ -136,11 +139,12 @@ public class AddItemToListPropertyTest {
         // Get new fields from json file to String
         String fieldsDataAsJson = readPropertiesFromFile("newFields.json");
         // ADD new fields
-        OperationContext ctx = new OperationContext(coreSession);
-        ctx.setInput(doc);
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(AddItemToListProperty.ID).set("xpath", "dc:title").set("complexJsonProperties", fieldsDataAsJson);
-        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            ctx.setInput(doc);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(AddItemToListProperty.ID).set("xpath", "dc:title").set("complexJsonProperties", fieldsDataAsJson);
+            DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
+        }
 
     }
 

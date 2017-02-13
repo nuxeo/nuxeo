@@ -427,16 +427,15 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         Map<String, Object> chainParameters = new HashMap<>();
         chainParameters.put("parameters", parameters);
 
-        OperationContext context = new OperationContext();
-        if (doc != null) {
-            DocumentModel pictureDocument = doc.getCoreSession().getDocument(doc.getRef());
-            pictureDocument.detach(true);
-            context.put("pictureDocument", pictureDocument);
-        }
-        context.setInput(blob);
-
         boolean txWasActive = false;
-        try {
+        try (OperationContext context = new OperationContext()) {
+            if (doc != null) {
+                DocumentModel pictureDocument = doc.getCoreSession().getDocument(doc.getRef());
+                pictureDocument.detach(true);
+                context.put("pictureDocument", pictureDocument);
+            }
+            context.setInput(blob);
+
             if (TransactionHelper.isTransactionActive()) {
                 txWasActive = true;
                 TransactionHelper.commitOrRollbackTransaction();
