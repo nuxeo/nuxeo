@@ -109,7 +109,7 @@ if (selectedLanguage != null) { %>
   nxtz.resetTimeZoneCookieIfNotSet();
 </script>
 
-<meta name="apple-itunes-app"
+<meta id="mobileItunesApp" name="apple-itunes-app"
   content="app-id=<%=itunesId%>, app-argument=<%=mobileApplicationURL%>" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -530,7 +530,16 @@ input:-webkit-autofill:focus {
   // Typically required for the Web UI
   var indexOfHash = window.location.href.indexOf('#!');
   if (indexOfHash > -1) {
-    document.getElementById('requestedUrl').value += window.location.href.substring(indexOfHash);
+    // lastPart = /doc/default/f6fa9686-3618-47a8-9419-ff1cc76fc857 or lastPart = /doc/f6fa9686-3618-47a8-9419-ff1cc76fc857
+    var lastPart = window.location.href.substring(indexOfHash);
+    document.getElementById('requestedUrl').value += lastPart;
+    var parts = lastPart.split('/');
+    if (parts.length === 3) {
+      // no server in URL
+      document.getElementById('mobileItunesApp').content += ("default/id/" + parts[2]);
+    } else if (parts.length === 4) {
+      document.getElementById('mobileItunesApp').content += (parts[2] + "/id/" + parts[3]);
+    }
   }
 
   document.getElementById('username').focus();
