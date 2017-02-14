@@ -54,6 +54,8 @@ public class FieldImpl implements Field {
 
     private Set<Constraint> constraints;
 
+    private String fallbackXpath;
+
     public FieldImpl(QName name, Type declaringType, Type type, String defaultValue, int flags,
             Collection<Constraint> constraints) {
         this.name = name;
@@ -106,6 +108,11 @@ public class FieldImpl implements Field {
     }
 
     @Override
+    public boolean isDeprecated() {
+        return (flags & DEPRECATED) != 0;
+    }
+
+    @Override
     public void setDefaultValue(String value) {
         defaultValue = value;
     }
@@ -125,6 +132,15 @@ public class FieldImpl implements Field {
             flags |= CONSTANT;
         } else {
             flags &= ~CONSTANT;
+        }
+    }
+
+    @Override
+    public void setDeprecated(boolean isDeprecated) {
+        if (isDeprecated) {
+            flags |= DEPRECATED;
+        } else {
+            flags &= ~DEPRECATED;
         }
     }
 
@@ -166,6 +182,14 @@ public class FieldImpl implements Field {
     @Override
     public Set<Constraint> getConstraints() {
         return Collections.unmodifiableSet(constraints);
+    }
+
+    public String getFallbackXpath() {
+        return fallbackXpath;
+    }
+
+    public void setFallbackXpath(String fallbackXpath) {
+        this.fallbackXpath = fallbackXpath;
     }
 
 }
