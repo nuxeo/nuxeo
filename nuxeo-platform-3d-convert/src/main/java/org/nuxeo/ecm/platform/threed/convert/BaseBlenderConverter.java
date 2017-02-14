@@ -191,7 +191,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
+        String dataContainer = "data" + String.valueOf(Calendar.getInstance().getTime().getTime());
+        String convertContainer = "convert" + String.valueOf(Calendar.getInstance().getTime().getTime());
         String commandName = getCommandName(blobHolder, parameters);
         if (commandName == null) {
             throw new ConversionException("Unable to determine target CommandLine name");
@@ -208,7 +209,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             Path mainScriptDir = getScriptWith(operatorsList);
-            params.addNamedParameter(SCRIPTS_DIR_PARAMETER, mainScriptDir.toString());
+            //params.addNamedParameter(SCRIPTS_DIR_PARAMETER, mainScriptDir.toString());
             params.addNamedParameter(SCRIPT_FILE_PARAMETER, initParameters.get(SCRIPT_FILE_PARAMETER));
 
             // Initialize render id params
@@ -232,11 +233,17 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder, inDirectory);
             Path mainFile = new Path(inputFiles.get(0));
-            params.addNamedParameter(INPUT_DIR_PARAMETER, mainFile.removeLastSegments(1).toString() );
+            //params.addNamedParameter(INPUT_DIR_PARAMETER, mainFile.removeLastSegments(1).toString() );
             params.addNamedParameter(INPUT_FILE_PARAMETER, mainFile.lastSegment());
 
             // Extra blob parameters
             Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder, parameters);
+
+            DockerHelper.CreateContainer(dataContainer,"nuxeo/blender");
+            DockerHelper.CopyData(mainFile.removeLastSegments(1).toString() + File.separatorChar + ".", dataContainer + ":/in/");
+            DockerHelper.CopyData(mainScriptDir.toString() + File.separatorChar + ".", dataContainer + ":/scripts/");
+            params.addNamedParameter(NAME_PARAM, convertContainer);
+            params.addNamedParameter(DATA_PARAM, dataContainer);
 
             if (blobParams != null) {
                 for (String blobParamName : blobParams.keySet()) {
@@ -270,12 +277,13 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             Path outDir = tempDirectory(null, "_out");
             params.addNamedParameter(OUT_DIR_PARAMETER, outDir.toString());
 
-            params.addNamedParameter(USER_ID_PARAMETER, UserIdHelper.getUid());
 
             ExecResult result = Framework.getService(CommandLineExecutorService.class).execCommand(commandName, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
+
+            DockerHelper.CopyData(dataContainer + ":/out/.", outDir.toString());
             return buildResult(result.getOutput(), params);
         } catch (CommandNotAvailable e) {
             // XXX bubble installation instructions
@@ -287,6 +295,8 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             for (Closeable closeable : toClose) {
                 IOUtils.closeQuietly(closeable);
             }
+            DockerHelper.RemoveContainer(dataContainer);
+            DockerHelper.RemoveContainer(convertContainer);
         }
 
     }

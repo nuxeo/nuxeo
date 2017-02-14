@@ -9,7 +9,7 @@
     <command name="blender_pipeline" enabled="true">
       <commandLine>docker</commandLine>
       <testParameterString>pull nuxeo/blender</testParameterString>
-      <parameterString>run --rm -v #{scriptsDir}:/scripts:ro -v #{inDir}:/in:ro -v #{outDir}:/out -u=#{userId} nuxeo/blender
+      <parameterString>run --name #{name} --volumes-from #{data} nuxeo/blender
         -P /scripts/#{scriptFile} -- --input /in/#{inFile} --outdir /out --operators #{operators}
         --renderids #{renderIds} -li #{lodIds} -pp #{percPoly} -mp #{maxPoly} -d #{dimensions} -c #{coords}
       </parameterString>
@@ -19,9 +19,29 @@
     <command name="collada2gltlf" enabled="true">
       <commandLine>docker</commandLine>
       <testParameterString>pull nuxeo/collada2gltf</testParameterString>
-      <parameterString>run --rm -v #{inDir}:/in:ro -v #{outDir}:/out -u=#{userId} nuxeo/collada2gltf
-        -f /in/#{inFile} -o /out/#{outFile} -e
-      </parameterString>
+      <parameterString>run --name #{name} --volumes-from #{data} nuxeo/collada2gltf
+        -f /in/#{inFile} -o /out/#{outFile} -e</parameterString>
+      <installationDirective>Please, install docker (https://www.docker.com/)
+      </installationDirective>
+    </command>
+    <command name="create_container" enabled="true">
+      <commandLine>docker</commandLine>
+      <testParameterString>version</testParameterString>
+      <parameterString>create --name #{name} #{image} </parameterString>
+      <installationDirective>Please, install docker (https://www.docker.com/)
+      </installationDirective>
+    </command>
+    <command name="remove_container" enabled="true">
+      <commandLine>docker</commandLine>
+      <testParameterString>version</testParameterString>
+      <parameterString>rm #{name} </parameterString>
+      <installationDirective>Please, install docker (https://www.docker.com/)
+      </installationDirective>
+    </command>
+    <command name="copy_container" enabled="true">
+      <commandLine>docker</commandLine>
+      <testParameterString>version</testParameterString>
+      <parameterString>cp #{source} #{destination}</parameterString>
       <installationDirective>Please, install docker (https://www.docker.com/)
       </installationDirective>
     </command>
