@@ -60,6 +60,8 @@
     <nuxeo.pdfutils.version>9.1-SNAPSHOT</nuxeo.pdfutils.version>
     <nuxeo.threed.version>9.1-SNAPSHOT</nuxeo.threed.version>
     <nuxeo.mqueues.version>9.1-SNAPSHOT</nuxeo.mqueues.version>
+    <nuxeo.mongodb.ext.version>9.1-SNAPSHOT</nuxeo.mongodb.ext.version>
+    
     <!-- optional addons -->
     <nuxeo.sync.version>9.1-SNAPSHOT</nuxeo.sync.version>
     <!-- end of optional addons -->
@@ -123,6 +125,7 @@
     <module>nuxeo-platform-3d</module>
     <module>nuxeo-mqueues</module>
     <module>nuxeo-agenda</module>
+    <module>nuxeo-mongodb-ext</module>
   </modules>
 
   <dependencyManagement>
@@ -1027,6 +1030,34 @@
         <version>${nuxeo.mqueues.version}</version>
       </dependency>
 
+      <!-- MongoDB Extension -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-core</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-seqgen</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-audit</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-directory</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.mongodb.ext</groupId>
+        <artifactId>nuxeo-mongodb-core</artifactId>
+        <version>${nuxeo.mongodb.ext.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
