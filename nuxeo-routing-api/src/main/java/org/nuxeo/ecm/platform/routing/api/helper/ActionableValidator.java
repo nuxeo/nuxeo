@@ -70,11 +70,11 @@ public class ActionableValidator {
 
     protected void runChain(String chainId) {
         AutomationService automationService = getAutomationService();
-        OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, actionnable.getDocumentRouteStep(session));
-        context.setInput(actionnable.getAttachedDocuments(session));
-        context.putAll(additionalProperties);
-        try {
+        try (OperationContext context = new OperationContext(session)) {
+            context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY,
+                    actionnable.getDocumentRouteStep(session));
+            context.setInput(actionnable.getAttachedDocuments(session));
+            context.putAll(additionalProperties);
             automationService.run(context, chainId);
         } catch (OperationException e) {
             throw new NuxeoException(e);

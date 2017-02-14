@@ -112,7 +112,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
      */
     public GraphNodeImpl(DocumentModel doc) {
         super(doc, new GraphRunner());
-        this.graph = (GraphRouteImpl) getDocumentRoute(doc.getCoreSession());
+        graph = (GraphRouteImpl) getDocumentRoute(doc.getCoreSession());
         inputTransitions = new ArrayList<Transition>(2);
     }
 
@@ -504,19 +504,18 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         }
 
         // get base context
-        OperationContext context = getExecutionContext(getSession());
-        if (transitionId != null) {
-            context.put("transition", transitionId);
-        }
+        try (OperationContext context = getExecutionContext(getSession())) {
+            if (transitionId != null) {
+                context.put("transition", transitionId);
+            }
 
-        AutomationService automationService = Framework.getLocalService(AutomationService.class);
-        try {
+            AutomationService automationService = Framework.getLocalService(AutomationService.class);
             automationService.run(context, chainId);
+
+            setAllVariables(context);
         } catch (OperationException e) {
             throw new DocumentRouteException("Error running chain: " + chainId, e);
         }
-
-        setAllVariables(context);
     }
 
     @Override
@@ -544,32 +543,33 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public List<Transition> evaluateTransitions() throws DocumentRouteException {
         List<Transition> trueTrans = new ArrayList<Transition>();
-        OperationContext context = getExecutionContext(getSession());
         for (Transition t : getOutputTransitions()) {
-            context.put("transition", t.id);
-            Expression expr = new RoutingScriptingExpression(t.condition, new RoutingScriptingFunctions(context));
-            Object res = null;
-            try {
-                res = expr.eval(context);
+            try (OperationContext context = getExecutionContext(getSession())) {
+                context.put("transition", t.id);
+                Expression expr = new RoutingScriptingExpression(t.condition, new RoutingScriptingFunctions(context));
+                Object res = expr.eval(context);
                 // stupid eval() method throws generic Exception
-            } catch (RuntimeException e) {
+                if (!(res instanceof Boolean)) {
+                    throw new DocumentRouteException("Condition for transition " + t + " of node '" + getId()
+                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + t.condition);
+                }
+                boolean bool = Boolean.TRUE.equals(res);
+                t.setResult(bool);
+                if (bool) {
+                    trueTrans.add(t);
+                    if (executeOnlyFirstTransition()) {
+                        // if node is exclusive, no need to evaluate others
+                        break;
+                    }
+                }
+                saveDocument();
+            } catch (OperationException | RuntimeException e) {
+                if (e instanceof DocumentRouteException) {
+                    throw (DocumentRouteException)e;
+                }
                 throw new DocumentRouteException("Error evaluating condition: " + t.condition, e);
             }
-            if (!(res instanceof Boolean)) {
-                throw new DocumentRouteException("Condition for transition " + t + " of node '" + getId()
-                        + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + t.condition);
-            }
-            boolean bool = Boolean.TRUE.equals(res);
-            t.setResult(bool);
-            if (bool) {
-                trueTrans.add(t);
-                if (executeOnlyFirstTransition()) {
-                    // if node is exclusive, no need to evaluate others
-                    break;
-                }
-            }
         }
-        saveDocument();
         return trueTrans;
     }
 
@@ -580,35 +580,37 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         if (StringUtils.isEmpty(taskAssigneesVar)) {
             return taskAssignees;
         }
-        OperationContext context = getExecutionContext(getSession());
-        Expression expr = Scripting.newExpression(taskAssigneesVar);
-        Object res = null;
-        try {
-            res = expr.eval(context);
-        } catch (RuntimeException e) {
-            throw new DocumentRouteException("Error evaluating task assignees: " + taskAssigneesVar, e);
-        }
-        if (res instanceof List<?>) {
-            res = ((List<?>) res).toArray();
-        }
-        if (res instanceof Object[]) {
-            // try to convert to String[]
-            Object[] list = (Object[]) res;
-            String[] tmp = new String[list.length];
-            try {
-                System.arraycopy(list, 0, tmp, 0, list.length);
-                res = tmp;
-            } catch (ArrayStoreException e) {
-                // one of the elements is not a String
+        try (OperationContext context = getExecutionContext(getSession())) {
+            Expression expr = Scripting.newExpression(taskAssigneesVar);
+            Object res = expr.eval(context);
+
+            if (res instanceof List<?>) {
+                res = ((List<?>) res).toArray();
             }
-        }
-        if (!(res instanceof String || res instanceof String[])) {
-            throw new DocumentRouteException("Can not evaluate task assignees from " + taskAssigneesVar);
-        }
-        if (res instanceof String) {
-            taskAssignees.add((String) res);
-        } else {
-            taskAssignees.addAll(Arrays.asList((String[]) res));
+            if (res instanceof Object[]) {
+                // try to convert to String[]
+                Object[] list = (Object[]) res;
+                String[] tmp = new String[list.length];
+                try {
+                    System.arraycopy(list, 0, tmp, 0, list.length);
+                    res = tmp;
+                } catch (ArrayStoreException e) {
+                    // one of the elements is not a String
+                }
+            }
+            if (!(res instanceof String || res instanceof String[])) {
+                throw new DocumentRouteException("Can not evaluate task assignees from " + taskAssigneesVar);
+            }
+            if (res instanceof String) {
+                taskAssignees.add((String) res);
+            } else {
+                taskAssignees.addAll(Arrays.asList((String[]) res));
+            }
+        } catch (OperationException|RuntimeException e) {
+            if (e instanceof DocumentRouteException) {
+                throw (DocumentRouteException)e;
+            }
+            throw new DocumentRouteException("Error evaluating task assignees: " + taskAssigneesVar, e);
         }
         return taskAssignees;
     }
@@ -700,25 +702,27 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         if (StringUtils.isEmpty(taskDueDateExpr)) {
             return new Date();
         }
-        OperationContext context = getExecutionContext(getSession());
-        Expression expr = Scripting.newExpression(taskDueDateExpr);
-        Object res = null;
-        try {
-            res = expr.eval(context);
-        } catch (RuntimeException e) {
+        try (OperationContext context = getExecutionContext(getSession())) {
+            Expression expr = Scripting.newExpression(taskDueDateExpr);
+            Object res = expr.eval(context);
+            if (res instanceof DateWrapper) {
+                return ((DateWrapper) res).getDate();
+            } else if (res instanceof Date) {
+                return (Date) res;
+            } else if (res instanceof Calendar) {
+                return ((Calendar) res).getTime();
+            } else if (res instanceof String) {
+                return DateParser.parseW3CDateTime((String) res);
+            } else {
+                throw new DocumentRouteException(
+                        "The following expression can not be evaluated to a date: " + taskDueDateExpr);
+            }
+        } catch (RuntimeException | OperationException e) {
+            if (e instanceof DocumentRouteException) {
+                throw (DocumentRouteException)e;
+            }
             throw new DocumentRouteException("Error evaluating task due date: " + taskDueDateExpr, e);
         }
-        if (res instanceof DateWrapper) {
-            return ((DateWrapper) res).getDate();
-        } else if (res instanceof Date) {
-            return (Date) res;
-        } else if (res instanceof Calendar) {
-            return ((Calendar) res).getTime();
-        } else if (res instanceof String) {
-            return DateParser.parseW3CDateTime((String) res);
-        } else
-            throw new DocumentRouteException("The following expression can not be evaluated to a date: "
-                    + taskDueDateExpr);
 
     }
 
@@ -747,9 +751,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         if (StringUtils.isBlank(subRouteModelExpr)) {
             return null;
         }
-        OperationContext context = getExecutionContext(getSession());
+        try (OperationContext context = getExecutionContext(getSession())) {
         String res = valueOrExpression(String.class, subRouteModelExpr, context, "Sub-workflow id expression");
         return StringUtils.defaultIfBlank(res, null);
+        } catch (OperationException cause) {
+            throw new DocumentRouteException("Cannot get sub route id for " + getId(), cause);
+        }
     }
 
     protected String getSubRouteInstanceId() {
@@ -783,16 +790,17 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     protected Map<String, Serializable> getSubRouteInitialVariables() {
         ListProperty props = (ListProperty) document.getProperty(PROP_SUB_ROUTE_VARS);
         Map<String, Serializable> map = new HashMap<String, Serializable>();
-        OperationContext context = null;
-        for (Property p : props) {
-            MapProperty prop = (MapProperty) p;
-            String key = (String) prop.get(PROP_KEYVALUE_KEY).getValue();
-            String v = (String) prop.get(PROP_KEYVALUE_VALUE).getValue();
-            if (context == null) {
-                context = getExecutionContext(getSession());
+        try (OperationContext context = getExecutionContext(getSession())) {
+            for (Property p : props) {
+                MapProperty prop = (MapProperty) p;
+                String key = (String) prop.get(PROP_KEYVALUE_KEY).getValue();
+                String v = (String) prop.get(PROP_KEYVALUE_VALUE).getValue();
+                Serializable value = valueOrExpression(Serializable.class, v, context,
+                        "Sub-workflow variable expression");
+                map.put(key, value);
             }
-            Serializable value = valueOrExpression(Serializable.class, v, context, "Sub-workflow variable expression");
-            map.put(key, value);
+        } catch (OperationException cause) {
+            throw new DocumentRouteException("Cannot get initial variables for " + getId(), cause);
         }
         return map;
     }
@@ -846,6 +854,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         return rules;
     }
 
+    @Override
     public List<EscalationRule> getEscalationRules() {
         if (escalationRules == null) {
             escalationRules = computeEscalationRules();
@@ -856,24 +865,25 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public List<EscalationRule> evaluateEscalationRules() {
         List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
-        OperationContext context = getExecutionContext(getSession());
         // add specific helpers for escalation
         for (EscalationRule rule : getEscalationRules()) {
-            Expression expr = new RoutingScriptingExpression(rule.condition,
-                    new RoutingScriptingFunctions(context, rule));
-            Object res = null;
-            try {
-                res = expr.eval(context);
-            } catch (RuntimeException e) {
+            try (OperationContext context = getExecutionContext(getSession())) {
+                Expression expr = new RoutingScriptingExpression(rule.condition,
+                        new RoutingScriptingFunctions(context, rule));
+                Object res = expr.eval(context);
+                if (!(res instanceof Boolean)) {
+                    throw new DocumentRouteException("Condition for rule " + rule + " of node '" + getId()
+                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + rule.condition);
+                }
+                boolean bool = Boolean.TRUE.equals(res);
+                if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
+                    rulesToExecute.add(rule);
+                }
+            } catch (RuntimeException|OperationException e) {
+                if (e instanceof DocumentRouteException) {
+                    throw (DocumentRouteException)e;
+                }
                 throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
-            }
-            if (!(res instanceof Boolean)) {
-                throw new DocumentRouteException("Condition for rule " + rule + " of node '" + getId() + "' of graph '"
-                        + graph.getName() + "' does not evaluate to a boolean: " + rule.condition);
-            }
-            boolean bool = Boolean.TRUE.equals(res);
-            if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
-                rulesToExecute.add(rule);
             }
         }
         saveDocument();
