@@ -774,7 +774,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             options.put(CoreEventConstants.DESTINATION_REF, parentRef);
             options.put(CoreEventConstants.DESTINATION_PATH, folder.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, childName);
-            options.put(CoreEventConstants.DESTINATION_EXISTS, folder.hasChild(childName));
+            if (Boolean.TRUE.equals(options.get(CoreSession.SKIP_DESTINATION_CHECK_ON_CREATE))) {
+                options.put(CoreEventConstants.DESTINATION_EXISTS, false);
+            } else {
+                options.put(CoreEventConstants.DESTINATION_EXISTS, folder.hasChild(childName));
+            }
         }
         return folder;
     }

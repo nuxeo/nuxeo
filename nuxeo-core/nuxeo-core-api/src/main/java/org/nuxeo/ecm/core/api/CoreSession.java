@@ -95,6 +95,13 @@ public interface CoreSession extends AutoCloseable {
     String IMPORT_PROXY_TYPE = "ecm:proxy";
 
     /**
+     * Skip the check to see if a destination exists on importDocument and createDocument
+     *
+     * @since 9.1
+     **/
+    String SKIP_DESTINATION_CHECK_ON_CREATE = "skipDestinationCheck";
+
+    /**
      * Allow version write, Boolean parameter passed in context data at saveDocument time.
      *
      * @since 5.9.2

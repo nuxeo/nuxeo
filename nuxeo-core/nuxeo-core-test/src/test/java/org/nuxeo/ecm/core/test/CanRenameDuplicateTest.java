@@ -60,6 +60,21 @@ public class CanRenameDuplicateTest {
     }
 
     @Test
+    public void duplicateCheckCanBeSkipped() {
+        DocumentModel model = repo.createDocumentModel("/", "aFile", "File");
+
+        DocumentModel original = repo.createDocument(model);
+        String originalName = original.getName();
+        Assert.assertThat(originalName, Matchers.is("aFile"));
+
+        // this is interesting for performance reason during mass import for instance
+        model.putContextData(CoreSession.SKIP_DESTINATION_CHECK_ON_CREATE, true);
+        DocumentModel duplicate = repo.createDocument(model);
+        String duplicateName = duplicate.getName();
+        Assert.assertThat(duplicateName, Matchers.is("aFile"));
+    }
+
+    @Test
     public void duplicateAfterCopy() {
 
     }
