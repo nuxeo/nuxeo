@@ -201,7 +201,7 @@ public class CSVImporterWork extends TransientStoreWork {
         this.parentPath = parentPath;
         this.username = username;
         if (csvBlob.getLength() >= 0 && csvBlob.getLength() / 1024 < COMPUTE_TOTAL_THRESHOLD_KB) {
-            this.computeTotal = true;
+            computeTotal = true;
         }
         this.options = options;
         startDate = new Date();
@@ -597,44 +597,39 @@ public class CSVImporterWork extends TransientStoreWork {
             return;
         }
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(session.getRootDocument());
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(session.getRootDocument());
 
-        CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-        List<CSVImportLog> importerLogs = csvImporter.getImportLogs(getId());
-        CSVImportResult importResult = CSVImportResult.fromImportLogs(importerLogs);
-        List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(getId(), Status.SKIPPED, Status.ERROR);
-        ctx.put("importResult", importResult);
-        ctx.put("skippedAndErrorImportLogs", skippedAndErrorImportLogs);
-        ctx.put("csvFilename", getBlob().getFilename());
-        ctx.put("startDate", DateFormat.getInstance().format(startDate));
-        ctx.put("username", username);
+            CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
+            List<CSVImportLog> importerLogs = csvImporter.getImportLogs(getId());
+            CSVImportResult importResult = CSVImportResult.fromImportLogs(importerLogs);
+            List<CSVImportLog> skippedAndErrorImportLogs = csvImporter.getImportLogs(getId(), Status.SKIPPED,
+                    Status.ERROR);
+            ctx.put("importResult", importResult);
+            ctx.put("skippedAndErrorImportLogs", skippedAndErrorImportLogs);
+            ctx.put("csvFilename", getBlob().getFilename());
+            ctx.put("startDate", DateFormat.getInstance().format(startDate));
+            ctx.put("username", username);
 
-        DocumentModel importFolder = session.getDocument(new PathRef(parentPath));
-        String importFolderUrl = getDocumentUrl(importFolder);
-        ctx.put("importFolderTitle", importFolder.getTitle());
-        ctx.put("importFolderUrl", importFolderUrl);
-        ctx.put("userUrl", getUserUrl());
+            DocumentModel importFolder = session.getDocument(new PathRef(parentPath));
+            String importFolderUrl = getDocumentUrl(importFolder);
+            ctx.put("importFolderTitle", importFolder.getTitle());
+            ctx.put("importFolderUrl", importFolderUrl);
+            ctx.put("userUrl", getUserUrl());
 
-        StringList to = buildRecipientsList(email);
-        Expression from = Scripting.newExpression("Env[\"mail.from\"]");
-        String subject = "CSV Import result of " + getBlob().getFilename();
-        String message = loadTemplate(TEMPLATE_IMPORT_RESULT);
+            StringList to = buildRecipientsList(email);
+            Expression from = Scripting.newExpression("Env[\"mail.from\"]");
+            String subject = "CSV Import result of " + getBlob().getFilename();
+            String message = loadTemplate(TEMPLATE_IMPORT_RESULT);
 
-        try {
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID)
-                 .set("from", from)
-                 .set("to", to)
-                 .set("HTML", true)
-                 .set("subject", subject)
-                 .set("message", message);
+            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject)
+                    .set("message", message);
             Framework.getLocalService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
             log.error(String.format("Unable to notify user '%s' for import result of '%s': %s", username,
-                    getBlob().getFilename(),
-                    e.getMessage()));
+                    getBlob().getFilename(), e.getMessage()));
             log.debug(e, e);
             throw ExceptionUtils.runtimeException(e);
         }
