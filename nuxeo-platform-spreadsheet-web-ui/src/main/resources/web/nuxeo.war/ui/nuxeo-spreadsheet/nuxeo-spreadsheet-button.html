@@ -88,8 +88,10 @@ Contributors:
         var provider = this.nxProvider;
 
         // convert from provider.sort to sortInfos
-        var sortInfos = Object.keys(provider.sort)
-          .map((k) => ({'sortColumn': k, 'sortAscending': provider.sort[k] === 'asc'}));
+        var sortInfos = [];
+        Object.keys(provider.sort).forEach(function(key) {
+          sortInfos.push({'sortColumn': key, 'sortAscending': provider.sort[key] === 'asc'});
+        });
 
         // convert provider.params and provider.aggregations to properties
         var properties = {};
