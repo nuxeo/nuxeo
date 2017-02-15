@@ -77,4 +77,16 @@ public interface SchemaManager extends TypeProvider {
      */
     Set<String> getAllowedSubTypes(String type);
 
+    /**
+     * @return the deprecated properties handler
+     * @since 9.2
+     */
+    PropertyDeprecationHandler getDeprecatedProperties();
+
+    /**
+     * @return the removed properties handler
+     * @since 9.2
+     */
+    PropertyDeprecationHandler getRemovedProperties();
+
 }

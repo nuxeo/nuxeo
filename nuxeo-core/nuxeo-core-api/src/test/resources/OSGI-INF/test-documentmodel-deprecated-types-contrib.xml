@@ -16,4 +16,14 @@
     </doctype>
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
+    <property schema="deprecated" name="scalar" deprecated="true" />
+    <property schema="deprecated" name="scalars" deprecated="true" />
+    <property schema="deprecated" name="complexDep" deprecated="true" />
+    <property schema="deprecated" name="complex/scalar" deprecated="true" />
+    <property schema="deprecated" name="scalar2scalar" fallback="scalarfallback" deprecated="true" />
+    <property schema="deprecated" name="scalar2complex" fallback="complexfallback/scalar" deprecated="true" />
+    <property schema="deprecated" name="complex2complex" fallback="complexfallback" deprecated="true" />
+  </extension>
+
 </component>

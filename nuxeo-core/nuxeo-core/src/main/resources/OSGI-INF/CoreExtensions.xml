@@ -192,6 +192,14 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="deprecation">
+    <documentation>The deprecated core properties</documentation>
+    <!-- Removed since 9.1 -->
+    <property schema="common" name="size" />
+    <property schema="file" name="filename" fallback="content/name" />
+    <property schema="files" name="files/*/filename" fallback="files/*/file/name" />
+  </extension>
+
    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
