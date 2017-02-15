@@ -106,7 +106,7 @@ public class MongoDBQueryBuilder {
 
     protected final SchemaManager schemaManager;
 
-    protected final MongoDBRepository repository;
+    protected final MongoDBConverter converter;
 
     protected final String idKey;
 
@@ -137,7 +137,7 @@ public class MongoDBQueryBuilder {
     public MongoDBQueryBuilder(MongoDBRepository repository, Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
-        this.repository = repository;
+        converter = repository.converter;
         idKey = repository.idKey;
         this.expression = expression;
         this.selectClause = selectClause;
@@ -971,7 +971,7 @@ public class MongoDBQueryBuilder {
             // simple field
             String field = DBSSession.convToInternal(prop);
             Type type = DBSSession.getType(field);
-            String queryField = repository.keyToBson(field);
+            String queryField = converter.keyToBson(field);
             return new FieldInfo(prop, field, queryField, field, type, true);
         } else {
             String first = parts[0];
