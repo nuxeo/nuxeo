@@ -80,4 +80,8 @@ public class Constants {
     public static final String BLENDER_PIPELINE_COMMAND = "blender_pipeline";
 
     public static final String COLLADA2GLTF_COMMAND = "collada2gltlf";
+
+    public static final String NAME_PARAM = "name";
+
+    public static final String DATA_PARAM = "data";
 }
