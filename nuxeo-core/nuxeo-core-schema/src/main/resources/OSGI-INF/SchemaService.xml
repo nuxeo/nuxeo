@@ -7,7 +7,7 @@
     Allows registrering new types defined using XSD schemas
     @author Bogdan Stefanescu (bs@nuxeo.com)
   </documentation>
-  
+
   <require>org.nuxeo.ecm.core.schema.ObjectResolverService</require>
 
   <service>
@@ -148,6 +148,47 @@
 
     <object
       class="org.nuxeo.ecm.core.schema.SchemaBindingDescriptor" />
+  </extension-point>
+
+  <extension-point name="deprecation">
+
+    <documentation>
+      Extension Point to register deprecated/removed properties.
+      XML extensions may contain any number of 'property' elements of the form:
+      <code>
+        <property schema="common" name="size" deprecated="true" />
+        <property schema="file" name="filename" fallback="content/name" />
+      </code>
+      A property contributed to this extension point enables deprecation mechanisms inside Nuxeo Platform.
+      This generates WARN message of usage to help to remove deprecated usage.
+      <p />
+      A contribution is one of these types:
+      <ul>
+        <li>deprecated: property still exists in schema definition, but it'll be removed in next version</li>
+        <li>removed: property has been removed from schema definition, relax platform behavior. This will avoid Nuxeo
+          property not found exceptions for remaining use of the property</li>
+      </ul>
+      The fallback attribute is optional, its value has to be a xpath referencing an existing property in the same
+      schema than removed/deprecated property.
+      When presents, it is used:
+      <ul>
+        <li>to set the value to the fallback property</li>
+        <li>to get the value from the fallback property if it exists</li>
+      </ul>
+      Note: for a deprecated property, setValue also set value to property and getValue get value from property if
+      fallback value is null.
+      <p />
+      For example, the contribution below enables WARN message of usage of property <i>file:filename</i>. This will also
+      get/set the value from/to <i>file:content/name</i> for deprecated usage of <i>file:filename</i> property.
+      <code>
+        <property schema="file" name="filename" fallback="content/name" />
+      </code>
+      As it, each usage of this property will automatically fallback on the fallback and avoid exception from platform.
+      This will also allows to import document declaring the removed property.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.schema.PropertyDeprecationDescriptor" />
+
   </extension-point>
 
   <extension target="org.nuxeo.runtime.EventService" point="listeners">

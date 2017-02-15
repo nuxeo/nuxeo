@@ -124,6 +124,12 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected List<Runnable> recomputeCallbacks;
 
+    /** @since 9.2 */
+    protected Map<String, Map<String, String>> deprecatedProperties = new HashMap<>();
+
+    /** @since 9.2 */
+    protected Map<String, Map<String, String>> removedProperties = new HashMap<>();
+
     public SchemaManagerImpl() {
         recomputeCallbacks = new ArrayList<>();
         schemaDir = new File(Environment.getDefault().getTemp(), SCHEMAS_DIR_NAME);
@@ -293,6 +299,10 @@ public class SchemaManagerImpl implements SchemaManager {
         recomputeProxies(); // depend on schemas
         fields.clear(); // re-filled lazily
     }
+
+    /*
+     * ===== Configuration =====
+     */
 
     protected void recomputeConfiguration() {
         if (allConfigurations.isEmpty()) {
@@ -506,7 +516,8 @@ public class SchemaManagerImpl implements SchemaManager {
 
     }
 
-    protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(DocumentTypeDescriptor src, DocumentTypeDescriptor dst) {
+    protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(DocumentTypeDescriptor src,
+            DocumentTypeDescriptor dst) {
         return dst.clone().merge(src);
     }
 
@@ -808,4 +819,58 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void executeRecomputeCallbacks() {
         recomputeCallbacks.forEach(Runnable::run);
     }
+
+    /*
+     * ===== Deprecation API =====
+     */
+
+    /**
+     * @since 9.2
+     */
+    public synchronized void registerPropertyDeprecation(PropertyDeprecationDescriptor descriptor) {
+        Map<String, Map<String, String>> properties = descriptor.isDeprecated() ? deprecatedProperties
+                : removedProperties;
+        properties.computeIfAbsent(descriptor.getSchema(), key -> new HashMap<>()).put(descriptor.getName(),
+                descriptor.getFallback());
+        log.info("Registered property deprecation: " + descriptor);
+    }
+
+    /**
+     * @since 9.2
+     */
+    public synchronized void unregisterPropertyDeprecation(PropertyDeprecationDescriptor descriptor) {
+        Map<String, Map<String, String>> properties = descriptor.isDeprecated() ? deprecatedProperties
+                : removedProperties;
+        boolean removed = false;
+        Map<String, String> schemaProperties = properties.get(descriptor.getSchema());
+        if (schemaProperties != null) {
+            removed = schemaProperties.remove(descriptor.getName(), descriptor.getFallback());
+            if (schemaProperties.isEmpty()) {
+                properties.remove(descriptor.getSchema());
+            }
+        }
+        if (removed) {
+            log.info("Unregistered property deprecation: " + descriptor);
+        } else {
+            log.error("Unregistering unknown property deprecation: " + descriptor);
+
+        }
+    }
+
+    /**
+     * @since 9.2
+     */
+    @Override
+    public PropertyDeprecationHandler getDeprecatedProperties() {
+        return new PropertyDeprecationHandler(deprecatedProperties);
+    }
+
+    /**
+     * @since 9.2
+     */
+    @Override
+    public PropertyDeprecationHandler getRemovedProperties() {
+        return new PropertyDeprecationHandler(removedProperties);
+    }
+
 }

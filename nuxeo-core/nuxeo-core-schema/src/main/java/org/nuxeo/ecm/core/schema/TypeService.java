@@ -37,6 +37,8 @@ public class TypeService extends DefaultComponent {
 
     private static final String XP_CONFIGURATION = "configuration";
 
+    private static final String XP_DEPRECATION = "deprecation";
+
     private SchemaManagerImpl schemaManager;
 
     @Override
@@ -52,8 +54,9 @@ public class TypeService extends DefaultComponent {
     @Override
     public void registerExtension(Extension extension) {
         String xp = extension.getExtensionPoint();
-        if (XP_DOCTYPE.equals(xp)) {
-            Object[] contribs = extension.getContributions();
+        Object[] contribs = extension.getContributions();
+        switch (xp) {
+        case XP_DOCTYPE:
             for (Object contrib : contribs) {
                 if (contrib instanceof DocumentTypeDescriptor) {
                     schemaManager.registerDocumentType((DocumentTypeDescriptor) contrib);
@@ -63,8 +66,8 @@ public class TypeService extends DefaultComponent {
                     schemaManager.registerProxies((ProxiesDescriptor) contrib);
                 }
             }
-        } else if (XP_SCHEMA.equals(xp)) {
-            Object[] contribs = extension.getContributions();
+            break;
+        case XP_SCHEMA:
             for (Object contrib : contribs) {
                 // use the context of the bundle contributing the extension
                 // to load schemas
@@ -72,19 +75,26 @@ public class TypeService extends DefaultComponent {
                 sbd.context = extension.getContext();
                 schemaManager.registerSchema(sbd);
             }
-        } else if (XP_CONFIGURATION.equals(xp)) {
-            Object[] contribs = extension.getContributions();
+            break;
+        case XP_CONFIGURATION:
             for (Object contrib : contribs) {
                 schemaManager.registerConfiguration((TypeConfiguration) contrib);
             }
+            break;
+        case XP_DEPRECATION:
+            for (Object contrib : contribs) {
+                schemaManager.registerPropertyDeprecation((PropertyDeprecationDescriptor) contrib);
+            }
+            break;
         }
     }
 
     @Override
     public void unregisterExtension(Extension extension) {
         String xp = extension.getExtensionPoint();
-        if (XP_DOCTYPE.equals(xp)) {
-            Object[] contribs = extension.getContributions();
+        Object[] contribs = extension.getContributions();
+        switch (xp) {
+        case XP_DOCTYPE:
             for (Object contrib : contribs) {
                 if (contrib instanceof DocumentTypeDescriptor) {
                     schemaManager.unregisterDocumentType((DocumentTypeDescriptor) contrib);
@@ -94,16 +104,22 @@ public class TypeService extends DefaultComponent {
                     schemaManager.unregisterProxies((ProxiesDescriptor) contrib);
                 }
             }
-        } else if (XP_SCHEMA.equals(xp)) {
-            Object[] contribs = extension.getContributions();
+            break;
+        case XP_SCHEMA:
             for (Object contrib : contribs) {
                 schemaManager.unregisterSchema((SchemaBindingDescriptor) contrib);
             }
-        } else if (XP_CONFIGURATION.equals(xp)) {
-            Object[] contribs = extension.getContributions();
+            break;
+        case XP_CONFIGURATION:
             for (Object contrib : contribs) {
                 schemaManager.unregisterConfiguration((TypeConfiguration) contrib);
             }
+            break;
+        case XP_DEPRECATION:
+            for (Object contrib : contribs) {
+                schemaManager.unregisterPropertyDeprecation((PropertyDeprecationDescriptor) contrib);
+            }
+            break;
         }
     }
 
