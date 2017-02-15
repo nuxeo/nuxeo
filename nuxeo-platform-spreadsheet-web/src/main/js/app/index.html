@@ -1,0 +1,57 @@
+<html>
+<head>
+  <title>Nuxeo Spreadsheet</title>
+  <!-- build:css styles/vendor.css -->
+  <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/theme.css">
+  <link rel="stylesheet" href="bower_components/handsontable/dist/jquery.handsontable.full.css">
+  <link rel="stylesheet" href="bower_components/select2/select2.css">
+  <!-- endbuild -->
+  <!-- build:css styles/style.css -->
+  <link rel="stylesheet" href="styles/styles.css">
+  <!-- endbuild -->
+  <!-- build:js scripts/vendor.js -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/jquery-ui/ui/core.js"></script>
+  <script src="bower_components/jquery-ui/ui/datepicker.js"></script>
+  <script src="bower_components/handsontable/dist/jquery.handsontable.full.js"></script>
+  <script src="bower_components/select2/select2.js"></script>
+  <script src="lib/select2-editor.js"></script>
+  <script src="bower_components/nuxeo/lib/jquery/nuxeo.js"></script>
+  <script src="bower_components/traceur/traceur.js"></script>
+  <script src="bower_components/es6-module-loader/dist/es6-module-loader.js"></script>
+  <script src="bower_components/system.js/lib/extension-register.js"></script>
+  <!-- endbuild -->
+</head>
+<body>
+<div id="header">
+  Spreadsheet editor
+</div>
+
+<div id="queryArea" style="display:none">
+  <input id="query" type="text" placeholder="SELECT * FROM Document" />
+  <button id="execute" class="button">Execute</button>
+</div>
+
+<div id="grid"></div>
+
+<div class="buttonsGadget">
+  <label><input type="checkbox" name="autosave" autocomplete="off"> Autosave</label>
+  <div style="display:inline-block;width:16px">
+    <img id="loading" style="display:none" src="images/ajax-loader.gif">
+  </div>
+  <button id="save">Save</button>
+  <button id="close" style="display:none">Close</button>
+  <div id="console" class="console"></div>
+</div>
+<script>register(System);</script>
+<!-- build:js scripts/app.js -->
+<script src="app-build.js"></script>
+<!-- endbuild -->
+<script>
+  System.import('app')
+    .then(function(app) { app.run(); })
+    .catch(console.error.bind(console));
+</script>
+</body>
+</html>

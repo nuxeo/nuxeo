@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Name: nuxeo-platform-spreadsheet-core
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.spreadsheet.core;singleton:=true
+Nuxeo-Component: OSGI-INF/page-providers-contrib.xml

@@ -38,9 +38,9 @@ class Request {
     this.headers['X-NXContext-Category'] = lst.join(',');
   }
 
-  execute(method = 'get') {
+  execute(method = 'get', path) {
     return new Promise((resolve, reject) => {
-      this.conn.request(this.path)
+      this.conn.request(path || this.path)
         .repositoryName(undefined)
         .headers(this._headers)
         .query(this._params)

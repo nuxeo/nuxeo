@@ -3,8 +3,7 @@ target
 .project
 .settings
 bin
-src/main/js/npm-debug.log
-src/main/js/app/app-build.js
-src/main/js/app/bower_components/
-src/main/js/node_modules/
-
+**/js/npm-debug.log
+**/js/app/app-build.js
+**/node_modules/
+**/bower_components/

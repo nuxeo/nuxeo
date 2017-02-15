@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Name: nuxeo-platform-spreadsheet-web-ui
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-SymbolicName: org.nuxeo.ecm.platform.spreadsheet.web-ui;singleton:=true
+Nuxeo-Component: OSGI-INF/nuxeo-spreadsheet-webresources-contrib.xml

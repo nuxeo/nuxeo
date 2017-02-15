@@ -1,0 +1,136 @@
+<!--
+(C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the License);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an AS IS BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+   Adilio Araujo <aaraujo@nuxeo.com>
+-->
+
+<!--
+`nuxeo-spreadsheet-button`
+@group Nuxeo UI
+@element nuxeo-spreadsheet-button
+-->
+<dom-module id="nuxeo-spreadsheet-button">
+
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-icon-button {
+        background: white;
+        color: var(--nuxeo-action-color);
+        border: 1px solid var(--divider-color);
+        border-radius: 4px;
+      }
+
+      .dialog {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+      }
+
+      #iframe {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+
+    <nuxeo-connection id="nxconn"></nuxeo-connection>
+
+    <template is="dom-if" if="[[_isAvailable(nxProvider, mode)]]">
+      <paper-icon-button id="button" icon="editor:mode-edit" on-tap="_show"></paper-icon-button>
+      <paper-tooltip for="button">[[i18n('spreadsheetButton.tooltip')]]</paper-tooltip>
+    </template>
+
+    <paper-dialog id="dialog" class="dialog" with-backdrop>
+      <iframe id="iframe" frameborder="0" scrolling="auto" on-load="_onLoad"></iframe>
+    </paper-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-spreadsheet-button',
+      behaviors: [Nuxeo.RoutingBehavior, Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+      properties: {
+        mode: {
+          type: String,
+          value: ''
+        },
+        nxProvider: {
+          type: HTMLElement,
+          value: null
+        }
+      },
+
+      _isAvailable: function() {
+        return (this.nxProvider !== null) && this.mode === 'table';
+      },
+
+      _show: function() {
+
+        var provider = this.nxProvider;
+
+        // convert from provider.sort to sortInfos
+        var sortInfos = Object.keys(provider.sort)
+          .map((k) => ({'sortColumn': k, 'sortAscending': provider.sort[k] === 'asc'}));
+
+        // convert provider.params and provider.aggregations to properties
+        var properties = {};
+        Object.keys(provider.params).forEach(function(key) {
+          properties[key] = provider.params[key];
+        });
+        Object.keys(provider.aggregations).forEach(function(key) {
+          properties[key] = provider.aggregations[key].selection;
+        });
+
+        var state = {
+          pageProviderName: provider.provider,
+          pageSize: provider.pageSize,
+          currentPage: provider.page,
+          namedParameters: provider.params,
+          searchDocument: {properties: properties},
+          sortInfos: sortInfos,
+
+          // TODO: pass columns here when https://jira.nuxeo.com/browse/ELEMENTS-223 is done
+          //resultColumns: [],
+
+          executed: false
+        };
+
+        this.$.iframe.src = this.$.nxconn.url + '/spreadsheet/?cv=' + encodeURIComponent(btoa(JSON.stringify(state)));
+        this.$.dialog.toggle();
+      },
+
+      _close: function() {
+        this.$.dialog.toggle();
+        this.nxProvider.fetch();
+      },
+
+      _onLoad: function() {
+        var close = (this.$.iframe.contentDocument || this.$.iframe.contentWindow.document).querySelector('#close');
+        if (close) {
+          close.addEventListener('click', this._close.bind(this));
+        }
+      }
+
+    });
+  </script>
+
+</dom-module>
