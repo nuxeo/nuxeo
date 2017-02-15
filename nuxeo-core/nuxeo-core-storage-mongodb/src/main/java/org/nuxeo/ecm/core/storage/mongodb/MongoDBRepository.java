@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.ScrollResultImpl.emptyResult;
-import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -45,16 +44,13 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,14 +69,12 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
-import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
@@ -108,11 +102,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MongoDBRepository.class);
 
-    private static final Long ZERO = Long.valueOf(0);
+    public static final Long ZERO = Long.valueOf(0);
 
-    private static final Long ONE = Long.valueOf(1);
+    public static final Long ONE = Long.valueOf(1);
 
-    private static final Long MINUS_ONE = Long.valueOf(-11);
+    public static final Long MINUS_ONE = Long.valueOf(-1);
 
     public static final String DB_DEFAULT = "nuxeo";
 
@@ -171,6 +165,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     /** Sequence allocation block size. */
     protected long sequenceBlockSize;
 
+    protected final MongoDBConverter converter;
+
     protected static Map<String, CursorResult> cursorResults = new ConcurrentHashMap<>();
 
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
@@ -193,6 +189,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             sequenceBlockSize = sbs == null ? 1 : sbs.longValue();
             sequenceLeft = 0;
         }
+        converter = new MongoDBConverter(idKey);
         initRepository();
     }
 
@@ -249,303 +246,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
     // used also by unit tests
     public static DBCollection getCountersCollection(MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
         return getCollection(mongoClient, descriptor.dbname, descriptor.name + ".counters");
-    }
-
-    protected String keyToBson(String key) {
-        if (useCustomId) {
-            return key;
-        } else {
-            return KEY_ID.equals(key) ? idKey : key;
-        }
-    }
-
-    protected Object valueToBson(Object value) {
-        if (value instanceof State) {
-            return stateToBson((State) value);
-        } else if (value instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Object> values = (List<Object>) value;
-            return listToBson(values);
-        } else if (value instanceof Object[]) {
-            return listToBson(Arrays.asList((Object[]) value));
-        } else {
-            return serializableToBson(value);
-        }
-    }
-
-    protected DBObject stateToBson(State state) {
-        DBObject ob = new BasicDBObject();
-        for (Entry<String, Serializable> en : state.entrySet()) {
-            Object val = valueToBson(en.getValue());
-            if (val != null) {
-                ob.put(keyToBson(en.getKey()), val);
-            }
-        }
-        return ob;
-    }
-
-    protected List<Object> listToBson(List<Object> values) {
-        ArrayList<Object> objects = new ArrayList<Object>(values.size());
-        for (Object value : values) {
-            objects.add(valueToBson(value));
-        }
-        return objects;
-    }
-
-    protected String bsonToKey(String key) {
-        if (useCustomId) {
-            return key;
-        } else {
-            return idKey.equals(key) ? KEY_ID : key;
-        }
-    }
-
-    protected State bsonToState(DBObject ob) {
-        if (ob == null) {
-            return null;
-        }
-        State state = new State(ob.keySet().size());
-        for (String key : ob.keySet()) {
-            if (useCustomId && MONGODB_ID.equals(key)) {
-                // skip native id
-                continue;
-            }
-            state.put(bsonToKey(key), bsonToValue(ob.get(key)));
-        }
-        return state;
-    }
-
-    protected Serializable bsonToValue(Object value) {
-        if (value instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Object> list = (List<Object>) value;
-            if (list.isEmpty()) {
-                return null;
-            } else {
-                Class<?> klass = Object.class;
-                for (Object o : list) {
-                    if (o != null) {
-                        klass = scalarToSerializableClass(o.getClass());
-                        break;
-                    }
-                }
-                if (DBObject.class.isAssignableFrom(klass)) {
-                    List<Serializable> l = new ArrayList<>(list.size());
-                    for (Object el : list) {
-                        l.add(bsonToState((DBObject) el));
-                    }
-                    return (Serializable) l;
-                } else {
-                    // turn the list into a properly-typed array
-                    Object[] ar = (Object[]) Array.newInstance(klass, list.size());
-                    int i = 0;
-                    for (Object el : list) {
-                        ar[i++] = scalarToSerializable(el);
-                    }
-                    return ar;
-                }
-            }
-        } else if (value instanceof DBObject) {
-            return bsonToState((DBObject) value);
-        } else {
-            return scalarToSerializable(value);
-        }
-    }
-
-    public static class Updates {
-        public BasicDBObject set = new BasicDBObject();
-
-        public BasicDBObject unset = new BasicDBObject();
-
-        public BasicDBObject push = new BasicDBObject();
-
-        public BasicDBObject inc = new BasicDBObject();
-    }
-
-    /**
-     * Constructs a list of MongoDB updates from the given {@link StateDiff}.
-     * <p>
-     * We need a list because some cases need two operations to avoid conflicts.
-     */
-    protected List<DBObject> diffToBson(StateDiff diff) {
-        Updates updates = new Updates();
-        diffToUpdates(diff, null, updates);
-        UpdateListBuilder builder = new UpdateListBuilder();
-        for (Entry<String, Object> en : updates.set.entrySet()) {
-            builder.update(MONGODB_SET, en.getKey(), en.getValue());
-        }
-        for (Entry<String, Object> en : updates.unset.entrySet()) {
-            builder.update(MONGODB_UNSET, en.getKey(), en.getValue());
-        }
-        for (Entry<String, Object> en : updates.push.entrySet()) {
-            builder.update(MONGODB_PUSH, en.getKey(), en.getValue());
-        }
-        for (Entry<String, Object> en : updates.inc.entrySet()) {
-            builder.update(MONGODB_INC, en.getKey(), en.getValue());
-        }
-        return builder.updateList;
-    }
-
-    /**
-     * Update list builder to prevent several updates of the same field.
-     * <p>
-     * This happens if two operations act on two fields where one is a prefix of the other.
-     * <p>
-     * Example: Cannot update 'mylist.0.string' and 'mylist' at the same time (error 16837)
-     *
-     * @since 5.9.5
-     */
-    protected static class UpdateListBuilder {
-
-        protected List<DBObject> updateList = new ArrayList<>(10);
-
-        protected DBObject update;
-
-        protected Set<String> prefixKeys;
-
-        protected Set<String> keys;
-
-        protected UpdateListBuilder() {
-            newUpdate();
-        }
-
-        protected void update(String op, String key, Object value) {
-            checkForConflict(key);
-            DBObject map = (DBObject) update.get(op);
-            if (map == null) {
-                update.put(op, map = new BasicDBObject());
-            }
-            map.put(key, value);
-        }
-
-        /**
-         * Checks if the key conflicts with one of the previous keys.
-         * <p>
-         * A conflict occurs if one key is equals to or is a prefix of the other.
-         */
-        protected void checkForConflict(String key) {
-            List<String> pKeys = getPrefixKeys(key);
-            if (conflictKeys(key, pKeys)) {
-                newUpdate();
-            }
-            prefixKeys.addAll(pKeys);
-            keys.add(key);
-        }
-
-        protected void newUpdate() {
-            updateList.add(update = new BasicDBObject());
-            prefixKeys = new HashSet<>();
-            keys = new HashSet<>();
-        }
-
-        protected boolean conflictKeys(String key, List<String> subkeys) {
-            if (prefixKeys.contains(key)) {
-                return true;
-            }
-            for (String sk: subkeys) {
-                if (keys.contains(sk)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /**
-         * return a list of parents key
-         * foo.0.bar -> [foo, foo.0, foo.0.bar]
-         */
-        protected List<String> getPrefixKeys(String key) {
-            List<String> ret = new ArrayList<>(10);
-            int i=0;
-            while ((i = key.indexOf('.', i)) > 0) {
-               ret.add(key.substring(0, i++));
-            }
-            ret.add(key);
-            return ret;
-        }
-
-    }
-
-    protected void diffToUpdates(StateDiff diff, String prefix, Updates updates) {
-        String elemPrefix = prefix == null ? "" : prefix + '.';
-        for (Entry<String, Serializable> en : diff.entrySet()) {
-            String name = elemPrefix + en.getKey();
-            Serializable value = en.getValue();
-            if (value instanceof StateDiff) {
-                diffToUpdates((StateDiff) value, name, updates);
-            } else if (value instanceof ListDiff) {
-                diffToUpdates((ListDiff) value, name, updates);
-            } else if (value instanceof Delta) {
-                diffToUpdates((Delta) value, name, updates);
-            } else {
-                // not a diff
-                if (value == null) {
-                    // for null values, beyond the space saving,
-                    // it's important to unset the field instead of setting the value to null
-                    // because $inc does not work on nulls but works on non-existent fields
-                    updates.unset.put(name, ONE);
-                } else {
-                    updates.set.put(name, valueToBson(value));
-                }
-            }
-        }
-    }
-
-    protected void diffToUpdates(ListDiff listDiff, String prefix, Updates updates) {
-        if (listDiff.diff != null) {
-            String elemPrefix = prefix == null ? "" : prefix + '.';
-            int i = 0;
-            for (Object value : listDiff.diff) {
-                String name = elemPrefix + i;
-                if (value instanceof StateDiff) {
-                    diffToUpdates((StateDiff) value, name, updates);
-                } else if (value != NOP) {
-                    // set value
-                    updates.set.put(name, valueToBson(value));
-                }
-                i++;
-            }
-        }
-        if (listDiff.rpush != null) {
-            Object pushed;
-            if (listDiff.rpush.size() == 1) {
-                // no need to use $each for one element
-                pushed = valueToBson(listDiff.rpush.get(0));
-            } else {
-                pushed = new BasicDBObject(MONGODB_EACH, listToBson(listDiff.rpush));
-            }
-            updates.push.put(prefix, pushed);
-        }
-    }
-
-    protected void diffToUpdates(Delta delta, String prefix, Updates updates) {
-        // MongoDB can $inc a field that doesn't exist, it's treated as 0 BUT it doesn't work on null
-        // so we ensure (in diffToUpdates) that we never store a null but remove the field instead
-        Object inc = valueToBson(delta.getDeltaValue());
-        updates.inc.put(prefix, inc);
-    }
-
-    protected Object serializableToBson(Object value) {
-        if (value instanceof Calendar) {
-            return ((Calendar) value).getTime();
-        }
-        return value;
-    }
-
-    protected Serializable scalarToSerializable(Object val) {
-        if (val instanceof Date) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime((Date) val);
-            return cal;
-        }
-        return (Serializable) val;
-    }
-
-    protected Class<?> scalarToSerializableClass(Class<?> klass) {
-        if (Date.class.isAssignableFrom(klass)) {
-            return Calendar.class;
-        }
-        return klass;
     }
 
     protected void initRepository() {
@@ -634,7 +334,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void createState(State state) {
-        DBObject ob = stateToBson(state);
+        DBObject ob = converter.stateToBson(state);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE " + ob.get(idKey) + ": " + ob);
         }
@@ -645,7 +345,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void createStates(List<State> states) {
-        List<DBObject> obs = states.stream().map(this::stateToBson).collect(Collectors.toList());
+        List<DBObject> obs = states.stream().map(converter::stateToBson).collect(Collectors.toList());
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE ["
                     + obs.stream().map(ob -> ob.get(idKey).toString()).collect(Collectors.joining(", "))
@@ -669,7 +369,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void updateState(String id, StateDiff diff) {
         DBObject query = new BasicDBObject(idKey, id);
-        for (DBObject update : diffToBson(diff)) {
+        List<DBObject> updates = converter.diffToBson(diff);
+        for (DBObject update : updates) {
             if (log.isTraceEnabled()) {
                 log.trace("MongoDB: UPDATE " + id + ": " + update);
             }
@@ -740,15 +441,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        DBObject query = new BasicDBObject(keyToBson(key), value);
+        DBObject query = new BasicDBObject(converter.keyToBson(key), value);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        DBObject query = new BasicDBObject(keyToBson(key1), value1);
-        query.put(keyToBson(key2), value2);
+        DBObject query = new BasicDBObject(converter.keyToBson(key1), value1);
+        query.put(converter.keyToBson(key2), value2);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
@@ -778,7 +479,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     proxyTargets.put(id, targetId);
                 }
                 if (targetProxies != null) {
-                    Object[] proxyIds = (Object[]) bsonToValue(ob.get(KEY_PROXY_IDS));
+                    Object[] proxyIds = (Object[]) converter.bsonToValue(ob.get(KEY_PROXY_IDS));
                     if (proxyIds != null) {
                         targetProxies.put(id, proxyIds);
                     }
@@ -803,7 +504,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(query, null);
         }
-        return bsonToState(coll.findOne(query));
+        return converter.bsonToState(coll.findOne(query));
     }
 
     protected List<State> findAll(DBObject query, int sizeHint) {
@@ -820,7 +521,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     // object several times
                     continue;
                 }
-                list.add(bsonToState(ob));
+                list.add(converter.bsonToState(ob));
             }
             return list;
         } finally {
@@ -869,7 +570,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             }
             projections = new ArrayList<>();
             for (DBObject ob : cursor) {
-                State state = bsonToState(ob);
+                State state = converter.bsonToState(ob);
                 if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
@@ -956,7 +657,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     break;
                 } else {
                     DBObject ob = cursorResult.cursor.next();
-                    String id = (String) ob.get(keyToBson(KEY_ID));
+                    String id = (String) ob.get(converter.keyToBson(KEY_ID));
                     if (id != null) {
                         ids.add(id);
                     } else {
@@ -1080,7 +781,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // not locked
             return null;
         }
-        Calendar created = (Calendar) scalarToSerializable(res.get(KEY_LOCK_CREATED));
+        Calendar created = (Calendar) converter.scalarToSerializable(res.get(KEY_LOCK_CREATED));
         return new Lock(owner, created);
     }
 
@@ -1090,7 +791,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         query.put(KEY_LOCK_OWNER, null); // select doc if no lock is set
         DBObject setLock = new BasicDBObject();
         setLock.put(KEY_LOCK_OWNER, lock.getOwner());
-        setLock.put(KEY_LOCK_CREATED, serializableToBson(lock.getCreated()));
+        setLock.put(KEY_LOCK_CREATED, converter.serializableToBson(lock.getCreated()));
         DBObject setLockUpdate = new BasicDBObject(MONGODB_SET, setLock);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: FINDANDMODIFY " + query + " UPDATE " + setLockUpdate);
@@ -1111,7 +812,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 throw new DocumentNotFoundException(id);
             }
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
-            Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
+            Calendar oldCreated = (Calendar) converter.scalarToSerializable(old.get(KEY_LOCK_CREATED));
             if (oldOwner != null) {
                 return new Lock(oldOwner, oldCreated);
             }
@@ -1140,7 +841,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 return null;
             } else {
                 // return previous lock
-                Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
+                Calendar oldCreated = (Calendar) converter.scalarToSerializable(old.get(KEY_LOCK_CREATED));
                 return new Lock(oldOwner, oldCreated);
             }
         } else {
@@ -1155,7 +856,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 throw new DocumentNotFoundException(id);
             }
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
-            Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
+            Calendar oldCreated = (Calendar) converter.scalarToSerializable(old.get(KEY_LOCK_CREATED));
             if (oldOwner != null) {
                 if (!LockManager.canLockBeRemoved(oldOwner, owner)) {
                     // existing mismatched lock, flag failure
