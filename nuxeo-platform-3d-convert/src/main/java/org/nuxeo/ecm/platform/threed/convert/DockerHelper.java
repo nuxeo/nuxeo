@@ -32,50 +32,47 @@ import org.nuxeo.runtime.api.Framework;
 public class DockerHelper {
 
     public static final String CREATE_CONTAINER_COMMAND = "create_container";
+
     public static final String REMOVE_CONTAINER_COMMAND = "remove_container";
+
     public static final String COPY_CONTAINER_COMMAND = "copy_container";
 
     public static final String NAME_PARAM = "name";
+
     public static final String IMAGE_PARAM = "image";
+
     public static final String SOURCE_PARAM = "source";
+
     public static final String DEST_PARAM = "destination";
 
-    public static boolean CreateContainer(String name, String image) {
+    public static ExecResult CreateContainer(String name, String image) {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter(NAME_PARAM, name);
         params.addNamedParameter(IMAGE_PARAM, image);
-        ExecResult result = null;
-        try {
-            result = Framework.getService(CommandLineExecutorService.class).execCommand(CREATE_CONTAINER_COMMAND, params);
-        } catch (CommandNotAvailable commandNotAvailable) {
-            return false;
-        }
-        return true;
+        return executeCommand(CREATE_CONTAINER_COMMAND, params);
     }
 
-    public static boolean RemoveContainer(String name) {
+    public static ExecResult RemoveContainer(String name) {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter(NAME_PARAM, name);
-        ExecResult result = null;
-        try {
-            result =  Framework.getService(CommandLineExecutorService.class).execCommand(REMOVE_CONTAINER_COMMAND, params);
-        } catch (CommandNotAvailable commandNotAvailable) {
-            return false;
-        }
-        return true;
+        return executeCommand(REMOVE_CONTAINER_COMMAND, params);
     }
 
-    public static boolean CopyData( String source, String destination) {
+    public static ExecResult CopyData(String source, String destination) {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter(SOURCE_PARAM, source);
         params.addNamedParameter(DEST_PARAM, destination);
+        return executeCommand(COPY_CONTAINER_COMMAND, params);
+    }
+
+    private static ExecResult executeCommand(String command, CmdParameters params) {
         ExecResult result = null;
         try {
-            result = Framework.getService(CommandLineExecutorService.class).execCommand(COPY_CONTAINER_COMMAND, params);
+            result = Framework.getService(CommandLineExecutorService.class).execCommand(command, params);
         } catch (CommandNotAvailable commandNotAvailable) {
-            return false;
+            return null;
         }
-        return true;
+        return result;
     }
 
 }

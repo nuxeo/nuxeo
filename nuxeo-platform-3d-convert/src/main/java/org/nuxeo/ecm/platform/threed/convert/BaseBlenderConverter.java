@@ -209,7 +209,7 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
 
             operatorsList = operatorsList.stream().distinct().collect(Collectors.toList());
             Path mainScriptDir = getScriptWith(operatorsList);
-            //params.addNamedParameter(SCRIPTS_DIR_PARAMETER, mainScriptDir.toString());
+            // params.addNamedParameter(SCRIPTS_DIR_PARAMETER, mainScriptDir.toString());
             params.addNamedParameter(SCRIPT_FILE_PARAMETER, initParameters.get(SCRIPT_FILE_PARAMETER));
 
             // Initialize render id params
@@ -233,15 +233,29 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             // Deal with input blobs (main and assets)
             List<String> inputFiles = blobsToTempDir(blobHolder, inDirectory);
             Path mainFile = new Path(inputFiles.get(0));
-            //params.addNamedParameter(INPUT_DIR_PARAMETER, mainFile.removeLastSegments(1).toString() );
+            // params.addNamedParameter(INPUT_DIR_PARAMETER, mainFile.removeLastSegments(1).toString() );
             params.addNamedParameter(INPUT_FILE_PARAMETER, mainFile.lastSegment());
 
             // Extra blob parameters
             Map<String, Blob> blobParams = getCmdBlobParameters(blobHolder, parameters);
 
-            DockerHelper.CreateContainer(dataContainer,"nuxeo/blender");
-            DockerHelper.CopyData(mainFile.removeLastSegments(1).toString() + File.separatorChar + ".", dataContainer + ":/in/");
-            DockerHelper.CopyData(mainScriptDir.toString() + File.separatorChar + ".", dataContainer + ":/scripts/");
+            ExecResult createRes = DockerHelper.CreateContainer(dataContainer, "nuxeo/blender");
+            if (createRes == null || !createRes.isSuccessful()) {
+                throw new ConversionException("Unable to create data volume : " + dataContainer,
+                        (createRes != null) ? createRes.getError() : null);
+            }
+            ExecResult copyRes = DockerHelper.CopyData(
+                    mainFile.removeLastSegments(1).toString() + File.separatorChar + ".", dataContainer + ":/in/");
+            if (copyRes == null || !copyRes.isSuccessful()) {
+                throw new ConversionException("Unable to copy content to data volume : " + dataContainer,
+                        (copyRes != null) ? copyRes.getError() : null);
+            }
+            copyRes = DockerHelper.CopyData(mainScriptDir.toString() + File.separatorChar + ".",
+                    dataContainer + ":/scripts/");
+            if (copyRes == null || !copyRes.isSuccessful()) {
+                throw new ConversionException("Unable to copy to scripts data volume : " + dataContainer,
+                        (copyRes != null) ? copyRes.getError() : null);
+            }
             params.addNamedParameter(NAME_PARAM, convertContainer);
             params.addNamedParameter(DATA_PARAM, dataContainer);
 
@@ -277,13 +291,16 @@ public abstract class BaseBlenderConverter extends CommandLineBasedConverter {
             Path outDir = tempDirectory(null, "_out");
             params.addNamedParameter(OUT_DIR_PARAMETER, outDir.toString());
 
-
             ExecResult result = Framework.getService(CommandLineExecutorService.class).execCommand(commandName, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
 
-            DockerHelper.CopyData(dataContainer + ":/out/.", outDir.toString());
+            copyRes = DockerHelper.CopyData(dataContainer + ":/out/.", outDir.toString());
+            if (copyRes == null || !copyRes.isSuccessful()) {
+                throw new ConversionException("Unable to copy from data volume : " + dataContainer,
+                        (copyRes != null) ? copyRes.getError() : null);
+            }
             return buildResult(result.getOutput(), params);
         } catch (CommandNotAvailable e) {
             // XXX bubble installation instructions

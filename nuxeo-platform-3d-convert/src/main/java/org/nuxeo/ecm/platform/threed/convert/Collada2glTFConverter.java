@@ -76,7 +76,8 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
         List<String> filesToDelete = new ArrayList<>();
 
         try {
-            Path directory = new Path(getTmpDirectory(parameters)).append(DAE2GLTF_PATH_PREFIX + UUID.randomUUID() + "_in");
+            Path directory = new Path(getTmpDirectory(parameters)).append(
+                    DAE2GLTF_PATH_PREFIX + UUID.randomUUID() + "_in");
             boolean dirCreated = new File(directory.toString()).mkdirs();
             if (!dirCreated) {
                 throw new ConversionException("Unable to create tmp dir: " + directory);
@@ -97,9 +98,17 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
             Path inputFile = new Path(filesToDelete.get(0));
             params.addNamedParameter(INPUT_FILE_PARAMETER, inputFile.lastSegment());
 
-            DockerHelper.CreateContainer(dataContainer,"nuxeo/collada2gltf");
-            DockerHelper.CopyData(inputFile.removeLastSegments(1).toString() + File.separatorChar + ".", dataContainer + ":/in/");
-
+            ExecResult createRes = DockerHelper.CreateContainer(dataContainer, "nuxeo/collada2gltf");
+            if (createRes == null || !createRes.isSuccessful()) {
+                throw new ConversionException("Unable to create data volume : " + dataContainer,
+                        (createRes != null) ? createRes.getError() : null);
+            }
+            ExecResult copyRes = DockerHelper.CopyData(
+                    inputFile.removeLastSegments(1).toString() + File.separatorChar + ".", dataContainer + ":/in/");
+            if (copyRes == null || !copyRes.isSuccessful()) {
+                throw new ConversionException("Unable to copy to data volume : " + dataContainer,
+                        (copyRes != null) ? copyRes.getError() : null);
+            }
             params.addNamedParameter(NAME_PARAM, convertContainer);
             params.addNamedParameter(DATA_PARAM, dataContainer);
             filesToDelete.add(directory.toString());
@@ -112,16 +121,19 @@ public class Collada2glTFConverter extends CommandLineBasedConverter {
                 throw new ConversionException("Unable to create tmp dir for transformer output: " + outDir);
             }
             params.addNamedParameter(OUTPUT_FILE_PARAMETER, inputFile.removeFileExtension().lastSegment() + ".gltf");
-            params.addNamedParameter(OUT_DIR_PARAMETER,outPath.toString());
-            //params.addNamedParameter(USER_ID_PARAMETER, UserIdHelper.getUid());
+            params.addNamedParameter(OUT_DIR_PARAMETER, outPath.toString());
+            // params.addNamedParameter(USER_ID_PARAMETER, UserIdHelper.getUid());
 
             ExecResult result = Framework.getService(CommandLineExecutorService.class).execCommand(commandName, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
 
-            DockerHelper.CopyData(dataContainer + ":/out/.", outPath.toString());
-
+            copyRes = DockerHelper.CopyData(dataContainer + ":/out/.", outPath.toString());
+            if (copyRes == null || !copyRes.isSuccessful()) {
+                throw new ConversionException("Unable to copy from data volume : " + dataContainer,
+                        (copyRes != null) ? copyRes.getError() : null);
+            }
             return buildResult(result.getOutput(), params);
         } catch (CommandNotAvailable e) {
             // XXX bubble installation instructions
