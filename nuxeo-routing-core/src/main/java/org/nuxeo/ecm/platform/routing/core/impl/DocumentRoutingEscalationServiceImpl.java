@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -126,10 +127,9 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
                 throw new NuxeoException("Can't execute worker '" + getId() + "' : the rule '" + escalationRuleId
                         + "' was not found on the node '" + nodeDocId + "'");
             }
-            OperationContext context = new OperationContext(session);
-            context.putAll(node.getWorkflowContextualInfo(session, true));
-            context.setInput(context.get("documents"));
-            try {
+            try (OperationContext context = new OperationContext(session)) {
+                context.putAll(node.getWorkflowContextualInfo(session, true));
+                context.setInput(context.get("documents"));
                 // check to see if the rule wasn't executed meanwhile
                 boolean alreadyExecuted = getExecutionStatus(rule, session);
                 if (alreadyExecuted && !rule.isMultipleExecution()) {
@@ -142,6 +142,8 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
             } catch (NuxeoException e) {
                 e.addInfo("Error when executing worker: " + getTitle());
                 throw e;
+            } catch (OperationException e) {
+                throw new NuxeoException("Error when executing worker: " + getTitle(), e);
             }
         }
 

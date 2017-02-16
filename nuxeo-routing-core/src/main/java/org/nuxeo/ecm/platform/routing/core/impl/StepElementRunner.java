@@ -52,13 +52,12 @@ public class StepElementRunner implements ElementRunner {
             throw new RuntimeException("Method run should be overriden in parent class.");
         }
         EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.beforeStepRunning.name());
-        OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
-        context.setInput(element.getAttachedDocuments(session));
-        if (!element.isDone()) {
-            EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.stepWaiting.name());
-        }
-        try {
+        try (OperationContext context = new OperationContext(session)) {
+            context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
+            context.setInput(element.getAttachedDocuments(session));
+            if (!element.isDone()) {
+                EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.stepWaiting.name());
+            }
             String chainId = getDocumentRoutingService().getOperationChainId(element.getDocument().getType());
             getAutomationService().run(context, chainId);
         } catch (OperationException e) {
@@ -88,19 +87,18 @@ public class StepElementRunner implements ElementRunner {
     @Override
     public void undo(CoreSession session, DocumentRouteElement element) {
         EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.beforeUndoingStep.name());
-        OperationContext context = new OperationContext(session);
-        context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
-        context.setInput(element.getAttachedDocuments(session));
-        String operationChainId;
-        String docType = element.getDocument().getType();
-        if (element.isDone()) {
-            operationChainId = getDocumentRoutingService().getUndoFromDoneOperationChainId(docType);
-        } else if (element.isRunning()) {
-            operationChainId = getDocumentRoutingService().getUndoFromRunningOperationChainId(docType);
-        } else {
-            throw new RuntimeException("Trying to undo a step neither in done nor running state.");
-        }
-        try {
+        try (OperationContext context = new OperationContext(session)) {
+            context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, element);
+            context.setInput(element.getAttachedDocuments(session));
+            String operationChainId;
+            String docType = element.getDocument().getType();
+            if (element.isDone()) {
+                operationChainId = getDocumentRoutingService().getUndoFromDoneOperationChainId(docType);
+            } else if (element.isRunning()) {
+                operationChainId = getDocumentRoutingService().getUndoFromRunningOperationChainId(docType);
+            } else {
+                throw new RuntimeException("Trying to undo a step neither in done nor running state.");
+            }
             getAutomationService().run(context, operationChainId);
         } catch (OperationException e) {
             throw new NuxeoException(e);
