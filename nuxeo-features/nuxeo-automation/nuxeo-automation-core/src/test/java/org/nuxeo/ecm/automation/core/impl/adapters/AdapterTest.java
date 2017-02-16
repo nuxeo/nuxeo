@@ -99,12 +99,12 @@ public class AdapterTest {
     }
 
     @Test
-    public void souldAdaptNullValue() throws Exception {
+    public void shouldAdaptNullValue() throws Exception {
         assertNull(automationService.getAdaptedValue(ctx, null, Void.class));
     }
 
     @Test
-    public void souldAdaptContext() throws Exception {
+    public void shouldAdaptContext() throws Exception {
         assertEquals(ctx, automationService.getAdaptedValue(ctx, null, OperationContext.class));
     }
 }

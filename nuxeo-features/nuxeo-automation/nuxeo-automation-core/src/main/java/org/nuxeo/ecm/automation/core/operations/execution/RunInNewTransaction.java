@@ -91,15 +91,15 @@ public class RunInNewTransaction {
                             log.error("Error while executing operation " + chainId, e);
                         }
                     }
-                } catch (OperationException cause) {
-                    throw new NuxeoException(cause);
+                } catch (OperationException e) {
+                    throw new NuxeoException(e);
                 }
             });
-        } catch (NuxeoException cause) {
-            if (cause.getCause() instanceof OperationException) {
-                throw (OperationException) cause.getCause();
+        } catch (NuxeoException e) {
+            if (e.getCause() instanceof OperationException) {
+                throw (OperationException) e.getCause();
             }
-            throw cause;
+            throw e;
         }
     }
 

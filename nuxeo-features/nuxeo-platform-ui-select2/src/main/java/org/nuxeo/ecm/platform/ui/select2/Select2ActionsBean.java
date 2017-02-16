@@ -109,7 +109,7 @@ public class Select2ActionsBean implements Serializable {
         List<String> result = new ArrayList<String>();
         if (array != null) {
             for (int i = 0; i < array.size(); i++) {
-                result.add(array.getJSONObject(i).getString(SuggestConstants.LABEL));
+                result.add(array.getJSONObject(i).getString(Select2Common.LABEL));
             }
         }
         return result;
