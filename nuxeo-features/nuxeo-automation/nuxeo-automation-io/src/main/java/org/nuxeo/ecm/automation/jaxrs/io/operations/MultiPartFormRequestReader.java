@@ -23,6 +23,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.util.List;
 
 import javax.mail.BodyPart;
@@ -115,8 +121,8 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
                         log.error("Received parts: " + mp.getBodyPart(i).getHeader("Content-ID")[0] + " -> "
                                 + mp.getBodyPart(i).getContentType());
                     }
-                    throw WebException.newException(new IllegalStateException("Received only " + cnt
-                            + " part in a multipart request"));
+                    throw WebException.newException(
+                            new IllegalStateException("Received only " + cnt + " part in a multipart request"));
                 }
             } finally {
                 try {
@@ -135,6 +141,19 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
     public static Blob readBlob(HttpServletRequest request, BodyPart part) throws MessagingException, IOException {
         String ctype = part.getContentType();
         String fname = part.getFileName();
+        try {
+            // get back the original filename header bytes and try to decode them using UTF-8
+            // if decoding succeeds, use it as the new filename, otherwise keep the original one
+            byte[] bytes = fname.getBytes("ISO-8859-1");
+            CharsetDecoder dec = Charset.forName("UTF-8").newDecoder();
+            CharBuffer buffer = dec.onUnmappableCharacter(CodingErrorAction.REPORT)
+                                   .onMalformedInput(CodingErrorAction.REPORT)
+                                   .decode(ByteBuffer.wrap(bytes));
+            fname = buffer.toString();
+        } catch (CharacterCodingException e) {
+            // do nothing, keep the original filename
+        }
+
         InputStream pin = part.getInputStream();
         final File tmp = Framework.createTempFile("nx-automation-upload-", ".tmp");
         FileUtils.copyToFile(pin, tmp);
