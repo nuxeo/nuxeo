@@ -96,41 +96,47 @@ public class RunOperationOnList {
     public void run() throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
+        try (OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput())) {
 
-        // Running chain/operation for each list elements
-        Collection<?> list = null;
-        if (ctx.get(listName) instanceof Object[]) {
-            list = Arrays.asList((Object[]) ctx.get(listName));
-        } else if (ctx.get(listName) instanceof Collection<?>) {
-            list = (Collection<?>) ctx.get(listName);
-        } else {
-            throw new UnsupportedOperationException(ctx.get(listName).getClass() + " is not a Collection");
-        }
-        for (Object value : list) {
-            subctx.put(itemName, value);
-            // Running chain/operation
-            if (newTx) {
-                service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
+            // Running chain/operation for each list elements
+            Collection<?> list = null;
+            if (ctx.get(listName) instanceof Object[]) {
+                list = Arrays.asList((Object[]) ctx.get(listName));
+            } else if (ctx.get(listName) instanceof Collection<?>) {
+                list = (Collection<?>) ctx.get(listName);
             } else {
-                service.run(subctx, chainId, chainParameters);
+                throw new UnsupportedOperationException(ctx.get(listName).getClass() + " is not a Collection");
             }
-        }
-
-        // reconnect documents in the context
-        if (!isolate) {
-            for (String varName : vars.keySet()) {
-                if (!ctx.getVars().containsKey(varName)) {
-                    ctx.put(varName, vars.get(varName));
-                } else {
-                    Object value = vars.get(varName);
-                    if (session != null && value != null && value instanceof DocumentModel) {
-                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
+            for (Object value : list) {
+                subctx.push(itemName, value);
+                // Running chain/operation
+                try {
+                    if (newTx) {
+                        service.runInNewTx(subctx, chainId, chainParameters, timeout, rollbackGlobalOnError);
                     } else {
-                        ctx.getVars().put(varName, value);
+                        service.run(subctx, chainId, chainParameters);
+                    }
+                } finally {
+                    subctx.pop(itemName);
+                }
+            }
+
+            // reconnect documents in the context
+            if (!isolate) {
+                for (String varName : vars.keySet()) {
+                    if (!ctx.getVars().containsKey(varName)) {
+                        ctx.put(varName, vars.get(varName));
+                    } else {
+                        Object value = vars.get(varName);
+                        if (session != null && value != null && value instanceof DocumentModel) {
+                            ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
+                        } else {
+                            ctx.getVars().put(varName, value);
+                        }
                     }
                 }
             }
         }
     }
+
 }

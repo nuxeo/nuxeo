@@ -25,6 +25,7 @@ import static org.junit.Assert.assertThat;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -88,7 +89,7 @@ public class TestScriptHelpers {
     @Test
     public void canUseConsoleHelper() throws OperationException {
         OperationContext ctx = new OperationContext(session);
-        automationService.run(ctx, "Scripting.UseConsoleHelper", null);
+        automationService.run(ctx, "Scripting.UseConsoleHelper", Collections.emptyMap());
         assertEquals("", outContent.toString());
         Logger logger = Logger.getLogger("org.nuxeo.automation.scripting");
         List<LoggingEvent> logs = ((LogChecker) logger.getAppender("CHECKER")).getLogs();
@@ -97,7 +98,7 @@ public class TestScriptHelpers {
         assertThat(logs.get(1).getLevel(), is(Level.ERROR));
         assertThat(logs.get(1).getMessage(), is("Errors"));
         runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, true);
-        automationService.run(ctx, "Scripting.UseConsoleHelper", null);
+        automationService.run(ctx, "Scripting.UseConsoleHelper", Collections.emptyMap());
         logs = ((LogChecker) logger.getAppender("CHECKER")).getLogs();
         assertThat(logs.get(2).getLevel(), is(Level.WARN));
         assertThat(logs.get(2).getMessage(), is("[INFO] Informations"));

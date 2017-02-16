@@ -116,18 +116,23 @@ public class TestScriptRunnerInfrastructure {
         Param[] paramDefs = type.getDocumentation().getParams();
         assertEquals(1, paramDefs.length);
 
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<>();
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
 
-        params.put("lang", "en");
-        ctx.setInput("John");
-        Object result = automationService.run(ctx, "Scripting.HelloWorld", params);
-        assertEquals("Hello John", result.toString());
+            params.put("lang", "en");
+            ctx.setInput("John");
+            Object result = automationService.run(ctx, "Scripting.HelloWorld", params);
+            assertEquals("Hello John", result.toString());
+        }
 
-        params.put("lang", "fr");
-        ctx.setInput("John");
-        result = automationService.run(ctx, "Scripting.HelloWorld", params);
-        assertEquals("Bonjour John", result.toString());
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
+
+            params.put("lang", "fr");
+            ctx.setInput("John");
+            Object result = automationService.run(ctx, "Scripting.HelloWorld", params);
+            assertEquals("Bonjour John", result.toString());
+        }
     }
 
     @Test
@@ -144,26 +149,28 @@ public class TestScriptRunnerInfrastructure {
         DocumentModelList res = session.query("select * from File where  " + "ecm:mixinType = 'HiddenInNavigation'");
         assertEquals(0, res.size());
 
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<>();
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
 
-        params.put("facet", "HiddenInNavigation");
-        params.put("type", "File");
-        ctx.setInput(root);
-        Object result = automationService.run(ctx, "Scripting.AddFacetInSubTree", params);
-        DocumentModelList docs = (DocumentModelList) result;
-        assertEquals(5, docs.size());
+            params.put("facet", "HiddenInNavigation");
+            params.put("type", "File");
+            ctx.setInput(root);
+            Object result = automationService.run(ctx, "Scripting.AddFacetInSubTree", params);
+            DocumentModelList docs = (DocumentModelList) result;
+            assertEquals(5, docs.size());
+        }
     }
 
     @Test
     public void simpleScriptingOperationsInChain() throws Exception {
 
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<>();
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
 
-        ctx.setInput("John");
-        Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
-        assertEquals("Hello Bonjour John", result.toString());
+            ctx.setInput("John");
+            Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
+            assertEquals("Hello Bonjour John", result.toString());
+        }
 
     }
 
@@ -175,41 +182,16 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void testMultiThread() throws InterruptedException {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<>();
-        ctx.setInput("John");
-        Thread t = new Thread(() -> {
-            try {
-                ctx.setInput("Vlad");
-                Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
-                assertEquals("Hello Bonjour Vlad", result.toString());
-            } catch (Exception e) {
-            }
-        });
-        Thread t2 = new Thread(() -> {
-            try {
-                Object result = automationService.run(ctx, "Scripting.ChainedHello", params);
-                assertEquals("Hello Bonjour John", result.toString());
-            } catch (Exception e) {
-            }
-        });
-        t.start();
-        t2.start();
-        t.join();
-        t2.join();
-    }
-
-    @Test
     public void testOperationCtx() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<>();
-        ctx.put("test", "odd");
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationCtx", params);
-        assertEquals("odd", result.getPropertyValue("dc:nature"));
-        assertEquals("modifiedValue", result.getPropertyValue("dc:description"));
-        assertEquals("newEntry", result.getPropertyValue("dc:title"));
-        assertEquals("Administrator", result.getPropertyValue("dc:creator"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
+            ctx.put("test", "odd");
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationCtx", params);
+            assertEquals("odd", result.getPropertyValue("dc:nature"));
+            assertEquals("modifiedValue", result.getPropertyValue("dc:description"));
+            assertEquals("newEntry", result.getPropertyValue("dc:title"));
+            assertEquals("Administrator", result.getPropertyValue("dc:creator"));
+        }
     }
 
     @Test
@@ -219,14 +201,15 @@ public class TestScriptRunnerInfrastructure {
         Blob fb = Blobs.createBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(fb);
-        Map<String, Object> params = new HashMap<>();
-        params.put("document", "/newDoc");
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
-        final Blob blob = (Blob) result.getPropertyValue("file:content");
-        assertEquals("New Title", result.getTitle());
-        assertEquals("creationFields.json", blob.getFilename());
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(fb);
+            Map<String, Object> params = new HashMap<>();
+            params.put("document", "/newDoc");
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
+            final Blob blob = (Blob) result.getPropertyValue("file:content");
+            assertEquals("New Title", result.getTitle());
+            assertEquals("creationFields.json", blob.getFilename());
+        }
     }
 
     @Test
@@ -236,12 +219,13 @@ public class TestScriptRunnerInfrastructure {
         Blob fb = Blobs.createBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
 
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(fb);
-        Map<String, Object> params = new HashMap<>();
-        params.put("document", "/newDoc");
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestSetBlob", params);
-        assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(fb);
+            Map<String, Object> params = new HashMap<>();
+            params.put("document", "/newDoc");
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestSetBlob", params);
+            assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
+        }
     }
 
     @Test
@@ -260,14 +244,16 @@ public class TestScriptRunnerInfrastructure {
         creationProps.put("ds:fields", fieldsDataAsJSon);
         creationProps.put("dc:title", "testDoc");
 
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> params = new HashMap<>();
-        params.put("properties", toString(creationProps));
-        params.put("type", "DataSet");
-        params.put("name", "testDoc");
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestComplexProperties", params);
-        assertEquals("whatever",
-                ((Map<?, ?>) ((List<?>) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("properties", toString(creationProps));
+            params.put("type", "DataSet");
+            params.put("name", "testDoc");
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestComplexProperties",
+                    params);
+            assertEquals("whatever",
+                    ((Map<?, ?>) ((List<?>) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
+        }
     }
 
     @Test
@@ -303,50 +289,55 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void handleDocumentListAsInput() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModelList result = (DocumentModelList) automationService.run(ctx, "Scripting.TestInputDocumentList");
-        assertNotNull(result);
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModelList result = (DocumentModelList) automationService.run(ctx,
+                    "Scripting.TestInputDocumentList");
+            assertNotNull(result);
+        }
     }
 
     @Test
     public void handleWorkflowVariables() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        Map<String, Object> wfVars = new HashMap<>();
-        Map<String, Object> nodeVars = new HashMap<>();
-        wfVars.put("var", "workflow");
-        nodeVars.put("var", "node");
-        ctx.put(Constants.VAR_WORKFLOW, wfVars);
-        ctx.put(Constants.VAR_WORKFLOW_NODE, nodeVars);
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationWF");
-        assertEquals("workflow", result.getPropertyValue("dc:title"));
-        assertEquals("node", result.getPropertyValue("dc:description"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            Map<String, Object> wfVars = new HashMap<>();
+            Map<String, Object> nodeVars = new HashMap<>();
+            wfVars.put("var", "workflow");
+            nodeVars.put("var", "node");
+            ctx.put(Constants.VAR_WORKFLOW, wfVars);
+            ctx.put(Constants.VAR_WORKFLOW_NODE, nodeVars);
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestOperationWF");
+            assertEquals("workflow", result.getPropertyValue("dc:title"));
+            assertEquals("node", result.getPropertyValue("dc:description"));
+        }
     }
 
     @Test
     public void canUseChainWithDashes() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        ctx.setInput(root);
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes");
-        assertNotNull(result);
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            ctx.setInput(root);
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes");
+            assertNotNull(result);
+        }
     }
 
     @Test
     public void canManageDocumentModelWrappers() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        root.setPropertyValue("dc:title", "New Title");
-        session.saveDocument(root);
-        ctx.setInput(root);
-        ctx.put("doc", root);
-        Map<String, Object> params = new HashMap<>();
-        params.put("doc", root);
-        Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
-        assertTrue(result instanceof DocumentModel);
-        Object doc = ctx.get("doc");
-        assertNotNull(doc);
-        assertTrue(doc instanceof DocumentModel);
-        assertTrue((Boolean) ctx.get("entry"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            root.setPropertyValue("dc:title", "New Title");
+            session.saveDocument(root);
+            ctx.setInput(root);
+            ctx.put("var", root);
+            Map<String, Object> params = new HashMap<>();
+            params.put("param", "root");
+            Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
+            assertTrue(result instanceof DocumentModel);
+            Object doc = ctx.get("var");
+            assertNotNull(doc);
+            assertTrue(doc instanceof DocumentModel);
+            assertTrue((Boolean) ctx.get("entry"));
+        }
     }
 
     @Test
@@ -361,41 +352,45 @@ public class TestScriptRunnerInfrastructure {
         values.put("name", "vlad");
         values.put("description", "desc");
         doc.setPropertyValue("list:complexItem", (Serializable) values);
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(session.createDocument(doc));
-        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList");
-        assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
-        assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(session.createDocument(doc));
+            DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList");
+            assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
+            assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
+        }
     }
 
     @Test
     public void canHandleLoginAsCtx() throws OperationException {
         try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
-            OperationContext ctx = new OperationContext(session);
-            String username = (String)automationService.run(ctx, "my-chain-with-loginasctx");
-            assertEquals("Administrator", username);
+            try (OperationContext ctx = new OperationContext(session)) {
+                String username = (String) automationService.run(ctx, "my-chain-with-loginasctx");
+                assertEquals("Administrator", username);
+            }
         }
     }
 
     @Test
     public void canHandleLoginAsOp() throws OperationException {
         try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
-            OperationContext ctx = new OperationContext(session);
-            String username = (String) automationService.run(ctx, "my-chain-with-loginasop");
-            assertEquals("Administrator", username);
+            try (OperationContext ctx = new OperationContext(session)) {
+                String username = (String) automationService.run(ctx, "my-chain-with-loginasop");
+                assertEquals("Administrator", username);
+            }
         }
     }
 
     @Test
     public void canUnwrapContextDocListing() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        DocumentModelList docs = new DocumentModelListImpl();
-        docs.add(root);
-        docs.add(root);
-        ctx.put("docs", docs);
-        Object result = automationService.run(ctx, "Scripting.SimpleScript");
-        assertNotNull(result);
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            DocumentModelList docs = new DocumentModelListImpl();
+            docs.add(root);
+            docs.add(root);
+            ctx.put("docs", docs);
+            Object result = automationService.run(ctx, "Scripting.SimpleScript");
+            assertNotNull(result);
+        }
     }
 
     /*
@@ -407,25 +402,28 @@ public class TestScriptRunnerInfrastructure {
             factory.toggleRecording();
         }
 
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        DocumentModelList docs = new DocumentModelListImpl();
-        docs.add(root);
-        docs.add(root);
-        ctx.put("docs", docs);
-        ctx.setInput(root);
-        Map<String, Object> params = new HashMap<>();
-        Object result = automationService.run(ctx, "Scripting.ChainWithScripting", params);
-        assertNotNull(result);
-        // check if the context has been unwrapped correctly
-        assertTrue(ctx.get("docs") instanceof DocumentModelList && ((DocumentModelList) ctx.get("docs")).size() == 2);
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            DocumentModelList docs = new DocumentModelListImpl();
+            docs.add(root);
+            docs.add(root);
+            ctx.put("docs", docs);
+            ctx.setInput(root);
+            Map<String, Object> params = new HashMap<>();
+            Object result = automationService.run(ctx, "Scripting.ChainWithScripting", params);
+            assertNotNull(result);
+            // check if the context has been unwrapped correctly
+            assertTrue(
+                    ctx.get("docs") instanceof DocumentModelList && ((DocumentModelList) ctx.get("docs")).size() == 2);
+        }
     }
 
     @Test
     public void testMVELScriptResolver() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        String mvelResult = (String) automationService.run(ctx, "my-chain-with-mvelresolver");
-        assertEquals("Foo Bar", mvelResult);
+        try (OperationContext ctx = new OperationContext(session)) {
+            Object mvelResult = automationService.run(ctx, "my-chain-with-mvelresolver");
+            assertEquals("Foo Bar", mvelResult);
+        }
     }
 
     /*
@@ -433,14 +431,15 @@ public class TestScriptRunnerInfrastructure {
      */
     @Test
     public void testSet() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSet");
-        assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(0L);
-        assertEquals(cal, root.getProperty("dc:created").getValue());
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            ctx.setInput(root);
+            root = (DocumentModel) automationService.run(ctx, "Scripting.TestSet");
+            assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(0L);
+            assertEquals(cal, root.getProperty("dc:created").getValue());
+        }
     }
 
     /*
@@ -448,14 +447,15 @@ public class TestScriptRunnerInfrastructure {
      */
     @Test
     public void testSetPropertyValue() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValue");
-        assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(0L);
-        assertEquals(cal, root.getProperty("dc:created").getValue());
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            ctx.setInput(root);
+            root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValue");
+            assertEquals("TitleFromTest", root.getProperty("dc:title").getValue());
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(0L);
+            assertEquals(cal, root.getProperty("dc:created").getValue());
+        }
     }
 
     /*
@@ -463,12 +463,13 @@ public class TestScriptRunnerInfrastructure {
      */
     @Test
     public void testSetArray() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetArray");
-        assertArrayEquals(new String[] { "sciences", "society" },
-                (Object[]) root.getProperty("dc:subjects").getValue());
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            ctx.setInput(root);
+            root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetArray");
+            assertArrayEquals(new String[] { "sciences", "society" },
+                    (Object[]) root.getProperty("dc:subjects").getValue());
+        }
     }
 
     /*
@@ -476,12 +477,13 @@ public class TestScriptRunnerInfrastructure {
      */
     @Test
     public void testSetPropertyValueArray() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray");
-        assertArrayEquals(new String[] { "sciences", "society" },
-                (Object[]) root.getProperty("dc:subjects").getValue());
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            ctx.setInput(root);
+            root = (DocumentModel) automationService.run(ctx, "Scripting.TestSetPropertyValueArray");
+            assertArrayEquals(new String[] { "sciences", "society" },
+                    (Object[]) root.getProperty("dc:subjects").getValue());
+        }
     }
 
     /*
@@ -500,14 +502,15 @@ public class TestScriptRunnerInfrastructure {
         DocumentHelper.addBlob(doc.getProperty("files:files"), fb);
         session.saveDocument(doc);
 
-        OperationContext ctx = new OperationContext(session);
-        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobList");
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        // We added two blobs to context
-        BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
-        assertNotNull(blobs);
-        assertEquals(2, blobs.size());
+        try (OperationContext ctx = new OperationContext(session)) {
+            BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobList");
+            assertNotNull(result);
+            assertEquals(2, result.size());
+            // We added two blobs to context
+            BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
+            assertNotNull(blobs);
+            assertEquals(2, blobs.size());
+        }
     }
 
     /*
@@ -526,24 +529,26 @@ public class TestScriptRunnerInfrastructure {
         DocumentHelper.addBlob(doc.getProperty("files:files"), fb);
         session.saveDocument(doc);
 
-        OperationContext ctx = new OperationContext(session);
-        BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobArray");
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        // We added two blobs to context
-        BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
-        assertNotNull(blobs);
-        assertEquals(2, blobs.size());
+        try (OperationContext ctx = new OperationContext(session)) {
+            BlobList result = (BlobList) automationService.run(ctx, "Scripting.TestInputBlobArray");
+            assertNotNull(result);
+            assertEquals(2, result.size());
+            // We added two blobs to context
+            BlobList blobs = (BlobList) ctx.pop(Constants.O_BLOBS);
+            assertNotNull(blobs);
+            assertEquals(2, blobs.size());
+        }
     }
 
     @Test
     public void testArrayObjectParametersOperation() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        DocumentModel root = session.getRootDocument();
-        ctx.setInput(root);
-        root = (DocumentModel) automationService.run(ctx, "Scripting.TestArrayObjectProperties");
-        assertArrayEquals(new String[] { "sciences", "society" },
-                (Object[]) root.getProperty("dc:subjects").getValue());
+        try (OperationContext ctx = new OperationContext(session)) {
+            DocumentModel root = session.getRootDocument();
+            ctx.setInput(root);
+            root = (DocumentModel) automationService.run(ctx, "Scripting.TestArrayObjectProperties");
+            assertArrayEquals(new String[] { "sciences", "society" },
+                    (Object[]) root.getProperty("dc:subjects").getValue());
+        }
     }
 
 }

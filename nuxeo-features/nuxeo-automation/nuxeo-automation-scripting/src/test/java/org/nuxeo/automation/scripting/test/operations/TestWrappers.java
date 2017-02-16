@@ -31,12 +31,12 @@ public class TestWrappers {
     @Context
     OperationContext operationContext;
 
-    @Param(name = "value")
-    DocumentModel value;
+    @Param(name = "param", required=true)
+    String param;
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        if (!(operationContext.get("doc") instanceof DocumentModel)) {
+        if (!(operationContext.get("var") instanceof DocumentModel)) {
             return null;
         }
         operationContext.put("entry", true);

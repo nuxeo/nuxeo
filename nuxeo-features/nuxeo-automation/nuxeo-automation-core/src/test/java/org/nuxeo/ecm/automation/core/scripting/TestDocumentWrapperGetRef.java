@@ -85,9 +85,10 @@ public class TestDocumentWrapperGetRef {
 
     private void runChain(DocumentModel inputDoc, String chainId) throws OperationException, InvalidChainException,
             Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(inputDoc);
-        automationService.run(ctx, chainId);
+        try (OperationContext ctx = new OperationContext(session)) {
+            ctx.setInput(inputDoc);
+            automationService.run(ctx, chainId);
+        }
     }
 
     @Test

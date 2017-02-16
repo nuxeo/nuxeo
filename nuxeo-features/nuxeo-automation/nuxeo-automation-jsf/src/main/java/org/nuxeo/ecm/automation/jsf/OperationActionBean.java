@@ -86,27 +86,28 @@ public class OperationActionBean implements Serializable {
 
     protected String runOperation(Object chain) throws OperationException {
         AutomationService os = Framework.getService(AutomationService.class);
-        OperationContext ctx = new OperationContext(documentManager);
-        ctx.setInput(navigationContext.getCurrentDocument());
+        try (OperationContext ctx = new OperationContext(documentManager)) {
+            ctx.setInput(navigationContext.getCurrentDocument());
 
-        if (chain instanceof String) {
-            try {
-                os.run(ctx, (String) chain);
-                showSuccess(ctx, (String) chain);
-            } catch (InvalidChainException e) {
-                facesMessages.add(StatusMessage.Severity.ERROR, "Unknown chain: " + chain);
-                return null;
-            } catch (OperationException e) {
-                log.error("Failed to execute action: ", e);
-                Throwable cause = ExceptionHelper.unwrapException(e);
-                showError(ctx, (String) chain, cause);
-                return null;
+            if (chain instanceof String) {
+                try {
+                    os.run(ctx, (String) chain);
+                    showSuccess(ctx, (String) chain);
+                } catch (InvalidChainException e) {
+                    facesMessages.add(StatusMessage.Severity.ERROR, "Unknown chain: " + chain);
+                    return null;
+                } catch (OperationException e) {
+                    log.error("Failed to execute action: ", e);
+                    Throwable cause = ExceptionHelper.unwrapException(e);
+                    showError(ctx, (String) chain, cause);
+                    return null;
+                }
+            } else {
+                os.run(ctx, (OperationChain) chain);
+                showSuccess(ctx, ((OperationChain) chain).getId());
             }
-        } else {
-            os.run(ctx, (OperationChain) chain);
-            showSuccess(ctx, ((OperationChain) chain).getId());
-        }
 
-        return (String) ctx.get(SeamOperation.OUTCOME);
+            return (String) ctx.get(SeamOperation.OUTCOME);
+        }
     }
 }

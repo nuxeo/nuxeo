@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.collections.core.automation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -57,19 +58,15 @@ public class GetCollectionsOperation {
 
     @OperationMethod
     public PaginableDocumentModelListImpl run() throws OperationException {
-
-        Map<String, Object> vars = ctx.getVars();
         StringList sl = new StringList();
         sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
         sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
+        OperationChain chain = new OperationChain("operation");
+        Map<String, Object> vars = new HashMap<>();
         vars.put("queryParams", sl);
         vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
-
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
-
-        OperationChain chain = new OperationChain("operation");
         OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
-        return (PaginableDocumentModelListImpl) service.run(subctx, chain);
+        return (PaginableDocumentModelListImpl) service.run(ctx, chain);
     }
 }

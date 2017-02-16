@@ -19,14 +19,9 @@
  */
 package org.nuxeo.ecm.automation.seam.operations;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -61,31 +56,21 @@ public class RunOperationInSeam {
 
     @OperationMethod
     public Object run() throws OperationException {
-
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(ctx.getVars()) : ctx.getVars();
-
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
-        subctx.setInput(ctx.getInput());
-        if (!OperationHelper.isSeamContextAvailable()) {
-            SeamOperationFilter.handleBeforeRun(ctx, conversationId);
-            try {
-                return runChain(subctx, vars);
-            } finally {
-                SeamOperationFilter.handleAfterRun(ctx, conversationId);
+        try (OperationContext subctx = ctx.getSubContext(isolate)) {
+            if (!OperationHelper.isSeamContextAvailable()) {
+                SeamOperationFilter.handleBeforeRun(ctx, conversationId);
+                try {
+                    return runChain(subctx);
+                } finally {
+                    SeamOperationFilter.handleAfterRun(ctx, conversationId);
+                }
+            } else {
+                return runChain(subctx);
             }
-        } else {
-            return runChain(subctx, vars);
         }
     }
 
-    protected Object runChain(OperationContext subctx, Map<String, Object> vars) throws OperationException {
-        if (chainId.startsWith("Chain.")) {
-            return service.run(subctx, chainId.substring(6));
-        } else {
-            OperationChain chain = new OperationChain("operation");
-            OperationParameters oparams = new OperationParameters(chainId, vars);
-            chain.add(oparams);
-            return service.run(subctx, chain);
-        }
+    protected Object runChain(OperationContext subctx) throws OperationException {
+        return service.run(subctx, chainId.startsWith("Chain.") ? chainId.substring(6) : chainId);
     }
 }

@@ -278,24 +278,23 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             operationParams = new HashMap<>();
         }
 
-        OperationContext ctx = new OperationContext(session);
+        try (OperationContext ctx = new OperationContext(session)) {
 
-        AutomationServer server = Framework.getService(AutomationServer.class);
-        RestBinding binding = server.getOperationBinding(chainOrOperationId);
+            AutomationServer server = Framework.getService(AutomationServer.class);
+            RestBinding binding = server.getOperationBinding(chainOrOperationId);
 
-        if (binding != null && binding.isAdministrator()) {
-            Principal principal = ctx.getPrincipal();
-            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
-                String message = "Not allowed. You must be administrator to use this operation";
-                log.error(message);
-                throw new WebSecurityException(message);
+            if (binding != null && binding.isAdministrator()) {
+                Principal principal = ctx.getPrincipal();
+                if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
+                    String message = "Not allowed. You must be administrator to use this operation";
+                    log.error(message);
+                    throw new WebSecurityException(message);
+                }
             }
-        }
 
-        ctx.setInput(blobInput);
-        ctx.putAll(contextParams);
+            ctx.setInput(blobInput);
+            ctx.putAll(contextParams);
 
-        try {
             Object result = null;
             AutomationService as = Framework.getLocalService(AutomationService.class);
             // Drag and Drop action category is accessible from the chain sub context as chain parameters

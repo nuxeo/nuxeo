@@ -53,7 +53,7 @@ public interface OperationType {
         return null;
     }
 
-    Object newInstance(OperationContext ctx, Map<String, ?> args) throws OperationException;
+    Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException;
 
     /**
      * Gets the service that registered that type.

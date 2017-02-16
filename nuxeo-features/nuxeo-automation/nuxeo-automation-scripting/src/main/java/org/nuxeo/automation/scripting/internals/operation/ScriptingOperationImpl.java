@@ -41,7 +41,7 @@ public class ScriptingOperationImpl {
 
     protected final Map<String, Object> args;
 
-    public ScriptingOperationImpl(String script, OperationContext ctx, Map<String, Object> args) {
+    protected ScriptingOperationImpl(String script, OperationContext ctx, Map<String, Object> args) {
         this.script = script;
         this.ctx = ctx;
         this.args = args;

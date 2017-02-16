@@ -89,19 +89,19 @@ public class SuggestCollectionEntry {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        Map<String, Object> vars = ctx.getVars();
-
-        StringList sl = new StringList();
-        sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
-        sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
-        vars.put("queryParams", sl);
-        vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(), vars);
+        Map<String, Object> vars = new HashMap<>();
+        {
+            StringList sl = new StringList();
+            sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
+            sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
+            vars.put("queryParams", sl);
+            vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
+        }
         OperationChain chain = new OperationChain("operation");
         OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
         @SuppressWarnings("unchecked")
-        List<DocumentModel> docs = (List<DocumentModel>) service.run(subctx, chain);
+        List<DocumentModel> docs = (List<DocumentModel>) service.run(ctx, chain);
 
         boolean found = false;
         for (DocumentModel doc : docs) {

@@ -47,7 +47,6 @@ import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.TypeAdapter;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.exception.CatchChainException;
 import org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
@@ -103,24 +102,19 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             log.warn("null operation parameters given for " + operationId, new Throwable("stack trace"));
             args = Collections.emptyMap();
         }
-        if (op instanceof ChainTypeImpl) {
-            return doRun(ctx, ((ChainTypeImpl)op).chain, args);
+        ctx.push(args);
+        try {
+            return run(ctx, getOperationChain(operationId));
+        } finally {
+            ctx.pop(args);
         }
-        OperationChain chain = new OperationChain(operationId);
-        chain.add(operationId);
-        return doRun(ctx, chain, args);
     }
 
     @Override
     public Object run(OperationContext ctx, OperationChain chain) throws OperationException {
-        return doRun(ctx, chain, chain.getChainParameters());
-    }
-
-    protected Object doRun(OperationContext ctx, OperationChain chain, Map<String,?> params) throws OperationException {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
         CompiledChain compiled = compileChain(inputType, chain);
-        ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         try {
             return compiled.invoke(ctx);
         } catch (OperationException cause) {
@@ -130,9 +124,6 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
                 ctx.setRollback();
             }
             throw cause;
-        } finally {
-            ctx.remove(Constants.VAR_RUNTIME_CHAIN);
-            ctx.dispose();
         }
     }
 
@@ -365,8 +356,8 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     }
 
     @Override
-    public CompiledChain compileChain(Class<?> inputType, OperationParameters... chain) throws OperationException {
-        return compileChain(inputType, new OperationChain("", Arrays.asList(chain)));
+    public CompiledChain compileChain(Class<?> inputType, OperationParameters... ops) throws OperationException {
+        return compileChain(inputType, new OperationChain("", Arrays.asList(ops)));
     }
 
     @Override
@@ -397,8 +388,11 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdaptedValue(OperationContext ctx, Object toAdapt, Class<?> targetType) throws OperationException {
-        if (toAdapt == null) {
+        if (targetType.isAssignableFrom(Void.class)) {
             return null;
+        }
+        if (OperationContext.class.isAssignableFrom(targetType)) {
+            return (T) ctx;
         }
         // handle primitive types
         Class<?> toAdaptClass = toAdapt == null ? Void.class : toAdapt.getClass();
