@@ -55,9 +55,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ * @deprecated since 9.1. Only {@link MultiPartFormRequestReader} is used.
  */
 @Provider
 @Consumes("multipart/related")
+@Deprecated
 public class MultiPartRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     private static final Log log = LogFactory.getLog(MultiPartRequestReader.class);

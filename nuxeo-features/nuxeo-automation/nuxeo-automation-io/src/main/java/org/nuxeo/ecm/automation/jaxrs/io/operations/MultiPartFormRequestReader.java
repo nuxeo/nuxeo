@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Provider
-@Consumes("multipart/form-data")
+@Consumes({ "multipart/form-data", "multipart/related" })
 public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     private static final Log log = LogFactory.getLog(MultiPartFormRequestReader.class);
