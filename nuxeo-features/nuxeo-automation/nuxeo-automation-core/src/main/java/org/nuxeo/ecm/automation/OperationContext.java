@@ -144,10 +144,22 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
         return input;
     }
 
+    /**
+     * Push the whole map into the context.
+     *
+     * @since 9.1
+     */
     public void push(Map<String, ?> map) {
         map.forEach(this::push);
     }
 
+    /**
+     * Pop all entries from the context giving the provided map keys.
+     *
+     * @param map
+     *
+     * @since 9.1
+     */
     public void pop(Map<String, ?> map) {
         map.forEach((k, v) -> pop(k));
     }
@@ -277,7 +289,7 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
 
 
     @Override
-    public Set<java.util.Map.Entry<String, Object>> entrySet() {
+    public Set<Map.Entry<String, Object>> entrySet() {
         return new AbstractSet<Map.Entry<String,Object>>() {
 
             @Override
@@ -375,7 +387,7 @@ public class OperationContext extends AbstractMap<String,Object> implements  Aut
         if (!(obj instanceof Expression)) {
             return obj;
         }
-        return ((Expression)obj).eval(this);
+        return ((Expression) obj).eval(this);
     }
 
 }

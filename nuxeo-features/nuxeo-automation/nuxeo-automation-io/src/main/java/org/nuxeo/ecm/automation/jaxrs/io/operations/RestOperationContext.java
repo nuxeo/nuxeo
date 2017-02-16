@@ -54,8 +54,8 @@ public class RestOperationContext extends OperationContext {
             public void cleanup(HttpServletRequest req) {
                 try {
                     close();
-                } catch (OperationException cause) {
-                    throw new NuxeoException(cause);
+                } catch (OperationException e) {
+                    throw new NuxeoException(e);
                 }
             }
         });

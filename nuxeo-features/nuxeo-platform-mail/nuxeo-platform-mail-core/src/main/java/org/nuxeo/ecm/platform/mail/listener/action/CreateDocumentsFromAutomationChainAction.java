@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -107,8 +108,8 @@ public class CreateDocumentsFromAutomationChainAction extends AbstractMailAction
             } catch (OperationException e) {
                 throw new NuxeoException(e);
             }
-        } catch (Exception cause) {
-            throw new NuxeoException(cause);
+        } catch (Exception e) {
+            ExceptionUtils.checkInterrupt(e);
         }
 
         return true;

@@ -86,33 +86,34 @@ public class RunDocumentChain {
     public DocumentModel run(DocumentModel doc) throws OperationException {
         // Handle isolation option
         Map<String, Object> vars = isolate ? new HashMap<>(ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = ctx.getSubContext(isolate, doc);
+        try (OperationContext subctx = ctx.getSubContext(isolate, doc)) {
 
-        // Running chain/operation
-        DocumentModel result = null;
-        if (newTx) {
-            result = (DocumentModel) service.runInNewTx(subctx, chainId, chainParameters, timeout,
-                    rollbackGlobalOnError);
-        } else {
-            result = (DocumentModel) service.run(subctx, chainId, chainParameters);
-        }
+            // Running chain/operation
+            DocumentModel result = null;
+            if (newTx) {
+                result = (DocumentModel) service.runInNewTx(subctx, chainId, chainParameters, timeout,
+                        rollbackGlobalOnError);
+            } else {
+                result = (DocumentModel) service.run(subctx, chainId, chainParameters);
+            }
 
-        // reconnect documents in the context
-        if (!isolate) {
-            for (String varName : vars.keySet()) {
-                if (!ctx.getVars().containsKey(varName)) {
-                    ctx.put(varName, vars.get(varName));
-                } else {
-                    Object value = vars.get(varName);
-                    if (session != null && value != null && value instanceof DocumentModel) {
-                        ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
+            // reconnect documents in the context
+            if (!isolate) {
+                for (String varName : vars.keySet()) {
+                    if (!ctx.getVars().containsKey(varName)) {
+                        ctx.put(varName, vars.get(varName));
                     } else {
-                        ctx.getVars().put(varName, value);
+                        Object value = vars.get(varName);
+                        if (session != null && value != null && value instanceof DocumentModel) {
+                            ctx.getVars().put(varName, session.getDocument(((DocumentModel) value).getRef()));
+                        } else {
+                            ctx.getVars().put(varName, value);
+                        }
                     }
                 }
             }
+            return result;
         }
-        return result;
     }
 
     @OperationMethod

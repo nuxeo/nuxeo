@@ -37,6 +37,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -91,22 +92,24 @@ public class RunOperationOnListInNewTransaction {
 
         // execute on list in separate transactions
         for (Object value : list) {
-            TransactionHelper.startTransaction();
-            boolean completedAbruptly = true;
             try {
-                OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
-                subctx.push(itemName, value);
-                try {
-                    service.run(subctx, chainId);
-                } finally {
-                    subctx.pop(itemName);
+                TransactionHelper.runInNewTransaction(() -> {
+                    try (OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput())) {
+                        subctx.push(itemName, value);
+                        try {
+                            service.run(subctx, chainId);
+                        } finally {
+                            subctx.pop(itemName);
+                        }
+                    } catch (OperationException e) {
+                        throw new NuxeoException(e);
+                    }
+                });
+            } catch (NuxeoException e) {
+                if (e.getCause() instanceof OperationException) {
+                    throw (OperationException) e.getCause();
                 }
-                completedAbruptly = false;
-            } finally {
-                if (completedAbruptly) {
-                    TransactionHelper.setTransactionRollbackOnly();
-                }
-                TransactionHelper.commitOrRollbackTransaction();
+                throw e;
             }
         }
 

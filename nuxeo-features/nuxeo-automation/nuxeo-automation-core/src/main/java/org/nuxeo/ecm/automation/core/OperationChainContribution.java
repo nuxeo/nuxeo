@@ -81,9 +81,6 @@ public class OperationChainContribution {
     @XNodeList(value = "param", type = OperationDocumentation.Param[].class, componentType = OperationDocumentation.Param.class)
     protected OperationDocumentation.Param[] params = new OperationDocumentation.Param[0];
 
-    @XNode("no-cache")
-    protected boolean nocache = false;
-
     /**
      * @since 7.1
      */
@@ -281,7 +278,6 @@ public class OperationChainContribution {
     public static OperationChainContribution contribOf(OperationChain chain, boolean replace) {
         OperationChainContribution contrib = new OperationChainContribution();
         contrib.id = chain.getId();
-        contrib.nocache = true;
         contrib.aliases = chain.getAliases();
         contrib.description = "inlined chain of " + contrib.id;
         contrib.isPublic = false;

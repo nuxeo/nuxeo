@@ -392,7 +392,7 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             return null;
         }
         if (OperationContext.class.isAssignableFrom(targetType)) {
-            return (T)ctx;
+            return (T) ctx;
         }
         // handle primitive types
         Class<?> toAdaptClass = toAdapt == null ? Void.class : toAdapt.getClass();

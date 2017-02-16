@@ -58,15 +58,13 @@ public class GetCollectionsOperation {
 
     @OperationMethod
     public PaginableDocumentModelListImpl run() throws OperationException {
+        StringList sl = new StringList();
+        sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
+        sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
         OperationChain chain = new OperationChain("operation");
         Map<String, Object> vars = new HashMap<>();
-        {
-            StringList sl = new StringList();
-            sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
-            sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
-            vars.put("queryParams", sl);
-            vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
-        }
+        vars.put("queryParams", sl);
+        vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
         OperationParameters oparams = new OperationParameters(DocumentPageProviderOperation.ID, vars);
         chain.add(oparams);
         return (PaginableDocumentModelListImpl) service.run(ctx, chain);
