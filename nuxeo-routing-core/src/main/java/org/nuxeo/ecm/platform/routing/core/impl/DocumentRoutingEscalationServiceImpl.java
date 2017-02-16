@@ -142,8 +142,8 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
             } catch (NuxeoException e) {
                 e.addInfo("Error when executing worker: " + getTitle());
                 throw e;
-            } catch (OperationException cause) {
-                throw new NuxeoException("Error when executing worker: "+ getTitle(), cause);
+            } catch (OperationException e) {
+                throw new NuxeoException("Error when executing worker: " + getTitle(), e);
             }
         }
 

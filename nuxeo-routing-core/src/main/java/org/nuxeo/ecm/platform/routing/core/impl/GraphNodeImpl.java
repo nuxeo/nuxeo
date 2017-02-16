@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -563,6 +564,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                     }
                 }
                 saveDocument();
+            } catch (DocumentRouteException e) {
+                throw e;
             } catch (OperationException | RuntimeException e) {
                 if (e instanceof DocumentRouteException) {
                     throw (DocumentRouteException)e;
@@ -606,10 +609,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             } else {
                 taskAssignees.addAll(Arrays.asList((String[]) res));
             }
-        } catch (OperationException|RuntimeException e) {
-            if (e instanceof DocumentRouteException) {
-                throw (DocumentRouteException)e;
-            }
+        } catch (DocumentRouteException e) {
+            throw e;
+        } catch (OperationException | RuntimeException e) {
             throw new DocumentRouteException("Error evaluating task assignees: " + taskAssigneesVar, e);
         }
         return taskAssignees;
@@ -717,13 +719,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 throw new DocumentRouteException(
                         "The following expression can not be evaluated to a date: " + taskDueDateExpr);
             }
+        } catch (DocumentRouteException e) {
+            throw e;
         } catch (RuntimeException | OperationException e) {
-            if (e instanceof DocumentRouteException) {
-                throw (DocumentRouteException)e;
-            }
             throw new DocumentRouteException("Error evaluating task due date: " + taskDueDateExpr, e);
         }
-
     }
 
     @Override
@@ -752,10 +752,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             return null;
         }
         try (OperationContext context = getExecutionContext(getSession())) {
-        String res = valueOrExpression(String.class, subRouteModelExpr, context, "Sub-workflow id expression");
-        return StringUtils.defaultIfBlank(res, null);
-        } catch (OperationException cause) {
-            throw new DocumentRouteException("Cannot get sub route id for " + getId(), cause);
+            String res = valueOrExpression(String.class, subRouteModelExpr, context, "Sub-workflow id expression");
+            return StringUtils.defaultIfBlank(res, null);
+        } catch (OperationException e) {
+            throw new DocumentRouteException("Cannot get sub route id for " + getId(), e);
         }
     }
 
@@ -799,8 +799,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                         "Sub-workflow variable expression");
                 map.put(key, value);
             }
-        } catch (OperationException cause) {
-            throw new DocumentRouteException("Cannot get initial variables for " + getId(), cause);
+        } catch (OperationException e) {
+            throw new DocumentRouteException("Cannot get initial variables for " + getId(), e);
         }
         return map;
     }
@@ -879,10 +879,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                 if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
                     rulesToExecute.add(rule);
                 }
-            } catch (RuntimeException|OperationException e) {
-                if (e instanceof DocumentRouteException) {
-                    throw (DocumentRouteException)e;
-                }
+            } catch (DocumentRouteException e) {
+                throw e;
+            } catch (RuntimeException | OperationException e) {
                 throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
             }
         }
