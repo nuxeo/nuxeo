@@ -44,6 +44,7 @@ import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -550,11 +551,10 @@ public class XMLImporterServiceImpl {
                         ctx.putAll(mvelCtx);
                         ctx.setInput(docsStack.peek());
                         getAutomationService().run(ctx, chain);
-                    } catch (Exception cause) {
-                        if (cause instanceof NuxeoException) {
-                            throw (NuxeoException)cause;
-                        }
-                        throw new NuxeoException(cause);
+                    } catch (NuxeoException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        ExceptionUtils.checkInterrupt(e);
                     }
                 }
             }
