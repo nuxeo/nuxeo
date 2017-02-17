@@ -39,7 +39,7 @@ public class JDBCMapperConnector implements InvocationHandler {
 
     protected final boolean noSharing;
 
-    protected final Function<Supplier<Object>,Object> defaultRunner;
+    protected final Function<Supplier<Object>, Object> defaultRunner;
 
     protected JDBCMapperConnector(Mapper mapper, boolean noSharing) {
         this.mapper = mapper;
@@ -56,8 +56,7 @@ public class JDBCMapperConnector implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String name = method.getName();
         if (mapper.isConnected()) {
             if (Arrays.asList("start", "end", "prepare", "commit", "rollback").contains(name)) {
@@ -90,20 +89,13 @@ public class JDBCMapperConnector implements InvocationHandler {
         if ("sendInvalidations".equals(name)) {
             return doInvoke(method, args);
         }
-        return doConnectAndInvoke(runnerOf(name), method, args);
+        return doConnectAndInvoke(method, args);
     }
 
-    protected Function<Supplier<Object>,Object> runnerOf(String name) {
-        if ("createDatabase".equals(name)) {
-            return TransactionHelper::runWithoutTransaction;
-        }
-        return defaultRunner;
-    }
-
-    protected Object doConnectAndInvoke(Function<Supplier<Object>, Object> runner, Method method, Object[] args)
-            throws Throwable {
-        Object result = runner.apply(() -> {
-            mapper.connect(noSharing);
+    protected Object doConnectAndInvoke(Method method, Object[] args) throws Throwable {
+        String name = method.getName();
+        Object result = runnerOf(name).apply(() -> {
+            mapper.connect(noSharingOf(name));
             try {
                 try {
                     return doInvoke(method, args);
@@ -123,6 +115,20 @@ public class JDBCMapperConnector implements InvocationHandler {
             throw (Throwable) result;
         }
         return result;
+    }
+
+    protected Function<Supplier<Object>, Object> runnerOf(String name) {
+        if ("createDatabase".equals(name)) {
+            return TransactionHelper::runWithoutTransaction;
+        }
+        return defaultRunner;
+    }
+
+    protected boolean noSharingOf(String name) {
+        if ("createDatabase".equals(name)) {
+            return true;
+        }
+        return noSharing;
     }
 
     public static Mapper newConnector(Mapper mapper, boolean noSharing) {
