@@ -98,7 +98,7 @@ public class DBSCachingRepository implements DBSRepository {
 
     protected <T> Cache<String, T> newCache(DBSRepositoryDescriptor descriptor) {
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        builder = builder.expireAfterWrite(descriptor.cacheTTL.longValue(), TimeUnit.MINUTES);
+        builder = builder.expireAfterWrite(descriptor.cacheTTL.longValue(), TimeUnit.MINUTES).recordStats();
         if (descriptor.cacheConcurrencyLevel != null) {
             builder = builder.concurrencyLevel(descriptor.cacheConcurrencyLevel.intValue());
         }
