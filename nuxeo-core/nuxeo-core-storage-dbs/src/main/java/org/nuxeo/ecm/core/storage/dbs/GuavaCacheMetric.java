@@ -52,6 +52,7 @@ public class GuavaCacheMetric implements MetricSet {
         String basicName = MetricRegistry.name(name, names);
 
         GuavaCacheMetric metrics = new GuavaCacheMetric();
+        metrics.putMetrics(() -> cache.size(), basicName, "size");
         metrics.putMetrics(() -> cache.stats().averageLoadPenalty(), basicName, "average", "load", "penalty");
         metrics.putMetrics(() -> cache.stats().evictionCount(), basicName, "eviction", "count");
         metrics.putMetrics(() -> cache.stats().hitCount(), basicName, "hit", "count");
