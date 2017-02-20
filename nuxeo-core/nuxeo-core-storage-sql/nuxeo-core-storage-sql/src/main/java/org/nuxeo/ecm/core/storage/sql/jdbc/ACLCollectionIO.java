@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
@@ -110,10 +111,11 @@ public class ACLCollectionIO implements CollectionIO {
     public void executeInserts(PreparedStatement ps, List<RowUpdate> rowus, List<Column> columns,
             boolean supportsBatchUpdates, String sql, JDBCConnection connection) throws SQLException {
         List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>() : null;
-        String loggedSql = supportsBatchUpdates ? sql + " -- BATCHED" : sql;
+        boolean batched = supportsBatchUpdates && rowus.size() > 1;
+        String loggedSql = batched ? sql + " -- BATCHED" : sql;
         int batch = 0;
-        for (RowUpdate rowu : rowus) {
-            batch++;
+        for (Iterator<RowUpdate> rowIt = rowus.iterator(); rowIt.hasNext();) {
+            RowUpdate rowu = rowIt.next();
             int start;
             if (rowu.pos == -1 || insertAll) {
                 start = 0;
@@ -175,9 +177,10 @@ public class ACLCollectionIO implements CollectionIO {
                     connection.logger.logSQL(loggedSql, debugValues);
                     debugValues.clear();
                 }
-                if (supportsBatchUpdates) {
+                if (batched) {
                     ps.addBatch();
-                    if (batch % JDBCRowMapper.UPDATE_BATCH_SIZE == 0) {
+                    batch++;
+                    if (batch % JDBCRowMapper.UPDATE_BATCH_SIZE == 0 || !rowIt.hasNext()) {
                         ps.executeBatch();
                         connection.countExecute();
                     }
@@ -186,10 +189,6 @@ public class ACLCollectionIO implements CollectionIO {
                     connection.countExecute();
                 }
             }
-        }
-        if (supportsBatchUpdates) {
-            ps.executeBatch();
-            connection.countExecute();
         }
     }
 
