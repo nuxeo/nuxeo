@@ -259,18 +259,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         SQLInfoSelect select = sqlInfo.getSelectFragmentsByIds(tableName, ids.size(), orderBys, skipColumns);
 
         String sql = select.sql;
-        try {
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, ids);
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, ids);
+        }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int i = 1;
+            for (Serializable id : ids) {
+                dialect.setId(ps, i++, id);
             }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                int i = 1;
-                for (Serializable id : ids) {
-                    dialect.setId(ps, i++, id);
-                }
-                rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
                 countExecute();
 
                 // get all values from result set, separate by ids
@@ -317,8 +314,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     }
                 }
                 return res;
-            } finally {
-                closeStatement(ps, rs);
             }
         } catch (SQLException e) {
             throw new NuxeoException("Could not select: " + sql, e);
@@ -352,10 +347,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (joinMap == null) {
             joinMap = Collections.emptyMap();
         }
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = connection.prepareStatement(select.sql);
+        try (PreparedStatement ps = connection.prepareStatement(select.sql)) {
 
             /*
              * Compute where part.
@@ -400,29 +392,30 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             /*
              * Execute query.
              */
-            rs = ps.executeQuery();
-            countExecute();
+            try (ResultSet rs = ps.executeQuery()) {
+                countExecute();
 
-            /*
-             * Construct the maps from the result set.
-             */
-            while (rs.next()) {
-                Row row = new Row(tableName, criteriaMap);
-                i = 1;
-                for (Column column : select.whatColumns) {
-                    row.put(column.getKey(), column.getFromResultSet(rs, i++));
-                }
-                if (select.opaqueColumns != null) {
-                    for (Column column : select.opaqueColumns) {
-                        row.putNew(column.getKey(), Row.OPAQUE);
+                /*
+                 * Construct the maps from the result set.
+                 */
+                while (rs.next()) {
+                    Row row = new Row(tableName, criteriaMap);
+                    i = 1;
+                    for (Column column : select.whatColumns) {
+                        row.put(column.getKey(), column.getFromResultSet(rs, i++));
                     }
-                }
-                if (logger.isLogEnabled()) {
-                    logger.logResultSet(rs, select.whatColumns);
-                }
-                list.add(row);
-                if (limitToOne) {
-                    return list;
+                    if (select.opaqueColumns != null) {
+                        for (Column column : select.opaqueColumns) {
+                            row.putNew(column.getKey(), Row.OPAQUE);
+                        }
+                    }
+                    if (logger.isLogEnabled()) {
+                        logger.logResultSet(rs, select.whatColumns);
+                    }
+                    list.add(row);
+                    if (limitToOne) {
+                        return list;
+                    }
                 }
             }
             if (limitToOne) {
@@ -432,12 +425,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
             throw new NuxeoException("Could not select: " + select.sql, e);
-        } finally {
-            try {
-                closeStatement(ps, rs);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -533,36 +520,31 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
         String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql + " -- BATCHED" : sql;
         List<Column> columns = sqlInfo.getInsertColumns(tableName);
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                int batch = 0;
-                for (Row row : rows) {
-                    batch++;
-                    if (logger.isLogEnabled()) {
-                        logger.logSQL(loggedSql, columns, row);
-                    }
-                    int i = 1;
-                    for (Column column : columns) {
-                        column.setToPreparedStatement(ps, i++, row.get(column.getKey()));
-                    }
-                    if (supportsBatchUpdates) {
-                        ps.addBatch();
-                        if (batch % UPDATE_BATCH_SIZE == 0) {
-                            ps.executeBatch();
-                            countExecute();
-                        }
-                    } else {
-                        ps.execute();
-                        countExecute();
-                    }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int batch = 0;
+            for (Row row : rows) {
+                batch++;
+                if (logger.isLogEnabled()) {
+                    logger.logSQL(loggedSql, columns, row);
+                }
+                int i = 1;
+                for (Column column : columns) {
+                    column.setToPreparedStatement(ps, i++, row.get(column.getKey()));
                 }
                 if (supportsBatchUpdates) {
-                    ps.executeBatch();
+                    ps.addBatch();
+                    if (batch % UPDATE_BATCH_SIZE == 0) {
+                        ps.executeBatch();
+                        countExecute();
+                    }
+                } else {
+                    ps.execute();
                     countExecute();
                 }
-            } finally {
-                closeStatement(ps);
+            }
+            if (supportsBatchUpdates) {
+                ps.executeBatch();
+                countExecute();
             }
         } catch (SQLException e) {
             if (e instanceof BatchUpdateException) {
@@ -587,13 +569,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         String sql = sqlInfo.getInsertSql(tableName);
         List<Column> columns = sqlInfo.getInsertColumns(tableName);
         CollectionIO io = getCollectionIO(tableName);
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                io.executeInserts(ps, rowus, columns, supportsBatchUpdates, sql, this);
-            } finally {
-                closeStatement(ps);
-            }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            io.executeInserts(ps, rowus, columns, supportsBatchUpdates, sql, this);
         } catch (SQLException e) {
             throw new NuxeoException("Could not insert: " + sql, e);
         }
@@ -642,43 +619,38 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             Set<String> deltas = deltasByCanonKeys.get(ck);
             SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys, deltas);
             String loggedSql = supportsBatchUpdates && rows.size() > 1 ? update.sql + " -- BATCHED" : update.sql;
-            try {
-                PreparedStatement ps = connection.prepareStatement(update.sql);
+            try (PreparedStatement ps = connection.prepareStatement(update.sql)) {
                 int batch = 0;
-                try {
-                    for (RowUpdate rowu : keysUpdates) {
-                        batch++;
-                        if (logger.isLogEnabled()) {
-                            logger.logSQL(loggedSql, update.whatColumns, rowu.row, deltas);
+                for (RowUpdate rowu : keysUpdates) {
+                    batch++;
+                    if (logger.isLogEnabled()) {
+                        logger.logSQL(loggedSql, update.whatColumns, rowu.row, deltas);
+                    }
+                    int i = 1;
+                    for (Column column : update.whatColumns) {
+                        Serializable value = rowu.row.get(column.getKey());
+                        if (value instanceof Delta) {
+                            value = ((Delta) value).getDeltaValue();
                         }
-                        int i = 1;
-                        for (Column column : update.whatColumns) {
-                            Serializable value = rowu.row.get(column.getKey());
-                            if (value instanceof Delta) {
-                                value = ((Delta) value).getDeltaValue();
-                            }
-                            column.setToPreparedStatement(ps, i++, value);
-                        }
-                        if (supportsBatchUpdates) {
-                            ps.addBatch();
-                            if (batch % UPDATE_BATCH_SIZE == 0) {
-                                int[] counts = ps.executeBatch();
-                                countExecute();
-                                logger.logCounts(counts);
-                            }
-                        } else {
-                            int count = ps.executeUpdate();
-                            countExecute();
-                            logger.logCount(count);
-                        }
+                        column.setToPreparedStatement(ps, i++, value);
                     }
                     if (supportsBatchUpdates) {
-                        int[] counts = ps.executeBatch();
+                        ps.addBatch();
+                        if (batch % UPDATE_BATCH_SIZE == 0) {
+                            int[] counts = ps.executeBatch();
+                            countExecute();
+                            logger.logCounts(counts);
+                        }
+                    } else {
+                        int count = ps.executeUpdate();
                         countExecute();
-                        logger.logCounts(counts);
+                        logger.logCount(count);
                     }
-                } finally {
-                    closeStatement(ps);
+                }
+                if (supportsBatchUpdates) {
+                    int[] counts = ps.executeBatch();
+                    countExecute();
+                    logger.logCounts(counts);
                 }
             } catch (SQLException e) {
                 checkConcurrentUpdate(e);
@@ -756,19 +728,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (logger.isLogEnabled()) {
             logger.logSQL(sql, Arrays.asList(whereIds, now));
         }
-        PreparedStatement ps = connection.prepareStatement(sql);
-        try {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             setToPreparedStatementIdArray(ps, 1, whereIds);
             dialect.setToPreparedStatementTimestamp(ps, 2, now, null);
             ps.execute();
             countExecute();
             return;
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -821,8 +786,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 boolean outFirst = sql.startsWith("{?=");
                 int outIndex = outFirst ? 1 : 3;
                 int inIndex = outFirst ? 2 : 1;
-                CallableStatement cs = connection.prepareCall(sql);
-                try {
+                try (CallableStatement cs = connection.prepareCall(sql)) {
                     cs.setInt(inIndex, max);
                     dialect.setToPreparedStatementTimestamp(cs, inIndex + 1, beforeTime, null);
                     cs.registerOutParameter(outIndex, Types.INTEGER);
@@ -830,25 +794,21 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     int count = cs.getInt(outIndex);
                     logger.logCount(count);
                     return count;
-                } finally {
-                    cs.close();
                 }
             } else {
                 // standard prepared statement with result set
-                PreparedStatement ps = connection.prepareStatement(sql);
-                try {
+                try (PreparedStatement ps = connection.prepareStatement(sql)) {
                     ps.setInt(1, max);
                     dialect.setToPreparedStatementTimestamp(ps, 2, beforeTime, null);
-                    ResultSet rs = ps.executeQuery();
-                    countExecute();
-                    if (!rs.next()) {
-                        throw new NuxeoException("Cannot get result");
+                    try (ResultSet rs = ps.executeQuery()) {
+                        countExecute();
+                        if (!rs.next()) {
+                            throw new NuxeoException("Cannot get result");
+                        }
+                        int count = rs.getInt(1);
+                        logger.logCount(count);
+                        return count;
                     }
-                    int count = rs.getInt(1);
-                    logger.logCount(count);
-                    return count;
-                } finally {
-                    closeStatement(ps);
                 }
             }
         } catch (SQLException e) {
@@ -857,23 +817,18 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected void deleteRowsDirect(String tableName, Collection<Serializable> ids) {
-        try {
-            String sql = sqlInfo.getDeleteSql(tableName, ids.size());
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, ids);
+        String sql = sqlInfo.getDeleteSql(tableName, ids.size());
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, ids);
+        }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int i = 1;
+            for (Serializable id : ids) {
+                dialect.setId(ps, i++, id);
             }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                int i = 1;
-                for (Serializable id : ids) {
-                    dialect.setId(ps, i++, id);
-                }
-                int count = ps.executeUpdate();
-                countExecute();
-                logger.logCount(count);
-            } finally {
-                closeStatement(ps);
-            }
+            int count = ps.executeUpdate();
+            countExecute();
+            logger.logCount(count);
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
             throw new NuxeoException("Could not delete: " + tableName, e);
@@ -905,13 +860,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (logger.isLogEnabled()) {
             logger.logSQL(sql, Collections.singletonList(id));
         }
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = connection.prepareStatement(sql);
-            try {
-                dialect.setId(ps, 1, id);
-                rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            dialect.setId(ps, 1, id);
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     for (int i = 1; i <= columns.size(); i++) {
                         ret.put(columns.get(i - 1), rs.getString(i));
@@ -920,13 +871,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 if (logger.isLogEnabled()) {
                     logger.log("  -> " + ret);
                 }
-            } finally {
-                closeStatement(ps, rs);
             }
+            return ret;
         } catch (SQLException e) {
             throw new NuxeoException("Could not select: " + sql, e);
         }
-        return ret;
     }
 
     @Override
@@ -934,17 +883,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         String tableName = rowId.tableName;
         Serializable id = rowId.id;
         String sql = sqlInfo.selectFragmentById.get(tableName).sql;
-        try {
-            // XXX statement should be already prepared
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.singletonList(id));
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                List<Column> columns = sqlInfo.selectFragmentById.get(tableName).whatColumns;
-                dialect.setId(ps, 1, id); // assumes only one primary column
-                rs = ps.executeQuery();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(id));
+        }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            List<Column> columns = sqlInfo.selectFragmentById.get(tableName).whatColumns;
+            dialect.setId(ps, 1, id); // assumes only one primary column
+            try (ResultSet rs = ps.executeQuery()) {
                 countExecute();
 
                 // construct the resulting collection using each row
@@ -962,8 +907,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     logger.log("  -> " + Arrays.asList(array));
                 }
                 return array;
-            } finally {
-                closeStatement(ps, rs);
             }
         } catch (SQLException e) {
             throw new NuxeoException("Could not select: " + sql, e);
@@ -1059,31 +1002,26 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Update update = sqlInfo.getUpdateByIdForKeys(tableName, row.getKeys());
         Table table = update.getTable();
         String sql = update.getStatement();
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                if (logger.isLogEnabled()) {
-                    List<Serializable> values = new LinkedList<Serializable>();
-                    values.addAll(row.getValues());
-                    values.add(row.id); // id last in SQL
-                    logger.logSQL(sql, values);
-                }
-                int i = 1;
-                List<String> keys = row.getKeys();
-                List<Serializable> values = row.getValues();
-                int size = keys.size();
-                for (int r = 0; r < size; r++) {
-                    String key = keys.get(r);
-                    Serializable value = values.get(r);
-                    table.getColumn(key).setToPreparedStatement(ps, i++, value);
-                }
-                dialect.setId(ps, i, row.id); // id last in SQL
-                int count = ps.executeUpdate();
-                countExecute();
-                logger.logCount(count);
-            } finally {
-                closeStatement(ps);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (logger.isLogEnabled()) {
+                List<Serializable> values = new LinkedList<Serializable>();
+                values.addAll(row.getValues());
+                values.add(row.id); // id last in SQL
+                logger.logSQL(sql, values);
             }
+            int i = 1;
+            List<String> keys = row.getKeys();
+            List<Serializable> values = row.getValues();
+            int size = keys.size();
+            for (int r = 0; r < size; r++) {
+                String key = keys.get(r);
+                Serializable value = values.get(r);
+                table.getColumn(key).setToPreparedStatement(ps, i++, value);
+            }
+            dialect.setId(ps, i, row.id); // id last in SQL
+            int count = ps.executeUpdate();
+            countExecute();
+            logger.logCount(count);
         } catch (SQLException e) {
             throw new NuxeoException("Could not update: " + sql, e);
         }
@@ -1136,8 +1074,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         boolean explicitName = name != null;
 
         SQLInfoSelect copy = sqlInfo.getCopyHier(explicitName, resetVersion);
-        PreparedStatement ps = connection.prepareStatement(copy.sql);
-        try {
+        try (PreparedStatement ps = connection.prepareStatement(copy.sql)) {
             Serializable newId = generateNewId();
 
             List<Serializable> debugValues = null;
@@ -1185,12 +1122,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
             idMap.put(id, newId);
             return newId;
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1204,47 +1135,40 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             logger.logSQL(sql, Collections.singletonList(id));
         }
         List<Column> columns = sqlInfo.getSelectChildrenIdsAndTypesWhatColumns();
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ResultSet rs = null;
-        try {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             List<String> debugValues = null;
             if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
             dialect.setId(ps, 1, id); // parent id
-            rs = ps.executeQuery();
-            countExecute();
-            while (rs.next()) {
-                Serializable childId = null;
-                String childPrimaryType = null;
-                String[] childMixinTypes = null;
-                int i = 1;
-                for (Column column : columns) {
-                    String key = column.getKey();
-                    Serializable value = column.getFromResultSet(rs, i++);
-                    if (key.equals(Model.MAIN_KEY)) {
-                        childId = value;
-                    } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
-                        childPrimaryType = (String) value;
-                    } else if (key.equals(Model.MAIN_MIXIN_TYPES_KEY)) {
-                        childMixinTypes = (String[]) value;
+            try (ResultSet rs = ps.executeQuery()) {
+                countExecute();
+                while (rs.next()) {
+                    Serializable childId = null;
+                    String childPrimaryType = null;
+                    String[] childMixinTypes = null;
+                    int i = 1;
+                    for (Column column : columns) {
+                        String key = column.getKey();
+                        Serializable value = column.getFromResultSet(rs, i++);
+                        if (key.equals(Model.MAIN_KEY)) {
+                            childId = value;
+                        } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
+                            childPrimaryType = (String) value;
+                        } else if (key.equals(Model.MAIN_MIXIN_TYPES_KEY)) {
+                            childMixinTypes = (String[]) value;
+                        }
                     }
-                }
-                children.add(new IdWithTypes(childId, childPrimaryType, childMixinTypes));
-                if (debugValues != null) {
-                    debugValues.add(childId + "/" + childPrimaryType + "/" + Arrays.toString(childMixinTypes));
+                    children.add(new IdWithTypes(childId, childPrimaryType, childMixinTypes));
+                    if (debugValues != null) {
+                        debugValues.add(childId + "/" + childPrimaryType + "/" + Arrays.toString(childMixinTypes));
+                    }
                 }
             }
             if (debugValues != null) {
                 logger.log("  -> " + debugValues);
             }
             return children;
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1261,10 +1185,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             Serializable overwriteId) throws SQLException {
         String copySql = sqlInfo.getCopySql(tableName);
         Column copyIdColumn = sqlInfo.getCopyIdColumn(tableName);
-        PreparedStatement copyPs = connection.prepareStatement(copySql);
         String deleteSql = sqlInfo.getDeleteSql(tableName);
-        PreparedStatement deletePs = connection.prepareStatement(deleteSql);
-        try {
+        try (PreparedStatement copyPs = connection.prepareStatement(copySql);
+                PreparedStatement deletePs = connection.prepareStatement(deleteSql)) {
             boolean before = false;
             boolean after = false;
             for (Serializable id : ids) {
@@ -1297,13 +1220,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // n , 0 -> del (FALSE)
             // 0 , 0 -> null
             return after ? Boolean.TRUE : (before ? Boolean.FALSE : null);
-        } finally {
-            try {
-                closeStatement(copyPs);
-                closeStatement(deletePs);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1330,47 +1246,46 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             logger.logSQL(sql, Collections.singletonList(rootId));
         }
         List<Column> columns = sqlInfo.getSelectDescendantsInfoWhatColumns();
-        PreparedStatement ps = null;
-        try {
-            ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             List<String> debugValues = null;
             if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
             dialect.setId(ps, 1, rootId); // parent id
-            ResultSet rs = ps.executeQuery();
-            countExecute();
-            while (rs.next()) {
-                Serializable id = null;
-                Serializable parentId = null;
-                String primaryType = null;
-                Boolean isProperty = null;
-                Serializable targetId = null;
-                Serializable versionableId = null;
-                int i = 1;
-                for (Column column : columns) {
-                    String key = column.getKey();
-                    Serializable value = column.getFromResultSet(rs, i++);
-                    if (key.equals(Model.MAIN_KEY)) {
-                        id = value;
-                    } else if (key.equals(Model.HIER_PARENT_KEY)) {
-                        parentId = value;
-                    } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
-                        primaryType = (String) value;
-                    } else if (key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)) {
-                        isProperty = (Boolean) value;
-                    } else if (key.equals(Model.PROXY_TARGET_KEY)) {
-                        targetId = value;
-                    } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
-                        versionableId = value;
+            try (ResultSet rs = ps.executeQuery()) {
+                countExecute();
+                while (rs.next()) {
+                    Serializable id = null;
+                    Serializable parentId = null;
+                    String primaryType = null;
+                    Boolean isProperty = null;
+                    Serializable targetId = null;
+                    Serializable versionableId = null;
+                    int i = 1;
+                    for (Column column : columns) {
+                        String key = column.getKey();
+                        Serializable value = column.getFromResultSet(rs, i++);
+                        if (key.equals(Model.MAIN_KEY)) {
+                            id = value;
+                        } else if (key.equals(Model.HIER_PARENT_KEY)) {
+                            parentId = value;
+                        } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
+                            primaryType = (String) value;
+                        } else if (key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)) {
+                            isProperty = (Boolean) value;
+                        } else if (key.equals(Model.PROXY_TARGET_KEY)) {
+                            targetId = value;
+                        } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
+                            versionableId = value;
+                        }
+                        // no mixins (not useful to caller)
+                        // no versions (not fileable)
                     }
-                    // no mixins (not useful to caller)
-                    // no versions (not fileable)
-                }
-                descendants.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
-                if (debugValues != null) {
-                    if (debugValues.size() < DEBUG_MAX_TREE) {
-                        debugValues.add(id + "/" + primaryType);
+                    descendants.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
+                    if (debugValues != null) {
+                        if (debugValues.size() < DEBUG_MAX_TREE) {
+                            debugValues.add(id + "/" + primaryType);
+                        }
                     }
                 }
             }
@@ -1383,12 +1298,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return descendants;
         } catch (SQLException e) {
             throw new NuxeoException("Failed to get descendants", e);
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1438,10 +1347,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             logger.logSQL(select.sql, ids);
         }
         Column where = select.whereColumns.get(0);
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = connection.prepareStatement(select.sql);
+        try (PreparedStatement ps = connection.prepareStatement(select.sql)) {
             List<String> debugValues = null;
             if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
@@ -1450,35 +1356,37 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             for (Serializable id : ids) {
                 where.setToPreparedStatement(ps, ii++, id);
             }
-            rs = ps.executeQuery();
-            countExecute();
-            while (rs.next()) {
-                Serializable id = null;
-                Serializable parentId = null;
-                String primaryType = null;
-                Boolean isProperty = Boolean.FALSE;
-                Serializable targetId = null;
-                Serializable versionableId = null;
-                int i = 1;
-                for (Column column : select.whatColumns) {
-                    String key = column.getKey();
-                    Serializable value = column.getFromResultSet(rs, i++);
-                    if (key.equals(Model.MAIN_KEY)) {
-                        id = value;
-                    } else if (key.equals(Model.HIER_PARENT_KEY)) {
-                        parentId = value;
-                    } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
-                        primaryType = (String) value;
-                    } else if (key.equals(Model.PROXY_TARGET_KEY)) {
-                        targetId = value;
-                    } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
-                        versionableId = value;
+            try (ResultSet
+            rs = ps.executeQuery()) {
+                countExecute();
+                while (rs.next()) {
+                    Serializable id = null;
+                    Serializable parentId = null;
+                    String primaryType = null;
+                    Boolean isProperty = Boolean.FALSE;
+                    Serializable targetId = null;
+                    Serializable versionableId = null;
+                    int i = 1;
+                    for (Column column : select.whatColumns) {
+                        String key = column.getKey();
+                        Serializable value = column.getFromResultSet(rs, i++);
+                        if (key.equals(Model.MAIN_KEY)) {
+                            id = value;
+                        } else if (key.equals(Model.HIER_PARENT_KEY)) {
+                            parentId = value;
+                        } else if (key.equals(Model.MAIN_PRIMARY_TYPE_KEY)) {
+                            primaryType = (String) value;
+                        } else if (key.equals(Model.PROXY_TARGET_KEY)) {
+                            targetId = value;
+                        } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
+                            versionableId = value;
+                        }
                     }
-                }
-                children.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
-                if (debugValues != null) {
-                    if (debugValues.size() < DEBUG_MAX_TREE) {
-                        debugValues.add(id + "/" + primaryType);
+                    children.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
+                    if (debugValues != null) {
+                        if (debugValues.size() < DEBUG_MAX_TREE) {
+                            debugValues.add(id + "/" + primaryType);
+                        }
                     }
                 }
             }
@@ -1491,12 +1399,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return children;
         } catch (SQLException e) {
             throw new NuxeoException("Failed to get descendants", e);
-        } finally {
-            try {
-                closeStatement(ps, rs);
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 

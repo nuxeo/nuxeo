@@ -185,29 +185,4 @@ public class JDBCConnection {
         }
     }
 
-    protected void closeStatement(Statement s) throws SQLException {
-        try {
-            if (s != null) {
-                s.close();
-            }
-        } catch (IllegalArgumentException e) {
-            // ignore
-            // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
-        }
-    }
-
-    protected void closeStatement(Statement s, ResultSet r) throws SQLException {
-        try {
-            if (r != null) {
-                r.close();
-            }
-            if (s != null) {
-                s.close();
-            }
-        } catch (IllegalArgumentException e) {
-            // ignore
-            // http://bugs.mysql.com/35489 with JDBC 4 and driver <= 5.1.6
-        }
-    }
-
 }
