@@ -18,7 +18,13 @@ Contributors:
 -->
 <nuxeo-slot-content name="damSearchMenuButtons" slot="SEARCH_MENU_BUTTONS">
   <template>
-    <nuxeo-menu-icon id="assetsSearchButton" name="assetsSearch" route="search:assets" icon="icons:perm-media" label="dam.assets.heading">
+    <nuxeo-menu-icon id="assetsSearchButton" name="assetsSearch" icon="icons:perm-media" label="dam.assets.heading">
     </nuxeo-menu-icon>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="damSearchMenuButtons" slot="DRAWER_PAGES">
+  <template>
+    <nuxeo-search-form name="assetsSearch" search-name="assets" provider="assets_search" schemas="dublincore,common,uid"></nuxeo-search-form>
   </template>
 </nuxeo-slot-content>
