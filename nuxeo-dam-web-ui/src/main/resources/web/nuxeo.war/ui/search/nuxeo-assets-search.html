@@ -135,67 +135,45 @@ Contributors:
 
   </template>
   <script>
-    (function() {
-      'use strict';
+    Polymer({
+      is: 'nuxeo-assets-search',
 
-      Polymer({
-        is: 'nuxeo-assets-search',
-
-        properties: {
-          params: {
-            type: Object,
-            value: {},
-            notify: true
-          },
-          aggregations: {
-            type: Object,
-            value: {},
-            notify: true
-          },
-          searchTerm: {
-            type: String,
-            notify: true,
-            observer: '_addFullTextSearch'
-          },
-          provider: {
-            type: String,
-            value: 'assets_search',
-            reflectToAttribute: true
-          },
-          schemas: {
-            type: String,
-            value: 'dublincore,common,uid',
-            reflectToAttribute: true
-          }
+      properties: {
+        params: {
+          type: Object,
+          value: {},
+          notify: true
         },
-
-        behaviors: [Nuxeo.I18nBehavior],
-
-        ready: function() {
-          window.addEventListener('navigation', function(e) {
-            if (e.detail.page === 'search') {
-              this.$.searchInput.$.input.focus();
-            }
-          }.bind(this));
+        aggregations: {
+          type: Object,
+          value: {},
+          notify: true
         },
-
-        _addFullTextSearch: function() {
-          if (this.searchTerm) {
-            this.set('params.ecm_fulltext', this.searchTerm + '*');
-          } else {
-            if (this.params.ecm_fulltext) {
-              this.set('params.ecm_fulltext', '');
-              // dirty but needed, the above line for
-              // ecm_fulltext removal being observed
-              delete this.params.ecm_fulltext;
-            }
-          }
-        },
-
-        clear: function() {
-          this.searchTerm = '';
+        searchTerm: {
+          type: String,
+          notify: true,
+          observer: '_addFullTextSearch'
         }
-      });
-    })();
+      },
+
+      behaviors: [Nuxeo.I18nBehavior],
+
+      _addFullTextSearch: function() {
+        if (this.searchTerm) {
+          this.set('params.ecm_fulltext', this.searchTerm + '*');
+        } else {
+          if (this.params.ecm_fulltext) {
+            this.set('params.ecm_fulltext', '');
+            // dirty but needed, the above line for
+            // ecm_fulltext removal being observed
+            delete this.params.ecm_fulltext;
+          }
+        }
+      },
+
+      clear: function() {
+        this.searchTerm = '';
+      }
+    });
   </script>
 </dom-module>
