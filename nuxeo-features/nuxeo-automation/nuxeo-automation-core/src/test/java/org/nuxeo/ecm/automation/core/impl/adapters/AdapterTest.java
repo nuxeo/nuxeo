@@ -19,6 +19,11 @@
  */
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
@@ -34,11 +39,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -101,6 +101,7 @@ public class AdapterTest {
     @Test
     public void shouldAdaptNullValue() throws Exception {
         assertNull(automationService.getAdaptedValue(ctx, null, Void.class));
+        assertNull(automationService.getAdaptedValue(ctx, null, DocumentModel.class));
     }
 
     @Test
