@@ -76,6 +76,9 @@ Contributors:
         nxProvider: {
           type: HTMLElement,
           value: null
+        },
+        columns: {
+          type: Array
         }
       },
 
@@ -84,7 +87,6 @@ Contributors:
       },
 
       _show: function() {
-
         var provider = this.nxProvider;
 
         // convert from provider.sort to sortInfos
@@ -102,6 +104,14 @@ Contributors:
           properties[key] = provider.aggregations[key].selection;
         });
 
+        // convert datatable.columns to columns
+        var columns = [];
+        this.columns.forEach(function(c) {
+          if (c.field && !c.hidden) {
+            columns.push({label: c.name ? c.name : c.field, field: c.field});
+          }
+        });
+
         var state = {
           pageProviderName: provider.provider,
           pageSize: provider.pageSize,
@@ -109,10 +119,7 @@ Contributors:
           namedParameters: provider.params,
           searchDocument: {properties: properties},
           sortInfos: sortInfos,
-
-          // TODO: pass columns here when https://jira.nuxeo.com/browse/ELEMENTS-223 is done
-          //resultColumns: [],
-
+          resultColumns: columns,
           executed: false
         };
 
