@@ -206,9 +206,9 @@ while true; do
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
   [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]] && \
-           echo "Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts=\"$JAVA_OPTS\" -Dnuxeo.home=\"$NUXEO_HOME\" -Dnuxeo.conf=\"$NUXEO_CONF\" -Dnuxeo.log.dir=\"$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@"
-  echo [`date`] "Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts=\"$JAVA_OPTS\" -Dnuxeo.home=\"$NUXEO_HOME\" -Dnuxeo.conf=\"$NUXEO_CONF\" -Dnuxeo.log.dir=\"$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
-  "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
+           echo "Launcher command: $JAVA $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@"
+  echo [`date`] "Launcher command: $JAVA $LAUNCHER_DEBUG \"-Dlauncher.java.opts=$JAVA_OPTS\" \"-Dnuxeo.home=$NUXEO_HOME\" \"-Dnuxeo.conf=$NUXEO_CONF\" \"-Dnuxeo.log.dir=$LOG_DIR\" -jar \"$TMPLAUNCHER\" $@" >> "$LOG_DIR"/nuxeoctl.log
+  "$JAVA" $LAUNCHER_DEBUG "-Dlauncher.java.opts=$JAVA_OPTS" "-Dnuxeo.home=$NUXEO_HOME" "-Dnuxeo.conf=$NUXEO_CONF" "-Dnuxeo.log.dir=$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
   rm -f "$TMPLAUNCHER"
   if [ "$exitcode" != "128" ]; then
