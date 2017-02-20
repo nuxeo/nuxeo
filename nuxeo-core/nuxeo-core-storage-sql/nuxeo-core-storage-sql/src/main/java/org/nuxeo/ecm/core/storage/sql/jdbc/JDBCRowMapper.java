@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -518,12 +519,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (sql == null) {
             throw new NuxeoException("Unknown table: " + tableName);
         }
-        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql + " -- BATCHED" : sql;
+        boolean batched = supportsBatchUpdates && rows.size() > 1;
+        String loggedSql = batched ? sql + " -- BATCHED" : sql;
         List<Column> columns = sqlInfo.getInsertColumns(tableName);
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int batch = 0;
-            for (Row row : rows) {
-                batch++;
+            for (Iterator<Row> rowIt = rows.iterator(); rowIt.hasNext();) {
+                Row row = rowIt.next();
                 if (logger.isLogEnabled()) {
                     logger.logSQL(loggedSql, columns, row);
                 }
@@ -531,9 +533,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 for (Column column : columns) {
                     column.setToPreparedStatement(ps, i++, row.get(column.getKey()));
                 }
-                if (supportsBatchUpdates) {
+                if (batched) {
                     ps.addBatch();
-                    if (batch % UPDATE_BATCH_SIZE == 0) {
+                    batch++;
+                    if (batch % UPDATE_BATCH_SIZE == 0 || !rowIt.hasNext()) {
                         ps.executeBatch();
                         countExecute();
                     }
@@ -541,10 +544,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     ps.execute();
                     countExecute();
                 }
-            }
-            if (supportsBatchUpdates) {
-                ps.executeBatch();
-                countExecute();
             }
         } catch (SQLException e) {
             if (e instanceof BatchUpdateException) {
@@ -618,11 +617,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             Collection<String> keys = keysByCanonKeys.get(ck);
             Set<String> deltas = deltasByCanonKeys.get(ck);
             SQLInfoSelect update = sqlInfo.getUpdateById(tableName, keys, deltas);
-            String loggedSql = supportsBatchUpdates && rows.size() > 1 ? update.sql + " -- BATCHED" : update.sql;
+            boolean batched = supportsBatchUpdates && keysUpdates.size() > 1;
+            String loggedSql = batched ? update.sql + " -- BATCHED" : update.sql;
             try (PreparedStatement ps = connection.prepareStatement(update.sql)) {
                 int batch = 0;
-                for (RowUpdate rowu : keysUpdates) {
-                    batch++;
+                for (Iterator<RowUpdate> rowIt = keysUpdates.iterator(); rowIt.hasNext();) {
+                    RowUpdate rowu = rowIt.next();
                     if (logger.isLogEnabled()) {
                         logger.logSQL(loggedSql, update.whatColumns, rowu.row, deltas);
                     }
@@ -634,9 +634,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         }
                         column.setToPreparedStatement(ps, i++, value);
                     }
-                    if (supportsBatchUpdates) {
+                    if (batched) {
                         ps.addBatch();
-                        if (batch % UPDATE_BATCH_SIZE == 0) {
+                        batch++;
+                        if (batch % UPDATE_BATCH_SIZE == 0 || !rowIt.hasNext()) {
                             int[] counts = ps.executeBatch();
                             countExecute();
                             logger.logCounts(counts);
@@ -646,11 +647,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                         countExecute();
                         logger.logCount(count);
                     }
-                }
-                if (supportsBatchUpdates) {
-                    int[] counts = ps.executeBatch();
-                    countExecute();
-                    logger.logCounts(counts);
                 }
             } catch (SQLException e) {
                 checkConcurrentUpdate(e);
