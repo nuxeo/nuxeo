@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL
 import java.io.IOException;
 import java.security.Principal;
 
+import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -66,9 +67,12 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         }
 
         Principal principal = request.getUserPrincipal();
-        NuxeoPrincipal nuxeoPrincipal;
+        if (principal == null) {
+            LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
+            principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+        }
         if (principal instanceof NuxeoPrincipal) {
-            nuxeoPrincipal = (NuxeoPrincipal) principal;
+            NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             // redirect to login than to requested page
             if (nuxeoPrincipal.isAnonymous()) {
                 response.resetBuffer();
