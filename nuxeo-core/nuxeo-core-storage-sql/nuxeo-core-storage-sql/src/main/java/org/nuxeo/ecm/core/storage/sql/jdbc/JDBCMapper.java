@@ -429,20 +429,16 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void createClusterNode(Serializable nodeId) {
         Calendar now = Calendar.getInstance();
-        try {
-            String sql = sqlInfo.getCreateClusterNodeSql();
-            List<Column> columns = sqlInfo.getCreateClusterNodeColumns();
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                if (logger.isLogEnabled()) {
-                    logger.logSQL(sql, Arrays.asList(nodeId, now));
-                }
-                columns.get(0).setToPreparedStatement(ps, 1, nodeId);
-                columns.get(1).setToPreparedStatement(ps, 2, now);
-                ps.execute();
-            } finally {
-                closeStatement(ps);
+        String sql = sqlInfo.getCreateClusterNodeSql();
+        List<Column> columns = sqlInfo.getCreateClusterNodeColumns();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Arrays.asList(nodeId, now));
             }
+            columns.get(0).setToPreparedStatement(ps, 1, nodeId);
+            columns.get(1).setToPreparedStatement(ps, 2, now);
+            ps.execute();
+
         } catch (SQLException e) {
             throw new NuxeoException(e);
         }
@@ -450,20 +446,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public void removeClusterNode(Serializable nodeId) {
-        try {
-            // delete from cluster_nodes
-            String sql = sqlInfo.getDeleteClusterNodeSql();
-            Column column = sqlInfo.getDeleteClusterNodeColumn();
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                if (logger.isLogEnabled()) {
-                    logger.logSQL(sql, Collections.singletonList(nodeId));
-                }
-                column.setToPreparedStatement(ps, 1, nodeId);
-                ps.execute();
-            } finally {
-                closeStatement(ps);
+        // delete from cluster_nodes
+        String sql = sqlInfo.getDeleteClusterNodeSql();
+        Column column = sqlInfo.getDeleteClusterNodeColumn();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Collections.singletonList(nodeId));
             }
+            column.setToPreparedStatement(ps, 1, nodeId);
+            ps.execute();
             // delete un-processed invals from cluster_invals
             deleteClusterInvals(nodeId);
         } catch (SQLException e) {
@@ -474,8 +465,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected void deleteClusterInvals(Serializable nodeId) throws SQLException {
         String sql = sqlInfo.getDeleteClusterInvalsSql();
         Column column = sqlInfo.getDeleteClusterInvalsColumn();
-        PreparedStatement ps = connection.prepareStatement(sql);
-        try {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             if (logger.isLogEnabled()) {
                 logger.logSQL(sql, Collections.singletonList(nodeId));
             }
@@ -485,12 +475,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (logger.isLogEnabled()) {
                 logger.logCount(n);
             }
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                log.error("deleteClusterInvals: " + e.getMessage(), e);
-            }
         }
     }
 
@@ -498,9 +482,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
         String sql = dialect.getClusterInsertInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
-        PreparedStatement ps = null;
-        try {
-            ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             int kind = Invalidations.MODIFIED;
             while (true) {
                 Set<RowId> rowIds = invalidations.getKindSet(kind);
@@ -543,12 +525,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         } catch (SQLException e) {
             throw new NuxeoException("Could not invalidate", e);
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -578,15 +554,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         Invalidations invalidations = new Invalidations();
         String sql = dialect.getClusterGetInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
-        try {
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.singletonList(nodeId));
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                setToPreparedStatement(ps, 1, nodeId);
-                rs = ps.executeQuery();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(nodeId));
+        }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            setToPreparedStatement(ps, 1, nodeId);
+            try (ResultSet rs = ps.executeQuery()) {
                 countExecute();
                 while (rs.next()) {
                     // first column ignored, it's the node id
@@ -601,8 +574,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     }
                     invalidations.add(id, fragments, kind);
                 }
-            } finally {
-                closeStatement(ps, rs);
             }
             if (logger.isLogEnabled()) {
                 // logCount(n);
@@ -620,15 +591,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public Serializable getRootId(String repositoryId) {
         String sql = sqlInfo.getSelectRootIdSql();
-        try {
-            if (logger.isLogEnabled()) {
-                logger.logSQL(sql, Collections.<Serializable> singletonList(repositoryId));
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = null;
-            try {
-                ps.setString(1, repositoryId);
-                rs = ps.executeQuery();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.<Serializable> singletonList(repositoryId));
+        }
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, repositoryId);
+            try (ResultSet rs = ps.executeQuery()) {
                 countExecute();
                 if (!rs.next()) {
                     if (logger.isLogEnabled()) {
@@ -646,8 +614,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     throw new NuxeoException("Row query for " + repositoryId + " returned several rows: " + sql);
                 }
                 return id;
-            } finally {
-                closeStatement(ps, rs);
             }
         } catch (SQLException e) {
             throw new NuxeoException("Could not select: " + sql, e);
@@ -657,40 +623,35 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void setRootId(Serializable repositoryId, Serializable id) {
         String sql = sqlInfo.getInsertRootIdSql();
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                List<Column> columns = sqlInfo.getInsertRootIdColumns();
-                List<Serializable> debugValues = null;
-                if (logger.isLogEnabled()) {
-                    debugValues = new ArrayList<>(2);
-                }
-                int i = 0;
-                for (Column column : columns) {
-                    i++;
-                    String key = column.getKey();
-                    Serializable v;
-                    if (key.equals(Model.MAIN_KEY)) {
-                        v = id;
-                    } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
-                        v = repositoryId;
-                    } else {
-                        throw new RuntimeException(key);
-                    }
-                    column.setToPreparedStatement(ps, i, v);
-                    if (debugValues != null) {
-                        debugValues.add(v);
-                    }
-                }
-                if (debugValues != null) {
-                    logger.logSQL(sql, debugValues);
-                    debugValues.clear();
-                }
-                ps.execute();
-                countExecute();
-            } finally {
-                closeStatement(ps);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            List<Column> columns = sqlInfo.getInsertRootIdColumns();
+            List<Serializable> debugValues = null;
+            if (logger.isLogEnabled()) {
+                debugValues = new ArrayList<>(2);
             }
+            int i = 0;
+            for (Column column : columns) {
+                i++;
+                String key = column.getKey();
+                Serializable v;
+                if (key.equals(Model.MAIN_KEY)) {
+                    v = id;
+                } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
+                    v = repositoryId;
+                } else {
+                    throw new RuntimeException(key);
+                }
+                column.setToPreparedStatement(ps, i, v);
+                if (debugValues != null) {
+                    debugValues.add(v);
+                }
+            }
+            if (debugValues != null) {
+                logger.logSQL(sql, debugValues);
+                debugValues.clear();
+            }
+            ps.execute();
+            countExecute();
         } catch (SQLException e) {
             throw new NuxeoException("Could not insert: " + sql, e);
         }
@@ -720,9 +681,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (!dialect.supportsArrays()) {
             principals = String.join(Dialect.ARRAY_SEP, (String[]) principals);
         }
-        PreparedStatement ps = null;
-        try {
-            ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             if (logger.isLogEnabled()) {
                 logger.logSQL(sql, Collections.singleton(principals));
             }
@@ -731,12 +690,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             countExecute();
         } catch (SQLException e) {
             throw new NuxeoException("Failed to prepare user read acl cache", e);
-        } finally {
-            try {
-                closeStatement(ps);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -787,80 +740,73 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             sql = dialect.addPagingClause(sql, Math.max(countUpTo + 1, limit + offset), 0);
         }
 
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        try (PreparedStatement ps = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY)) {
             int i = 1;
             for (Serializable object : q.selectParams) {
                 setToPreparedStatement(ps, i++, object);
             }
-            rs = ps.executeQuery();
-            countExecute();
+            try (ResultSet rs = ps.executeQuery()) {
+                countExecute();
 
-            // limit/offset
-            long totalSize = -1;
-            boolean available;
-            if ((limit == 0) || (offset == 0)) {
-                available = rs.first();
-                if (!available) {
-                    totalSize = 0;
-                }
-                if (limit == 0) {
-                    limit = -1; // infinite
-                }
-            } else {
-                available = rs.absolute((int) offset + 1);
-            }
-
-            Column column = q.selectInfo.whatColumns.get(0);
-            List<Serializable> ids = new LinkedList<>();
-            int rowNum = 0;
-            while (available && (limit != 0)) {
-                Serializable id;
-                try {
-                    id = column.getFromResultSet(rs, 1);
-                } catch (SQLDataException e) {
-                    // actually no data available, MariaDB Connector/J lied, stop now
-                    available = false;
-                    break;
-                }
-                ids.add(id);
-                rowNum = rs.getRow();
-                available = rs.next();
-                limit--;
-            }
-
-            // total size
-            if (countUpTo != 0 && (totalSize == -1)) {
-                if (!available && (rowNum != 0)) {
-                    // last row read was the actual last
-                    totalSize = rowNum;
+                // limit/offset
+                long totalSize = -1;
+                boolean available;
+                if ((limit == 0) || (offset == 0)) {
+                    available = rs.first();
+                    if (!available) {
+                        totalSize = 0;
+                    }
+                    if (limit == 0) {
+                        limit = -1; // infinite
+                    }
                 } else {
-                    // available if limit reached with some left
-                    // rowNum == 0 if skipped too far
-                    rs.last();
-                    totalSize = rs.getRow();
+                    available = rs.absolute((int) offset + 1);
                 }
-                if (countUpTo > 0 && totalSize > countUpTo) {
-                    // the result where truncated we don't know the total size
-                    totalSize = -2;
+
+                Column column = q.selectInfo.whatColumns.get(0);
+                List<Serializable> ids = new LinkedList<>();
+                int rowNum = 0;
+                while (available && (limit != 0)) {
+                    Serializable id;
+                    try {
+                        id = column.getFromResultSet(rs, 1);
+                    } catch (SQLDataException e) {
+                        // actually no data available, MariaDB Connector/J lied, stop now
+                        available = false;
+                        break;
+                    }
+                    ids.add(id);
+                    rowNum = rs.getRow();
+                    available = rs.next();
+                    limit--;
                 }
-            }
 
-            if (logger.isLogEnabled()) {
-                logger.logIds(ids, countUpTo != 0, totalSize);
-            }
+                // total size
+                if (countUpTo != 0 && (totalSize == -1)) {
+                    if (!available && (rowNum != 0)) {
+                        // last row read was the actual last
+                        totalSize = rowNum;
+                    } else {
+                        // available if limit reached with some left
+                        // rowNum == 0 if skipped too far
+                        rs.last();
+                        totalSize = rs.getRow();
+                    }
+                    if (countUpTo > 0 && totalSize > countUpTo) {
+                        // the result where truncated we don't know the total size
+                        totalSize = -2;
+                    }
+                }
 
-            return new PartialList<>(ids, totalSize);
+                if (logger.isLogEnabled()) {
+                    logger.logIds(ids, countUpTo != 0, totalSize);
+                }
+
+                return new PartialList<>(ids, totalSize);
+            }
         } catch (SQLException e) {
             throw new NuxeoException("Invalid query: " + query, e);
-        } finally {
-            try {
-                closeStatement(ps, rs);
-            } catch (SQLException e) {
-                log.error("Cannot close connection", e);
-            }
         }
     }
 
@@ -956,6 +902,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (connection.getAutoCommit()) {
                 throw new NuxeoException("Scroll should be done inside a transaction");
             }
+            // ps MUST NOT be auto-closed because it's referenced by a cursor
             PreparedStatement ps = connection.prepareStatement(q.selectInfo.sql, ResultSet.TYPE_FORWARD_ONLY,
                     ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
             ps.setFetchSize(batchSize);
@@ -963,6 +910,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             for (Serializable object : q.selectParams) {
                 setToPreparedStatement(ps, i++, object);
             }
+            // rs MUST NOT be auto-closed because it's referenced by a cursor
             ResultSet rs = ps.executeQuery();
             String scrollId = UUID.randomUUID().toString();
             registerCursor(scrollId, ps, rs, batchSize, keepAliveSeconds);
@@ -1098,25 +1046,31 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
         Serializable whereIds = newIdArray(ids);
         Set<Serializable> res = new HashSet<>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            if (logger.isLogEnabled()) {
-                logger.logSQL(select.sql, Collections.singleton(whereIds));
-            }
-            Column what = select.whatColumns.get(0);
-            ps = connection.prepareStatement(select.sql);
+        if (logger.isLogEnabled()) {
+            logger.logSQL(select.sql, Collections.singleton(whereIds));
+        }
+        Column what = select.whatColumns.get(0);
+        try (PreparedStatement ps = connection.prepareStatement(select.sql)) {
             setToPreparedStatementIdArray(ps, 1, whereIds);
-            rs = ps.executeQuery();
-            countExecute();
-            List<Serializable> debugIds = null;
-            if (logger.isLogEnabled()) {
-                debugIds = new LinkedList<>();
-            }
-            while (rs.next()) {
-                if (dialect.supportsArraysReturnInsteadOfRows()) {
-                    Serializable[] resultIds = dialect.getArrayResult(rs.getArray(1));
-                    for (Serializable id : resultIds) {
+            try (ResultSet rs = ps.executeQuery()) {
+                countExecute();
+                List<Serializable> debugIds = null;
+                if (logger.isLogEnabled()) {
+                    debugIds = new LinkedList<>();
+                }
+                while (rs.next()) {
+                    if (dialect.supportsArraysReturnInsteadOfRows()) {
+                        Serializable[] resultIds = dialect.getArrayResult(rs.getArray(1));
+                        for (Serializable id : resultIds) {
+                            if (id != null) {
+                                res.add(id);
+                                if (logger.isLogEnabled()) {
+                                    debugIds.add(id);
+                                }
+                            }
+                        }
+                    } else {
+                        Serializable id = what.getFromResultSet(rs, 1);
                         if (id != null) {
                             res.add(id);
                             if (logger.isLogEnabled()) {
@@ -1124,28 +1078,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                             }
                         }
                     }
-                } else {
-                    Serializable id = what.getFromResultSet(rs, 1);
-                    if (id != null) {
-                        res.add(id);
-                        if (logger.isLogEnabled()) {
-                            debugIds.add(id);
-                        }
-                    }
                 }
-            }
-            if (logger.isLogEnabled()) {
-                logger.logIds(debugIds, false, 0);
+                if (logger.isLogEnabled()) {
+                    logger.logIds(debugIds, false, 0);
+                }
             }
             return res;
         } catch (SQLException e) {
             throw new NuxeoException("Failed to get ancestors ids", e);
-        } finally {
-            try {
-                closeStatement(ps, rs);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1153,8 +1093,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * Uses iterative parentid selection.
      */
     protected Set<Serializable> getAncestorsIdsIterative(Collection<Serializable> ids) {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
         try {
             LinkedList<Serializable> todo = new LinkedList<>(ids);
             Set<Serializable> done = new HashSet<>();
@@ -1167,45 +1105,39 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 Column what = select.whatColumns.get(0);
                 Column where = select.whereColumns.get(0);
-                ps = connection.prepareStatement(select.sql);
-                int i = 1;
-                for (Serializable id : todo) {
-                    where.setToPreparedStatement(ps, i++, id);
-                }
-                rs = ps.executeQuery();
-                countExecute();
-                todo = new LinkedList<>();
-                List<Serializable> debugIds = null;
-                if (logger.isLogEnabled()) {
-                    debugIds = new LinkedList<>();
-                }
-                while (rs.next()) {
-                    Serializable id = what.getFromResultSet(rs, 1);
-                    if (id != null) {
-                        res.add(id);
-                        if (!done.contains(id)) {
-                            todo.add(id);
+                try (PreparedStatement ps = connection.prepareStatement(select.sql)) {
+                    int i = 1;
+                    for (Serializable id : todo) {
+                        where.setToPreparedStatement(ps, i++, id);
+                    }
+                    try (ResultSet rs = ps.executeQuery()) {
+                        countExecute();
+                        todo = new LinkedList<>();
+                        List<Serializable> debugIds = null;
+                        if (logger.isLogEnabled()) {
+                            debugIds = new LinkedList<>();
+                        }
+                        while (rs.next()) {
+                            Serializable id = what.getFromResultSet(rs, 1);
+                            if (id != null) {
+                                res.add(id);
+                                if (!done.contains(id)) {
+                                    todo.add(id);
+                                }
+                                if (logger.isLogEnabled()) {
+                                    debugIds.add(id);
+                                }
+                            }
                         }
                         if (logger.isLogEnabled()) {
-                            debugIds.add(id);
+                            logger.logIds(debugIds, false, 0);
                         }
                     }
                 }
-                if (logger.isLogEnabled()) {
-                    logger.logIds(debugIds, false, 0);
-                }
-                rs.close();
-                ps.close();
             }
             return res;
         } catch (SQLException e) {
             throw new NuxeoException("Failed to get ancestors ids", e);
-        } finally {
-            try {
-                closeStatement(ps, rs);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
     }
 
@@ -1217,9 +1149,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (log.isDebugEnabled()) {
             log.debug("updateReadAcls: updating");
         }
-        Statement st = null;
-        try {
-            st = connection.createStatement();
+        try (Statement st = connection.createStatement()) {
             String sql = dialect.getUpdateReadAclsSql();
             if (logger.isLogEnabled()) {
                 logger.log(sql);
@@ -1229,12 +1159,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } catch (SQLException e) {
             checkConcurrentUpdate(e);
             throw new NuxeoException("Failed to update read acls", e);
-        } finally {
-            try {
-                closeStatement(st);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
         if (log.isDebugEnabled()) {
             log.debug("updateReadAcls: done.");
@@ -1247,21 +1171,13 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return;
         }
         log.debug("rebuildReadAcls: rebuilding ...");
-        Statement st = null;
-        try {
-            st = connection.createStatement();
+        try (Statement st = connection.createStatement()) {
             String sql = dialect.getRebuildReadAclsSql();
             logger.log(sql);
             st.execute(sql);
             countExecute();
         } catch (SQLException e) {
             throw new NuxeoException("Failed to rebuild read acls", e);
-        } finally {
-            try {
-                closeStatement(st);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
         log.debug("rebuildReadAcls: done.");
     }
@@ -1325,12 +1241,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void markReferencedBinaries() {
         log.debug("Starting binaries GC mark");
-        Statement st = null;
-        ResultSet rs = null;
         BlobManager blobManager = Framework.getService(BlobManager.class);
         String repositoryName = getRepositoryName();
-        try {
-            st = connection.createStatement();
+        try (Statement st = connection.createStatement()) {
             int i = -1;
             for (String sql : sqlInfo.getBinariesSql) {
                 i++;
@@ -1338,29 +1251,23 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 if (logger.isLogEnabled()) {
                     logger.log(sql);
                 }
-                rs = st.executeQuery(sql);
-                countExecute();
-                int n = 0;
-                while (rs.next()) {
-                    n++;
-                    String key = (String) col.getFromResultSet(rs, 1);
-                    if (key != null) {
-                        blobManager.markReferencedBinary(key, repositoryName);
+                try (ResultSet rs = st.executeQuery(sql)) {
+                    countExecute();
+                    int n = 0;
+                    while (rs.next()) {
+                        n++;
+                        String key = (String) col.getFromResultSet(rs, 1);
+                        if (key != null) {
+                            blobManager.markReferencedBinary(key, repositoryName);
+                        }
+                    }
+                    if (logger.isLogEnabled()) {
+                        logger.logCount(n);
                     }
                 }
-                if (logger.isLogEnabled()) {
-                    logger.logCount(n);
-                }
-                rs.close();
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to mark binaries for gC", e);
-        } finally {
-            try {
-                closeStatement(st, rs);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
         log.debug("End of binaries GC mark");
     }
