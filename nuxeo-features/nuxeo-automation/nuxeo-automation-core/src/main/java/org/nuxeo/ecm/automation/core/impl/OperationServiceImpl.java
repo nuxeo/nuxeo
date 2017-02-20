@@ -409,6 +409,9 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
         }
         TypeAdapter adapter = getTypeAdapter(toAdaptClass, targetType);
         if (adapter == null) {
+            if (toAdapt == null) {
+                return null;
+            }
             if (toAdapt instanceof JsonNode) {
                 // fall-back to generic jackson adapter
                 ObjectMapper mapper = new ObjectMapper();
