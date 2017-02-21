@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class DirectoryOperationsTest {
     protected DirectoryService directoryService;
 
     protected void createEntry(String id, String label, int obsolete) {
-        Map<String, Object> m = new HashMap<String, Object>();
+        Map<String, Object> m = new HashMap<>();
         m.put("id", id);
         m.put("label", label);
         m.put("obsolete", obsolete);
@@ -92,10 +92,10 @@ public class DirectoryOperationsTest {
 
     @Test
     public void shouldCreateNewEntries() throws Exception {
-        String newEntries = "[{\"id\": \"newContinent\"," + "\"label\": \"newLabel\"," + "\"obsolete\": 0},"
-                + "{\"id\": \"anotherContinent\"," + "\"label\": \"anotherLabel\"," + "\"obsolete\": 0}]";
+        String newEntries = "[{\"id\": \"newContinent\", \"label\": \"newLabel\", \"obsolete\": 0},"
+                + "{\"id\": \"anotherContinent\", \"label\": \"anotherLabel\", \"obsolete\": 0}]";
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("entries", newEntries);
         OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
@@ -125,9 +125,9 @@ public class DirectoryOperationsTest {
 
     @Test
     public void shouldNotCreateNewEntryIFEntryAlreadyExsists() throws Exception {
-        String newEntries = "[{\"id\": \"europe\"," + "\"label\": \"europe\"," + "\"obsolete\": 0}]";
+        String newEntries = "[{\"id\": \"europe\", \"label\": \"europe\", \"obsolete\": 0}]";
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("entries", newEntries);
         OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
@@ -151,7 +151,7 @@ public class DirectoryOperationsTest {
     public void shouldDeleteEntries() throws Exception {
         createEntry("entryToDelete", "entryToDeleteLabel", 0);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("entries", "[\"entryToDelete\"]");
         OperationParameters oparams = new OperationParameters(DeleteDirectoryEntries.ID, params);
@@ -177,7 +177,7 @@ public class DirectoryOperationsTest {
     public void shouldMarkEntriesAsObsolete() throws Exception {
         createEntry("entryToMarkAsObsolete", "entryToMarkAsObsoleteLabel", 0);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("markObsolete", true);
         params.put("entries", "[\"entryToMarkAsObsolete\"]");
@@ -206,10 +206,9 @@ public class DirectoryOperationsTest {
     public void shouldUpdateEntries() throws Exception {
         createEntry("entryToUpdate", "entryToUpdateLabel", 0);
 
-        String entriesToUpdate = "[{\"id\": \"entryToUpdate\"," + "\"label\": \"newEntryToUpdateLabel\","
-                + "\"obsolete\": 0}]";
+        String entriesToUpdate = "[{\"id\": \"entryToUpdate\", \"label\": \"newEntryToUpdateLabel\", \"obsolete\": 0}]";
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("entries", entriesToUpdate);
         OperationParameters oparams = new OperationParameters(UpdateDirectoryEntries.ID, params);
@@ -237,7 +236,7 @@ public class DirectoryOperationsTest {
     public void shouldReadEntries() throws Exception {
         String entriesToRead = "[\"europe\", \"asia\", \"oceania\"]";
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("entries", entriesToRead);
         OperationParameters oparams = new OperationParameters(ReadDirectoryEntries.ID, params);
