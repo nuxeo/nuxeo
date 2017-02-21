@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Thomas Roger <troger@nuxeo.com>
+ *     Mincong Huang <mhuang@nuxeo.com>
  */
 
 package org.nuxeo.ecm.automation.core.test.directory;
@@ -22,10 +23,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
@@ -43,6 +47,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -95,11 +100,51 @@ public class DirectoryOperationsTest {
     }
 
     @Test
-    public void shouldCreateNewEntries() throws Exception {
+    public void shouldCreateNewEntriesIfAllParamsFilled() throws Exception {
         String newEntries = "[{\"id\": \"newContinent\"," + "\"label\": \"newLabel\"," + "\"obsolete\": 0},"
                 + "{\"id\": \"anotherContinent\"," + "\"label\": \"anotherLabel\"," + "\"obsolete\": 0}]";
 
         Map<String, Object> params = new HashMap<String, Object>();
+        params.put("directoryName", "continent");
+        params.put("entries", newEntries);
+        OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
+
+        OperationContext ctx = new OperationContext(session);
+        OperationChain chain = new OperationChain("fakeChain");
+        chain.add(oparams);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> createdIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        });
+
+        assertEquals(2, createdIds.size());
+        assertEquals("newContinent", createdIds.get(0));
+        assertEquals("anotherContinent", createdIds.get(1));
+
+        Session directorySession = null;
+        try {
+            directorySession = directoryService.open("continent");
+            assertEntriesIn(directorySession);
+        } finally {
+            if (directorySession != null) {
+                // tear down
+                for (String createdId : createdIds) {
+                    directorySession.deleteEntry(createdId);
+                }
+                directorySession.close();
+            }
+        }
+    }
+
+    @Test
+    public void shouldCreateNewEntriesIfSomeParamsMissing() throws Exception {
+        // Field 'obsolete' is missing on purpose.
+        String newEntries = "[{\"id\": \"newContinent\", \"label\": \"newLabel\"},"
+                + "{\"id\": \"anotherContinent\", \"label\": \"anotherLabel\"}]";
+
+        Map<String, Object> params = new HashMap<>();
         params.put("directoryName", "continent");
         params.put("entries", newEntries);
         OperationParameters oparams = new OperationParameters(CreateDirectoryEntries.ID, params);
@@ -120,17 +165,35 @@ public class DirectoryOperationsTest {
         Session directorySession = null;
         try {
             directorySession = directoryService.open("continent");
-            DocumentModel entry = directorySession.getEntry("newContinent");
-            assertNotNull(entry);
-            assertEquals("newLabel", entry.getProperty("vocabulary", "label"));
-            entry = directorySession.getEntry("anotherContinent");
-            assertNotNull(entry);
-            assertEquals("anotherLabel", entry.getProperty("vocabulary", "label"));
+            assertEntriesIn(directorySession);
         } finally {
             if (directorySession != null) {
+                // tear down
+                for (String createdId : createdIds) {
+                    directorySession.deleteEntry(createdId);
+                }
                 directorySession.close();
             }
         }
+    }
+
+    private void assertEntriesIn(Session directorySession) {
+        // assert using method 'Session#getEntry'
+        DocumentModel entry = directorySession.getEntry("newContinent");
+        assertEquals("newLabel", entry.getProperty("vocabulary", "label"));
+        assertEquals(0L, entry.getProperty("vocabulary", "obsolete"));
+
+        entry = directorySession.getEntry("anotherContinent");
+        assertEquals("anotherLabel", entry.getProperty("vocabulary", "label"));
+        assertEquals(0L, entry.getProperty("vocabulary", "obsolete"));
+
+        // assert using method 'Session#query'
+        Map<String, Serializable> filter = new HashMap<>();
+        Set<String> fulltext = new HashSet<>();
+        Map<String, String> orderBy = new HashMap<>();
+        filter.put("obsolete", 0L);
+        DocumentModelList docs = directorySession.query(filter, fulltext, orderBy, false);
+        assertEquals(9, docs.size());
     }
 
     @Test
@@ -256,6 +319,7 @@ public class DirectoryOperationsTest {
             assertEquals("newEntryToUpdateLabel", entry.getProperty("vocabulary", "label"));
         } finally {
             if (directorySession != null) {
+                directorySession.deleteEntry("entryToUpdate");
                 directorySession.close();
             }
         }
