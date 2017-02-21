@@ -42,7 +42,6 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -326,6 +325,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
             return;
         }
+
         try {
             if (!TransactionHelper.isTransactionActive()) {
                 // Manually start and stop a transaction around repository access to be able to release transactional
@@ -338,13 +338,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             try (CoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
                 DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
                 if (!session.exists(docRef)) {
-                    // Authenticate first, if the user is anonymous
+                    // Send a security exception to force authentication, if the current user is anonymous
                     Principal principal = req.getUserPrincipal();
                     if (principal instanceof NuxeoPrincipal) {
-                        NuxeoPrincipal nxPrincipal = (NuxeoPrincipal) principal;
-                        if (nxPrincipal.isAnonymous()) {
+                        NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
+                        if (nuxeoPrincipal.isAnonymous()) {
                             throw new DocumentSecurityException(
-                                    "Authentication is needed for downloading the document");
+                                    "Authentication is needed for downloading the blob");
                         }
                     }
                     resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
