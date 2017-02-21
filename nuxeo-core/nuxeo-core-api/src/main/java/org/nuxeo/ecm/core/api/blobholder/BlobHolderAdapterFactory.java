@@ -25,18 +25,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class BlobHolderAdapterFactory implements DocumentAdapterFactory {
 
-    protected static BlobHolderAdapterService bhas;
-
-    protected BlobHolderAdapterService getService() {
-        if (bhas == null) {
-            bhas = Framework.getLocalService(BlobHolderAdapterService.class);
-        }
-        return bhas;
-    }
-
     @Override
     public Object getAdapter(DocumentModel doc, Class itf) {
-        return getService().getBlobHolderAdapter(doc);
+        return Framework.getService(BlobHolderAdapterService.class).getBlobHolderAdapter(doc);
     }
 
 }
