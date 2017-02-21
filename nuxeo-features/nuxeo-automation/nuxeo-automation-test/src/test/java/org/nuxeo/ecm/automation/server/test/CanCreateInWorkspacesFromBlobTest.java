@@ -18,13 +18,13 @@ package org.nuxeo.ecm.automation.server.test;
 
 import javax.inject.Inject;
 
-import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -34,14 +34,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-/**
- *
- *
- * @since TODO
- */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
-@Deploy({"org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.userworkspace.api","org.nuxeo.ecm.platform.userworkspace.core","org.nuxeo.ecm.platform.userworkspace.types"})
+@Features(AutomationFeature.class)
+@Deploy({ "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.types" })
 @Jetty(port = 18080)
 public class CanCreateInWorkspacesFromBlobTest {
 
@@ -52,14 +49,14 @@ public class CanCreateInWorkspacesFromBlobTest {
     CoreSession session;
 
     @Test
-    public void createUserFile() throws OperationException {
+    public void createUserFileWithoutCurrentDocument() throws OperationException {
         try (OperationContext context = new OperationContext(session)) {
-            final StringBlob input = new StringBlob("blah blah blah");
+            StringBlob input = new StringBlob("blah blah blah");
             input.setFilename("blah");
             context.setInput(input);
-            DocumentModel result = (DocumentModel)automation.run(context, UserWorkspaceCreateFromBlob.ID);
-            Assertions.assertThat(result).isNotNull();
-            Assertions.assertThat(result.getName()).isEqualTo("blah");
+            DocumentModel result = (DocumentModel) automation.run(context, UserWorkspaceCreateFromBlob.ID);
+            Assert.assertNotNull(result);
+            Assert.assertEquals(result.getName(), "blah");
         }
     }
 }
