@@ -48,8 +48,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory implements
-        VersioningFileSystemItemFactory {
+public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
+        implements VersioningFileSystemItemFactory {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
@@ -138,7 +138,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
             BlobManager blobManager = Framework.getService(BlobManager.class);
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             BlobProvider blobProvider = blobManager.getBlobProvider(bh.getBlob());
-            if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+            if (blobProvider != null
+                    && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Blob for Document %s is backed by a BlobProvider preventing updates, it cannot be adapted as a FileSystemItem.",
