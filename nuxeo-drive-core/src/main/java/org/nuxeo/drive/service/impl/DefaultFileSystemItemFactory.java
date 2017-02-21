@@ -36,6 +36,7 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -83,6 +84,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
      * <li>AND it is not HiddenInNavigation</li>
      * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
      * <li>AND it is Folderish or it can be adapted as a {@link BlobHolder} with a blob</li>
+     * <li>AND its blob is not backed by an extended blob provider</li>
      * <li>AND it is not a synchronization root registered for the current user, unless {@code relaxSyncRootConstraint}
      * is true</li>
      * </ul>
@@ -123,8 +125,18 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
             }
             return false;
         }
+        // Try to fetch blob
+        Blob blob = null;
+        try {
+            blob = getBlob(doc);
+        } catch (NuxeoException e) {
+            log.error(String.format(
+                    "Error while fetching blob for document %s, it cannot be adapted as a FileSystemItem.",
+                    doc.getId()), e);
+            return false;
+        }
         // Check Folderish or BlobHolder with a blob
-        if (!doc.isFolder() && !hasBlob(doc)) {
+        if (!doc.isFolder() && blob == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Document %s is not Folderish nor a BlobHolder with a blob, it cannot be adapted as a FileSystemItem.",
@@ -136,8 +148,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         // Check for blobs backed by extended blob providers (ex: Google Drive)
         if (!doc.isFolder()) {
             BlobManager blobManager = Framework.getService(BlobManager.class);
-            BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            BlobProvider blobProvider = blobManager.getBlobProvider(bh.getBlob());
+            BlobProvider blobProvider = blobManager.getBlobProvider(blob);
             if (blobProvider != null
                     && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
                 if (log.isDebugEnabled()) {
@@ -250,22 +261,21 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
     }
 
     /*--------------------------- Protected ---------------------------------*/
-    protected boolean hasBlob(DocumentModel doc) {
+    protected Blob getBlob(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s is not a BlobHolder.", doc.getId()));
             }
-            return false;
+            return null;
         }
         Blob blob = bh.getBlob();
         if (blob == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s is a BlobHolder without a blob.", doc.getId()));
             }
-            return false;
         }
-        return true;
+        return blob;
     }
 
 }
