@@ -113,7 +113,7 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
     let pageProviderName = cv ? cv.pageProviderName : (pp || 'spreadsheet_query');
 
     // default columns
-    if (!resultLayoutName && !resultColumns) {
+    if (!resultLayoutName && (!resultColumns || resultColumns.length === 0)) {
       resultColumns = [
         { label: 'Title', field: 'dc:title' },
         { label: 'Modified', field: 'dc:modified'},
