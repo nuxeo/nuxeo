@@ -250,4 +250,11 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     public void doCheckOut(Document doc) {
         service.doCheckOut(doc);
     }
+
+    @Override
+    public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument,
+            DocumentModel currentDocument) {
+        return service.getOptionForAutoVersioning(previousDocument, currentDocument);
+    }
+
 }

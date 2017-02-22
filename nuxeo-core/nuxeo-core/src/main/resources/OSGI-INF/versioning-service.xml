@@ -112,4 +112,12 @@
       class="org.nuxeo.ecm.core.versioning.DefaultVersioningRuleDescriptor" />
 
   </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="versioninglistener" async="false" postCommit="false" priority="1000"
+              class="org.nuxeo.ecm.core.versioning.VersioningListener">
+      <event>beforeDocumentModification</event>
+    </listener>
+  </extension>
+
 </component>

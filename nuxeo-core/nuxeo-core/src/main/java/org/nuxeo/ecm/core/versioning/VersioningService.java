@@ -156,4 +156,11 @@ public interface VersioningService {
      */
     void doCheckOut(Document doc);
 
+    /**
+     * TODO BLABLA
+     *
+     * @since 9.1
+     */
+    VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument);
+
 }
