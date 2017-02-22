@@ -24,16 +24,12 @@ package org.nuxeo.functionaltests.pages.tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.List;
-
-import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
+import org.nuxeo.functionaltests.contentView.ContentViewSelectionActions;
+import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
 import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -45,7 +41,7 @@ import org.openqa.selenium.support.FindBy;
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
  * children.
  */
-public class ContentTabSubPage extends DocumentBasePage {
+public class ContentTabSubPage extends AbstractContentTabSubPage {
 
     /**
      * @since 8.3
@@ -59,6 +55,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     /**
      * @since 8.3
+     * @deprecated since 9.1 not used anymore as we now have {@link ContentViewSelectionActions#delete()}
      */
     public static final String DELETE = "Delete";
 
@@ -67,42 +64,37 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public static final String ADD_TO_WORKLIST = "Add to Worklist";
 
+    /**
+     * @since 9.1
+     */
+    public static final String ADD_TO_COLLECTION = "Add to collection";
+
     @Required
     @FindBy(id = "document_content")
     WebElement documentContentForm;
 
+    @Required
+    @FindBy(id = "cv_document_content_0_panel")
+    WebElement contentView;
+
     @FindBy(linkText = "New")
     WebElement newButton;
-
-    @FindBy(id = "cv_document_content_0_quickFilterForm:nxl_document_content_filter:nxw_search_title")
-    WebElement filterInput;
-
-    @FindBy(id = "cv_document_content_0_quickFilterForm:submitFilter")
-    WebElement filterButton;
-
-    @FindBy(id = "cv_document_content_0_resetFilterForm:resetFilter")
-    WebElement clearFilterButton;
 
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
     }
 
-    protected ContentViewElement getElement() {
-        return AbstractTest.getWebFragment(By.id("cv_document_content_0_panel"), ContentViewElement.class);
-    }
-
-    public List<WebElement> getChildDocumentRows() {
-        return getElement().getItems();
+    @Override
+    protected WebElement getContentViewElement() {
+        return contentView;
     }
 
     /**
-     * Clicking on one of the child with the title.
-     *
-     * @param documentTitle the document title
+     * @since 9.1 use {@link #getContentView()} instead.
      */
-    public DocumentBasePage goToDocument(String documentTitle) {
-        getElement().clickOnItemTitle(documentTitle);
-        return asPage(DocumentBasePage.class);
+    @Deprecated
+    protected ContentViewElement getElement() {
+        return getContentView();
     }
 
     /**
@@ -122,37 +114,25 @@ public class ContentTabSubPage extends DocumentBasePage {
         return asPage(pageClassToProxy);
     }
 
-    public DocumentBasePage removeDocument(String documentTitle) {
-        getElement().checkByTitle(documentTitle);
-        deleteSelectedDocuments();
-        return asPage(DocumentBasePage.class);
-    }
-
+    /**
+     * @deprecated since 9.1 no need - use {@link ContentViewElement#selectByTitle(String...)} then the action instead
+     */
+    @Deprecated
     protected void deleteSelectedDocuments() {
-        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(DELETE));
-        Alert alert = driver.switchTo().alert();
-        assertEquals("Delete selected document(s)?", alert.getText());
-        alert.accept();
+        getContentView().getSelectionActions().delete();
     }
 
-    public DocumentBasePage addToWorkList(String documentTitle) {
-        getElement().checkByTitle(documentTitle);
-        waitUntilEnabledAndClick(getElement().getSelectionActionByTitle(ADD_TO_WORKLIST));
-        return asPage(DocumentBasePage.class);
+    public ContentTabSubPage addToWorkList(String documentTitle) {
+        return getContentView().selectByTitle(documentTitle).clickOnActionByTitle(ADD_TO_WORKLIST,
+                ContentTabSubPage.class);
     }
 
     /**
      * Removes all documents visible on current page.
      */
+    @Override
     public ContentTabSubPage removeAllDocuments() {
-        ContentViewElement cv = getElement();
-        if (cv.getItems().size() == 0) {
-            // no document to remove
-            return this;
-        }
-        cv.checkAllItems();
-        deleteSelectedDocuments();
-        return asPage(ContentTabSubPage.class);
+        return removeAllDocuments(ContentTabSubPage.class);
     }
 
     /**
@@ -160,8 +140,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      *
      * @param filter the string to filter
      * @since 5.7.2
-     * @deprecated since 9.1 use {@link ContentTabSubPage#filterDocument(String)} instead and assert in your
-     * test the expected number of results.
+     * @deprecated since 9.1 use {@link ContentTabSubPage#filterDocument(String)} instead and assert in your test the
+     *             expected number of results.
      */
     @Deprecated
     public ContentTabSubPage filterDocument(final String filter, final int expectedNbOfDisplayedResult,
@@ -177,21 +157,23 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param filter the string to filter
      * @since 9.1
      */
+    @Override
     public ContentTabSubPage filterDocument(final String filter) {
-        filterInput.clear();
-        filterInput.sendKeys(filter);
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        filterButton.click();
-        arm.end();
-        return asPage(ContentTabSubPage.class);
+        return filterDocument(filter, ContentTabSubPage.class);
+    }
+
+    @Override
+    public ContentTabSubPage clearFilter() {
+        return clearFilter(ContentTabSubPage.class);
     }
 
     /**
      * Reset the filter.
      *
      * @since 5.7.2
+     * @deprecated since 9.1 use {@link #clearFilter()} instead and assert the expected number of result in your test
      */
+    @Deprecated
     public ContentTabSubPage clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
         Locator.waitUntilEnabledAndClick(clearFilterButton);
         Locator.waitUntilGivenFunction(driver -> {
@@ -210,7 +192,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 8.1
      */
     public ContentTabSubPage selectByIndex(int... indexes) {
-        getElement().checkByIndex(indexes);
+        getContentView().selectByIndex(indexes);
         return asPage(ContentTabSubPage.class);
     }
 
@@ -231,7 +213,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 8.1
      */
     public ContentTabSubPage selectByTitle(String... titles) {
-        getElement().checkByTitle(titles);
+        getContentView().selectByTitle(titles);
         return asPage(ContentTabSubPage.class);
     }
 
@@ -242,9 +224,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage copyByIndex(int... indexes) {
-        getElement().checkByIndex(indexes);
-        getElement().getSelectionActionByTitle(COPY).click();
-        return asPage(ContentTabSubPage.class);
+        return getContentView().selectByIndex(indexes).clickOnActionByTitle(COPY, ContentTabSubPage.class);
     }
 
     /**
@@ -254,9 +234,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage copyByTitle(String... titles) {
-        getElement().checkByTitle(titles);
-        getElement().getSelectionActionByTitle(COPY).click();
-        return asPage(ContentTabSubPage.class);
+        return getContentView().selectByTitle(titles).clickOnActionByTitle(COPY, ContentTabSubPage.class);
     }
 
     /**
@@ -265,28 +243,13 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {
-        getElement().getSelectionActionByTitle(PASTE).click();
-        return asPage(ContentTabSubPage.class);
+        return getContentView().getSelectionActions().clickOnActionByTitle(PASTE, ContentTabSubPage.class);
     }
 
-    /**
-     * @since 5.9.3
-     */
-    public DocumentBasePage goToDocument(final int index) {
-        waitUntilEnabledAndClick(getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")));
-        return asPage(DocumentBasePage.class);
-    }
-
-    /**
-     * @since 8.3
-     */
-    public boolean hasDocumentLink(String title) {
-        try {
-            WebElement element = documentContentForm.findElement(By.linkText(title));
-            return element != null;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+    public AddAllToCollectionForm addToCollectionByIndex(int... indexes) {
+        getContentView().selectByIndex(indexes).clickOnActionByTitle(ADD_TO_COLLECTION);
+        WebElement elt = AbstractPage.getFancyBoxContent();
+        return getWebFragment(elt, AddAllToCollectionForm.class);
     }
 
     /**
