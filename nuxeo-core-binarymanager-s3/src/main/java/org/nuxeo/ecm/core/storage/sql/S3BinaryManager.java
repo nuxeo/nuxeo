@@ -469,7 +469,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 // Check ETag it is by default MD5 if not multipart
                 if (!isEncrypted && !digest.equals(download.getObjectMetadata().getETag())) {
                     // In case of multipart it will happen, verify the downloaded file
-                    String currentDigest = DigestUtils.md5Hex(new FileInputStream(file));
+                    String currentDigest = "";
+                    try(FileInputStream input = new FileInputStream(file)) {
+                        currentDigest = DigestUtils.md5Hex(input);
+                    }
                     if (!currentDigest.equals(digest)) {
                         log.error("Invalid ETag in S3, currentDigest=" + currentDigest + " expectedDigest=" + digest);
                         throw new IOException("Invalid S3 object, it is corrupted expected digest is " + digest + " got " + currentDigest);
@@ -482,7 +485,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 }
                 return false;
             } catch (InterruptedException e) {
-                return false;
+                // reset interrupted status
+                Thread.currentThread().interrupt();
+                // continue interrupt
+                throw new RuntimeException(e);
             } finally {
                 if (log.isDebugEnabled()) {
                     long dtms = System.currentTimeMillis() - t0;
