@@ -19,13 +19,13 @@
     layout="block" styleClass="pageNavigationControls"
     rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
 
-    <a4j:commandButton action="#{provider.rewind}"
+    <a4j:commandButton action="#{provider.firstPage}"
                      alt="#{messages['command.navigation.rewind']}"
                      image="/icons/navigation_first.png"
                      render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </a4j:commandButton>
-    <a4j:commandButton action="#{provider.previous}"
+    <a4j:commandButton action="#{provider.previousPage}"
                      alt="#{messages['command.navigation.previous']}"
                      image="/icons/navigation_previous.png"
                      render="#{contentIdToBeReRendered}" >
@@ -37,14 +37,14 @@
          value="#{(provider.resultsCount ge 0 or provider.currentPageIndex ge provider.pageLimit) ? provider.currentPageStatus : nxu:translate('command.navigation.status.unknownPageAmount', provider.currentPageIndex + 1, provider.pageLimit)}" />
     </h:panelGroup>
 
-    <a4j:commandButton action="#{provider.next}"
+    <a4j:commandButton action="#{provider.nextPage}"
                      alt="#{messages['command.navigation.next']}"
                      image="/icons/navigation_next.png"
                      render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
     </a4j:commandButton>
 
-    <a4j:commandButton action="#{provider.last}"
+    <a4j:commandButton action="#{provider.lastPage}"
                      alt="#{messages['command.navigation.fastforward']}"
                      image="/icons/navigation_last.png"
                      render="#{contentIdToBeReRendered}" >
