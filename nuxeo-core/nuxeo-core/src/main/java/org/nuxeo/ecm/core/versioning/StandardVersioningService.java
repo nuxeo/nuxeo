@@ -325,4 +325,9 @@ public class StandardVersioningService implements ExtendableVersioningService {
         this.defaultVersioningRule = defaultVersioningRule;
     }
 
+    @Override
+    public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
+        return VersioningOption.MINOR;
+    }
+
 }
