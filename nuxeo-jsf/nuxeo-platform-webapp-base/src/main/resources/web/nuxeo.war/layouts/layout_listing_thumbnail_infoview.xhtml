@@ -21,17 +21,17 @@
   <!-- slideshow init -->
   <nxu:set var="cvpcfp"
     value="#{nxu:jsfTagIdEscape(contentViewPanelId)}">
-    <a4j:jsFunction name="#{cvpcfp}NP" action="#{provider.next()}"
+    <a4j:jsFunction name="#{cvpcfp}NP" action="#{provider.nextPage()}"
       render="#{contentIdToBeReRendered}"
       oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();" />
-    <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previous()}"
+    <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previousPage()}"
       render="#{contentIdToBeReRendered}"
       oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
 
-    <a4j:jsFunction name="#{cvpcfp}_infoViewNextPage" action="#{provider.next()}"
+    <a4j:jsFunction name="#{cvpcfp}_infoViewNextPage" action="#{provider.nextPage()}"
       render="#{contentIdToBeReRendered}"
       oncomplete="nuxeo.infoView.openFirstInfoView();" />
-    <a4j:jsFunction name="#{cvpcfp}_infoViewPreviousPage" action="#{provider.previous()}"
+    <a4j:jsFunction name="#{cvpcfp}_infoViewPreviousPage" action="#{provider.previousPage()}"
       render="#{contentIdToBeReRendered}"
       oncomplete="nuxeo.infoView.openLastInfoView();" />
 
