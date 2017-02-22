@@ -111,8 +111,9 @@ public class ITSelectAndFilterTest extends AbstractTest {
         assertEquals(1, trelements.size());
 
         // Reset filter
-        workspacePage.getContentTab().clearFilter(2, AJAX_TIMEOUT_SECONDS * 1000);
+        workspacePage.getContentTab().clearFilter();
         Locator.waitUntilElementNotPresent(By.id(RESET_FILTER_XPATH));
+        assertEquals(2, workspacePage.getContentTab().getChildDocumentRows().size());
 
         trelements = contentTabSubPage.getChildDocumentRows();
 

@@ -19,6 +19,15 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -46,17 +55,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test Collection feature.
@@ -166,9 +164,7 @@ public class ITCollectionsTest extends AbstractTest {
                                                                     .goToDocument(TEST_WORKSPACE_TITLE)
                                                                     .getContentTab();
 
-        workspaceContentTab.selectByIndex(0, 1);
-
-        AddAllToCollectionForm addAllToCollectionForm = workspaceContentTab.getAddAllToCollectionPopup();
+        AddAllToCollectionForm addAllToCollectionForm = workspaceContentTab.addToCollectionByIndex(0, 1);
 
         addAllToCollectionForm.setCollection(COLLECTION_NAME_2);
 
@@ -230,9 +226,9 @@ public class ITCollectionsTest extends AbstractTest {
 
         assertEquals(3, contentTabSubPage.getChildDocumentRows().size());
 
-        contentTabSubPage = contentTabSubPage.goToDocument(1).getCollectionContentTab();
+        collectionContentTabSubPage = contentTabSubPage.goToDocument(1).getCollectionContentTab();
 
-        assertEquals(2, contentTabSubPage.getChildDocumentRows().size());
+        assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // TODO test collection remove
 

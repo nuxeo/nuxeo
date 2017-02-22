@@ -20,49 +20,49 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
+
 import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.AjaxRequestManager;
-import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * Section content tab.
  *
  * @since 8.3
  */
-public class SectionContentTabSubPage extends DocumentBasePage {
+public class SectionContentTabSubPage extends AbstractContentTabSubPage {
 
+    /**
+     * @deprecated since 9.1 not used
+     */
+    @Deprecated
     @Required
     @FindBy(id = "section_content")
     WebElement contentForm;
 
+    @Required
+    @FindBy(id = "cv_section_content_0_panel")
+    WebElement contentView;
+
     @FindBy(linkText = "New")
     WebElement newButton;
-
-    @FindBy(id = "nxw_contentViewActions_refreshContentView_form:nxw_contentViewActions_refreshContentView")
-    WebElement refreshContentLink;
 
     public SectionContentTabSubPage(WebDriver driver) {
         super(driver);
     }
 
-    public ContentViewElement getContentView() {
-        return AbstractTest.getWebFragment(By.id("cv_section_content_0_panel"), ContentViewElement.class);
+    @Override
+    protected WebElement getContentViewElement() {
+        return contentView;
     }
 
     public DublinCoreCreationDocumentFormPage getSectionCreatePage() {
@@ -75,41 +75,13 @@ public class SectionContentTabSubPage extends DocumentBasePage {
         return asPage(DublinCoreCreationDocumentFormPage.class);
     }
 
-    public DocumentBasePage removeDocument(String documentTitle) {
-        getContentView().checkByTitle(documentTitle).getSelectionActionByTitle(ContentTabSubPage.DELETE).click();
-        Alert alert = driver.switchTo().alert();
-        assertEquals("Delete selected document(s)?", alert.getText());
-        alert.accept();
-        return asPage(DocumentBasePage.class);
-    }
-
     public SectionContentTabSubPage unpublishDocument(String documentTitle) {
-        getContentView().checkByTitle(documentTitle).getSelectionActionByTitle("Unpublish").click();
+        getContentView().selectByTitle(documentTitle).clickOnActionByTitle("Unpublish");
         return asPage(SectionContentTabSubPage.class);
     }
 
     protected ContentViewElement getElement() {
         return AbstractTest.getWebFragment(By.id("cv_section_content_0_panel"), ContentViewElement.class);
-    }
-
-    public DocumentBasePage goToDocument(String documentTitle) {
-        getElement().clickOnItemTitle(documentTitle);
-        return asPage(DocumentBasePage.class);
-    }
-
-    public DocumentBasePage goToDocumentWithVersion(String title, String version) {
-        WebElement rowElement = getContentView().getItemWithTitleAndVersion(title, version);
-        Locator.findElementWaitUntilEnabledAndClick(rowElement, By.linkText(title));
-        return asPage(DocumentBasePage.class);
-    }
-
-    public boolean hasDocumentLink(String title) {
-        try {
-            WebElement element = getElement().findElement(By.linkText(title));
-            return element != null;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
     }
 
     /**
@@ -127,10 +99,7 @@ public class SectionContentTabSubPage extends DocumentBasePage {
      * @since 8.3
      */
     public SectionContentTabSubPage refreshContent() {
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        refreshContentLink.click();
-        arm.end();
+        getContentView().getUpperActions().refreshContent();
         return asPage(SectionContentTabSubPage.class);
     }
 

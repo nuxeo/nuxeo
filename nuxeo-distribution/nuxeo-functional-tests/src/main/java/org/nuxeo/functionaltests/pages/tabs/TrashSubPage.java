@@ -129,6 +129,7 @@ public class TrashSubPage extends AbstractPage {
      * @since 8.3
      */
     public TrashSubPage purgeDocument(String... titles) {
+//        return getElement().selectByTitle(titles).delete(TrashSubPage.class);
         getElement().checkByTitle(titles);
         deleteSelectedDocuments();
         return asPage(TrashSubPage.class);

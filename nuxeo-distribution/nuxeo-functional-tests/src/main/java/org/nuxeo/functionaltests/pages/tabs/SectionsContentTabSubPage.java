@@ -27,7 +27,11 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @since 8.3
  */
-public class SectionsContentTabSubPage extends ContentTabSubPage {
+public class SectionsContentTabSubPage extends AbstractContentTabSubPage {
+
+    @Required
+    @FindBy(id = "cv_section_content_0_panel")
+    WebElement contentView;
 
     @Required
     @FindBy(id = "nxw_newSection_form:nxw_newSection")
@@ -35,6 +39,11 @@ public class SectionsContentTabSubPage extends ContentTabSubPage {
 
     public SectionsContentTabSubPage(WebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    protected WebElement getContentViewElement() {
+        return contentView;
     }
 
     public DublinCoreCreationDocumentFormPage getSectionCreatePage() {
