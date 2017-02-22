@@ -34,12 +34,13 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -64,12 +65,9 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3EncryptionClient;
-import com.amazonaws.services.s3.internal.ServiceUtils;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
@@ -81,9 +79,10 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
+import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.amazonaws.services.s3.transfer.model.UploadResult;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -113,7 +112,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String BUCKET_REGION_PROPERTY = "region";
 
-    public static final String DEFAULT_BUCKET_REGION = null; // US East
+    public static final String DEFAULT_BUCKET_REGION = "us-east-1"; // US East
 
     public static final String AWS_ID_PROPERTY = "awsid";
 
@@ -245,7 +244,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         // set up credentials
         if (isBlank(awsID) || isBlank(awsSecret)) {
-            awsCredentialsProvider = new InstanceProfileCredentialsProvider();
+            awsCredentialsProvider = InstanceProfileCredentialsProvider.getInstance();
             try {
                 awsCredentialsProvider.getCredentials();
             } catch (AmazonClientException e) {
@@ -327,26 +326,27 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
         // Try to create bucket if it doesn't exist
         if (!isEncrypted) {
-            amazonS3 = new AmazonS3Client(awsCredentialsProvider, clientConfiguration);
+            amazonS3 = AmazonS3ClientBuilder.standard()
+                            .withCredentials(awsCredentialsProvider)
+                            .withClientConfiguration(clientConfiguration)
+                            .withRegion(bucketRegion)
+                            .build();
         } else {
-            amazonS3 = new AmazonS3EncryptionClient(awsCredentialsProvider, new StaticEncryptionMaterialsProvider(
-                    encryptionMaterials), clientConfiguration, cryptoConfiguration);
+            amazonS3 = AmazonS3EncryptionClientBuilder.standard()
+                            .withClientConfiguration(clientConfiguration)
+                            .withCryptoConfiguration(cryptoConfiguration)
+                            .withCredentials(awsCredentialsProvider)
+                            .withRegion(bucketRegion)
+                            .withEncryptionMaterials(new StaticEncryptionMaterialsProvider(encryptionMaterials))
+                            .build();
         }
         if (isNotBlank(endpoint)) {
             amazonS3.setEndpoint(endpoint);
         }
 
-        // Set region explicitely for regions that reguire Version 4 signature
-        ArrayList<String> V4_ONLY_REGIONS = new ArrayList<String>();
-        V4_ONLY_REGIONS.add("eu-central-1");
-        V4_ONLY_REGIONS.add("ap-northeast-2");
-        if (V4_ONLY_REGIONS.contains(bucketRegion)) {
-            amazonS3.setRegion(Region.getRegion(Regions.fromName(bucketRegion)));
-        }
-
         try {
             if (!amazonS3.doesBucketExist(bucketName)) {
-                amazonS3.createBucket(bucketName, bucketRegion);
+                amazonS3.createBucket(bucketName);
                 amazonS3.setBucketAcl(bucketName, CannedAccessControlList.Private);
             }
         } catch (AmazonClientException e) {
@@ -365,7 +365,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             directDownloadExpire = dde;
         }
 
-        transferManager = new TransferManager(amazonS3);
+        transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         abortOldUploads();
     }
 
@@ -415,11 +415,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 t0 = System.currentTimeMillis();
                 log.debug("storing blob " + digest + " to S3");
             }
-            String etag;
             String key = bucketNamePrefix + digest;
             try {
-                ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, key);
-                etag = metadata.getETag();
+                amazonS3.getObjectMetadata(bucketName, key);
                 if (log.isDebugEnabled()) {
                     log.debug("blob " + digest + " is already in S3");
                 }
@@ -441,8 +439,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 }
                 Upload upload = transferManager.upload(request);
                 try {
-                    UploadResult result = upload.waitForUploadResult();
-                    etag = result.getETag();
+                    upload.waitForUploadResult();
                 } catch (AmazonClientException ee) {
                     throw new IOException(ee);
                 } catch (InterruptedException ee) {
@@ -457,17 +454,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     }
                 }
             }
-            // check transfer went ok
-            if (!isEncrypted && !etag.equals(digest) && !ServiceUtils.isMultipartUploadETag(etag)) {
-                // When the blob is not encrypted by S3, the MD5 remotely
-                // computed by S3 and passed as a Etag should match the locally
-                // computed MD5 digest.
-                // This check cannot be done when encryption is enabled unless
-                // we could replicate that encryption locally just for that
-                // purpose which would add further load and complexity on the
-                // client.
-                throw new IOException("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
-            }
         }
 
         @Override
@@ -478,20 +464,24 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 log.debug("fetching blob " + digest + " from S3");
             }
             try {
-
-                ObjectMetadata metadata = amazonS3.getObject(
-                        new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
-                // check ETag
-                String etag = metadata.getETag();
-                if (!isEncrypted && !etag.equals(digest) && !ServiceUtils.isMultipartUploadETag(etag)) {
-                    log.error("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
-                    return false;
+                Download download = transferManager.download(new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
+                download.waitForCompletion();
+                // Check ETag it is by default MD5 if not multipart
+                if (!isEncrypted && !digest.equals(download.getObjectMetadata().getETag())) {
+                    // In case of multipart it will happen, verify the downloaded file
+                    String currentDigest = DigestUtils.md5Hex(new FileInputStream(file));
+                    if (!currentDigest.equals(digest)) {
+                        log.error("Invalid ETag in S3, currentDigest=" + currentDigest + " expectedDigest=" + digest);
+                        throw new IOException("Invalid S3 object, it is corrupted expected digest is " + digest + " got " + currentDigest);
+                    }
                 }
                 return true;
             } catch (AmazonClientException e) {
                 if (!isMissingKey(e)) {
                     throw new IOException(e);
                 }
+                return false;
+            } catch (InterruptedException e) {
                 return false;
             } finally {
                 if (log.isDebugEnabled()) {

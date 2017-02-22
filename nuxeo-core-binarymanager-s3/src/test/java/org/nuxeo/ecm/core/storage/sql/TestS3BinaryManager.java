@@ -163,6 +163,27 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     @Override
     @Test
+    public void testStoreFile() throws Exception {
+        // Run normal test
+        super.testStoreFile();
+        // Run corruption test
+        String key = binaryManager.bucketNamePrefix + CONTENT_MD5;
+        binaryManager.amazonS3.putObject(binaryManager.bucketName, key, "Georges Abitbol");
+        binaryManager.fileCache.clear();
+        Boolean exceptionOccured = false;
+        try {
+            binaryManager.getBinary(CONTENT_MD5).getStream();
+        } catch (RuntimeException e) {
+            // Should not be wrapped in a RuntimeException as it declare the IOException
+            if (e.getCause() instanceof IOException) {
+                exceptionOccured = true;
+            }
+        }
+        assertTrue("IOException should occured as content is corrupted", exceptionOccured);
+    }
+    
+    @Override
+    @Test
     public void testBinaryManagerGC() throws Exception {
         if (binaryManager.bucketNamePrefix.isEmpty()) {
             // no additional test if no bucket name prefix
