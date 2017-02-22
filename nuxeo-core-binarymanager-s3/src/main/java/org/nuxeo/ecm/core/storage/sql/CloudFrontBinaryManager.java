@@ -38,7 +38,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.PEM;
 import com.amazonaws.auth.RSA;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
-import com.amazonaws.services.cloudfront.CloudFrontUrlSigner.Protocol;
+import com.amazonaws.services.cloudfront.util.SignerUtils.Protocol;
 import com.amazonaws.util.IOUtils;
 
 /**
@@ -115,7 +115,7 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
     }
 
     private String buildResourcePath(String s3ObjectKey) {
-        return protocol != CloudFrontUrlSigner.Protocol.http && protocol != CloudFrontUrlSigner.Protocol.https
+        return protocol != Protocol.http && protocol != Protocol.https
                 ? s3ObjectKey : protocol + "://" + distributionDomain + "/" + s3ObjectKey;
     }
 

@@ -469,8 +469,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 // Check ETag it is by default MD5 if not multipart
                 if (!isEncrypted && !digest.equals(download.getObjectMetadata().getETag())) {
                     // In case of multipart it will happen, verify the downloaded file
-                    String currentDigest = "";
-                    try(FileInputStream input = new FileInputStream(file)) {
+                    String currentDigest;
+                    try (FileInputStream input = new FileInputStream(file)) {
                         currentDigest = DigestUtils.md5Hex(input);
                     }
                     if (!currentDigest.equals(digest)) {
