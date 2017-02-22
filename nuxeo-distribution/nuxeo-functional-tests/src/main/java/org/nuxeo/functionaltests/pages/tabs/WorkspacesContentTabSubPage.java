@@ -28,7 +28,11 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
  */
-public class WorkspacesContentTabSubPage extends ContentTabSubPage {
+public class WorkspacesContentTabSubPage extends AbstractContentTabSubPage {
+
+    @Required
+    @FindBy(id = "cv_document_content_0_panel")
+    WebElement contentView;
 
     @Required
     @FindBy(id = "nxw_newWorkspace_form:nxw_newWorkspace")
@@ -36,6 +40,11 @@ public class WorkspacesContentTabSubPage extends ContentTabSubPage {
 
     public WorkspacesContentTabSubPage(WebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    protected WebElement getContentViewElement() {
+        return contentView;
     }
 
     public WorkspaceCreationFormPage getWorkspaceCreatePage() {

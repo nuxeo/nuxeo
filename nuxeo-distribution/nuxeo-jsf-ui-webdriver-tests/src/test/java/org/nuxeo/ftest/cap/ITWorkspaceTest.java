@@ -92,7 +92,8 @@ public class ITWorkspaceTest extends AbstractTest {
 
         // Delete it as Test User
         DocumentBasePage workspacesPage = loginAsTestUser().goToWorkspaces().goToDocumentWorkspaces();
-        ContentTabSubPage contentTabPage = workspacesPage.getContentTab().selectByTitle(WORKSPACE_TITLE);
+        ContentTabSubPage contentTabPage = workspacesPage.getContentTab();
+        contentTabPage.getContentView().selectByTitle(WORKSPACE_TITLE);
         WebElement deleteLink = driver.findElementById(
                 "document_content_buttons:nxw_CURRENT_SELECTION_TRASH_form:nxw_CURRENT_SELECTION_TRASH");
         assertTrue(deleteLink.isEnabled());
@@ -106,7 +107,7 @@ public class ITWorkspaceTest extends AbstractTest {
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.dismiss();
         // De-select workspace to delete as removeDocument() select it
-        contentTabPage = contentTabPage.getContentTab().selectByTitle(WORKSPACE_TITLE);
+        contentTabPage.getContentView().unselectByTitle(WORKSPACE_TITLE);
         contentTabPage = contentTabPage.removeDocument(WORKSPACE_TITLE).asPage(ContentTabSubPage.class);
         assertFalse(contentTabPage.getChildDocumentRows()
                                   .stream()

@@ -20,6 +20,13 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
+import static org.nuxeo.functionaltests.Constants.FORUM_TYPE;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,14 +75,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
-import static org.nuxeo.functionaltests.Constants.FORUM_TYPE;
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * The nuxeo main document base page
@@ -443,7 +442,9 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * @since 5.9.3
+     * @deprecated since 9.1 use actions from {@link ContentTabSubPage} instead.
      */
+    @Deprecated
     public AddAllToCollectionForm getAddAllToCollectionPopup() {
         Locator.waitUntilGivenFunctionIgnoring(
                 driver -> StringUtils.isBlank(
