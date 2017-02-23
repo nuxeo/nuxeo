@@ -129,10 +129,6 @@ public class ICanRunTest extends ScenarioTest<Given, When, Then> {
             return self();
         }
 
-        <T extends Stage<T>> T and(T t) {
-            return t;
-        }
-
     }
 
     @Test

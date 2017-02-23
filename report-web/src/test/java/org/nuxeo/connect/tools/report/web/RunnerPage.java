@@ -20,18 +20,14 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.nuxeo.runtime.test.runner.web.WebPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.ui.Select;
 
-/**
- *
- *
- */
-public class ReportRunnerPage extends WebPage {
+
+public class RunnerPage extends WebPage {
 
     @FindBy(how = How.NAME, using = "reports")
     protected final WebElement reports = null;
@@ -50,8 +46,9 @@ public class ReportRunnerPage extends WebPage {
         return new Select(reports).getAllSelectedOptions().stream().map(WebElement::getText).collect(Collectors.toSet());
     }
 
-    public ReportRunnerPage submit() {
+    public RunnerPage submit() {
         findElement(By.xpath("//input")).submit();
-        return getPage(ReportRunnerPage.class);
+        return getPage(RunnerPage.class);
     }
+
 }

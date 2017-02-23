@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,10 @@
  */
 package org.nuxeo.connect.tools.report.web;
 
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.How;
+public class WebPage extends org.nuxeo.runtime.test.runner.web.WebPage {
 
-
-public class RootPage extends WebPage {
-
-    @FindBy(how = How.PARTIAL_LINK_TEXT, using = "report")
-    WebElement link;
-
-    RunnerPage navigateRunner() {
-        link.click();
-        return getPage(RunnerPage.class);
+    @Override
+    public String toString() {
+        return new WebPageFormatter().format(this);
     }
 }
