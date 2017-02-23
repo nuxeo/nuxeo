@@ -20,31 +20,6 @@
     <module>nuxeo-platform-spreadsheet-web-ui</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-web</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-spreadsheet-web-ui</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>
