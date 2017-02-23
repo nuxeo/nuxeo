@@ -927,4 +927,17 @@ public class TestAutomaticIndexing {
 
     }
 
+
+    @Test
+    public void sortOnUnmappedField() throws Exception {
+
+        // sort on a field that does not exist on the mapping and not present in the index
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document ORDER BY dc:source"));
+        Assert.assertEquals(0, ret.totalSize());
+
+        // sort on internal field
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document ORDER BY ecm:pos"));
+        Assert.assertEquals(0, ret.totalSize());
+
+    }
 }

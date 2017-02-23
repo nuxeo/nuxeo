@@ -42,6 +42,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -268,10 +269,32 @@ public class NxQueryBuilder {
         ret = new SortBuilder[sortInfos.size()];
         int i = 0;
         for (SortInfo sortInfo : sortInfos) {
+            String fieldType = guessFieldType(sortInfo.getSortColumn());
             ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn()).order(
-                    sortInfo.getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
+                    sortInfo.getSortAscending() ? SortOrder.ASC : SortOrder.DESC)
+                    .unmappedType(fieldType);
         }
         return ret;
+    }
+
+    protected String guessFieldType(String field) {
+        String fieldType;
+        try {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            fieldType = schemaManager.getField(field).getType().getName();
+        } catch (NullPointerException e) {
+            // probably an internal field without schema
+            fieldType = "string";
+        }
+        switch (fieldType) {
+            case "integer":
+            case "long":
+            case "boolean":
+            case "date":
+            case "string":
+                return fieldType;
+        }
+        return "string";
     }
 
     protected QueryBuilder getAggregateFilter() {
