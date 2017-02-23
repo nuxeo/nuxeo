@@ -25,7 +25,7 @@ The documentation for Nuxeo Spreadsheet is available in our Documentation Center
 
 ### Following Project QA Status
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-spreadsheet-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-spreadsheet-master/)
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=master/addons_nuxeo-platform-spreadsheet-master)](https://qa.nuxeo.org/jenkins/job/master/job/addons_nuxeo-platform-spreadsheet-master/)
 
 ### Reporting Issues
 You can follow the developments in the Nuxeo Platform project of our JIRA bug tracker, which includes a Spreadsheet component: [https://jira.nuxeo.com/browse/NXP/component/14505](https://jira.nuxeo.com/browse/NXP/component/14505).
