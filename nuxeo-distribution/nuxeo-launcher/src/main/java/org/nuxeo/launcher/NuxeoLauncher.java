@@ -1281,11 +1281,10 @@ public abstract class NuxeoLauncher {
                         gzip ? ".gz" : ""));
             }
             log.info("Dumping connect report in " + outputpath);
-            OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-            if (gzip) {
-                output = new GZIPOutputStream(output, 512, true);
+            try (OutputStream output = Files.newOutputStream(outputpath, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
+                commandSucceeded = launcher.dumpConnectReport(gzip ? new GZIPOutputStream(output) : output,
+                        prettyprinting);
             }
-            commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
         } else {
             log.error("Unknown command " + launcher.command);
             printLongHelp();
@@ -2132,9 +2131,9 @@ public abstract class NuxeoLauncher {
             serverStarted = isRunning();
             if (pid != null) {
                 File pidFile = new File(configurationGenerator.getPidDir(), "nuxeo.pid");
-                FileWriter writer = new FileWriter(pidFile);
-                writer.write(pid);
-                writer.close();
+                try (FileWriter writer = new FileWriter(pidFile)) {
+                    writer.write(pid);
+                }
             }
         } catch (ConfigurationException e) {
             errorValue = EXIT_CODE_NOT_CONFIGURED;
