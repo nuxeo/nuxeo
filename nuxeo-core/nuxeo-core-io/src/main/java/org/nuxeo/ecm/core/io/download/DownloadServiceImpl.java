@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -323,6 +324,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             String filename = downloadBlobInfo.filename;
             DocumentModel doc = getDownloadDocument(downloadBlobInfo.repository, downloadBlobInfo.docId);
             if (doc == null) {
+                // Send a security exception to force authentication, if the current user is anonymous
+                Principal principal = req.getUserPrincipal();
+                if (principal instanceof NuxeoPrincipal) {
+                    NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
+                    if (nuxeoPrincipal.isAnonymous()) {
+                        throw new DocumentSecurityException("Authentication is needed for downloading the blob");
+                    }
+                }
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
                 return;
             }

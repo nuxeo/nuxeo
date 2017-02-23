@@ -19,8 +19,11 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +39,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoException
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
 
 public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
@@ -66,9 +70,18 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         }
 
         Principal principal = request.getUserPrincipal();
-        NuxeoPrincipal nuxeoPrincipal = null;
+        if (principal == null) {
+            LoginContext loginContext = (LoginContext) request.getAttribute(LOGINCONTEXT_KEY);
+            Subject subject = loginContext.getSubject();
+            if (subject != null) {
+                Set<Principal> principals = subject.getPrincipals();
+                if (principals != null && !principals.isEmpty()) {
+                    principal = (Principal) principals.toArray()[0];
+                }
+            }
+        }
         if (principal instanceof NuxeoPrincipal) {
-            nuxeoPrincipal = (NuxeoPrincipal) principal;
+            NuxeoPrincipal nuxeoPrincipal = (NuxeoPrincipal) principal;
             // redirect to login than to requested page
             if (nuxeoPrincipal.isAnonymous()) {
                 response.resetBuffer();
