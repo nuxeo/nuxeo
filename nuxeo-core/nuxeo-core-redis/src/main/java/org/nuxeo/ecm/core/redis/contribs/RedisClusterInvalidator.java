@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
-
 import redis.clients.jedis.JedisPubSub;
 
 /**
@@ -113,7 +112,7 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
         subscriberThread.start();
         try {
             if (!subscribeLatch.await(TIMEOUT_SUBSCRIBE_SECOND, TimeUnit.SECONDS)) {
-                log.error("Redis channel subscripion timeout after " + TIMEOUT_SUBSCRIBE_SECOND
+                log.error("Redis channel subscription timeout after " + TIMEOUT_SUBSCRIBE_SECOND
                         + "s, continuing but this node may not receive cluster invalidations");
             }
         } catch (InterruptedException e) {
@@ -124,8 +123,7 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     protected void subscribeToInvalidationChannel() {
         log.info("Subscribing to channel: " + getChannelName());
-        redisExecutor.execute(jedis -> {
-            jedis.subscribe(new JedisPubSub() {
+        redisExecutor.subscribe(new JedisPubSub() {
                 @Override
                 public void onSubscribe(String channel, int subscribedChannels) {
                     super.onSubscribe(channel, subscribedChannels);
@@ -153,8 +151,6 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
                     }
                 }
             }, getChannelName());
-            return null;
-        });
     }
 
     protected String getChannelName() {

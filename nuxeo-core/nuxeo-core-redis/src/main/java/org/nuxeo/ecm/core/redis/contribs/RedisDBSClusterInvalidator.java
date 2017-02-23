@@ -112,7 +112,7 @@ public class RedisDBSClusterInvalidator implements DBSClusterInvalidator {
         subscriberThread.start();
         try {
             if (!subscribeLatch.await(TIMEOUT_SUBSCRIBE_SECOND, TimeUnit.SECONDS)) {
-                log.error("Redis channel subscripion timeout after " + TIMEOUT_SUBSCRIBE_SECOND
+                log.error("Redis channel subscription timeout after " + TIMEOUT_SUBSCRIBE_SECOND
                         + "s, continuing but this node may not receive cluster invalidations");
             }
         } catch (InterruptedException e) {
@@ -123,8 +123,7 @@ public class RedisDBSClusterInvalidator implements DBSClusterInvalidator {
 
     protected void subscribeToInvalidationChannel() {
         log.info("Subscribing to channel: " + getChannelName());
-        redisExecutor.execute(jedis -> {
-            jedis.subscribe(new JedisPubSub() {
+        redisExecutor.subscribe(new JedisPubSub() {
                 @Override
                 public void onSubscribe(String channel, int subscribedChannels) {
                     super.onSubscribe(channel, subscribedChannels);
@@ -152,8 +151,6 @@ public class RedisDBSClusterInvalidator implements DBSClusterInvalidator {
                     }
                 }
             }, getChannelName());
-            return null;
-        });
     }
 
     protected String getChannelName() {

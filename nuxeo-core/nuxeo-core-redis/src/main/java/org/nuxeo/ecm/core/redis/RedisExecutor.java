@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.redis;
 import java.util.List;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.util.Pool;
 
@@ -77,6 +78,16 @@ public interface RedisExecutor {
     Object evalsha(byte[] sha1, List<byte[]> keys, List<byte[]> args) throws JedisException;
 
     <T> T execute(RedisCallable<T> call) throws JedisException;
+
+    /**
+     * Run a subscriber, do not return.
+     */
+    default void subscribe(JedisPubSub subscriber, String channel) throws JedisException {
+        execute(jedis -> {
+            jedis.subscribe(subscriber, channel);
+            return null;
+        });
+    }
 
     Pool<Jedis> getPool();
 
