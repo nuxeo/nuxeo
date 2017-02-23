@@ -321,7 +321,7 @@ public abstract class NuxeoLauncher {
     /**
      * @since 8.3
      */
-    protected static final String OPTION_PRETTY_PRINTING = "pretty-print";
+    protected static final String OPTION_PRETTY_PRINT = "pretty-print";
 
     private static final String OPTION_PRETTY_PRINT_DESC = "Pretty print the output.";
 
@@ -1030,21 +1030,24 @@ public abstract class NuxeoLauncher {
         // Output options
         options.addOption(Option.builder()
                 .longOpt(OPTION_GZIP_OUTPUT)
+                .desc(OPTION_GZIP_DESC)
+                .hasArg()
                 .argName("true|false")
                 .optionalArg(true)
-                .desc(OPTION_GZIP_DESC)
                 .build());
         options.addOption(Option.builder()
-                .longOpt(OPTION_PRETTY_PRINTING)
+                .longOpt(OPTION_PRETTY_PRINT)
+                .desc(OPTION_PRETTY_PRINT_DESC)
+                .hasArg()
                 .argName("true|false")
                 .optionalArg(true)
-                .desc(OPTION_PRETTY_PRINT_DESC)
                 .build());
         options.addOption(Option.builder()
                 .longOpt(OPTION_OUTPUT)
+                .desc(OPTION_OUTPUT_DESC)
                 .hasArg()
                 .argName("file")
-                .desc(OPTION_OUTPUT_DESC)
+                .optionalArg(true)
                 .build());
         { // Config options (mutually exclusive)
             OptionGroup configOptions = new OptionGroup();
@@ -1267,7 +1270,7 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.registerTrial();
         } else if (launcher.commandIs("connect-report")) {
             boolean gzip = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true")).booleanValue();
-            boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT_DESC, "false"));
+            boolean prettyprinting = Boolean.valueOf(launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT, "false"));
             Path outputpath;
             if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
                 outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
