@@ -47,4 +47,20 @@ public interface ExtendableVersioningService extends VersioningService {
      */
     void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule);
 
+    /**
+     * Add versioning policies
+     *
+     * @param versioningPolicies
+     * @since 9.1
+     */
+    void setVersioningPolicies(Map<String, VersioningPolicyDescriptor> versioningPolicies);
+
+    /**
+     * Add versioning filters
+     *
+     * @param versioningFilters
+     * @since 9.1
+     */
+    void setVersioningFilters(Map<String, VersioningFilterDescriptor> versioningFilters);
+
 }

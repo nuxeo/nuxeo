@@ -19,25 +19,68 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.VersioningOption;
 
 /**
  * @since 9.1
  */
-public class VersioningPolicyDescriptor {
+@XObject("policy")
+public class VersioningPolicyDescriptor implements Serializable {
+
+    @XNode("@id")
+    protected String id;
+
+    @XNode("@increment")
+    protected VersioningOption increment;
+
+    @XNode("initialState")
+    public InitialStateDescriptor initialState;
+
+    @XNodeList(value = "filterId", componentType = String.class, type = ArrayList.class)
+    protected List<String> filterIds;
 
     public String getId() {
-        return null;
+        return id;
     }
 
     public VersioningOption getIncrement() {
-        return null;
+        return increment;
     }
 
-    public Collection<String> getFilterIds() {
-        return Collections.emptyList();
+    public InitialStateDescriptor getInitialState() {
+        return initialState;
     }
+
+    public List<String> getFilterIds() {
+        return filterIds;
+    }
+
+    public void merge(VersioningPolicyDescriptor other) {
+        if (other.id != null) {
+            id = other.id;
+        }
+        if (other.increment != null) {
+            increment = other.increment;
+        }
+        if (other.initialState != null) {
+            initialState = other.initialState;
+        }
+        filterIds.addAll(other.filterIds);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + id + ", increment=" + increment + ", beforeUpdate=" + beforeUpdate
+                + ')';
+    }
+
 }

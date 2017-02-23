@@ -69,6 +69,10 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     private DefaultVersioningRuleDescriptor defaultVersioningRule;
 
+    private Map<String, VersioningPolicyDescriptor> versioningPolicies;
+
+    private Map<String, VersioningFilterDescriptor> versioningFilters;
+
     @Override
     public String getVersionLabel(DocumentModel docModel) {
         String label;
@@ -327,10 +331,18 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
+    public void setVersioningPolicies(Map<String, VersioningPolicyDescriptor> versioningPolicies) {
+        this.versioningPolicies = versioningPolicies;
+    }
+
+    @Override
+    public void setVersioningFilters(Map<String, VersioningFilterDescriptor> versioningFilters) {
+        this.versioningFilters = versioningFilters;
+    }
+
+    @Override
     public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
-        // TODO change that when descriptor will be registers
-        List<VersioningPolicyDescriptor> policyDescriptors = Collections.emptyList();
-        for (VersioningPolicyDescriptor policyDescriptor : policyDescriptors) {
+        for (VersioningPolicyDescriptor policyDescriptor : versioningPolicies.values()) {
             if (isPolicyMatch(policyDescriptor, previousDocument, currentDocument)) {
                 return policyDescriptor.getIncrement();
             }
@@ -340,11 +352,9 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     protected boolean isPolicyMatch(VersioningPolicyDescriptor policyDescriptor, DocumentModel previousDocument,
             DocumentModel currentDocument) {
-        // TODO change that when descriptor will be registers
         // Relation between filters in a policy is a AND
-        Map<String, VersioningFilterDescriptor> filterDescriptors = Collections.emptyMap();
         for (String filterId : policyDescriptor.getFilterIds()) {
-            VersioningFilterDescriptor filterDescriptor = filterDescriptors.get(filterId);
+            VersioningFilterDescriptor filterDescriptor = versioningFilters.get(filterId);
             if (filterDescriptor == null) {
                 // TODO maybe throw something ?
                 log.warn("Versioning filter with id=" + filterId + " is referenced in the policy with id= "

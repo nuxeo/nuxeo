@@ -47,11 +47,45 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
 
     public static final String VERSIONING_RULE_XP = "versioningRules";
 
+    public static final String VERSIONING_POLICY_XP = "policies";
+
+    public static final String VERSIONING_FILTER_XP = "filters";
+
     protected static final StandardVersioningService STANDARD_VERSIONING_SERVICE = new StandardVersioningService();
 
     protected Map<VersioningServiceDescriptor, VersioningService> versioningServices = new LinkedHashMap<>();
 
     protected VersioningRuleRegistry versioningRulesRegistry = new VersioningRuleRegistry();
+
+    protected VersioningPolicyRegistry versioningPoliciesRegistry = new VersioningPolicyRegistry();
+
+    protected VersioningFilterRegistry versioningFiltersRegistry = new VersioningFilterRegistry();
+
+    protected static class VersioningPolicyRegistry extends SimpleContributionRegistry<VersioningPolicyDescriptor> {
+
+        @Override
+        public String getContributionId(VersioningPolicyDescriptor contrib) {
+            return contrib.getId();
+        }
+
+        public Map<String, VersioningPolicyDescriptor> getVersioningPolicyDescriptors() {
+            return currentContribs;
+        }
+
+    }
+
+    protected static class VersioningFilterRegistry extends SimpleContributionRegistry<VersioningFilterDescriptor> {
+
+        @Override
+        public String getContributionId(VersioningFilterDescriptor contrib) {
+            return contrib.getId();
+        }
+
+        public Map<String, VersioningFilterDescriptor> getVersioningFilterDescriptors() {
+            return currentContribs;
+        }
+
+    }
 
     protected static class VersioningRuleRegistry extends SimpleContributionRegistry<VersioningRuleDescriptor> {
 
@@ -113,9 +147,11 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
 
     @Override
     public void registerContribution(Object contrib, String point, ComponentInstance contributor) {
-        if (VERSIONING_SERVICE_XP.equals(point)) {
+        switch (point) {
+        case VERSIONING_SERVICE_XP:
             registerVersioningService((VersioningServiceDescriptor) contrib);
-        } else if (VERSIONING_RULE_XP.equals(point)) {
+            break;
+        case VERSIONING_RULE_XP:
             if (contrib instanceof VersioningRuleDescriptor) {
                 registerVersioningRule((VersioningRuleDescriptor) contrib);
             } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
@@ -123,21 +159,39 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
             } else {
                 throw new RuntimeException("Unknown contribution to " + point + ": " + contrib.getClass());
             }
-        } else {
+            break;
+        case VERSIONING_POLICY_XP:
+            registerVersioningPolicy((VersioningPolicyDescriptor) contrib);
+            break;
+        case VERSIONING_FILTER_XP:
+            registerVersioningFilter((VersioningFilterDescriptor) contrib);
+            break;
+        default:
             throw new RuntimeException("Unknown extension point: " + point);
         }
     }
 
     @Override
     public void unregisterContribution(Object contrib, String point, ComponentInstance contributor) {
-        if (VERSIONING_SERVICE_XP.equals(point)) {
+        switch (point) {
+        case VERSIONING_SERVICE_XP:
             unregisterVersioningService((VersioningServiceDescriptor) contrib);
-        } else if (VERSIONING_RULE_XP.equals(point)) {
+            break;
+        case VERSIONING_RULE_XP:
             if (contrib instanceof VersioningRuleDescriptor) {
                 unregisterVersioningRule((VersioningRuleDescriptor) contrib);
             } else if (contrib instanceof DefaultVersioningRuleDescriptor) {
                 unregisterDefaultVersioningRule((DefaultVersioningRuleDescriptor) contrib);
             }
+            break;
+        case VERSIONING_POLICY_XP:
+            unregisterVersioningPolicy((VersioningPolicyDescriptor) contrib);
+            break;
+        case VERSIONING_FILTER_XP:
+            unregisterVersioningFilter((VersioningFilterDescriptor) contrib);
+            break;
+        default:
+            break;
         }
     }
 
@@ -182,6 +236,30 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
         recompute();
     }
 
+    protected void registerVersioningPolicy(VersioningPolicyDescriptor contrib) {
+        versioningPoliciesRegistry.addContribution(contrib);
+        log.info("Registered versioning policy: " + contrib.getId());
+        recompute();
+    }
+
+    protected void unregisterVersioningPolicy(VersioningPolicyDescriptor contrib) {
+        versioningPoliciesRegistry.removeContribution(contrib);
+        log.info("Unregistered versioning policy: " + contrib.getId());
+        recompute();
+    }
+
+    protected void registerVersioningFilter(VersioningFilterDescriptor contrib) {
+        versioningFiltersRegistry.addContribution(contrib);
+        log.info("Registered versioning filter: " + contrib.getId());
+        recompute();
+    }
+
+    protected void unregisterVersioningFilter(VersioningFilterDescriptor contrib) {
+        versioningFiltersRegistry.removeContribution(contrib);
+        log.info("Unregistered versioning filter: " + contrib.getId());
+        recompute();
+    }
+
     protected void recompute() {
         VersioningService versioningService = STANDARD_VERSIONING_SERVICE;
         for (VersioningService vs : versioningServices.values()) {
@@ -191,6 +269,8 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
             ExtendableVersioningService vs = (ExtendableVersioningService) versioningService;
             vs.setVersioningRules(getVersioningRules());
             vs.setDefaultVersioningRule(getDefaultVersioningRule());
+            vs.setVersioningPolicies(getVersioningPolicies());
+            vs.setVersioningFilters(getVersioningFilters());
         }
         this.service = versioningService;
     }
@@ -201,6 +281,14 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
 
     protected DefaultVersioningRuleDescriptor getDefaultVersioningRule() {
         return defaultVersioningRuleList.peekLast();
+    }
+
+    protected Map<String, VersioningPolicyDescriptor> getVersioningPolicies() {
+        return versioningPoliciesRegistry.getVersioningPolicyDescriptors();
+    }
+
+    protected Map<String, VersioningFilterDescriptor> getVersioningFilters() {
+        return versioningFiltersRegistry.getVersioningFilterDescriptors();
     }
 
     @Override
