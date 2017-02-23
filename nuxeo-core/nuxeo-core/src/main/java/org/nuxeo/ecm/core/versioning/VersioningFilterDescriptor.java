@@ -19,13 +19,65 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @since 9.1
  */
-public class VersioningFilterDescriptor {
+@XObject("filter")
+public class VersioningFilterDescriptor implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(VersioningFilterDescriptor.class);
+
+    @XNode("@id")
+    protected String id;
+
+    @XNode("@class")
+    protected Class<VersioningPolicyFilter> className;
+
+    @XNodeList(value = "types/type", componentType = String.class, type = ArrayList.class)
+    protected List<String> types;
+
+    @XNodeList(value = "facets/facet", componentType = String.class, type = ArrayList.class)
+    protected List<String> facets;
+
+    @XNodeList(value = "schemas/schema", componentType = String.class, type = ArrayList.class)
+    protected List<String> schemas;
+
+    @XNode("condition")
+    protected String condition;
+
+    public String getId() {
+        return id;
+    }
 
     public VersioningPolicyFilter newInstance() {
-        return null;
+        VersioningPolicyFilter filter = null;
+        if (className != null) {
+            try {
+                filter = className.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                log.error("Class " + className + " could not be instantiated", e);
+            }
+        } else {
+            return new StandardVersioningPolicyFilter(types, facets, schemas, condition);
+        }
+        return filter;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + id + ')';
     }
 
 }
