@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -327,7 +328,34 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
-        return VersioningOption.MINOR;
+        // TODO change that when descriptor will be registers
+        List<VersioningPolicyDescriptor> policyDescriptors = Collections.emptyList();
+        for (VersioningPolicyDescriptor policyDescriptor : policyDescriptors) {
+            if (isPolicyMatch(policyDescriptor, previousDocument, currentDocument)) {
+                return policyDescriptor.getIncrement();
+            }
+        }
+        return null;
+    }
+
+    protected boolean isPolicyMatch(VersioningPolicyDescriptor policyDescriptor, DocumentModel previousDocument,
+            DocumentModel currentDocument) {
+        // TODO change that when descriptor will be registers
+        // Relation between filters in a policy is a AND
+        Map<String, VersioningFilterDescriptor> filterDescriptors = Collections.emptyMap();
+        for (String filterId : policyDescriptor.getFilterIds()) {
+            VersioningFilterDescriptor filterDescriptor = filterDescriptors.get(filterId);
+            if (filterDescriptor == null) {
+                // TODO maybe throw something ?
+                log.warn("Versioning filter with id=" + filterId + " is referenced in the policy with id= "
+                        + policyDescriptor.getId() + ", but doesn't exist.");
+            } else if (!filterDescriptor.newInstance().test(previousDocument, currentDocument)) {
+                // As it's a AND, if one fails then policy doesn't match
+                return false;
+            }
+        }
+        // All filters match the context (previousDocument + currentDocument)
+        return true;
     }
 
 }
