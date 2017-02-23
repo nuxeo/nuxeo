@@ -113,11 +113,17 @@ public class AddPermission {
             throw new IllegalParameterException("'end' parameter must be set when adding a permission for an 'email'");
         }
 
-        String username = user;
-        if (username == null) {
+        String username;
+        if (user == null) {
+            // share a document with someone not registered in Nuxeo, by using only an email
             username = NuxeoPrincipal.computeTransientUsername(email);
-        } else if (Framework.getService(UserManager.class).getUserModel(username) == null) {
-            throw new NuxeoException("Username '" + username + "' does not exist. Please provide a valid username.");
+        } else {
+            username = user;
+            UserManager userManager = Framework.getService(UserManager.class);
+            if (userManager.getUserModel(username) == null && userManager.getGroup(username) == null) {
+                String errorMsg = "User or group name '" + username + "' does not exist. Please provide a valid name.";
+                throw new NuxeoException(errorMsg);
+            }
         }
 
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();

@@ -45,6 +45,7 @@ import org.nuxeo.ecm.automation.core.operations.document.ReplacePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -85,6 +86,10 @@ public class PermissionAutomationTest {
     @RuntimeService
     private UserManager userManager;
 
+    private final GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
+
+    private final GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Folder");
@@ -94,43 +99,59 @@ public class PermissionAutomationTest {
         src = session.getDocument(src.getRef());
 
         when(userManager.getUserModel("existingUser")).thenReturn(new DocumentModelImpl("user"));
+        when(userManager.getGroup("existingGroup")).thenReturn(new NuxeoGroupImpl("existingGroup"));
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
     }
 
+
     @Test
     public void canAddPermissionForExistingUser() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-        Map<String, Object> params = new HashMap<>();
-        params.put("user", "existingUser");
-        params.put("permission", "Write");
-        GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
-        params.put("begin", begin);
+        canAddPermissionFor("existingUser");
+    }
 
-        GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        params.put("end", end);
-
-        assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
-        automationService.run(ctx, AddPermission.ID, params);
-        assertNotNull(src.getACP().getACL(ACL.LOCAL_ACL));
-        assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
-
-        // Tear down
-        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "existingUser");
+    @Test
+    public void canAddPermissionForExistingGroup() throws OperationException {
+        canAddPermissionFor("existingGroup");
     }
 
     @Test
     public void cannotAddPermissionForNonExistentUser() throws OperationException {
+        cannotAddPermissionFor("nonExistentUser");
+    }
+
+    @Test
+    public void cannotAddPermissionForNonExistentGroup() throws OperationException {
+        cannotAddPermissionFor("nonExistentGroup");
+    }
+
+    private void canAddPermissionFor(String existingGroupOrUser) throws OperationException {
+        try {
+            OperationContext ctx = new OperationContext(session);
+            ctx.setInput(src);
+            Map<String, Object> params = new HashMap<>();
+            params.put("user", existingGroupOrUser);
+            params.put("permission", "Write");
+            params.put("begin", begin);
+            params.put("end", end);
+
+            assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
+            automationService.run(ctx, AddPermission.ID, params);
+            assertNotNull(src.getACP().getACL(ACL.LOCAL_ACL));
+            assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
+        } finally {
+            // Tear down
+            src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, existingGroupOrUser);
+        }
+    }
+
+    private void cannotAddPermissionFor(String nonExistentGroupOrUser) throws OperationException {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
         Map<String, Object> params = new HashMap<>();
-        params.put("user", "nonExistentUser");
+        params.put("user", nonExistentGroupOrUser);
         params.put("permission", "Write");
-        GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
         params.put("begin", begin);
-
-        GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
         params.put("end", end);
 
         assertNull(src.getACP().getACL(ACL.LOCAL_ACL));
@@ -146,28 +167,30 @@ public class PermissionAutomationTest {
 
     @Test
     public void canReplacePermission() throws OperationException {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
+        try {
+            OperationContext ctx = new OperationContext(session);
+            ctx.setInput(src);
 
-        // Add permission
-        Map<String, Object> params = new HashMap<>();
-        params.put("user", "existingUser");
-        params.put("permission", "Write");
-        automationService.run(ctx, AddPermission.ID, params);
-        ctx.setInput(src);
+            // Add permission
+            Map<String, Object> params = new HashMap<>();
+            params.put("user", "existingUser");
+            params.put("permission", "Write");
+            automationService.run(ctx, AddPermission.ID, params);
+            ctx.setInput(src);
 
-        // Replace permission
-        params.put("user", "existingUser");
-        params.put("permission", "Everything");
-        params.put("id", "existingUser:Write:true:Administrator::");
+            // Replace permission
+            params.put("user", "existingUser");
+            params.put("permission", "Everything");
+            params.put("id", "existingUser:Write:true:Administrator::");
 
-        assertEquals("Write", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
-        automationService.run(ctx, ReplacePermission.ID, params);
-        src.refresh();
-        assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
-
-        // Tear down
-        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "existingUser");
+            assertEquals("Write", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
+            automationService.run(ctx, ReplacePermission.ID, params);
+            src.refresh();
+            assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
+        } finally {
+            // Tear down
+            src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "existingUser");
+        }
     }
 
     @Test
