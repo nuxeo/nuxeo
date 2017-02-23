@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -28,12 +29,15 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  */
 public class VersioningPolicyDescriptor {
 
+    public String getId() {
+        return null;
+    }
+
     public VersioningOption getIncrement() {
         return null;
     }
 
-    public Iterable<String> getFilterIds() {
+    public Collection<String> getFilterIds() {
         return Collections.emptyList();
     }
-
 }
