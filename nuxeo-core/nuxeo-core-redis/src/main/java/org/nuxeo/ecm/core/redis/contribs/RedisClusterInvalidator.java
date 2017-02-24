@@ -120,8 +120,7 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     protected void subscribeToInvalidationChannel() {
         log.info("Subscribing to channel: " + getChannelName());
-        redisExecutor.execute(jedis -> {
-            jedis.subscribe(new JedisPubSub() {
+        redisExecutor.subscribe(new JedisPubSub() {
                 @Override
                 public void onSubscribe(String channel, int subscribedChannels) {
                     super.onSubscribe(channel, subscribedChannels);
@@ -147,8 +146,6 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
                     }
                 }
             }, getChannelName());
-            return null;
-        });
     }
 
     protected String getChannelName() {
