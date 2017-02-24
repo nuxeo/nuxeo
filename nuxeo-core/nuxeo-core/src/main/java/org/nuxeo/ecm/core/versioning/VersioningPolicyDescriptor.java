@@ -43,7 +43,7 @@ public class VersioningPolicyDescriptor implements Serializable {
     @XNode("initialState")
     public InitialStateDescriptor initialState;
 
-    @XNodeList(value = "filterId", componentType = String.class, type = ArrayList.class)
+    @XNodeList(value = "filter-id", componentType = String.class, type = ArrayList.class)
     protected List<String> filterIds;
 
     public String getId() {

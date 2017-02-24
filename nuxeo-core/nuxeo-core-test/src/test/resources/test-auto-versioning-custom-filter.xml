@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
     <policy id="custom-filter" increment="MINOR">
-      <filterId>custom</filterId>
+      <filter-id>custom</filter-id>
     </policy>
   </extension>
 

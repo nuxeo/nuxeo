@@ -46,8 +46,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.core.test.tests")
 @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
+@Deploy({"org.nuxeo.ecm.core.test.tests", "org.nuxeo.ecm.platform.el"})
 public class TestAutoVersioning {
 
     @Inject

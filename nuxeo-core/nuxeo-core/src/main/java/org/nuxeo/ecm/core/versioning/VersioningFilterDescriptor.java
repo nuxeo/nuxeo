@@ -45,13 +45,13 @@ public class VersioningFilterDescriptor implements Serializable {
     @XNode("@class")
     protected Class<VersioningPolicyFilter> className;
 
-    @XNodeList(value = "types/type", componentType = String.class, type = ArrayList.class)
+    @XNodeList(value = "type", componentType = String.class, type = ArrayList.class)
     protected List<String> types;
 
-    @XNodeList(value = "facets/facet", componentType = String.class, type = ArrayList.class)
+    @XNodeList(value = "facet", componentType = String.class, type = ArrayList.class)
     protected List<String> facets;
 
-    @XNodeList(value = "schemas/schema", componentType = String.class, type = ArrayList.class)
+    @XNodeList(value = "schema", componentType = String.class, type = ArrayList.class)
     protected List<String> schemas;
 
     @XNode("condition")
