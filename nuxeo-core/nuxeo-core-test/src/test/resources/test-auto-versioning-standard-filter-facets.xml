@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.test.custom-filter">
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="custom-filter" increment="MINOR">
+      <filterId>standard</filterId>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="standard">
+      <facet>Downloadable</facet>
+      <facet>Note2Facet</facet>
+    </filter>
+  </extension>
+
+</component>

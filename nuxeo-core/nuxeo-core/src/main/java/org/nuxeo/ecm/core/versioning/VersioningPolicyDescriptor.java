@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.versioning;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;

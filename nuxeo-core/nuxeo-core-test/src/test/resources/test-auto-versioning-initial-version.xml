@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.test.initial-version">
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="always-initial-version">
+      <initialState major="2" minor="5" />
+    </policy>
+  </extension>
+
+</component>

@@ -25,15 +25,16 @@ import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -160,21 +161,16 @@ public class StandardVersioningService implements ExtendableVersioningService {
      * Sets the initial version on a document. Can be overridden.
      */
     protected void setInitialVersion(Document doc) {
-        InitialStateDescriptor initialState = null;
-        if (versioningRules != null) {
-            VersioningRuleDescriptor versionRule = versioningRules.get(doc.getType().getName());
-            if (versionRule != null) {
-                initialState = versionRule.getInitialState();
+        // Create a document model for filters
+        DocumentModelImpl documentModel = DocumentModelFactory.createDocumentModel(doc, null, null);
+        for (VersioningPolicyDescriptor policyDescriptor : versioningPolicies.values()) {
+            if (isPolicyMatch(policyDescriptor, null, documentModel)) {
+                InitialStateDescriptor initialState = policyDescriptor.getInitialState();
+                if (initialState != null) {
+                    setVersion(doc, initialState.getMajor(), initialState.getMinor());
+                    return;
+                }
             }
-        }
-        if (initialState == null && defaultVersioningRule != null) {
-            initialState = defaultVersioningRule.getInitialState();
-        }
-        if (initialState != null) {
-            int initialMajor = initialState.getMajor();
-            int initialMinor = initialState.getMinor();
-            setVersion(doc, initialMajor, initialMinor);
-            return;
         }
         setVersion(doc, 0, 0);
     }
