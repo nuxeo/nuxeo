@@ -10,6 +10,25 @@
 
     <operation
       class="org.nuxeo.template.automation.RenderWithTemplateOperation" />
+
+  </extension>
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+
+    <scriptedOperation id="javascript.FilterTemplatesByType">
+      <inputType>document</inputType>
+      <outputType>documents</outputType>
+      <category>javascript</category>
+      <description>Filter suitable templates for a given input document.</description>
+      <script><![CDATA[
+        function run(input, params) {
+          return Repository.Query(null, {
+            'query': 'select * from Document where ecm:mixinType = "Template" AND ecm:currentLifeCycleState != "deleted" AND tmpl:applicableTypes IN ( "all", "' + input['type'] + '")'
+          });
+        }
+      ]]></script>
+    </scriptedOperation>
+    
   </extension>
   
 </component>

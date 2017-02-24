@@ -8,7 +8,7 @@
 
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-jaxrs</artifactId>
-  <name>Template Rendering JAXRS Binding </name>
+  <name>Template Rendering JAXRS Binding</name>
 
   <dependencies>
     <dependency>

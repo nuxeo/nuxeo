@@ -1,0 +1,83 @@
+<!--
+(C) Copyright 2017 Nuxeo (http://nuxeo.com/) and contributors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-webtemplatesource-metadata-layout`
+@group Nuxeo UI
+@element nuxeo-webtemplatesource-metadata-layout
+-->
+
+<dom-module id="nuxeo-webtemplatesource-metadata-layout">
+
+  <template>
+    <div role="widget">
+      <label>[[i18n('label.dublincore.title')]]</label>
+      <div name="title">[[document.properties.dc:title]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:description]]">
+      <label>[[i18n('label.dublincore.description')]]</label>
+      <div name="description" class="multiline">[[document.properties.dc:description]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:nature]]">
+      <label>[[i18n('label.dublincore.nature')]]</label>
+      <div>[[formatDirectory(document.properties.dc:nature)]]</div>
+    </div>
+
+    <nuxeo-directory-suggestion role="widget"
+                                label="[[i18n('label.dublincore.subjects')]]"
+                                directory-name="l10nsubjects"
+                                value="{{document.properties.dc:subjects}}"
+                                hidden$="[[!document.properties.dc:subjects.length]]"
+                                multiple="true"
+                                dbl10n="true"
+                                readonly>
+    </nuxeo-directory-suggestion>
+
+    <div role="widget" hidden$="[[!document.properties.dc:coverage]]">
+      <label>[[i18n('label.dublincore.coverage')]]</label>
+      <div>[[formatDirectory(document.properties.dc:coverage)]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:expired]]">
+      <label>[[i18n('label.dublincore.expire')]]</label>
+      <div>[[formatDate(document.properties.dc:expired)]]</div>
+    </div>
+
+    <div role="widget">
+      <label>[[i18n('noteMetadataLayout.format')]]</label>
+      <div>[[formatMimeType(document.properties.note:mime_type)]]</div>
+    </div>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'nuxeo-webtemplatesource-metadata-layout',
+        behaviors: [Nuxeo.LayoutBehavior],
+        properties: {
+          /**
+          * @doctype WebTemplateSource
+          */
+          document: Object
+        }
+      });
+    })();
+  </script>
+</dom-module>

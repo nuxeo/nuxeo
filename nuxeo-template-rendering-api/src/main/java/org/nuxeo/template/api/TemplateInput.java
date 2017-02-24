@@ -55,6 +55,7 @@ public class TemplateInput implements Serializable {
 
     public TemplateInput(String name) {
         this.name = name;
+        this.stringValue = "";
     }
 
     public TemplateInput(String name, Object value) {
