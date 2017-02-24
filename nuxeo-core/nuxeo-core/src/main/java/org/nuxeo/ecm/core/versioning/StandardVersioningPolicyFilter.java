@@ -21,8 +21,19 @@
 
 package org.nuxeo.ecm.core.versioning;
 
+import org.apache.commons.lang.StringUtils;
+import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.platform.el.ELService;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 
 import java.util.List;
 
@@ -49,16 +60,46 @@ public class StandardVersioningPolicyFilter implements VersioningPolicyFilter {
 
     @Override
     public boolean test(DocumentModel previousDocument, DocumentModel currentDocument) {
-        if (!types.contains(currentDocument.getType())) {
+        if (!types.isEmpty() && !types.contains(currentDocument.getType())) {
             return false;
-        } else {
-            DocumentType docType = currentDocument.getDocumentType();
-            if (!schemas.stream().anyMatch(docType::hasSchema) || !facets.stream().anyMatch(docType::hasFacet)) {
-                return false;
-            } else {
-                // TODO Resolve EL expression
-                return true;
-            }
         }
+        DocumentType docType = currentDocument.getDocumentType();
+        if (!schemas.isEmpty() && !schemas.stream().anyMatch(s -> docType.hasSchema(s))) {
+            return false;
+        }
+        if (!facets.isEmpty() && !facets.stream().anyMatch(f -> docType.hasFacet(f))) {
+            return false;
+        }
+        if (!StringUtils.isBlank(condition)) {
+            String cond = condition.trim();
+            // compatibility code, as JEXL could resolve that kind of expression:
+            // detect if expression is in brackets #{}, otherwise add it
+            if (!cond.startsWith("#{") && !cond.startsWith("${") && !cond.endsWith("}")) {
+                cond = "#{" + cond + "}";
+            }
+
+            ELContext context = Framework.getService(ELService.class).createELContext();
+            ExpressionFactory expressionFactory = new ExpressionFactoryImpl();
+
+            VariableMapper vm = context.getVariableMapper();
+
+            // init default variables
+            ValueExpression previousDocExpr = expressionFactory.createValueExpression(previousDocument,
+                    DocumentModel.class);
+            ValueExpression currentDocExpr = expressionFactory.createValueExpression(currentDocument,
+                    DocumentModel.class);
+            ValueExpression userExpr = expressionFactory.createValueExpression(ClientLoginModule.getCurrentPrincipal(),
+                    NuxeoPrincipal.class);
+            vm.setVariable("previousDocument", previousDocExpr);
+            vm.setVariable("currentDocument", currentDocExpr);
+            vm.setVariable("document", currentDocExpr);
+            vm.setVariable("principal", userExpr);
+            vm.setVariable("currentUser", userExpr);
+
+            // evaluate expression
+            ValueExpression ve = expressionFactory.createValueExpression(context, cond, Boolean.class);
+            return Boolean.TRUE.equals(ve.getValue(context));
+        }
+        return true;
     }
 }
