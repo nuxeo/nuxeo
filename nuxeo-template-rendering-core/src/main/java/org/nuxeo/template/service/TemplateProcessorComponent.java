@@ -254,8 +254,24 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     @Override
+    public String buildTemplateSearchByNameQuery(String name) {
+        StringBuffer sb = new StringBuffer(
+            "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = '" + name + "'");
+        if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
+            sb.append(" AND ecm:isCheckedInVersion = 0");
+        }
+        return sb.toString();
+    }
+
+    @Override
     public List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) {
         String query = buildTemplateSearchQuery(targetType);
+        return session.query(query);
+    }
+
+    @Override
+    public List<DocumentModel> getTemplateDocs(CoreSession session, String name) {
+        String query = buildTemplateSearchByNameQuery(name);
         return session.query(query);
     }
 

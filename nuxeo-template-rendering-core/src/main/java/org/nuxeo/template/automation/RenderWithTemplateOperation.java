@@ -18,6 +18,7 @@
  */
 package org.nuxeo.template.automation;
 
+import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -27,9 +28,16 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.doc.TemplateBindings;
+import org.nuxeo.template.api.TemplateInput;
+import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+
+import java.util.List;
 
 /**
  * Operation to wrapp the rendition process
@@ -53,10 +61,34 @@ public class RenderWithTemplateOperation {
     @Param(name = "save", required = false, values = "true")
     protected Boolean save = true;
 
+    @Param(name = "attach", required = false)
+    protected Boolean attach = false;
+
+    @Param(name = "templateData", required = false)
+    protected String templateData = null;
+
     @OperationMethod
     public Blob run(DocumentModel targetDocument) {
         TemplateBasedDocument renderable = targetDocument.getAdapter(TemplateBasedDocument.class);
+        if (attach && (renderable == null || !renderable.getTemplateNames().contains(templateName))) {
+            TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
+            List<DocumentModel> templates = tps.getTemplateDocs(ctx.getCoreSession(), templateName);
+            renderable = (templates == null || templates.size() == 0) ? null :
+                tps.makeTemplateBasedDocument(targetDocument, templates.get(0), true)
+                    .getAdapter(TemplateBasedDocument.class);
+        }
         if (renderable != null) {
+            if (templateData != null) {
+                List<TemplateInput> params;
+                try {
+                    params = XMLSerializer.readFromXml(templateData);
+                } catch (DocumentException e) {
+                    throw new NuxeoException(e.getMessage(), e);
+                }
+                if (params != null) {
+                    renderable.saveParams(templateName, params, true);
+                }
+            }
             if (store) {
                 return renderable.renderAndStoreAsAttachment(templateName, save);
             } else {

@@ -7,8 +7,8 @@
   </parent>
 
   <groupId>org.nuxeo.template.rendering</groupId>
-  <artifactId>nuxeo-template-rendering-jaxrs-jsf</artifactId>
-  <name>Template Rendering JAXRS Binding JSF Layer</name>
+  <artifactId>nuxeo-template-rendering-jaxrs-web-ui</artifactId>
+  <name>Template Rendering JAXRS Binding Web UI Layer</name>
 
   <dependencies>
     <dependency>

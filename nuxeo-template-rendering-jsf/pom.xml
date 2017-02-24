@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.template.rendering</groupId>
   <artifactId>nuxeo-template-rendering-jsf</artifactId>
-  <name>Template Rendering Web layer</name>
+  <name>Template Rendering JSF layer</name>
 
   <dependencies>
     <dependency>

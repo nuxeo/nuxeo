@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Document template Web UI
-Bundle-SymbolicName: org.nuxeo.template.manager.web;singleton:=true
+Bundle-Name: Nuxeo ECM Document template JSF UI
+Bundle-SymbolicName: org.nuxeo.template.manager.jsf;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/url-codec-contrib.xml,
  OSGI-INF/layouts-contrib.xml,

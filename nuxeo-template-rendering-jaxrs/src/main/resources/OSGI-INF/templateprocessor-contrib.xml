@@ -1,5 +1,5 @@
 <component
-  name="org.nuxeo.template.service.jaxrs.ontrib">
+  name="org.nuxeo.template.service.jaxrs.contrib">
 
   <require>org.nuxeo.template.service.defaultContrib</require>
 
