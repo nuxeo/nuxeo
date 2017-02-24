@@ -45,7 +45,6 @@ import org.nuxeo.ecm.automation.core.operations.document.ReplacePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -99,7 +98,7 @@ public class PermissionAutomationTest {
         src = session.getDocument(src.getRef());
 
         when(userManager.getUserModel("existingUser")).thenReturn(new DocumentModelImpl("user"));
-        when(userManager.getGroup("existingGroup")).thenReturn(new NuxeoGroupImpl("existingGroup"));
+        when(userManager.getGroupModel("existingGroup")).thenReturn(new DocumentModelImpl("group"));
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
     }
