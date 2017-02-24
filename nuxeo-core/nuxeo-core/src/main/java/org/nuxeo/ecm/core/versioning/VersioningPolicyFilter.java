@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface VersioningPolicyFilter extends BiPredicate<DocumentModel, DocumentModel> {
 
     /**
-     * @param previousDocument the document before modification
+     * @param previousDocument the document before modification, could be null if event is aboutToCreate
      * @param currentDocument the document after modification
      */
     @Override
