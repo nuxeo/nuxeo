@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.api.VersioningOption.MINOR;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -338,12 +339,13 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
-        for (VersioningPolicyDescriptor policyDescriptor : versioningPolicies.values()) {
-            if (isPolicyMatch(policyDescriptor, previousDocument, currentDocument)) {
-                return policyDescriptor.getIncrement();
-            }
-        }
-        return null;
+        return new ArrayList<>(versioningPolicies.values()).stream()
+                                                           .sorted()
+                                                           .filter(policy -> isPolicyMatch(policy, previousDocument,
+                                                                   currentDocument))
+                                                           .map(VersioningPolicyDescriptor::getIncrement)
+                                                           .findFirst()
+                                                           .orElse(null);
     }
 
     protected boolean isPolicyMatch(VersioningPolicyDescriptor policyDescriptor, DocumentModel previousDocument,

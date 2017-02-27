@@ -32,10 +32,15 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  * @since 9.1
  */
 @XObject("policy")
-public class VersioningPolicyDescriptor implements Serializable {
+public class VersioningPolicyDescriptor implements Serializable, Comparable<VersioningPolicyDescriptor> {
+
+    protected static final long serialVersionUID = 1L;
 
     @XNode("@id")
     protected String id;
+
+    @XNode("@order")
+    protected int order;
 
     @XNode("@increment")
     protected VersioningOption increment;
@@ -48,6 +53,10 @@ public class VersioningPolicyDescriptor implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public int getOrder() {
+        return order;
     }
 
     public VersioningOption getIncrement() {
@@ -66,6 +75,7 @@ public class VersioningPolicyDescriptor implements Serializable {
         if (other.id != null) {
             id = other.id;
         }
+        order = other.order;
         if (other.increment != null) {
             increment = other.increment;
         }
@@ -73,6 +83,10 @@ public class VersioningPolicyDescriptor implements Serializable {
             initialState = other.initialState;
         }
         filterIds.addAll(other.filterIds);
+    }
+
+    public int compareTo(VersioningPolicyDescriptor versioningPolicyDescriptor) {
+        return Integer.compare(order, versioningPolicyDescriptor.order);
     }
 
     @Override
