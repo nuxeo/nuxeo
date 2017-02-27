@@ -129,6 +129,10 @@ public class TestGetChangeSummary {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
+        // Ensure the rounded modification date will not be equal to the truncated sync date
+        if (coreFeature.getStorageConfiguration().isVCSMySQL()) {
+            Thread.sleep(1000);
+        }
 
         changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
