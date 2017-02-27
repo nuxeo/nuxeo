@@ -25,19 +25,13 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentLocation;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,8 +44,6 @@ import org.nuxeo.runtime.api.Framework;
 public class LoginScreenHelper {
 
     protected static final Log log = LogFactory.getLog(LoginScreenHelper.class);
-
-    public static final String NUXEO_PROTOCOL = "nuxeo://";
 
     /**
      * @since 8.4
@@ -153,54 +145,6 @@ public class LoginScreenHelper {
             return null;
         }
         return Collections.max(config.getStartupPages().values());
-    }
-
-    /**
-     * Returns a full URL that can be handled by the mobile applications.
-     *
-     * @since 8.10
-     */
-    public static String getURLForMobileApplication(HttpServletRequest request) {
-        String baseURL = VirtualHostHelper.getBaseURL(request);
-        String requestedUrl = request.getParameter("requestedUrl");
-        return getURLForMobileApplication(baseURL, requestedUrl);
-    }
-
-    /**
-     * Returns a full URL that can be handled by the mobile applications.
-     *
-     * @since 8.10
-     */
-    public static String getURLForMobileApplication(String baseURL, String requestedURL) {
-        if (!baseURL.endsWith("/")) {
-            baseURL += "/";
-        }
-
-        String url = String.format("%s%s", NUXEO_PROTOCOL, baseURL.replaceAll("://", "/"));
-        if (StringUtils.isBlank(requestedURL)) {
-            return url;
-        }
-
-        DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
-        DocumentView docView = documentViewCodecManager.getDocumentViewFromUrl(requestedURL, false, null);
-        if (docView != null && docView.getDocumentLocation() != null) {
-            DocumentLocation docLoc = docView.getDocumentLocation();
-            String serverName = docLoc.getServerName();
-            if (serverName == null) {
-                return url;
-            }
-
-            url += serverName;
-            IdRef idRef = docLoc.getIdRef();
-            PathRef pathRef = docLoc.getPathRef();
-            if (idRef != null) {
-                url += "/id/" + idRef;
-            } else if (pathRef != null) {
-                url += "/path" + pathRef;
-            }
-        }
-
-        return url;
     }
 
 }
