@@ -245,3 +245,28 @@
   padding: .3em .5em 0;
   vertical-align: middle;
 }
+
+/* =Mobile Banner */
+#mobileBanner {
+  display: none;
+  text-align: right;
+  position: fixed;
+  z-index: 500;
+  bottom: 0;
+  left:0;
+  right: 0;
+  height: 7vh;
+  background-color: rgba(255, 255, 255, .8);
+  padding: 1vh;
+}
+
+a.mobileAppLink,
+a.mobileAppLink:hover {
+  display: inline-block;
+  background-color: #00adff;
+  border-radius: 3em;
+  padding: .8em 1.5em;
+  color: #fff;
+  font-size: 2.5vh;
+  text-decoration: none;
+}
