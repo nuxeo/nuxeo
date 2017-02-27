@@ -541,3 +541,7 @@ body .package.disabled {
   color:red;
   font-size:133%;
 }
+
+#CLID {
+  word-break: break-all;
+}
