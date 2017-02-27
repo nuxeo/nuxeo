@@ -214,6 +214,22 @@ public class TestAutoVersioning {
         assertEquals("0.1+", doc.getVersionLabel());
     }
 
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-ordering.xml")
+    public void testAutoVersioningOrdering() {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
+        doc = session.createDocument(doc);
+        doc = session.saveDocument(doc);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("0.1", doc.getVersionLabel());
+
+        doc = session.createDocumentModel("/", "testfile2", "Note");
+        doc = session.createDocument(doc);
+        doc = session.saveDocument(doc);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("1.0", doc.getVersionLabel());
+    }
+
     /** A custom filter for tests. */
     public static class CustomVersioningFilter implements VersioningPolicyFilter {
 
