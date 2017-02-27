@@ -51,9 +51,15 @@ public class VersioningListener implements EventListener {
         DocumentModel previousDocument = (DocumentModel) docCtx.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
         DocumentModel currentDocument = docCtx.getSourceDocument();
 
-        VersioningOption option = service.getOptionForAutoVersioning(previousDocument, currentDocument);
-        if (option != null && option != VersioningOption.NONE) {
-            currentDocument.putContextData(VersioningService.VERSIONING_OPTION, option);
+        VersioningOption option = (VersioningOption) currentDocument.getContextData(
+                VersioningService.VERSIONING_OPTION);
+
+        // In case of a manual versioning, the versioning option is not null
+        if (option == null) {
+            option = service.getOptionForAutoVersioning(previousDocument, currentDocument);
+            if (option != null && option != VersioningOption.NONE) {
+                currentDocument.putContextData(VersioningService.VERSIONING_OPTION, option);
+            }
         }
     }
 
