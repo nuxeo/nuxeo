@@ -10,6 +10,8 @@
 
     <operation
       class="org.nuxeo.template.automation.RenderWithTemplateOperation" />
+    <operation
+      class="org.nuxeo.template.automation.DetachTemplateOperation" />
 
   </extension>
 
@@ -19,7 +21,7 @@
       <inputType>document</inputType>
       <outputType>documents</outputType>
       <category>javascript</category>
-      <description>Filter suitable templates for a given input document.</description>
+      <description>Filter templates according to the type of a given input document.</description>
       <script><![CDATA[
         function run(input, params) {
           return Repository.Query(null, {

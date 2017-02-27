@@ -92,11 +92,6 @@ limitations under the License.
               <label>[[i18n('templateRenderingPage.processor.label')]]</label>
               <div>[[_getProcessorLabel(document.properties.tmpl:templateType)]]</div>
             </div>
-
-            <!--<div hidden$="[[!document.properties.tmpl:outputFormat]]">
-              <label>[[i18n('templateRenderingPage.outputFormat.label')]]</label>
-              <div>[[_getOutputFormatLabel(document.properties.tmpl:outputFormat)]]</div>
-            </div>-->
           </div>
 
           <div class="buttons">
@@ -127,15 +122,6 @@ limitations under the License.
                   </template>
                 </paper-menu>
               </paper-dropdown-menu>
-              <!--<paper-dropdown-menu label="[[i18n('templateRenderingPage.outputFormat.label')]]"
-                                   horizontal-align="left"
-                                   always-float-label>
-                <paper-menu class="dropdown-content" selected="{{selectedOutputFormat}}" attr-for-selected="name">
-                  <template is="dom-repeat" items="[[outputFormats]]">
-                    <paper-item name="[[item]]">[[_getOutputFormatLabel(item)]]</paper-item>
-                  </template>
-                </paper-menu>
-              </paper-dropdown-menu>-->
             </div>
           </div>
           <div class="buttons">
@@ -193,10 +179,6 @@ limitations under the License.
             type: Array,
             value: ['none', 'pdf', 'odt', 'doc', 'docx']
           },
-          selectedOutputFormat: {
-            type: String,
-            observer: '_formatChanged'
-          },
           editedDocument: Object,
           configMode: {
             type: String,
@@ -223,15 +205,8 @@ limitations under the License.
         _documentChanged: function() {
           if (this.document) {
             this.set('document.properties.tmpl:templateType', this.document.properties['tmpl:templateType'] || 'auto');
-            this.set('selectedOutputFormat', this.document.properties['tmpl:outputFormat'] || 'none');
+            this.set('document.properties.tmpl:templateType', this.document.properties['tmpl:templateType'] || 'auto');
             this.set('editedDocument' , JSON.parse(JSON.stringify(this.document)));
-          }
-        },
-
-        _formatChanged: function() {
-          if (this.editedDocument) {
-            this.editedDocument.properties['tmpl:outputFormat'] = this.selectedOutputFormat === 'none' ? null
-            : this.selectedOutputFormat;
           }
         },
 
@@ -253,7 +228,6 @@ limitations under the License.
 
         _resetConfig: function() {
           this.set('editedDocument', JSON.parse(JSON.stringify(this.document)));
-          this.set('selectedOutputFormat', this.editedDocument.properties['tmpl:outputFormat']);
         },
 
         _save: function() {

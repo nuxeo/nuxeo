@@ -71,8 +71,6 @@ public interface TemplateProcessorService {
      */
     Collection<TemplateProcessorDescriptor> getRegisteredTemplateProcessors();
 
-    String buildTemplateSearchByNameQuery(String name);
-
     /**
      * Find {@link TemplateSourceDocument}s that can be bound to a given doc type.
      *
@@ -91,7 +89,16 @@ public interface TemplateProcessorService {
      */
     List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType);
 
-    List<DocumentModel> getTemplateDocs(CoreSession session, String name);
+    /**
+     * Returns a template with a given templateName.
+     *
+     * @param session
+     * @param name the name of the template
+     * @return
+     *
+     * @since 9.1
+     */
+    DocumentModel getTemplateDoc(CoreSession session, String name);
 
     /**
      * Retrieve the {@link TemplateSourceDocument} that can be used as an Office template (i.e that support to store the

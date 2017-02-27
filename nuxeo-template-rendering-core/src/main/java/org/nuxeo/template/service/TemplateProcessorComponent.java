@@ -253,8 +253,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
         return sb.toString();
     }
 
-    @Override
-    public String buildTemplateSearchByNameQuery(String name) {
+    protected String buildTemplateSearchByNameQuery(String name) {
         StringBuffer sb = new StringBuffer(
             "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = '" + name + "'");
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
@@ -270,9 +269,10 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     @Override
-    public List<DocumentModel> getTemplateDocs(CoreSession session, String name) {
+    public DocumentModel getTemplateDoc(CoreSession session, String name) {
         String query = buildTemplateSearchByNameQuery(name);
-        return session.query(query);
+        List<DocumentModel> docs = session.query(query);
+        return (docs == null || docs.size() == 0) ? null : docs.get(0);
     }
 
     protected <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {
