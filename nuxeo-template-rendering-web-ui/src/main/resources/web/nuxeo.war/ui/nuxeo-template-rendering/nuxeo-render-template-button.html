@@ -128,7 +128,7 @@ limitations under the License.
   <script>
     Polymer({
       is: 'nuxeo-render-template-button',
-      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+      behaviors: [Nuxeo.I18nBehavior],
       properties: {
         /**
          * The document to be rendered
@@ -183,7 +183,9 @@ limitations under the License.
         this.set('selectedTemplate', '');
         this.$.getTemplatesOp.input = this.document;
         this.$.getTemplatesOp.execute().then(function(response) {
-          this.set('_templates', response.entries);
+          if (response.entries) {
+            this.set('_templates', response.entries);
+          }
           if (this._templates.length === 0) {
             this._toast(this.i18n('renderTemplateButton.toast.noTemplates'));
           } else {
@@ -237,32 +239,14 @@ limitations under the License.
         this._toast(this.i18n('renderTemplateButton.toast.rendering'), 0);
         return this.$.renderTemplateOp.execute().then(function(response) {
           if (response.body) {
+            var contentDisposition = response.headers.get('Content-Disposition');
+            var filenameMatches = contentDisposition
+                .match(/filename[^;=\n]*=([^;\n]*''([^;\n]*)|[^;\n]*)/).filter(function(match) { return !!match; });
+            var filename = decodeURI(filenameMatches[filenameMatches.length - 1]);
             response.blob().then(function(blob) {
-              var filename = this.document.path.split('/').pop() || 'document';
-              var ext = this.selectedTemplate.properties['tmpl:outputFormat'] || '';
-              if (!ext) {
-                if (this.selectedTemplate.properties['file:content']) {
-                  ext = this.selectedTemplate.properties['file:content'].name.split('.').pop();
-                } else if (this.selectedTemplate.properties['note:note']) {
-                  switch (this.selectedTemplate.properties['note:note']) {
-                    case 'text/html':
-                      ext = '.html';
-                      break;
-                    case 'text/plain':
-                      ext = '.txt';
-                      break;
-                    case 'text/xml':
-                      ext = '.xml';
-                      break;
-                    case 'text/x-web-markdown':
-                      ext = '.md';
-                      break;
-                  }
-                }
-              }
               var a = document.createElement('a');
               a.style = 'display: none';
-              a.download = filename + '.' + ext;
+              a.download = filename;
               a.href = URL.createObjectURL(blob);
               a.click();
               URL.revokeObjectURL(a.href);
@@ -285,7 +269,7 @@ limitations under the License.
         this.$.toast.duration = typeof duration === 'undefined' ? 3000 : duration;
         this.$.toast.text = msg;
         this.$.toast.open();
-      },
+      }
 
     });
   </script>

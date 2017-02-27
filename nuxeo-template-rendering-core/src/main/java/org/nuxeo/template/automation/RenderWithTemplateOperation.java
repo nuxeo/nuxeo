@@ -72,9 +72,9 @@ public class RenderWithTemplateOperation {
         TemplateBasedDocument renderable = targetDocument.getAdapter(TemplateBasedDocument.class);
         if (attach && (renderable == null || !renderable.getTemplateNames().contains(templateName))) {
             TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
-            List<DocumentModel> templates = tps.getTemplateDocs(ctx.getCoreSession(), templateName);
-            renderable = (templates == null || templates.size() == 0) ? null :
-                tps.makeTemplateBasedDocument(targetDocument, templates.get(0), true)
+            DocumentModel template = tps.getTemplateDoc(ctx.getCoreSession(), templateName);
+            renderable = (template == null) ? null :
+                tps.makeTemplateBasedDocument(targetDocument, template, true)
                     .getAdapter(TemplateBasedDocument.class);
         }
         if (renderable != null) {

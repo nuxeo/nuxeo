@@ -14,9 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <link rel="import" href="nuxeo-render-template-button.html">
+<link rel="import" href="nuxeo-delete-template-button.html">
 <link rel="import" href="nuxeo-template-rendering-page.html">
 
-<nuxeo-slot-content name="templateRenderingDocumentActions" slot="DOCUMENT_ACTIONS">
+<nuxeo-slot-content name="templateDeleteAction" slot="DOCUMENT_ACTIONS">
+  <template>
+    <nuxeo-filter document="[[document]]" facet="Template">
+      <template>
+        <nuxeo-delete-template-button document="[[document]]"></nuxeo-delete-template-button>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="templateRenderAction" slot="DOCUMENT_ACTIONS">
   <template>
     <nuxeo-render-template-button document="[[document]]"
                                   filter-op="javascript.FilterTemplatesByType"
