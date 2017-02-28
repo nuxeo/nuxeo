@@ -40,6 +40,11 @@
 
   <extension-point name="versioningRules">
     <documentation>
+      CAUTION: Deprecated since 9.1, use policies, filters and restrictions extension points. Compatibility is provided,
+      contribution to this endpoint will be converted to new contributions in order to preserve the initial state and
+      options. The default contribution will be converted to a policy with an order equals to 10000, and each
+      versioningRule will have an order equals to 10000 - idx where idx is the index of rule in VersioningComponent.
+
       Extension point defining default versioning rules or versioning rules by
       document type. Contributions to this XP are available for
       VersioningService implementing ExtendableVersioningService interface.
@@ -122,6 +127,68 @@
   <extension-point name="filters">
 
     <object class="org.nuxeo.ecm.core.versioning.VersioningFilterDescriptor" />
+
+  </extension-point>
+
+  <extension-point name="restrictions">
+    <documentation>
+      Extension point defining restrictions of versioning option by document type. Contributions to this XP are
+      available for VersioningService implementing ExtendableVersioningService interface.
+
+      Example:
+
+      <code>
+        <restriction type="File">
+          <options lifeCycleState="project">
+            <option>NONE</option>
+            <option default="true">MINOR</option>
+          </options>
+          <options lifeCycleState="approved" />
+        </restriction>
+
+        <restriction type="*">
+          <options lifeCycleState="*">
+            <option default="true">NONE</option>
+            <option>MINOR</option>
+            <option>MAJOR</option>
+          </options>
+          <options lifeCycleState="approved">
+            <option default="true">NONE</option>
+            <option>MINOR</option>
+          </options>
+        </restriction>
+      </code>
+
+      "type" attribute is available for restriction tag and should be the name of a document type.
+
+      The restriction with type "*" will be used for all the document types if no specific restriction is contributed.
+
+      Options tag contains the different increment option available when saving a document. If the default attribute
+      isn't set, the first tag will be used as default. Options tag should always have the lifeCycleState attribute.
+      The life cycle state name "*" can be used to match any state: it'll be used by default if no other option with
+      a matching state exists.
+
+      Following option gives no increment saving option when the current life cycle of the document is approved.
+      <code>
+        <options lifeCycleState="approved" />
+      </code>
+
+      Following options removes major increment option and set the minor increment option as default choice when the
+      current life cycle of the document is projet.
+      <code>
+        <options lifeCycleState="project">
+          <none />
+          <minor default="true" />
+        </options>
+      </code>
+
+      If no restriction is specified, the restriction with "*" is used. If there is no default restriction, we fall
+      back on the service implementation (ie: none, minor and major options are available).
+
+      @since 9.1
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.versioning.VersioningRestrictionDescriptor" />
 
   </extension-point>
 

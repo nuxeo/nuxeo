@@ -49,7 +49,7 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
     public InitialStateDescriptor initialState;
 
     @XNodeList(value = "filter-id", componentType = String.class, type = ArrayList.class)
-    protected List<String> filterIds;
+    protected List<String> filterIds = new ArrayList<>();
 
     public String getId() {
         return id;
