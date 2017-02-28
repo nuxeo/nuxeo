@@ -548,6 +548,11 @@
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-el</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
 
       <!-- Nuxeo Services -->
       <dependency>
@@ -626,11 +631,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-dublincore</artifactId>
-        <version>${nuxeo.services.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-el</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
       <dependency>

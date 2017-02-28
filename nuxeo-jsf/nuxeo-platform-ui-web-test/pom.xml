@@ -25,8 +25,8 @@
       <artifactId>jboss-el</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-el</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-el</artifactId>
     </dependency>
   </dependencies>
 
