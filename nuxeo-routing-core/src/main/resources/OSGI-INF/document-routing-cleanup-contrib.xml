@@ -15,7 +15,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="workflowInstancesCleanup"
+    <listener name="workflowInstancesCleanup" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup">
       <event>workflowInstancesCleanup</event>
     </listener>

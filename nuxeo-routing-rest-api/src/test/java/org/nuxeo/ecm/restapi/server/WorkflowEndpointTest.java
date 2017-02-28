@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -55,12 +56,12 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener;
+import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -85,6 +86,9 @@ public class WorkflowEndpointTest extends BaseTest {
 
     @Inject
     WorkManager workManager;
+    
+    @Inject
+    EventService eventService;
 
     protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -666,7 +670,6 @@ public class WorkflowEndpointTest extends BaseTest {
         EventContext eventContext = new EventContextImpl();
         eventContext.setProperty("category", "escalation");
         Event event = new EventImpl(DocumentRoutingEscalationListener.EXECUTE_ESCALATION_RULE_EVENT, eventContext);
-        EventService eventService = Framework.getService(EventService.class);
         eventService.fireEvent(event);
 
         awaitEscalationWorks();
@@ -679,11 +682,55 @@ public class WorkflowEndpointTest extends BaseTest {
 
     }
 
+    /**
+     * @since 9.1
+     */
+    @Test
+    public void testWorkflowCleanUp() throws JsonProcessingException, IOException, InterruptedException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+        final int max = 5;
+        for (int i = 0; i < max; i++) {
+            ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                    "ParallelDocumentReview", Collections.singletonList(note.getId())));
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            final String createdWorflowInstanceId = node.get("id").getTextValue();
+            // Cancel the workflow
+            response = getResponse(RequestType.DELETE, "/workflow/" + createdWorflowInstanceId);
+            assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        }
+        DocumentModelList cancelled = session.query(
+                "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
+        assertEquals(max, cancelled.size());
+
+        EventContext eventContext = new EventContextImpl();
+        eventContext.setProperty("category", "workflowInstancesCleanup");
+        Event event = new EventImpl(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_EVENT_NAME, eventContext);
+        eventService.fireEvent(event);
+
+        awaitCleanupWorks();
+
+        cancelled = session.query(
+                "SELECT ecm:uuid FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'canceled'");
+        assertTrue(cancelled.isEmpty());
+
+    }
+
+    /**
+     * @since 9.1
+     */
+    protected void awaitCleanupWorks() throws InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        workManager.awaitCompletion("default", 10, TimeUnit.SECONDS);
+    }
+
     protected void awaitEscalationWorks() throws InterruptedException {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        workManager.awaitCompletion("escalation", 10000, TimeUnit.MILLISECONDS);
+        workManager.awaitCompletion("escalation", 10, TimeUnit.SECONDS);
     }
 
 }
