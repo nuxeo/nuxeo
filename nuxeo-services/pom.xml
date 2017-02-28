@@ -32,7 +32,6 @@
     <module>nuxeo-platform-versioning-api</module>
     <module>nuxeo-platform-versioning-core</module>
     <module>nuxeo-platform-content-template-manager</module>
-    <module>nuxeo-platform-el</module>
     <module>nuxeo-platform-convert</module>
     <module>nuxeo-platform-forms-layout-api</module>
     <module>nuxeo-platform-forms-layout-core</module>

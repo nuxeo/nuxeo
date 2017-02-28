@@ -31,6 +31,7 @@
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
     <module>nuxeo-core-convert-plugins-test</module>
+    <module>nuxeo-core-el</module>
     <module>nuxeo-core-event</module>
     <module>nuxeo-core-event-jms</module>
     <module>nuxeo-core-persistence</module>
