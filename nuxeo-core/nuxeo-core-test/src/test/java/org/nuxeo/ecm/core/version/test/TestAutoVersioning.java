@@ -41,7 +41,6 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     @Test
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-initial-version.xml")
     public void testInitialVersion() {
-        // No initial state defined by policy
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         assertTrue(doc.isCheckedOut());
