@@ -474,6 +474,9 @@ public class StandardVersioningService implements ExtendableVersioningService {
                                  .sorted()
                                  .filter(policy -> isPolicyMatch(policy, previousDocument, currentDocument))
                                  .map(VersioningPolicyDescriptor::getIncrement)
+                                 // Filter out null element - possible if we declare a policy for the initial state for
+                                 // all documents
+                                 .filter(inc -> inc != null)
                                  .findFirst()
                                  .orElse(null);
     }
