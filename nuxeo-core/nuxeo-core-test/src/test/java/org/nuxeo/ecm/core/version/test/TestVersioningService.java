@@ -20,95 +20,15 @@ package org.nuxeo.ecm.core.version.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-public class TestVersioningService {
-
-    @Inject
-    protected CoreFeature coreFeature;
-
-    @Inject
-    protected VersioningService service;
-
-    @Inject
-    protected EventService eventService;
-
-    @Inject
-    protected CoreSession session;
-
-    protected void maybeSleepToNextSecond() {
-        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
-    }
-
-    protected void waitForAsyncCompletion() {
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
-    }
-
-    protected void nextTransaction() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-    }
-
-    protected long getMajor(DocumentModel doc) {
-        return getVersion(doc, VersioningService.MAJOR_VERSION_PROP);
-    }
-
-    protected long getMinor(DocumentModel doc) {
-        return getVersion(doc, VersioningService.MINOR_VERSION_PROP);
-    }
-
-    protected long getVersion(DocumentModel doc, String prop) {
-        Object propVal = doc.getPropertyValue(prop);
-        if (propVal == null || !(propVal instanceof Long)) {
-            return -1;
-        } else {
-            return ((Long) propVal).longValue();
-        }
-    }
-
-    protected void assertVersion(String expected, DocumentModel doc) throws Exception {
-        assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
-    }
-
-    protected void assertLatestVersion(String expected, DocumentModel doc) throws Exception {
-        DocumentModel ver = doc.getCoreSession().getLastDocumentVersion(doc.getRef());
-        if (ver == null) {
-            assertNull(expected);
-        } else {
-            assertVersion(expected, ver);
-        }
-    }
-
-    protected void assertVersionLabel(String expected, DocumentModel doc) {
-        assertEquals(expected, service.getVersionLabel(doc));
-    }
+public class TestVersioningService extends AbstractTestVersioning {
 
     @Test
     public void testStandardVersioning() throws Exception {
@@ -225,24 +145,6 @@ public class TestVersioningService {
         assertVersion("1.3", doc);
         assertVersionLabel("1.3", doc);
         assertLatestVersion("1.3", doc);
-    }
-
-    @Test
-    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-nooptions.xml")
-    public void testNoOptions() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
-        doc = session.createDocument(doc);
-
-        // no options according to config
-        List<VersioningOption> opts = service.getSaveOptions(doc);
-        assertEquals(0, opts.size());
-
-        doc.setPropertyValue("dc:title", "A");
-        doc = session.saveDocument(doc);
-
-        assertVersion("0.0", doc);
-        assertVersionLabel("0.0", doc);
-        assertLatestVersion(null, doc);
     }
 
     @Test

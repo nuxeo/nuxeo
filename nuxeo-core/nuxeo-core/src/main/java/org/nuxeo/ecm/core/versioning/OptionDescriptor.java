@@ -22,7 +22,10 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-
+/**
+ * @deprecated since 9.1 use 'policy', 'filter' and 'restriction' contributions instead
+ */
+@Deprecated
 @XObject("option")
 public class OptionDescriptor implements Serializable {
 

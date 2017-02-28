@@ -25,33 +25,18 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningPolicyFilter;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 9.1
  */
-@RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
 @Deploy({"org.nuxeo.ecm.core.test.tests", "org.nuxeo.ecm.platform.el"})
-public class TestAutoVersioning {
-
-    @Inject
-    private CoreSession session;
+@LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
+public class TestAutoVersioning extends AbstractTestVersioning {
 
     @Test
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-initial-version.xml")

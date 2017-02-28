@@ -30,21 +30,25 @@ public interface ExtendableVersioningService extends VersioningService {
 
     /**
      * @return A Map containing the versioning rule for specific types.
+     * @deprecated since 9.1, use policy and filter contributions instead
      */
+    @Deprecated
     Map<String, VersioningRuleDescriptor> getVersioningRules();
 
     /**
      * Add versioning rules for specific types.
-     * 
-     * @param versioningRules
+     *
+     * @deprecated since 9.1, use policy and filter contributions instead
      */
+    @Deprecated
     void setVersioningRules(Map<String, VersioningRuleDescriptor> versioningRules);
 
     /**
      * Set the default versioning rule for all document type.
-     * 
-     * @param defaultVersioningRule
+     *
+     * @deprecated since 9.1, use policy and filter contributions instead
      */
+    @Deprecated
     void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule);
 
     /**
@@ -62,5 +66,13 @@ public interface ExtendableVersioningService extends VersioningService {
      * @since 9.1
      */
     void setVersioningFilters(Map<String, VersioningFilterDescriptor> versioningFilters);
+
+    /**
+     * Add versioning filters
+     *
+     * @param versioningRestrictions the restrictions to apply in versioning system
+     * @since 9.1
+     */
+    void setVersioningRestrictions(Map<String, VersioningRestrictionDescriptor> versioningRestrictions);
 
 }

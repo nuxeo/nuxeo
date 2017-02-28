@@ -19,15 +19,15 @@
  */
 package org.nuxeo.ecm.core.versioning;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 9.1
@@ -46,13 +46,13 @@ public class VersioningFilterDescriptor implements Serializable {
     protected Class<VersioningPolicyFilter> className;
 
     @XNodeList(value = "type", componentType = String.class, type = ArrayList.class)
-    protected List<String> types;
+    protected List<String> types = new ArrayList<>();
 
     @XNodeList(value = "facet", componentType = String.class, type = ArrayList.class)
-    protected List<String> facets;
+    protected List<String> facets = new ArrayList<>();
 
     @XNodeList(value = "schema", componentType = String.class, type = ArrayList.class)
-    protected List<String> schemas;
+    protected List<String> schemas = new ArrayList<>();
 
     @XNode("condition")
     protected String condition;

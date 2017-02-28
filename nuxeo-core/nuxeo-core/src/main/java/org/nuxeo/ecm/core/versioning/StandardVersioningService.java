@@ -26,14 +26,20 @@ import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.LifeCycleException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -47,10 +53,28 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     private static final Log log = LogFactory.getLog(StandardVersioningService.class);
 
+    protected static final int DEFAULT_FORMER_RULE_ORDER = 10_000;
+
+    protected static final String COMPAT_ID_PREFIX = "compatibility-type-";
+
+    protected static final String COMPAT_DEFAULT_ID = "compatibility-default";
+
+    /**
+     * @deprecated since 9.1 seems unused
+     */
+    @Deprecated
     public static final String FILE_TYPE = "File";
 
+    /**
+     * @deprecated since 9.1 seems unused
+     */
+    @Deprecated
     public static final String NOTE_TYPE = "Note";
 
+    /**
+     * @deprecated since 9.1 seems unused
+     */
+    @Deprecated
     public static final String PROJECT_STATE = "project";
 
     public static final String APPROVED_STATE = "approved";
@@ -59,6 +83,10 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     public static final String BACK_TO_PROJECT_TRANSITION = "backToProject";
 
+    /**
+     * @deprecated since 9.1 seems unused
+     */
+    @Deprecated
     protected static final String AUTO_CHECKED_OUT = "AUTO_CHECKED_OUT";
 
     /** Key for major version in Document API. */
@@ -67,13 +95,11 @@ public class StandardVersioningService implements ExtendableVersioningService {
     /** Key for minor version in Document API. */
     protected static final String MINOR_VERSION = "ecm:minorVersion";
 
-    private Map<String, VersioningRuleDescriptor> versioningRules;
+    private Map<String, VersioningPolicyDescriptor> versioningPolicies = new HashMap<>();
 
-    private DefaultVersioningRuleDescriptor defaultVersioningRule;
+    private Map<String, VersioningFilterDescriptor> versioningFilters = new HashMap<>();
 
-    private Map<String, VersioningPolicyDescriptor> versioningPolicies;
-
-    private Map<String, VersioningFilterDescriptor> versioningFilters;
+    private Map<String, VersioningRestrictionDescriptor> versioningRestrictions = new HashMap<>();
 
     @Override
     public String getVersionLabel(DocumentModel docModel) {
@@ -179,65 +205,86 @@ public class StandardVersioningService implements ExtendableVersioningService {
     @Override
     public List<VersioningOption> getSaveOptions(DocumentModel docModel) {
         boolean versionable = docModel.isVersionable();
-        String lifecycleState = docModel.getCoreSession().getCurrentLifeCycleState(docModel.getRef());
+        String lifeCycleState = docModel.getCoreSession().getCurrentLifeCycleState(docModel.getRef());
         String type = docModel.getType();
-        return getSaveOptions(versionable, lifecycleState, type);
+        return getSaveOptions(versionable, lifeCycleState, type);
     }
 
     protected List<VersioningOption> getSaveOptions(Document doc) {
         boolean versionable = doc.getType().getFacets().contains(FacetNames.VERSIONABLE);
-        String lifecycleState;
+        String lifeCycleState;
         try {
-            lifecycleState = doc.getLifeCycleState();
+            lifeCycleState = doc.getLifeCycleState();
         } catch (LifeCycleException e) {
-            lifecycleState = null;
+            lifeCycleState = null;
         }
         String type = doc.getType().getName();
-        return getSaveOptions(versionable, lifecycleState, type);
+        return getSaveOptions(versionable, lifeCycleState, type);
     }
 
-    protected List<VersioningOption> getSaveOptions(boolean versionable, String lifecycleState, String type) {
+    protected List<VersioningOption> getSaveOptions(boolean versionable, String lifeCycleState, String type) {
         if (!versionable) {
-            return Arrays.asList(NONE);
+            return Collections.singletonList(NONE);
         }
-        if (lifecycleState == null) {
-            return Arrays.asList(NONE);
+
+        // try to get restriction for current type
+        List<VersioningOption> options = computeRestrictionOptions(lifeCycleState, type);
+        if (options == null) {
+            // no specific restrictions on current document type - get restriction for any document type
+            options = computeRestrictionOptions(lifeCycleState, "*");
         }
-        SaveOptionsDescriptor option = null;
-        if (versioningRules != null) {
-            VersioningRuleDescriptor saveOption = versioningRules.get(type);
-            if (saveOption != null) {
-                option = saveOption.getOptions().get(lifecycleState);
-                if (option == null) {
-                    // try on any life cycle state
-                    option = saveOption.getOptions().get("*");
-                }
+        if (options != null) {
+            return options;
+        }
+
+        // By default a versionable document could be incremented by all available options
+        return Arrays.asList(VersioningOption.values());
+    }
+
+    protected List<VersioningOption> computeRestrictionOptions(String lifeCycleState, String type) {
+        VersioningRestrictionDescriptor restrictions = versioningRestrictions.get(type);
+        if (restrictions != null) {
+            // try to get restriction options for current life cycle state
+            VersioningRestrictionOptionsDescriptor restrictionOptions = null;
+            if (lifeCycleState != null) {
+                restrictionOptions = restrictions.getRestrictionOption(lifeCycleState);
+            }
+            if (restrictionOptions == null) {
+                // try to get restriction for any life cycle states
+                restrictionOptions = restrictions.getRestrictionOption("*");
+            }
+            if (restrictionOptions != null) {
+                return restrictionOptions.getOptions();
             }
         }
-        if (option == null && defaultVersioningRule != null) {
-            option = defaultVersioningRule.getOptions().get(lifecycleState);
-            if (option == null) {
-                // try on any life cycle state
-                option = defaultVersioningRule.getOptions().get("*");
-            }
-        }
-        if (option != null) {
-            return option.getVersioningOptionList();
-        }
-        if (PROJECT_STATE.equals(lifecycleState) || APPROVED_STATE.equals(lifecycleState)
-                || OBSOLETE_STATE.equals(lifecycleState)) {
-            return Arrays.asList(NONE, MINOR, MAJOR);
-        }
-        if (FILE_TYPE.equals(type) || NOTE_TYPE.equals(type)) {
-            return Arrays.asList(NONE, MINOR, MAJOR);
-        }
-        return Arrays.asList(NONE);
+        return null;
     }
 
     protected VersioningOption validateOption(Document doc, VersioningOption option) {
         List<VersioningOption> options = getSaveOptions(doc);
-        if (!options.contains(option)) {
-            option = options.isEmpty() ? NONE : options.get(0);
+        // some variables for exceptions
+        String type = doc.getType().getName();
+        String lifeCycleState;
+        try {
+            lifeCycleState = doc.getLifeCycleState();
+        } catch (LifeCycleException e) {
+            lifeCycleState = null;
+        }
+        if (option == null) {
+            if (options.isEmpty() || options.contains(VersioningOption.NONE)) {
+                // Valid cases:
+                // - we don't ask for a version and versioning is blocked by configuration
+                // - we don't ask for a version and NONE is available as restriction
+                return VersioningOption.NONE;
+            } else {
+                // No version is asked but configuration requires that document must be versioned ie: NONE doesn't
+                // appear in restriction contribution
+                throw new NuxeoException("Versioning configuration restricts documents with type=" + type
+                        + "/lifeCycleState=" + lifeCycleState + " must be versioned for each updates.");
+            }
+        } else if (!options.contains(option)) {
+            throw new NuxeoException("Versioning option=" + option + " is not allowed by the configuration for type="
+                    + type + "/lifeCycleState=" + lifeCycleState);
         }
         return option;
     }
@@ -313,39 +360,122 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
+    @Deprecated
     public Map<String, VersioningRuleDescriptor> getVersioningRules() {
-        return versioningRules;
+        return Collections.emptyMap();
     }
 
     @Override
+    @Deprecated
     public void setVersioningRules(Map<String, VersioningRuleDescriptor> versioningRules) {
-        this.versioningRules = versioningRules;
+        // Convert former rules to new one - keep initial state and restriction
+        int order = DEFAULT_FORMER_RULE_ORDER - 1;
+        for (Entry<String, VersioningRuleDescriptor> rules : versioningRules.entrySet()) {
+            String documentType = rules.getKey();
+            VersioningRuleDescriptor versioningRule = rules.getValue();
+            // Compute policy and filter id
+            String compatId = COMPAT_ID_PREFIX + documentType;
+
+            // Convert the rule
+            if (versioningRule.isEnabled()) {
+                VersioningPolicyDescriptor policy = new VersioningPolicyDescriptor();
+                policy.id = compatId;
+                policy.order = order;
+                policy.initialState = versioningRule.initialState;
+                policy.filterIds = new ArrayList<>(Collections.singleton(compatId));
+
+                VersioningFilterDescriptor filter = new VersioningFilterDescriptor();
+                filter.id = compatId;
+                filter.types = new ArrayList<>(Collections.singleton(documentType));
+
+                // Register rules
+                versioningPolicies.put(compatId, policy);
+                versioningFilters.put(compatId, filter);
+
+                // Convert save options
+                VersioningRestrictionDescriptor restriction = new VersioningRestrictionDescriptor();
+                restriction.type = documentType;
+                restriction.options = versioningRule.getOptions()
+                                                    .values()
+                                                    .stream()
+                                                    .map(SaveOptionsDescriptor::toRestrictionOptions)
+                                                    .collect(Collectors.toMap(
+                                                            VersioningRestrictionOptionsDescriptor::getLifeCycleState,
+                                                            Function.identity()));
+                versioningRestrictions.put(restriction.type, restriction);
+
+                order--;
+            } else {
+                versioningPolicies.remove(compatId);
+                versioningFilters.remove(compatId);
+            }
+        }
     }
 
     @Override
+    @Deprecated
     public void setDefaultVersioningRule(DefaultVersioningRuleDescriptor defaultVersioningRule) {
-        this.defaultVersioningRule = defaultVersioningRule;
+        if (defaultVersioningRule == null) {
+            return;
+        }
+        // Convert former rules to new one - keep initial state and restriction
+        VersioningPolicyDescriptor policy = new VersioningPolicyDescriptor();
+        policy.id = COMPAT_DEFAULT_ID;
+        policy.order = DEFAULT_FORMER_RULE_ORDER;
+        policy.initialState = defaultVersioningRule.initialState;
+
+        // Register rule
+        if (versioningPolicies == null) {
+            versioningPolicies = new HashMap<>();
+        }
+        versioningPolicies.put(policy.id, policy);
+
+        // Convert save options
+        VersioningRestrictionDescriptor restriction = new VersioningRestrictionDescriptor();
+        restriction.type = "*";
+        restriction.options = defaultVersioningRule.getOptions()
+                                                   .values()
+                                                   .stream()
+                                                   .map(SaveOptionsDescriptor::toRestrictionOptions)
+                                                   .collect(Collectors.toMap(
+                                                           VersioningRestrictionOptionsDescriptor::getLifeCycleState,
+                                                           Function.identity()));
+        versioningRestrictions.put(restriction.type, restriction);
     }
 
     @Override
     public void setVersioningPolicies(Map<String, VersioningPolicyDescriptor> versioningPolicies) {
-        this.versioningPolicies = versioningPolicies;
+        this.versioningPolicies.clear();
+        if (versioningPolicies != null) {
+            this.versioningPolicies.putAll(versioningPolicies);
+        }
     }
 
     @Override
     public void setVersioningFilters(Map<String, VersioningFilterDescriptor> versioningFilters) {
-        this.versioningFilters = versioningFilters;
+        this.versioningFilters.clear();
+        if (versioningFilters != null) {
+            this.versioningFilters.putAll(versioningFilters);
+        }
+    }
+
+    @Override
+    public void setVersioningRestrictions(Map<String, VersioningRestrictionDescriptor> versioningRestrictions) {
+        this.versioningRestrictions.clear();
+        if (versioningRestrictions != null) {
+            this.versioningRestrictions.putAll(versioningRestrictions);
+        }
     }
 
     @Override
     public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
-        return new ArrayList<>(versioningPolicies.values()).stream()
-                                                           .sorted()
-                                                           .filter(policy -> isPolicyMatch(policy, previousDocument,
-                                                                   currentDocument))
-                                                           .map(VersioningPolicyDescriptor::getIncrement)
-                                                           .findFirst()
-                                                           .orElse(null);
+        return versioningPolicies.values()
+                                 .stream()
+                                 .sorted()
+                                 .filter(policy -> isPolicyMatch(policy, previousDocument, currentDocument))
+                                 .map(VersioningPolicyDescriptor::getIncrement)
+                                 .findFirst()
+                                 .orElse(null);
     }
 
     protected boolean isPolicyMatch(VersioningPolicyDescriptor policyDescriptor, DocumentModel previousDocument,

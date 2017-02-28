@@ -31,7 +31,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  * @author Laurent Doguin
  * @since 5.4.2
+ * @deprecated since 9.1 use 'policy', 'filter' and 'restriction' contributions instead
  */
+@Deprecated
 @XObject("versioningRule")
 public class VersioningRuleDescriptor implements Serializable {
 
