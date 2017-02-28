@@ -17,6 +17,12 @@
     </div>
   </#if>
 
+  <div class="description">
+    <h2>Description</h2>
+    ${nxItem.description}
+    <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  </div>
+
   <table class="listTable">
     <tr><th>Operation id</th><td> ${nxItem.name?html} </td></tr>
     <#if nxItem.aliases> <tr><th>Aliases</th><td><#list nxItem.aliases as alias><code>${alias}<code></#list></td></tr></#if>
@@ -68,14 +74,10 @@
      </td></tr>
   </table>
 
+<#if json??>
   <h2>JSON definition</h2>
-  <p><a href="${Root.path}/../automation/${nxItem.name}" class="button" target="_new">Generate JSON definition</a></p>
-
-  <div class="description">
-  <h2>Description</h2>
-  ${nxItem.description}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  </div>
+  <pre>${json?html}</pre>
+</#if>
 
 </div>
 </@block>

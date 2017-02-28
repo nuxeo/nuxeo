@@ -18,6 +18,9 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -25,10 +28,15 @@ import javax.ws.rs.Produces;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.runtime.api.Framework;
 
 @WebObject(type = "operation")
 public class OperationWO extends NuxeoArtifactWebObject {
@@ -95,6 +103,25 @@ public class OperationWO extends NuxeoArtifactWebObject {
             return StringUtils.join(param.values, ", ");
         }
         return "";
+    }
+
+    @GET
+    @Produces("text/html")
+    @Override
+    public Object doViewDefault() {
+        Template t = (Template) super.doViewDefault();
+        try {
+            OperationDocumentation opeDoc = Framework.getService(AutomationService.class)
+                                                     .getOperation(nxArtifactId)
+                                                     .getDocumentation();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            JsonWriter.writeOperation(baos, opeDoc, true);
+            t.arg("json", baos.toString());
+        } catch (OperationException | IOException e) {
+            throw WebException.wrap(e);
+        }
+        return t;
     }
 
     @Override
