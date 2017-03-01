@@ -23,9 +23,11 @@ package org.nuxeo.common.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -68,6 +70,90 @@ public class TestStringUtils {
         assertTrue(Arrays.equals(new String[] { " ", " ", " a ", " b", " c", " d  ", "  ", "  " }, ar));
         ar = StringUtils.split(str, ',', true);
         assertTrue(Arrays.equals(new String[] { "", "", "a", "b", "c", "d", "", "" }, ar));
+    }
+
+    /**
+     * @since 9.1
+     */
+    @Test
+    public void testSplitWithEscape() {
+
+        String str = " , , a , b, c, d  ,  ,  ";
+        List<String> li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { " ", " ", " a ", " b", " c", " d  ", "  ", "  " },
+                li.toArray(new String[li.size()])));
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(
+                Arrays.equals(new String[] { "", "", "a", "b", "c", "d", "", "" }, li.toArray(new String[li.size()])));
+
+        str = " , , a , b, c, d  ,  ,";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { " ", " ", " a ", " b", " c", " d  ", "  ", "" },
+                li.toArray(new String[li.size()])));
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(
+                Arrays.equals(new String[] { "", "", "a", "b", "c", "d", "", "" }, li.toArray(new String[li.size()])));
+
+        str = "a , b\\,aobad, c,\n d";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "a ", " b,aobad", " c", "\n d" }, li.toArray(new String[li.size()])));
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(Arrays.equals(new String[] { "a", "b,aobad", "c", "d" }, li.toArray(new String[li.size()])));
+
+        str = "a , b\\\\,aobad, c, d\\";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(
+                Arrays.equals(new String[] { "a ", " b\\", "aobad", " c", " d\\" }, li.toArray(new String[li.size()])));
+        li = StringUtils.split(str, ',', '\\', true);
+        assertTrue(Arrays.equals(new String[] { "a", "b\\", "aobad", "c", "d\\" }, li.toArray(new String[li.size()])));
+
+        str = "a | b\\|aobad| c|\n d";
+        li = StringUtils.split(str, '|', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "a ", " b|aobad", " c", "\n d" }, li.toArray(new String[li.size()])));
+        li = StringUtils.split(str, '|', '\\', true);
+        assertTrue(Arrays.equals(new String[] { "a", "b|aobad", "c", "d" }, li.toArray(new String[li.size()])));
+
+        str = "a \\ b\\\\aobad\\ c\\\n d";
+        try {
+            li = StringUtils.split(str, '\\', '\\', false);
+            fail("Using the same character for escape and delimiter should not be possible");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        try {
+            li = StringUtils.split(str, '\\', '\\', true);
+            fail("Using the same character for escape and delimiter should not be possible");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        str = "foo\\\\bar";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "foo\\bar" }, li.toArray(new String[li.size()])));
+
+        str = "toto,foo\\\\bar";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "toto", "foo\\bar" }, li.toArray(new String[li.size()])));
+
+        str = "foo\\,bar";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "foo,bar" }, li.toArray(new String[li.size()])));
+
+        str = "foo\\,bar,foo\\\\bar";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "foo,bar", "foo\\bar" }, li.toArray(new String[li.size()])));
+
+        str = "foo\\\\\\,bar";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "foo\\,bar" }, li.toArray(new String[li.size()])));
+
+        str = "foo\\\\,bar";
+        li = StringUtils.split(str, ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "foo\\", "bar" }, li.toArray(new String[li.size()])));
+
+        str = "foo\\zbar";
+        li = StringUtils.split("foo\\zbar", ',', '\\', false);
+        assertTrue(Arrays.equals(new String[] { "foo\\zbar" }, li.toArray(new String[li.size()])));
     }
 
 }
