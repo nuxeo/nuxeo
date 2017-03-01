@@ -17,7 +17,10 @@
           </p>
           <h:inputText value="#{bean.newInput.name}" class="eightyPercent"></h:inputText>
           <span class="floatR">
-            <h:commandButton type="submit" styleClass="button primary" value="#{messages['label.template.parameter.add']}" action="#{bean.addTemplateInput}" id="button_add" />
+            <h:commandButton styleClass="button primary" value="#{messages['label.template.parameter.add']}"
+               id="button_add" >
+              <f:ajax render="@form" execute="@form" listener="#{bean.addTemplateInput}"/>
+            </h:commandButton>
           </span>
         </div>
         <hr />
