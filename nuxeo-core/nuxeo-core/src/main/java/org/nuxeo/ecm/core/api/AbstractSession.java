@@ -1463,7 +1463,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             charFilteringService.filter(docModel);
         }
 
-        options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
+        DocumentModel previousDocModel = readModel(doc);
+        options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, previousDocModel);
         // regular event, last chance to modify docModel
         options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
         options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
@@ -1487,7 +1488,16 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
         options.put(VersioningService.DISABLE_AUTO_CHECKOUT, disableAutoCheckOut);
 
+        boolean manualVersioning = versioningOption != null;
         if (!docModel.isImmutable()) {
+            // compute auto versioning - here we create a version of document in order to save previous state
+            // it's useful if we want to implement rules like create a version if last contributor is not the same than
+            // previous one. So we want to trigger this mechanism if and only if document have dirty properties, unless
+            // it could just be a manual versioning for instance
+            // no need to fire event, as we use DocumentModel API it's already done
+            if (dirty) {
+                getVersioningService().doAutomaticVersioning(previousDocModel, docModel, true);
+            }
             // pre-save versioning
             boolean checkout = getVersioningService().isPreSaveDoingCheckOut(doc, dirty, versioningOption, options);
             if (checkout) {
@@ -1520,7 +1530,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (checkin) {
                 notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
             }
-            checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
+            if (manualVersioning) {
+                checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
+            } else {
+                // compute auto versioning - only if it is not deactivated by manual versioning
+                // no need to fire event, as we use DocumentModel API it's already done
+                getVersioningService().doAutomaticVersioning(previousDocModel, docModel, false);
+            }
         }
 
         // post-save events

@@ -271,11 +271,11 @@ public class StandardVersioningService implements ExtendableVersioningService {
             lifeCycleState = null;
         }
         if (option == null) {
-            if (options.isEmpty() || options.contains(VersioningOption.NONE)) {
+            if (options.isEmpty() || options.contains(NONE)) {
                 // Valid cases:
                 // - we don't ask for a version and versioning is blocked by configuration
                 // - we don't ask for a version and NONE is available as restriction
-                return VersioningOption.NONE;
+                return NONE;
             } else {
                 // No version is asked but configuration requires that document must be versioned ie: NONE doesn't
                 // appear in restriction contribution
@@ -333,7 +333,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) {
-        if (option != VersioningOption.NONE) {
+        if (option != NONE) {
             incrementByOption(doc, option == MAJOR ? MAJOR : MINOR);
         }
         return doc.checkIn(null, checkinComment); // auto-label
@@ -468,15 +468,29 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
+    public void doAutomaticVersioning(DocumentModel previousDocument, DocumentModel currentDocument, boolean before) {
+        VersioningPolicyDescriptor policy = retrieveMatchingVersioningPolicy(previousDocument, currentDocument, before);
+        if (policy != null && policy.getIncrement() != NONE) {
+            if (before) {
+                if (previousDocument.isCheckedOut()) {
+                    previousDocument.checkIn(policy.getIncrement(), null); // auto label
+                }
+            } else {
+                currentDocument.checkIn(policy.getIncrement(), null); // auto label
+            }
+        }
+    }
+
+    protected VersioningPolicyDescriptor retrieveMatchingVersioningPolicy(DocumentModel previousDocument,
+            DocumentModel currentDocument, boolean before) {
         return versioningPolicies.values()
                                  .stream()
                                  .sorted()
+                                 .filter(policy -> policy.isBeforeUpdate() == before)
                                  .filter(policy -> isPolicyMatch(policy, previousDocument, currentDocument))
-                                 .map(VersioningPolicyDescriptor::getIncrement)
-                                 // Filter out null element - possible if we declare a policy for the initial state for
-                                 // all documents
-                                 .filter(inc -> inc != null)
+                                 // Filter out policy with null increment - possible if we declare a policy for the
+                                 // initial state for all documents
+                                 .filter(policy -> policy.getIncrement() != null)
                                  .findFirst()
                                  .orElse(null);
     }

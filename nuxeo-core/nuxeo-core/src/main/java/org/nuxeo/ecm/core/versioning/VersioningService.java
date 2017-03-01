@@ -157,10 +157,12 @@ public interface VersioningService {
     void doCheckOut(Document doc);
 
     /**
-     * TODO BLABLA
+     * Does automatic versioning if a policy exists for the current input context. Currently automatic versioning is
+     * either before or after document update, never both.
      *
+     * @param before the flag to trigger a before or after automatic versioning (used to retrieve the right policy)
      * @since 9.1
      */
-    VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument);
+    void doAutomaticVersioning(DocumentModel previousDocument, DocumentModel currentDocument, boolean before);
 
 }

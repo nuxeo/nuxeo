@@ -434,8 +434,8 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     }
 
     @Override
-    public VersioningOption getOptionForAutoVersioning(DocumentModel previousDocument, DocumentModel currentDocument) {
-        return service.getOptionForAutoVersioning(previousDocument, currentDocument);
+    public void doAutomaticVersioning(DocumentModel previousDocument, DocumentModel currentDocument, boolean before) {
+        service.doAutomaticVersioning(previousDocument, currentDocument, before);
     }
 
 }
