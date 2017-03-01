@@ -37,6 +37,12 @@ import javax.el.VariableMapper;
 
 import java.util.List;
 
+import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_DOCUMENT;
+import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_USER;
+import static org.nuxeo.ecm.platform.el.ELConstants.DOCUMENT;
+import static org.nuxeo.ecm.platform.el.ELConstants.PREVIOUS_DOCUMENT;
+import static org.nuxeo.ecm.platform.el.ELConstants.PRINCIPAL;
+
 /**
  * @since 9.1
  */
@@ -64,19 +70,15 @@ public class StandardVersioningPolicyFilter implements VersioningPolicyFilter {
             return false;
         }
         DocumentType docType = currentDocument.getDocumentType();
-        if (!schemas.isEmpty() && !schemas.stream().anyMatch(s -> docType.hasSchema(s))) {
+        if (!schemas.isEmpty() && schemas.stream().noneMatch(docType::hasSchema)) {
             return false;
         }
-        if (!facets.isEmpty() && !facets.stream().anyMatch(f -> docType.hasFacet(f))) {
+        if (!facets.isEmpty() && facets.stream().noneMatch(docType::hasFacet)) {
             return false;
         }
         if (!StringUtils.isBlank(condition)) {
-            String cond = condition.trim();
-            // compatibility code, as JEXL could resolve that kind of expression:
-            // detect if expression is in brackets #{}, otherwise add it
-            if (!cond.startsWith("#{") && !cond.startsWith("${") && !cond.endsWith("}")) {
-                cond = "#{" + cond + "}";
-            }
+
+            String cond = evaluateCondition(condition);
 
             ELContext context = Framework.getService(ELService.class).createELContext();
             ExpressionFactory expressionFactory = new ExpressionFactoryImpl();
@@ -90,16 +92,40 @@ public class StandardVersioningPolicyFilter implements VersioningPolicyFilter {
                     DocumentModel.class);
             ValueExpression userExpr = expressionFactory.createValueExpression(ClientLoginModule.getCurrentPrincipal(),
                     NuxeoPrincipal.class);
-            vm.setVariable("previousDocument", previousDocExpr);
-            vm.setVariable("currentDocument", currentDocExpr);
-            vm.setVariable("document", currentDocExpr);
-            vm.setVariable("principal", userExpr);
-            vm.setVariable("currentUser", userExpr);
+            vm.setVariable(PREVIOUS_DOCUMENT, previousDocExpr);
+            vm.setVariable(CURRENT_DOCUMENT, currentDocExpr);
+            vm.setVariable(DOCUMENT, currentDocExpr);
+            vm.setVariable(PRINCIPAL, userExpr);
+            vm.setVariable(CURRENT_USER, userExpr);
 
             // evaluate expression
             ValueExpression ve = expressionFactory.createValueExpression(context, cond, Boolean.class);
             return Boolean.TRUE.equals(ve.getValue(context));
         }
         return true;
+    }
+
+    /**
+     * Evaluate and build a valid condition
+     *
+     * @param condition the initial condition
+     */
+    public static String evaluateCondition(String condition) {
+
+        String cond = condition.trim();
+        // compatibility code, as JEXL could resolve that kind of expression:
+        // detect if expression is in brackets #{}, otherwise add it
+        if (!cond.startsWith("#{") && !cond.startsWith("${") && !cond.endsWith("}")) {
+            cond = "#{" + cond + "}";
+        }
+
+        // Check if there is a null/not-null evaluation on previousDocument, if not
+        // Add a not-null evaluation on it to prevent NPE
+        String p1 = ".*" + PREVIOUS_DOCUMENT + "\\..+";
+        String p2 = ".*" + PREVIOUS_DOCUMENT + "\\s*[!=]=\\s*null.*";
+        if (cond.matches(p1) && !cond.matches(p2)) {
+            cond = "#{" + PREVIOUS_DOCUMENT + " != null && " + cond.substring(2);
+        }
+        return cond;
     }
 }
