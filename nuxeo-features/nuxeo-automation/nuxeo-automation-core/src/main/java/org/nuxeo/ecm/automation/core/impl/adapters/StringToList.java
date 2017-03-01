@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.core.impl.adapters;
 
+import java.util.List;
+
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
@@ -32,8 +34,8 @@ public class StringToList implements TypeAdapter {
     @Override
     public Object getAdaptedValue(OperationContext ctx, Object objectToAdapt) throws TypeAdaptException {
         String content = (String) objectToAdapt;
-        String[] ar = StringUtils.split(content, ',', true);
-        return new StringList(ar);
+        List<String> li = StringUtils.split(content, ',', '\\', true);
+        return new StringList(li);
     }
 
 }
