@@ -589,6 +589,8 @@ limitations under the License.
       _observeVisible: function() {
         if (this.visible) {
           this._clear();
+        } else if (this._waitProgressId) {
+          clearTimeout(this._waitProgressId);
         }
       },
 
@@ -698,7 +700,7 @@ limitations under the License.
         };
         this.$.csvImportRes.post().then(function(res) {
           this.stage = 'progress';
-          window.setTimeout(this._waitForProgress.bind(this), 500, res);
+          this._waitProgressId = window.setTimeout(this._waitForProgress.bind(this), 500, res);
         }.bind(this), this._handleError.bind(this));
       },
 
@@ -719,9 +721,10 @@ limitations under the License.
             } else {
               this.progressLabel = this.i18n('csv.import.progress.statusWithoutTotal', this._count);
             }
-            window.setTimeout(this._waitForProgress.bind(this), 800, importId);
+            this._waitProgressId = window.setTimeout(this._waitForProgress.bind(this), 800, importId);
           } else if (status.state === 'COMPLETED') {
             this._count = status.numberOfProcessedDocument;
+            this._waitProgressId = null;
             if (this._count < 0) {
               this._error = true;
             } else {
@@ -742,6 +745,9 @@ limitations under the License.
         if (this.stage === 'progress' && this._count > 0) {
           this.fire('document-updated');
           page('/browse' + this.targetPath);
+        }
+        if (this._waitProgressId) {
+          clearTimeout(this._waitProgressId);
         }
       }
 
