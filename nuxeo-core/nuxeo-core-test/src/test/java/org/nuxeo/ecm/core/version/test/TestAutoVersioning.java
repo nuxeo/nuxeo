@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import org.junit.Test;
@@ -212,6 +213,66 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertEquals("1.0", doc.getVersionLabel());
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-always-minor.xml")
+    public void testAutoVersioningBeforeAlwaysMinor() {
+        // No initial state defined by policy
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
+        doc = session.createDocument(doc);
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+        // get last version (document before update)
+        DocumentModel lastVersion = session.getLastDocumentVersion(doc.getRef());
+        assertFalse(lastVersion.isCheckedOut());
+        assertEquals("0.1", lastVersion.getVersionLabel());
+        assertTrue(doc.isCheckedOut());
+        assertEquals("0.1+", doc.getVersionLabel());
+
+        // an edition should create a version
+        doc.setPropertyValue("dc:title", "B");
+        doc = session.saveDocument(doc);
+        // get last version (document before update)
+        lastVersion = session.getLastDocumentVersion(doc.getRef());
+        assertFalse(lastVersion.isCheckedOut());
+        assertEquals("0.2", lastVersion.getVersionLabel());
+        assertTrue(doc.isCheckedOut());
+        assertEquals("0.2+", doc.getVersionLabel());
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-before-minor-after-major.xml")
+    public void testAutoVersioningBeforeAlwaysMinorAfterAlwaysMajor() {
+        // No initial state defined by policy
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
+        doc = session.createDocument(doc);
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+        // get versions (document before update)
+        List<DocumentModel> versions = session.getVersions(doc.getRef());
+        assertEquals(2, versions.size());
+        DocumentModel versionBefore = versions.get(0);
+        DocumentModel versionAfter = versions.get(1);
+        assertFalse(versionBefore.isCheckedOut());
+        assertEquals("0.1", versionBefore.getVersionLabel());
+        assertFalse(versionAfter.isCheckedOut());
+        assertEquals("1.0", versionAfter.getVersionLabel());
+        assertFalse(doc.isCheckedOut());
+        assertEquals("1.0", doc.getVersionLabel());
+
+        // an edition should create a version
+        doc.setPropertyValue("dc:title", "B");
+        doc = session.saveDocument(doc);
+        // get versions (document before update)
+        versions = session.getVersions(doc.getRef());
+        // as document before update was already a version - service will just create one new version
+        assertEquals(3, versions.size());
+        versionAfter = versions.get(2);
+        assertFalse(versionAfter.isCheckedOut());
+        assertEquals("2.0", versionAfter.getVersionLabel());
+        assertFalse(doc.isCheckedOut());
+        assertEquals("2.0", doc.getVersionLabel());
     }
 
     /** A custom filter for tests. */

@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 @XObject("policy")
 public class VersioningPolicyDescriptor implements Serializable, Comparable<VersioningPolicyDescriptor> {
 
-    protected static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @XNode("@id")
     protected String id;
@@ -45,8 +45,11 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
     @XNode("@increment")
     protected VersioningOption increment;
 
+    @XNode("@beforeUpdate")
+    protected boolean beforeUpdate;
+
     @XNode("initialState")
-    public InitialStateDescriptor initialState;
+    protected InitialStateDescriptor initialState;
 
     @XNodeList(value = "filter-id", componentType = String.class, type = ArrayList.class)
     protected List<String> filterIds = new ArrayList<>();
@@ -61,6 +64,10 @@ public class VersioningPolicyDescriptor implements Serializable, Comparable<Vers
 
     public VersioningOption getIncrement() {
         return increment;
+    }
+
+    public boolean isBeforeUpdate() {
+        return beforeUpdate;
     }
 
     public InitialStateDescriptor getInitialState() {
