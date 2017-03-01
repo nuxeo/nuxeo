@@ -89,6 +89,59 @@ public final class StringUtils {
         return toAscii(s, false);
     }
 
+    /**
+     * Split the given string.
+     *
+     * @param str the string to split
+     * @param delimiter the delimiter to split with
+     * @param escape the character used to escape the delimiter
+     * @param trim trim the extracted segments
+     * @return the list of strings computed by splitting this string
+     * @since 9.1
+     */
+    public static List<String> split(String str, char delimiter, char escape, boolean trim) {
+        if (delimiter == escape) {
+            throw new IllegalArgumentException("Delimiter cannot be the escape character");
+        }
+        List<String> ar = new ArrayList<>();
+        StringBuilder segment = new StringBuilder();
+        int i = 0;
+        int length = str.length();
+        boolean lastCharDelimiter = false;
+        while (i < length) {
+            char c = str.charAt(i);
+            if (c == escape) {
+                if (i < length - 2) {
+                    char nextC = str.charAt(i + 1);
+                    if (nextC == delimiter || nextC == escape) {
+                        segment.append(nextC);
+                        i = i + 2;
+                    } else {
+                        segment.append(c);
+                        i++;
+                    }
+                } else {
+                    segment.append(c);
+                    i++;
+                }
+            } else if (c == delimiter) {
+                ar.add(trim ? segment.toString().trim() : segment.toString());
+                segment = new StringBuilder();
+                if (i == length - 1) {
+                    lastCharDelimiter = true;
+                }
+                i++;
+            } else {
+                segment.append(c);
+                i++;
+            }
+        }
+        if (segment.length() > 0 || lastCharDelimiter) {
+            ar.add(trim ? segment.toString().trim() : segment.toString());
+        }
+        return ar;
+    }
+
     public static String[] split(String str, char delimiter, boolean trim) {
         int s = 0;
         int e = str.indexOf(delimiter, s);
