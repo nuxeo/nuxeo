@@ -3,7 +3,7 @@
   "csv.import.description" : "Import de documents en masse dans la plateforme Nuxeo à partir d'un fichier CSV",
   "csv.import.clickOrDrop": "Cliquer pour sélectionner un fichier csv ou déposer le téléverser.",
   "csv.import.option.emailReport": "Recevoir un rapport de l'import par email.",
-  "csv.import.option.useImportMode=": "Activer le mode import de document.",
+  "csv.import.option.useImportMode=": "Générer les métadonnées Date, Author et Dublin Core.",
   "csv.import.progress.statusWithTotal": "Import de l'entrée #{0} sur {1}",
   "csv.import.progress.statusWithoutTotal": "Import de l'entrée #{0}",
   "csv.import.error": "Un erreur s'est produite pendant l'import csv.",
