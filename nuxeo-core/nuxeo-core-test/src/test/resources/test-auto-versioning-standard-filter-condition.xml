@@ -9,7 +9,7 @@
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
     <filter id="standard">
-      <condition>#{previousDocument != null &amp;&amp; previousDocument.dc.title != currentDocument.dc.title}</condition>
+      <condition>#{previousDocument.dc.title != currentDocument.dc.title}</condition>
     </filter>
   </extension>
 
