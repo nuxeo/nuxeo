@@ -22,8 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
@@ -130,9 +132,8 @@ public class TestBulkEditService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-noversion-contrib.xml")
     public void testBulkEditNoVersion() throws Exception {
-        URL url = getClass().getClassLoader().getResource("test-bulkedit-noversion-contrib.xml");
-        runtimeHarness.deployTestContrib("org.nuxeo.ecm.webapp.base", url);
 
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
@@ -153,9 +154,8 @@ public class TestBulkEditService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-majorversion-contrib.xml")
     public void testBulkEditMajorVersion() throws Exception {
-        URL url = getClass().getClassLoader().getResource("test-bulkedit-majorversion-contrib.xml");
-        runtimeHarness.deployTestContrib("org.nuxeo.ecm.webapp.base", url);
 
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
@@ -177,6 +177,24 @@ public class TestBulkEditService {
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
             assertEquals("1.0", version.getVersionLabel());
+        }
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-restricted-version-options.xml")
+    public void testBulkEditAutoVersioningFailure() throws Exception {
+
+        List<DocumentModel> docs = createTestDocuments();
+        DocumentModel sourceDoc = buildSimpleDocumentModel();
+
+        try {
+            bulkEditService.updateDocuments(session, sourceDoc, docs);
+            fail("Creating documents should have failed as the version option does not exist");
+        } catch (NuxeoException e) {
+            assertEquals(
+                    "Versioning option=" + BulkEditServiceImpl.DEFAULT_VERSIONING_OPTION.toString()
+                            + " is not allowed by the configuration for type=File/lifeCycleState=project",
+                    e.getMessage());
         }
     }
 
