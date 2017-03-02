@@ -414,4 +414,13 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
     }
 
+    @Test
+    public void testExtendsAppendTypes() throws Exception {
+        // test appending types which extend another document
+        deployContrib("org.nuxeo.ecm.core.schema.tests", "OSGI-INF/test-extends-append-doctypes.xml");
+        DocumentType t = schemaManager.getDocumentType("MyMergeableFolder");
+        assertEquals(t.getFacets(), new HashSet(Arrays.asList("specdoc", "specdoc2", "specdoc3", "specdoc4")));
+        assertEquals(t.getAllowedSubtypes(), new HashSet(Arrays.asList("myDoc2", "myDoc3", "myDoc4")));
+    }
+
 }
