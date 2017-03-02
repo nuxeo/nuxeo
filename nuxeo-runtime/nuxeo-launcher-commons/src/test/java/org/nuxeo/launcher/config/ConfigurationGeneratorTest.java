@@ -21,17 +21,23 @@ package org.nuxeo.launcher.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -347,6 +353,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     protected void checkJavaVersions(boolean compliant) {
         // ok
+        checkJavaVersion(true, "1.7.0_10", "1.7.0_1");
+        checkJavaVersion(true, "1.8.0_92", "1.7.0_1");
         checkJavaVersion(true, "1.8.0_40", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_45", "1.8.0_40");
         checkJavaVersion(true, "1.8.0_101", "1.8.0_40");
@@ -367,6 +375,103 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     protected void checkJavaVersion(boolean compliant, String version, String requiredVersion) {
         assertTrue(version + " vs " + requiredVersion,
                 compliant == ConfigurationGenerator.checkJavaVersion(version, requiredVersion, true, false));
+    }
+
+    @Test
+    public void testCheckJavaVersionCompliant() throws Exception {
+        final LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN);
+        Logger.getRootLogger().addAppender(logCaptureAppender);
+        try {
+            // Nuxeo 6.0 case
+            ConfigurationGenerator.checkJavaVersion("1.7.0_10", new String[] { "1.7.0_1", "1.8.0_1" });
+            assertTrue(logCaptureAppender.isEmpty());
+            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1", "1.8.0_1" });
+            assertTrue(logCaptureAppender.isEmpty());
+            // Nuxeo 7.10/8.10 case
+            ConfigurationGenerator.checkJavaVersion("1.8.0_50", new String[] { "1.8.0_40" });
+            assertTrue(logCaptureAppender.isEmpty());
+
+            // may log warn message cases
+            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.7.0_1" });
+            assertEquals(1, logCaptureAppender.size());
+            assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.8.0_92).", logCaptureAppender.get(0));
+            logCaptureAppender.clear();
+
+            ConfigurationGenerator.checkJavaVersion("1.8.0_92", new String[] { "1.6.0_1", "1.7.0_1" });
+            assertEquals(1, logCaptureAppender.size());
+            assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.8.0_92).", logCaptureAppender.get(0));
+            logCaptureAppender.clear();
+
+            // jvmcheck=nofail case
+            runJVMCheck(false, new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
+                        assertEquals(1, logCaptureAppender.size());
+                        assertEquals("Nuxeo requires Java 1.7.0_1+ (detected 1.6.0_1).", logCaptureAppender.get(0));
+                        logCaptureAppender.clear();
+                    } catch (Exception e) {
+                        fail("Exception thrown " + e.getMessage());
+                    }
+                }
+
+            });
+
+            // fail case
+            try {
+                ConfigurationGenerator.checkJavaVersion("1.6.0_1", new String[] { "1.7.0_1" });
+            } catch (ConfigurationException ce) {
+                assertEquals("Nuxeo requires Java {1.7.0_1} (detected 1.6.0_1). See 'jvmcheck' option to bypass version check.", ce.getMessage());
+            }
+        } finally {
+            Logger.getRootLogger().removeAppender(logCaptureAppender);
+        }
+    }
+
+    private static class LogCaptureAppender extends AppenderSkeleton {
+
+        private final List<String> messages = new ArrayList<>();
+
+        private final Level level;
+
+        public LogCaptureAppender(Level level) {
+            this.level = level;
+        }
+
+        @Override
+        protected void append(LoggingEvent event) {
+            if ("org.nuxeo.launcher.config.ConfigurationGenerator".equals(event.getLoggerName()) && level.equals(event.getLevel())) {
+                messages.add(event.getRenderedMessage());
+            }
+        }
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public boolean requiresLayout() {
+            return false;
+        }
+
+        public boolean isEmpty() {
+            return messages.isEmpty();
+        }
+
+        public String get(int i) {
+            return messages.get(i);
+        }
+
+        public int size() {
+            return messages.size();
+        }
+
+        public void clear() {
+            messages.clear();
+        }
+
     }
 
 }
