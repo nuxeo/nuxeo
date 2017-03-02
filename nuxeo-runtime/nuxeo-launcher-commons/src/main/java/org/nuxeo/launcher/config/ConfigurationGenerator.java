@@ -47,7 +47,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -1240,12 +1242,54 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public void checkJavaVersion() throws ConfigurationException {
-        String requiredVersion = COMPLIANT_JAVA_VERSIONS[0];
         String version = System.getProperty("java.version");
-        if (!checkJavaVersion(version, requiredVersion, true, true)) {
-            String message = String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version);
-            throw new ConfigurationException(message + " See '" + JVMCHECK_PROP + "' option to bypass version check.");
+        checkJavaVersion(version, COMPLIANT_JAVA_VERSIONS);
+    }
+
+    /**
+     * Check the java version compared to compliant ones.
+     *
+     * @param version the java version
+     * @param compliantVersions the compliant java versions
+     * @since 9.1
+     */
+    protected static void checkJavaVersion(String version, String[] compliantVersions) throws ConfigurationException {
+        // compliantVersions represents the java versions on which Nuxeo runs perfectly, so:
+        // - if we run Nuxeo with a major java version present in compliantVersions and compatible with then this
+        // method exits without error and without logging a warn message about loose compliance
+        // - if we run Nuxeo with a major java version not present in compliantVersions but greater than once then
+        // this method exits without error and logs a warn message about loose compliance
+        // - if we run Nuxeo with a non valid java version then method exits with error
+        // - if we run Nuxeo with a non valid java version and with jvmcheck=nofail property then method exits without
+        // error and logs a warn message about loose compliance
+
+        // try to retrieve the closest compliant java version
+        String lastCompliantVersion = null;
+        for (String compliantVersion : compliantVersions) {
+            if (checkJavaVersion(version, compliantVersion, false, false)) {
+                // current compliant version is valid, go to next one
+                lastCompliantVersion = compliantVersion;
+            } else if (lastCompliantVersion != null) {
+                // current compliant version is not valid, but we found a valid one earlier, 1st case
+                return;
+            } else if (checkJavaVersion(version, compliantVersion, true, true)) {
+                // current compliant version is not valid, try to check java version with jvmcheck=nofail, 4th case
+                // here we will log about loose compliance for the lower compliant java version
+                return;
+            }
         }
+        // we might have lastCompliantVersion, unless nothing is valid against the current java version
+        if (lastCompliantVersion != null) {
+            // 2nd case: log about loose compliance if current major java version is greater than the greatest
+            // compliant java version
+            checkJavaVersion(version, lastCompliantVersion, false, true);
+            return;
+        }
+
+        // 3th case
+        String message = String.format("Nuxeo requires Java %s (detected %s).", ArrayUtils.toString(compliantVersions),
+                version);
+        throw new ConfigurationException(message + " See '" + JVMCHECK_PROP + "' option to bypass version check.");
     }
 
     /**
@@ -1275,7 +1319,10 @@ public class ConfigurationGenerator {
             if (!compliant && !allowNoFailFlag) {
                 return false;
             }
-            log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
+            // greater major version or noFail is present in system property, considered loosely compliant but may warn
+            if (warnIfLooseCompliance) {
+                log.warn(String.format("Nuxeo requires Java %s+ (detected %s).", requiredVersion, version));
+            }
             return true;
         } catch (java.text.ParseException cause) {
             if (allowNoFailFlag) {
