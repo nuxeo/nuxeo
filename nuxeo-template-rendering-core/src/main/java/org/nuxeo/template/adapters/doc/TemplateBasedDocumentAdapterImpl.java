@@ -64,10 +64,11 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
     protected final TemplateBindings bindings;
 
     public TemplateBasedDocumentAdapterImpl(DocumentModel doc) {
-        this.adaptedDoc = doc;
+        adaptedDoc = doc;
         bindings = new TemplateBindings(doc);
     }
 
+    @Override
     public DocumentModel setTemplate(DocumentModel template, boolean save) {
 
         TemplateSourceDocument source = template.getAdapter(TemplateSourceDocument.class);
@@ -94,6 +95,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return adaptedDoc;
     }
 
+    @Override
     public DocumentModel removeTemplateBinding(String templateName, boolean save) {
         if (bindings.containsTemplateName(templateName)) {
             bindings.removeByName(templateName);
@@ -105,6 +107,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return adaptedDoc;
     }
 
+    @Override
     public TemplateSourceDocument getSourceTemplate(String templateName) {
         DocumentModel template = getSourceTemplateDoc(templateName);
         if (template != null) {
@@ -127,6 +130,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return new IdRef(binding.getTemplateId());
     }
 
+    @Override
     public DocumentModel getSourceTemplateDoc(String templateName) {
         TemplateBinding binding = null;
         if (templateName == null) {
@@ -148,6 +152,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         }
     }
 
+    @Override
     public List<TemplateSourceDocument> getSourceTemplates() {
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
         for (TemplateBinding binding : bindings) {
@@ -159,6 +164,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return result;
     }
 
+    @Override
     public String getTemplateType(String templateName) {
         TemplateSourceDocument source = getSourceTemplate(templateName);
         if (source != null) {
@@ -171,6 +177,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return initializeFromTemplate(TemplateBindings.DEFAULT_BINDING, save);
     }
 
+    @Override
     public DocumentModel initializeFromTemplate(String templateName, boolean save) {
 
         TemplateSourceDocument tmpl = getSourceTemplate(templateName);
@@ -214,6 +221,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
+    @Override
     public Blob renderWithTemplate(String templateName) {
         TemplateProcessor processor = getTemplateProcessor(templateName);
         if (processor != null) {
@@ -253,21 +261,22 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         String chainId = outFormat.getChainId();
         String mimeType = outFormat.getMimeType();
         AutomationService automationService = Framework.getLocalService(AutomationService.class);
-        OperationContext ctx = initOperationContext(blob, templateName);
-        Object result = null;
-        if (chainId != null) {
-            ctx.put("templateSourceDocument", getSourceTemplateDoc(templateName));
-            ctx.put("templateBasedDocument", adaptedDoc);
-            result = automationService.run(ctx, chainId);
-        } else if (mimeType != null) {
-            OperationChain chain = new OperationChain("convertToMimeType");
-            chain.add(ConvertBlob.ID).set("mimeType", mimeType);
-            result = automationService.run(ctx, chain);
-        }
-        if (result != null && result instanceof Blob) {
-            return (Blob) result;
-        } else {
-            return blob;
+        try (OperationContext ctx = initOperationContext(blob, templateName)) {
+            Object result = null;
+            if (chainId != null) {
+                ctx.put("templateSourceDocument", getSourceTemplateDoc(templateName));
+                ctx.put("templateBasedDocument", adaptedDoc);
+                result = automationService.run(ctx, chainId);
+            } else if (mimeType != null) {
+                OperationChain chain = new OperationChain("convertToMimeType");
+                chain.add(ConvertBlob.ID).set("mimeType", mimeType);
+                result = automationService.run(ctx, chain);
+            }
+            if (result != null && result instanceof Blob) {
+                return (Blob) result;
+            } else {
+                return blob;
+            }
         }
     }
 
@@ -280,6 +289,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return ctx;
     }
 
+    @Override
     public Blob renderAndStoreAsAttachment(String templateName, boolean save) {
         Blob blob = renderWithTemplate(templateName);
         setBlob(blob);
@@ -297,6 +307,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return false;
     }
 
+    @Override
     public Blob getTemplateBlob(String templateName) {
         TemplateSourceDocument source = getSourceTemplate(templateName);
         if (source != null) {
@@ -322,10 +333,12 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         }
     }
 
+    @Override
     public boolean hasParams(String templateName) {
         return getParams(templateName).size() > 0;
     }
 
+    @Override
     public List<TemplateInput> getParams(String templateName) {
 
         TemplateBinding binding = bindings.get(templateName);
@@ -341,6 +354,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return new ArrayList<TemplateInput>();
     }
 
+    @Override
     public DocumentModel saveParams(String templateName, List<TemplateInput> params, boolean save) {
         TemplateBinding binding = bindings.get(templateName);
         if (binding != null) {
@@ -363,6 +377,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return tps.getOutputFormatDescriptor(outputFormat);
     }
 
+    @Override
     public boolean hasEditableParams(String templateName) {
         for (TemplateInput param : getParams(templateName)) {
             if (!param.isReadOnly()) {
@@ -372,6 +387,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return false;
     }
 
+    @Override
     public String getTemplateNameForRendition(String renditionName) {
         for (TemplateBinding binding : bindings) {
             TemplateSourceDocument template = getSourceTemplate(binding.getName());
@@ -382,6 +398,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return null;
     }
 
+    @Override
     public List<String> getTemplateNames() {
         return bindings.getNames();
     }
