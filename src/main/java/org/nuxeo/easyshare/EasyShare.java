@@ -101,9 +101,7 @@ public class EasyShare extends ModuleRoot {
             return getView("denied");
           }
 
-          try {
-
-            OperationContext opCtx = new OperationContext(session);
+          try (OperationContext opCtx = new OperationContext(session)) {
             OperationChain chain = new OperationChain("getEasyShareContent");
             chain.add("Document.Query")
                 .set("query", query)
@@ -217,53 +215,52 @@ public class EasyShare extends ModuleRoot {
     return (Response) new EasyShareUnrestrictedRunner() {
       @Override
       public Object run(CoreSession session, IdRef docRef) throws NuxeoException {
-        if (session.exists(docRef)) {
-          try {
-            DocumentModel doc = session.getDocument(docRef);
-            DocumentModel docShare = session.getDocument(new IdRef(shareId));
+                if (session.exists(docRef)) {
+                    DocumentModel doc = session.getDocument(docRef);
+                    try (OperationContext ctx = new OperationContext(session)) {
+                        DocumentModel docShare = session.getDocument(new IdRef(shareId));
 
-            if (!checkIfShareIsValid(docShare)) {
-              return Response.serverError().status(Response.Status.NOT_FOUND).build();
+                        if (!checkIfShareIsValid(docShare)) {
+                            return Response.serverError().status(Response.Status.NOT_FOUND).build();
+                        }
+
+                        Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
+
+                        // Audit Log
+                        ctx.setInput(doc);
+
+                        // Audit.Log automation parameter setting
+                        Map<String, Object> params = new HashMap<>();
+                        params.put("event", "Download");
+                        params.put("category", "Document");
+                        params.put("comment", "IP: " + getIpAddr());
+                        AutomationService service = Framework.getLocalService(AutomationService.class);
+                        service.run(ctx, "Audit.Log", params);
+
+                        if (doc.isProxy()) {
+                            DocumentModel liveDoc = session.getSourceDocument(docRef);
+                            ctx.setInput(liveDoc);
+                            service.run(ctx, "Audit.Log", params);
+
+                        }
+
+                        // Email notification
+                        Map<String, Object> mail = new HashMap<>();
+                        mail.put("filename", blob.getFilename());
+                        sendNotification("easyShareDownload", docShare, mail);
+
+                        return Response.ok(blob.getStream(), blob.getMimeType()).build();
+
+                    } catch (Exception ex) {
+                        log.error("error ", ex);
+                        return Response.serverError().status(Response.Status.NOT_FOUND).build();
+                    }
+
+                } else {
+                    return Response.serverError().status(Response.Status.NOT_FOUND).build();
+                }
             }
-
-            Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
-
-            // Audit Log
-            OperationContext ctx = new OperationContext(session);
-            ctx.setInput(doc);
-
-            // Audit.Log automation parameter setting
-            Map<String, Object> params = new HashMap<>();
-            params.put("event", "Download");
-            params.put("category", "Document");
-            params.put("comment", "IP: " + getIpAddr());
-            AutomationService service = Framework.getLocalService(AutomationService.class);
-            service.run(ctx, "Audit.Log", params);
-
-            if (doc.isProxy()) {
-              DocumentModel liveDoc = session.getSourceDocument(docRef);
-              ctx.setInput(liveDoc);
-              service.run(ctx, "Audit.Log", params);
-
-            }
-
-            // Email notification
-            Map<String, Object> mail = new HashMap<>();
-            mail.put("filename", blob.getFilename());
-            sendNotification("easyShareDownload", docShare, mail);
-
-            return Response.ok(blob.getStream(), blob.getMimeType()).build();
-
-          } catch (Exception ex) {
-            log.error("error ", ex);
-            return Response.serverError().status(Response.Status.NOT_FOUND).build();
-          }
-
-        } else {
-          return Response.serverError().status(Response.Status.NOT_FOUND).build();
-        }
-      }
-    }.runUnrestricted(fileId);
+        }.runUnrestricted(fileId);
 
   }
 
