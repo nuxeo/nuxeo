@@ -186,11 +186,12 @@ public class TestQuotaViaAutomation {
     }
 
     protected Long setQuota(DocumentRef docRef, long size) throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        OperationChain chain = new OperationChain("fakeChain");
-        chain.add(SetQuotaInfoOperation.ID).set("documentRef", docRef).set("targetSize", size);
+        try (OperationContext ctx = new OperationContext(session)) {
+            OperationChain chain = new OperationChain("fakeChain");
+            chain.add(SetQuotaInfoOperation.ID).set("documentRef", docRef).set("targetSize", size);
 
-        return (Long) automationService.run(ctx, chain);
+            return (Long) automationService.run(ctx, chain);
+        }
     }
 
     @Test
