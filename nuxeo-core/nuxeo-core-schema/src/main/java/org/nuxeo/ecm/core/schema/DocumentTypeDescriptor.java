@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -130,6 +131,12 @@ public class DocumentTypeDescriptor {
             }
         }
 
+        // update supertype
+        if (StringUtils.isEmpty(superTypeName) && StringUtils.isNotEmpty(other.superTypeName)) {
+            superTypeName = other.superTypeName;
+        }
+
+        // merge subtypes
         if (subtypes == null) {
             subtypes = other.subtypes;
         } else if (other.subtypes != null) {
