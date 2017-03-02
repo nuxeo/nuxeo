@@ -590,7 +590,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.template.rendering</groupId>
-        <artifactId>nuxeo-template-rendering-web</artifactId>
+        <artifactId>nuxeo-template-rendering-jaxrs-web-ui</artifactId>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jsf</artifactId>
         <version>${nuxeo.templates.version}</version>
       </dependency>
       <dependency>
@@ -607,6 +612,17 @@
         <groupId>org.nuxeo.template.rendering</groupId>
         <artifactId>nuxeo-template-rendering-core-dependencies</artifactId>
         <type>pom</type>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-jsf-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.templates.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.template.rendering</groupId>
+        <artifactId>nuxeo-template-rendering-web-ui</artifactId>
         <version>${nuxeo.templates.version}</version>
       </dependency>
 
