@@ -130,6 +130,13 @@ public class DocumentTypeDescriptor {
             }
         }
 
+        // update supertype
+        if ((superTypeName == null || superTypeName.isEmpty()) &&
+            (other.superTypeName != null && !other.superTypeName.isEmpty())) {
+            superTypeName = other.superTypeName;
+        }
+
+        // merge subtypes
         if (subtypes == null) {
             subtypes = other.subtypes;
         } else if (other.subtypes != null) {
