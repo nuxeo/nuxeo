@@ -16,10 +16,6 @@
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-jsf</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.template.rendering</groupId>
-      <artifactId>nuxeo-template-rendering-jaxrs-jsf</artifactId>
-    </dependency>
   </dependencies>
 
 </project>

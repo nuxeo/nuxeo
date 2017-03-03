@@ -22,24 +22,135 @@ limitations under the License.
 <dom-module id="nuxeo-webtemplatesource-view-layout">
 
   <template>
+
+    <style>
+      nuxeo-data-table ::content #items {
+        background-color: #fff;
+      }
+
+      nuxeo-data-table ::content nuxeo-data-table-row:not([header]):hover {
+        @apply(--nuxeo-block-hover);
+      }
+
+      nuxeo-data-table ::content #container iron-list#list::after {
+        background-color: transparent;
+        content:'';
+        display: block;
+        height: 4em;
+      }
+
+      nuxeo-data-table {
+        min-height: calc(25vh);
+      }
+
+      #templateBasedDatatable {
+        border: 2px solid transparent;
+      }
+
+      .ellipsis {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: block;
+        width: calc(100% - 38px);
+      }
+
+      .queue-thumbnail {
+        height: 32px;
+        width: 32px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        margin-right: 8px;
+      }
+
+      .queue-thumbnail ::content img {
+        height: 32px;
+        width: 32px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        margin-right: 8px;
+      }
+    </style>
+
+    <nuxeo-connection id="nxcon"></nuxeo-connection>
+    <nuxeo-page-provider id="templateBasedDocs"
+                         provider="template_based"
+                         page-size="10"
+                         enrichers="thumbnail"
+                         params="[[_buildParams(document)]]">
+    </nuxeo-page-provider>
+
     <nuxeo-note-editor role="widget" document="[[document]]"></nuxeo-note-editor>
+
+    <div class="card-content">
+      <div class="vertical layout">
+        <h2>[[i18n('templateSourceViewLayout.templateBasedDocuments.heading')]]</h2>
+        <nuxeo-data-table id="templateBasedDatatable"
+                          nx-provider="templateBasedDocs"
+                          empty-label="[[i18n('templateSourceViewLayout.templateBasedDocuments.noDocument')]]"
+                          empty-label-when-filtered="[[i18n('templateSourceViewLayout.templateBasedDocuments.noDocumentWhenFiltered')]]"
+                          on-row-clicked="_navigate">
+          <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.title')]]" flex="100">
+            <template>
+              <img class="queue-thumbnail" src="[[_thumbnail(item)]]">
+              <a class="ellipsis" href$="[[urlFor('browse', item.path)]]">[[item.title]]</a>
+            </template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('recentDocumentsTable.type')]]" flex="50">
+            <template>
+              [[item.type]]
+            </template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('recentDocumentsTable.lastViewed')]]" flex="50">
+            <template>
+              [[formatDate(item.lastViewed)]]
+            </template>
+          </nuxeo-data-table-column>
+        </nuxeo-data-table>
+      </div>
+    </div>
+    </paper-card>
   </template>
 
   <script>
-    (function() {
-      'use strict';
-
-      Polymer({
-        is: 'nuxeo-webtemplatesource-view-layout',
-        behaviors: [Nuxeo.LayoutBehavior],
-        properties: {
-          /**
-          * @doctype WebTemplateSource
-          */
-          document: Object
+    Polymer({
+      is: 'nuxeo-webtemplatesource-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+        * @doctype WebTemplateSource
+        */
+        document: {
+          type: Object,
+          observer: '_documentChanged'
         }
-      });
-    })();
+      },
+
+      _documentChanged: function() {
+        if (this.document) {
+          this.$.templateBasedDocs.fetch();
+        }
+      },
+
+      _buildParams: function() {
+        return ['"' + this.document.uid + '"', 0];
+      },
+
+      _thumbnail: function(doc) {
+        if (doc && doc.uid) {
+          if (doc.contextParameters && doc.contextParameters.thumbnail.url) {
+            return doc.contextParameters.thumbnail.url;
+          } else {
+            var baseUrl = this.$.nxcon.url;
+            return baseUrl + '/api/v1/id/' + doc.uid + '/@rendition/thumbnail';
+          }
+        }
+      },
+
+      _navigate: function(e) {
+        window.location = this.urlFor('browse', e.detail.item.path);
+      }
+    });
   </script>
 
 </dom-module>

@@ -24,7 +24,6 @@
     <module>nuxeo-template-rendering-sandbox</module>
     <module>nuxeo-template-rendering-jsf</module>
     <module>nuxeo-template-rendering-jaxrs</module>
-    <module>nuxeo-template-rendering-jaxrs-jsf</module>
     <module>nuxeo-template-rendering-jaxrs-web-ui</module>
     <module>nuxeo-template-rendering-samples</module>
     <module>nuxeo-template-rendering-deckjs</module>

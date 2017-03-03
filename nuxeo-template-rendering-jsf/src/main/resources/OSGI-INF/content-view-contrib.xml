@@ -16,19 +16,6 @@
         <parameter>#{templateActions.checkedInVersion}</parameter>
       </pageProvider>
 
-      <!--<coreQueryPageProvider>
-        <property name="coreSession">#{documentManager}</property>
-        <pattern>
-          SELECT * FROM Document WHERE ecm:mixinType = 'TemplateBased' AND
-          ecm:currentLifeCycleState != 'deleted' AND
-          nxts:bindings/*/templateId IN ? AND ecm:isCheckedInVersion = ?
-        </pattern>
-        <parameter>#{templateActions.templateAndVersionsUUIDs}</parameter>
-        <parameter>#{templateActions.checkedInVersion}</parameter>
-        <sort column="dc:title" ascending="true" />
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>-->
-
       <showFilterForm>false</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>

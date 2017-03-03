@@ -3,4 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Document template Web UI
 Bundle-SymbolicName: org.nuxeo.template.manager.webui;singleton:=true
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/nuxeo-template-rendering-webresources-contrib.xml
+Nuxeo-Component: OSGI-INF/nuxeo-template-rendering-webresources-contrib.xml,
+ OSGI-INF/operations-contrib.xml

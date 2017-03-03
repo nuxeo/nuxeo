@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.TemplateSources.webui.operations" version="1.0">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+
+    <scriptedOperation id="javascript.FilterTemplatesByType">
+      <inputType>document</inputType>
+      <outputType>documents</outputType>
+      <category>javascript</category>
+      <description>Filter templates according to the type of a given input document.</description>
+      <script><![CDATA[
+        function run(input, params) {
+          return Repository.Query(null, {
+            'query': 'select * from Document where ecm:mixinType = "Template" AND ecm:currentLifeCycleState != "deleted" AND tmpl:applicableTypes IN ( "all", "' + input['type'] + '")'
+          });
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="javascript.RenderPdf">
+      <inputType>document</inputType>
+      <outputType>blob</outputType>
+      <category>javascript</category>
+      <param name="templateName" type="string"/>
+      <param name="attach" type="boolean"/>
+      <param name="templateData" type="string"/>
+      <description>Render a document with a given template and converts it to PDF.</description>
+      <script><![CDATA[
+        function run(input, params) {
+          var blob = TemplateProcessor.Render(input, {
+            'templateName': params.templateName,
+            'attach': params.attach || false,
+            'templateData': params.templateData || null
+          });
+          return Blob.RunConverter(blob, {'converter': 'any2pdf'});
+        }
+      ]]></script>
+    </scriptedOperation>
+    
+  </extension>
+  
+</component>

@@ -28,31 +28,6 @@ limitations under the License.
         display: inline-block;
       }
 
-      ::content iron-icon:hover {
-        fill: var(--nuxeo-link-hover-color);
-      }
-
-      paper-dropdown-menu {
-        width: 250px;
-      }
-
-      paper-button:hover {
-        @apply(--nx-button-hover);
-      }
-
-      paper-button.primary {
-        @apply(--nx-button-primary);
-      }
-
-      paper-button.primary:hover,
-      paper-button.primary:focus {
-        @apply(--nx-button-primary-hover);
-      }
-
-      paper-button[disabled] {
-        @apply(--nx-button-disabled);
-      }
-
       #dialog {
         width: 512px;
       }
@@ -93,7 +68,7 @@ limitations under the License.
   <script>
     Polymer({
       is: 'nuxeo-delete-template-button',
-      behaviors: [Nuxeo.I18nBehavior],
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.RoutingBehavior],
       properties: {
         /**
          * The template to be deleted
@@ -107,11 +82,10 @@ limitations under the License.
 
       _delete: function() {
         this.$.deleteTemplatesOp.input = this.document.uid;
-        this.$.deleteTemplatesOp.execute().then(function() {
-          this.$.template.remove().then(function() {
-            page('/doc/' + this.document.parentRef);
-          }.bind(this));
-        }.bind(this));
+        this.$.deleteTemplatesOp.execute().then(this.$.template.remove.bind(this.$.template))
+                                          .then(function() {
+                                            window.location = this.urlFor('document', this.document.parentRef);
+                                          }.bind(this));
       }
 
     });
