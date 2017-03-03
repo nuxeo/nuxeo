@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -107,7 +108,7 @@ public class PublishTabSubPage extends AbstractPage {
             return -1;
         } else {
             for (WebElement expander : expanders) {
-                expander.click();
+                Locator.waitUntilEnabledAndClick(expander);
             }
             return findTreeNodeIndex(itemName);
         }
