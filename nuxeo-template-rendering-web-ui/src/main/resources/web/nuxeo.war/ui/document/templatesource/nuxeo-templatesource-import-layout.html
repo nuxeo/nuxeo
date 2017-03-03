@@ -24,20 +24,20 @@ limitations under the License.
   <template>
     <nuxeo-connection id="nxcon"></nuxeo-connection>
 
-    <paper-input role="widget" label="[[i18n('title')]]" value="{{document.properties.dc:title::change}}"
+    <paper-input role="widget" name="title" label="[[i18n('title')]]" value="{{document.properties.dc:title::change}}"
                  always-float-label required></paper-input>
 
-    <paper-textarea role="widget" label="[[i18n('label.description')]]" always-float-label
+    <paper-textarea role="widget" name="description" label="[[i18n('label.description')]]" always-float-label
                     value="{{document.properties.dc:description::change}}"></paper-textarea>
 
-    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.nature')]]"
+    <nuxeo-directory-suggestion role="widget" name="nature" label="[[i18n('label.dublincore.nature')]]"
                                 directory-name="nature"
                                 value="{{document.properties.dc:nature}}"
                                 placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
                                 min-chars="0">
     </nuxeo-directory-suggestion>
 
-    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.subjects')]]"
+    <nuxeo-directory-suggestion role="widget" name="subjects" label="[[i18n('label.dublincore.subjects')]]"
                                 directory-name="l10nsubjects"
                                 value="{{document.properties.dc:subjects}}"
                                 multiple="true"
@@ -46,7 +46,7 @@ limitations under the License.
                                 min-chars="0">
     </nuxeo-directory-suggestion>
 
-    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.coverage')]]"
+    <nuxeo-directory-suggestion role="widget" name="coverage" label="[[i18n('label.dublincore.coverage')]]"
                                 directory-name="l10ncoverage"
                                 value="{{document.properties.dc:coverage}}"
                                 dbl10n="true"
@@ -54,7 +54,7 @@ limitations under the License.
                                 min-chars="0">
     </nuxeo-directory-suggestion>
 
-    <nuxeo-date-picker role="widget" label="[[i18n('label.dublincore.expire')]]"
+    <nuxeo-date-picker role="widget" name="expireDate" label="[[i18n('label.dublincore.expire')]]"
                        value="{{document.properties.dc:expired}}">
     </nuxeo-date-picker>
   </template>

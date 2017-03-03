@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -255,7 +256,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     protected String buildTemplateSearchByNameQuery(String name) {
         StringBuffer sb = new StringBuffer(
-            "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = '" + name + "'");
+            "select * from Document where ecm:mixinType = 'Template' AND tmpl:templateName = " + NXQL.escapeString(name));
         if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
             sb.append(" AND ecm:isCheckedInVersion = 0");
         }
@@ -272,7 +273,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     public DocumentModel getTemplateDoc(CoreSession session, String name) {
         String query = buildTemplateSearchByNameQuery(name);
         List<DocumentModel> docs = session.query(query);
-        return (docs == null || docs.size() == 0) ? null : docs.get(0);
+        return docs.size() == 0 ? null : docs.get(0);
     }
 
     protected <T> List<T> wrap(List<DocumentModel> docs, Class<T> adapter) {

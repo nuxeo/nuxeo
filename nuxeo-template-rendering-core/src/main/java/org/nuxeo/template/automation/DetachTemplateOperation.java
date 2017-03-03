@@ -52,6 +52,6 @@ public class DetachTemplateOperation {
         TemplateSourceDocument template = targetTemplate.getAdapter(TemplateSourceDocument.class);
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         List<TemplateBasedDocument> documents = template.getTemplateBasedDocuments();
-        documents.forEach((doc)->tps.detachTemplateBasedDocument(doc.getAdaptedDoc(), template.getName(), true));
+        documents.forEach(doc -> tps.detachTemplateBasedDocument(doc.getAdaptedDoc(), template.getName(), true));
     }
 }

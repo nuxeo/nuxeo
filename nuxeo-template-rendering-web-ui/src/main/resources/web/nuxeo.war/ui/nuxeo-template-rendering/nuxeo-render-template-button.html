@@ -28,29 +28,8 @@ limitations under the License.
         display: inline-block;
       }
 
-      ::content iron-icon:hover {
-        fill: var(--nuxeo-link-hover-color);
-      }
-
       paper-dropdown-menu {
         width: 250px;
-      }
-
-      paper-button:hover {
-        @apply(--nx-button-hover);
-      }
-
-      paper-button.primary {
-        @apply(--nx-button-primary);
-      }
-
-      paper-button.primary:hover,
-      paper-button.primary:focus {
-        @apply(--nx-button-primary-hover);
-      }
-
-      paper-button[disabled] {
-        @apply(--nx-button-disabled);
       }
 
       #dialog,
@@ -94,12 +73,12 @@ limitations under the License.
         </div>
       </paper-dialog-scrollable>
       <div class="buttons horizontal end-justified layout">
-       <div class="flex start-justified">
-         <paper-button noink dialog-dismiss>[[i18n('command.cancel')]]</paper-button>
-       </div>
-       <paper-button noink class="primary" on-tap="_render">
-         [[i18n('renderTemplateButton.dialog.render')]]
-       </paper-button>
+         <div class="flex start-justified">
+           <paper-button noink dialog-dismiss>[[i18n('command.cancel')]]</paper-button>
+         </div>
+         <paper-button noink class="primary" on-tap="_render">
+           [[i18n('renderTemplateButton.dialog.render')]]
+         </paper-button>
       </div>
     </paper-dialog>
 
@@ -152,7 +131,7 @@ limitations under the License.
         /**
          * The label for the tooltip.
          **/
-        tooltipLabel: {
+        tooltip: {
           type: String,
           value: 'renderTemplateButton.tooltip'
         },
@@ -203,10 +182,16 @@ limitations under the License.
         this.set('_templateData', this.selectedTemplate.properties['tmpl:templateData']);
         if (this.selectedTemplate.properties['tmpl:allowOverride'] && this._templateData) {
           if (this.document.properties['nxts:bindings']) {
-            var binding = this.document.properties['nxts:bindings'].find(function(binding) {
-              return binding.templateName === this.selectedTemplate.properties['tmpl:templateName'];
-            }.bind(this));
-            this.set('_templateData', binding.templateData);
+            var binding;
+            for (var i = 0; i < this.document.properties['nxts:bindings'].length; i++) {
+              var b = this.document.properties['nxts:bindings'][i];
+              if (b.templateName === this.selectedTemplate.properties['tmpl:templateName']) {
+                binding = b;
+              }
+            }
+            if (binding) {
+              this.set('_templateData', binding.templateData);
+            }
             this.$.paramEditor.reset();
           }
           this.$.editParamsDialog.toggle();
@@ -238,25 +223,13 @@ limitations under the License.
         };
         this._toast(this.i18n('renderTemplateButton.toast.rendering'), 0);
         return this.$.renderTemplateOp.execute().then(function(response) {
-          if (response.body) {
-            var contentDisposition = response.headers.get('Content-Disposition');
-            var filenameMatches = contentDisposition
-                .match(/filename[^;=\n]*=([^;\n]*''([^;\n]*)|[^;\n]*)/).filter(function(match) { return !!match; });
-            var filename = decodeURI(filenameMatches[filenameMatches.length - 1]);
-            response.blob().then(function(blob) {
-              var a = document.createElement('a');
-              a.style = 'display: none';
-              a.download = filename;
-              a.href = URL.createObjectURL(blob);
-              a.click();
-              URL.revokeObjectURL(a.href);
-              this._toast(this.i18n('renderTemplateButton.toast.rendered',
-                          this.selectedTemplate.properties['dc:title']));
-              if (this.selectedTemplate.properties['tmpl:allowOverride']) {
-                this.fire('document-updated');
-              }
-            }.bind(this));
-          }
+          return this._download(response).then(function() {
+            this._toast(this.i18n('renderTemplateButton.toast.rendered',
+                this.selectedTemplate.properties['dc:title']));
+            if (this.selectedTemplate.properties['tmpl:allowOverride']) {
+              this.fire('document-updated');
+            }
+          }.bind(this));
         }.bind(this)).catch(function(response) {
           this._toast(this.i18n('renderTemplateButton.toast.render.error', response.message));
         }.bind(this));
@@ -269,6 +242,26 @@ limitations under the License.
         this.$.toast.duration = typeof duration === 'undefined' ? 3000 : duration;
         this.$.toast.text = msg;
         this.$.toast.open();
+      },
+
+      _download: function(response) {
+        if (response.body) {
+          var contentDisposition = response.headers.get('Content-Disposition');
+          var filenameMatches = contentDisposition
+              .match(/filename[^;=\n]*=([^;\n]*''([^;\n]*)|[^;\n]*)/).filter(function(match) { return !!match; });
+          var filename = decodeURI(filenameMatches[filenameMatches.length - 1]);
+          return response.blob().then(function(blob) {
+            var a = document.createElement('a');
+            a.style = 'display: none';
+            a.download = filename;
+            a.href = URL.createObjectURL(blob);
+            a.click();
+            URL.revokeObjectURL(a.href);
+            Promise.resolve();
+          }.bind(this));
+        } else {
+          return Promise.reject(new Error('response did not carry a valid blob'));
+        }
       }
 
     });

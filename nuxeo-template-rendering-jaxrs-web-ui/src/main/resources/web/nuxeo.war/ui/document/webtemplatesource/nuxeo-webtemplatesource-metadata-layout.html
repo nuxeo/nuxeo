@@ -35,10 +35,11 @@ limitations under the License.
 
     <div role="widget" hidden$="[[!document.properties.dc:nature]]">
       <label>[[i18n('label.dublincore.nature')]]</label>
-      <div>[[formatDirectory(document.properties.dc:nature)]]</div>
+      <div name="nature">[[formatDirectory(document.properties.dc:nature)]]</div>
     </div>
 
     <nuxeo-directory-suggestion role="widget"
+                                name="subjects"
                                 label="[[i18n('label.dublincore.subjects')]]"
                                 directory-name="l10nsubjects"
                                 value="{{document.properties.dc:subjects}}"
@@ -50,34 +51,30 @@ limitations under the License.
 
     <div role="widget" hidden$="[[!document.properties.dc:coverage]]">
       <label>[[i18n('label.dublincore.coverage')]]</label>
-      <div>[[formatDirectory(document.properties.dc:coverage)]]</div>
+      <div name="coverage">[[formatDirectory(document.properties.dc:coverage)]]</div>
     </div>
 
     <div role="widget" hidden$="[[!document.properties.dc:expired]]">
       <label>[[i18n('label.dublincore.expire')]]</label>
-      <div>[[formatDate(document.properties.dc:expired)]]</div>
+      <div name="expireDate">[[formatDate(document.properties.dc:expired)]]</div>
     </div>
 
     <div role="widget">
       <label>[[i18n('noteMetadataLayout.format')]]</label>
-      <div>[[formatMimeType(document.properties.note:mime_type)]]</div>
+      <div name="format">[[formatMimeType(document.properties.note:mime_type)]]</div>
     </div>
   </template>
 
   <script>
-    (function() {
-      'use strict';
-
-      Polymer({
-        is: 'nuxeo-webtemplatesource-metadata-layout',
-        behaviors: [Nuxeo.LayoutBehavior],
-        properties: {
-          /**
-          * @doctype WebTemplateSource
-          */
-          document: Object
-        }
-      });
-    })();
+    Polymer({
+      is: 'nuxeo-webtemplatesource-metadata-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+        * @doctype WebTemplateSource
+        */
+        document: Object
+      }
+    });
   </script>
 </dom-module>

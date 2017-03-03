@@ -72,6 +72,7 @@ limitations under the License.
       }
     </style>
 
+    <nuxeo-connection id="nxcon"></nuxeo-connection>
     <nuxeo-page-provider id="templateBasedDocs"
                          provider="template_based"
                          page-size="10"
@@ -112,51 +113,44 @@ limitations under the License.
   </template>
 
   <script>
-    (function() {
-      'use strict';
-
-      Polymer({
-        is: 'nuxeo-templatesource-view-layout',
-        behaviors: [Nuxeo.LayoutBehavior],
-        properties: {
-          /**
-          * @doctype TemplateSource
-          */
-          document: {
-            type: Object,
-            observer: '_documentChanged'
-          }
-        },
-
-        _documentChanged: function() {
-          if (this.document) {
-            this.$.templateBasedDocs.fetch();
-          }
-        },
-
-        _buildParams: function() {
-          return ['"' + this.document.uid + '"', 0];
-        },
-
-        _thumbnail: function(doc) {
-          if (doc && doc.uid) {
-            if (doc.contextParameters && doc.contextParameters.thumbnail.url) {
-              return doc.contextParameters.thumbnail.url;
-            } else {
-              var baseUrl = this.$.nxcon.url;
-              return baseUrl + '/api/v1/id/' + doc.uid + '/@rendition/thumbnail';
-            }
-          }
-        },
-
-        _navigate: function(e) {
-          var detail = {
-            doc: e.detail.item,
-          };
-          page('/browse' + detail.doc.path);
+    Polymer({
+      is: 'nuxeo-templatesource-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+        * @doctype TemplateSource
+        */
+        document: {
+          type: Object,
+          observer: '_documentChanged'
         }
-      });
-    })();
+      },
+
+      _documentChanged: function() {
+        if (this.document) {
+          this.$.templateBasedDocs.fetch();
+        }
+      },
+
+      _buildParams: function() {
+        return ['"' + this.document.uid + '"', 0];
+      },
+
+      _thumbnail: function(doc) {
+        if (doc && doc.uid) {
+          if (doc.contextParameters && doc.contextParameters.thumbnail.url) {
+            return doc.contextParameters.thumbnail.url;
+          } else {
+            var baseUrl = this.$.nxcon.url;
+            return baseUrl + '/api/v1/id/' + doc.uid + '/@rendition/thumbnail';
+          }
+        }
+      },
+
+      _navigate: function(e) {
+        window.location = this.urlFor('browse', e.detail.item.path);
+      }
+    });
   </script>
 
 </dom-module>

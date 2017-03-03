@@ -3,5 +3,3 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Document template Manager JAXRS Binding for Web UI
 Bundle-SymbolicName: org.nuxeo.template.manager.jaxrs.webui;singleton:=true
 Bundle-Version: 1.0.0
-
-

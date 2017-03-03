@@ -159,9 +159,6 @@ limitations under the License.
 
   </template>
   <script>
-    (function() {
-      'use strict';
-
       Polymer({
         is: 'nuxeo-template-rendering-page',
         behaviors: [Nuxeo.I18nBehavior, Nuxeo.FormatBehavior],
@@ -204,7 +201,6 @@ limitations under the License.
 
         _documentChanged: function() {
           if (this.document) {
-            this.set('document.properties.tmpl:templateType', this.document.properties['tmpl:templateType'] || 'auto');
             this.set('document.properties.tmpl:templateType', this.document.properties['tmpl:templateType'] || 'auto');
             this.set('editedDocument' , JSON.parse(JSON.stringify(this.document)));
           }
@@ -273,7 +269,6 @@ limitations under the License.
         }
 
       });
-    })();
   </script>
 
 </dom-module>
