@@ -72,20 +72,18 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
     }
 
     public static String typeLabelOf(String type) {
-        if (StringUtils.isEmpty(type)) {
+        if (StringUtils.isBlank(type)) {
             return "";
         }
 
         DirectoryService dm = Framework.getService(DirectoryService.class);
         try (Session session = dm.open(DocumentationComponent.DIRECTORY_NAME)) {
-            try {
-                DocumentModel entry = session.getEntry(type);
+            DocumentModel entry = session.getEntry(type);
+            if (entry != null) {
                 return (String) entry.getProperty("vocabulary", "label");
-            } catch (PropertyException e) {
-                log.error("Error while resolving typeLabel", e);
             }
-        } catch (DirectoryException cause) {
-            ;
+        } catch (DirectoryException | PropertyException e) {
+            log.error("Error while resolving typeLabel", e);
         }
         return type;
     }
