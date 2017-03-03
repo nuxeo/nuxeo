@@ -39,9 +39,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -136,14 +133,14 @@ public class TestNuxeoDriveManager {
             user2.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user2);
         }
-        workspace_1 = session.createDocument(session.createDocumentModel("/default-domain/workspaces", "workspace-1",
-                "Workspace"));
-        folder_1_1 = session.createDocument(session.createDocumentModel("/default-domain/workspaces/workspace-1",
-                "folder-1-1", "Folder"));
-        workspace_2 = session.createDocument(session.createDocumentModel("/default-domain/workspaces", "workspace-2",
-                "Workspace"));
-        folder_2_1 = session.createDocument(session.createDocumentModel("/default-domain/workspaces/workspace-2",
-                "folder-2-1", "Folder"));
+        workspace_1 = session.createDocument(
+                session.createDocumentModel("/default-domain/workspaces", "workspace-1", "Workspace"));
+        folder_1_1 = session.createDocument(
+                session.createDocumentModel("/default-domain/workspaces/workspace-1", "folder-1-1", "Folder"));
+        workspace_2 = session.createDocument(
+                session.createDocumentModel("/default-domain/workspaces", "workspace-2", "Workspace"));
+        folder_2_1 = session.createDocument(
+                session.createDocumentModel("/default-domain/workspaces/workspace-2", "folder-2-1", "Folder"));
         setPermissions(workspace_1, new ACE("members", SecurityConstants.READ));
         setPermissions(workspace_2, new ACE("members", SecurityConstants.READ_WRITE));
 
@@ -185,11 +182,12 @@ public class TestNuxeoDriveManager {
         Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
         assertEquals(2, rootRefs.size());
         assertTrue(rootRefs.contains(user1Workspace));
-        assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
-                new PathRef("/default-domain/workspaces/workspace-2")).getId())));
+        assertTrue(rootRefs.contains(
+                new IdRef(user1Session.getDocument(new PathRef("/default-domain/workspaces/workspace-2")).getId())));
 
         // Check synchronization root paths
-        Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(user1Session.getPrincipal());
+        Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(
+                user1Session.getPrincipal());
         Set<String> rootPaths = synRootMap.get(session.getRepositoryName()).paths;
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
@@ -423,10 +421,10 @@ public class TestNuxeoDriveManager {
 
         // Create 2 folders with path inclusion:
         // /default-domain/folder1 includes /default-domain/folder
-        DocumentModel folder = session.createDocument(session.createDocumentModel("/default-domain/workspaces",
-                "folder", "Folder"));
-        DocumentModel folder1 = session.createDocument(session.createDocumentModel("/default-domain/workspaces",
-                "folder1", "Folder"));
+        DocumentModel folder = session.createDocument(
+                session.createDocumentModel("/default-domain/workspaces", "folder", "Folder"));
+        DocumentModel folder1 = session.createDocument(
+                session.createDocumentModel("/default-domain/workspaces", "folder1", "Folder"));
         setPermissions(folder, new ACE("members", SecurityConstants.READ_WRITE));
         setPermissions(folder1, new ACE("members", SecurityConstants.READ_WRITE));
 
@@ -445,8 +443,8 @@ public class TestNuxeoDriveManager {
     @Test
     public void testAddToLocallyEditedCollection() {
         // Create a test document and add it to the "Locally Edited" collection
-        DocumentModel doc1 = session.createDocument(session.createDocumentModel(workspace_1.getPathAsString(),
-                "driveEditFile1", "File"));
+        DocumentModel doc1 = session.createDocument(
+                session.createDocumentModel(workspace_1.getPathAsString(), "driveEditFile1", "File"));
         nuxeoDriveManager.addToLocallyEditedCollection(session, doc1);
 
         // Check that the "Locally Edited" collection has been created, the test
@@ -466,8 +464,8 @@ public class TestNuxeoDriveManager {
 
         // Add another document to the "Locally Edited" collection, check
         // collection membership
-        DocumentModel doc2 = session.createDocument(session.createDocumentModel(workspace_1.getPathAsString(),
-                "driveEditFile2", "File"));
+        DocumentModel doc2 = session.createDocument(
+                session.createDocumentModel(workspace_1.getPathAsString(), "driveEditFile2", "File"));
         nuxeoDriveManager.addToLocallyEditedCollection(session, doc2);
         doc2 = session.getDocument(doc2.getRef());
         assertTrue(cm.isInCollection(locallyEditedCollection, doc2, session));
@@ -476,8 +474,8 @@ public class TestNuxeoDriveManager {
         // to it, check collection membership and the collection is registered
         // as a synchronization root once again
         nuxeoDriveManager.unregisterSynchronizationRoot(session.getPrincipal(), locallyEditedCollection, session);
-        DocumentModel doc3 = session.createDocument(session.createDocumentModel(workspace_1.getPathAsString(),
-                "driveEditFile3", "File"));
+        DocumentModel doc3 = session.createDocument(
+                session.createDocumentModel(workspace_1.getPathAsString(), "driveEditFile3", "File"));
         nuxeoDriveManager.addToLocallyEditedCollection(session, doc3);
         doc3 = session.getDocument(doc3.getRef());
         assertTrue(cm.isInCollection(locallyEditedCollection, doc3, session));
@@ -498,7 +496,8 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), locallyEditedCollection, session);
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), locallyEditedCollection));
 
-        log.trace("Register a parent as a sync root, should unregister children sync roots, except for 'Locally Edited'");
+        log.trace(
+                "Register a parent as a sync root, should unregister children sync roots, except for 'Locally Edited'");
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), workspace_1, session);
         assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), folder_1_1));
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), locallyEditedCollection));
@@ -522,8 +521,8 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), workspace_2, user1Session);
 
         log.trace("Create a test folder in sync root");
-        DocumentModel testFolder = user1Session.createDocument(user1Session.createDocumentModel(
-                workspace_2.getPathAsString(), "testFolder", "Folder"));
+        DocumentModel testFolder = user1Session.createDocument(
+                user1Session.createDocumentModel(workspace_2.getPathAsString(), "testFolder", "Folder"));
 
         log.trace("Register test folder as a sync root for user2");
         nuxeoDriveManager.registerSynchronizationRoot(user2Session.getPrincipal(), testFolder, user2Session);
@@ -579,7 +578,8 @@ public class TestNuxeoDriveManager {
         if (!container.hasFacet(NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET)) {
             return false;
         }
-        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) container.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
+        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) container.getPropertyValue(
+                NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         if (subscriptions == null) {
             return false;
         }
