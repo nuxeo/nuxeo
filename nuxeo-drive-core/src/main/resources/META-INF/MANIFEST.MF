@@ -13,7 +13,8 @@ Nuxeo-Component: OSGI-INF/nuxeodrive-service.xml,
  OSGI-INF/nuxeodrive-pageproviders-contrib.xml,
  OSGI-INF/nuxeodrive-filesystemitem-service.xml,
  OSGI-INF/nuxeodrive-hierarchy-userworkspace-adapter-contrib.xml,
- OSGI-INF/nuxeodrive-hierarchy-permission-adapter-contrib.xml
+ OSGI-INF/nuxeodrive-hierarchy-permission-adapter-contrib.xml,
+ OSGI-INF/nuxeodrive-configurationservice-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

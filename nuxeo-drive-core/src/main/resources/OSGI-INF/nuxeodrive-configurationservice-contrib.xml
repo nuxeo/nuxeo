@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.configuration.service" version="1.0">
+
+ <extension target="org.nuxeo.runtime.ConfigurationService"
+  point="configuration">
+  <documentation>
+    If true, reset synchronization root registrations on a copied document and its children.
+
+    @since 9.1
+  </documentation>
+  <property name="org.nuxeo.drive.resetSyncRootsOnCopy">true</property>
+ </extension>
+
+</component>
