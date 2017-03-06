@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.storage.State;
  */
 public class DBSDocumentState {
 
+    private static final String UNDEFINED_PARENT_ID = "_undefined_";
     /**
      * The current state.
      */
@@ -47,6 +48,10 @@ public class DBSDocumentState {
      * When non-null, the original state (otherwise the state hasn't been modified).
      */
     protected State originalState;
+
+    private String id;
+
+    private String parentId = UNDEFINED_PARENT_ID;
 
     /**
      * Constructs an empty state.
@@ -120,11 +125,22 @@ public class DBSDocumentState {
     }
 
     public Serializable get(String key) {
+        if (KEY_ID.equals(key)) {
+            return getId();
+        } else if (KEY_PARENT_ID.equals(key)) {
+            return getParentId();
+        }
         return state.get(key);
     }
 
     public void put(String key, Serializable value) {
         markDirty();
+
+        if (KEY_ID.equals(key)) {
+            id = (String) value;
+        } else if (KEY_PARENT_ID.equals(key)) {
+            parentId = (String) value;
+        }
         state.put(key, value);
     }
 
@@ -133,11 +149,18 @@ public class DBSDocumentState {
     }
 
     public String getId() {
-        return (String) get(KEY_ID);
+        if (id == null) {
+            id = (String) state.get(KEY_ID);
+        }
+        return id;
     }
 
     public String getParentId() {
-        return (String) get(KEY_PARENT_ID);
+        // use a marker because parentId can be null
+        if (parentId == UNDEFINED_PARENT_ID) {
+            parentId = (String) state.get(KEY_PARENT_ID);
+        }
+        return parentId;
     }
 
     public String getName() {
