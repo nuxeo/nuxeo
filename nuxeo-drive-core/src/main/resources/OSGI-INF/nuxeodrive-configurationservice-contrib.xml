@@ -1,20 +1,29 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.drive.configuration.service" version="1.0">
 
- <extension target="org.nuxeo.runtime.ConfigurationService"
-  point="configuration">
-  <documentation>
-   Force Drive to send its versioning option even if no minor/major increase
-   is needed.
-  </documentation>
-  <property name="nuxeo.drive.force.versioning">true</property>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      If true, when adapting a document to a FileSystemItem, don't perform the RemoveChildren check on the
+      parent to compute canDelete nor the check on AddChildren to compute canCreateChild.
 
-  <documentation>
-    If true, reset synchronization root registrations on a copied document and its children.
+      @since 8.10
+    </documentation>
+    <property name="org.nuxeo.drive.permissionCheckOptimized">true</property>
 
-    @since 9.1
-  </documentation>
-  <property name="org.nuxeo.drive.resetSyncRootsOnCopy">true</property>
- </extension>
+    <documentation>
+      If true, force Drive to send its versioning option even if no minor/major increase is needed.
+
+      @since 8.10
+    </documentation>
+    <property name="nuxeo.drive.force.versioning">true</property>
+
+
+    <documentation>
+      If true, reset synchronization root registrations on a copied document and its children.
+
+      @since 9.1
+    </documentation>
+    <property name="org.nuxeo.drive.resetSyncRootsOnCopy">true</property>
+  </extension>
 
 </component>
