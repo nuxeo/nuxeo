@@ -220,15 +220,20 @@ public class SQLSession extends BaseSession implements EntrySource {
 
         List<Column> columnList = new ArrayList<>(table.getColumns());
         Column idColumn = null;
-        for (Column column : columnList) {
+        for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
+            Column column = i.next();
             if (column.isIdentity()) {
                 idColumn = column;
             }
-            String localFieldName = schemaFieldMap.get(column.getKey()).getName().getLocalName();
+            String prefixedName = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
 
-            if (!fieldMap.containsKey(localFieldName)) {
-                Field field = schemaFieldMap.get(localFieldName);
-                fieldMap.put(localFieldName, field.getDefaultValue());
+            if (!fieldMap.containsKey(prefixedName)) {
+                Field prefixedField = schemaFieldMap.get(prefixedName);
+                if (prefixedField != null && prefixedField.getDefaultValue() != null) {
+                    fieldMap.put(prefixedName, prefixedField.getDefaultValue());
+                } else {
+                    i.remove();
+                }
             }
         }
         Insert insert = new Insert(table);
