@@ -69,7 +69,12 @@ public class TestDynamicMapping extends TestMapping {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
-        assertNumberOfCommandProcessed(1);
+        // automatic versioning system check in all notes after an update
+        // 3 commands processed:
+        // - creation of note
+        // - update of version (ie: just the version created) - stacker stacks UPDATE command when document is checkined
+        // - creation of version - automatically done by versioning system
+        assertNumberOfCommandProcessed(3);
 
         startTransaction();
         // check that the custom mapping applied
@@ -78,13 +83,13 @@ public class TestDynamicMapping extends TestMapping {
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 11"));
         Assert.assertEquals(0, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:id_int = 10 AND ecm:isCheckedInVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:name_string LIKE 'test' AND ecm:isCheckedInVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02'"));
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dynamic/type1/type1:creation_date BETWEEN DATE '2015-01-01' AND DATE '2015-01-02' AND ecm:isCheckedInVersion = 0"));
         Assert.assertEquals(1, ret.totalSize());
     }
 }

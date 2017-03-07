@@ -268,7 +268,7 @@
       <property name="coreSession">#{documentManager}</property>
       <property name="maxResults">10000</property>
       <pageSize>20</pageSize>
-      <pattern>SELECT * FROM Document</pattern>
+      <pattern>SELECT * FROM Document WHERE ecm:isVersion = 0</pattern>
       <aggregates>
         <aggregate id="subjects" type="terms" parameter="dc:subjects">
           <field schema="advanced_search" name="subjects_agg"/>

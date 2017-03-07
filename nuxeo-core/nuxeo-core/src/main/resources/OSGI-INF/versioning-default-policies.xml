@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.default-policies" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.el.service</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="no-versioning-for-system" increment="NONE" order="1">
+      <filter-id>system-document</filter-id>
+    </policy>
+    <policy id="note-as-wiki" increment="MINOR" order="50">
+      <filter-id>note-filter</filter-id>
+    </policy>
+    <policy id="collaborative-save" increment="MINOR" beforeUpdate="true" order="100">
+      <filter-id>last-contributor-different-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="system-document">
+      <type>Never</type> <!-- TODO implement this filter-->
+    </filter>
+    <filter id="note-filter">
+      <type>Note</type>
+    </filter>
+    <filter id="last-contributor-different-filter">
+      <schema>file</schema>
+      <condition>#{previousDocument.dc.lastContributor != currentDocument.dc.lastContributor}</condition>
+    </filter>
+  </extension>
+
+</component>

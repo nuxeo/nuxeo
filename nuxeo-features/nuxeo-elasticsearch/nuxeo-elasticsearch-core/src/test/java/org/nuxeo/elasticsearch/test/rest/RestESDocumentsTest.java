@@ -177,10 +177,11 @@ public class RestESDocumentsTest extends BaseTest {
     }
 
     /**
-     * @since 8.4
+     * @since 8.10
      */
     @Test
     public void iCanQueryESQLPageProviderAndFetchAggregateKeys() throws Exception {
+        // Updating a note automatically creates a version of it
 
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("fetch." + AggregateJsonWriter.ENTITY_TYPE, AggregateJsonWriter.FETCH_KEY);

@@ -35,7 +35,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 /**
  * @since 9.1
  */
-@Deploy({"org.nuxeo.ecm.core.test.tests", "org.nuxeo.ecm.platform.el"})
+@Deploy({"org.nuxeo.ecm.core.test.tests"})
 @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-document-type.xml")
 public class TestAutoVersioning extends AbstractTestVersioning {
 
@@ -135,20 +135,20 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-facets.xml")
     public void testWithStandardFilterAndFacets() {
         // No initial state defined by policy
-        // Document with facet Folderish or Downloadable should have a new version for each update
+        // Document with facet Downloadable or Note3Facet should have a new version for each update
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertEquals("0.1", doc.getVersionLabel());
 
-        doc = session.createDocumentModel("/", "testfile1", "Note");
+        doc = session.createDocumentModel("/", "testfile1", "Note2");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertEquals("0.0", doc.getVersionLabel());
 
-        doc = session.createDocumentModel("/", "testfile1", "Note2");
+        doc = session.createDocumentModel("/", "testfile1", "Note3");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
@@ -159,14 +159,8 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-standard-filter-schemas.xml")
     public void testWithStandardFilterAndSchemas() {
         // No initial state defined by policy
-        // Document with file or note schema should have a new version for each update
+        // Document with file schema should have a new version for each update
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
-        doc = session.createDocument(doc);
-        doc = session.saveDocument(doc);
-        assertFalse(doc.isCheckedOut());
-        assertEquals("0.1", doc.getVersionLabel());
-
-        doc = session.createDocumentModel("/", "testfile1", "Note");
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
