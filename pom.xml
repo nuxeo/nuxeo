@@ -60,6 +60,7 @@
     <nuxeo.forum.version>8.10-HF03-SNAPSHOT</nuxeo.forum.version>
     <nuxeo.pdfutils.version>8.10-HF03-SNAPSHOT</nuxeo.pdfutils.version>
     <nuxeo.mongodb.ext.version>8.10-HF03-SNAPSHOT</nuxeo.mongodb.ext.version>
+    <nuxeo.threed.version>8.10-HF03-SNAPSHOT</nuxeo.threed.version>
 
     <!-- optional addons -->
     <nuxeo.sync.version>8.10-HF03-SNAPSHOT</nuxeo.sync.version>
@@ -126,6 +127,7 @@
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-mongodb-ext</module>
+    <module>nuxeo-platform-3d</module>
   </modules>
 
   <dependencyManagement>
@@ -1062,6 +1064,33 @@
         <version>${nuxeo.mongodb.ext.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
+      </dependency>
+
+      <!-- 3D -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-api</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-core</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-convert</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-jsf</artifactId>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-web-ui</artifactId>
+        <version>${nuxeo.threed.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
