@@ -25,11 +25,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helpers for deep copy and deep diff of {@link State} objects.
  */
 public class StateHelper {
+
+    private static final String DISABLED_DELTA_PROP = "org.nuxeo.core.delta.disabled";
 
     /** Utility class. */
     private StateHelper() {
@@ -466,6 +469,9 @@ public class StateHelper {
      * @since 6.0
      */
     public static void resetDeltas(State state) {
+        if (Boolean.parseBoolean(Framework.getProperty(DISABLED_DELTA_PROP, "false"))) {
+            return;
+        }
         for (Entry<String, Serializable> en : state.entrySet()) {
             Serializable value = en.getValue();
             if (value instanceof State) {
