@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.LoginStartupPage;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.web.common.MobileBannerHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,6 +52,10 @@ public class LoginScreenHelper {
 
     protected static final Log log = LogFactory.getLog(LoginScreenHelper.class);
 
+    /**
+     * @deprecated since 9.1, use {@link MobileBannerHelper#PROTOCOL_PROPERTY} instead
+     */
+    @Deprecated
     public static final String NUXEO_PROTOCOL = "nuxeo://";
 
     /**
@@ -159,7 +164,10 @@ public class LoginScreenHelper {
      * Returns a full URL that can be handled by the mobile applications.
      *
      * @since 8.10
+     * @deprecated since 9.1, use {@link MobileBannerHelper#getURLForAndroidApplication(HttpServletRequest)} or
+     *             {@link MobileBannerHelper#getURLForIOSApplication(HttpServletRequest)} instead
      */
+    @Deprecated
     public static String getURLForMobileApplication(HttpServletRequest request) {
         String baseURL = VirtualHostHelper.getBaseURL(request);
         String requestedUrl = request.getParameter("requestedUrl");
@@ -170,7 +178,11 @@ public class LoginScreenHelper {
      * Returns a full URL that can be handled by the mobile applications.
      *
      * @since 8.10
+     * @deprecated since 9.1, use
+     *             {@link MobileBannerHelper#getURLForMobileApplication(String, String, org.nuxeo.ecm.core.api.DocumentModel, String)}
+     *             instead
      */
+    @Deprecated
     public static String getURLForMobileApplication(String baseURL, String requestedURL) {
         if (!baseURL.endsWith("/")) {
             baseURL += "/";
