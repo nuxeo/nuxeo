@@ -197,9 +197,9 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             // Write doc properties from outputs.
             for (String metadata : blobMetadataOutput.keySet()) {
                 Object metadataValue = blobMetadataOutput.get(metadata);
-                boolean metadataIsArray = metadataValue.getClass().isArray() || metadataValue instanceof ArrayList;
+                boolean metadataIsArray = metadataValue instanceof Object[] || metadataValue instanceof List;
                 String property = metadataMapping.get(metadata);
-                if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection) && !(metadataIsArray)) {
+                if (!(metadataValue instanceof Date) && !(metadataValue instanceof Collection) && !metadataIsArray) {
                     metadataValue = metadataValue.toString();
                 }
                 if (metadataValue instanceof String) {
@@ -213,7 +213,11 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                         }
                     } else {
                         if (metadataIsArray) {
-                            metadataValue = metadataValue.toString();
+                            if (metadataValue instanceof Object[]) {
+                                metadataValue = Arrays.asList((Object[]) metadataValue);
+                            } else {
+                                metadataValue = metadataValue.toString();
+                            }
                         }
                     }
                     doc.setPropertyValue(property, (Serializable) metadataValue);
