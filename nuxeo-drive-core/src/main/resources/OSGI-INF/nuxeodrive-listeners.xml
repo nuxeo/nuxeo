@@ -49,6 +49,14 @@
     <listener name="nuxeoDriveVirtualEventLoggerListener" async="true" postCommit="true"
       class="org.nuxeo.drive.listener.NuxeoDriveVirtualEventLogger" />
 
+    <documentation>
+      Reset synchronization root registrations on a copied document and its children.
+    </documentation>
+    <listener name="nuxeoDriveSyncRootCopyListener" async="false" postCommit="false"
+      class="org.nuxeo.drive.listener.NuxeoDriveSyncRootCopyListener">
+      <event>documentCreatedByCopy</event>
+    </listener>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">

@@ -56,4 +56,19 @@ public class SynchronizationRoots {
         return refs;
     }
 
+    /**
+     * @since 9.1
+     */
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).append("(repo = ")
+                                                            .append(repositoryName)
+                                                            .append(", paths = ")
+                                                            .append(paths)
+                                                            .append(", refs = ")
+                                                            .append(refs)
+                                                            .append(")")
+                                                            .toString();
+    }
+
 }

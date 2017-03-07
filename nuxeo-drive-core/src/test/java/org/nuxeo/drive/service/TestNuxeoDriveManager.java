@@ -65,6 +65,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -579,6 +580,45 @@ public class TestNuxeoDriveManager {
         log.trace("Check FileSystemItem id for user2 relaxing sync root constraint");
         String fsItemIdUser2 = fileSystemItemAdapterService.getFileSystemItem(testFolderUser2, false, true).getId();
         assertEquals(fsItemIdUser1, fsItemIdUser2);
+    }
+
+    @Test
+    public void testResetSyncRootsOnCopy() {
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder_1_1, session);
+        // Copy a sync root
+        DocumentModel copy = session.copy(folder_1_1.getRef(), workspace_2.getRef(), null);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), copy));
+        nuxeoDriveManager.invalidateSynchronizationRootsCache(session.getPrincipal().getName());
+        // Copy a folder containing a sync root
+        copy = session.copy(workspace_1.getRef(), workspace_2.getRef(), null);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(),
+                session.getDocument(new PathRef(copy.getPathAsString() + "/" + folder_1_1.getName()))));
+    }
+
+    @Test
+    public void testResetSyncRootsOnCopyDisabled() {
+        Framework.getProperties().put("org.nuxeo.drive.resetSyncRootsOnCopy", "true");
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder_1_1, session);
+            // Copy a sync root
+            DocumentModel copy = session.copy(folder_1_1.getRef(), workspace_2.getRef(), null);
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), copy));
+            nuxeoDriveManager.invalidateSynchronizationRootsCache(session.getPrincipal().getName());
+            // Copy a folder containing a sync root
+            copy = session.copy(workspace_1.getRef(), workspace_2.getRef(), null);
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(),
+                    session.getDocument(new PathRef(copy.getPathAsString() + "/" + folder_1_1.getName()))));
+        } finally {
+            Framework.getProperties().remove("org.nuxeo.drive.resetSyncRootsOnCopy");
+        }
     }
 
     protected DocumentModel doc(String path) throws ClientException {
