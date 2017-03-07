@@ -24,7 +24,7 @@ package org.nuxeo.ecm.core.schema.types;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,9 +43,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  */
 public final class JavaTypes {
 
-    private static final Map<Class<?>, Type> class2Types = new Hashtable<Class<?>, Type>();
+    private static final Map<Class<?>, Type> class2Types = new HashMap<Class<?>, Type>();
 
-    private static final Map<Type, Class<?>> types2Class = new Hashtable<Type, Class<?>>();
+    private static final Map<Type, Class<?>> types2Class = new HashMap<Type, Class<?>>();
 
     // Utility class.
     private JavaTypes() {
