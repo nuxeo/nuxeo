@@ -1,0 +1,21 @@
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  id="mobileBannerContainer">
+  <div id="mobileBanner">
+    <h:outputLink id="androidAppLink" styleClass="mobileAppLink"
+      value="#{mobileBannerActions.getURLForAndroidApplication()}">
+      <h:outputText value="#{messages['label.mobile.openInApp']}"/>
+    </h:outputLink>
+    <h:outputLink id="iOSAppLink" styleClass="mobileAppLink"
+      value="javascript:nuxeo.mobile.openIOSAppOrAppStore('#{mobileBannerActions.getURLForIOSApplication()}', '#{appStoreURL}');">
+      <h:outputText value="#{messages['label.mobile.openInApp']}"/>
+    </h:outputLink>
+  </div>
+
+  <h:outputScript target="#{pageJsTarget}">
+    nuxeo.mobile.displayMobileBanner('mobileBanner', 'block', 'mobileBannerContainer:androidAppLink', 'mobileBannerContainer:iOSAppLink');
+  </h:outputScript>
+
+</f:subview>

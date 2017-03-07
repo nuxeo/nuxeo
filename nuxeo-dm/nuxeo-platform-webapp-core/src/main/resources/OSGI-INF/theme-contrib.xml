@@ -233,6 +233,9 @@
     <resource name="jquery-standalone.js">
       <uri>/scripts/jquery.js</uri>
     </resource>
+    <resource name="mobile-banner.js">
+      <uri>/scripts/mobile-banner.js</uri>
+    </resource>
     <!-- end of "static" resources declaration -->
 
     <!-- Sass styles -->
@@ -423,6 +426,7 @@
         <resource>automation.js</resource>
         <resource>nuxeo_javascript_context.xhtml</resource>
         <resource>nuxeo.js</resource>
+        <resource>mobile-banner.js</resource>
       </resources>
     </bundle>
 
