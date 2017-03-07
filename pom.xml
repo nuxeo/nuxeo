@@ -5642,6 +5642,9 @@
           <groupId>io.gatling</groupId>
           <artifactId>gatling-maven-plugin</artifactId>
           <version>${gatling.version}</version>
+          <configuration>
+            <skip>${skipITs}</skip>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>net.alchim31.maven</groupId>
