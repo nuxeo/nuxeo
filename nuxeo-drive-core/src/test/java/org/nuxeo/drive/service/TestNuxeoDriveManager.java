@@ -565,28 +565,28 @@ public class TestNuxeoDriveManager {
         // Copy a sync root
         DocumentModel copy = session.copy(folder_1_1.getRef(), workspace_2.getRef(), null);
         txFeature.nextTransaction();
-        assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), copy));
-        nuxeoDriveManager.invalidateSynchronizationRootsCache(session.getPrincipal().getName());
-        // Copy a folder containing a sync root
-        copy = session.copy(workspace_1.getRef(), workspace_2.getRef(), null);
-        txFeature.nextTransaction();
-        assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(),
-                session.getDocument(new PathRef(copy.getPathAsString() + "/" + folder_1_1.getName()))));
-    }
-
-    @Test
-    @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-reset-sync-roots-on-copy-disabled-contrib.xml")
-    public void testResetSyncRootsOnCopyDisabled() {
-        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder_1_1, session);
-        // Copy a sync root
-        DocumentModel copy = session.copy(folder_1_1.getRef(), workspace_2.getRef(), null);
-        txFeature.nextTransaction();
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), copy));
         nuxeoDriveManager.invalidateSynchronizationRootsCache(session.getPrincipal().getName());
         // Copy a folder containing a sync root
         copy = session.copy(workspace_1.getRef(), workspace_2.getRef(), null);
         txFeature.nextTransaction();
         assertTrue(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(),
+                session.getDocument(new PathRef(copy.getPathAsString() + "/" + folder_1_1.getName()))));
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-reset-sync-roots-on-copy-enabled-contrib.xml")
+    public void testResetSyncRootsOnCopyDisabled() {
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder_1_1, session);
+        // Copy a sync root
+        DocumentModel copy = session.copy(folder_1_1.getRef(), workspace_2.getRef(), null);
+        txFeature.nextTransaction();
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(), copy));
+        nuxeoDriveManager.invalidateSynchronizationRootsCache(session.getPrincipal().getName());
+        // Copy a folder containing a sync root
+        copy = session.copy(workspace_1.getRef(), workspace_2.getRef(), null);
+        txFeature.nextTransaction();
+        assertFalse(nuxeoDriveManager.isSynchronizationRoot(session.getPrincipal(),
                 session.getDocument(new PathRef(copy.getPathAsString() + "/" + folder_1_1.getName()))));
     }
 

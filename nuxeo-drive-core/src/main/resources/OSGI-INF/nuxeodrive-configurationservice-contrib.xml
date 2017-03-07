@@ -15,7 +15,7 @@
 
       @since 9.1
     </documentation>
-    <property name="org.nuxeo.drive.resetSyncRootsOnCopy">true</property>
+    <property name="org.nuxeo.drive.resetSyncRootsOnCopy">false</property>
   </extension>
 
 </component>
