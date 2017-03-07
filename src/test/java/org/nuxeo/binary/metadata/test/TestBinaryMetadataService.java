@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -104,9 +105,9 @@ public class TestBinaryMetadataService {
     @Test
     public void itShouldExtractSingleKeywordToStringList() throws PropertyException, IOException {
         // Get the document with One KW attached
-    	File binary = FileUtils.getResourceFileFromContext("data/iptc_one_keyword.jpg");
+        File binary = FileUtils.getResourceFileFromContext("data/iptc_one_keyword.jpg");
 
-    	DocumentModel doc = session.createDocumentModel("/folder", "file_1000", "File");
+        DocumentModel doc = session.createDocumentModel("/folder", "file_1000", "File");
         doc.setPropertyValue("dc:title", "file_1000");
         doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
         //doc = session.createDocument(doc);
@@ -119,32 +120,30 @@ public class TestBinaryMetadataService {
     @Test
     public void itShouldExtractKeywordListToStringList() throws PropertyException, IOException {
         // Get the document with One KW attached
-    	File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
+        File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
 
-    	DocumentModel doc = session.createDocumentModel("/folder", "file_2000", "File");
+        DocumentModel doc = session.createDocumentModel("/folder", "file_2000", "File");
         doc.setPropertyValue("dc:title", "file_2000");
         doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
         //doc = session.createDocument(doc);
         binaryMetadataService.writeMetadata(doc, "EXCEL-TITLES-OF-PARTS-TO-SUBJECTS");
         String[] subjects = (String[]) doc.getPropertyValue("dc:subjects");
         assertEquals(4, subjects.length);
-        assertEquals("Example", subjects[0]); // ["Example","Hop","Sheet2","Chart Data"]
-
+        assertEquals(Arrays.asList("Example", "Hop", "Sheet2", "Chart Data"), Arrays.asList(subjects));
     }
 
     @Test
     public void itShouldExtractKeywordListToString() throws PropertyException, IOException {
         // Get the document with One KW attached
-    	File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
+        File binary = FileUtils.getResourceFileFromContext("data/Budget-Example.xlsx");
 
-    	DocumentModel doc = session.createDocumentModel("/folder", "file_3000", "File");
+        DocumentModel doc = session.createDocumentModel("/folder", "file_3000", "File");
         doc.setPropertyValue("dc:title", "file_3000");
         doc.setPropertyValue("file:content",  (Serializable) Blobs.createBlob(binary));
         //doc = session.createDocument(doc);
         binaryMetadataService.writeMetadata(doc, "EXCEL-TITLES-OF-PARTS-TO-FORMAT");
         String format = (String) doc.getPropertyValue("dc:format");
-        assertNotNull(format);
-
+        assertEquals("[Example, Hop, Sheet2, Chart Data]", format);
     }
 
     @Test
