@@ -128,6 +128,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected Set<String> providerIds;
 
+    protected List<String> repositoryNames;
+
     protected String defaultProviderId;
 
     @Override
@@ -188,7 +190,10 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     @Override
     public Collection<String> getBlobProviderIds() {
         if (useRepositoryName) {
-            return Framework.getService(RepositoryManager.class).getRepositoryNames();
+            if (repositoryNames == null) {
+                repositoryNames = Framework.getService(RepositoryManager.class).getRepositoryNames();
+            }
+            return repositoryNames;
         }
         return providerIds;
     }
