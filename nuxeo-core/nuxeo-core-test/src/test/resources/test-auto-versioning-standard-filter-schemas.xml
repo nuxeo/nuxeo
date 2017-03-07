@@ -10,7 +10,6 @@
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
     <filter id="standard">
       <schema>file</schema>
-      <schema>note</schema>
     </filter>
   </extension>
 

@@ -10,7 +10,7 @@
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
     <filter id="standard">
       <facet>Downloadable</facet>
-      <facet>Note2Facet</facet>
+      <facet>Note3Facet</facet>
     </filter>
   </extension>
 
