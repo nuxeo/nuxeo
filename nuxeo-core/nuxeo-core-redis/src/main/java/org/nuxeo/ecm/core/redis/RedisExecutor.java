@@ -89,6 +89,20 @@ public interface RedisExecutor {
         });
     }
 
+    /**
+     * Runs a subscriber to the given patterns.
+     *
+     * @param subscriber the subscriber
+     * @param patterns the channel patterns
+     * @since 9.1
+     */
+    default void psubscribe(JedisPubSub subscriber, String... patterns) throws JedisException {
+        execute(jedis -> {
+            jedis.psubscribe(subscriber, patterns);
+            return null;
+        });
+    }
+
     Pool<Jedis> getPool();
 
     /**

@@ -137,7 +137,14 @@ public class RedisFeature extends SimpleFeature {
     }
 
     public static boolean setup(RuntimeHarness harness) throws Exception {
-        return new RedisFeature().setupMe(harness);
+        RedisFeature redisFeature = setUpFeature(harness);
+        return Mode.disabled.equals(redisFeature.getMode()) ? false : true;
+    }
+
+    public static RedisFeature setUpFeature(RuntimeHarness harness) throws Exception {
+        RedisFeature redisFeature = new RedisFeature();
+        redisFeature.setupMe(harness);
+        return redisFeature;
     }
 
     protected boolean setupMe(RuntimeHarness harness) throws Exception {

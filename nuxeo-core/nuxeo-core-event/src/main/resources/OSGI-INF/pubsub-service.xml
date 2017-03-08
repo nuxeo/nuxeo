@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.pubsub.PubSubService" version="1.0">
+
+  <documentation>
+    The PubSub service allows cross-instance notifications through simple messages sent to topics.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.pubsub.PubSubService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.pubsub.PubSubServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      Defines the implementation of the PubSub service:
+      <code>
+        <provider class="org.nuxeo.ecm.core.pubsub.MemPubSubProvider"/>
+      </code>
+      The class must implement org.nuxeo.ecm.core.pubsub.PubSubProvider.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.pubsub.PubSubProviderDescriptor" />
+  </extension-point>
+
+</component>
