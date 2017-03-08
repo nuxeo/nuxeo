@@ -348,16 +348,6 @@
       </widget>
     </layout>
   </extension>
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="versioningRules">
-    <versioningRule typeName="EasyShareFolder">
-      <initialState major="0" minor="0"/>
-      <options lifeCycleState="*">
-        <none default="true"/>
-        <minor/>
-        <major/>
-      </options>
-    </versioningRule>
-  </extension>
   <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="notifications">
     <notification name="easyShareDownload" channel="email"
                   enabled="true" availableIn="Workspace" autoSubscribed="true"
