@@ -6,7 +6,7 @@
       <property name="path">binaries2</property>
     </blobprovider>
   </extension>
-  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+  <extension target="org.nuxeo.ecm.core.storage.mem.MemRepositoryService"
     point="repository">
     <repository name="layoutDemo" label="Layout demo repository (with a memory backend)">
       <schema>
@@ -18,11 +18,5 @@
         <fulltext disabled="true" />
       </indexing>
     </repository>
-  </extension>
-  <extension target="org.nuxeo.runtime.datasource" point="datasources">
-    <datasource name="jdbc/repository_layoutDemo" driverClassName="org.h2.Driver"
-      maxPoolSize="20" minPoolSize="5">
-      <property name="url">jdbc:h2:mem:layoutDemo;DB_CLOSE_DELAY=-1</property>
-    </datasource>
   </extension>
 </component>
