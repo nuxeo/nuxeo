@@ -1611,24 +1611,6 @@
       </rule>
     </filter>
   </extension>
-  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="versioningRules">
-    <versioningRule typeName="CustomerReference">
-      <initialState major="0" minor="0"/>
-      <options lifeCycleState="*">
-        <none default="true"/>
-        <minor/>
-        <major/>
-      </options>
-    </versioningRule>
-    <versioningRule typeName="InterventionStatement">
-      <initialState major="0" minor="0"/>
-      <options lifeCycleState="*">
-        <none default="true"/>
-        <minor/>
-        <major/>
-      </options>
-    </versioningRule>
-  </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
     <widgetType name="template_rendering_header">
       <configuration>
