@@ -39,4 +39,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.core.event;singleton:=true
 Nuxeo-Component: OSGI-INF/EventService.xml,
  OSGI-INF/workmanager-service.xml,
  OSGI-INF/workmanager-config.xml,
- OSGI-INF/scheduler-service.xml
+ OSGI-INF/scheduler-service.xml,
+ OSGI-INF/pubsub-service.xml
