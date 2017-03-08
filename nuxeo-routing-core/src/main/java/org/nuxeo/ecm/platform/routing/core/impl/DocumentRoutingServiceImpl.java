@@ -1338,6 +1338,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (document != null) {
             query.append(String.format(" AND nt:targetDocumentId = '%s'", document.getId()));
         }
+        query.append(String.format("ORDER BY %s ASC", TaskConstants.TASK_DUE_DATE_PROPERTY_NAME));
         final DocumentModelList documentModelList = session.query(query.toString());
         final List<Task> result = new ArrayList<>();
 
