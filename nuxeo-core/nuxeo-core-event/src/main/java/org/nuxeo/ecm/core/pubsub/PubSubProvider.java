@@ -1,0 +1,52 @@
+/*
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Florent Guillaume
+ */
+package org.nuxeo.ecm.core.pubsub;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+/**
+ * The SPI of a Publish/Subscribe implementation of the {@link PubSubService).
+ *
+ * @since 9.1
+ */
+public interface PubSubProvider {
+
+    /**
+     * Initializes the resources for this provider and registers the local subscribers map.
+     * <p>
+     * The subscribers map structure is thread-safe. The implementation must not modify the subscribers map in any way.
+     */
+    void initialize(Map<String, List<BiConsumer<String, byte[]>>> subscribers);
+
+    /**
+     * Frees the resources.
+     */
+    void close();
+
+    /**
+     * Publishes a message to the given topic.
+     *
+     * @param topic the topic
+     * @param message the message
+     */
+    void publish(String topic, byte[] message);
+
+}
