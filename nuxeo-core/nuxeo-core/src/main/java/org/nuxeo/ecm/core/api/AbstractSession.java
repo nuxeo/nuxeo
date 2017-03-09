@@ -1532,7 +1532,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             if (manualVersioning) {
                 checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
-            } else {
+            } else if (docModel.isCheckedOut()) {
                 // compute auto versioning - only if it is not deactivated by manual versioning
                 // no need to fire event, as we use DocumentModel API it's already done
                 getVersioningService().doAutomaticVersioning(previousDocModel, docModel, false);

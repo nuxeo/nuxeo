@@ -25,10 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.FileImporterDescript
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporter;
 import org.nuxeo.ecm.platform.filemanager.service.extension.FolderImporterDescriptor;
 import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
-import org.nuxeo.ecm.platform.filemanager.service.extension.VersioningDescriptor;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -106,12 +103,18 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     /**
      * @since 5.7
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     *             behaviors from importers
      */
+    @Deprecated
     private VersioningOption defaultVersioningOption = DEF_VERSIONING_OPTION;
 
     /**
      * @since 5.7
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     *             behaviors from importers
      */
+    @Deprecated
     private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
 
     private TypeManager typeService;
@@ -300,26 +303,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 }
             }
         } else if (extension.getExtensionPoint().equals("versioning")) {
-            Object[] contribs = extension.getContributions();
-            for (Object contrib : contribs) {
-                if (contrib instanceof VersioningDescriptor) {
-                    VersioningDescriptor descr = (VersioningDescriptor) contrib;
-                    String defver = descr.defaultVersioningOption;
-                    if (!StringUtils.isBlank(defver)) {
-                        try {
-                            defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
-                        } catch (IllegalArgumentException e) {
-                            log.warn(String.format("Illegal versioning option: %s, using %s instead", defver,
-                                    DEF_VERSIONING_OPTION));
-                            defaultVersioningOption = DEF_VERSIONING_OPTION;
-                        }
-                    }
-                    Boolean veradd = descr.versionAfterAdd;
-                    if (veradd != null) {
-                        versioningAfterAdd = veradd.booleanValue();
-                    }
-                }
-            }
+            String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
+                    + "Nuxeo Platform. Please use versioning policy instead.";
         } else {
             log.warn(String.format("Unknown contribution %s: ignored", extension.getExtensionPoint()));
         }
@@ -574,12 +559,22 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return digestAlgorithm;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     *             behaviors from importers
+     */
     @Override
+    @Deprecated
     public VersioningOption getVersioningOption() {
         return defaultVersioningOption;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     *             behaviors from importers
+     */
     @Override
+    @Deprecated
     public boolean doVersioningAfterAdd() {
         return versioningAfterAdd;
     }

@@ -102,6 +102,18 @@ public interface CoreSession extends AutoCloseable {
     String ALLOW_VERSION_WRITE = "allowVersionWrite";
 
     /**
+     * A context data key which represents the source of current session calls. For example:
+     * <ul>
+     *     <li>fileimporter-NoteImporter</li>
+     *     <li>drive</li>
+     *     <li>rest</li>
+     * </ul>
+     *
+     * @since 9.1
+     */
+    String SOURCE = "source";
+
+    /**
      * Closes this session.
      *
      * @since 5.9.3
