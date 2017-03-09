@@ -489,6 +489,36 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     }
 
+    /**
+     * @since 9.1
+     */
+    @Test
+    public void testTaskWithGroupAssignee() throws IOException {
+        // Start SerialDocumentReview on Note 0
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "ParallelDocumentReview", Collections.singletonList(note.getId())));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        // Complete first task
+        String taskId = getCurrentTaskId(createdWorflowInstanceId);
+        String out = getBodyForStartReviewTaskCompletion(taskId, "group:administrator");
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Check GET /task i.e. pending tasks for current user
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("userId", Collections.singletonList("Administrator"));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+
+    }
+
     @Test
     public void testReassignTask() throws IOException {
         // Start SerialDocumentReview on Note 0
