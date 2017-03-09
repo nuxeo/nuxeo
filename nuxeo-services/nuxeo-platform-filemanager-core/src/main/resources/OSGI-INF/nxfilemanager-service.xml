@@ -100,6 +100,9 @@
 
   <extension-point name="versioning">
     <documentation>
+      CAUTION deprecated extension point since 9.1, versioning has been removed from file manager, if you want to
+      provide automatic versioning, contribute policy to versioning service.
+
       @since 5.7
       The versioning extension point defines the versioning option that will be
       used when incrementing the document version at file import (DnD,

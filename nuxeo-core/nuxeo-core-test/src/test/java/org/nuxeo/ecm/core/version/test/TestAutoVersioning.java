@@ -89,6 +89,22 @@ public class TestAutoVersioning extends AbstractTestVersioning {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-always-major.xml")
+    public void testAlwaysVersionMajorTwoSaves() {
+        // No initial state defined by policy
+        DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
+        doc = session.createDocument(doc);
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("1.0", doc.getVersionLabel());
+        // Save document again without editing it
+        doc = session.saveDocument(doc);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("1.0", doc.getVersionLabel());
+    }
+
+    @Test
     @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-auto-versioning-custom-filter.xml")
     public void testWithCustomFilter() {
         // No initial state defined by policy

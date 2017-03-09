@@ -192,7 +192,6 @@ public abstract class AbstractFileImporter implements FileImporter {
         } else {
             doc = FileManagerUtils.getExistingDocByFileName(session, path, filename);
         }
-        boolean skipCheckInAfterAdd = false;
         if (overwrite && doc != null) {
             Blob previousBlob = getBlob(doc);
             // check that previous blob allows overwrite
@@ -201,10 +200,6 @@ public abstract class AbstractFileImporter implements FileImporter {
                 if (blobProvider != null && !blobProvider.supportsUserUpdate()) {
                     throw new DocumentSecurityException("Cannot overwrite blob");
                 }
-            }
-            // make sure we save any existing data
-            if (!skipCheckInForBlob(previousBlob)) {
-                checkIn(doc);
             }
             // update data
             boolean isDocumentUpdated = updateDocumentIfPossible(doc, content);
@@ -216,6 +211,7 @@ public abstract class AbstractFileImporter implements FileImporter {
                 doc.putContextData(DISABLE_AUDIT_LOGGER, true);
             }
             // save
+            doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
             doc = doc.getCoreSession().saveDocument(doc);
         } else {
             // create document model
@@ -226,13 +222,9 @@ public abstract class AbstractFileImporter implements FileImporter {
             doc.setPathInfo(path, pss.generatePathSegment(doc));
             // update data
             updateDocument(doc, content);
-            skipCheckInAfterAdd = skipCheckInForBlob(content);
             // create
+            doc.putContextData(CoreSession.SOURCE, "fileimporter-" + getName());
             doc = session.createDocument(doc);
-        }
-        // check in if requested
-        if (!skipCheckInAfterAdd) {
-            checkInAfterAdd(doc);
         }
         session.save();
         return doc;
@@ -241,7 +233,11 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * Avoid checkin for a 0-length blob. Microsoft-WebDAV-MiniRedir first creates a 0-length file and then locks it
      * before putting the real file. But we don't want this first placeholder to cause a versioning event.
+     *
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     * behaviors from importers
      */
+    @Deprecated
     protected boolean skipCheckInForBlob(Blob blob) {
         return blob == null || blob.getLength() == 0;
     }
@@ -295,6 +291,11 @@ public abstract class AbstractFileImporter implements FileImporter {
         return path;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     * behaviors from importers
+     */
+    @Deprecated
     protected void checkIn(DocumentModel doc) {
         VersioningOption option = fileManagerService.getVersioningOption();
         if (option != null && option != VersioningOption.NONE) {
@@ -304,6 +305,11 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     * behaviors from importers
+     */
+    @Deprecated
     protected void checkInAfterAdd(DocumentModel doc) {
         if (fileManagerService.doVersioningAfterAdd()) {
             checkIn(doc);

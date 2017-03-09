@@ -169,9 +169,6 @@ public class TestFileManagerService {
         assertNotNull(blob);
         assertEquals("hello.doc", blob.getFilename());
 
-        List<DocumentModel> versions = coreSession.getVersions(docRef);
-        assertEquals(0, versions.size());
-
         // create again with same file
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
                 "test-data/hello.doc");
@@ -183,9 +180,6 @@ public class TestFileManagerService {
         blob = (Blob) doc.getProperty("file", "content");
         assertNotNull(blob);
         assertEquals("hello.doc", blob.getFilename());
-
-        versions = coreSession.getVersions(docRef);
-        assertEquals(1, versions.size());
     }
 
     @Test
@@ -262,14 +256,11 @@ public class TestFileManagerService {
             expectedNoteTest = expectedNoteTest.trim();
             expectedNoteTest = expectedNoteTest.replace("\n", "");
             expectedNoteTest = expectedNoteTest.replace("\r", "");
-            noteText = expectedNoteTest.trim();
-            noteText = expectedNoteTest.replace("\n", "");
-            noteText = expectedNoteTest.replace("\r", "");
+            noteText = noteText.trim();
+            noteText = noteText.replace("\n", "");
+            noteText = noteText.replace("\r", "");
         }
         assertEquals(expectedNoteTest, noteText);
-
-        List<DocumentModel> versions = coreSession.getVersions(docRef);
-        assertEquals(0, versions.size());
 
         // create again with same file
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
@@ -280,14 +271,11 @@ public class TestFileManagerService {
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
         noteText = ((String) doc.getProperty("note", "note"));
         if (SystemUtils.IS_OS_WINDOWS) {
-            noteText = expectedNoteTest.trim();
-            noteText = expectedNoteTest.replace("\n", "");
-            noteText = expectedNoteTest.replace("\r", "");
+            noteText = noteText.trim();
+            noteText = noteText.replace("\n", "");
+            noteText = noteText.replace("\r", "");
         }
         assertEquals(expectedNoteTest, noteText);
-
-        versions = coreSession.getVersions(docRef);
-        assertEquals(1, versions.size());
     }
 
     @Test
@@ -419,9 +407,6 @@ public class TestFileManagerService {
         assertTrue(extractText(doc).contains("RTF"));
         assertEquals("text/rtf", getMimeType(doc));
 
-        List<DocumentModel> versions = coreSession.getVersions(docRef);
-        assertEquals(0, versions.size());
-
         // update the with a file that matches the same importer
         file = getTestFile("test-data/hello.html");
         input = Blobs.createBlob(file, "text/html");
@@ -436,9 +421,6 @@ public class TestFileManagerService {
         assertEquals("hello.html", blob.getFilename());
         assertTrue(extractText(doc).contains("HTML"));
         assertEquals("text/html", getMimeType(doc));
-
-        versions = coreSession.getVersions(docRef);
-        assertEquals(1, versions.size());
     }
 
     @Test

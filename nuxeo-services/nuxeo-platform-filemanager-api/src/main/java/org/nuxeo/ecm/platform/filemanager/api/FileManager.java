@@ -133,14 +133,20 @@ public interface FileManager {
      * Gets the versioning applied on an overwritten document before it is overwritten.
      *
      * @since 5.7
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     * behaviors from importers
      */
+    @Deprecated
     VersioningOption getVersioningOption();
 
     /**
      * Checks whether versioning should also be applied after a document is added.
      *
      * @since 5.7
+     * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
+     * behaviors from importers
      */
+    @Deprecated
     boolean doVersioningAfterAdd();
 
 }
