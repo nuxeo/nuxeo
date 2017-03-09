@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.time.based.versioning" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.el.service</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="lifecycle-based-versioning-policy" increment="MINOR" order="2">
+      <filter-id>lifecycle-based-versioning-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="lifecycle-based-versioning-filter">
+      <condition>currentDocument.currentLifeCycleState == 'approved'</condition>
+    </filter>
+  </extension>
+
+</component>
