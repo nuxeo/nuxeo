@@ -505,7 +505,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         // Complete first task
         String taskId = getCurrentTaskId(createdWorflowInstanceId);
-        String out = getBodyForStartReviewTaskCompletion(taskId, "group:administrator");
+        String out = getBodyForStartReviewTaskCompletion(taskId, "group:administrators");
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
         // Missing required variables
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
