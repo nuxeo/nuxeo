@@ -88,7 +88,9 @@ import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 import org.nuxeo.ecm.platform.task.core.service.TaskEventNotificationHelper;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -1340,15 +1342,27 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 String.format("SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                         TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
         if (StringUtils.isNotBlank(actorId)) {
-            query.append(String.format(" AND nt:actors/* = '%s'", actorId));
+            List<String> actors = new ArrayList<String>();
+            UserManager userManager = Framework.getService(UserManager.class);
+            NuxeoPrincipal principal = userManager.getPrincipal(actorId);
+            if (principal != null) {
+                for (String actor : TaskActorsHelper.getTaskActors(principal)) {
+                    actors.add("'" + actor + "'");
+                }
+            } else {
+                actors.add("'" + actorId + "'");
+            }
+            String actorsParam = StringUtils.join(actors, ", ");
+            query.append(String.format(" AND (nt:actors/* IN (%s) OR nt:delegatedActors/* IN (%s))",
+                    actorsParam, actorsParam));
         }
         if (StringUtils.isNotBlank(workflowInstanceId)) {
-            query.append(String.format(" AND nt:processId = '%s'", workflowInstanceId));
+            query.append(String.format(" AND nt:processId = %s", NXQL.escapeString(workflowInstanceId)));
         }
         if (document != null) {
             query.append(String.format(" AND nt:targetDocumentsIds = '%s'", document.getId()));
         }
-        query.append(String.format("ORDER BY %s ASC", TaskConstants.TASK_DUE_DATE_PROPERTY_NAME));
+        query.append(String.format(" ORDER BY %s ASC", TaskConstants.TASK_DUE_DATE_PROPERTY_NAME));
         final DocumentModelList documentModelList = session.query(query.toString());
         final List<Task> result = new ArrayList<>();
 
