@@ -69,7 +69,7 @@ public class RedisFeature extends SimpleFeature {
 
     public static final String PROP_PORT= "nuxeo.test.redis.port";
 
-    public static final Mode DEFAULT_MODE = Mode.embedded;
+    public static final Mode DEFAULT_MODE = Mode.server;
 
     public static final String DEFAULT_HOST = "localhost";
 
