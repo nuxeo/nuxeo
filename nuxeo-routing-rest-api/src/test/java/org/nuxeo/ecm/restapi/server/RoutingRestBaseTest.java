@@ -63,11 +63,28 @@ public class RoutingRestBaseTest extends BaseTest {
         return getBodyForStartReviewTaskCompletion(taskId, calendar.getTime());
     }
 
+    /**
+     * @since 9.1
+     */
+    protected String getBodyForStartReviewTaskCompletion(String taskId, String assignee) throws IOException {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, 1);
+        return getBodyForStartReviewTaskCompletion(taskId, calendar.getTime(), assignee);
+    }
+
     protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate) throws IOException {
+        return getBodyForStartReviewTaskCompletion(taskId, dueDate, "user:Administrator");
+    }
+
+    /**
+     * @since 9.1
+     */
+    protected String getBodyForStartReviewTaskCompletion(String taskId, Date dueDate, String assignee)
+            throws IOException {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
                 + DateParser.formatW3CDateTime(dueDate) + "\","
-                + "\"participants\": [\"user:Administrator\"]," + "\"assignees\": [\"user:Administrator\"]" + "}" + "}";
+                + "\"participants\": [\"" + assignee + "\"]," + "\"assignees\": [\"" + assignee + "\"]" + "}" + "}";
         return jsonBody;
     }
 
