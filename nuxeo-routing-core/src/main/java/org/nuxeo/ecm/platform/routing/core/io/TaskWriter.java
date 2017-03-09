@@ -27,7 +27,9 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+
 import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
@@ -73,6 +75,12 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
     public static final String TARGET_DOCUMENT_IDS = "targetDocumentIds";
 
     public static final String FETCH_TARGET_DOCUMENT = TARGET_DOCUMENT_IDS;
+
+    protected static final String USER_PREFIX = "user";
+
+    protected static final String GROUP_PREFIX = "group";
+
+    protected static final String SEPARATOR = ":";
 
     @Inject
     private SchemaManager schemaManager;
@@ -132,15 +140,31 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             final boolean isFetchActors = ctx.getFetched(ENTITY_TYPE).contains(FETCH_ACTORS);
             for (String actorId : item.getActors()) {
                 if (isFetchActors) {
-                    NuxeoPrincipal user = userManager.getPrincipal(actorId);
-                    if (user != null) {
-                        writeEntity(user, jg);
-                        break;
-                    } else {
+                    if (actorId.startsWith(USER_PREFIX + SEPARATOR)) {
+                        actorId = actorId.substring(USER_PREFIX.length() + SEPARATOR.length());
+                        NuxeoPrincipal user = userManager.getPrincipal(actorId);
+                        if (user != null) {
+                            writeEntity(user, jg);
+                            continue;
+                        }
+                    } else if (actorId.startsWith(GROUP_PREFIX + SEPARATOR)) {
+                        actorId = actorId.substring(GROUP_PREFIX.length() + SEPARATOR.length());
                         NuxeoGroup group = userManager.getGroup(actorId);
                         if (group !=  null) {
                             writeEntity(group, jg);
-                            break;
+                            continue;
+                        }
+                    } else {
+                        NuxeoPrincipal user = userManager.getPrincipal(actorId);
+                        if (user != null) {
+                            writeEntity(user, jg);
+                            continue;
+                        } else {
+                            NuxeoGroup group = userManager.getGroup(actorId);
+                            if (group != null) {
+                                writeEntity(group, jg);
+                                continue;
+                            }
                         }
                     }
                 }
