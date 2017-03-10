@@ -118,7 +118,7 @@ public class DBSCachingRepository implements DBSRepository {
             nodeId = nodeId.trim();
         }
         clusterInvalidator = createClusterInvalidator(descriptor);
-        clusterInvalidator.initialize(nodeId, this);
+        clusterInvalidator.initialize(nodeId, getName());
     }
 
     protected DBSClusterInvalidator createClusterInvalidator(DBSRepositoryDescriptor descriptor) {

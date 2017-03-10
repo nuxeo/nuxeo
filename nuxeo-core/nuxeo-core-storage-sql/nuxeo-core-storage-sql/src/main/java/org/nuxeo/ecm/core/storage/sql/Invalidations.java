@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,23 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.nuxeo.ecm.core.pubsub.SerializableInvalidations;
 
 /**
  * A set of invalidations.
  * <p>
  * Records both modified and deleted fragments, as well as "parents modified" fragments.
  */
-public class Invalidations implements Serializable {
+public class Invalidations implements SerializableInvalidations {
 
     private static final long serialVersionUID = 1L;
 
@@ -68,6 +75,7 @@ public class Invalidations implements Serializable {
         this.all = all;
     }
 
+    @Override
     public boolean isEmpty() {
         return modified == null && deleted == null && !all;
     }
@@ -108,7 +116,9 @@ public class Invalidations implements Serializable {
         throw new AssertionError();
     }
 
-    public void add(Invalidations other) {
+    @Override
+    public void add(SerializableInvalidations o) {
+        Invalidations other = (Invalidations) o;
         if (other == null) {
             return;
         }
@@ -165,6 +175,23 @@ public class Invalidations implements Serializable {
             set.add(new RowId(tableName, id));
         }
         checkMaxSize();
+    }
+
+    // TODO do a more fine-grained serialization than using ObjectOutputStream
+
+    @Override
+    public void serialize(OutputStream out) throws IOException {
+        try (ObjectOutputStream oout = new ObjectOutputStream(out)) {
+            oout.writeObject(this);
+        }
+    }
+
+    public static Invalidations deserialize(InputStream in) throws IOException {
+        try (ObjectInputStream oin = new ObjectInputStream(in)) {
+            return (Invalidations) oin.readObject();
+        } catch (ClassNotFoundException | ClassCastException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override

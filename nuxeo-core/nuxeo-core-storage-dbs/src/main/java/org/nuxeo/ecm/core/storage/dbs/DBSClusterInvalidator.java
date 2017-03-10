@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.storage.dbs;
 
-import org.nuxeo.ecm.core.model.Repository;
-
 /**
  * Encapsulates cluster node DBS invalidations management.
  * <p>
@@ -34,9 +32,9 @@ public interface DBSClusterInvalidator {
      * Initializes the cluster invalidator.
      *
      * @param nodeId the cluster node id
-     * @param repository the repository
+     * @param repositoryName the repository name
      */
-    void initialize(String nodeId, Repository repository);
+    void initialize(String nodeId, String repositoryName);
 
     /**
      * Closes this cluster invalidator and releases resources.
