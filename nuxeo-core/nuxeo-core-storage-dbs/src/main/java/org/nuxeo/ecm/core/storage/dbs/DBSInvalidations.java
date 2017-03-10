@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,15 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.nuxeo.ecm.core.pubsub.SerializableInvalidations;
 
 /**
  * A set of invalidations for a given repository.
@@ -29,7 +35,9 @@ import java.util.Set;
  *
  * @since 8.10
  */
-public class DBSInvalidations {
+public class DBSInvalidations implements SerializableInvalidations {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Maximum number of invalidations kept, after which only {@link #all} is set. This avoids accumulating too many
@@ -52,6 +60,7 @@ public class DBSInvalidations {
         this.all = all;
     }
 
+    @Override
     public boolean isEmpty() {
         return ids == null && !all;
     }
@@ -72,7 +81,9 @@ public class DBSInvalidations {
         }
     }
 
-    public void add(DBSInvalidations other) {
+    @Override
+    public void add(SerializableInvalidations o) {
+        DBSInvalidations other = (DBSInvalidations) o;
         if (other == null) {
             return;
         }
@@ -113,6 +124,54 @@ public class DBSInvalidations {
             ids.addAll(idsToAdd);
         }
         checkMaxSize();
+    }
+
+    private static final String UTF_8 = "UTF-8";
+
+    private static final int ALL_IDS = (byte) 'A';
+
+    private static final int ID_SEP = (byte) ',';
+
+    @Override
+    public void serialize(OutputStream out) throws IOException {
+        if (all) {
+            out.write(ALL_IDS);
+        } else if (ids != null) {
+            for (String id : ids) {
+                out.write(ID_SEP);
+                out.write(id.getBytes(UTF_8));
+            }
+        }
+    }
+
+    public static DBSInvalidations deserialize(InputStream in) throws IOException {
+        int first = in.read();
+        if (first == -1) {
+            // empty message
+            return null;
+        }
+        DBSInvalidations invalidations = new DBSInvalidations();
+        if (first == ALL_IDS) {
+            invalidations.setAll();
+        } else if (first != ID_SEP) {
+            // invalid message
+            return null;
+        } else {
+            ByteArrayOutputStream baout = new ByteArrayOutputStream(36); // typical uuid size
+            for (;;) {
+                int b = in.read(); // we read from a ByteArrayInputStream so one at a time is ok
+                if (b == ID_SEP || b == -1) {
+                    invalidations.add(baout.toString(UTF_8));
+                    if (b == -1) {
+                        break;
+                    }
+                    baout.reset();
+                } else {
+                    baout.write(b);
+                }
+            }
+        }
+        return invalidations;
     }
 
     @Override
