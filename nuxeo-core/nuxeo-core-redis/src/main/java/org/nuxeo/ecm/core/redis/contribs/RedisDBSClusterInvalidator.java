@@ -86,9 +86,9 @@ public class RedisDBSClusterInvalidator implements DBSClusterInvalidator {
     private String sendSha;
 
     @Override
-    public void initialize(String nodeId, Repository repository) {
+    public void initialize(String nodeId, String repositoryName) {
         this.nodeId = nodeId;
-        this.repositoryName = repository.getName();
+        this.repositoryName = repositoryName;
         redisExecutor = Framework.getService(RedisExecutor.class);
         RedisAdmin redisAdmin = Framework.getService(RedisAdmin.class);
         namespace = redisAdmin.namespace(PREFIX, repositoryName);

@@ -26,10 +26,8 @@ import javax.inject.Inject;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.redis.RedisFeature.Mode;
 import org.nuxeo.ecm.core.redis.contribs.RedisDBSClusterInvalidator;
-import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.dbs.DBSInvalidations;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -54,15 +52,9 @@ public class TestRedisDBSClusterInvalidator {
 
     private RedisDBSClusterInvalidator createRedisDBSClusterInvalidator(String node) {
         assumeTrueRedisServer();
-        Repository repository = getDefaultRepository();
         RedisDBSClusterInvalidator rci = new RedisDBSClusterInvalidator();
-        rci.initialize(node, repository);
+        rci.initialize(node, "test");
         return rci;
-    }
-
-    private Repository getDefaultRepository() {
-        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        return repositoryService.getRepository("test");
     }
 
     private void assumeTrueRedisServer() {
