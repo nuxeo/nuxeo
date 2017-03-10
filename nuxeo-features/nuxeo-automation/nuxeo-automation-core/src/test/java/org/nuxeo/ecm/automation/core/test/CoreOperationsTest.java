@@ -484,7 +484,7 @@ public class CoreOperationsTest {
         Expression expr = Scripting.newExpression("Document.versionLabel");
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         chain.add(CreateVersion.ID).set("increment", "Major");
         chain.add(SetVar.ID).set("name", "versionLabel_2").set("value", expr);
@@ -511,7 +511,7 @@ public class CoreOperationsTest {
         Expression expr = Scripting.newExpression("Document.versionLabel");
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         // update document to test if version change (it should not change)
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:title").set("value", "MyDoc2");
@@ -531,7 +531,7 @@ public class CoreOperationsTest {
         Expression expr = Scripting.newExpression("Document.versionLabel");
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("name", "note").set("properties", "dc:title=MyDoc");
+        chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
         chain.add(SetVar.ID).set("name", "versionLabel_1").set("value", expr);
         chain.add(SetDocumentLifeCycle.ID).set("value", "approve");
         chain.add(CheckInDocument.ID).set("version", "major").set("comment", "yo").set("versionVarName", "ver");

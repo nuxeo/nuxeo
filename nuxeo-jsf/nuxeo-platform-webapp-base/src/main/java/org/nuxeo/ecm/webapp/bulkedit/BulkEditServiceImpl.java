@@ -31,7 +31,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -44,10 +45,20 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
 
     public static final String VERSIONING_EP = "versioning";
 
+    /**
+     * @deprecated since 9.1 automatic versioning mechanism has been moved to versioning service, this field is not used
+     * anymore
+     */
+    @Deprecated
     public static final VersioningOption DEFAULT_VERSIONING_OPTION = VersioningOption.MINOR;
 
     private static final Log log = LogFactory.getLog(BulkEditServiceImpl.class);
 
+    /**
+     * @deprecated since 9.1 automatic versioning mechanism has been moved to versioning service, this field is not used
+     * anymore
+     */
+    @Deprecated
     protected VersioningOption defaultVersioningOption = DEFAULT_VERSIONING_OPTION;
 
     @Override
@@ -68,7 +79,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
                     log.warn(String.format(message, propertyToCopy, targetDoc));
                 }
             }
-            targetDoc.putContextData(VersioningService.VERSIONING_OPTION, defaultVersioningOption);
+            targetDoc.putContextData(CoreSession.SOURCE, "bulkEdit");
             session.saveDocument(targetDoc);
         }
     }
@@ -112,6 +123,10 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (VERSIONING_EP.equals(extensionPoint)) {
+            String message = "Extension point 'versioning' has been deprecated and corresponding behavior removed from "
+                    + "Nuxeo Platform. Please use versioning policy instead.";
+            DeprecationLogger.log(message, "9.1");
+            Framework.getRuntime().getWarnings().add(message);
             VersioningDescriptor desc = (VersioningDescriptor) contribution;
             String defaultVer = desc.getDefaultVersioningOption();
             if (!StringUtils.isBlank(defaultVer)) {

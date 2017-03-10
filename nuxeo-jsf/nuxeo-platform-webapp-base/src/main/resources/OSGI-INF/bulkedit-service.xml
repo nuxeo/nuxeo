@@ -16,6 +16,9 @@
 
   <extension-point name="versioning">
     <documentation>
+      CAUTION deprecated extension point since 9.1, versioning has been removed from bulk edit, if you want to
+      provide automatic versioning, contribute policy to versioning service.
+
       The versioning extension point defines the versioning option that will be
       used before editing a document through bulk edit.
       The default value will be MINOR, to keep compatibility with previous

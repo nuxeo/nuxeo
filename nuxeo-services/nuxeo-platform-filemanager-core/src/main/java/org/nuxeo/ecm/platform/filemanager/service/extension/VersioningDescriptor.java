@@ -26,8 +26,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @since 5.7
+ * @deprecated since 9.1 automatic versioning mechanism has been moved to versioning service
  */
-
+@Deprecated
 @XObject("versioning")
 public class VersioningDescriptor implements Serializable {
 
