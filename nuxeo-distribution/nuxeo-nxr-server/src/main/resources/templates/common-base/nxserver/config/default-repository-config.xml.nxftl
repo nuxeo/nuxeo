@@ -17,7 +17,9 @@
         idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" 
         activeTimeoutMinutes="${nuxeo.vcs["active-timeout-minutes"]}" />
       <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
-<#if "${repository.clustering.invalidation}" == "redis">
+<#if "${repository.clustering.invalidation}" == "pubsub">
+      <clusterInvalidatorClass>org.nuxeo.ecm.core.storage.sql.VCSPubSubInvalidator</clusterInvalidatorClass>
+<#elseif "${repository.clustering.invalidation}" == "redis">
       <clusterInvalidatorClass>org.nuxeo.ecm.core.redis.contribs.RedisClusterInvalidator</clusterInvalidatorClass>
 </#if>
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
@@ -116,7 +118,9 @@
       <cache enabled="${nuxeo.dbs.cache.enabled}" maxSize="${nuxeo.dbs.cache.maxSize}"
              concurrencyLevel="${nuxeo.dbs.cache.concurrencyLevel}" ttl="${nuxeo.dbs.cache.ttl}" />
       <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}">
-<#if "${repository.clustering.invalidation}" == "redis">
+<#if "${repository.clustering.invalidation}" == "pubsub">
+        <invalidatorClass>org.nuxeo.ecm.core.storage.dbs.DBSPubSubInvalidator</invalidatorClass>
+<#elseif "${repository.clustering.invalidation}" == "redis">
         <invalidatorClass>org.nuxeo.ecm.core.redis.contribs.RedisDBSClusterInvalidator</invalidatorClass>
 </#if>
       </clustering>
