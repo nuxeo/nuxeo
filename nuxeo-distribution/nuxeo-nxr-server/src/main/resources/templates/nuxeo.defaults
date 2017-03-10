@@ -74,7 +74,7 @@ opensocial.trusted.hosts=
 repository.clustering.enabled=false
 repository.clustering.id=
 repository.clustering.delay=1000
-repository.clustering.invalidation=default
+repository.clustering.invalidation=pubsub
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 
