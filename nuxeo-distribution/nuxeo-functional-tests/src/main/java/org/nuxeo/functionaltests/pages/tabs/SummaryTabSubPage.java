@@ -74,6 +74,9 @@ public class SummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//div[@class='publication_block']")
     public WebElement publicationBlock;
 
+    @FindBy(xpath = "//span[@class=\"versionNumber\"]")
+    public WebElement versionNumberField;
+
     public SummaryTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -259,5 +262,12 @@ public class SummaryTabSubPage extends AbstractPage {
         WebElement text = publicationBlock.findElement(By.xpath(".//*[contains(@name, 'rejectPublishingComment')]"));
         text.sendKeys(comment);
         Locator.findElementWaitUntilEnabledAndClick(publicationBlock, By.xpath(".//input[@value='Reject']"));
+    }
+
+    /**
+     * @since 9.1
+     */
+    public String getVersionNumberText() {
+        return versionNumberField.getText();
     }
 }
