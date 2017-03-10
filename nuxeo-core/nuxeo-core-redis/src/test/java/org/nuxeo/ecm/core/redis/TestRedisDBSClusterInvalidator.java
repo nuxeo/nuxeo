@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestRedisDBSClusterInvalidator {
 
     @Inject
-    private FeaturesRunner runner;
+    protected RedisFeature redisFeature;
 
     @Test
     public void testInitializeAndClose() throws Exception {
@@ -66,8 +66,7 @@ public class TestRedisDBSClusterInvalidator {
     }
 
     private void assumeTrueRedisServer() {
-        Assume.assumeTrue("Require a true Redis server with pubsub support",
-                Mode.server == runner.getFeature(RedisFeature.class).getMode());
+        Assume.assumeTrue("Require a true Redis server with pubsub support", Mode.server == redisFeature.getMode());
     }
 
     @Test
