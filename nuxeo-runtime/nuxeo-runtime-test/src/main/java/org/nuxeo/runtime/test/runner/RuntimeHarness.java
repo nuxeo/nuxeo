@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -103,6 +104,15 @@ public interface RuntimeHarness {
     void stop() throws Exception;
 
     boolean isStarted();
+
+    /**
+     * Deploys a subset of a Bundle defined per the targetExtensions parameter
+     * 
+     * @param bundle the name of the component
+     * @param targetExtensions Set of allowed TargetExtensions in the final contribution
+     * @since 9.1
+     */
+    void deployPartial(String bundle, Set<TargetExtensions> targetExtensions) throws Exception;
 
     void deployFolder(File folder, ClassLoader loader) throws Exception;
 

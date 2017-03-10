@@ -29,15 +29,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -60,15 +64,22 @@ import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.StreamRef;
+import org.nuxeo.runtime.model.URLStreamRef;
+import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.MDCFeature;
 import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.TargetExtensions;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
@@ -398,6 +409,67 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return ctx;
     }
 
+    @Override
+    public void deployPartial(String name, Set<TargetExtensions> targetExtensions) throws Exception {
+        // Do not install bundle; we only need the Object to list his components
+        Bundle bundle = new BundleImpl(osgi, lookupBundle(name), null);
+
+        RuntimeContext ctx = new OSGiRuntimeContext(runtime, bundle);
+        listBundleComponents(bundle).map(URLStreamRef::new).forEach(component -> {
+            try {
+                this.deployPartialComponent(ctx, targetExtensions, component);
+            } catch (IOException e) {
+                log.error("PartialBundle: " + name + " failed to load: " + component, e);
+            }
+        });
+    }
+
+    /**
+     * Read a component from his StreamRef and create a new component (suffixed with `-partial`, and the base component
+     * name aliased) with only matching contributions of the extensionPoints parameter.
+     * 
+     * @param ctx RuntimeContext in which the new component will be deployed
+     * @param extensionPoints Set of white listed TargetExtensions
+     * @param component Reference to the original component
+     */
+    protected void deployPartialComponent(RuntimeContext ctx, Set<TargetExtensions> extensionPoints,
+            StreamRef component) throws IOException {
+        RegistrationInfo ri = ((DefaultRuntimeContext) ctx).createRegistrationInfo(component);
+        String name = ri.getName().getName() + "-partial";
+
+        // Flatten Target Extension Points
+        Set<String> targets = extensionPoints.stream()
+                                             .map(TargetExtensions::getTargetExtensions)
+                                             .flatMap(Set::stream)
+                                             .collect(Collectors.toSet());
+
+        String ext = Arrays.stream(ri.getExtensions())
+                           .filter(e -> targets.contains(TargetExtensions.newTargetExtension(
+                                   e.getTargetComponent().getName(), e.getExtensionPoint())))
+                           .map(Extension::toXML)
+                           .collect(Collectors.joining());
+
+        InlineURLFactory.install();
+        ctx.deploy(new InlineRef(name, String.format("<component name=\"%s\">%s</component>", name, ext)));
+    }
+
+    /**
+     * Listing component's urls of a bundle. Inspired from org.nuxeo.runtime.osgi.OSGiRuntimeService#loadComponents but
+     * without deploying anything.
+     * 
+     * @param bundle Bundle to be read
+     */
+    protected Stream<URL> listBundleComponents(Bundle bundle) {
+        String list = OSGiRuntimeService.getComponentsList(bundle);
+        String name = bundle.getSymbolicName();
+        log.debug("PartialBundle: " + name + " components: " + list);
+        if (list == null) {
+            return null;
+        }
+
+        return Arrays.stream(list.split("[, \t\n\r\f]")).map(s -> bundle.getEntry((String) s)).filter(Objects::nonNull);
+    }
+
     /**
      * Undeploys a contribution from a given bundle.
      * <p>
@@ -466,7 +538,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Override
     public void deployBundle(String name) throws Exception {
         // install only if not yet installed
-        BundleImpl bundle = bundleLoader.getOSGi().getRegistry().getBundle(name);
+        Bundle bundle = bundleLoader.getOSGi().getRegistry().getBundle(name);
         if (bundle == null) {
             BundleFile bundleFile = lookupBundle(name);
             bundleLoader.loadBundle(bundleFile);
