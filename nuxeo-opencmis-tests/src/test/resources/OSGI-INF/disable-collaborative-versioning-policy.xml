@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.opencmis.tests.versioning.default-policies">
+
+  <require>org.nuxeo.ecm.core.versioning.default-policies</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="no-versioning-for-system" increment="NONE" order="1">
+      <filter-id>system-document</filter-id>
+    </policy>
+    <policy id="note-as-wiki" increment="NONE" order="50">
+      <filter-id>note-filter</filter-id>
+    </policy>
+    <policy id="collaborative-save" increment="NONE" beforeUpdate="true" order="100">
+      <filter-id>last-contributor-different-filter</filter-id>
+    </policy>
+  </extension>
+
+</component>
