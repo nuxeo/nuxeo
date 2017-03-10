@@ -698,7 +698,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
 
         // init document life cycle
-        NXCore.getLifeCycleService().initialize(doc, initialLifecycleState);
+        getLifeCycleService().initialize(doc, initialLifecycleState);
 
         // init document with data from doc model
         docModel = writeModel(doc, docModel);
@@ -715,6 +715,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         createDocumentCount.inc();
         return docModel;
+    }
+
+    private transient LifeCycleService lifeCycleService;
+
+    private LifeCycleService getLifeCycleService() {
+        if (lifeCycleService == null) {
+            lifeCycleService = NXCore.getLifeCycleService();
+        }
+        return lifeCycleService;
     }
 
     protected Document fillCreateOptions(DocumentRef parentRef, String childName, Map<String, Serializable> options)
@@ -2006,8 +2015,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public void reinitLifeCycleState(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
-        LifeCycleService service = NXCore.getLifeCycleService();
-        service.reinitLifeCycle(doc);
+        getLifeCycleService().reinitLifeCycle(doc);
     }
 
     @Override

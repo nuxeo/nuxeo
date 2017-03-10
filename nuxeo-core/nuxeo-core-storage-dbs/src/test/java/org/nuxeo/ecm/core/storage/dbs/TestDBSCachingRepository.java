@@ -114,56 +114,6 @@ public class TestDBSCachingRepository {
     }
 
     @Test
-    public void testCreateState() {
-        State state = new State();
-        String id = "ID";
-        String parentId = "PARENT-ID";
-        String name = "NAME";
-        state.setSingle(KEY_ID, id);
-        state.setSingle(KEY_PARENT_ID, parentId);
-        state.setSingle(KEY_NAME, name);
-
-        // Create state
-        repository.createState(state);
-        verify(subRepository, times(1)).createState(eq(state));
-
-        // Check state is now in cache
-        State cachedState = repository.readState(id);
-        assertEquals(state, cachedState);
-        verify(subRepository, never()).readState(eq(id));
-
-        // Check state in children cache
-        cachedState = repository.readChildState(parentId, name, Collections.emptySet());
-        assertEquals(state, cachedState);
-        verify(subRepository, never()).readChildState(eq(parentId), eq(name), any());
-    }
-
-    @Test
-    public void testCreateStates() {
-        State state = new State();
-        String id = "ID";
-        String parentId = "PARENT-ID";
-        String name = "NAME";
-        state.setSingle(KEY_ID, id);
-        state.setSingle(KEY_PARENT_ID, parentId);
-        state.setSingle(KEY_NAME, name);
-
-        // Create state
-        repository.createStates(Collections.singletonList(state));
-        verify(subRepository, times(1)).createStates(eq(Collections.singletonList(state)));
-
-        // Check state is now in cache
-        State cachedState = repository.readState(id);
-        assertEquals(state, cachedState);
-        verify(subRepository, never()).readState(eq(id));
-
-        // Check state in children cache
-        cachedState = repository.readChildState(parentId, name, Collections.emptySet());
-        assertEquals(state, cachedState);
-        verify(subRepository, never()).readChildState(eq(parentId), eq(name), any());
-    }
-
-    @Test
     public void testUpdateState() {
         String id = "ID";
 

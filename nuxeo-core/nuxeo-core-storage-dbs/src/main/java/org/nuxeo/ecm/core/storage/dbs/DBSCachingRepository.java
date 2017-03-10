@@ -203,14 +203,13 @@ public class DBSCachingRepository implements DBSRepository {
     @Override
     public void createState(State state) {
         repository.createState(state);
-        // TODO check if it's relevant
-        putInCache(state);
+        // don't cache new state, it is inefficient on mass import
     }
 
     @Override
     public void createStates(List<State> states) {
         repository.createStates(states);
-        states.forEach(this::putInCache);
+        // don't cache new states, it is inefficient on mass import
     }
 
     @Override
