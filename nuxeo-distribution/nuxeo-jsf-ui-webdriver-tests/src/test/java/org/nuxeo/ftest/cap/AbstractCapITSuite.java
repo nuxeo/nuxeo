@@ -34,7 +34,8 @@ import org.junit.runners.Suite;
         ITDocumentRelationTest.class, ITFileUploadTest.class, ITLoginLogoutTest.class, ITLogsViewerTest.class,
         ITModifyWorkspaceDescriptionTest.class, ITNoteDocumentTest.class, ITRichfileUploadTest.class,
         ITRSSAtomExportTest.class, ITSafeEditTest.class, ITSuggestBoxTest.class, ITSelect2Test.class,
-        ITSelectAndFilterTest.class, ITTaggingTest.class, ITUsersTest.class, ITVocabularyTest.class })
+        ITSelectAndFilterTest.class, ITTaggingTest.class, ITUsersTest.class, ITVocabularyTest.class,
+        ITAutoVersioningTest.class })
 public abstract class AbstractCapITSuite {
 
 }
