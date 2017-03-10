@@ -34,11 +34,13 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -104,10 +106,8 @@ public class TestBulkEditService {
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-minorversion-contrib.xml")
     public void testBulkEdit() {
-        // for tests, force the versioning policy to be the default one
-        ((BulkEditServiceImpl) bulkEditService).defaultVersioningOption = BulkEditServiceImpl.DEFAULT_VERSIONING_OPTION;
-
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
 
@@ -132,7 +132,6 @@ public class TestBulkEditService {
     }
 
     @Test
-    @LocalDeploy("org.nuxeo.ecm.webapp.base:test-bulkedit-noversion-contrib.xml")
     public void testBulkEditNoVersion() throws Exception {
 
         List<DocumentModel> docs = createTestDocuments();
@@ -185,6 +184,7 @@ public class TestBulkEditService {
     public void testBulkEditAutoVersioningFailure() throws Exception {
 
         List<DocumentModel> docs = createTestDocuments();
+        docs.forEach(doc -> doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR));
         DocumentModel sourceDoc = buildSimpleDocumentModel();
 
         try {
@@ -192,8 +192,7 @@ public class TestBulkEditService {
             fail("Creating documents should have failed as the version option does not exist");
         } catch (NuxeoException e) {
             assertEquals(
-                    "Versioning option=" + BulkEditServiceImpl.DEFAULT_VERSIONING_OPTION.toString()
-                            + " is not allowed by the configuration for type=File/lifeCycleState=project",
+                    "Versioning option=MINOR is not allowed by the configuration for type=File/lifeCycleState=project",
                     e.getMessage());
         }
     }

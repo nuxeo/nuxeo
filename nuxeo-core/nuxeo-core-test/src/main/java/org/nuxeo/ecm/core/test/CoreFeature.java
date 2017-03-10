@@ -89,6 +89,7 @@ import com.google.inject.Binder;
         "org.nuxeo.ecm.core.storage.mongodb", //
         "org.nuxeo.ecm.platform.commandline.executor", //
         "org.nuxeo.ecm.platform.el", //
+        "org.nuxeo.ecm.core.io", //
 })
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
