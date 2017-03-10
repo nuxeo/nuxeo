@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
@@ -32,12 +33,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -61,6 +64,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return doc;
     }
 
+    @Override
     public DocumentRef getRef() {
         return doc.getRef();
     }
@@ -73,7 +77,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             return targetDoc.getRef();
         }
         if (!targetDoc.isProxy() && !targetDoc.isCheckedOut()) {
-            return targetDoc.getCoreSession().getLastDocumentVersionRef(targetDoc.getRef());
+            return targetDoc.getCoreSession().getBaseVersion(targetDoc.getRef());
         }
         if (targetDoc.isProxy()) {
             DocumentModel proxyTarget = targetDoc.getCoreSession().getDocument(new IdRef(targetDoc.getSourceId()));
@@ -130,20 +134,40 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             doc.addFacet(FacetNames.VERSIONABLE);
         }
 
-        DocumentModelList children = doc.getCoreSession().getChildren(doc.getRef());
+        List<DocumentModel> folders = new ArrayList<>();
+        List<DocumentModel> leafs = new ArrayList<>();
+        String[] vuuids = null;
 
-        String[] vuuids = new String[children.size()];
+        doc.getCoreSession().save();
+        String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '" + doc.getId() + "' AND ecm:currentLifeCycleState != 'deleted'";
+        try (IterableQueryResult res = doc.getCoreSession().queryAndFetch(
+                query, "NXQL")) {
 
-        for (int i = 0; i < children.size(); i++) {
-            DocumentModel child = children.get(i);
-            if (!child.isFolder()) {
-                DocumentRef leafRef = createLeafVersion(child, option);
-                vuuids[i] = leafRef.toString();
-            } else {
-                SnapshotableAdapter adapter = new SnapshotableAdapter(child);
-                Snapshot snap = adapter.createSnapshot(option);
-                vuuids[i] = snap.getRef().toString();
+            vuuids = new String[(int) res.size()];
+            for (Map<String, Serializable> item : res) {
+                DocumentModel child = doc.getCoreSession().getDocument(new IdRef((String) item.get(NXQL.ECM_UUID)));
+                if (child.isFolder()) {
+                    folders.add(child);
+                } else {
+                    leafs.add(child);
+                }
             }
+
+        }
+
+        int i = 0;
+
+        for (DocumentModel child : leafs) {
+            DocumentRef docRef = createLeafVersion(child, option);
+            String versionUuid = docRef.toString();
+            vuuids[i++] = versionUuid;
+        }
+
+        for (DocumentModel child : folders) {
+            SnapshotableAdapter adapter = new SnapshotableAdapter(child);
+            Snapshot snap = adapter.createSnapshot(option);
+            String versionUuid = snap.getRef().toString();
+            vuuids[i++] = versionUuid;
         }
 
         // check if a snapshot is needed
@@ -233,6 +257,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
     }
 
+    @Override
     public List<Snapshot> getFlatTree() {
         List<Snapshot> list = new ArrayList<Snapshot>();
 
