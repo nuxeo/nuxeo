@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.redis;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.redis.RedisFeature.Mode;
 import org.nuxeo.ecm.core.redis.contribs.RedisClusterInvalidator;
 import org.nuxeo.ecm.core.redis.contribs.RedisInvalidations;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
@@ -35,12 +36,17 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import javax.inject.Inject;
+
 /**
  * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class, RedisFeature.class})
 public class TestRedisClusterInvalidator {
+
+    @Inject
+    protected RedisFeature redisFeature;
 
     @Test
     public void testInitializeAndClose() throws Exception {
@@ -62,8 +68,7 @@ public class TestRedisClusterInvalidator {
     }
 
     private void assumeTrueRedisServer() {
-        Assume.assumeTrue("Require a true Redis server with pubsub support",
-                "server".equals(Framework.getProperty("nuxeo.test.redis.mode")));
+        Assume.assumeTrue("Require a true Redis server with pubsub support", Mode.server == redisFeature.getMode());
     }
 
     @Test
