@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Document template Samples With no initialization
+Bundle-SymbolicName: org.nuxeo.template.manager.samples.no-init.test;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-RequiredBy: studio.extensions.template-module-demo
+Bundle-Activator: org.nuxeo.template.samples.importer.TemplateBundleActivator
+Nuxeo-Component: OSGI-INF/test-content-template-contrib.xml

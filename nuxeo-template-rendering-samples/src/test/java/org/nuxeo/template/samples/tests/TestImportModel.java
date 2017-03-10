@@ -47,9 +47,10 @@ import org.nuxeo.template.samples.importer.ModelImporter;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.template.manager.api", //
         "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.jaxrs",
-        "studio.extensions.template-module-demo",//
-        "org.nuxeo.template.manager.samples"
+        "org.nuxeo.template.manager.jaxrs", //
+        "studio.extensions.template-module-demo", //
+        "org.nuxeo.template.manager.samples", //
+        "org.nuxeo.template.manager.samples.no-init.test", //
 })
 public class TestImportModel {
 
@@ -73,7 +74,7 @@ public class TestImportModel {
         // check result
 
         StringBuffer sb = new StringBuffer();
-        DocumentModelList docs = session.query("select * from Document where ecm:mixinType in ('Template','TemplateBased') order by ecm:path");
+        DocumentModelList docs = session.query("select * from Document where ecm:isVersion = 0 and ecm:mixinType in ('Template','TemplateBased') order by ecm:path");
         for (DocumentModel doc : docs) {
             sb.append("path: " + doc.getPathAsString() + " type: " + doc.getType() + " title:" + doc.getTitle()
                     + " name:" + doc.getName() + " uuid:" + doc.getId());

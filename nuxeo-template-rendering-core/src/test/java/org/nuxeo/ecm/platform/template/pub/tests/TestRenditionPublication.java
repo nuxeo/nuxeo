@@ -233,15 +233,17 @@ public class TestRenditionPublication {
         assertTrue(bodyIdx > 0); // at least one body tag
         assertTrue(htmlPage.indexOf("<body>", bodyIdx + 1) < 0); // but not 2
 
+        // note is versioned at creation and for each updates
         // refetch !?
         proxy = session.getDocument(proxy.getRef());
-        assertEquals("0.1", proxy.getVersionLabel());
+        assertEquals("0.2", proxy.getVersionLabel());
 
         // update template
         templateBasedDoc.setPropertyValue("dc:description", "updated!");
         templateBasedDoc = session.saveDocument(templateBasedDoc);
         session.save();
-        assertEquals("0.1+", templateBasedDoc.getVersionLabel());
+        // as it's a note, it is versioned for each updates
+        assertEquals("0.3", templateBasedDoc.getVersionLabel());
 
         // republish
         publishedDocument = (SimpleCorePublishedDocument) tree.publish(templateBasedDoc, targetNode,
@@ -257,7 +259,7 @@ public class TestRenditionPublication {
 
         // refetch !?
         proxy = session.getDocument(proxy.getRef());
-        assertEquals("0.2", proxy.getVersionLabel());
+        assertEquals("0.3", proxy.getVersionLabel());
 
     }
 
