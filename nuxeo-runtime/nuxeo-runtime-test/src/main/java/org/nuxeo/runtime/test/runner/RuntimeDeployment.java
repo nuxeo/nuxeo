@@ -21,6 +21,7 @@ package org.nuxeo.runtime.test.runner;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,10 +36,8 @@ import javax.inject.Inject;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
-
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
-
 import org.osgi.framework.Bundle;
 
 import com.google.common.base.Supplier;
@@ -51,6 +50,8 @@ import com.google.common.collect.SetMultimap;
 public class RuntimeDeployment {
 
     Set<String> bundles = new HashSet<>();
+
+    Map<String, Set<TargetExtensions>> partialBundles = new HashMap<>();
 
     Map<String, Collection<String>> mainContribs = new HashMap<>();
 
@@ -84,6 +85,8 @@ public class RuntimeDeployment {
                 index((Deploy) anno);
             } else if (anno.annotationType() == LocalDeploy.class) {
                 index((LocalDeploy) anno);
+            } else if (anno.annotationType() == PartialDeploy.class) {
+                index((PartialDeploy) anno);
             }
         }
     }
@@ -113,6 +116,25 @@ public class RuntimeDeployment {
         for (String each : config.value()) {
             index(each, localIndex);
         }
+    }
+
+    /**
+     * @since 9.1
+     * @param config
+     */
+    protected void index(PartialDeploy config) {
+        if (config == null) {
+            return;
+        }
+
+        Set<TargetExtensions> pairs = partialBundles.computeIfAbsent(config.bundle(), key -> new HashSet<>());
+        Arrays.stream(config.features()).map(c -> {
+            try {
+                return c.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException(e);
+            }
+        }).forEach(pairs::add);
     }
 
     protected void index(Features features) {
@@ -190,6 +212,14 @@ public class RuntimeDeployment {
                 contexts.add(harness.deployTestContrib(resource.getKey(), resource.getValue()));
             } catch (Exception error) {
                 errors.addSuppressed(error);
+            }
+        }
+
+        for (Map.Entry<String, Set<TargetExtensions>> resource : partialBundles.entrySet()) {
+            try {
+                harness.deployPartial(resource.getKey(), resource.getValue());
+            } catch (Exception e) {
+                errors.addSuppressed(e);
             }
         }
 
