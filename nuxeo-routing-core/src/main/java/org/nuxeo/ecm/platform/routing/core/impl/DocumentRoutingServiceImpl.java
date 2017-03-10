@@ -1347,10 +1347,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             NuxeoPrincipal principal = userManager.getPrincipal(actorId);
             if (principal != null) {
                 for (String actor : TaskActorsHelper.getTaskActors(principal)) {
-                    actors.add("'" + actor + "'");
+                    actors.add(NXQL.escapeString(actor));
                 }
             } else {
-                actors.add("'" + actorId + "'");
+                actors.add(NXQL.escapeString(actorId));
             }
             String actorsParam = StringUtils.join(actors, ", ");
             query.append(String.format(" AND (nt:actors/* IN (%s) OR nt:delegatedActors/* IN (%s))",
