@@ -147,60 +147,89 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     @Override
-    public DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException {
+    public DocumentModel createFolder(CoreSession documentManager, String fullname, String path, boolean overwrite)
+            throws IOException {
 
         if (folderImporters.isEmpty()) {
-            return defaultCreateFolder(documentManager, fullname, path);
+            return defaultCreateFolder(documentManager, fullname, path, overwrite);
         } else {
             // use the last registered folder importer
             FolderImporter folderImporter = folderImporters.get(folderImporters.size() - 1);
-            return folderImporter.create(documentManager, fullname, path, true, getTypeService());
+            return folderImporter.create(documentManager, fullname, path, overwrite, getTypeService());
         }
     }
 
+    /**
+     * @deprecated since 9.1, use {@link #defaultCreateFolder(CoreSession, String, String, boolean)} instead
+     */
+    @Deprecated
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path) {
-        return defaultCreateFolder(documentManager, fullname, path, DEFAULT_FOLDER_TYPE_NAME, true);
+        return defaultCreateFolder(documentManager, fullname, path, true);
     }
 
+    /**
+     * @since 9.1
+     */
+    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
+            boolean overwrite) {
+        return defaultCreateFolder(documentManager, fullname, path, DEFAULT_FOLDER_TYPE_NAME, true, overwrite);
+    }
+
+    /**
+     * @deprecated since 9.1, use {@link #defaultCreateFolder(CoreSession, String, String, String, boolean, boolean)}
+     *             instead
+     */
+    @Deprecated
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
             String containerTypeName, boolean checkAllowedSubTypes) {
+        return defaultCreateFolder(documentManager, fullname, path, containerTypeName, checkAllowedSubTypes, true);
+    }
+
+    /**
+     * @since 9.1
+     */
+    public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
+            String containerTypeName, boolean checkAllowedSubTypes, boolean overwrite) {
 
         // Fetching filename
         String title = FileManagerUtils.fetchFileName(fullname);
 
-        // Looking if an existing Folder with the same filename exists.
-        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
-
-        if (docModel == null) {
-            // check permissions
-            PathRef containerRef = new PathRef(path);
-            if (!documentManager.hasPermission(containerRef, SecurityConstants.READ_PROPERTIES)
-                    || !documentManager.hasPermission(containerRef, SecurityConstants.ADD_CHILDREN)) {
-                throw new DocumentSecurityException("Not enough rights to create folder");
+        if (overwrite) {
+            // Looking if an existing Folder with the same filename exists.
+            DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(documentManager, path, title);
+            if (docModel != null) {
+                return docModel;
             }
-
-            // check allowed sub types
-            DocumentModel container = documentManager.getDocument(containerRef);
-            if (checkAllowedSubTypes
-                    && !getTypeService().isAllowedSubType(containerTypeName, container.getType(), container)) {
-                // cannot create document file here
-                // TODO: we should better raise a dedicated exception to be
-                // catched by the FileManageActionsBean instead of returning
-                // null
-                return null;
-            }
-
-            PathSegmentService pss = Framework.getService(PathSegmentService.class);
-            docModel = documentManager.createDocumentModel(containerTypeName);
-            docModel.setProperty("dublincore", "title", title);
-
-            // writing changes
-            docModel.setPathInfo(path, pss.generatePathSegment(docModel));
-            docModel = documentManager.createDocument(docModel);
-            documentManager.save();
-
-            log.debug("Created container: " + docModel.getName() + " with type " + containerTypeName);
         }
+
+        // check permissions
+        PathRef containerRef = new PathRef(path);
+        if (!documentManager.hasPermission(containerRef, SecurityConstants.READ_PROPERTIES)
+                || !documentManager.hasPermission(containerRef, SecurityConstants.ADD_CHILDREN)) {
+            throw new DocumentSecurityException("Not enough rights to create folder");
+        }
+
+        // check allowed sub types
+        DocumentModel container = documentManager.getDocument(containerRef);
+        if (checkAllowedSubTypes
+                && !getTypeService().isAllowedSubType(containerTypeName, container.getType(), container)) {
+            // cannot create document file here
+            // TODO: we should better raise a dedicated exception to be
+            // catched by the FileManageActionsBean instead of returning
+            // null
+            return null;
+        }
+
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
+        DocumentModel docModel = documentManager.createDocumentModel(containerTypeName);
+        docModel.setProperty("dublincore", "title", title);
+
+        // writing changes
+        docModel.setPathInfo(path, pss.generatePathSegment(docModel));
+        docModel = documentManager.createDocument(docModel);
+        documentManager.save();
+
+        log.debug("Created container: " + docModel.getName() + " with type " + containerTypeName);
         return docModel;
     }
 
