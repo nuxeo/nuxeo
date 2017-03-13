@@ -17,14 +17,21 @@ if (id == false) then
   return false
 end
 
+local isrunning = redis.call('SISMEMBER', runningKey, id)
+-- weird check because of embedded lua that returns a boolean instead of integer
+if isrunning == 1 or isrunning == true then
+    redis.call('LPUSH', queuedKey, id)
+    return false
+end
+
 redis.call('SREM', scheduledKey, id)
 redis.call('SADD', runningKey, id)
 redis.call('HSET', stateKey, id, state)
 
 return {
     {
-      redis.call('HINCRBY', countKey, scheduledKey, -1), 
-      redis.call('HINCRBY', countKey, runningKey, 1), 
+      redis.call('HINCRBY', countKey, scheduledKey, -1),
+      redis.call('HINCRBY', countKey, runningKey, 1),
       redis.call('HINCRBY', countKey, completedKey, 0),
       redis.call('HINCRBY', countKey, canceledKey, 0)
     },
