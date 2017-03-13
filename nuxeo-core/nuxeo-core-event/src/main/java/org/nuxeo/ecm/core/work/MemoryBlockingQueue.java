@@ -158,7 +158,23 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     @Override
     public Runnable take() throws InterruptedException {
         Runnable r = queue.take();
+        if (anotherWorkIsAlreadyRunning(r)) {
+            // reschedule the work so it does not run concurrently
+            offer(r);
+            // take a break we don't want to take too much CPU looping on the same message.
+            Thread.sleep(100);
+            return null;
+        }
         return r;
+    }
+
+    private boolean anotherWorkIsAlreadyRunning(Runnable r) throws InterruptedException {
+        Work work = WorkHolder.getWork(r);
+        String id = work.getId();
+        if (runningWorks.contains(id)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
