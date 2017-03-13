@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.multifiles.test.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+             point="documentMapping">
+
+    <docConfig tagName="doc">
+      <docType>File</docType>
+    </docConfig>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+             point="attributeMapping">
+
+    <attributeConfig tagName="title" docProperty="dc:title" xmlPath="text()"/>
+
+    <attributeConfig tagName="file" docProperty="file:content">
+      <mapping documentProperty="content">text()</mapping>
+    </attributeConfig>
+
+    <attributeConfig tagName="files" docProperty="files:files">
+      <mapping documentProperty="file">text()</mapping>
+    </attributeConfig>
+
+  </extension>
+
+</component>
