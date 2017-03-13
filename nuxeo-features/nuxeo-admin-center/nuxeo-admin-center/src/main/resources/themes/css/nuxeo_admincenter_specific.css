@@ -131,3 +131,6 @@ p.directoryBack {  padding: .2em .2em .2em 2em }
 /* Remove padding space from tabContent when the actionBar div or the
    marketplace message are displayed in the Update Center main tab */
 #connectAppListing { display: block; margin: -1.5em 0 }
+
+.dataTable .wordbreak {
+  word-break: break-all }
