@@ -10,7 +10,6 @@ Require-Bundle: org.nuxeo.ecm.platform.tag.api,
 Export-Package: org.nuxeo.ecm.platform.tag.web
 Nuxeo-Component: OSGI-INF/navtree-contrib.xml,
  OSGI-INF/tag-widgets-contrib.xml,
- OSGI-INF/operations-contrib.xml,
  OSGI-INF/tag-theme-contrib.xml
 
 
