@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.filemanager.api;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.List;
 
@@ -69,8 +68,7 @@ public interface FileManager {
      * @param path the path were to create the folder
      * @return the Folder Created
      */
-    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws
-            IOException;
+    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException;
 
     /**
      * Returns the list of document that are to be suggested to principalName as a candidate container for a new
