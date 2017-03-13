@@ -143,17 +143,21 @@ public class JSONDocumentObject extends DocumentObject {
     /**
      * In case of version option header presence, checkin the related document
      *
-     * @param headers X-Versioning-Option Header
+     * @param headers X-Versioning-Option or Source (for automatic versioning) Header
      */
     private void versioningDocFromHeaderIfExists(HttpHeaders headers) {
         isVersioning = false;
         List<String> versionHeader = headers.getRequestHeader(RestConstants.X_VERSIONING_OPTION);
-        if (versionHeader != null && versionHeader.size() != 0) {
+        List<String> sourceHeader = headers.getRequestHeader(RestConstants.SOURCE);
+        if (versionHeader != null && !versionHeader.isEmpty()) {
             VersioningOption versioningOption = VersioningOption.valueOf(versionHeader.get(0).toUpperCase());
             if (versioningOption != null && !versioningOption.equals(VersioningOption.NONE)) {
                 doc.putContextData(VersioningService.VERSIONING_OPTION, versioningOption);
                 isVersioning = true;
             }
+        } else if (sourceHeader != null && !sourceHeader.isEmpty()) {
+            doc.putContextData(CoreSession.SOURCE, sourceHeader.get(0));
+            isVersioning = true;
         }
     }
 }

@@ -33,4 +33,9 @@ public class RestConstants {
      */
     public static final String CONTRIBUTOR_CTX_PARAMETERS = "contextParameters";
 
+    /**
+     * @since 9.1 Rest Source header
+     */
+    public static final String SOURCE = "source";
+
 }
