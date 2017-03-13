@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,6 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Binder;
-import com.google.inject.Provider;
 
 /**
  * The core feature provides a default {@link CoreSession} that can be injected.
@@ -71,13 +70,13 @@ import com.google.inject.Provider;
  * In addition, by injecting the feature itself, some helper methods are available to open new sessions.
  */
 @Deploy({ "org.nuxeo.runtime.management", //
-        "org.nuxeo.runtime.metrics",
+        "org.nuxeo.runtime.metrics", //
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.core.query", //
         "org.nuxeo.ecm.core.api", //
         "org.nuxeo.ecm.core.event", //
         "org.nuxeo.ecm.core", //
-        "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.core.cache", //
         "org.nuxeo.ecm.core.test", //
         "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.core.convert", //
@@ -106,9 +105,7 @@ public class CoreFeature extends SimpleFeature {
         }
 
         protected void logInfos(WorkManager workManager) {
-            StringBuilder sb = new StringBuilder()
-                    .append("Timed out while waiting for works")
-                    .append(" ");
+            StringBuilder sb = new StringBuilder().append("Timed out while waiting for works").append(" ");
             Iterator<String> queueids = workManager.getWorkQueueIds().iterator();
             while (queueids.hasNext()) {
                 sb.append(System.lineSeparator());
@@ -166,7 +163,6 @@ public class CoreFeature extends SimpleFeature {
         granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
     }
 
-
     public Granularity getGranularity() {
         return granularity;
     }
@@ -208,12 +204,7 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(CoreSession.class).toProvider(new Provider<CoreSession>() {
-            @Override
-            public CoreSession get() {
-                return session;
-            }
-        });
+        binder.bind(CoreSession.class).toProvider(() -> session);
     }
 
     @Override
@@ -226,13 +217,13 @@ public class CoreFeature extends SimpleFeature {
             releaseCoreSession();
         }
 
-        List<CoreSessionRegistrationInfo> leakedInfos = Framework.getService(
-                CoreSessionService.class).getCoreSessionRegistrationInfos();
+        List<CoreSessionRegistrationInfo> leakedInfos = Framework.getService(CoreSessionService.class)
+                                                                 .getCoreSessionRegistrationInfos();
         if (leakedInfos.size() == 0) {
             return;
         }
         AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
-        for (CoreSessionRegistrationInfo info:leakedInfos) {
+        for (CoreSessionRegistrationInfo info : leakedInfos) {
             try {
                 info.getCoreSession().close();
                 leakedErrors.addSuppressed(info);
@@ -284,7 +275,8 @@ public class CoreFeature extends SimpleFeature {
             }
             // remove non-proxies
             session.removeChildren(new PathRef("/"));
-            log.trace("remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
+            log.trace(
+                    "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
             // remove remaining placeless documents
             try (IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation",
                     NXQL.NXQL)) {
@@ -375,7 +367,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     public CoreSession createCoreSession() {
-        UserPrincipal principal = new UserPrincipal("Administrator", new ArrayList<String>(), false, true);
+        UserPrincipal principal = new UserPrincipal("Administrator", new ArrayList<>(), false, true);
         session = CoreInstance.openCoreSession(getRepositoryName(), principal);
         return session;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public interface VersioningService {
      * Applies versioning after document creation.
      *
      * @param doc the document
-     * @param context map event info
+     * @param options map event info
      */
     void doPostCreate(Document doc, Map<String, Serializable> options);
 
@@ -110,7 +110,7 @@ public interface VersioningService {
      * @param isDirty {@code true} if there is actual data to save
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
-     * @param context map event info
+     * @param options map event info
      * @return the validated option (to use in doPostSave)
      */
     VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
@@ -133,7 +133,7 @@ public interface VersioningService {
      * @param doc the document
      * @param option an option chosen by the user or framework
      * @param checkinComment a checkin comment
-     * @param context map event info
+     * @param options map event info
      * @return checkedInDocument or null
      */
     Document doPostSave(Document doc, VersioningOption option, String checkinComment,

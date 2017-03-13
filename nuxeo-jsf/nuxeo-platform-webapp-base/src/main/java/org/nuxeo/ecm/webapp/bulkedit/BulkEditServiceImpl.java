@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Thomas Roger
  */
-
 package org.nuxeo.ecm.webapp.bulkedit;
 
 import java.io.Serializable;
@@ -80,7 +79,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
      * {@code false otherwise}.
      */
     protected List<String> getPropertiesToCopy(DocumentModel sourceDoc) {
-        List<String> propertiesToCopy = new ArrayList<String>();
+        List<String> propertiesToCopy = new ArrayList<>();
         for (Map.Entry<String, Serializable> entry : sourceDoc.getContextData().entrySet()) {
             String key = entry.getKey();
             if (key.startsWith(BULK_EDIT_PREFIX)) {
