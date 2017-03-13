@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.automation.core")
 // For version label info
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
-// @RepositoryConfig(cleanup=Granularity.METHOD)
 public class CoreOperationsTest {
 
     protected DocumentModel src;
@@ -305,8 +304,8 @@ public class CoreOperationsTest {
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(FetchContextDocument.ID);
-        chain.add(CreateDocument.ID).set("type", "Note").set("properties", new Properties("dc:title=MyDoc")).set(
-                "name", "note");
+        chain.add(CreateDocument.ID).set("type", "Note").set("properties", new Properties("dc:title=MyDoc")).set("name",
+                "note");
         chain.add(PushDocument.ID);
         chain.add(GetDocumentParent.ID);
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "parentdoc");
@@ -602,8 +601,10 @@ public class CoreOperationsTest {
         // test that the global transaction is not marked for rollback
         try {
             OperationChain chain = new OperationChain("testChain");
-            chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false").set(
-                    "rollbackGlobalOnError", "false");
+            chain.add(RunInNewTransaction.ID)
+                 .set("id", "testExitChain")
+                 .set("isolate", "false")
+                 .set("rollbackGlobalOnError", "false");
             service.run(ctx, chain);
         } finally {
             assertFalse(TransactionHelper.isTransactionMarkedRollback());
@@ -612,8 +613,10 @@ public class CoreOperationsTest {
         // test that the global transaction is marked for rollback
         try {
             OperationChain chain = new OperationChain("testChain");
-            chain.add(RunInNewTransaction.ID).set("id", "testExitChain").set("isolate", "false")
-                    .set("rollbackGlobalOnError", "true");
+            chain.add(RunInNewTransaction.ID)
+                 .set("id", "testExitChain")
+                 .set("isolate", "false")
+                 .set("rollbackGlobalOnError", "true");
             service.run(ctx, chain);
         } catch (Exception e) {
             assertTrue(TransactionHelper.isTransactionMarkedRollback());

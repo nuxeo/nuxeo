@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class VersioningRuleDescriptor implements Serializable {
     protected Boolean enabled;
 
     @XNodeMap(value = "options", key = "@lifeCycleState", type = HashMap.class, componentType = SaveOptionsDescriptor.class)
-    public Map<String, SaveOptionsDescriptor> options = new HashMap<String, SaveOptionsDescriptor>();
+    public Map<String, SaveOptionsDescriptor> options = new HashMap<>();
 
     @XNode("initialState")
     public InitialStateDescriptor initialState;

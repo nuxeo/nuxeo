@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class SaveOptionsDescriptor implements Serializable {
     }
 
     public List<VersioningOption> getVersioningOptionList() {
-        List<VersioningOption> opts = new LinkedList<VersioningOption>();
+        List<VersioningOption> opts = new LinkedList<>();
         if (none != null) {
             if (none.isDefault()) {
                 opts.add(0, NONE);

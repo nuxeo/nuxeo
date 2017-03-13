@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- *
- * $Id: Registry.java 2531 2006-09-04 23:01:57Z janguenot $
  */
-
 package org.nuxeo.ecm.platform.filemanager.service;
 
 import java.io.IOException;
@@ -94,7 +90,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private final List<CreationContainerListProvider> creationContainerListProviders;
 
-    private List<String> fieldsXPath = new ArrayList<String>();
+    private List<String> fieldsXPath = new ArrayList<>();
 
     private MimetypeRegistry mimeService;
 
@@ -121,9 +117,9 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     private TypeManager typeService;
 
     public FileManagerService() {
-        fileImporters = new HashMap<String, FileImporter>();
-        folderImporters = new LinkedList<FolderImporter>();
-        creationContainerListProviders = new LinkedList<CreationContainerListProvider>();
+        fileImporters = new HashMap<>();
+        folderImporters = new LinkedList<>();
+        creationContainerListProviders = new LinkedList<>();
     }
 
     private MimetypeRegistry getMimeService() {
@@ -248,7 +244,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             input = checkMimeType(input, fullName);
         }
 
-        List<FileImporter> importers = new ArrayList<FileImporter>(fileImporters.values());
+        List<FileImporter> importers = new ArrayList<>(fileImporters.values());
         Collections.sort(importers);
         String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(input.getMimeType()).getNormalized();
         for (FileImporter importer : importers) {
@@ -529,7 +525,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             Principal principal) {
         String nxql = String.format(QUERY, digest);
         DocumentModelList documentModelList = documentManager.query(nxql, MAX);
-        List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>(documentModelList.size());
+        List<DocumentLocation> docLocationList = new ArrayList<>(documentModelList.size());
         for (DocumentModel documentModel : documentModelList) {
             docLocationList.add(new DocumentLocationImpl(documentModel));
         }
