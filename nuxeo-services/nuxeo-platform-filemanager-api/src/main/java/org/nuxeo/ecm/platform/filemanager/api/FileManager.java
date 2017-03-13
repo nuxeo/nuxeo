@@ -44,7 +44,7 @@ public interface FileManager {
      *
      * @param input the blob containing the content and the mime type
      * @param path the path were to create the document
-     * @param overwrite boolean how decide to overwrite or not
+     * @param overwrite whether to overwrite an existing file with the same title or not
      * @param fullName the fullname that contains the filename
      * @return the created Document
      */
@@ -67,8 +67,24 @@ public interface FileManager {
      * @param fullname the full name of the folder
      * @param path the path were to create the folder
      * @return the Folder Created
+     * @deprecated since 9.1, use {@link #createFolder(CoreSession, String, String, boolean)} instead
      */
-    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException;
+    @Deprecated
+    default DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException {
+        return createFolder(documentManager, fullname, path, true);
+    }
+
+    /**
+     * Creates a Folder.
+     *
+     * @param fullname the full name of the folder
+     * @param path the path were to create the folder
+     * @param overwrite whether to overwrite an existing folder with the same title or not
+     * @return the Folder Created
+     * @since 9.1
+     */
+    DocumentModel createFolder(CoreSession documentManager, String fullname, String path, boolean overwrite)
+            throws IOException;
 
     /**
      * Returns the list of document that are to be suggested to principalName as a candidate container for a new
