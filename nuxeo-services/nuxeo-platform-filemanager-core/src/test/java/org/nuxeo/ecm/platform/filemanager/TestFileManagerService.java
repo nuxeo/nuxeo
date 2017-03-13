@@ -116,7 +116,7 @@ public class TestFileManagerService {
         // because the blob already carries a mime-type that matches the file name
         // using mime-type check on or off should yield the same result
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
-            "test-data/hello2.doc", true);
+                "test-data/hello2.doc", true);
         assertNotNull(doc);
         assertEquals("hello2.doc", doc.getProperty("dublincore", "title"));
         assertNotNull(doc.getProperty("file", "content"));
@@ -133,7 +133,7 @@ public class TestFileManagerService {
         File file = getTestFile("test-data/hello.doc");
         Blob input = Blobs.createBlob(file, "application/sometype");
         DocumentModel doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
-            "test-data/hello3.doc");
+                "test-data/hello3.doc");
         assertNotNull(doc);
         assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
         assertNotNull(doc.getProperty("file", "content"));
@@ -143,7 +143,7 @@ public class TestFileManagerService {
 
         input = Blobs.createBlob(file, "application/sometype");
         doc = service.createDocumentFromBlob(coreSession, input, workspace.getPathAsString(), true,
-            "test-data/hello3.doc", true);
+                "test-data/hello3.doc", true);
         assertNotNull(doc);
         assertEquals("hello3.doc", doc.getProperty("dublincore", "title"));
         assertNotNull(doc.getProperty("file", "content"));
