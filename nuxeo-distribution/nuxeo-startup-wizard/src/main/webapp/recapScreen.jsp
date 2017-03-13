@@ -47,7 +47,7 @@ boolean connectOK = ctx.isConnectRegistrationDone();
     Map<String,String> connectMap = ctx.getConnectMap();%>
     <div class="screenExplanations">
       <div class="bold"><fmt:message key="label.connectFinish.ok" /></div>
-      <div id="CLID"><%=connectMap.get("CLID")%></div>
+      <div id="CLID" style="word-break: break-all;"><%=connectMap.get("CLID")%></div>
     </div>
  <%}%>
 
