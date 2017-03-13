@@ -62,6 +62,8 @@ public class ITAutoVersioningTest extends AbstractTest {
 
     protected static final String INITIAL_VERSION = "VERSION 0.0";
 
+    protected static final String UPDATED_VERSION_NOTE = "VERSION 0.1";
+
     protected static final String UPDATED_VERSION = "VERSION 0.1+";
 
     @Before
@@ -98,7 +100,7 @@ public class ITAutoVersioningTest extends AbstractTest {
         editTab.edit(null, null, null);
 
         // Check the result => The minor version should have been incremented
-        assertEquals(UPDATED_VERSION, noteSummaryPage.getVersionNumberText());
+        assertEquals(UPDATED_VERSION_NOTE, noteSummaryPage.getVersionNumberText());
 
         logout();
     }

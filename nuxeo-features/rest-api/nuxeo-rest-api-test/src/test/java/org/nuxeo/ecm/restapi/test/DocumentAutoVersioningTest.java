@@ -34,12 +34,16 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -57,6 +61,26 @@ import static org.nuxeo.ecm.restapi.test.BaseTest.RequestType.PUT;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentAutoVersioningTest extends BaseTest {
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.restapi.test:source-based-versioning-contrib.xml")
+    public void iCanUpdateDocumentWithSourceCondition() throws Exception {
+
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        assertEquals("0.0", note.getVersionLabel());
+
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        Map<String, String> headers = new HashMap<>();
+        headers.put(RestConstants.SOURCE, "REST");
+        getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(), headers);
+        fetchInvalidations();
+
+        note = RestServerInit.getNote(0, session);
+        assertEquals("0.1", note.getVersionLabel());
+    }
 
     @Test
     public void iCanDoCollaborativeVersioning() throws IOException {
