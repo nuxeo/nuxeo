@@ -297,7 +297,7 @@ public class FileManageActionsBean implements FileManageActions {
 
             DocumentModel createdDoc;
             try {
-                createdDoc = getFileManagerService().createFolder(documentManager, fullName, path);
+                createdDoc = getFileManagerService().createFolder(documentManager, fullName, path, true);
             } catch (NuxeoException | IOException t) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(t);
                 if (ExceptionHelper.isSecurityError(unwrappedError)) {

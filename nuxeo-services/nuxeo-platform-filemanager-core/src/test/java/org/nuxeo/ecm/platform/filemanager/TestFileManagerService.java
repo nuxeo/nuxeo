@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.filemanager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -433,6 +434,17 @@ public class TestFileManagerService {
 
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());
+    }
+
+    @Test
+    public void testCreateFolder() throws IOException {
+        DocumentModel testFolder = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), true);
+        // Overwrite existing folder
+        DocumentModel testFolder2 = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), true);
+        assertEquals(testFolder.getId(), testFolder2.getId());
+        // Create a new folder
+        DocumentModel testFolder3 = service.createFolder(coreSession, "testFolder", workspace.getPathAsString(), false);
+        assertNotEquals(testFolder.getId(), testFolder3.getId());
     }
 
     private Object getMimeType(DocumentModel doc) {
