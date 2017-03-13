@@ -416,4 +416,44 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         service.awaitCompletion(5, TimeUnit.SECONDS);
     }
 
+    @Test
+    public void testNoConcurrentJobsWithSameId() throws Exception {
+        deployAndStart();
+
+        // create an init work to warm up the service, this is needed only for the embedded redis mode
+        // sometime embedded mode takes around 1s to init, this prevent to put reliable assertion on time execution
+        SleepWork initWork = new SleepWork(1, false, "0");
+        service.schedule(initWork);
+        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
+        assertMetrics(0, 0, 1, 0);
+
+        // Schedule a first work
+        int durationMS = 2000;
+        String workId = "1234";
+        SleepWork work = new SleepWork(durationMS, false, workId);
+        service.schedule(work);
+
+        // wait a bit to make sure it is running
+        Thread.sleep(durationMS / 3);
+        assertMetrics(0, 1, 1, 0);
+
+        // schedule another work with the same workId
+        int durationBisMS = 500;
+        SleepWork workbis = new SleepWork(durationBisMS, false, workId);
+        service.schedule(workbis);
+
+        // wait a bit, the first work is still running, the scheduled work should wait
+        // because we don't want concurrent execution of work with the same workId
+        Thread.sleep(durationMS / 3);
+        assertMetrics(1, 1, 1, 0);
+
+        // wait enough so the first work is done and the second should be running
+        Thread.sleep(durationMS / 3 + durationBisMS / 2);
+        assertMetrics(0, 1, 2, 0);
+
+        assertTrue(service.awaitCompletion(durationMS, TimeUnit.MILLISECONDS));
+        System.out.println("Test 4 " + System.currentTimeMillis());
+        assertMetrics(0, 0, 3, 0);
+    }
+
 }
