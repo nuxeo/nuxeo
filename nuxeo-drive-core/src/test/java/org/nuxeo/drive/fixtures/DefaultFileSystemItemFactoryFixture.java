@@ -20,6 +20,7 @@ package org.nuxeo.drive.fixtures;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -1019,6 +1020,24 @@ public class DefaultFileSystemItemFactoryFixture {
     @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
     public void testBlobException() throws Exception {
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
+    }
+
+    @Test
+    public void testCreateFoldersWithSameName() {
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        FolderItem subFolderItem = folderItem.createFolder("subfolder01");
+        FolderItem subFolderItem2 = folderItem.createFolder("subfolder01");
+        assertNotEquals(subFolderItem.getId(), subFolderItem2.getId());
+    }
+
+    @Test
+    public void testCreateFilesWithSameName() {
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        Blob blob = new StringBlob("This is a blob.");
+        blob.setFilename("File01.txt");
+        FileItem fileItem = folderItem.createFile(blob);
+        FileItem fileItem2 = folderItem.createFile(blob);
+        assertNotEquals(fileItem.getId(), fileItem2.getId());
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
