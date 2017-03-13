@@ -6,5 +6,7 @@
     <operation class="org.nuxeo.ecm.platform.tag.operations.UntagDocument"/>
     <operation
             class="org.nuxeo.ecm.platform.tag.operations.RemoveDocumentTags"/>
+    <operation
+      class="org.nuxeo.ecm.platform.tag.automation.SuggestTagEntry" />
   </extension>
 </component>
