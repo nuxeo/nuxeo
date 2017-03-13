@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static javax.resource.spi.work.WorkException.UNDEFINED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
@@ -54,7 +53,7 @@ public class DBSDocumentState {
 
     private String id;
 
-    private String parentId = UNDEFINED;
+    private String parentId = UNDEFINED_PARENT_ID;
 
     /**
      * Constructs an empty state.
@@ -160,7 +159,7 @@ public class DBSDocumentState {
 
     public String getParentId() {
         // use a marker because parentId can be null
-        if (parentId == UNDEFINED) {
+        if (parentId == UNDEFINED_PARENT_ID) {
             parentId = (String) state.get(KEY_PARENT_ID);
         }
         return parentId;
