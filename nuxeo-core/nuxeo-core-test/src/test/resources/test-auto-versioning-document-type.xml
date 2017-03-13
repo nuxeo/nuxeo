@@ -26,6 +26,17 @@
       <facet name="Note3Facet" />
     </doctype>
 
+    <doctype name="Note4" extends="Document">
+      <schema name="common"/>
+      <schema name="uid"/>
+      <schema name="dublincore"/>
+      <facet name="Versionable"/>
+      <facet name="Publishable"/>
+      <facet name="Commentable"/>
+      <facet name="HasRelatedText"/>
+      <facet name="SystemDocument" />
+    </doctype>
+
   </extension>
 
 </component>

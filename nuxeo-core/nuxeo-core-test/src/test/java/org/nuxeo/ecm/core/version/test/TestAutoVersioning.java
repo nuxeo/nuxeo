@@ -285,6 +285,19 @@ public class TestAutoVersioning extends AbstractTestVersioning {
         assertEquals("2.0", doc.getVersionLabel());
     }
 
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-no-auto-versioning-system.xml")
+    public void testAutoVersioningNoneOption() {
+
+        DocumentModel doc = session.createDocumentModel("/", "note", "Note4");
+        doc = session.createDocument(doc);
+        doc.setPropertyValue("dc:title", "newNote");
+        doc = session.saveDocument(doc);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("0.0", doc.getVersionLabel());
+
+    }
+
     /** A custom filter for tests. */
     public static class CustomVersioningFilter implements VersioningPolicyFilter {
 

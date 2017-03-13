@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.versioning.test.no-increment">
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="no-version-filter" increment="NONE">
+      <filter-id>no-version</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="no-version">
+      <facet>SystemDocument</facet>
+    </filter>
+  </extension>
+
+</component>

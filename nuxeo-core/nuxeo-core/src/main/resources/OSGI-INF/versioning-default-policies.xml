@@ -4,7 +4,10 @@
   <require>org.nuxeo.ecm.platform.el.service</require>
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
-    <policy id="no-versioning-for-system" increment="NONE" order="1">
+    <policy id="no-versioning-for-system-before-update" beforeUpdate="true" increment="NONE" order="1">
+      <filter-id>system-document</filter-id>
+    </policy>
+    <policy id="no-versioning-for-system-after-update" increment="NONE" order="1">
       <filter-id>system-document</filter-id>
     </policy>
     <policy id="note-as-wiki" increment="MINOR" order="50">
@@ -17,7 +20,7 @@
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
     <filter id="system-document">
-      <type>Never</type> <!-- TODO implement this filter-->
+      <facet>SystemDocument</facet>
     </filter>
     <filter id="note-filter">
       <type>Note</type>
