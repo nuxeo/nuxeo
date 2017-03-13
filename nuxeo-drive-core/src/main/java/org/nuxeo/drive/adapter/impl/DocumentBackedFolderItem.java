@@ -157,7 +157,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @Override
     public FolderItem createFolder(String name) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            DocumentModel folder = getFileManager().createFolder(session, name, docPath);
+            DocumentModel folder = getFileManager().createFolder(session, name, docPath, false);
             if (folder == null) {
                 throw new NuxeoException(
                         String.format(
@@ -178,8 +178,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public FileItem createFile(Blob blob) {
         String fileName = blob.getFilename();
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            // TODO: manage conflict (overwrite should not necessarily be true)
-            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, true, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, false, fileName);
             if (file == null) {
                 throw new NuxeoException(
                         String.format(
