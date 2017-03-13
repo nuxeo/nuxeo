@@ -151,7 +151,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @Override
     public FolderItem createFolder(String name) throws ClientException {
         try {
-            DocumentModel folder = getFileManager().createFolder(getSession(), name, docPath);
+            DocumentModel folder = getFileManager().createFolder(getSession(), name, docPath, false);
             if (folder == null) {
                 throw new ClientException(
                         String.format(
@@ -169,8 +169,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public FileItem createFile(Blob blob) throws ClientException {
         String fileName = blob.getFilename();
         try {
-            // TODO: manage conflict (overwrite should not necessarily be true)
-            DocumentModel file = getFileManager().createDocumentFromBlob(getSession(), blob, docPath, true, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(getSession(), blob, docPath, false, fileName);
             if (file == null) {
                 throw new ClientException(
                         String.format(

@@ -64,7 +64,7 @@ public class NuxeoDriveCreateTestDocuments {
             String name = String.format(namePattern, i);
             StreamingBlob content = StreamingBlob.createFromString(String.format(contentPattern, i));
             content.setFilename(name);
-            fileManager.createDocumentFromBlob(session, content, parent.getPathAsString(), true, name);
+            fileManager.createDocumentFromBlob(session, content, parent.getPathAsString(), false, name);
             if (delay > 0) {
                 Thread.sleep(delay);
             }
