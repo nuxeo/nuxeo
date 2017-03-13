@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.platform.filemanager.api;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.List;
 
@@ -63,11 +62,10 @@ public interface FileManager {
      * @param fullName the fullname that contains the filename
      * @param noMimeTypeCheck true if the blob's mime-type doesn't have to be checked against fullName
      * @return the created Document
-     *
      * @since 8.10
      */
     DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
-        String fullName, boolean noMimeTypeCheck) throws IOException;
+            String fullName, boolean noMimeTypeCheck) throws IOException;
 
     /**
      * Just applies the same actions as creation but does not changes the doc type.
@@ -86,8 +84,7 @@ public interface FileManager {
      * @param path the path were to create the folder
      * @return the Folder Created
      */
-    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws
-            IOException;
+    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException;
 
     /**
      * Returns the list of document that are to be suggested to principalName as a candidate container for a new
