@@ -146,6 +146,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return blob;
     }
 
+    @Override
     public DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws IOException {
 
         if (folderImporters.isEmpty()) {
@@ -203,11 +204,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return docModel;
     }
 
+    @Override
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
-        String fullName) throws IOException {
+            String fullName) throws IOException {
         return createDocumentFromBlob(documentManager, input, path, overwrite, fullName, false);
     }
 
+    @Override
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
             String fullName, boolean noMimeTypeCheck) throws IOException {
 
@@ -232,6 +235,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return null;
     }
 
+    @Override
     public DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName) {
         String filename = FileManagerUtils.fetchFileName(fullName);
         DocumentModel doc = FileManagerUtils.getExistingDocByFileName(documentManager, path, filename);
@@ -491,6 +495,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         log.info("unregistered creationContaineterList provider: " + name);
     }
 
+    @Override
     public List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
             Principal principal) {
         String nxql = String.format(QUERY, digest);
@@ -502,18 +507,22 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return docLocationList;
     }
 
+    @Override
     public boolean isUnicityEnabled() {
         return unicityEnabled;
     }
 
+    @Override
     public boolean isDigestComputingEnabled() {
         return computeDigest;
     }
 
+    @Override
     public List<String> getFields() {
         return fieldsXPath;
     }
 
+    @Override
     public DocumentModelList getCreationContainers(Principal principal, String docType) {
         DocumentModelList containers = new DocumentModelListImpl();
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
@@ -525,6 +534,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return containers;
     }
 
+    @Override
     public DocumentModelList getCreationContainers(CoreSession documentManager, String docType) {
         for (CreationContainerListProvider provider : creationContainerListProviders) {
             if (provider.accept(docType)) {
@@ -534,6 +544,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return new DocumentModelListImpl();
     }
 
+    @Override
     public String getDigestAlgorithm() {
         return digestAlgorithm;
     }
