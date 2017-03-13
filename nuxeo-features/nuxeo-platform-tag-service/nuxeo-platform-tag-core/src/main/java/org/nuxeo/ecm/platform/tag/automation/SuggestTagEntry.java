@@ -21,25 +21,23 @@ package org.nuxeo.ecm.platform.tag.automation;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
-import org.jboss.seam.Component;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
-import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * @since 6.0
@@ -67,23 +65,24 @@ public class SuggestTagEntry {
     @Param(name = "xpath", required = false)
     protected String xpath;
 
+    @Param(name = "document", required = false)
+    protected DocumentModel doc;
+
     @OperationMethod
     public Blob run() {
         JSONArray result = new JSONArray();
         if (tagService != null && tagService.isEnabled()) {
             if (!StringUtils.isEmpty(value)) {
-                final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext");
-                DocumentModel currentDocument = navigationContext.getCurrentDocument();
-                if (currentDocument == null) {
+                if (doc == null) {
                     return null;
                 } else {
-                    String docId = currentDocument.getId();
+                    String docId = doc.getId();
                     List<Tag> tags = tagService.getDocumentTags(documentManager, docId, null);
                     Collections.sort(tags, Tag.LABEL_COMPARATOR);
                     for (Tag tag : tags) {
                         JSONObject obj = new JSONObject();
-                        obj.element(Select2Common.ID, tag.getLabel());
-                        obj.element(Select2Common.LABEL, tag.getLabel());
+                        obj.element(SuggestConstants.ID, tag.getLabel());
+                        obj.element(SuggestConstants.LABEL, tag.getLabel());
                         result.add(obj);
                     }
                 }
@@ -94,8 +93,8 @@ public class SuggestTagEntry {
                     for (int i = 0; i < 10 && i < tags.size(); i++) {
                         JSONObject obj = new JSONObject();
                         Tag tag = tags.get(i);
-                        obj.element(Select2Common.ID, tag.getLabel());
-                        obj.element(Select2Common.LABEL, tag.getLabel());
+                        obj.element(SuggestConstants.ID, tag.getLabel());
+                        obj.element(SuggestConstants.LABEL, tag.getLabel());
                         result.add(obj);
                     }
                 }
