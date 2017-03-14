@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -58,6 +59,29 @@ public class TestDocumentModel {
         doc.putContextData("key", "value");
         doc = session.createDocument(doc);
         assertEquals(doc.getContextData("key"), "value");
+    }
+
+    /**
+     * NXP-21866
+     */
+    @Test
+    public void testUIDAndPathOfCreatedDocument() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        assertNotNull(doc.getId());
+        assertEquals("/doc", doc.getPathAsString());
+    }
+
+    /**
+     * NXP-21866
+     */
+    @Test
+    public void testUIDAndPathOfCreatedDocumentWithSkipVersioning() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.putContextData(VersioningService.SKIP_VERSIONING, Boolean.TRUE);
+        doc = session.createDocument(doc);
+        assertNotNull(doc.getId());
+        assertEquals("/doc", doc.getPathAsString());
     }
 
     @Test
