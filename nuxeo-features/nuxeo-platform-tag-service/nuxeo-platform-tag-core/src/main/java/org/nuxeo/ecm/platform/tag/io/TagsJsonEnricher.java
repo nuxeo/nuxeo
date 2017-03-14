@@ -55,9 +55,9 @@ public class TagsJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             for (Tag tag : tagService.getDocumentTags(wrapper.getSession(), document.getId(), null)) {
                 jg.writeString(tag.getLabel());
             }
-            }
+        }
         jg.writeEndArray();
 
-        }
-
     }
+
+}
