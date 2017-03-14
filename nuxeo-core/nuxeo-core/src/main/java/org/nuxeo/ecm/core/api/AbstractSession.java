@@ -740,9 +740,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // during remote publishing we want to skip versioning
             // to avoid overwriting the version number
             getVersioningService().doPostCreate(doc, options);
-            docModel = readModel(doc, docModel);
         }
 
+        // post-create event
+        docModel = readModel(doc, docModel);
         notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options, null, null, true, false);
         docModel = writeModel(doc, docModel);
 
