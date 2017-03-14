@@ -386,7 +386,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
                 VersioningFilterDescriptor filter = new VersioningFilterDescriptor();
                 filter.id = compatId;
-                filter.types = new ArrayList<>(Collections.singleton(documentType));
+                filter.types = Collections.singleton(documentType);
 
                 // Register rules
                 versioningPolicies.put(compatId, policy);

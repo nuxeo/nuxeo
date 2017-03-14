@@ -42,7 +42,7 @@ public class ELConstants {
     public static final String CURRENT_USER = "currentUser";
 
     /**
-     * Previous document variable
+     * Current document variable
      */
     public static final String DOCUMENT = "document";
 

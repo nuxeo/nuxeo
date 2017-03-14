@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.core.versioning;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,14 +45,14 @@ public class VersioningFilterDescriptor implements Serializable {
     @XNode("@class")
     protected Class<VersioningPolicyFilter> className;
 
-    @XNodeList(value = "type", componentType = String.class, type = ArrayList.class)
-    protected List<String> types = new ArrayList<>();
+    @XNodeList(value = "type", componentType = String.class, type = HashSet.class)
+    protected Set<String> types = new HashSet<>();
 
-    @XNodeList(value = "facet", componentType = String.class, type = ArrayList.class)
-    protected List<String> facets = new ArrayList<>();
+    @XNodeList(value = "facet", componentType = String.class, type = HashSet.class)
+    protected Set<String> facets = new HashSet<>();
 
-    @XNodeList(value = "schema", componentType = String.class, type = ArrayList.class)
-    protected List<String> schemas = new ArrayList<>();
+    @XNodeList(value = "schema", componentType = String.class, type = HashSet.class)
+    protected Set<String> schemas = new HashSet<>();
 
     @XNode("condition")
     protected String condition;
