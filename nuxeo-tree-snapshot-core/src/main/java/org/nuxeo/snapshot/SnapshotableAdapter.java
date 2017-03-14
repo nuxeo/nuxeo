@@ -60,6 +60,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         this.doc = doc;
     }
 
+    @Override
     public DocumentModel getDocument() {
         return doc;
     }
@@ -139,9 +140,9 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         String[] vuuids = null;
 
         doc.getCoreSession().save();
-        String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '" + doc.getId() + "' AND ecm:currentLifeCycleState != 'deleted'";
-        try (IterableQueryResult res = doc.getCoreSession().queryAndFetch(
-                query, "NXQL")) {
+        String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '" + doc.getId()
+                + "' AND ecm:currentLifeCycleState != 'deleted'";
+        try (IterableQueryResult res = doc.getCoreSession().queryAndFetch(query, "NXQL")) {
 
             vuuids = new String[(int) res.size()];
             for (Map<String, Serializable> item : res) {
@@ -319,11 +320,11 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
         if (target.isFolder() && first) {
             // save all subtree
-            olddocs = session.query("select * from Document where ecm:path STARTSWITH '" + target.getPathAsString()
-                    + "'");
+            olddocs = session.query(
+                    "select * from Document where ecm:path STARTSWITH '" + target.getPathAsString() + "'");
             if (olddocs.size() > 0) {
-                DocumentModel container = session.createDocumentModel(
-                        target.getPath().removeLastSegments(1).toString(), target.getName() + "_tmp", "Folder");
+                DocumentModel container = session.createDocumentModel(target.getPath().removeLastSegments(1).toString(),
+                        target.getName() + "_tmp", "Folder");
                 container = session.createDocument(container);
                 for (DocumentModel oldChild : olddocs) {
                     session.move(oldChild.getRef(), container.getRef(), oldChild.getName());
@@ -362,7 +363,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                     name = (String) child.getPropertyValue(NAME_PROP);
                 }
                 if (name == null && child.getTitle() != null) {
-                    name = IdUtils.generateId(child.getTitle(), "-", true, 24);;
+                    name = IdUtils.generateId(child.getTitle(), "-", true, 24);
                 }
                 if (name == null) {
                     name = child.getType() + System.currentTimeMillis();
