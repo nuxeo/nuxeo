@@ -42,7 +42,9 @@ import redis.clients.jedis.JedisPubSub;
  * to register nodes, only for debug purpose so far.
  *
  * @since 8.10
+ * @deprecated since 9.1, use DBSPubSubInvalidator instead
  */
+@Deprecated
 public class RedisDBSClusterInvalidator implements DBSClusterInvalidator {
 
     protected static final String PREFIX = "inval";
