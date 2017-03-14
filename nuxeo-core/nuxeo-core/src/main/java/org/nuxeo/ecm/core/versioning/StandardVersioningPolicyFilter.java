@@ -35,7 +35,7 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_DOCUMENT;
 import static org.nuxeo.ecm.platform.el.ELConstants.CURRENT_USER;
@@ -48,16 +48,16 @@ import static org.nuxeo.ecm.platform.el.ELConstants.PRINCIPAL;
  */
 public class StandardVersioningPolicyFilter implements VersioningPolicyFilter {
 
-    protected List<String> types;
+    protected Collection<String> types;
 
-    protected List<String> facets;
+    protected Collection<String> facets;
 
-    protected List<String> schemas;
+    protected Collection<String> schemas;
 
     protected String condition;
 
-    public StandardVersioningPolicyFilter(List<String> types, List<String> facets, List<String> schemas,
-            String condition) {
+    public StandardVersioningPolicyFilter(Collection<String> types, Collection<String> facets,
+            Collection<String> schemas, String condition) {
         this.types = types;
         this.facets = facets;
         this.schemas = schemas;
@@ -124,7 +124,7 @@ public class StandardVersioningPolicyFilter implements VersioningPolicyFilter {
         String p1 = ".*" + PREVIOUS_DOCUMENT + "\\..+";
         String p2 = ".*" + PREVIOUS_DOCUMENT + "\\s*[!=]=\\s*null.*";
         if (cond.matches(p1) && !cond.matches(p2)) {
-            cond = "#{" + PREVIOUS_DOCUMENT + " != null && " + cond.substring(2);
+            cond = "#{" + PREVIOUS_DOCUMENT + " != null && (" + cond.substring(2, cond.length() - 1) + ")}";
         }
         return cond;
     }

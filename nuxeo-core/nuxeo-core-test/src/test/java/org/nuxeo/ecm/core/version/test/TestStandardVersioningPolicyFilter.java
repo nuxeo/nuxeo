@@ -34,11 +34,11 @@ public class TestStandardVersioningPolicyFilter {
     public void testEvaluateCondition() {
 
         String cond1 = "previousDocument.dc.title != currentDocument.dc.title";
-        String expectedCond1 = "#{previousDocument != null && previousDocument.dc.title != currentDocument.dc.title}";
+        String expectedCond1 = "#{previousDocument != null && (previousDocument.dc.title != currentDocument.dc.title)}";
         assertEquals(expectedCond1, StandardVersioningPolicyFilter.evaluateCondition(cond1));
 
         String cond2 = "#{previousDocument.dc.title != currentDocument.dc.title}";
-        String expectedCond2 = "#{previousDocument != null && previousDocument.dc.title != currentDocument.dc.title}";
+        String expectedCond2 = "#{previousDocument != null && (previousDocument.dc.title != currentDocument.dc.title)}";
         assertEquals(expectedCond2, StandardVersioningPolicyFilter.evaluateCondition(cond2));
 
         String cond3 = "previousDocument  !=  null && previousDocument.dc.title != currentDocument.dc.title";
