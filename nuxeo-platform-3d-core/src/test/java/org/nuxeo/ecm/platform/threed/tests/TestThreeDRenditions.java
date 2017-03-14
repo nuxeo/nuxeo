@@ -18,33 +18,13 @@
  */
 package org.nuxeo.ecm.platform.threed.tests;
 
-import com.google.inject.Inject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
-import org.nuxeo.ecm.platform.rendition.service.RenditionService;
-import org.nuxeo.ecm.platform.threed.ThreeD;
-import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
-import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
-import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
-import org.nuxeo.ecm.platform.threed.service.ThreeDService;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
+import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
+import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionProvider.THREED_RENDER_VIEW_RENDITION_KIND;
+import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionProvider.THREED_TRANSMISSION_RENDITION_KIND;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,13 +36,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.RENDER_VIEWS_PROPERTY;
-import static org.nuxeo.ecm.platform.threed.ThreeDDocumentConstants.TRANSMISSIONS_PROPERTY;
-import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionProvider.THREED_RENDER_VIEW_RENDITION_KIND;
-import static org.nuxeo.ecm.platform.threed.rendition.ThreeDRenditionDefinitionProvider.THREED_TRANSMISSION_RENDITION_KIND;
+import javax.inject.Inject;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.ecm.platform.threed.BatchConverterHelper;
+import org.nuxeo.ecm.platform.threed.ThreeD;
+import org.nuxeo.ecm.platform.threed.ThreeDRenderView;
+import org.nuxeo.ecm.platform.threed.TransmissionThreeD;
+import org.nuxeo.ecm.platform.threed.service.ThreeDService;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test 3D renditions
@@ -93,7 +95,7 @@ public class TestThreeDRenditions {
     protected RenditionService renditionService;
 
     @Inject
-    protected RuntimeHarness runtimeHarness;
+    protected HotDeployer deployer;
 
     @Inject
     protected ThreeDService threeDService;
@@ -169,8 +171,9 @@ public class TestThreeDRenditions {
         ThreeD threeD = getTestThreeD();
         DocumentModel doc = session.createDocumentModel("/", "threed", "ThreeD");
         doc = session.createDocument(doc);
-        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
-                "OSGI-INF/threed-service-contrib-override.xml");
+        String docId = doc.getId();
+        deployer.deploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml");
+        doc = session.getDocument(new IdRef(docId));
 
         assertEquals(0, getThreeDRenditionDefinitions(doc).size());
         Date timeBefore = new Date();
@@ -195,16 +198,13 @@ public class TestThreeDRenditions {
         availableRenditions = getThreeDAvailableRenditions(doc, true);
         assertEquals(7, availableRenditions.size());
 
-        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",
-                "OSGI-INF/threed-service-contrib-override.xml");
     }
 
     @Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testBatchConverterHelper() throws Exception {
         ThreeD threeD = getTestThreeD();
-        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.threed.core",
-                "OSGI-INF/threed-service-contrib-override.xml");
+        deployer.deploy("org.nuxeo.ecm.platform.threed.core.test:OSGI-INF/threed-service-contrib-override.xml");
         BlobHolder results = threeDService.batchConvert(threeD);
         List<ThreeDRenderView> renderviews = BatchConverterHelper.getRenders(results);
         List<BlobHolder> resources = BatchConverterHelper.getResources(results);
@@ -221,8 +221,6 @@ public class TestThreeDRenditions {
                                          .filter(aLOD -> aLOD.getName().equals(tTD.getName()))
                                          .count());
         }
-        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.threed.core",
-                "OSGI-INF/threed-service-contrib-override.xml");
     }
 
 }
