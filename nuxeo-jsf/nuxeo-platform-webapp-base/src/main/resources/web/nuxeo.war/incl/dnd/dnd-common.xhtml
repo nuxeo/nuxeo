@@ -36,6 +36,19 @@
       // init Dropout and Internal DnD
       initNXDrapAndDropOnPage(null);
     });
+
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        initNXDrapAndDropOnPage(null);
+      }
+    });
+
+    nuxeo.utils.addOnEvent(function(data) {
+      if (data.status == "success") {
+        initNXDrapAndDropOnPage(null);
+      }
+    });
   </h:outputScript>
 
 </ui:fragment>
