@@ -1382,6 +1382,12 @@ public class ConfigurationGenerator {
         InetAddress bindAddress;
         try {
             bindAddress = InetAddress.getByName(userConfig.getProperty(PARAM_BIND_ADDRESS));
+            if (bindAddress.isAnyLocalAddress()) {
+                boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
+                        && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
+                bindAddress = preferIPv6 ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
+                log.debug("Bind address is \"ANY\", using local address instead: " + bindAddress);
+            }
             log.debug("Configured bind address: " + bindAddress);
         } catch (UnknownHostException e) {
             throw new ConfigurationException(e);
