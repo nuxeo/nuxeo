@@ -99,13 +99,8 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
     public void testQueryOnlyProxiesDenied() throws Exception {
         Session session = repository.getConnection();
         String sql = "SELECT * FROM Document WHERE ecm:isProxy = 1";
-        try {
-            IterableQueryResult res = session.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY);
-            res.close();
-            fail("Proxy-only query should be denied");
-        } catch (Exception e) {
-            String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Proxies are disabled by configuration"));
+        try (IterableQueryResult res = session.queryAndFetch(sql, "NXQL", QueryFilter.EMPTY)) {
+            assertEquals(0, res.size());
         }
     }
 
