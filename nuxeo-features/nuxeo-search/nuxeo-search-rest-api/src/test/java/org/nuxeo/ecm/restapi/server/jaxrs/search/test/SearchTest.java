@@ -94,7 +94,7 @@ public class SearchTest extends BaseTest {
     public void iCanPerformQueriesOnRepository() throws IOException {
         // Given a repository, when I perform a query in NXQL on it
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("query", "SELECT * FROM Document");
+        queryParams.putSingle("query", "SELECT * FROM Document WHERE ecm:isVersion = 0");
         ClientResponse response = getResponse(RequestType.GET, QUERY_EXECUTE_PATH, queryParams);
 
         // Then I get document listing as result

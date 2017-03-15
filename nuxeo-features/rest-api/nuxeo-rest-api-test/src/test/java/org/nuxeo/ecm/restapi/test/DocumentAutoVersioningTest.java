@@ -20,7 +20,20 @@
 
 package org.nuxeo.ecm.restapi.test;
 
-import com.sun.jersey.api.client.ClientResponse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.security.ACL.LOCAL_ACL;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.restapi.test.BaseTest.RequestType.POST;
+import static org.nuxeo.ecm.restapi.test.BaseTest.RequestType.PUT;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
@@ -40,18 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.api.security.ACL.LOCAL_ACL;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
-import static org.nuxeo.ecm.restapi.test.BaseTest.RequestType.POST;
-import static org.nuxeo.ecm.restapi.test.BaseTest.RequestType.PUT;
+import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * @since 9.1
@@ -70,16 +72,17 @@ public class DocumentAutoVersioningTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.GET, "id/" + note.getId());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        assertEquals("0.0", note.getVersionLabel());
+        assertEquals("0.1", note.getVersionLabel());
 
         JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        jsonDoc.setPropertyValue("dc:title", "New title !");
         Map<String, String> headers = new HashMap<>();
         headers.put(RestConstants.SOURCE, "REST");
         getResponse(RequestType.PUT, "id/" + note.getId(), jsonDoc.asJson(), headers);
         fetchInvalidations();
 
         note = RestServerInit.getNote(0, session);
-        assertEquals("0.1", note.getVersionLabel());
+        assertEquals("1.0", note.getVersionLabel());
     }
 
     @Test

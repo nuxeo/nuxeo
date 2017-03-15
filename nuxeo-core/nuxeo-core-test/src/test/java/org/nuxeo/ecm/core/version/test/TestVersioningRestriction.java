@@ -47,6 +47,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.core.test.tests:test-versioning-restriction-document-type.xml")
 public class TestVersioningRestriction {
 
     @Inject
@@ -56,8 +57,8 @@ public class TestVersioningRestriction {
     public void testNoRestriction() {
         testNoRestriction("File", false);
         testNoRestriction("File", true);
-        testNoRestriction("Note", false);
-        testNoRestriction("Note", true);
+        testNoRestriction("Note2", false);
+        testNoRestriction("Note2", true);
     }
 
     @Test
@@ -65,8 +66,8 @@ public class TestVersioningRestriction {
     public void testRestrictionAllTypesAllLifeCycles() {
         testRestriction("File", false);
         testRestriction("File", true);
-        testRestriction("Note", false);
-        testRestriction("Note", true);
+        testRestriction("Note2", false);
+        testRestriction("Note2", true);
     }
 
     @Test
@@ -74,8 +75,8 @@ public class TestVersioningRestriction {
     public void testRestrictionAllTypesProjectLifeCycles() {
         testRestriction("File", false);
         testNoRestriction("File", true);
-        testRestriction("Note", false);
-        testNoRestriction("Note", true);
+        testRestriction("Note2", false);
+        testNoRestriction("Note2", true);
     }
 
     @Test
@@ -83,8 +84,8 @@ public class TestVersioningRestriction {
     public void testRestrictionFileTypeAllLifeCycles() {
         testRestriction("File", false);
         testRestriction("File", true);
-        testNoRestriction("Note", false);
-        testNoRestriction("Note", true);
+        testNoRestriction("Note2", false);
+        testNoRestriction("Note2", true);
     }
 
     @Test
@@ -92,8 +93,8 @@ public class TestVersioningRestriction {
     public void testRestrictionFileTypeProjectLifeCycle() {
         testRestriction("File", false);
         testNoRestriction("File", true);
-        testNoRestriction("Note", false);
-        testNoRestriction("Note", true);
+        testNoRestriction("Note2", false);
+        testNoRestriction("Note2", true);
     }
 
     @Test
@@ -101,8 +102,8 @@ public class TestVersioningRestriction {
     public void testRestrictionFileTypeObsoleteLifeCycleAndAllTypesProjectLifeCycle() {
         testRestriction("File", false);
         testNoRestriction("File", true);
-        testRestriction("Note", false);
-        testNoRestriction("Note", true);
+        testRestriction("Note2", false);
+        testNoRestriction("Note2", true);
     }
 
     @Test
@@ -112,8 +113,8 @@ public class TestVersioningRestriction {
         // everything is rejected
         testRestriction("File", false);
         testRestriction("File", true);
-        testRestriction("Note", false);
-        testRestriction("Note", true);
+        testRestriction("Note2", false);
+        testRestriction("Note2", true);
     }
 
     @Test
@@ -122,8 +123,8 @@ public class TestVersioningRestriction {
         // here everything is restricted, unless File which re-init the rule
         testNoRestriction("File", false);
         testNoRestriction("File", true);
-        testRestriction("Note", false);
-        testRestriction("Note", true);
+        testRestriction("Note2", false);
+        testRestriction("Note2", true);
     }
 
     private void testNoRestriction(String type, boolean followApproveTransition) {

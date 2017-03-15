@@ -21,12 +21,9 @@ package org.nuxeo.ftest.cap;
 import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_URL;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
 import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
 import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
@@ -38,6 +35,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -50,11 +48,17 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
  */
 public class ITArchivedVersionsTest extends AbstractTest {
 
+    public static final String TEST_FILE_2_TITLE = TEST_FILE_TITLE + 2;
+
+    public static final String TEST_FILE_2_PATH = TEST_WORKSPACE_PATH + TEST_FILE_2_TITLE;
+
+    public static final String TEST_FILE_2_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_FILE_2_PATH);
+
     @Before
     public void before() throws DocumentBasePage.UserNotConnectedException {
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, "Test File description");
-        RestHelper.createDocument(TEST_WORKSPACE_PATH, NOTE_TYPE, TEST_NOTE_TITLE, "Test Note description");
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_2_TITLE, "Test File2 description");
 
         login();
         open(TEST_FILE_URL);
@@ -76,7 +80,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
     @Test
     public void testNoArchivedVersions() throws UserNotConnectedException {
         login();
-        open(TEST_NOTE_URL);
+        open(TEST_FILE_2_URL);
 
         DocumentBasePage notePage = asPage(DocumentBasePage.class);
 

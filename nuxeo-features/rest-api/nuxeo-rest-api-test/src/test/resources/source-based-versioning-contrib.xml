@@ -4,7 +4,7 @@
   <require>org.nuxeo.ecm.platform.el.service</require>
 
   <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
-    <policy id="source-based-versioning-policy" increment="MINOR" order="2">
+    <policy id="source-based-versioning-policy" increment="MAJOR" order="2">
       <filter-id>source-based-versioning-filter</filter-id>
     </policy>
   </extension>

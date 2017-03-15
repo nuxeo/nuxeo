@@ -128,7 +128,7 @@ public class RestESDocumentsTest extends BaseTest {
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         // Verify results
-        assertEquals(15, getLogEntries(node).size());
+        assertEquals(19, getLogEntries(node).size());
         // And verify contributed aggregates
         assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
     }

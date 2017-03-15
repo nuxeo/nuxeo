@@ -58,23 +58,23 @@ public class TestDynamicMapping extends TestMapping {
         startTransaction();
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
-        doc = session.createDocument(doc);
         // put some raw json in the node and checked is indexed dynamically
         doc.setPropertyValue(
                 "note:note",
                 String.format(
                         "{\"type1\":[{\"type1:id_int\":10},{\"type1:name_string\":\"test\"},{\"type1:creation_date\":\"%s\"}]}",
                         "2015-01-01T12:30:00"));
-        doc = session.saveDocument(doc);
+        doc = session.createDocument(doc);
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForIndexing();
         // automatic versioning system check in all notes after an update
         // 3 commands processed:
-        // - creation of note
-        // - update of version (ie: just the version created) - stacker stacks UPDATE command when document is checkined
-        // - creation of version - automatically done by versioning system
-        assertNumberOfCommandProcessed(3);
+        // - update of version - stacker stacks UPDATE command when document is checkined -> UPDATE on version
+        // - creation of version - automatically done by versioning system at creation step -> UPDATE on note
+        // - creation of version - automatically done by versioning system -> INSERT on version
+        // - creation of note -> INSERT on note
+        assertNumberOfCommandProcessed(4);
 
         startTransaction();
         // check that the custom mapping applied

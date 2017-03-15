@@ -89,7 +89,7 @@
 
     <coreQueryPageProvider name="namedParamProviderWithQuickFilter">
       <pattern>
-        SELECT * FROM Document where dc:title='Note 1'
+        SELECT * FROM Document where dc:title='Note 1' and ecm:isVersion = 0
       </pattern>
       <sort column="dc:title" ascending="true" />
       <quickFilters>

@@ -206,10 +206,12 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Check the current version of the live document
-        assertEquals("0.0", note.getVersionLabel());
+        // it's a note - version at creation and for each updates
+        assertEquals("0.1", note.getVersionLabel());
 
         // When i do a PUT request on the document with modified version in the header
         JSONDocumentNode jsonDoc = new JSONDocumentNode(response.getEntityInputStream());
+        jsonDoc.setPropertyValue("dc:title", "New title !");
         Map<String, String> headers = new HashMap<>();
         headers.put(RestConstants.X_VERSIONING_OPTION, VersioningOption.MAJOR.toString());
         headers.put(HEADER_PREFIX + FETCH_PROPERTIES + "." + ENTITY_TYPE, "versionLabel");
@@ -221,7 +223,7 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // Check if the original document is still not versioned.
         note = RestServerInit.getNote(0, session);
-        assertEquals("0.0", note.getVersionLabel());
+        assertEquals("0.1", note.getVersionLabel());
     }
 
     @Test

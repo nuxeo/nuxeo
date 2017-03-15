@@ -118,7 +118,7 @@ public class DocumentListTest extends BaseTest {
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(15, getLogEntries(node).size());
+        assertEquals(20, getLogEntries(node).size());
 
         // Given a repository, when I perform a query in NXQL on it
         response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL, queryParams);
@@ -126,13 +126,13 @@ public class DocumentListTest extends BaseTest {
         // Then I get document listing as result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(15, getLogEntries(node).size());
+        assertEquals(20, getLogEntries(node).size());
 
         // Given parameters as page size and ordered parameters
         queryParams.clear();
         queryParams.add("pageSize", "2");
         queryParams.add("queryParams", "$currentUser");
-        queryParams.add("query", "select * from Document where " + "dc:creator = ?");
+        queryParams.add("query", "select * from Document where dc:creator = ?");
 
         // Given a repository, when I perform a query in NXQL on it
         response = getResponse(RequestType.GET, QueryObject.PATH + "/" + QueryObject.NXQL, queryParams);

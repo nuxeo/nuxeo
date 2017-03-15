@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,8 +57,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import javax.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -202,7 +202,7 @@ public class TestCompareQueryAndFetch {
             // the number of doc in the iterator
             Assert.assertEquals(LIMIT, res.size());
             // the total number of docs that match for the query
-            Assert.assertEquals(15, ((EsResultSetImpl) res).totalSize());
+            Assert.assertEquals(20, ((EsResultSetImpl) res).totalSize());
         }
     }
 

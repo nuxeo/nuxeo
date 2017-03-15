@@ -711,6 +711,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         // post-create event
         docModel = readModel(doc, docModel);
+        // compute auto versioning
+        // no need to fire event, as we use DocumentModel API it's already done
+        // we don't rely on SKIP_VERSIONING because automatic versioning in saveDocument as the same behavior - and it
+        // doesn't erase initial version as it's the case to avoid when setting Skip_VERSIONING
+        getVersioningService().doAutomaticVersioning(null, docModel, false);
         notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options, null, null, true, false);
         docModel = writeModel(doc, docModel);
 
@@ -1464,6 +1469,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
 
         DocumentModel previousDocModel = readModel(doc);
+        // load previous data for versioning purpose, we want previous document filled with previous value which could
+        // not be the case if access to property value is done after the update
+        Arrays.asList(previousDocModel.getSchemas()).forEach(previousDocModel::getProperties);
         options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, previousDocModel);
         // regular event, last chance to modify docModel
         options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
@@ -1480,6 +1488,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         dirty = docModel.isDirty();
         options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
 
+        // recompute versioning option as it can be set by listeners
         VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
         docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
         String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
@@ -1490,12 +1499,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         boolean manualVersioning = versioningOption != null;
         if (!docModel.isImmutable()) {
-            // compute auto versioning - here we create a version of document in order to save previous state
-            // it's useful if we want to implement rules like create a version if last contributor is not the same than
-            // previous one. So we want to trigger this mechanism if and only if document have dirty properties, unless
-            // it could just be a manual versioning for instance
+            // compute auto versioning before update - here we create a version of document in order to save previous
+            // state it's useful if we want to implement rules like create a version if last contributor is not the
+            // same previous one. So we want to trigger this mechanism if and only if:
+            // - previous document is checkouted
+            // - we don't ask for a version without updating the document (manual versioning only)
             // no need to fire event, as we use DocumentModel API it's already done
-            if (dirty) {
+            if (previousDocModel.isCheckedOut() && (!manualVersioning || dirty)) {
                 getVersioningService().doAutomaticVersioning(previousDocModel, docModel, true);
             }
             // pre-save versioning
@@ -1532,7 +1542,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             if (manualVersioning) {
                 checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
-            } else if (docModel.isCheckedOut()) {
+            } else {
                 // compute auto versioning - only if it is not deactivated by manual versioning
                 // no need to fire event, as we use DocumentModel API it's already done
                 getVersioningService().doAutomaticVersioning(previousDocModel, docModel, false);

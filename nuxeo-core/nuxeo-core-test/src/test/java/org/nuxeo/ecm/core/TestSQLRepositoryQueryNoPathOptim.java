@@ -136,10 +136,11 @@ public class TestSQLRepositoryQueryNoPathOptim {
      *  |- testfolder1 (UUID_2)
      *  |  |- testfile1 (UUID_3) (content UUID_4)
      *  |  |- testfile2 (UUID_5) (content UUID_6)
-     *  |  \- testfile3 (UUID_7) (Note)
-     *  \- tesfolder2 (UUID_8)
-     *     \- testfolder3 (UUID_9)
-     *        \- testfile4 (UUID_10) (content UUID_11)
+     *  |  |- testfile3 (UUID_7) (Note)
+     *  |  \- testfile3 (UUID_8) (version of testfile3/UUID_7)
+     *  \- tesfolder2 (UUID_9)
+     *     \- testfolder3 (UUID_10)
+     *        \- testfile4 (UUID_11) (content UUID_12)
      * </pre>
      */
     protected void createDocs() throws Exception {
@@ -288,7 +289,7 @@ public class TestSQLRepositoryQueryNoPathOptim {
         assertEquals(2, dml.size());
 
         // negative query
-        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:ancestorId <> '%s'",
+        dml = session.query(String.format("SELECT * FROM Document WHERE ecm:ancestorId <> '%s' AND ecm:isVersion = 0",
                 session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(4, dml.size());
 
@@ -298,7 +299,7 @@ public class TestSQLRepositoryQueryNoPathOptim {
         assertEquals(1, dml.size());
 
         dml = session.query(String.format(
-                "SELECT * FROM document WHERE dc:title LIKE 'testfile%%' AND ecm:ancestorId = '%s'",
+                "SELECT * FROM document WHERE dc:title LIKE 'testfile%%' AND ecm:ancestorId = '%s' AND ecm:isVersion = 0",
                 session.getRootDocument().getId()));
         assertEquals(4, dml.size());
     }
