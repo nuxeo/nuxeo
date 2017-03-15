@@ -7,17 +7,32 @@
   <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
   <h:outputScript target="#{pageJsTarget}">
+    var nxDropZoneOptions = {
+       url : "#{contextPath}/api/v1/",
+       uploadRateRefreshTime : 500,
+       numConcurrentUploads : 3,
+       dropContext : ctx,
+       uploadTimeout : #{configurationService.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+       execTimeout : #{configurationService.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+       extendedModeTimeout : #{configurationService.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")}
+     };
+
     jQuery(document).ready(function(){
       // init Browser DnD import
-      jQuery(".dropzone").nxDropZone({
-        url : "#{contextPath}/api/v1/",
-        uploadRateRefreshTime : 500,
-        numConcurrentUploads : 3,
-        dropContext : ctx,
-        uploadTimeout : #{configurationService.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
-        execTimeout : #{configurationService.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
-        extendedModeTimeout : #{configurationService.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")}
-      });
+      jQuery(".dropzone").nxDropZone(nxDropZoneOptions);
+    });
+
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        jQuery(".dropzone").nxDropZone(nxDropZoneOptions);
+      }
+    });
+
+    nuxeo.utils.addOnEvent(function(data) {
+      if (data.status == "success") {
+        jQuery(".dropzone").nxDropZone(nxDropZoneOptions);
+      }
     });
   </h:outputScript>
 
