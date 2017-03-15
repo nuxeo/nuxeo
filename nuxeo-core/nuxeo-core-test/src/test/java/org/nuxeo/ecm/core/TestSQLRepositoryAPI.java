@@ -2488,9 +2488,9 @@ public class TestSQLRepositoryAPI {
         assertTrue(session.exists(new PathRef("/note")));
         assertTrue(session.exists(new PathRef("/folder")));
 
-        // no versions at first
+        // only one version at first
         List<DocumentRef> versions = session.getVersionsRefs(note.getRef());
-        assertEquals(0, versions.size());
+        assertEquals(1, versions.size());
 
         // version the note
         note.setProperty("dublincore", "title", "blah");
@@ -2500,7 +2500,7 @@ public class TestSQLRepositoryAPI {
 
         // check versions
         versions = session.getVersionsRefs(note.getRef());
-        assertEquals(1, versions.size());
+        assertEquals(2, versions.size());
 
         // copy
         DocumentModel copy = session.copy(note.getRef(), folder.getRef(), null);
@@ -2524,9 +2524,9 @@ public class TestSQLRepositoryAPI {
         assertTrue(session.exists(new PathRef("/folder")));
         assertTrue(session.exists(new PathRef("/folder/note")));
 
-        // no versions at first
+        // only one version at first
         List<DocumentRef> versions = session.getVersionsRefs(note.getRef());
-        assertEquals(0, versions.size());
+        assertEquals(1, versions.size());
 
         // version the note
         note.setProperty("dublincore", "title", "blah");
@@ -2536,7 +2536,7 @@ public class TestSQLRepositoryAPI {
 
         // check versions
         versions = session.getVersionsRefs(note.getRef());
-        assertEquals(1, versions.size());
+        assertEquals(2, versions.size());
 
         // copy folder, use an all-digit name to test for xpath escaping
         DocumentModel copy = session.copy(folder.getRef(), root.getRef(), "123");

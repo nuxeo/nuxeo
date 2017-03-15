@@ -85,12 +85,13 @@ public class TestTrashService {
 
     public void createDocuments() throws Exception {
         fold = session.createDocumentModel("/", "fold", "Folder");
+        // use File as document type as Note is now automatically versioned on each update
         fold = session.createDocument(fold);
-        doc1 = session.createDocumentModel("/fold", "doc1", "Note");
+        doc1 = session.createDocumentModel("/fold", "doc1", "File");
         doc1 = session.createDocument(doc1);
-        doc2 = session.createDocumentModel("/fold", "doc2", "Note");
+        doc2 = session.createDocumentModel("/fold", "doc2", "File");
         doc2 = session.createDocument(doc2);
-        doc3 = session.createDocumentModel("/", "doc3", "Note");
+        doc3 = session.createDocumentModel("/", "doc3", "File");
         doc3 = session.createDocument(doc3);
         session.save();
     }

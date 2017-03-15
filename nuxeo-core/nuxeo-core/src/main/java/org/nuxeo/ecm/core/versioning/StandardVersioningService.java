@@ -474,9 +474,13 @@ public class StandardVersioningService implements ExtendableVersioningService {
             if (before) {
                 if (previousDocument.isCheckedOut()) {
                     previousDocument.checkIn(policy.getIncrement(), null); // auto label
+                    // put back document in checked out state
+                    previousDocument.checkOut();
                 }
             } else {
-                currentDocument.checkIn(policy.getIncrement(), null); // auto label
+                if (currentDocument.isCheckedOut()) {
+                    currentDocument.checkIn(policy.getIncrement(), null); // auto label
+                }
             }
         }
     }

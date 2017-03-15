@@ -280,13 +280,10 @@ public class TestVersioningRemovalPolicy extends AbstractTestVersioning {
         assertEquals("0.1+", vdoc.getVersionLabel());
 
         DocumentModel note = session.createDocumentModel("/", "testnote1", "Note");
+        // create document triggers automatic versioning system - note, by default, is automatically versioned
         note = session.createDocument(note);
         VersioningDocument vnote = note.getAdapter(VersioningDocument.class);
         assertNotNull(vnote);
-        assertTrue(note.isCheckedOut());
-        assertEquals("0.0", vnote.getVersionLabel());
-
-        note.checkIn(VersioningOption.MINOR, "");
         assertFalse(note.isCheckedOut());
         assertEquals("0.1", vnote.getVersionLabel());
 

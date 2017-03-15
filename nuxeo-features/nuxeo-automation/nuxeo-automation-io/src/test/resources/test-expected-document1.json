@@ -5,10 +5,10 @@
    "path" : "/folder1/doc0",
    "type" : "Note",
    "changeToken" : null,
-   "isCheckedOut" : true,
+   "isCheckedOut" : false,
    "isVersion": false,
    "isProxy": false,
-   "versionLabel" : "0.0",
+   "versionLabel" : "0.1",
    "parentRef" : "the-parent-id",
    "state" : "project",
    "title" : "Note 0",
@@ -44,7 +44,7 @@
       "note:note" : null,
       "relatedtext:relatedtextresources" : [],
       "uid:major_version" : 0,
-      "uid:minor_version" : 0,
+      "uid:minor_version" : 1,
       "uid:uid" : null
    },
    "contextParameters":{"children":{"entity-type":"documents","entries":[]}}

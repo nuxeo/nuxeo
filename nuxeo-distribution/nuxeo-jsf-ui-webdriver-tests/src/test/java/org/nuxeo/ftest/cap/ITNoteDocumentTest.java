@@ -18,6 +18,13 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,15 +40,6 @@ import org.nuxeo.functionaltests.pages.tabs.NoteSummaryTabSubPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
-
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test document note creation and edition.
@@ -60,9 +58,9 @@ public class ITNoteDocumentTest extends AbstractTest {
 
     protected final static String NOTE_DESCRIPTION = "Description note 1";
 
-    protected static final String NOTE_VERSION = "VERSION 0.0";
+    protected static final String NOTE_VERSION_CREATED = "VERSION 0.1";
 
-    protected static final String NOTE_VERSION_EDITED = "VERSION 0.1";
+    protected static final String NOTE_VERSION_EDITED = "VERSION 1.0";
 
     @Before
     public void before() {
@@ -137,13 +135,13 @@ public class ITNoteDocumentTest extends AbstractTest {
 
         // Check version
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
-        assertEquals(NOTE_VERSION, noteSummaryPage.getVersionNumberText());
+        assertEquals(NOTE_VERSION_CREATED, noteSummaryPage.getVersionNumberText());
 
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();
         RichEditorElement editor = new RichEditorElement(driver, "document_edit:nxl_note:nxw_note_editor");
         editor.setInputValue(CONTENT_NOTE_EDITED);
-        editTab.edit(null, null, EditTabSubPage.MINOR_VERSION_INCREMENT_VALUE);
+        editTab.edit(null, null, EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
 
         // Check the result
         String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED, CONTENT_NOTE);
