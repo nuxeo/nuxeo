@@ -110,7 +110,7 @@ public abstract class TestCmisBindingBase {
     }
 
     protected boolean supportsProxies() {
-        return false;
+        return true;
     }
 
     protected boolean useElasticsearch() {

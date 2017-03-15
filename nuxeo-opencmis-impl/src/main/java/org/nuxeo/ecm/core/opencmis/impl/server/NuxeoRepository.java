@@ -156,7 +156,7 @@ public class NuxeoRepository {
 
     protected boolean supportsJoins;
 
-    protected boolean supportsProxies;
+    protected boolean supportsProxies = true;
 
     protected boolean useElasticsearch;
 
@@ -168,8 +168,8 @@ public class NuxeoRepository {
         if (Framework.isBooleanPropertyTrue(SUPPORTS_JOINS_PROP)) {
             setSupportsJoins(true);
         }
-        if (Framework.isBooleanPropertyTrue(SUPPORTS_PROXIES_PROP)) {
-            setSupportsProxies(true);
+        if (Framework.isBooleanPropertyFalse(SUPPORTS_PROXIES_PROP)) {
+            setSupportsProxies(false);
         }
         if (Framework.isBooleanPropertyTrue(ELASTICSEARCH_PROP)) {
             setUseElasticsearch(true);

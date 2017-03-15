@@ -39,4 +39,9 @@ public class TestCmisBindingJoins extends TestCmisBinding {
         return true;
     }
 
+    @Override
+    protected boolean supportsProxies() {
+        return false;
+    }
+
 }

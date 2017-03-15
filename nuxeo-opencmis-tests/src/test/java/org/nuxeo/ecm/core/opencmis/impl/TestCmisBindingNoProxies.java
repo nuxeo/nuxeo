@@ -21,13 +21,13 @@ package org.nuxeo.ecm.core.opencmis.impl;
 /**
  * Test the high-level session using a local connection.
  * <p>
- * Test with proxies allowed.
+ * Test with proxies not allowed.
  */
-public class TestCmisBindingProxies extends TestCmisBinding {
+public class TestCmisBindingNoProxies extends TestCmisBinding {
 
     @Override
     protected boolean supportsProxies() {
-        return true;
+        return false;
     }
 
 }

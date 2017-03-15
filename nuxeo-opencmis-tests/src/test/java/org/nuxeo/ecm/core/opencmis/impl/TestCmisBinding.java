@@ -2687,11 +2687,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
     @Test
     public void testQueryPWC() throws Exception {
         waitForIndexing();
+        // TODO proxies shouldn't be considered checked out
+        boolean expectProxies = supportsProxies() && !useElasticsearch();
 
         ObjectList list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null,
                 null);
-        // TODO XXX proxy shouldn't be considered checked out
-        assertEquals(supportsProxies() ? 5 : 4, list.getNumItems().intValue()); // 4 docs, 1 proxy
+        assertEquals(expectProxies ? 5 : 4, list.getNumItems().intValue()); // 4 docs, 1 proxy
 
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
@@ -2701,8 +2702,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         waitForIndexing();
 
         list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
-        // TODO XXX proxy shouldn't be considered checked out
-        assertEquals(supportsProxies() ? 4 : 3, list.getNumItems().intValue()); // 3 docs, 1 proxy
+        assertEquals(expectProxies ? 4 : 3, list.getNumItems().intValue()); // 3 docs, 1 proxy
 
         verService.checkOut(repositoryId, idHolder, null, null);
 
@@ -2710,8 +2710,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // re-checkout (ecm:isCheckedIn now false instead of null earlier)
         list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
-        // TODO XXX proxy shouldn't be considered checked out
-        assertEquals(supportsProxies() ? 5 : 4, list.getNumItems().intValue()); // 4 docs, 1 proxy
+        assertEquals(expectProxies ? 5 : 4, list.getNumItems().intValue()); // 4 docs, 1 proxy
 
         // with folder and filter and order
         ObjectData f1 = getObjectByPath("/testfolder1");
