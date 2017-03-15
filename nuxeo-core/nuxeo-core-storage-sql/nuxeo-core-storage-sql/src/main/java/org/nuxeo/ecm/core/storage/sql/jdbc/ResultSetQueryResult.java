@@ -49,7 +49,8 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
         logger = mapper.logger;
         q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, pathResolver, query, queryFilter, params);
         if (q == null) {
-            logger.log("Query cannot return anything due to conflicting clauses");
+            // no result
+            size = 0;
             ps = null;
             rs = null;
             eof = true;
@@ -128,10 +129,10 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public long size() {
-        checkNotClosed();
         if (size != -1) {
             return size;
         }
+        checkNotClosed();
         try {
             // save cursor pos
             int old = rs.isBeforeFirst() ? -1 : rs.isAfterLast() ? -2 : rs.getRow();
@@ -206,12 +207,12 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public boolean hasNext() {
+        if (eof) {
+            return false;
+        }
         checkNotClosed();
         if (next != null) {
             return true;
-        }
-        if (eof) {
-            return false;
         }
         try {
             next = fetchNext();
