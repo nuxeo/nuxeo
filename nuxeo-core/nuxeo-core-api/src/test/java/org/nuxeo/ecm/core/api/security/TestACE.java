@@ -99,6 +99,13 @@ public class TestACE {
 
         ACE ace8 = ACE.fromId(ace7.getId());
         assertEquals(ace6, ace8);
+
+        // NXP-21696: For null permissions
+        ACE ace9 = new ACE("john", null, false);
+        ACE ace10 = new ACE("jane", null, true);
+        ACE ace11 = new ACE("john", null, false);
+        assertFalse(ace9.equals(ace10));
+        assertTrue(ace9.equals(ace11));
     }
 
     @Test
