@@ -7,6 +7,15 @@
   </parent>
   <artifactId>nuxeo-segmentio-connector</artifactId>
   <name>nuxeo-segmentio-connector</name>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.github.segmentio</groupId>
+        <artifactId>analytics</artifactId>
+        <version>1.0.7</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>com.github.segmentio</groupId>

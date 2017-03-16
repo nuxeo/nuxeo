@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
-import com.github.segmentio.models.Providers;
-
 public interface SegmentIO {
 
     String getWriteKey();
@@ -24,7 +22,7 @@ public interface SegmentIO {
 
     void flush();
 
-    Providers getProviders();
+    Map<String, Boolean> getIntegrations();
 
     SegmentIOUserFilter getUserFilters();
 }

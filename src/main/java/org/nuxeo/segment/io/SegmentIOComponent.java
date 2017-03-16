@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -34,15 +35,14 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.segment.io.extension.Group;
 import org.osgi.framework.Bundle;
 
 import com.github.segmentio.Analytics;
 import com.github.segmentio.AnalyticsClient;
 import com.github.segmentio.flush.Flusher;
-import com.github.segmentio.models.Context;
-import com.github.segmentio.models.EventProperties;
-import com.github.segmentio.models.Providers;
+import com.github.segmentio.models.Group;
+import com.github.segmentio.models.Options;
+import com.github.segmentio.models.Props;
 import com.github.segmentio.models.Traits;
 
 /**
@@ -78,8 +78,6 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     protected SegmentIOUserFilter userFilters;
 
-    protected Providers providers;
-
     protected Bundle bundle;
 
     protected Flusher flusher;
@@ -110,7 +108,6 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
             mappers.put(mapper.name, mapper);
         } else if (PROVIDER_EP.equalsIgnoreCase(extensionPoint)) {
             providersConfig = (SegmentIOProviders) contribution;
-            providers = null;
         } else if (FILTERS_EP.equalsIgnoreCase(extensionPoint)) {
             userFilters = (SegmentIOUserFilter) contribution;
         }
@@ -185,20 +182,19 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     @Override
-    public Providers getProviders() {
-        if (providers == null) {
-            providers = new Providers();
-            if (providersConfig != null) {
-                if (!providersConfig.enableDefaults) {
-                    providers.setDefault(false);
-                }
-                for (String name : providersConfig.providers.keySet()) {
-                    providers.setEnabled(name,
-                            providersConfig.providers.get(name));
-                }
-            }
+    public Map<String, Boolean> getIntegrations() {
+        if (providersConfig != null && providersConfig.providers != null) {
+            return providersConfig.providers;
         }
-        return providers;
+        return new HashMap<>();
+    }
+
+    protected Options buildOptions() {
+        Options options = new Options();
+        for (Entry<String, Boolean> integration : getIntegrations().entrySet()) {
+            options.setIntegration(integration.getKey(), integration.getValue());
+        }
+        return options.setTimestamp(new DateTime());
     }
 
     @Override
@@ -227,24 +223,23 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
                 log.debug("send identify with " + metadata.toString());
                 Traits traits = new Traits();
                 traits.putAll(wrapper.getMetadata());
-                Context ctx = new Context();
-                ctx.setProviders(getProviders());
-                Analytics.identify(wrapper.getUserId(), traits, ctx);
+                Options options = buildOptions();
+                Analytics.getDefaultClient().identify(wrapper.getUserId(), traits, options);
 
                 Map<String, Serializable> groupMeta = wrapper.getGroupMetadata();
                 if (groupMeta.size() > 0 && groupMeta.containsKey("id")) {
                     Traits gtraits = new Traits();
                     gtraits.putAll(groupMeta);
                     group((String) groupMeta.get("id"), wrapper.getUserId(),
-                            gtraits, ctx);
+                            gtraits, options);
                 } else {
                     // automatic grouping
                     if (principal.getCompany() != null) {
                         group(principal.getCompany(), wrapper.getUserId(),
-                                null, ctx);
+                                null, options);
                     } else if (wrapper.getMetadata().get("company") != null) {
                         group((String) wrapper.getMetadata().get("company"),
-                                wrapper.getUserId(), null, ctx);
+                                wrapper.getUserId(), null, options);
                     }
                 }
             }
@@ -252,13 +247,13 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     protected void group(String groupId, String userId, Traits traits,
-            Context ctx) {
+            Options options) {
         if (groupId == null || groupId.isEmpty()) {
             return;
         }
         Flusher flusher = getFlusher();
         if (flusher != null) {
-            Group grp = new Group(userId, groupId, traits, new DateTime(), ctx);
+            Group grp = new Group(userId, groupId, traits, options);
             flusher.enqueue(grp);
         } else {
             log.warn("Can not use Group API");
@@ -317,12 +312,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
                         + metadata.toString());
             } else {
                 log.debug("send track with " + metadata.toString());
-                EventProperties eventProperties = new EventProperties();
+                Props eventProperties = new Props();
                 eventProperties.putAll(wrapper.getMetadata());
-                Context ctx = new Context();
-                ctx.setProviders(getProviders());
-                Analytics.track(wrapper.getUserId(), eventName,
-                        eventProperties, new DateTime(), ctx);
+                Analytics.getDefaultClient().track(wrapper.getUserId(), eventName,
+                        eventProperties, buildOptions());
             }
         }
     }
