@@ -141,7 +141,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
         doc.getCoreSession().save();
         String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '" + doc.getId()
-                + "' AND ecm:currentLifeCycleState != 'deleted'";
+                + "' AND ecm:currentLifeCycleState != 'deleted' ORDER BY ecm:pos";
         try (IterableQueryResult res = doc.getCoreSession().queryAndFetch(query, "NXQL")) {
 
             vuuids = new String[(int) res.size()];
