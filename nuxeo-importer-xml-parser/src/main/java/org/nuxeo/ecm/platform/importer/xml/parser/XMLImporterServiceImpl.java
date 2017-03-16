@@ -19,16 +19,6 @@
 
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +32,6 @@ import org.dom4j.Text;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.ZipUtils;
@@ -58,12 +47,30 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.runtime.api.Framework;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
 /**
  * Main implementation class for delivering the Import logic
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class XMLImporterServiceImpl {
+
+    protected static final String FILE_PROPERTY = "file";
+
+    protected static final String CONTENT_PROPERTY = "content";
+
+    protected static final String MIME_TYPE_PROPERTY = "mimetype";
+
+    protected static final String FILE_NAME_PROPERTY = "filename";
 
     private static final String MSG_NO_ELEMENT_FOUND = "**CREATION**\n"
             + "No element \"%s\" found in %s, use the DOC_TYPE-INDEX value";
@@ -238,29 +245,33 @@ public class XMLImporterServiceImpl {
         return propValue;
     }
 
-    protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf) {
+    protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf, String propertyName) {
         @SuppressWarnings("unchecked")
         Map<String, Object> propValues = (Map<String, Object>) resolveComplex(el, conf);
 
-        if (propValues.containsKey("content")) {
+        if (propValues.containsKey(propertyName)) {
             try {
                 Blob blob = null;
-                String content = (String) propValues.get("content");
+                String content = (String) propValues.get(propertyName);
                 if (content != null && workingDirectory != null) {
                     File file = new File(workingDirectory, content.trim());
                     if (file.exists()) {
                         blob = Blobs.createBlob(file);
                     }
                 }
-                if (blob == null) {
-                    blob = Blobs.createBlob((String) propValues.get("content"));
+                if (blob == null && content != null) {
+                    blob = Blobs.createBlob(content);
                 }
-                if (propValues.containsKey("mimetype")) {
-                    blob.setMimeType((String) propValues.get("mimetype"));
+
+                if (blob != null) {
+                    if (propValues.containsKey(MIME_TYPE_PROPERTY)) {
+                        blob.setMimeType((String) propValues.get(MIME_TYPE_PROPERTY));
+                    }
+                    if (propValues.containsKey(FILE_NAME_PROPERTY)) {
+                        blob.setFilename((String) propValues.get(FILE_NAME_PROPERTY));
+                    }
                 }
-                if (propValues.containsKey("filename")) {
-                    blob.setFilename((String) propValues.get("filename"));
-                }
+
                 return blob;
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -269,6 +280,7 @@ public class XMLImporterServiceImpl {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     protected void processDocAttributes(DocumentModel doc, Element el, AttributeConfigDescriptor conf) {
         String targetDocProperty = conf.getTargetDocProperty();
 
@@ -289,7 +301,7 @@ public class XMLImporterServiceImpl {
         } else if (property.isComplex()) {
 
             if (property instanceof BlobProperty) {
-                Object value = resolveBlob(el, conf);
+                Object value = resolveBlob(el, conf, CONTENT_PROPERTY);
                 if (log.isTraceEnabled()) {
                     log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                             conf.toString()));
@@ -328,10 +340,13 @@ public class XMLImporterServiceImpl {
                     }
                 }
             } else {
-                value = (Serializable) resolveComplex(el, conf);
-                if (value != null && !conf.getMapping().isEmpty()) {
-                    property.addValue(value);
+                Map<String, Object> props = (Map<String, Object>) resolveComplex(el, conf);
+                if (props.containsKey(FILE_PROPERTY)) {
+                    Blob blob = resolveBlob(el, conf, FILE_PROPERTY);
+                    props.put(FILE_PROPERTY, blob);
                 }
+                property.addValue(props);
+                value = (Serializable) props;
             }
 
             if (log.isTraceEnabled()) {
