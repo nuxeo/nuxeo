@@ -20,6 +20,7 @@ package org.nuxeo.drive.service.adapter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -426,6 +427,24 @@ public class TestFileSystemItemManagerService {
                 fileSystemItemManagerService.getChildren(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal)
                                             .size());
 
+        // NXP-21854: Check overwrite parameter
+        // Test overwrite=false
+        FolderItem differentFolderItem = fileSystemItemManagerService.createFolder(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), "A new folder", principal, false);
+        assertNotNull(differentFolderItem);
+        assertNotEquals(newFolderItem.getId(), differentFolderItem.getId());
+        assertEquals("A new folder", differentFolderItem.getName());
+        // Test overwrite=true
+        FolderItem otherFolderItem = fileSystemItemManagerService.createFolder(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), "Test overwrite", principal, false);
+        assertNotNull(otherFolderItem);
+        assertEquals("Test overwrite", otherFolderItem.getName());
+        FolderItem sameFolderItem = fileSystemItemManagerService.createFolder(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), "Test overwrite", principal, true);
+        assertNotNull(sameFolderItem);
+        assertEquals(otherFolderItem.getId(), sameFolderItem.getId());
+        assertEquals("Test overwrite", sameFolderItem.getName());
+
         // ------------------------------------------------------
         // Check #createFile
         // ------------------------------------------------------
@@ -450,6 +469,27 @@ public class TestFileSystemItemManagerService {
         assertEquals("nxfile/test/" + newFile.getId() + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
+
+        // NXP-21854: Check overwrite parameter
+        // Test overwrite=false
+        FileItem differentFileItem = fileSystemItemManagerService.createFile(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), blob, principal, false);
+        assertNotNull(differentFileItem);
+        assertNotEquals(fileItem.getId(), differentFileItem.getId());
+        assertEquals("New file.odt", differentFileItem.getName());
+        // Test overwrite=true
+        Blob otherBlob = new StringBlob("Content of a new file.");
+        otherBlob.setFilename("Test overwrite.odt");
+        otherBlob.setMimeType("application/vnd.oasis.opendocument.text");
+        FileItem otherFileItem = fileSystemItemManagerService.createFile(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), otherBlob, principal, false);
+        assertNotNull(otherFileItem);
+        assertEquals("Test overwrite.odt", otherFileItem.getName());
+        FileItem sameFileItem = fileSystemItemManagerService.createFile(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), otherBlob, principal, true);
+        assertNotNull(sameFileItem);
+        assertEquals(otherFileItem.getId(), sameFileItem.getId());
+        assertEquals("Test overwrite.odt", sameFileItem.getName());
 
         // Parent folder children check
         assertEquals(1, fileSystemItemManagerService.getChildren(newFolderItem.getId(), principal).size());
