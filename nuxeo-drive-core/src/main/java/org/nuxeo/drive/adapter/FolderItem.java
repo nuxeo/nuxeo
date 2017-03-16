@@ -40,8 +40,28 @@ public interface FolderItem extends FileSystemItem {
 
     boolean getCanCreateChild();
 
+    /**
+     * @deprecated since 9.1, use {@link #createFile(String, boolean)} instead
+     */
+    @Deprecated
     FileItem createFile(Blob blob) throws ClientException;
 
+    /**
+     * @param overwrite allows to overwrite an existing file with the same title
+     * @since 9.1
+     */
+    FileItem createFile(Blob blob, boolean overwrite) throws ClientException;
+
+    /**
+     * @deprecated since 9.1, use {@link #createFolder(String, boolean)} instead
+     */
+    @Deprecated
     FolderItem createFolder(String name) throws ClientException;
+
+    /**
+     * @param overwrite allows to overwrite an existing folder with the same title
+     * @since 9.1
+     */
+    FolderItem createFolder(String name, boolean overwrite) throws ClientException;
 
 }

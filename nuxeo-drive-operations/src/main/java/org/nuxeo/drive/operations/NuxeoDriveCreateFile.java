@@ -51,6 +51,9 @@ public class NuxeoDriveCreateFile {
     @Param(name = "parentId")
     protected String parentId;
 
+    @Param(name = "overwrite", required = false)
+    protected boolean overwrite;
+
     /**
      * @deprecated
      * @see https://jira.nuxeo.com/browse/NXP-12173
@@ -69,7 +72,7 @@ public class NuxeoDriveCreateFile {
             blob.setFilename(name);
         }
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
-        FileItem fileItem = fileSystemItemManager.createFile(parentId, blob, ctx.getPrincipal());
+        FileItem fileItem = fileSystemItemManager.createFile(parentId, blob, ctx.getPrincipal(), overwrite);
 
         return NuxeoDriveOperationHelper.asJSONBlob(fileItem);
     }

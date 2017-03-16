@@ -149,9 +149,15 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
+    @Deprecated
     public FolderItem createFolder(String name) throws ClientException {
+        return createFolder(name, false);
+    }
+    
+    @Override
+    public FolderItem createFolder(String name, boolean overwrite) throws ClientException {
         try {
-            DocumentModel folder = getFileManager().createFolder(getSession(), name, docPath, false);
+            DocumentModel folder = getFileManager().createFolder(getSession(), name, docPath, overwrite);
             if (folder == null) {
                 throw new ClientException(
                         String.format(
@@ -165,11 +171,17 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         }
     }
 
+    @Deprecated
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
+        return createFile(blob, false);
+    }
+    
+    @Override
+    public FileItem createFile(Blob blob, boolean overwrite) throws ClientException {
         String fileName = blob.getFilename();
         try {
-            DocumentModel file = getFileManager().createDocumentFromBlob(getSession(), blob, docPath, false, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(getSession(), blob, docPath, overwrite, fileName);
             if (file == null) {
                 throw new ClientException(
                         String.format(

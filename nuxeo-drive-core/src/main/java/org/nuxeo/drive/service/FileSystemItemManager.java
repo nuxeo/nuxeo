@@ -122,8 +122,19 @@ public interface FileSystemItemManager {
      * @throws ClientException if the {@link FileSystemItem} with the given id cannot be retrieved, or if it is not a
      *             {@link FolderItem} or if an error occurs while creating the folder
      * @see FolderItem#createFolder(String)
+     * @deprecated since 9.1, use {@link #createFolder(String, String, Principal, boolean)} instead
      */
+    @Deprecated
     FolderItem createFolder(String parentId, String name, Principal principal) throws ClientException;
+
+    /**
+     * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the given principal.
+     *
+     * @param overwrite allows to overwrite an existing folder with the same title
+     * @see FolderItem#createFolder(String, boolean)
+     * @since 9.1
+     */
+    FolderItem createFolder(String parentId, String name, Principal principal, boolean overwrite) throws ClientException;
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
@@ -131,8 +142,19 @@ public interface FileSystemItemManager {
      * @throws ClientException if the {@link FileSystemItem} with the given id cannot be retrieved, or if it is not a
      *             {@link FolderItem} or if an error occurs while creating the file
      * @see FolderItem#createFile(Blob)
+     * @deprecated since 9.1, use {@link #createFile(String, Blob, Principal, boolean)} instead
      */
+    @Deprecated
     FileItem createFile(String parentId, Blob blob, Principal principal) throws ClientException;
+
+    /**
+     * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
+     *
+     * @param overwrite allows to overwrite an existing folder with the same title
+     * @see FolderItem#createFile(Blob, boolean)
+     * @since 9.1
+     */
+    FileItem createFile(String parentId, Blob blob, Principal principal, boolean overwrite) throws ClientException;
 
     /**
      * Updates the {@link FileSystemItem} with the given id with the given blob for the given principal.

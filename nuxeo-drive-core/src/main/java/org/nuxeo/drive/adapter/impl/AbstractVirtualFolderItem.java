@@ -94,12 +94,22 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     }
 
     @Override
+    @Deprecated
     public FolderItem createFolder(String name) throws ClientException {
+        return createFolder(name, false);
+    }
+
+    public FolderItem createFolder(String name, boolean overwrite) throws ClientException {
         throw new UnsupportedOperationException("Cannot create a folder in a virtual folder item.");
     }
 
     @Override
+    @Deprecated
     public FileItem createFile(Blob blob) throws ClientException {
+        return createFile(blob, false);
+    }
+
+    public FileItem createFile(Blob blob, boolean overwrite) throws ClientException {
         throw new UnsupportedOperationException("Cannot create a file in a virtual folder item.");
     }
 
