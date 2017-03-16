@@ -111,12 +111,12 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     }
 
     @Override
-    public FolderItem createFolder(String name) {
+    public FolderItem createFolder(String name, boolean overwrite) {
         throw new UnsupportedOperationException("Cannot create a folder in a virtual folder item.");
     }
 
     @Override
-    public FileItem createFile(Blob blob) {
+    public FileItem createFile(Blob blob, boolean overwrite) {
         throw new UnsupportedOperationException("Cannot create a file in a virtual folder item.");
     }
 

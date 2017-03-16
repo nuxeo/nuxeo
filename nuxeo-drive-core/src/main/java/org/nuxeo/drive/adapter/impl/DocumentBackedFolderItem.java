@@ -458,9 +458,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    public FolderItem createFolder(String name) {
+    public FolderItem createFolder(String name, boolean overwrite) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            DocumentModel folder = getFileManager().createFolder(session, name, docPath, false);
+            DocumentModel folder = getFileManager().createFolder(session, name, docPath, overwrite);
             if (folder == null) {
                 throw new NuxeoException(String.format(
                         "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
@@ -477,10 +477,10 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    public FileItem createFile(Blob blob) {
+    public FileItem createFile(Blob blob, boolean overwrite) {
         String fileName = blob.getFilename();
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, false, fileName);
+            DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, overwrite, fileName);
             if (file == null) {
                 throw new NuxeoException(String.format(
                         "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
