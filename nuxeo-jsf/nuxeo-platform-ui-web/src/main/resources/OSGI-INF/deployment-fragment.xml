@@ -549,6 +549,15 @@
       </component-class>
     </component>
 
+    <component>
+      <component-type>
+        javax.faces.HtmlInputText
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.html.NXHtmlInputText
+      </component-class>
+    </component>
+
     <!-- override of buggy seam libraries -->
     <component>
       <component-type>
@@ -774,6 +783,14 @@
       <renderer-type>javax.faces.Message</renderer-type>
       <renderer-class>
         org.nuxeo.ecm.platform.ui.web.component.message.EscapableMessageRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>javax.faces.Input</component-family>
+      <renderer-type>javax.faces.Text</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.renderer.NXTextRenderer
       </renderer-class>
     </renderer>
 
