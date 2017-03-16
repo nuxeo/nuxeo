@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -323,10 +324,11 @@ public final class ACE implements Serializable, Cloneable {
                     || !(ace.begin == null || begin == null) && ace.begin.getTimeInMillis() == begin.getTimeInMillis();
             boolean endEqual = ace.end == null && end == null
                     || !(ace.end == null || end == null) && ace.end.getTimeInMillis() == end.getTimeInMillis();
-            boolean creatorEqual = ace.creator != null ? ace.creator.equals(creator) : creator == null;
-            boolean usernameEqual = ace.username != null ? ace.username.equals(username) : username == null;
-            return ace.isGranted == isGranted && usernameEqual && ace.permission.equals(permission) && creatorEqual
-                    && beginEqual && endEqual;
+            boolean creatorEqual = Objects.equals(ace.creator, creator);
+            boolean usernameEqual = Objects.equals(ace.username, username);
+            boolean permissionEqual = Objects.equals(ace.permission, permission);
+            return ace.isGranted == isGranted && usernameEqual && permissionEqual && creatorEqual && beginEqual
+                    && endEqual;
         }
         return super.equals(obj);
     }
