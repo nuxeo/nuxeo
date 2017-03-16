@@ -9,7 +9,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mvel2.ast.AssertNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -27,7 +26,6 @@ import org.nuxeo.segment.io.SegmentIOComponent;
 import org.nuxeo.segment.io.SegmentIOMapper;
 import org.nuxeo.segment.io.SegmentIOUserFilter;
 
-import com.github.segmentio.models.Providers;
 import com.google.inject.Inject;
 
 @Deploy({ "org.nuxeo.segmentio.connector"})
@@ -129,12 +127,12 @@ public class TestSegmentIOService {
         SegmentIO sio = Framework.getLocalService(SegmentIO.class);
         Assert.assertNotNull(sio);
 
-        Providers providers = sio.getProviders();
+        Map<String, Boolean> integrations = sio.getIntegrations();
 
-        Assert.assertNotNull(providers);
+        Assert.assertNotNull(integrations);
 
-        Assert.assertTrue(providers.containsKey("Marketo"));
-        Assert.assertTrue((Boolean)providers.get("Marketo"));
+        Assert.assertTrue(integrations.containsKey("Marketo"));
+        Assert.assertTrue(integrations.get("Marketo"));
 
     }
 

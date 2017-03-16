@@ -1,13 +1,8 @@
   // integrate Segment IO
-  window.analytics||(window.analytics=[]),window.analytics.methods=["identify","track","trackLink","trackForm","trackClick","trackSubmit","page","pageview","ab","alias","ready","group","on","once","off"],window.analytics.factory=function(t){return function(){var a=Array.prototype.slice.call(arguments);return a.unshift(t),window.analytics.push(a),window.analytics}};for(var i=0;i < window.analytics.methods.length;i++){var method=window.analytics.methods[i];window.analytics[method]=window.analytics.factory(method)}window.analytics.load=function(t){var a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=("https:"===document.location.protocol?"https://":"http://")+"d2dq2ahtl5zl1z.cloudfront.net/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n)},window.analytics.SNIPPET_VERSION="2.0.8",
-  window.analytics.load("${writeKey}");
-  window.analytics.page();
-
-  function marketoUpdate(email, key) {
-    if (Munchkin) {
-       Munchkin.munchkinFunction('associateLead',{Email: email}, key);
-    }
-  }
+  !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="4.0.0";
+  analytics.load("${writeKey}");
+  analytics.page();
+  }}();
 
   function identifyIfNeeded(login, email) {
     var blackList = ${blackListedLogins};
@@ -19,17 +14,11 @@
         // do the identify
          analytics.identify(login, {
           email   : email
-         }, ${providers});
-         if (jQuery) {
-            // forward to Marketo
-            jQuery.get('${This.path}/marketo/' + email,function(key){
-              marketoUpdate(email,key);
-            });
-         }
+         });
          document.cookie = "_nxIdentified="+login;
       }
     }
-   }
+  }
 <#if principal??>
-   identifyIfNeeded('${principal.name}','${principal.email}');
+	identifyIfNeeded('${principal.name}','${principal.email}');
 </#if>

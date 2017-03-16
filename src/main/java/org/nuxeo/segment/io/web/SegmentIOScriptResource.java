@@ -17,8 +17,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOUserFilter;
 
-import com.github.segmentio.models.Providers;
-
 @WebObject(type = "segmentIOScriptResource")
 @Path("/segmentIO")
 public class SegmentIOScriptResource extends ModuleRoot {
@@ -37,28 +35,6 @@ public class SegmentIOScriptResource extends ModuleRoot {
     public Object signed(@PathParam("login")
     String login) {
         return buildScript(login);
-    }
-
-    protected String buildJsonProvidersOptions() {
-        SegmentIO segmentIO = Framework.getLocalService(SegmentIO.class);
-        Providers providers = segmentIO.getProviders();
-
-        StringBuffer p = new StringBuffer();
-        for (String pname : providers.keySet()) {
-            p.append("\"" + pname + "\"");
-            p.append(" : ");
-            p.append(providers.get(pname).toString());
-            p.append(" , ");
-        }
-
-        StringBuffer json = new StringBuffer("{");
-        json.append(p.toString());
-
-        json.append("\"providers\": {");
-        json.append(p.toString());
-        json.append("} }");
-
-        return json.toString();
     }
 
     protected String buildJsonBlackListedLogins() {
@@ -101,7 +77,6 @@ public class SegmentIOScriptResource extends ModuleRoot {
                 ctx.put("principal", principal);
             }
         }
-        ctx.put("providers", buildJsonProvidersOptions());
         ctx.put("blackListedLogins", buildJsonBlackListedLogins());
 
         return getView("script").args(ctx);

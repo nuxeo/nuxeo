@@ -12,7 +12,7 @@
       <dependency>
         <groupId>com.github.segmentio</groupId>
         <artifactId>analytics</artifactId>
-        <version>0.4.2</version>
+        <version>1.0.7</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
