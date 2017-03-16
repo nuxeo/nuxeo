@@ -190,22 +190,24 @@ public class TestFileSystemItemManagerService {
         // Check #exists
         // ------------------------------------------------------
         // Non existent doc id
-        assertFalse(fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentId", principal));
+        assertFalse(
+                fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + "nonExistentId", principal));
         // File
         assertTrue(fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), principal));
         // Not adaptable as a FileSystemItem
-        assertFalse(fileSystemItemManagerService.exists(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(), principal));
+        assertFalse(fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(),
+                principal));
         // Deleted
         custom.followTransition("delete");
-        assertFalse(fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
+        assertFalse(
+                fileSystemItemManagerService.exists(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(), principal));
 
         // ------------------------------------------------------------
         // Check #getFileSystemItemById(String id, Principal principal)
         // ------------------------------------------------------------
         // Folder
-        FileSystemItem fsItem = fileSystemItemManagerService.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + folder.getId(), principal);
+        FileSystemItem fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), fsItem.getId());
@@ -255,8 +257,8 @@ public class TestFileSystemItemManagerService {
         assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
 
         // Not adaptable as a FileSystemItem
-        fsItem = fileSystemItemManagerService.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + notAFileSystemItem.getId(), principal);
+        fsItem = fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + notAFileSystemItem.getId(), principal);
         assertNull(fsItem);
 
         // Deleted
@@ -343,8 +345,8 @@ public class TestFileSystemItemManagerService {
         checkChildren(folderDescendants, folder.getId(), file.getId(), note.getId(), folderishFile.getId(),
                 subFolder.getId(), false);
 
-        folderDescendants = fileSystemItemManagerService.scrollDescendants(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + subFolder.getId(), principal, null, 10, 1000);
+        folderDescendants = fileSystemItemManagerService.scrollDescendants(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal, null, 10, 1000);
         assertTrue(folderDescendants.isEmpty());
 
         // ------------------------------------------------------
@@ -400,19 +402,20 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Not allowed to create a folder in a non FolderItem
         try {
-            fileSystemItemManagerService.createFolder(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
-                    "A new folder", principal);
+            fileSystemItemManagerService.createFolder(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(), "A new folder",
+                    principal, false);
             fail("Folder creation in a non folder item should fail.");
         } catch (NuxeoException e) {
             assertEquals(String.format(
                     "Cannot create a folder in file system item with id %s because it is not a folder but is: "
-                            + "DocumentBackedFileItem(id=\"%s\", name=\"Joe.odt\")", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                            + file.getId(), DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()), e.getMessage());
+                            + "DocumentBackedFileItem(id=\"%s\", name=\"Joe.odt\")",
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()), e.getMessage());
         }
 
         // Folder creation
-        FolderItem newFolderItem = fileSystemItemManagerService.createFolder(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + folder.getId(), "A new folder", principal);
+        FolderItem newFolderItem = fileSystemItemManagerService.createFolder(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), "A new folder", principal, false);
         assertNotNull(newFolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), newFolderItem.getParentId());
         assertEquals("A new folder", newFolderItem.getName());
@@ -424,8 +427,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("A new folder", newFolder.getTitle());
 
         // Parent folder children check
-        assertEquals(
-                6,
+        assertEquals(6,
                 fileSystemItemManagerService.getChildren(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal)
                                             .size());
 
@@ -454,12 +456,12 @@ public class TestFileSystemItemManagerService {
         Blob blob = new StringBlob("Content of a new file.");
         blob.setFilename("New file.odt");
         blob.setMimeType("application/vnd.oasis.opendocument.text");
-        FileItem fileItem = fileSystemItemManagerService.createFile(newFolderItem.getId(), blob, principal);
+        FileItem fileItem = fileSystemItemManagerService.createFile(newFolderItem.getId(), blob, principal, false);
         assertNotNull(fileItem);
         assertEquals(newFolderItem.getId(), fileItem.getParentId());
         assertEquals("New file.odt", fileItem.getName());
-        folderChildren = session.query(String.format("select * from Document where ecm:parentId = '%s'",
-                newFolder.getId()));
+        folderChildren = session.query(
+                String.format("select * from Document where ecm:parentId = '%s'", newFolder.getId()));
         assertEquals(1, folderChildren.size());
         DocumentModel newFile = folderChildren.get(0);
         assertEquals("File", newFile.getType());
@@ -507,8 +509,8 @@ public class TestFileSystemItemManagerService {
         assertEquals(fileItemId, fileItem.getId());
         assertEquals(fileItemParentId, fileItem.getParentId());
         assertEquals("New file.odt", fileItem.getName());
-        folderChildren = session.query(String.format("select * from Document where ecm:parentId = '%s'",
-                newFolder.getId()));
+        folderChildren = session.query(
+                String.format("select * from Document where ecm:parentId = '%s'", newFolder.getId()));
         assertEquals(1, folderChildren.size());
         DocumentModel updatedFile = folderChildren.get(0);
         assertEquals("File", updatedFile.getType());
@@ -537,7 +539,8 @@ public class TestFileSystemItemManagerService {
         // ------------------------------------------------------
         // Folder rename
         String fsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId();
-        FileSystemItem fsItem = fileSystemItemManagerService.rename(fsItemId, "Jack's folder has a new name", principal);
+        FileSystemItem fsItem = fileSystemItemManagerService.rename(fsItemId, "Jack's folder has a new name",
+                principal);
         assertEquals(fsItemId, fsItem.getId());
         String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX + syncRoot1.getId();
         assertEquals(expectedSyncRoot1Id, fsItem.getParentId());
@@ -568,7 +571,7 @@ public class TestFileSystemItemManagerService {
         blob = new StringBlob("File for a doc with title == filename.");
         blob.setFilename("Title-filename equality.odt");
         blob.setMimeType("application/vnd.oasis.opendocument.text");
-        fileItem = fileSystemItemManagerService.createFile(newFolderItem.getId(), blob, principal);
+        fileItem = fileSystemItemManagerService.createFile(newFolderItem.getId(), blob, principal, false);
         // Note that the PathSegmentService truncates doc title at 24 characters
         newFile = session.getDocument(new PathRef("/syncRoot1/aFolder/A new folder/Title-filename equality."));
         assertEquals("Title-filename equality.odt", newFile.getTitle());
