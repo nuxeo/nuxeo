@@ -261,7 +261,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
             throw new ClientException(
-                    String.format("Cannot renamefile system item with id %s because it doesn't exist.", id));
+                    String.format("Cannot rename file system item with id %s because it doesn't exist.", id));
         }
         fsItem.rename(name);
         return fsItem;
