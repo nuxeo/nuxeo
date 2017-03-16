@@ -111,15 +111,41 @@ public interface FileSystemItemManager {
      * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the given principal.
      *
      * @see FolderItem#createFolder(String)
+     * @deprecated since 9.1, use {@link #createFolder(String, String, Principal, boolean)} instead
      */
-    FolderItem createFolder(String parentId, String name, Principal principal);
+    @Deprecated
+    default FolderItem createFolder(String parentId, String name, Principal principal) {
+        return createFolder(parentId, name, principal, false);
+    }
+
+    /**
+     * Creates a folder with the given name in the {@link FileSystemItem} with the given id for the given principal.
+     *
+     * @param overwrite allows to overwrite an existing folder with the same title
+     * @see FolderItem#createFolder(String, boolean)
+     * @since 9.1
+     */
+    FolderItem createFolder(String parentId, String name, Principal principal, boolean overwrite);
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
      *
      * @see FolderItem#createFile(Blob)
+     * @deprecated since 9.1, use {@link #createFile(String, Blob, Principal, boolean)} instead
      */
-    FileItem createFile(String parentId, Blob blob, Principal principal);
+    @Deprecated
+    default FileItem createFile(String parentId, Blob blob, Principal principal) {
+        return createFile(parentId, blob, principal, false);
+    }
+
+    /**
+     * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
+     *
+     * @param overwrite allows to overwrite an existing folder with the same title
+     * @see FolderItem#createFile(Blob, boolean)
+     * @since 9.1
+     */
+    FileItem createFile(String parentId, Blob blob, Principal principal, boolean overwrite);
 
     /**
      * Updates the {@link FileSystemItem} with the given id with the given blob for the given principal.

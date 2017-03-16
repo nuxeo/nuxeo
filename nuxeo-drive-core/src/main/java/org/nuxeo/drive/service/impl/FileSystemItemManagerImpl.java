@@ -190,7 +190,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Write operations ---------------*/
     @Override
-    public FolderItem createFolder(String parentId, String name, Principal principal) {
+    public FolderItem createFolder(String parentId, String name, Principal principal, boolean overwrite) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
             throw new NuxeoException(String.format(
@@ -202,11 +202,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                     parentId, parentFsItem));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
-        return parentFolder.createFolder(name);
+        return parentFolder.createFolder(name, overwrite);
     }
 
     @Override
-    public FileItem createFile(String parentId, Blob blob, Principal principal) {
+    public FileItem createFile(String parentId, Blob blob, Principal principal, boolean overwrite) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
             throw new NuxeoException(String.format(
@@ -218,7 +218,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                     parentId, parentFsItem));
         }
         FolderItem parentFolder = (FolderItem) parentFsItem;
-        return parentFolder.createFile(blob);
+        return parentFolder.createFile(blob, overwrite);
     }
 
     @Override

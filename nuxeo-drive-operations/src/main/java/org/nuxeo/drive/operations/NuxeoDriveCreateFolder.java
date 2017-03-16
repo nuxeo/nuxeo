@@ -50,11 +50,14 @@ public class NuxeoDriveCreateFolder {
     @Param(name = "name")
     protected String name;
 
+    @Param(name = "overwrite", required = false)
+    protected boolean overwrite;
+
     @OperationMethod
     public Blob run() throws IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FolderItem folderItem = fileSystemItemManager.createFolder(parentId, name, ctx.getPrincipal());
+        FolderItem folderItem = fileSystemItemManager.createFolder(parentId, name, ctx.getPrincipal(), overwrite);
 
         return NuxeoDriveOperationHelper.asJSONBlob(folderItem);
     }
