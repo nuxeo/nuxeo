@@ -217,13 +217,11 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         } else if (ListItemMapper.class.isAssignableFrom(baseClass)) {
             ListItemMapper mapper = (ListItemMapper) base;
             ProtectedEditableModel model = mapper.getModel();
-            ValueExpression listVe;
-            if (model.getParent() != null) {
-                // move one level up to resolve parent list binding
-                listVe = model.getParent().getBinding();
-            } else {
-                listVe = model.getBinding();
+
+            while (model.getParent() != null) {
+                model = model.getParent();
             }
+            ValueExpression listVe = model.getBinding();
             ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(listVe);
             ValueReference listRef = expressionAnalyzer.getReference(context.getELContext());
             if (isResolvable(listRef, listVe)) {
