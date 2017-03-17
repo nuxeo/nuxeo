@@ -70,8 +70,6 @@ public class PackWar {
 
     private static Log log = LogFactory.getLog(PackWar.class);
 
-    private static final List<String> ENDORSED_LIBS = Arrays.asList("xercesImpl");
-
     private static final List<String> MISSING_WEBINF_LIBS = Arrays.asList( //
             "mail", //
             "freemarker");
@@ -83,6 +81,7 @@ public class PackWar {
             "log4j", //
             "commons-logging", //
             "commons-lang", //
+            "commons-lang3", //
             "jcl-over-slf4j", //
             "slf4j-api", //
             "slf4j-log4j12", //
@@ -95,9 +94,9 @@ public class PackWar {
             "mysql-connector-java", // MySQL
             "nuxeo-core-storage-sql-extensions", // for Derby/H2
             "lucene", // for H2
+            "xercesImpl",
+            "xml-apis",
             "elasticsearch");
-
-    private static final String ENDORSED_LIB = "endorsed/";
 
     private static final String ZIP_LIB = "lib/";
 
@@ -217,8 +216,6 @@ public class PackWar {
             zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"), MISSING_WEBINF_LIBS, zout);
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
             zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"), zout, null);
-            zipTree(ENDORSED_LIB, new File(tomcat, "endorsed"), false, zout);
-            zipLibs(ENDORSED_LIB, new File(tomcat, "lib"), ENDORSED_LIBS, zout);
         } finally {
             zout.finish();
             zout.close();
