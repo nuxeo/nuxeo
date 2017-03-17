@@ -37,16 +37,12 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This factory will import a file using a path defined in the option of the
- * factoryBinding extension point. This path can be defined using three
- * different prefix. absolute:myAbsolute path will reference a file on the
- * server's filesystem, nxData:myPath will reference a file inside nuxeo data
- * folder and resource:myPath will reference a file in the bundle's resources.
- *
- * If the file exist, it's imported by the {@link FileManager} service.
+ * This factory will import a file using a path defined in the option of the factoryBinding extension point. This path
+ * can be defined using three different prefix. absolute:myAbsolute path will reference a file on the server's
+ * filesystem, nxData:myPath will reference a file inside nuxeo data folder and resource:myPath will reference a file in
+ * the bundle's resources. If the file exist, it's imported by the {@link FileManager} service.
  *
  * @author ldoguin
- *
  */
 public class ImportBasedFactory extends BaseContentFactory {
 
@@ -102,8 +98,8 @@ public class ImportBasedFactory extends BaseContentFactory {
     }
 
     @Override
-    public boolean initFactory(Map<String, String> options,
-            List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
+    public boolean initFactory(Map<String, String> options, List<ACEDescriptor> rootAcl,
+            List<TemplateItemDescriptor> template) {
         this.options = options;
         overwrite = Boolean.valueOf(options.get(IMPORT_OVERWRITE_OPTION));
         String path = options.get(IMPORT_FILE_PATH_OPTION);
@@ -113,16 +109,14 @@ public class ImportBasedFactory extends BaseContentFactory {
                 importedFile = file;
                 return true;
             } else {
-                log.warn("Following file does not exist: "
-                        + file.getAbsolutePath());
+                log.warn("Following file does not exist: " + file.getAbsolutePath());
             }
         }
         return false;
     }
 
     @Override
-    public void createContentStructure(DocumentModel eventDoc)
-            throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
         initSession(eventDoc);
 
         if (eventDoc.isVersion()) {
@@ -155,8 +149,7 @@ public class ImportBasedFactory extends BaseContentFactory {
         } else {
             Blob fb = new FileBlob(file);
             fb.setFilename(file.getName());
-            getFileManagerService().createDocumentFromBlob(session, fb,
-                    parentPath, overwrite, fb.getFilename());
+            getFileManagerService().createDocumentFromBlob(session, fb, parentPath, overwrite, fb.getFilename());
         }
     }
 
@@ -165,8 +158,7 @@ public class ImportBasedFactory extends BaseContentFactory {
             try {
                 fileManager = Framework.getService(FileManager.class);
             } catch (Exception e) {
-                throw new RuntimeException(
-                        "Unable to get FileManager service ", e);
+                throw new RuntimeException("Unable to get FileManager service ", e);
             }
         }
         return fileManager;

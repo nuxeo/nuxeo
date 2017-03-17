@@ -219,8 +219,8 @@ public class FileManageActionsBean implements FileManageActions {
     @Override
     @Deprecated
     @WebRemote
-    public String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64)
-            throws ClientException {
+    public String addFileFromPlugin(String content, String mimetype, String fullName, String morePath,
+            Boolean UseBase64) throws ClientException {
         try {
             byte[] bcontent;
             if (UseBase64.booleanValue()) {
@@ -559,8 +559,8 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void validateMultipleUploadForDocument(DocumentModel current) throws ClientException, FileNotFoundException,
-            IOException {
+    public void validateMultipleUploadForDocument(DocumentModel current)
+            throws ClientException, FileNotFoundException, IOException {
         if (!current.hasSchema(FILES_SCHEMA)) {
             return;
         }
