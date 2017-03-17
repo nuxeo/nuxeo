@@ -34,6 +34,7 @@
     <module>nuxeo-server-tomcat</module>
     <!-- Functional Tests -->
     <module>nuxeo-server-tests</module>
+    <module>nuxeo-war-tests</module>
     <module>nuxeo-wizard-tests</module>
     <module>nuxeo-jsf-ui-webdriver-tests</module>
     <module>nuxeo-jsf-ui-funkload-tests</module>
