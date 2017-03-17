@@ -1851,7 +1851,7 @@ public abstract class NuxeoLauncher {
             configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED, "true");
             List<String> startCommand = new ArrayList<>();
             startCommand.add(getJavaExecutable().getPath());
-            startCommand.addAll(getJavaOptsProperty(Function.<String>identity()));
+            startCommand.addAll(getJavaOptsProperty(opt -> StrSubstitutor.replace(opt, configurationGenerator.getUserConfig())));
             startCommand.add("-cp");
             String classpath = getClassPath();
             classpath = addToClassPath(classpath, "bin" + File.separator + "nuxeo-launcher.jar");
