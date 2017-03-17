@@ -11,10 +11,6 @@
   <artifactId>nuxeo-war-tests</artifactId>
   <name>Nuxeo WebDriver tests using Nuxeo WAR</name>
 
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
