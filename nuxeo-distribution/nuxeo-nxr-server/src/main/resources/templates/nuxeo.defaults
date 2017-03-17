@@ -45,6 +45,7 @@ nuxeo.redis.ha.hosts=localhost
 nuxeo.redis.ha.timeout=300
 nuxeo.redis.ha.port=26379
 nuxeo.pubsub.provider=redis
+nuxeo.keyvalue.provider=redis
 nuxeo.work.queuing=redis
 nuxeo.lock.manager=redis
 

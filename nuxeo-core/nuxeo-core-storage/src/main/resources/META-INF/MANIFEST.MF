@@ -2,4 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.ecm.core.storage
 Nuxeo-Component: OSGI-INF/lockmanager-service-contrib.xml,
- OSGI-INF/reload-contrib.xml
+ OSGI-INF/reload-contrib.xml,
+ OSGI-INF/keyvalue-service.xml
