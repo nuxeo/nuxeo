@@ -18,7 +18,7 @@
  */
 package org.nuxeo.elasticsearch.web.admin;
 
-import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +58,7 @@ import com.codahale.metrics.Timer;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @Name("esAdmin")
-@Scope(EVENT)
+@Scope(CONVERSATION)
 public class ElasticSearchManager {
 
     private static final Log log = LogFactory.getLog(ElasticSearchManager.class);
@@ -88,6 +88,8 @@ public class ElasticSearchManager {
 
     private String nxql = DEFAULT_NXQL_QUERY;
 
+    private List<String> repositoryNames;
+
     private String repositoryName;
 
     private Boolean dropIndex = false;
@@ -109,19 +111,23 @@ public class ElasticSearchManager {
     }
 
     public void startReindexAll() {
+        String repositoryName = getRepositoryName();
         log.warn("Re-indexing the entire repository: " + repositoryName);
         esa.dropAndInitRepositoryIndex(repositoryName);
         esi.runReindexingWorker(repositoryName, "SELECT ecm:uuid FROM Document");
     }
 
     public void startReindexNxql() {
+        String repositoryName = getRepositoryName();
         log.warn(String.format("Re-indexing from a NXQL query: %s on repository: %s", getNxql(), repositoryName));
         esi.runReindexingWorker(repositoryName, getNxql());
     }
 
     public void startReindexFrom() {
+        String repositoryName = getRepositoryName();
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
-            log.warn(String.format("Try to remove %s and its children from %s repository index", rootId, repositoryName));
+            log.warn(String.format("Try to remove %s and its children from %s repository index", rootId,
+                    repositoryName));
             String jsonCmd = String.format(JSON_DELETE_CMD, rootId, repositoryName);
             IndexingCommand rmCmd = IndexingCommand.fromJSON(jsonCmd);
             esi.indexNonRecursive(rmCmd);
@@ -197,9 +203,10 @@ public class ElasticSearchManager {
     }
 
     private String[] getIndexNames() {
-        String indices[]  = new String[esa.getRepositoryNames().size()];
-        int i=0;
-        for (String repo : esa.getRepositoryNames()) {
+        List<String> repositoryNames = getRepositoryNames();
+        String indices[] = new String[repositoryNames.size()];
+        int i = 0;
+        for (String repo : repositoryNames) {
             indices[i++] = esa.getIndexNameForRepository(repo);
         }
         return indices;
@@ -230,7 +237,10 @@ public class ElasticSearchManager {
     }
 
     public List<String> getRepositoryNames() {
-        return esa.getRepositoryNames();
+        if (repositoryNames == null) {
+            repositoryNames = esa.getRepositoryNames();
+        }
+        return repositoryNames;
     }
 
     public void setRootId(String rootId) {
@@ -246,6 +256,12 @@ public class ElasticSearchManager {
     }
 
     public String getRepositoryName() {
+        if (repositoryName == null) {
+            List<String> repositoryNames = getRepositoryNames();
+            if (!repositoryNames.isEmpty()) {
+                repositoryName = repositoryNames.get(0);
+            }
+        }
         return repositoryName;
     }
 

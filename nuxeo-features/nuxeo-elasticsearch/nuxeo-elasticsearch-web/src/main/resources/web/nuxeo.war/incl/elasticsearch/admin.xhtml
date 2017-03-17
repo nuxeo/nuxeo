@@ -16,16 +16,17 @@
       </c:otherwise>
     </c:choose>
   </a4j:outputPanel>
-   <a4j:poll id="statePoll" interval="2000" enabled="true" timeout="60000" render="statePolledPanel" ajaxSingle="true"/> 
-
-    <h:form id="esAdmin">
+   <a4j:poll id="statePoll" interval="2000" enabled="true" timeout="60000" render="statePolledPanel" ajaxSingle="true"/>
 
     <div class="detail">Choose a repository where the indexing operation will apply.</div>
     <div class="bubbleBox">
       Repository:
-      <h:selectOneMenu name="j_repo" value="#{esAdmin.repositoryName}">
-        <f:selectItems value="#{esAdmin.repositoryNames}"/>
-      </h:selectOneMenu>
+      <h:form id="esAdminRepository">
+        <h:selectOneMenu name="j_repo" value="#{esAdmin.repositoryName}">
+          <f:selectItems value="#{esAdmin.repositoryNames}"/>
+            <a4j:ajax execute="@this" render="@this" />
+        </h:selectOneMenu>
+      </h:form>
     </div>
 
     <h4>Re-indexing the entire repository</h4>
@@ -35,7 +36,9 @@
       during the re-indexing.
     </div>
     <div class="bubbleBox">
-      <h:commandButton action="#{esAdmin.startReindexAll}" value="Re-index repository"/>
+      <h:form id="esAdminAll">
+        <h:commandButton action="#{esAdmin.startReindexAll}" value="Re-index repository"/>
+      </h:form>
     </div>
 
     <h4>Re-indexing documents that match a NXQL query</h4>
@@ -45,8 +48,10 @@
     </div>
     <div class="bubbleBox">
       NXQL query:
-      <h:inputText name="j_nxql" value="#{esAdmin.nxql}"/>
-      <h:commandButton action="#{esAdmin.startReindexNxql}" value="Re-index"/>
+      <h:form id="esAdminNxql">
+        <h:inputText name="j_nxql" value="#{esAdmin.nxql}"/>
+        <h:commandButton action="#{esAdmin.startReindexNxql}" value="Re-index"/>
+      </h:form>
     </div>
 
     <h4>Re-indexing a document and its children</h4>
@@ -58,8 +63,10 @@
     </div>
     <div class="bubbleBox">
       Document id:
-      <h:inputText name="j_docid" value="#{esAdmin.rootId}"/>
-      <h:commandButton action="#{esAdmin.startReindexFrom}" value="Re-index"/>
+      <h:form id="esAdminDoc">
+        <h:inputText name="j_docid" value="#{esAdmin.rootId}"/>
+        <h:commandButton action="#{esAdmin.startReindexFrom}" value="Re-index"/>
+      </h:form>
     </div>
 
     <h3>Other operations</h3>
@@ -68,7 +75,9 @@
 
     <div class="detail">Use this to make sure Elasticsearch flush its indexes to disk.</div>
     <div class="bubbleBox">
-      <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
+      <h:form id="esAdminFlush">
+        <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
+      </h:form>
     </div>
 
     <h4>Optimize all Elasticsearch indexes</h4>
@@ -79,9 +88,9 @@
       very heavy operation.
     </div>
     <div class="bubbleBox">
-      <h:commandButton action="#{esAdmin.optimize}" value="Optimize"/>
+      <h:form id="esAdminOptimize">
+        <h:commandButton action="#{esAdmin.optimize}" value="Optimize"/>
+      </h:form>
     </div>
-
-  </h:form>
 
 </div>
