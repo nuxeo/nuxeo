@@ -470,6 +470,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-dbs</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
