@@ -94,6 +94,11 @@
       <type>test-jar</type>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib-nodep</artifactId>
       <scope>test</scope>
