@@ -19,7 +19,6 @@
     <antcall target="create-pack"/>
     <antcall target="download-tomcat"/>
     <antcall target="deploy-pack"/>
-    <antcall target="fix-tomcat"/>
 
     <antcall target="_use-catalina"/>
   </target>
@@ -49,14 +48,6 @@
   </target>
 
   <target name="create-pack">
-    <!-- See NXP-21659 -->
-    <mkdir dir="${nuxeo.home}/endorsed"/>
-    <replaceregexp file="${nuxeo.conf}"
-                   match="^JAVA_OPTS=.*\$\{.*"
-                   replace=""
-                   byline="true"/>
-    <!-- EOW - End of Workarounds -->
-
     <delete failonerror="false" file="${nuxeo.pack}"/>
     <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl"/>
     <exec executable="${nuxeo.ctl}" spawn="false" failonerror="true">
@@ -69,20 +60,6 @@
 
   <target name="deploy-pack">
     <unzip src="${nuxeo.pack}" dest="${nuxeo.home}/"/>
-  </target>
-
-  <target name="fix-tomcat">
-    <!-- See NXP-21659 -->
-    <copy todir="${nuxeo.home}/lib">
-      <artifact:file key="xml-apis:xml-apis"/>
-      <artifact:file key="org.apache.commons:commons-lang3"/>
-    </copy>
-    <move todir="${nuxeo.home}/lib">
-      <fileset dir="${nuxeo.home}/endorsed">
-        <include name="xercesImpl*jar"/>
-      </fileset>
-    </move>
-    <!-- EOW - End of Workarounds -->
   </target>
 
   <target name="_use-catalina">
