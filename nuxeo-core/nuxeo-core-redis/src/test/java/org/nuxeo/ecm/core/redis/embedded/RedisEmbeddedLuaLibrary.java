@@ -8,6 +8,7 @@
  ******************************************************************************/
 package org.nuxeo.ecm.core.redis.embedded;
 
+import org.luaj.vm2.LuaInteger;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -43,6 +44,14 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
             return CoerceJavaToLua.coerce(collection.toArray());
         }
         return CoerceJavaToLua.coerce(value);
+    }
+
+    protected LuaValue valueOfOrZero(Object value) {
+        LuaValue ret = valueOfOrFalse(value);
+        if (ret.toboolean() == false) {
+            return LuaInteger.valueOf(0);
+        }
+        return ret;
     }
 
     public class RedisCall extends LibFunction {
@@ -119,6 +128,10 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
 
                 case "lpush":
                     return valueOfOrFalse(connection.lpush(key, arg));
+
+                case "sismember":
+                    return valueOfOrZero(connection.sismember(key, arg));
+
             }
             throw new UnsupportedOperationException(opcode);
         }

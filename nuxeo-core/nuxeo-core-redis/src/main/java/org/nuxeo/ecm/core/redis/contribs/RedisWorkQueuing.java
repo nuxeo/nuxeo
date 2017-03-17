@@ -424,6 +424,10 @@ public class RedisWorkQueuing implements WorkQueuing {
         return keyBytes(KEY_SCHEDULED_PREFIX, queueId);
     }
 
+    protected String scheduledKeyString(String queueId) {
+        return redisNamespace + KEY_SCHEDULED_PREFIX + queueId;
+    }
+
     protected byte[] completedKey(String queueId) {
         return keyBytes(KEY_COMPLETED_PREFIX, queueId);
     }
@@ -884,6 +888,7 @@ public class RedisWorkQueuing implements WorkQueuing {
                 String completedKey = completedKeyString(queueId);
                 String stateKey = stateKeyString();
                 String dataKey = dataKeyString();
+                String scheduledKey = scheduledKeyString(queueId);
                 SScanner sscanner = new SScanner();
                 ScanParams scanParams = new ScanParams().count(BATCH_SIZE);
                 String cursor = "0";
@@ -893,7 +898,7 @@ public class RedisWorkQueuing implements WorkQueuing {
                     List<String> workIds = scanResult.getResult();
                     if (!workIds.isEmpty()) {
                         // delete these works if before the completion time
-                        List<String> keys = Arrays.asList(completedKey, stateKey, dataKey);
+                        List<String> keys = Arrays.asList(completedKey, stateKey, dataKey, scheduledKey);
                         List<String> args = new ArrayList<String>(1 + workIds.size());
                         args.add(String.valueOf(completionTime));
                         args.addAll(workIds);

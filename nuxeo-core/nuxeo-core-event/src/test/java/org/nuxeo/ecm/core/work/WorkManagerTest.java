@@ -468,4 +468,70 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
     }
 
+    @Test
+    public void testClearCompletedWithScheduled() throws Exception {
+        deployAndStart();
+
+        long durationFast = 5;
+        long duration = 1000;
+        String workId = "myWorkId";
+
+        SleepWork workFast = new SleepWork(durationFast, false, workId);
+        SleepWork workLong1 = new SleepWork(duration, false, "longWork1");
+        SleepWork workLong2 = new SleepWork(duration, false, "longWork2");
+
+        // Run a work and wait for its completion
+        service.schedule(workFast);
+        assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
+
+        // Start 2 long jobs, so next scheduled jobs will be queued
+        service.schedule(workLong1);
+        service.schedule(workLong2);
+
+        // Schedule 2 works with the same id as the initial work
+        service.schedule(workFast);
+        service.schedule(workFast);
+
+        // Now clean the work done while other instances of the work are scheduled
+        service.clearCompletedWork(0);
+
+        service.awaitCompletion(10, TimeUnit.SECONDS);
+
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        // note that counter only count for distinct workId
+        assertEquals(3, service.getQueueSize(QUEUE, COMPLETED));
+    }
+
+    @Test
+    public void testClearCompletedWithRunning() throws Exception {
+        deployAndStart();
+
+        long durationFast = 5;
+        long duration = 1000;
+        String workId = "myWorkId";
+
+        SleepWork workFast = new SleepWork(durationFast, false, workId);
+        SleepWork workLong = new SleepWork(duration, false, workId);
+
+        // Run a work and wait for its completion
+        service.schedule(workFast);
+        assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
+        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
+        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
+
+        // Start 2 long jobs, so next scheduled jobs will be queued
+        service.schedule(workLong);
+        Thread.sleep(duration/2);
+        assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
+
+        // Now clean the work done while other instances of the work are running
+        service.clearCompletedWork(0);
+        assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+
+        service.awaitCompletion(10, TimeUnit.SECONDS);
+
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
+    }
 }
