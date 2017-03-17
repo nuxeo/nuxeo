@@ -140,8 +140,8 @@ public class ImportBasedFactory extends BaseContentFactory {
      */
     protected void importBlob(File file, String parentPath) throws Exception {
         if (file.isDirectory()) {
-            DocumentModel createdFolder = getFileManagerService().createFolder(
-                    session, file.getAbsolutePath(), parentPath);
+            DocumentModel createdFolder = getFileManagerService().createFolder(session, file.getAbsolutePath(),
+                    parentPath, true);
             File[] files = file.listFiles();
             for (File childFile : files) {
                 importBlob(childFile, createdFolder.getPathAsString());

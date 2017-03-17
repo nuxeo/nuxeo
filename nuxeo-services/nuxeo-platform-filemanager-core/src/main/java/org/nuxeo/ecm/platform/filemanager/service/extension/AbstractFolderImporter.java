@@ -42,8 +42,7 @@ public abstract class AbstractFolderImporter implements FolderImporter {
             TypeManager typeManager) throws IOException, ClientException {
         // sample implementation to override in a custom FolderImporter
         // implementation
-        return fileManagerService.defaultCreateFolder(documentManager,
-                fullname, path);
+        return fileManagerService.defaultCreateFolder(documentManager, fullname, path, overwrite);
     }
 
     @Override
