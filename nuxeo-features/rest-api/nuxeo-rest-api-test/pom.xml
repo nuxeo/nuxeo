@@ -182,15 +182,5 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.lordofthejars</groupId>
-      <artifactId>nosqlunit-redis</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.luaj</groupId>
-      <artifactId>luaj-jse</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>
