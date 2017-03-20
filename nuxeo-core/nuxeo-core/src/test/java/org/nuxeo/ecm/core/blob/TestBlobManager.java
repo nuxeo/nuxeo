@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -121,23 +122,38 @@ public class TestBlobManager {
         // blob that's not a video gets stored on the first dummy repo
         Blob blob = Blobs.createBlob("foo", "text/plain");
         Document doc = mockery.mock(Document.class, "doc1");
-        String key = blobManager.writeBlob(blob, doc);
-        assertEquals("dummy:1", key);
+        String key1 = blobManager.writeBlob(blob, doc);
+        assertTrue(key1.startsWith("dummy:"));
         // videos get stored in the second one
         blob = Blobs.createBlob("bar", "video/mp4");
-        key = blobManager.writeBlob(blob, doc);
-        assertEquals("dummy2:1", key);
+        String key2 = blobManager.writeBlob(blob, doc);
+        assertTrue(key2.startsWith("dummy2:"));
 
         // read first one
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = "dummy:1";
+        blobInfo.key = key1;
         blob = blobManager.readBlob(blobInfo, null);
         assertEquals("foo", IOUtils.toString(blob.getStream()));
 
         // read second one
-        blobInfo.key = "dummy2:1";
+        blobInfo.key = key2;
         blob = blobManager.readBlob(blobInfo, null);
         assertEquals("bar", IOUtils.toString(blob.getStream()));
     }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-blob-dispatch-xpath.xml")
+    public void testDispatchUsingBlobXpath() throws Exception {
+        Blob blob = Blobs.createBlob("foo", "text/plain");
+        Document doc = mockery.mock(Document.class, "doc1");
+        String key1 = blobManager.writeBlob(blob, doc, "file:content");
+        assertTrue(key1.startsWith("dummy:"));
+
+        // any xpath other than file:content gets stored in the second blobprovider
+        blob = Blobs.createBlob("bar", "video/mp4");
+        String key2 = blobManager.writeBlob(blob, doc, "dummy:path");
+        assertTrue(key2.startsWith("dummy2:"));
+    }
+
 
 }

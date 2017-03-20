@@ -129,6 +129,17 @@ public interface BlobManager {
     String writeBlob(Blob blob, Document doc) throws IOException;
 
     /**
+     * @since 9.1
+     * Writes a {@link Blob} to storage and returns its key.
+     *
+     * @param blob the blob
+     * @param doc the document to which this blob belongs
+     * @param xpath the xpath of blob in doc
+     * @return the blob key
+     */
+    String writeBlob(Blob blob, Document doc, String xpath) throws IOException;
+
+    /**
      * INTERNAL - Gets an {@link InputStream} for the data of a managed blob. Used by internal implementations, regular
      * callers should call {@link Blob#getStream}.
      *
