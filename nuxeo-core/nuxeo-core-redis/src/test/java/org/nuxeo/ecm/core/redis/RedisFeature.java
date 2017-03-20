@@ -26,9 +26,6 @@ import java.lang.annotation.Target;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.cache.CacheFeature;
-import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedGuessConnectionError;
-import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedPool;
-import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedSynchronizedExecutor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -59,8 +56,6 @@ public class RedisFeature extends SimpleFeature {
         String host() default "";
 
         int port() default 0;
-
-        Class<? extends RedisEmbeddedGuessConnectionError> guessError() default RedisEmbeddedGuessConnectionError.NoError.class;
     }
 
     public static final String PROP_MODE = "nuxeo.test.redis.mode";
@@ -76,7 +71,7 @@ public class RedisFeature extends SimpleFeature {
     public static final int DEFAULT_PORT = Protocol.DEFAULT_PORT;
 
     public enum Mode {
-        undefined, disabled, embedded, server, sentinel
+        undefined, disabled, server, sentinel
     }
 
     protected Mode getMode() {
@@ -166,15 +161,8 @@ public class RedisFeature extends SimpleFeature {
 
         RedisComponent component = (RedisComponent) Framework.getRuntime().getComponent(
                 RedisComponent.class.getPackage().getName());
-        if (Mode.embedded.equals(mode)) {
-            RedisExecutor executor = new RedisPoolExecutor(new RedisEmbeddedPool());
-            executor = new RedisEmbeddedSynchronizedExecutor(executor);
-            executor = new RedisFailoverExecutor(10, executor);
-            component.handleNewExecutor(executor);
-        } else {
-            component.registerRedisPoolDescriptor(getDescriptor(mode));
-            component.handleNewExecutor(component.getConfig().newExecutor());
-        }
+        component.registerRedisPoolDescriptor(getDescriptor(mode));
+        component.handleNewExecutor(component.getConfig().newExecutor());
 
         clear();
         return true;

@@ -98,26 +98,6 @@
       <artifactId>nuxeo-core-storage</artifactId>
       <type>test-jar</type>
     </dependency>
-    <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib-nodep</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.lordofthejars</groupId>
-      <artifactId>nosqlunit-redis</artifactId>
-      <scope>test</scope>
-    </dependency>
-   <dependency>
-      <groupId>org.luaj</groupId>
-      <artifactId>luaj-jse</artifactId>
-      <scope>test</scope>
-   </dependency>
-    <dependency>
-      <groupId>org.jooq</groupId>
-      <artifactId>joor</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 
