@@ -781,7 +781,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
             }
         });
-        String key = blobManager.writeBlob(blob, doc);
+        String key = blobManager.writeBlob(blob, doc, "somexpath");
         session.addChildNode(session.getRootNode(), name, null, "TestDoc", false).setSimpleProperty("tst:bin", key);
     }
 

@@ -254,7 +254,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
      * to recompute a key. Otherwise, go through the blob provider.
      */
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob, Document doc, String xpath) throws IOException {
         BlobDispatcher blobDispatcher = getBlobDispatcher();
         BlobDispatch dispatch = null;
         if (blob instanceof ManagedBlob) {
@@ -265,14 +265,14 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
                 // not something we have to dispatch, reuse the key
                 return managedBlob.getKey();
             }
-            dispatch = blobDispatcher.getBlobProvider(doc, blob);
+            dispatch = blobDispatcher.getBlobProvider(doc, blob, xpath);
             if (dispatch.providerId.equals(currentProviderId)) {
                 // same provider, just reuse the key
                 return managedBlob.getKey();
             }
         }
         if (dispatch == null) {
-            dispatch = blobDispatcher.getBlobProvider(doc, blob);
+            dispatch = blobDispatcher.getBlobProvider(doc, blob, xpath);
         }
         BlobProvider blobProvider = getBlobProvider(dispatch.providerId);
         if (blobProvider == null) {

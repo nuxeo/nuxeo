@@ -125,8 +125,23 @@ public interface BlobManager {
      * @param blob the blob
      * @param doc the document to which this blob belongs
      * @return the blob key
+     * @deprecated since 9.1, use {@link #writeBlob(Blob, Document, String)} instead
      */
-    String writeBlob(Blob blob, Document doc) throws IOException;
+    @Deprecated
+    default String writeBlob(Blob blob, Document doc) throws IOException {
+        return writeBlob(blob, doc, null);
+    }
+
+    /**
+     * Writes a {@link Blob} to storage and returns its key.
+     *
+     * @param blob the blob
+     * @param doc the document to which this blob belongs
+     * @param xpath the xpath of blob in doc
+     * @return the blob key
+     * @since 9.1
+     */
+    String writeBlob(Blob blob, Document doc, String xpath) throws IOException;
 
     /**
      * INTERNAL - Gets an {@link InputStream} for the data of a managed blob. Used by internal implementations, regular

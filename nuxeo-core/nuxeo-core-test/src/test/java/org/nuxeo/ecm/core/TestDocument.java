@@ -154,8 +154,10 @@ public class TestDocument {
         BiConsumer<String, Object> c1 = (xpath, value) -> DocumentSetValue.accept(doc1, xpath, value);
         checkSet(c1, "tp:complexList", Long.valueOf(0),
                 "Expected List value for: tp:complexList, got java.lang.Long instead");
-        checkSet(c1, "tp:complexList/0", Long.valueOf(0), "Expected Map value for: item, got java.lang.Long instead");
-        checkSet(c1, "tp:complexList/0", Collections.singletonMap("foo", null), "Unknown key: foo for item");
+        checkSet(c1, "tp:complexList/0", Long.valueOf(0),
+                "Expected Map value for: tp:complexList/0, got java.lang.Long instead");
+        checkSet(c1, "tp:complexList/0", Collections.singletonMap("foo", null),
+                "Unknown key: foo for tp:complexList/0");
 
         BiConsumer<String, Object> c2 = (xpath, value) -> DocumentSetValue.accept(doc2, xpath, value);
         checkSet(c2, "content", Long.valueOf(0), "Expected Blob value for: content, got java.lang.Long instead");

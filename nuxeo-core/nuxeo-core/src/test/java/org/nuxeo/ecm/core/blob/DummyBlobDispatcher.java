@@ -35,9 +35,9 @@ public class DummyBlobDispatcher implements BlobDispatcher {
 
     private static final String PROVIDERS = "providers";
 
-    private String defaultProvider;
+    protected String defaultProvider;
 
-    private String secondProvider;
+    protected String secondProvider;
 
     @Override
     public void initialize(Map<String, String> properties) {
@@ -64,7 +64,7 @@ public class DummyBlobDispatcher implements BlobDispatcher {
     }
 
     @Override
-    public BlobDispatch getBlobProvider(Document doc, Blob blob) {
+    public BlobDispatch getBlobProvider(Document doc, Blob blob, String xpath) {
         String provider = blob.getMimeType().startsWith("video/") ? secondProvider : defaultProvider;
         return new BlobDispatch(provider, true);
     }

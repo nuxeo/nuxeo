@@ -5,6 +5,7 @@
       <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
       <property name="dc:format=video">test2</property>
       <property name="blob:mime-type=video/mp4">test2</property>
+      <property name="blob:xpath~files/*/?ile">test2</property>
       <property name="ecm:repositoryName=nosuchrepo,ecm:lifeCycleState=approved">test2</property>
       <property name="ecm:repositoryName=test,ecm:lifeCycleState=approved">test2</property>
       <property name="default">test</property>

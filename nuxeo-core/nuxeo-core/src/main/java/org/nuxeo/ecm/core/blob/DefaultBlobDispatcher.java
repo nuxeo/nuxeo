@@ -48,21 +48,25 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * The property name is a list of comma-separated clauses, with each clause consisting of a property, an operator and a
  * value. The property can be a {@link Document} xpath, {@code ecm:repositoryName}, or, to match the current blob being
- * dispatched, {@code blob:name}, {@code blob:mime-type}, {@code blob:encoding}, {@code blob:digest} or
- * {@code blob:length}. Comma-separated clauses are ANDed together. The special name {@code default} defines the default
- * provider, and must be present.
+ * dispatched, {@code blob:name}, {@code blob:mime-type}, {@code blob:encoding}, {@code blob:digest},
+ * {@code blob:length} or {@code blob:xpath}. Comma-separated clauses are ANDed together. The special name
+ * {@code default} defines the default provider, and must be present.
  * <p>
- * Available operators between property and value are =, !=, &lt, and >.
+ * Available operators between property and value are =, !=, &lt, > and ~. The operators &lt; and > work with integer
+ * values. The operator ~ does glob matching using {@code ?} to match a single arbitrary character, and {@code *} to
+ * match any number of characters (including none).
  * <p>
  * For example, to dispatch to the "first" provider if dc:format is "video", to the "second" provider if the blob's MIME
- * type is "video/mp4", to the "third" provider if the lifecycle state is "approved" and the document is in the default
- * repository, and otherwise to the "fourth" provider:
+ * type is "video/mp4", to the "third" provider if the blob is stored as a secondary attached file, to the "fourth"
+ * provider if the lifecycle state is "approved" and the document is in the default repository, and otherwise to the
+ * "other" provider:
  *
  * <pre>
  * &lt;property name="dc:format=video">first&lt;/property>
  * &lt;property name="blob:mime-type=video/mp4">second&lt;/property>
- * &lt;property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">third2&lt;/property>
- * &lt;property name="default">fourth&lt;/property>
+ * &lt;property name="blob:xpath~files/*&#47;file">third&lt;/property>
+ * &lt;property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">fourth&lt;/property>
+ * &lt;property name="default">other&lt;/property>
  * </pre>
  *
  * @since 7.3
@@ -73,7 +77,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected static final String NAME_DEFAULT = "default";
 
-    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>)(.*)");
+    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>|~)(.*)");
 
     /** Pseudo-property for the repository name. */
     protected static final String REPOSITORY_NAME = "ecm:repositoryName";
@@ -90,8 +94,10 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected static final String BLOB_LENGTH = "length";
 
+    protected static final String BLOB_XPATH = "xpath";
+
     protected enum Op {
-        EQ, NEQ, LT, GT;
+        EQ, NEQ, LT, GT, GLOB;
     }
 
     protected static class Clause {
@@ -167,6 +173,10 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                             op = Op.GT;
                             value = Long.valueOf((String) value);
                             break;
+                        case "~":
+                            op = Op.GLOB;
+                            value = getPatternFromGlob((String) value);
+                            break;
                         default:
                             log.error("Invalid dispatcher configuration operator: " + ops);
                             continue;
@@ -187,6 +197,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         }
     }
 
+    protected Pattern getPatternFromGlob(String glob) {
+        // this relies on the fact that Pattern.quote wraps everything between \Q and \E
+        // so we "open" the quoting to insert the corresponding regex for * and ?
+        String regex = Pattern.quote(glob).replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
+        return Pattern.compile(regex);
+    }
+
     @Override
     public Collection<String> getBlobProviderIds() {
         if (useRepositoryName) {
@@ -198,7 +215,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         return providerIds;
     }
 
-    protected String getProviderId(Document doc, Blob blob) {
+    protected String getProviderId(Document doc, Blob blob, String blobXPath) {
         if (useRepositoryName) {
             return doc.getRepositoryName();
         }
@@ -225,6 +242,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                         break;
                     case BLOB_LENGTH:
                         value = Long.valueOf(blob.getLength());
+                        break;
+                    case BLOB_XPATH:
+                        value = blobXPath;
                         break;
                     default:
                         log.error("Invalid dispatcher configuration property name: " + xpath);
@@ -261,6 +281,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     }
                     match = ((Long) value).compareTo((Long) clause.value) > 0;
                     break;
+                case GLOB:
+                    match = ((Pattern) clause.value).matcher(String.valueOf(value)).matches();
+                    break;
                 default:
                     throw new AssertionError("notreached");
                 }
@@ -286,12 +309,12 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     }
 
     @Override
-    public BlobDispatch getBlobProvider(Document doc, Blob blob) {
+    public BlobDispatch getBlobProvider(Document doc, Blob blob, String xpath) {
         if (useRepositoryName) {
             String providerId = doc.getRepositoryName();
             return new BlobDispatch(providerId, false);
         }
-        String providerId = getProviderId(doc, blob);
+        String providerId = getProviderId(doc, blob, xpath);
         return new BlobDispatch(providerId, true);
     }
 
@@ -314,7 +337,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             return;
         }
         // compare current provider with expected
-        String expectedProviderId = getProviderId(doc, blob);
+        String expectedProviderId = getProviderId(doc, blob, accessor.getXPath());
         if (((ManagedBlob) blob).getProviderId().equals(expectedProviderId)) {
             return;
         }

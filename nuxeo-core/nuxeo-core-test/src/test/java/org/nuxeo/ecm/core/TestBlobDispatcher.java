@@ -23,18 +23,22 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -187,6 +191,54 @@ public class TestBlobDispatcher {
         // check that it was dispatched on save to the second blob provider
         blob = (Blob) doc.getPropertyValue("file:content");
         assertEquals(foo2_test_key, ((ManagedBlob) blob).getKey());
+    }
+
+    @Test
+    public void testDispatchXPath() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+
+        Blob blob = Blobs.createBlob("foo", "text/plain");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.saveDocument(doc);
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("file:content");
+        String key = ((ManagedBlob) blob).getKey();
+        assertTrue(key, key.startsWith("test:"));
+
+        // files/0/file gets stored in the second blob provider
+        blob = Blobs.createBlob("bar", "text/plain");
+        doc.setPropertyValue("files:files",
+                (Serializable) Collections.singletonList(Collections.singletonMap("file", blob)));
+        doc = session.saveDocument(doc);
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("files:files/0/file");
+        key = ((ManagedBlob) blob).getKey();
+        assertTrue(key, key.startsWith("test2:"));
+    }
+
+    // same with low-level Document API
+    // (has a different code path to compute the xpath)
+    @Test
+    public void testDispatchXPathOnDocument() throws Exception {
+        Session documentSession = ((AbstractSession) session).getSession();
+        Document root = documentSession.getRootDocument();
+        Document doc = root.addChild("doc", "File");
+
+        Blob blob = Blobs.createBlob("foo", "text/plain");
+        doc.setValue("content", blob);
+        // check binary key
+        blob = (Blob) doc.getValue("content");
+        String key = ((ManagedBlob) blob).getKey();
+        assertTrue(key, key.startsWith("test:"));
+
+        // files/0/file gets stored in the second blob provider
+        blob = Blobs.createBlob("bar", "text/plain");
+        doc.setValue("files", Collections.singletonList(Collections.singletonMap("file", blob)));
+        // check binary key
+        blob = (Blob) doc.getValue("files/0/file");
+        key = ((ManagedBlob) blob).getKey();
+        assertTrue(key, key.startsWith("test2:"));
     }
 
 }
