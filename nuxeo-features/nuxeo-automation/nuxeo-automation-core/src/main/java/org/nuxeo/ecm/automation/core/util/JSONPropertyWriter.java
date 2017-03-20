@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -49,39 +50,177 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
  */
 public class JSONPropertyWriter {
 
-    /** Utility class. */
-    private JSONPropertyWriter() {
+    /**
+     * The date time format.
+     * 
+     * @since 9.1
+     */
+    protected DateTimeFormat dateTimeFormat = DateTimeFormat.W3C;
+
+    /**
+     * The baseUrl that can be used to locate blob content.
+     * 
+     * @since 9.1
+     */
+    protected String filesBaseUrl;
+
+    /**
+     * The prefix to append to field name.
+     * 
+     * @since 9.1
+     */
+    protected String prefix;
+
+    /**
+     * Whether or not this writer write null values.
+     * 
+     * @since 9.1
+     */
+    protected boolean writeNull = true;
+
+    /**
+     * Whether or not this writer write empty list or object.
+     * 
+     * @since 9.1
+     */
+    protected boolean writeEmpty = true;
+
+    /**
+     * Instantiate a JSONPropertyWriter.
+     */
+    protected JSONPropertyWriter() {
+        // Default constructor
     }
 
     /**
-     * Converts the value of the given core property to JSON. The given filesBaseUrl is the baseUrl that can be used to
-     * locate blob content and is useful to generate blob URLs.
+     * Copy constructor.
+     *
+     * @since 9.1
      */
-    public static void writePropertyValue(JsonGenerator jg, Property prop, DateTimeFormat dateTimeFormat,
-            String filesBaseUrl) throws PropertyException, JsonGenerationException, IOException {
+    protected JSONPropertyWriter(JSONPropertyWriter writer) {
+        this.dateTimeFormat = writer.dateTimeFormat;
+        this.filesBaseUrl = writer.filesBaseUrl;
+        this.prefix = writer.prefix;
+        this.writeNull = writer.writeNull;
+    }
+
+    /**
+     * @return a {@link JSONPropertyWriter} instance with {@link DateTimeFormat#W3C} as date time formatter.
+     * @since 9.1
+     */
+    public static JSONPropertyWriter create() {
+        return new JSONPropertyWriter();
+    }
+
+    /**
+     * @return this {@link JSONPropertyWriter} filled with the previous configuration and the input dateTimeFormat.
+     * @since 9.1
+     */
+    public JSONPropertyWriter dateTimeFormat(DateTimeFormat dateTimeFormat) {
+        this.dateTimeFormat = dateTimeFormat;
+        return this;
+    }
+
+    /**
+     * @param filesBaseUrl the baseUrl that can be used to locate blob content
+     * @return this {@link JSONPropertyWriter} filled with the previous configuration and the input filesBaseUrl.
+     * @since 9.1
+     */
+    public JSONPropertyWriter filesBaseUrl(String filesBaseUrl) {
+        this.filesBaseUrl = filesBaseUrl;
+        if (this.filesBaseUrl != null && !this.filesBaseUrl.endsWith("/")) {
+            this.filesBaseUrl += "/";
+        }
+        return this;
+    }
+
+    /**
+     * @param prefix the prefix to append for each property
+     * @return this {@link JSONPropertyWriter} filled with the previous configuration and the input prefix.
+     * @since 9.1
+     */
+    public JSONPropertyWriter prefix(String prefix) {
+        this.prefix = prefix;
+        return this;
+    }
+
+    /**
+     * @param writeNull whether or not this writer might write null values
+     * @return this {@link JSONPropertyWriter} filled with the previous configuration and the input writeNull value.
+     * @since 9.1
+     */
+    public JSONPropertyWriter writeNull(boolean writeNull) {
+        this.writeNull = writeNull;
+        return this;
+    }
+
+    /**
+     * @param writeEmpty whether or not this writer might write empty array/list/object
+     * @return this {@link JSONPropertyWriter} filled with the previous configuration and the input writeEmpty value.
+     * @since 9.1
+     */
+    public JSONPropertyWriter writeEmpty(boolean writeEmpty) {
+        this.writeEmpty = writeEmpty;
+        return this;
+    }
+
+    /**
+     * Converts the value of the given core property to JSON.
+     * <p />
+     * CAUTION: this method will write the field name to {@link JsonGenerator} with its prefix without writing the start
+     * and the end of object.
+     *
+     * @since 9.1
+     */
+    public void writeProperty(JsonGenerator jg, Property prop)
+            throws PropertyException, JsonGenerationException, IOException {
+        PropertyConsumer fieldNameWriter;
+        if (prefix == null) {
+            fieldNameWriter = (j, p) -> j.writeFieldName(p.getName());
+        } else {
+            fieldNameWriter = (j, p) -> j.writeFieldName(prefix + ':' + p.getField().getName().getLocalName());
+        }
+        writeProperty(jg, prop, fieldNameWriter);
+    }
+
+    /**
+     * Converts the value of the given core property to JSON.
+     *
+     * @param fieldNameWriter the field name writer is used to write the field name depending on writer configuration,
+     *            this parameter also allows us to handle different cases: field with prefix, field under complex
+     *            property, or nothing for arrays and lists
+     */
+    protected void writeProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
+            throws PropertyException, JsonGenerationException, IOException {
         if (prop.isScalar()) {
-            writeScalarPropertyValue(jg, prop, dateTimeFormat);
+            writeScalarProperty(jg, prop, fieldNameWriter);
         } else if (prop.isList()) {
-            writeListPropertyValue(jg, prop, dateTimeFormat, filesBaseUrl);
+            writeListProperty(jg, prop, fieldNameWriter);
         } else {
             if (prop.isPhantom()) {
-                jg.writeNull();
+                if (writeNull) {
+                    fieldNameWriter.accept(jg, prop);
+                    jg.writeNull();
+                }
             } else if (prop instanceof BlobProperty) { // a blob
-                writeBlobPropertyValue(jg, prop, filesBaseUrl);
+                writeBlobProperty(jg, prop, fieldNameWriter);
             } else { // a complex property
-                writeMapPropertyValue(jg, (ComplexProperty) prop, dateTimeFormat, filesBaseUrl);
+                writeMapProperty(jg, (ComplexProperty) prop, fieldNameWriter);
             }
         }
     }
 
-    @SuppressWarnings("boxing")
-    protected static void writeScalarPropertyValue(JsonGenerator jg, Property prop, DateTimeFormat dateTimeFormat)
-            throws PropertyException, IOException {
-        org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
+    protected void writeScalarProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
+            throws PropertyException, JsonGenerationException, IOException {
+        Type type = prop.getType();
         Object v = prop.getValue();
         if (v == null) {
-            jg.writeNull();
+            if (writeNull) {
+                fieldNameWriter.accept(jg, prop);
+                jg.writeNull();
+            }
         } else {
+            fieldNameWriter.accept(jg, prop);
             if (type instanceof BooleanType) {
                 jg.writeBoolean((Boolean) v);
             } else if (type instanceof LongType) {
@@ -106,8 +245,14 @@ public class JSONPropertyWriter {
         }
     }
 
-    protected static void writeListPropertyValue(JsonGenerator jg, Property prop, DateTimeFormat dateTimeFormat,
-            String filesBaseUrl) throws PropertyException, JsonGenerationException, IOException {
+    protected void writeListProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
+            throws PropertyException, JsonGenerationException, IOException {
+        // test if array/list is empty - don't write empty case
+        if (!writeEmpty && (prop == null || (prop instanceof ArrayProperty && prop.getValue() == null)
+                || (prop instanceof ListProperty && prop.getChildren().isEmpty()))) {
+            return;
+        }
+        fieldNameWriter.accept(jg, prop);
         jg.writeStartArray();
         if (prop instanceof ArrayProperty) {
             Object[] ar = (Object[]) prop.getValue();
@@ -115,66 +260,82 @@ public class JSONPropertyWriter {
                 jg.writeEndArray();
                 return;
             }
-            org.nuxeo.ecm.core.schema.types.Type type = ((ListType) prop.getType()).getFieldType();
+            Type type = ((ListType) prop.getType()).getFieldType();
             for (Object o : ar) {
                 jg.writeString(type.encode(o));
             }
         } else {
-            ListProperty listp = (ListProperty) prop;
-            for (Property p : listp.getChildren()) {
-                writePropertyValue(jg, p, dateTimeFormat, filesBaseUrl);
+            for (Property p : prop.getChildren()) {
+                // it's a list of complex object, don't write field names
+                writeProperty(jg, p, PropertyConsumer.nothing());
             }
         }
         jg.writeEndArray();
     }
 
-    protected static void writeMapPropertyValue(JsonGenerator jg, ComplexProperty prop, DateTimeFormat dateTimeFormat,
-            String filesBaseUrl) throws JsonGenerationException, IOException, PropertyException {
+    protected void writeMapProperty(JsonGenerator jg, ComplexProperty prop, PropertyConsumer fieldNameWriter)
+            throws PropertyException, JsonGenerationException, IOException {
+        if (!writeEmpty && (prop == null || prop.getChildren().isEmpty())) {
+            return;
+        }
+        fieldNameWriter.accept(jg, prop);
         jg.writeStartObject();
+        PropertyConsumer childFieldWriter = (j, p) -> j.writeFieldName(p.getName());
         for (Property p : prop.getChildren()) {
-            jg.writeFieldName(p.getName());
-            writePropertyValue(jg, p, dateTimeFormat, filesBaseUrl);
+            writeProperty(jg, p, childFieldWriter);
         }
         jg.writeEndObject();
     }
 
-    protected static void writeBlobPropertyValue(JsonGenerator jg, Property prop, String filesBaseUrl)
+    protected void writeBlobProperty(JsonGenerator jg, Property prop, PropertyConsumer fieldNameWriter)
             throws PropertyException, JsonGenerationException, IOException {
         Blob blob = (Blob) prop.getValue();
         if (blob == null) {
-            jg.writeNull();
-            return;
-        }
-        jg.writeStartObject();
-        String v = blob.getFilename();
-        if (v == null) {
-            jg.writeNullField("name");
+            if (writeNull) {
+                fieldNameWriter.accept(jg, prop);
+                jg.writeNull();
+            }
         } else {
-            jg.writeStringField("name", v);
+            fieldNameWriter.accept(jg, prop);
+            jg.writeStartObject();
+            String v = blob.getFilename();
+            if (v == null) {
+                if (writeNull) {
+                    jg.writeNullField("name");
+                }
+            } else {
+                jg.writeStringField("name", v);
+            }
+            v = blob.getMimeType();
+            if (v == null) {
+                if (writeNull) {
+                    jg.writeNullField("mime-type");
+                }
+            } else {
+                jg.writeStringField("mime-type", v);
+            }
+            v = blob.getEncoding();
+            if (v == null) {
+                if (writeNull) {
+                    jg.writeNullField("encoding");
+                }
+            } else {
+                jg.writeStringField("encoding", v);
+            }
+            v = blob.getDigest();
+            if (v == null) {
+                if (writeNull) {
+                    jg.writeNullField("digest");
+                }
+            } else {
+                jg.writeStringField("digest", v);
+            }
+            jg.writeNumberField("length", blob.getLength());
+            if (filesBaseUrl != null) {
+                jg.writeStringField("data", getBlobUrl(prop, filesBaseUrl));
+            }
+            jg.writeEndObject();
         }
-        v = blob.getMimeType();
-        if (v == null) {
-            jg.writeNullField("mime-type");
-        } else {
-            jg.writeStringField("mime-type", v);
-        }
-        v = blob.getEncoding();
-        if (v == null) {
-            jg.writeNullField("encoding");
-        } else {
-            jg.writeStringField("encoding", v);
-        }
-        v = blob.getDigest();
-        if (v == null) {
-            jg.writeNullField("digest");
-        } else {
-            jg.writeStringField("digest", v);
-        }
-        jg.writeNumberField("length", blob.getLength());
-        if (filesBaseUrl != null) {
-            jg.writeStringField("data", getBlobUrl(prop, filesBaseUrl));
-        }
-        jg.writeEndObject();
     }
 
     /**
@@ -182,8 +343,8 @@ public class JSONPropertyWriter {
      *
      * @since 5.9.3
      */
-    private static String getBlobUrl(Property prop, String filesBaseUrl) throws UnsupportedEncodingException,
-            PropertyException {
+    private static String getBlobUrl(Property prop, String filesBaseUrl)
+            throws UnsupportedEncodingException, PropertyException {
         StringBuilder blobUrlBuilder = new StringBuilder(filesBaseUrl);
         blobUrlBuilder.append(prop.getSchema().getName());
         blobUrlBuilder.append(":");
@@ -195,6 +356,29 @@ public class JSONPropertyWriter {
             blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
         }
         return blobUrlBuilder.toString();
+    }
+
+    /**
+     * Converts the value of the given core property to JSON. The given filesBaseUrl is the baseUrl that can be used to
+     * locate blob content and is useful to generate blob URLs.
+     */
+    public static void writePropertyValue(JsonGenerator jg, Property prop, DateTimeFormat dateTimeFormat,
+            String filesBaseUrl) throws PropertyException, JsonGenerationException, IOException {
+        JSONPropertyWriter writer = create().dateTimeFormat(dateTimeFormat).filesBaseUrl(filesBaseUrl);
+        // as we just want to write property value, give a nothing consumer
+        writer.writeProperty(jg, prop, PropertyConsumer.nothing());
+    }
+
+    @FunctionalInterface
+    public interface PropertyConsumer {
+
+        void accept(JsonGenerator jg, Property prop) throws JsonGenerationException, IOException;
+
+        static PropertyConsumer nothing() {
+            return (jg, prop) -> {
+            };
+        }
+
     }
 
 }

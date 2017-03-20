@@ -45,7 +45,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.core.util.DateTimeFormat;
 import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -245,18 +244,17 @@ public class JsonESDocumentWriter implements MessageBodyWriter<DocumentModel> {
         if (prefix == null || prefix.length() == 0) {
             prefix = schema;
         }
-        prefix = prefix + ":";
+        JSONPropertyWriter writer = JSONPropertyWriter.create().writeNull(false).writeEmpty(false).prefix(prefix);
 
-        String blobUrlPrefix = null;
         if (request != null) {
             DownloadService downloadService = Framework.getService(DownloadService.class);
-            blobUrlPrefix = VirtualHostHelper.getBaseURL(request) + downloadService.getDownloadUrl(doc, null, null)
-                    + "/";
+            String blobUrlPrefix =
+                    VirtualHostHelper.getBaseURL(request) + downloadService.getDownloadUrl(doc, null, null) + "/";
+            writer.filesBaseUrl(blobUrlPrefix);
         }
 
         for (Property p : properties) {
-            jg.writeFieldName(prefix + p.getField().getName().getLocalName());
-            JSONPropertyWriter.writePropertyValue(jg, p, DateTimeFormat.W3C, blobUrlPrefix);
+            writer.writeProperty(jg, p);
         }
     }
 
