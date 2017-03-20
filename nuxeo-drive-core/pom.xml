@@ -192,16 +192,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.lordofthejars</groupId>
-      <artifactId>nosqlunit-redis</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.luaj</groupId>
-      <artifactId>luaj-jse</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>test</scope>
