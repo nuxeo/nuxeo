@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-war-tests</artifactId>
-  <name>Nuxeo WebDriver tests using Nuxeo WAR</name>
+  <name>Functional [WebDriver] tests on Nuxeo (static) WAR</name>
 
   <dependencies>
     <dependency>

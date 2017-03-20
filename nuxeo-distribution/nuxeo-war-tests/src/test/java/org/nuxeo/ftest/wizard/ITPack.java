@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Sun Seng David TAN
- *     Florent Guillaume
- *     Antoine Taillefer
+ *     Arnaud Kervern
  */
 package org.nuxeo.ftest.wizard;
 
@@ -34,7 +32,6 @@ public class ITPack extends AbstractTest {
 
     @Test
     public void testLoginLogout() throws UserNotConnectedException {
-        // Login
         getLoginPage().login(ADMINISTRATOR, ADMINISTRATOR, NoUIPage.class);
     }
 }
