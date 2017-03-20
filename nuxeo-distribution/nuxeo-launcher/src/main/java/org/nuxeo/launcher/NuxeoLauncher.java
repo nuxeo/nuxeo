@@ -733,7 +733,7 @@ public abstract class NuxeoLauncher {
     protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
         List<String> startCommand = new ArrayList<>();
         startCommand.add(getJavaExecutable().getPath());
-        startCommand.addAll(getJavaOptsProperty(opt -> StrSubstitutor.replace(opt, configurationGenerator.getUserConfig())));
+        startCommand.addAll(getJavaOptsProperty(Function.identity()));
         startCommand.add("-cp");
         startCommand.add(getClassPath());
         startCommand.addAll(getNuxeoProperties());
@@ -786,6 +786,7 @@ public abstract class NuxeoLauncher {
         return Arrays
                 .stream(System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT)
                         .split("[ ]+(?=([^\"]*\"[^\"]*\")*[^\"]*$)"))
+                .map(opt -> StrSubstitutor.replace(opt, configurationGenerator.getUserConfig()))
                 .map(mapper)
                 .collect(Collectors.toList());
     }
@@ -1851,7 +1852,7 @@ public abstract class NuxeoLauncher {
             configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED, "true");
             List<String> startCommand = new ArrayList<>();
             startCommand.add(getJavaExecutable().getPath());
-            startCommand.addAll(getJavaOptsProperty(opt -> StrSubstitutor.replace(opt, configurationGenerator.getUserConfig())));
+            startCommand.addAll(getJavaOptsProperty(Function.identity()));
             startCommand.add("-cp");
             String classpath = getClassPath();
             classpath = addToClassPath(classpath, "bin" + File.separator + "nuxeo-launcher.jar");
