@@ -244,9 +244,9 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         }
         // cleanup / on begin or at end
         if (xpath != null) {
-           xpath = StringUtils.strip(xpath, "/");
+            xpath = StringUtils.strip(xpath, "/");
         } else if (field == null && xpath == null) {
-           return null;
+            return null;
         }
         return new XPathAndField(field, xpath);
     }
