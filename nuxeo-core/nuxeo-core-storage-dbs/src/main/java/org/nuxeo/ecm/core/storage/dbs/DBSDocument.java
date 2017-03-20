@@ -406,12 +406,14 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    protected void updateList(State state, String name, List<Object> values, Field field) {
+    protected void updateList(State state, String name, Field field, String xpath, List<Object> values) {
         List<State> childStates = new ArrayList<>(values.size());
+        int i = 0;
         for (Object v : values) {
             State childState = new State();
-            setValueComplex(childState, field, v);
+            setValueComplex(childState, field, xpath + '/' + i, v);
             childStates.add(childState);
+            i++;
         }
         state.put(name, (Serializable) childStates);
     }

@@ -201,7 +201,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    protected void updateList(Node node, String name, List<Object> values, Field field) throws PropertyException {
+    protected void updateList(Node node, String name, Field field, String xpath, List<Object> values)
+            throws PropertyException {
         List<Node> childNodes = getChildAsList(node, name);
         int oldSize = childNodes.size();
         int newSize = values.size();
@@ -222,8 +223,9 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         // write values
         int i = 0;
         for (Object v : values) {
-            Node childNode = childNodes.get(i++);
-            setValueComplex(childNode, field, v);
+            Node childNode = childNodes.get(i);
+            setValueComplex(childNode, field, xpath + '/' + i, v);
+            i++;
         }
     }
 

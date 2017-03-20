@@ -111,21 +111,22 @@ public class TestBlobManager {
 
             }
         });
-        String key = blobManager.writeBlob(blob, doc);
+        String key = blobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy:1234", key);
     }
 
     @Test
     @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-blob-dispatch.xml")
     public void testDispatch() throws Exception {
+        DummyBlobProvider.resetAllCounters();
         // blob that's not a video gets stored on the first dummy repo
         Blob blob = Blobs.createBlob("foo", "text/plain");
         Document doc = mockery.mock(Document.class, "doc1");
-        String key = blobManager.writeBlob(blob, doc);
+        String key = blobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy:1", key);
         // videos get stored in the second one
         blob = Blobs.createBlob("bar", "video/mp4");
-        key = blobManager.writeBlob(blob, doc);
+        key = blobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy2:1", key);
 
         // read first one
@@ -138,6 +139,21 @@ public class TestBlobManager {
         blobInfo.key = "dummy2:1";
         blob = blobManager.readBlob(blobInfo, null);
         assertEquals("bar", IOUtils.toString(blob.getStream()));
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/test-blob-dispatch-xpath.xml")
+    public void testDispatchXPath() throws Exception {
+        DummyBlobProvider.resetAllCounters();
+        Blob blob = Blobs.createBlob("foo", "text/plain");
+        Document doc = mockery.mock(Document.class, "doc1");
+        String key = blobManager.writeBlob(blob, doc, "content");
+        assertEquals("dummy:1", key);
+
+        // files/0/file gets stored in the second blob provider
+        blob = Blobs.createBlob("bar", "text/plain");
+        key = blobManager.writeBlob(blob, doc, "files/0/file");
+        assertEquals("dummy2:1", key);
     }
 
 }

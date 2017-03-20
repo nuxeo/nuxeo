@@ -21,7 +21,9 @@ package org.nuxeo.ecm.core.blob;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,16 +41,26 @@ public class DummyBlobProvider extends AbstractBlobProvider {
 
     protected AtomicLong counter;
 
+    protected static List<AtomicLong> COUNTERS = new ArrayList<>();
+
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
         blobs = new HashMap<>();
         counter = new AtomicLong();
+        COUNTERS.add(counter);
+    }
+
+    public static void resetAllCounters() {
+        for (AtomicLong counter : COUNTERS) {
+            counter.set(0);
+        }
     }
 
     @Override
     public void close() {
         blobs.clear();
+        COUNTERS.remove(counter);
     }
 
     @Override

@@ -147,7 +147,7 @@ public class TestFilesystemBlobProvider {
         }
 
         // write it, it has a prefix so doesn't need a doc
-        String writtenKey = blobManager.writeBlob(blob, null);
+        String writtenKey = blobManager.writeBlob(blob, null, "somexpath");
         assertEquals(key, writtenKey);
     }
 

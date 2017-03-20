@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -178,10 +177,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      *
      * @param state the parent state
      * @param name the child name
-     * @param values the values
      * @param field the list element type
+     * @param xpath the xpath of this list
+     * @param values the values
      */
-    protected abstract void updateList(T state, String name, List<Object> values, Field field) throws PropertyException;
+    protected abstract void updateList(T state, String name, Field field, String xpath, List<Object> values)
+            throws PropertyException;
 
     /**
      * Update a list.
@@ -515,7 +516,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 field = ((ListType) type).getField();
                 if (i == segments.length - 1) {
                     // last segment
-                    setValueComplex(state, field, value);
+                    setValueComplex(state, field, xpath, value);
                 } else {
                     // not last segment
                     parentType = (ComplexType) field.getType();
@@ -525,7 +526,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
             if (i == segments.length - 1) {
                 // last segment
-                setValueField(state, field, value);
+                setValueField(state, field, xpath, value);
             } else {
                 // not last segment
                 if (type.isSimpleType()) {
@@ -550,7 +551,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
     }
 
-    protected void setValueField(T state, Field field, Object value) throws PropertyException {
+    protected void setValueField(T state, Field field, String xpath, Object value) throws PropertyException {
         Type type = field.getType();
         String name = field.getName().getPrefixedName(); // normalize from map key
         name = internalName(name);
@@ -561,7 +562,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         } else if (type.isComplexType()) {
             // complex property
             T childState = getChildForWrite(state, name, type);
-            setValueComplex(childState, field, value);
+            setValueComplex(childState, field, xpath, value);
         } else {
             // array or list
             ListType listType = (ListType) type;
@@ -580,25 +581,24 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 }
                 @SuppressWarnings("unchecked")
                 List<Object> values = value == null ? Collections.emptyList() : (List<Object>) value;
-                updateList(state, name, values, listType.getField());
+                updateList(state, name, listType.getField(), xpath, values);
             }
         }
     }
 
-    // pass field instead of just type for better error messages
-    protected void setValueComplex(T state, Field field, Object value) throws PropertyException {
+    protected void setValueComplex(T state, Field field, String xpath, Object value) throws PropertyException {
         ComplexType complexType = (ComplexType) field.getType();
         if (TypeConstants.isContentType(complexType)) {
             if (value != null && !(value instanceof Blob)) {
-                throw new PropertyException("Expected Blob value for: " + field.getName().getPrefixedName() + ", got "
-                        + value.getClass().getName() + " instead");
+                throw new PropertyException(
+                        "Expected Blob value for: " + xpath + ", got " + value.getClass().getName() + " instead");
             }
-            setValueBlob(state, (Blob) value);
+            setValueBlob(state, (Blob) value, xpath);
             return;
         }
         if (value != null && !(value instanceof Map)) {
-            throw new PropertyException("Expected Map value for: " + field.getName().getPrefixedName() + ", got "
-                    + value.getClass().getName() + " instead");
+            throw new PropertyException(
+                    "Expected Map value for: " + xpath + ", got " + value.getClass().getName() + " instead");
         }
         @SuppressWarnings("unchecked")
         Map<String, Object> map = value == null ? Collections.emptyMap() : (Map<String, Object>) value;
@@ -607,20 +607,19 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             String name = f.getName().getPrefixedName();
             keys.remove(name);
             value = map.get(name);
-            setValueField(state, f, value);
+            setValueField(state, f, xpath + '/' + name, value);
         }
         if (!keys.isEmpty()) {
-            throw new PropertyException(
-                    "Unknown key: " + keys.iterator().next() + " for " + field.getName().getPrefixedName());
+            throw new PropertyException("Unknown key: " + keys.iterator().next() + " for " + xpath);
         }
     }
 
-    protected void setValueBlob(T state, Blob blob) throws PropertyException {
+    protected void setValueBlob(T state, Blob blob, String xpath) throws PropertyException {
         BlobInfo blobInfo = new BlobInfo();
         if (blob != null) {
             BlobManager blobManager = Framework.getService(BlobManager.class);
             try {
-                blobInfo.key = blobManager.writeBlob(blob, this);
+                blobInfo.key = blobManager.writeBlob(blob, this, xpath);
             } catch (IOException e) {
                 throw new PropertyException("Cannot get blob info for: " + blob, e);
             }
@@ -684,9 +683,24 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
     }
 
+    protected static class BlobWriteInfo<T extends StateAccessor> {
+
+        public final T state;
+
+        public final Blob blob;
+
+        public final String xpath;
+
+        public BlobWriteInfo(T state, Blob blob, String xpath) {
+            this.state = state;
+            this.blob = blob;
+            this.xpath = xpath;
+        }
+    }
+
     protected static class BlobWriteContext<T extends StateAccessor> implements WriteContext {
 
-        public final Map<BaseDocument<T>, List<Pair<T, Blob>>> blobWriteInfosPerDoc = new HashMap<>();
+        public final Map<BaseDocument<T>, List<BlobWriteInfo<T>>> blobWriteInfos = new HashMap<>();
 
         public final Set<String> xpaths = new HashSet<>();
 
@@ -700,12 +714,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         /**
          * Records a blob update.
          */
-        public void recordBlob(T state, Blob blob, BaseDocument<T> doc) {
-            List<Pair<T, Blob>> list = blobWriteInfosPerDoc.get(doc);
-            if (list == null) {
-                blobWriteInfosPerDoc.put(doc, list = new ArrayList<>());
-            }
-            list.add(Pair.of(state, blob));
+        public void recordBlob(BaseDocument<T> doc, T state, Blob blob, String xpath) {
+            BlobWriteInfo<T> info = new BlobWriteInfo<T>(state, blob, xpath);
+            blobWriteInfos.computeIfAbsent(doc, k -> new ArrayList<>()).add(info);
         }
 
         @Override
@@ -717,12 +728,10 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         @Override
         public void flush(Document baseDoc) {
             // first, write all updated blobs
-            for (Entry<BaseDocument<T>, List<Pair<T, Blob>>> en : blobWriteInfosPerDoc.entrySet()) {
-                BaseDocument<T> doc = en.getKey();
-                for (Pair<T, Blob> pair : en.getValue()) {
-                    T state = pair.getLeft();
-                    Blob blob = pair.getRight();
-                    doc.setValueBlob(state, blob);
+            for (Entry<BaseDocument<T>, List<BlobWriteInfo<T>>> es : blobWriteInfos.entrySet()) {
+                BaseDocument<T> doc = es.getKey();
+                for (BlobWriteInfo<T> info : es.getValue()) {
+                    doc.setValueBlob(info.state, info.blob, info.xpath);
                 }
             }
             // then inform the blob manager about the changed xpaths
@@ -762,7 +771,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             if (value != null && !(value instanceof Blob)) {
                 throw new PropertyException("Cannot write a non-Blob value: " + value);
             }
-            writeContext.recordBlob(state, (Blob) value, this);
+            writeContext.recordBlob(this, state, (Blob) value, xpath);
             return true;
         }
         boolean changed = false;
@@ -992,7 +1001,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         @Override
         public void setBlob(Blob blob) throws PropertyException {
             markDirty.run();
-            setValueBlob(state, blob);
+            setValueBlob(state, blob, getXPath());
         }
     }
 
