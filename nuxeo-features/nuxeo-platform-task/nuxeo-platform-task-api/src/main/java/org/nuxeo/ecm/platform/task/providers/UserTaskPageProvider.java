@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -98,10 +100,10 @@ public class UserTaskPageProvider extends
 
     protected Locale getLocale() {
         String locale = (String) getProperties().get("locale");
-        if (locale!=null) {
-            return new Locale(locale);
+        if (!StringUtils.isBlank(locale)) {
+            return LocaleUtils.toLocale(locale);
         }
-        return null;
+        return Locale.getDefault();
     }
 
     protected void getAllTasks() {
