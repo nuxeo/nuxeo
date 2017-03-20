@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ public class CacheDescriptor {
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<String, String>();
 
-    protected CacheAttributesChecker cacheChecker;
+    protected Cache cache;
 
     public CacheDescriptor() {
         super();
@@ -89,22 +88,25 @@ public class CacheDescriptor {
         return name + ": " + implClass + ": " + ttl + ": " + options;
     }
 
-    public void start() {
+    protected void start() {
         try {
-            cacheChecker = new CacheAttributesChecker(this);
-            cacheChecker.setCache(implClass.getConstructor(CacheDescriptor.class).newInstance(this));
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
+            cache = implClass.getConstructor(CacheDescriptor.class).newInstance(this);
+            cache = new CacheAttributesChecker(this, cache);
+            cache = new CacheMetrics(cache);
+        } catch (ReflectiveOperationException e) {
             throw new NuxeoException("Failed to instantiate class " + implClass, e);
         }
     }
 
-    public void stop() {
-        if (cacheChecker == null) {
+    protected void stop() {
+        if (cache == null) {
             return;
         }
-        cacheChecker.cache = null;
-        cacheChecker = null;
+        try {
+            ((CacheWrapper) cache).stop();
+        } finally {
+            cache = null;
+        }
     }
 
 }

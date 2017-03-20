@@ -60,9 +60,8 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
      */
     protected final List<String> autoregisteredCacheNames = new ArrayList<String>();
 
-
     @Override
-    public CacheAttributesChecker getCache(String name) {
+    public Cache getCache(String name) {
         return cacheRegistry.getCache(name);
     }
 

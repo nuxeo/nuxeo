@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Contributors:
- *     Maxime Hilaire
- *
  */
 package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
 import java.util.Set;
 
-/**
- * Class to implement mandatory check attributes before calling implementation of cache This enable to have the same
- * behavior for any use of cache for all implementation of cache
- *
- * @since 6.0
- */
-public class CacheAttributesChecker extends CacheWrapper {
+public abstract class CacheWrapper implements Cache {
 
-    protected CacheAttributesChecker(CacheDescriptor desc, Cache cache) {
-        super(cache);
+    public final Cache cache;
+
+    protected CacheWrapper(Cache cache) {
+        this.cache = cache;
+    }
+
+    public void stop() {
+        if (cache instanceof CacheWrapper) {
+            ((CacheWrapper)cache).stop();
+        }
+        onStop();
+    }
+
+    protected void onStop() {
+    }
+
+    @Override
+    public String getName() {
+        return cache.getName();
     }
 
     @Override
     public Serializable get(String key) {
-        if (key == null) {
-            return null;
-        }
         return cache.get(key);
     }
 
@@ -49,9 +54,6 @@ public class CacheAttributesChecker extends CacheWrapper {
 
     @Override
     public void invalidate(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException(String.format("Can't invalidate a null key for the cache '%s'!", cache.getName()));
-        }
         cache.invalidate(key);
     }
 
@@ -62,22 +64,12 @@ public class CacheAttributesChecker extends CacheWrapper {
 
     @Override
     public void put(String key, Serializable value) {
-        if (key == null) {
-            throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", cache.getName()));
-        }
         cache.put(key, value);
     }
 
     @Override
     public boolean hasEntry(String key) {
-        if (key == null) {
-            return false;
-        }
         return cache.hasEntry(key);
     }
 
-    @Override
-    public long getSize() {
-        return cache.getSize();
-    }
 }

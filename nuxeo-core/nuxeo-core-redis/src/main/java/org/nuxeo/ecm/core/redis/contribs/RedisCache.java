@@ -165,12 +165,20 @@ public class RedisCache extends AbstractCache {
 
     @Override
     public boolean hasEntry(final String key) {
-        return (Boolean) executor.execute(new RedisCallable<Serializable>() {
+        return  executor.<Boolean>execute(new RedisCallable<Boolean>() {
             @Override
-            public Serializable call(Jedis jedis) {
+            public Boolean call(Jedis jedis) {
                 return jedis.exists(bytes(formatKey(key)));
             }
-        });
+        }).booleanValue();
     }
 
+    @Override
+    /**
+     * Too expensive to evaluate the # keys redis side, should monitor redis itself
+     * @return -1L
+     */
+    public long getSize() {
+        return -1L;
+    }
 }
