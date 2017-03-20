@@ -1,6 +1,6 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="loginBackground" x1="0" y1="100%" x2="100%" y2="50%">
+    <linearGradient id="loginBackground" x1="0" y1="100%" x2="130%" y2="50%">
       <stop offset="5%" stop-color="#000053" />
       <stop offset="95%" stop-color="#2965FF" />
     </linearGradient>
