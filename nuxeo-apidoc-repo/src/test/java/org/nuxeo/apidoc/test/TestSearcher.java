@@ -67,8 +67,8 @@ public class TestSearcher {
     /** Wait for async worker completion and ES indexing completion. */
     protected void waitForIndexing() throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
-        workManager.awaitCompletion(20, TimeUnit.SECONDS);
-        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
+        workManager.awaitCompletion(1, TimeUnit.MINUTES);
+        esa.prepareWaitForIndexing().get(1, TimeUnit.MINUTES);
         esa.refresh();
         TransactionHelper.startTransaction();
     }
