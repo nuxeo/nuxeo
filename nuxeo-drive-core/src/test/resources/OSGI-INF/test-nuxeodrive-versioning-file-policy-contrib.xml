@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.versioning.test.file.not-drive" version="1.0">
+
+  <!-- These contributions replace the former behavior of Drive versioning when an automatic policy is setup
+   and `nuxeo.drive.force.versioning` = false -->
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="version-file" increment="MINOR" order="210">
+      <filter-id>file-type-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="file-type-filter">
+      <type>File</type>
+    </filter>
+  </extension>
+
+</component>

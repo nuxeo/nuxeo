@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.versioning" version="1.0">
+
+  <require>org.nuxeo.ecm.core.versioning.default-policies</require>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="policies">
+    <policy id="versioning-delay" increment="MINOR" beforeUpdate="true" order="150">
+      <filter-id>versioning-delay</filter-id>
+      <filter-id>drive-filter</filter-id>
+    </policy>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.versioning.VersioningService" point="filters">
+    <filter id="versioning-delay">
+      <condition>#{currentDocument.dc.modified.time - previousDocument.dc.modified.time >= 3600000}</condition>
+    </filter>
+    <filter id="drive-filter">
+      <condition>#{currentDocument.contextData.source == "drive"}</condition>
+    </filter>
+    <filter id="not-drive-filter">
+      <condition>#{currentDocument.contextData.source != "drive"}</condition>
+    </filter>
+  </extension>
+
+</component>

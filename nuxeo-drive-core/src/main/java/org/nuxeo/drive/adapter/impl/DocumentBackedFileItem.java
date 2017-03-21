@@ -21,6 +21,7 @@ package org.nuxeo.drive.adapter.impl;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -49,32 +50,91 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     protected boolean canUpdate;
 
-    protected VersioningFileSystemItemFactory factory;
+    protected FileSystemItemFactory factory;
 
+    public DocumentBackedFileItem(FileSystemItemFactory factory, DocumentModel doc) {
+        this(factory, doc, false);
+    }
+
+    public DocumentBackedFileItem(FileSystemItemFactory factory, DocumentModel doc, boolean relaxSyncRootConstraint) {
+        this(factory, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DocumentBackedFileItem(FileSystemItemFactory factory, DocumentModel doc, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) {
+        super(factory.getName(), doc, relaxSyncRootConstraint, getLockInfo);
+        initialize(factory, doc);
+    }
+
+    public DocumentBackedFileItem(FileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
+        this(factory, parentItem, doc, false);
+    }
+
+    public DocumentBackedFileItem(FileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint) {
+        this(factory, parentItem, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DocumentBackedFileItem(FileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        super(factory.getName(), parentItem, doc, relaxSyncRootConstraint, getLockInfo);
+        initialize(factory, doc);
+    }
+
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) {
         this(factory, doc, false);
     }
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
             boolean relaxSyncRootConstraint) {
         this(factory, doc, relaxSyncRootConstraint, true);
     }
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
             boolean relaxSyncRootConstraint, boolean getLockInfo) {
         super(factory.getName(), doc, relaxSyncRootConstraint, getLockInfo);
         initialize(factory, doc);
     }
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
         this(factory, parentItem, doc, false);
     }
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) {
         this(factory, parentItem, doc, relaxSyncRootConstraint, true);
     }
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint, boolean getLockInfo) {
         super(factory.getName(), parentItem, doc, relaxSyncRootConstraint, getLockInfo);
@@ -91,13 +151,12 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
-            // Handle versioning
-            FileSystemItemHelper.versionIfNeeded(factory, doc, session);
             BlobHolder bh = getBlobHolder(doc);
             Blob blob = getBlob(bh);
             blob.setFilename(name);
             bh.setBlob(blob);
             updateDocTitleIfNeeded(doc, name);
+            doc.putContextData(CoreSession.SOURCE, "drive");
             doc = session.saveDocument(doc);
             session.save();
             /* Update FileSystemItem attributes */
@@ -141,8 +200,6 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
-            // Handle versioning
-            FileSystemItemHelper.versionIfNeeded(factory, doc, session);
             // If blob's filename is empty, set it to the current name
             String blobFileName = blob.getFilename();
             if (StringUtils.isEmpty(blobFileName)) {
@@ -154,6 +211,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
             }
             BlobHolder bh = getBlobHolder(doc);
             bh.setBlob(blob);
+            doc.putContextData(CoreSession.SOURCE, "drive");
             doc = session.saveDocument(doc);
             session.save();
             /* Update FileSystemItem attributes */
@@ -163,7 +221,16 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     /*--------------------- Protected -----------------*/
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     *             drive level, the {@link VersioningFileSystemItemFactory} is not used anymore
+     */
+    @Deprecated
     protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) {
+        initialize((FileSystemItemFactory) factory, doc);
+    }
+
+    protected final void initialize(FileSystemItemFactory factory, DocumentModel doc) {
         this.factory = factory;
         Blob blob = getBlob(doc);
         name = getFileName(blob, doc.getTitle());
@@ -179,10 +246,9 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     protected BlobHolder getBlobHolder(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
-            throw new NuxeoException(
-                    String.format(
-                            "Document %s is not a BlobHolder, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.",
-                            doc.getId()));
+            throw new NuxeoException(String.format(
+                    "Document %s is not a BlobHolder, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.",
+                    doc.getId()));
         }
         return bh;
     }

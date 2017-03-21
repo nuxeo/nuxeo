@@ -125,6 +125,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             // Update doc properties
             DocumentModel doc = getDocument(session);
             doc.setPropertyValue("dc:title", name);
+            doc.putContextData(CoreSession.SOURCE, "drive");
             doc = session.saveDocument(doc);
             session.save();
             // Update FileSystemItem attributes

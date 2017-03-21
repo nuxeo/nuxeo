@@ -44,7 +44,6 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
-import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory;
@@ -56,7 +55,6 @@ import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
@@ -172,9 +170,6 @@ public class TestFileSystemItemAdapterService {
         assertNull(desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DummyFileItemFactory);
-        assertTrue(factory instanceof VersioningFileSystemItemFactory);
-        assertEquals(2.0, ((VersioningFileSystemItemFactory) factory).getVersioningDelay(), .01);
-        assertEquals(VersioningOption.MINOR, ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
         desc = fileSystemItemFactoryDescs.get("dummyFacetFactory");
         assertNotNull(desc);
@@ -193,9 +188,6 @@ public class TestFileSystemItemAdapterService {
         assertNull(desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DefaultFileSystemItemFactory);
-        assertTrue(factory instanceof VersioningFileSystemItemFactory);
-        assertEquals(3600.0, ((VersioningFileSystemItemFactory) factory).getVersioningDelay(), .01);
-        assertEquals(VersioningOption.MINOR, ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
         desc = fileSystemItemFactoryDescs.get("dummyVirtualFolderItemFactory");
         assertNotNull(desc);
@@ -481,9 +473,6 @@ public class TestFileSystemItemAdapterService {
         assertNull(desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DefaultFileSystemItemFactory);
-        assertTrue(factory instanceof VersioningFileSystemItemFactory);
-        assertEquals(60.0, ((VersioningFileSystemItemFactory) factory).getVersioningDelay(), .01);
-        assertEquals(VersioningOption.MAJOR, ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
         desc = fileSystemItemFactoryDescs.get("dummyVirtualFolderItemFactory");
         assertNotNull(desc);

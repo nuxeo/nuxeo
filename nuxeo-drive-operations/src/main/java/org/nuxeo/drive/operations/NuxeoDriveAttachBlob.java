@@ -18,11 +18,7 @@
  */
 package org.nuxeo.drive.operations;
 
-import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
-import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
-import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -33,11 +29,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * Updates the given {@link DocumentModel} with the given blob using the versioning policy of the given
- * {@link VersioningFileSystemItemFactory}.
+ * Updates the given {@link DocumentModel} with the given blob.
  *
  * @author Antoine Taillefer
  * @since 7.4
@@ -53,6 +47,11 @@ public class NuxeoDriveAttachBlob {
     @Param(name = "document")
     protected DocumentModel doc;
 
+    /**
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this parameter is not used anymore
+     */
+    @Deprecated
     @Param(name = "applyVersioningPolicy", required = false, values = "false")
     protected boolean applyVersioningPolicy = false;
 
@@ -61,16 +60,6 @@ public class NuxeoDriveAttachBlob {
 
     @OperationMethod
     public Blob run(Blob blob) {
-        if (applyVersioningPolicy) {
-            FileSystemItemFactory factory = ((FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class)).getFileSystemItemFactory(factoryName);
-            if (!(factory instanceof VersioningFileSystemItemFactory)) {
-                throw new NuxeoException(String.format("Factory %s must implement VersioningFileSystemItemFactory.",
-                        factoryName));
-            }
-            VersioningFileSystemItemFactory versioningFactory = (VersioningFileSystemItemFactory) factory;
-            FileSystemItemHelper.versionIfNeeded(versioningFactory, doc, session);
-        }
-
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             throw new NuxeoException(String.format("Document %s is not a BlobHolder, no blob can be attached to it.",

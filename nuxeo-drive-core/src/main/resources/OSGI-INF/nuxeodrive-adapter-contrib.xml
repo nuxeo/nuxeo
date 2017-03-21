@@ -14,12 +14,7 @@
     <fileSystemItemFactory name="defaultSyncRootFolderItemFactory" order="10" facet="DriveSynchronized"
       class="org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory" />
     <fileSystemItemFactory name="defaultFileSystemItemFactory" order="50"
-      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory">
-      <parameters>
-        <parameter name="versioningDelay">3600</parameter>
-        <parameter name="versioningOption">MINOR</parameter>
-      </parameters>
-    </fileSystemItemFactory>
+      class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
 
   </extension>
 

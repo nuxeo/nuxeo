@@ -29,7 +29,10 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  *
  * @author Antoine Taillefer
  * @see DefaultFileSystemItemFactory
+ * @deprecated since 9.1 as the automatic versioning is handled by versioning system, we don't need anymore this
+ *             mechanism in drive
  */
+@Deprecated
 public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
 
     /**
@@ -37,31 +40,48 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      * the document if the last modification was done more than {@link #getVersioningDelay()} seconds ago.
      *
      * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this method is not used anymore
      */
+    @Deprecated
     boolean needsVersioning(DocumentModel doc);
 
     /**
      * Gets the delay passed which a document needs to be versioned since its last modification.
      *
      * @see DefaultFileSystemItemFactory#needsVersioning(DocumentModel)
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this method is not used anymore
      */
+    @Deprecated
     double getVersioningDelay();
 
     /**
      * Sets the delay passed which a document needs to be versioned since its last modification.
+     *
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this method is not used anymore
      */
+    @Deprecated
     void setVersioningDelay(double versioningDelay);
 
     /**
      * Gets the increment option used when versioning a document.
      *
      * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this method is not used anymore
      */
+    @Deprecated
     VersioningOption getVersioningOption();
 
     /**
      * Sets the increment option used when versioning a document.
+     *
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this method is not used anymore
      */
+    @Deprecated
     void setVersioningOption(VersioningOption versioningOption);
 
 }

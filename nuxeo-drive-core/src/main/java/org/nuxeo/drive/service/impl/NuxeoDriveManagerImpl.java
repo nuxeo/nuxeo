@@ -251,6 +251,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                 newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY, (Serializable) subscriptions);
                 newRootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
                 newRootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+                newRootContainer.putContextData(CoreSession.SOURCE, "drive");
                 DocumentModel savedNewRootContainer = session.saveDocument(newRootContainer);
                 newRootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
                 newRootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, false);
@@ -288,6 +289,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                 rootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY, (Serializable) subscriptions);
                 rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
                 rootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+                rootContainer.putContextData(CoreSession.SOURCE, "drive");
                 session.saveDocument(rootContainer);
                 rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
                 rootContainer.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, false);

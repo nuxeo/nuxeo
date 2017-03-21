@@ -54,13 +54,29 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
+    @Deprecated
     protected static final String VERSIONING_DELAY_PARAM = "versioningDelay";
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
+    @Deprecated
     protected static final String VERSIONING_OPTION_PARAM = "versioningOption";
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
+    @Deprecated
     // Versioning delay in seconds, default value: 1 hour
     protected double versioningDelay = 3600;
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
+    @Deprecated
     // Versioning option, default value: MINOR
     protected VersioningOption versioningOption = VersioningOption.MINOR;
 
@@ -202,8 +218,12 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
     /**
      * Need to version the doc if the current contributor is different from the last contributor or if the last
      * modification was done more than {@link #versioningDelay} seconds ago.
+     *
+     * @deprecated since 9.1 versioning policy is now handled at versioning service level, as versioning is removed at
+     * drive level, this method is not used anymore
      */
     @Override
+    @Deprecated
     public boolean needsVersioning(DocumentModel doc) {
 
         String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
@@ -219,7 +239,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         }
         Calendar lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
         if (lastModificationDate == null) {
-            log.debug("Last modification date is null => will not create a version of the document.");
+            log.debug("Last modification date is null => will create a version of the document.");
             return true;
         }
         long lastModified = System.currentTimeMillis() - lastModificationDate.getTimeInMillis();
@@ -240,22 +260,38 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         return false;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
     @Override
+    @Deprecated
     public double getVersioningDelay() {
         return versioningDelay;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
     @Override
+    @Deprecated
     public void setVersioningDelay(double versioningDelay) {
         this.versioningDelay = versioningDelay;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
     @Override
+    @Deprecated
     public VersioningOption getVersioningOption() {
         return versioningOption;
     }
 
+    /**
+     * @deprecated since 9.1 automatic versioning is directly done by versioning system which holds the policies
+     */
     @Override
+    @Deprecated
     public void setVersioningOption(VersioningOption versioningOption) {
         this.versioningOption = versioningOption;
     }

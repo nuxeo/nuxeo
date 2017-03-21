@@ -56,6 +56,8 @@
           </fileSystemItemFactory>
          </extension>
       </code>
+      Please note that `versioningDelay` and `versioningOption` parameter have been deprecated since 9.1 and are not
+      used anymore as automatic versioning is now handled at versioning service level.
 
       Example of a FileSystemItem factory for documents with the Picture facet:
       <code>

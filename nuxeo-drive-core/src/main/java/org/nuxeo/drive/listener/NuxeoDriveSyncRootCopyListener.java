@@ -54,6 +54,8 @@ public class NuxeoDriveSyncRootCopyListener implements EventListener {
         DocumentModelList syncRoots = getSyncRoots(doc, session);
         for (DocumentModel syncRoot : syncRoots) {
             syncRoot.setPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY, null);
+            syncRoot.putContextData("source", "drive");
+            syncRoot.putContextData(CoreSession.SOURCE, "drive");
             session.saveDocument(syncRoot);
         }
     }

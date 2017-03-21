@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.Lock;
  * @author Antoine Taillefer
  * @see AbstractFileSystemItemFactory
  * @see DefaultFileSystemItemFactory
- * @see VersioningFileSystemItemFactory
  * @see TopLevelFolderItemFactory
  */
 public interface FileSystemItemFactory {

@@ -81,6 +81,8 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         canScrollDescendants = false;
         this.userWorkspace = userWorkspace;
         this.syncRootParentFactoryName = syncRootParentFactoryName;
+        // detach user workspace as we will use another session to update it
+        userWorkspace.detach(true);
     }
 
     protected UserWorkspaceTopLevelFolderItem() {

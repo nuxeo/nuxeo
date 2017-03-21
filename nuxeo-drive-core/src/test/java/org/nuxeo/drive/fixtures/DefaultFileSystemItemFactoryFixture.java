@@ -49,7 +49,6 @@ import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
@@ -85,6 +84,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(NuxeoDriveFeature.class)
+@LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-versioning-filter-contrib.xml" })
 public class DefaultFileSystemItemFactoryFixture {
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactoryFixture.class);
@@ -131,7 +131,7 @@ public class DefaultFileSystemItemFactoryFixture {
 
     protected DocumentModel notAFileSystemItem;
 
-    protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
+    protected FileSystemItemFactory defaultFileSystemItemFactory;
 
     @Before
     public void createTestDocs() throws Exception {
@@ -183,14 +183,7 @@ public class DefaultFileSystemItemFactoryFixture {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory(
-                "defaultFileSystemItemFactory");
-        assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
-
-        // Set versioning delay to 1 second
-        defaultFileSystemItemFactory.setVersioningDelay(VERSIONING_DELAY / 1000.0);
-        assertEquals(VERSIONING_DELAY / 1000.0, defaultFileSystemItemFactory.getVersioningDelay(), .01);
-        assertEquals(VersioningOption.MINOR, defaultFileSystemItemFactory.getVersioningOption());
+        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
     }
 
     @Test
@@ -265,6 +258,9 @@ public class DefaultFileSystemItemFactoryFixture {
         assertEquals("Bonnie's file.odt", fsItem.getName());
 
         // Version
+        // Note is now automatically versioned at each save
+        assertEquals("0.1", note.getVersionLabel());
+        note.checkOut();
         DocumentRef versionRef = session.checkIn(note.getRef(), VersioningOption.MINOR, null);
         DocumentModel version = session.getDocument(versionRef);
         assertFalse(defaultFileSystemItemFactory.isFileSystemItem(version));
@@ -658,7 +654,10 @@ public class DefaultFileSystemItemFactoryFixture {
             // dc:lastContributor to "Administrator"
             // rename the file to enable dc listener (disable if not dirty)
             file.setPropertyValue("file:content/name", "newTitle");
-            session.saveDocument(file);
+            file = session.saveDocument(file);
+            // Check versioning => should be versioned cause last contributor has changed
+            assertVersion("0.3", file);
+            // Switch back to Administrator as last contributor
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
             ensureJustModified(file, session);
             fileItem.rename("Renamed file.txt");
@@ -668,7 +667,7 @@ public class DefaultFileSystemItemFactoryFixture {
             // Check versioning => should not be versioned since same
             // contributor and last modification was done before the
             // versioning delay
-            assertVersion("0.2", file);
+            assertVersion("0.3", file);
 
             // Wait for versioning delay
             Thread.sleep(VERSIONING_DELAY);
@@ -679,10 +678,10 @@ public class DefaultFileSystemItemFactoryFixture {
             assertEquals("Renamed again.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since last
             // modification was done after the versioning delay
-            assertVersion("0.3", file);
+            assertVersion("0.4", file);
             fileVersions = session.getVersions(file.getRef());
-            assertEquals(3, fileVersions.size());
-            lastFileVersion = fileVersions.get(2);
+            assertEquals(4, fileVersions.size());
+            lastFileVersion = fileVersions.get(3);
             updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
             assertEquals("Renamed file.txt", updatedBlob.getFilename());
 
@@ -696,10 +695,10 @@ public class DefaultFileSystemItemFactoryFixture {
             assertEquals("File renamed by Joe.txt", updatedBlob.getFilename());
             // Check versioning => should be versioned since updated by a
             // different contributor
-            assertVersion("0.4", file);
+            assertVersion("0.5", file);
             fileVersions = session.getVersions(file.getRef());
-            assertEquals(4, fileVersions.size());
-            lastFileVersion = fileVersions.get(3);
+            assertEquals(5, fileVersions.size());
+            lastFileVersion = fileVersions.get(4);
             updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
             assertEquals("Renamed again.txt", updatedBlob.getFilename());
         }
