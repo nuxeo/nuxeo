@@ -31,31 +31,25 @@ Example:
 -->
 <dom-module id="nuxeo-drive-page">
   <template>
-    <paper-header-panel class="flex">
-      <div class="paper-header layout horizontal">
-        <span class="flex">[[i18n('drivePage.heading','Nuxeo Drive')]]</span>
-      </div>
+
+    <nuxeo-page>
+      <div class="header">[[i18n('drivePage.heading','Nuxeo Drive')]]</div>
       <div class="content">
         <paper-card class="card" elevation="0">
-          <div class="card-content">
-            <div class="title">[[i18n('drivePage.packages','Packages')]]</div>
-            <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
+          <h3>[[i18n('drivePage.packages','Packages')]]</h3>
+          <nuxeo-drive-desktop-packages></nuxeo-drive-desktop-packages>
+        </paper-card>
+        <paper-card class="card" elevation="0">
+          <h3>[[i18n('drivePage.roots','Synchronization Roots')]]</h3>
+          <nuxeo-drive-sync-roots-management></nuxeo-drive-sync-roots-management>
           </div>
         </paper-card>
         <paper-card class="card" elevation="0">
-          <div class="card-content">
-            <div class="title">[[i18n('drivePage.roots','Synchronization Roots')]]</div>
-            <nuxeo-drive-sync-roots-management></nuxeo-drive-sync-roots-management>
-          </div>
-        </paper-card>
-        <paper-card class="card" elevation="0">
-          <div class="card-content">
-            <div class="title">[[i18n('drivePage.tokens','Tokens')]]</div>
-            <nuxeo-authentication-tokens-management application="Nuxeo Drive"></nuxeo-authentication-tokens-management>
-          </div>
+          <h3>[[i18n('drivePage.tokens','Tokens')]]</h3>
+          <nuxeo-authentication-tokens-management application="Nuxeo Drive"></nuxeo-authentication-tokens-management>
         </paper-card>
       </div>
-    </paper-header-panel>
+    </nuxeo-page>
   </template>
   <script>
     Polymer({

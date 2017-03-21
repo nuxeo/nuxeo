@@ -32,22 +32,51 @@ Example:
       :host {
         display: block;
       }
+
       .table {
-        border: 1px solid #e7e7e7;
-        margin-top: 0.5em;
+        font-family: var(--nuxeo-app-font);
+        line-height: 3.5;
       }
+
       .row {
+        border-bottom: 1px solid var(--nuxeo-border);
         @apply(--layout-horizontal);
       }
-      .row > div {
-        padding: 0.6em 1em;
+
+      .row:hover {
+        background-color: var(--nuxeo-container-hover);
       }
-      .headers > div {
-        background-color: #f8f9fb;
-        font-weight: bold;
+
+      .header {
+        background-color: var(--nuxeo-table-header-background);
+        color: var(--nuxeo-table-header-titles);
+        font-weight: 400;
+        height: 56px;
+        display: flex;
+        flex-direction: row;
       }
+
+      .cell {
+        padding: 0 24px 0 24px;
+        min-height: 46px;
+        overflow: hidden;
+      }
+
+      paper-icon-button:hover ::content iron-icon {
+        color: var(--nuxeo-action-hover, #00adff);
+      }
+
       .actions {
         width: 50px;
+      }
+
+      .emptyResult {
+        color: var(--nuxeo-text-light, #939caa);
+        display: block;
+        font-weight: 300;
+        padding: 1.5em .7em;
+        text-align: center;
+        font-size: 1.1em;
       }
     </style>
 
@@ -57,13 +86,13 @@ Example:
 
     <template is="dom-if" if=[[_empty(tokens)]]>
       <div class="table-row">
-        <div>[[i18n('authenticationTokensManagement.empty', "You currently don't have any token.")]]</div>
+        <div class="emptyResult">[[i18n('authenticationTokensManagement.empty', "You currently don't have any token.")]]</div>
       </div>
     </template>
 
     <template is="dom-if" if=[[!_empty(tokens)]]>
       <div class="table">
-        <div class="row headers">
+        <div class="header">
           <div class="flex-2">[[i18n('authenticationTokensManagement.token', 'Token')]]</div>
           <div class="flex-1">[[i18n('authenticationTokensManagement.application', 'Application')]]</div>
           <div class="flex">[[i18n('authenticationTokensManagement.deviceId', 'Device Identifier')]]</div>

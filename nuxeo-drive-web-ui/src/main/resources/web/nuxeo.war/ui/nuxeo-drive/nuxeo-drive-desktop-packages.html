@@ -34,34 +34,44 @@ Example:
       }
 
       .table {
-        border: 1px solid #e7e7e7;
+        font-family: var(--nuxeo-app-font);
+        line-height: 3.5;
       }
 
       .row {
+        border-bottom: 1px solid var(--nuxeo-border);
         @apply(--layout-horizontal);
       }
 
-      .row > div {
-        padding: 0.6em 1em;
+      .row:hover {
+        background-color: var(--nuxeo-container-hover);
       }
 
-      .headers > div {
-        background-color: #f8f9fb;
-        font-weight: bold;
+      .header {
+        background-color: var(--nuxeo-table-header-background);
+        color: var(--nuxeo-table-header-titles);
+        font-weight: 400;
+        height: 56px;
+        display: flex;
+        flex-direction: row;
       }
 
-      .button {
-        color: inherit;
-        background-color: inherit;
-        text-decoration: none;
+      .cell {
+        padding: 0 24px 0 24px;
+        min-height: 46px;
+        overflow: hidden;
+      }
+
+      paper-button {
+        line-height: normal;
       }
 
       .platform {
         background-color: #50c3f0;
         border-radius: 3px;
         color: #fff;
-        font-size: 0.9em;
-        font-weight: bold;
+        font-size: .9em;
+        letter-spacing: .04em;
         line-height: 130%;
         margin: 0 0.2em 0.2em 0;
         padding: 0.06em 0.3em;
@@ -72,17 +82,16 @@ Example:
     </style>
 
     <div class="table">
-      <div class="row headers">
-        <div class="flex-2">[[i18n('driveDesktopPackages.platform', 'Platform')]]</div>
-        <div class="flex-10">[[i18n('driveDesktopPackages.install', 'Package to Install')]]</div>
+      <div class="header">
+        <div class="cell flex">[[i18n('driveDesktopPackages.platform', 'Platform')]]</div>
+        <div class="cell flex-3">[[i18n('driveDesktopPackages.install', 'Package to Install')]]</div>
       </div>
       <template is="dom-repeat" items="[[packages]]" as="pkg">
         <div class="row">
-          <div class="flex-2"><span class="platform">[[pkg.platform]]</span></div>
-          <div class="flex-10">
-            <a href$="[[pkg.url]]" tabindex="-1" target="_blank" class="button">
-              <paper-button raised>
-                <iron-icon icon="icons:file-download"></iron-icon>
+          <div class="cell flex"><span class="platform">[[pkg.platform]]</span></div>
+          <div class="cell flex-3">
+            <a href$="[[pkg.url]]" tabindex="-1" target="_blank">
+              <paper-button noink>
                 [[pkg.name]]
               </paper-button>
             </a>

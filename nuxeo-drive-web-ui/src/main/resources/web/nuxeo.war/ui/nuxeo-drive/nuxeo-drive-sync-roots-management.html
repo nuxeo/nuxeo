@@ -34,20 +34,45 @@ Example:
       }
 
       .table {
-        border: 1px solid #e7e7e7;
+        font-family: var(--nuxeo-app-font);
+        line-height: 3.5;
       }
 
       .row {
+        border-bottom: 1px solid var(--nuxeo-border);
         @apply(--layout-horizontal);
       }
 
-      .row > div {
-        padding: 0.6em 1em;
+      .row:hover {
+        background-color: var(--nuxeo-container-hover);
       }
 
-      .headers > div {
-        background-color: #f8f9fb;
-        font-weight: bold;
+      .header {
+        background-color: var(--nuxeo-table-header-background);
+        color: var(--nuxeo-table-header-titles);
+        font-weight: 400;
+        height: 56px;
+        display: flex;
+        flex-direction: row;
+      }
+
+      .cell {
+        padding: 0 24px 0 24px;
+        min-height: 46px;
+        overflow: hidden;
+      }
+
+      paper-icon-button:hover ::content iron-icon {
+        color: var(--nuxeo-action-hover, #00adff);
+      }
+
+      .emptyResult {
+        color: var(--nuxeo-text-light, #939caa);
+        display: block;
+        font-weight: 300;
+        padding: 1.5em .7em;
+        text-align: center;
+        font-size: 1.1em;
       }
     </style>
 
@@ -55,21 +80,21 @@ Example:
     <nuxeo-operation id="disable" op="NuxeoDrive.SetSynchronization" params='{"enable": false}'></nuxeo-operation>
 
     <template is="dom-if" if="[[_empty(roots)]]">
-      [[i18n('driveSyncRootsManagement.roots.empty',"You currently don't have any synchronization root.")]]
+      <div class="emptyResult">[[i18n('driveSyncRootsManagement.roots.empty',"You currently don't have any synchronization root.")]]</div>
     </template>
 
     <template is="dom-if" if="[[!_empty(roots)]]">
       <div class="table">
-        <div class="row headers">
-          <div class="flex-2">[[i18n('driveSyncRootsManagement.root.name', 'Name')]]</div>
-          <div class="flex-8">[[i18n('driveSyncRootsManagement.root.path', 'Path')]]</div>
-          <div class="flex"></div>
+        <div class="header">
+          <div class="cell flex-1">[[i18n('driveSyncRootsManagement.root.name', 'Name')]]</div>
+          <div class="cell flex-3">[[i18n('driveSyncRootsManagement.root.path', 'Path')]]</div>
+          <div class="cell"></div>
         </div>
         <template is="dom-repeat" items="[[roots]]" as="doc">
           <div class="row">
-            <div class="flex-2">[[doc.title]]</div>
-            <div class="flex-8">[[doc.path]]</div>
-            <div class="actions">
+            <div class="cell flex-1">[[doc.title]]</div>
+            <div class="cell flex-3">[[doc.path]]</div>
+            <div class="cell actions">
               <paper-icon-button icon="icons:clear"
                                  title="[[i18n('driveSyncRootsManagement.root.disable', 'Disable)]]"
                                  on-tap="_disable">
