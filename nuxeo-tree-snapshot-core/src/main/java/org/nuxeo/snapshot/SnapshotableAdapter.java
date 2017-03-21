@@ -318,7 +318,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         if (target.isFolder() && first) {
             // save all subtree
             olddocs = session.query(
-                    "select * from Document where ecm:path STARTSWITH '" + target.getPathAsString() + "'");
+                    "select * from Document where ecm:path STARTSWITH " + NXQL.escapeString(target.getPathAsString()));
             if (olddocs.size() > 0) {
                 DocumentModel container = session.createDocumentModel(target.getPath().removeLastSegments(1).toString(),
                         target.getName() + "_tmp", "Folder");
