@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * Example:
  *
  * <pre>
- * &#64;PartialDeploy(bundle = "com.extensions.wonderful-SANDBOX", features = {TargetExtensions.Something.class})
+ * &#64;PartialDeploy(bundle = "com.extensions.wonderful-SANDBOX", extensions = {TargetExtensions.Something.class})
  * </pre>
  * 
  * @since 9.1
@@ -47,5 +47,5 @@ public @interface PartialDeploy {
     /**
      * White listed target extensions to deploy
      */
-    Class<? extends TargetExtensions>[] features();
+    Class<? extends TargetExtensions>[] extensions();
 }

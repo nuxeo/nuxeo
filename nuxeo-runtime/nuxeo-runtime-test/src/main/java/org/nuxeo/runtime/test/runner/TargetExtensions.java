@@ -69,7 +69,7 @@ public abstract class TargetExtensions {
     }
 
     /**
-     * White list org.nuxeo.runtime.test.runner.TargetExtensions.ContentModel and ContentTemplateService
+     * White list {@link ContentModel} and ContentTemplateService
      */
     public static class ContentTemplate extends ContentModel {
         @Override
@@ -81,7 +81,7 @@ public abstract class TargetExtensions {
     }
 
     /**
-     * White list org.nuxeo.runtime.test.runner.TargetExtensions.ContentModel and Automation related contributions
+     * White list {@link ContentModel} and Automation related contributions
      */
     public static class Automation extends ContentModel {
         @Override
