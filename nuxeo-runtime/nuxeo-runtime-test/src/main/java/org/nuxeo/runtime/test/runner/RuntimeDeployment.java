@@ -128,7 +128,7 @@ public class RuntimeDeployment {
         }
 
         Set<TargetExtensions> pairs = partialBundles.computeIfAbsent(config.bundle(), key -> new HashSet<>());
-        Arrays.stream(config.features()).map(c -> {
+        Arrays.stream(config.extensions()).map(c -> {
             try {
                 return c.newInstance();
             } catch (ReflectiveOperationException e) {
