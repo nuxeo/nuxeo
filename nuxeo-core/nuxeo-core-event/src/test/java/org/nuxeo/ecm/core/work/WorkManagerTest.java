@@ -438,7 +438,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertMetrics(0, 1, 1, 0);
 
         // schedule another work with the same workId
-        int durationBisMS = 500;
+        int durationBisMS = 1000;
         SleepWork workbis = new SleepWork(durationBisMS, false, workId);
         service.schedule(workbis);
 
@@ -451,8 +451,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         Thread.sleep(durationMS / 3 + durationBisMS / 2);
         assertMetrics(0, 1, 2, 0);
 
-        assertTrue(service.awaitCompletion(durationMS, TimeUnit.MILLISECONDS));
-        System.out.println("Test 4 " + System.currentTimeMillis());
+        assertTrue(service.awaitCompletion(2 * durationMS, TimeUnit.MILLISECONDS));
         assertMetrics(0, 0, 3, 0);
     }
 
