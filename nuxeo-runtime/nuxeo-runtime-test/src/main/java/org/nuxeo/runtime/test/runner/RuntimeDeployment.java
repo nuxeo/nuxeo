@@ -217,7 +217,7 @@ public class RuntimeDeployment {
 
         for (Map.Entry<String, Set<TargetExtensions>> resource : partialBundles.entrySet()) {
             try {
-                harness.deployPartial(resource.getKey(), resource.getValue());
+                contexts.add(harness.deployPartial(resource.getKey(), resource.getValue()));
             } catch (Exception e) {
                 errors.addSuppressed(e);
             }
