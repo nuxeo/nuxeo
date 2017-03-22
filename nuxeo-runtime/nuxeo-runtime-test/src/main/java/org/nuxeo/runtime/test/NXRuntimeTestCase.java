@@ -437,7 +437,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
     @Override
-    public void deployPartial(String name, Set<TargetExtensions> targetExtensions) throws Exception {
+    public RuntimeContext deployPartial(String name, Set<TargetExtensions> targetExtensions) throws Exception {
         // Do not install bundle; we only need the Object to list his components
         Bundle bundle = new BundleImpl(osgi, lookupBundle(name), null);
 
@@ -449,6 +449,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 log.error("PartialBundle: " + name + " failed to load: " + component, e);
             }
         });
+        return ctx;
     }
 
     /**
