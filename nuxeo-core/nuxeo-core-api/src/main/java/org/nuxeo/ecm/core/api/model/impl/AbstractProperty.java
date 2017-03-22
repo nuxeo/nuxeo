@@ -131,6 +131,29 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
+    public String getXPath() {
+        StringBuilder buf = new StringBuilder();
+        getXPath(buf);
+        return buf.toString();
+    }
+
+    protected void getXPath(StringBuilder buf) {
+        if (parent != null) {
+            ((AbstractProperty) parent).getXPath(buf);
+            if (parent.isList()) {
+                buf.append('/');
+                int i = ((ListProperty) parent).children.indexOf(this);
+                buf.append(i);
+            } else {
+                if (buf.length() != 0) {
+                    buf.append('/');
+                }
+                buf.append(getName());
+            }
+        }
+    }
+
+    @Override
     public String getPath() {
         Path path = collectPath(new Path("/"));
         return path.toString();
@@ -305,7 +328,7 @@ public abstract class AbstractProperty implements Property {
     public void setValue(Object value) throws PropertyException {
         // 1. check the read only flag
         if (isReadOnly()) {
-            throw new ReadOnlyPropertyException(getPath());
+            throw new ReadOnlyPropertyException(getXPath());
         }
         // 1. normalize the value
         Serializable normalizedValue = normalize(value);
@@ -433,7 +456,7 @@ public abstract class AbstractProperty implements Property {
         if (isNormalized(value)) {
             return (Serializable) value;
         }
-        throw new PropertyConversionException(value.getClass(), Serializable.class, getPath());
+        throw new PropertyConversionException(value.getClass(), Serializable.class, getXPath());
     }
 
     @Override
@@ -459,7 +482,7 @@ public abstract class AbstractProperty implements Property {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getPath() + ')';
+        return getClass().getSimpleName() + '(' + getXPath() + ')';
     }
 
     @Override

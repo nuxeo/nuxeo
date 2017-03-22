@@ -179,7 +179,7 @@ public class DocumentModelResolver extends BeanELResolver {
         }
         if (subProperty == null) {
             throw new PropertyException(String.format("Could not resolve subproperty '%s' under '%s'", propertyValue,
-                    docProperty.getPath()));
+                    docProperty.getXPath()));
         }
         return subProperty;
     }

@@ -101,7 +101,7 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
             String p = (String) prop.getValue();
             if (p != null && charsToRemove.matchesAnyOf(p)) {
                 String filteredProp = filter(p);
-                docModel.setPropertyValue(prop.getPath(), filteredProp);
+                docModel.setPropertyValue(prop.getXPath(), filteredProp);
             }
         } else if (prop instanceof ArrayProperty) {
             Serializable value = prop.getValue();
@@ -118,7 +118,7 @@ public class CharacterFilteringServiceImpl extends DefaultComponent implements C
                     }
                 }
                 if (modified) {
-                    docModel.setPropertyValue(prop.getPath(), arrayProp);
+                    docModel.setPropertyValue(prop.getXPath(), arrayProp);
                 }
             }
         } else if (prop instanceof ComplexProperty) {

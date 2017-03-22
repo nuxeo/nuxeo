@@ -161,7 +161,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
         if (propToClean instanceof BlobProperty) {
             // if the blob used to exist
             if (propToClean.getValue() == null) {
-                Serializable value = docRef.getPropertyValue(propToClean.getPath());
+                Serializable value = docRef.getPropertyValue(propToClean.getXPath());
                 propToClean.setValue(value);
             }
         } else if (propToClean instanceof ComplexProperty) {
