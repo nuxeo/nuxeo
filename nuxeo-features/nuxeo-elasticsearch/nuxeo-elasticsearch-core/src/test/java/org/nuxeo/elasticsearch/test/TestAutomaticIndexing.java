@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -813,7 +814,42 @@ public class TestAutomaticIndexing {
     }
 
     @Test
-    public void shoulIndexLatestVersions() throws Exception {
+    public void shouldIndexLatestVersions() throws Exception {
+        createADocumentWith3Versions();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(4, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
+        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals("v3", ret.get(0).getTitle());
+    }
+
+    @Test
+    public void shouldNotIndexLatestVersions() throws Exception {
+        System.setProperty(AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY, "true");
+        try {
+            createADocumentWith3Versions();
+        } finally {
+            System.clearProperty(AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY);
+        }
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(4, ret.totalSize());
+
+        // but isLatestVersion and isLatestMajorVersion are not updated
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
+        Assert.assertEquals(3, ret.totalSize());
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
+        Assert.assertEquals(3, ret.totalSize());
+
+    }
+
+    protected void createADocumentWith3Versions() throws Exception {
         startTransaction();
         DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");
         file1 = session.createDocument(file1);
@@ -837,16 +873,6 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         startTransaction();
-
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
-        Assert.assertEquals(4, ret.totalSize());
-
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
-
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
-        Assert.assertEquals("v3", ret.get(0).getTitle());
     }
 
     @Test
