@@ -112,7 +112,7 @@ public interface RuntimeHarness {
      * @param targetExtensions Set of allowed TargetExtensions in the final contribution
      * @since 9.1
      */
-    void deployPartial(String bundle, Set<TargetExtensions> targetExtensions) throws Exception;
+    RuntimeContext deployPartial(String bundle, Set<TargetExtensions> targetExtensions) throws Exception;
 
     void deployFolder(File folder, ClassLoader loader) throws Exception;
 
