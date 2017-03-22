@@ -77,11 +77,13 @@ public class ModelImporter {
 
     private static final String[] IMPORT_ALREADY_DONE_EVENTS = { TEMPLATE_SAMPLE_INIT_EVENT };
 
-    public static final String EXAMPLES_ROOT = "examples";
+    public static final String EXAMPLE_ROOT = "example";
 
-    public static final String RAW_EXAMPLES_ROOT = "rawexamples";
+    public static final String TEST_EXAMPLE_ROOT = "testexample";
 
     public static final String TEMPLATE_ROOT = "template";
+    
+    public static final String TEST_TEMPLATE_ROOT = "testtemplate";
 
     protected static final String RESOURCES_ROOT = "templatesamples";
 
@@ -165,7 +167,7 @@ public class ModelImporter {
         return container;
     }
 
-    private DocumentModel getOrCreateRawSampleContainer() {
+    private DocumentModel getOrCreateTestSamplesContainer() {
         DocumentModel container = null;
         DocumentModel parentContainer = getOrCreateSampleContainer();
 
@@ -260,11 +262,14 @@ public class ModelImporter {
                 if (file.getName().equals(TEMPLATE_ROOT)) {
                     roots.put(TEMPLATE_ROOT, file);
                     return true;
-                } else if (file.getName().equals(EXAMPLES_ROOT)) {
-                    roots.put(EXAMPLES_ROOT, file);
+                } else if (file.getName().equals(TEST_TEMPLATE_ROOT) && Framework.isTestModeSet()) {
+                	roots.put(TEMPLATE_ROOT, file);
                     return true;
-                } else if (file.getName().equals(RAW_EXAMPLES_ROOT)) {
-                    roots.put(RAW_EXAMPLES_ROOT, file);
+                } else if (file.getName().equals(EXAMPLE_ROOT)) {
+                    roots.put(EXAMPLE_ROOT, file);
+                    return true;
+                } else if (file.getName().equals(TEST_EXAMPLE_ROOT) && Framework.isTestModeSet()) {
+                    roots.put(TEST_EXAMPLE_ROOT, file);
                     return true;
                 }
 
@@ -276,18 +281,22 @@ public class ModelImporter {
             if (roots.get(TEMPLATE_ROOT) != null) {
                 DocumentModel templatesContainer = getOrCreateTemplateContainer();
                 DocumentModel samplesContainer = getOrCreateSampleContainer();
-                DocumentModel rawSamplesContainer = getOrCreateRawSampleContainer();
+                DocumentModel testSamplesContainer = null;
+                if(Framework.isTestModeSet()){
+                	testSamplesContainer = getOrCreateTestSamplesContainer();
+                }
                 if (templatesContainer != null) {
                     DocumentRef modelRef = importModel(root.getName(), roots.get(TEMPLATE_ROOT), templatesContainer);
                     nbImportedDocs++;
                     if (samplesContainer != null) {
-                        if (roots.get(EXAMPLES_ROOT) != null) {
+                        if (roots.get(EXAMPLE_ROOT) != null) {
                             nbImportedDocs = nbImportedDocs
-                                    + importSamples(roots.get(EXAMPLES_ROOT), modelRef, samplesContainer);
+                                    + importSamples(roots.get(EXAMPLE_ROOT), modelRef, samplesContainer);
                         }
-                        if (roots.get(RAW_EXAMPLES_ROOT) != null) {
+                        if (roots.get(TEST_EXAMPLE_ROOT) != null 
+                        	&& Framework.isTestModeSet()) {
                             nbImportedDocs = nbImportedDocs
-                                    + importSamples(roots.get(RAW_EXAMPLES_ROOT), modelRef, rawSamplesContainer);
+                                    + importSamples(roots.get(TEST_EXAMPLE_ROOT), modelRef, testSamplesContainer);
                         }
                     }
                 }
