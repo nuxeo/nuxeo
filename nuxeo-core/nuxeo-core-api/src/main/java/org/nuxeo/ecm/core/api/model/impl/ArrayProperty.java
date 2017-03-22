@@ -110,7 +110,7 @@ public class ArrayProperty extends ScalarProperty {
         } else if (value instanceof Collection) {
             return convert((Collection<?>) value);
         }
-        throw new PropertyConversionException(value.getClass(), Object[].class, getPath());
+        throw new PropertyConversionException(value.getClass(), Object[].class, getXPath());
     }
 
     protected Serializable convert(Collection<?> value) throws PropertyConversionException {

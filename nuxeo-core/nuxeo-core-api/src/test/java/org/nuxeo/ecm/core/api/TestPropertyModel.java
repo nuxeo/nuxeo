@@ -277,6 +277,37 @@ public class TestPropertyModel extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testXPath() throws Exception {
+        Property prop = dp.get("file");
+        assertEquals("book:file", prop.getXPath());
+        prop = prop.get("fileName");
+        assertEquals("book:file/fileName", prop.getXPath());
+
+        prop = dp.resolvePath("file/blob");
+        assertEquals("book:file/blob", prop.getXPath());
+
+        Author author = new Author();
+        dp.get("authors").addValue(author.getMap());
+        prop = dp.get("book:authors");
+        assertEquals("book:authors", prop.getXPath());
+        prop = prop.get("0");
+        assertEquals("book:authors/0", prop.getXPath());
+        prop = prop.get("name");
+        assertEquals("book:authors/0/name", prop.getXPath());
+        prop = prop.get("firstName");
+        assertEquals("book:authors/0/name/firstName", prop.getXPath());
+
+        // schema without prefix: no prefix either in xpath
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        DocumentPartImpl dp2 = new DocumentPartImpl(schemaManager.getSchema("wihtoutpref"));
+        prop = dp2.get("blobname");
+        assertEquals("blobname", prop.getXPath());
+        prop = dp2.resolvePath("blob/mime-type");
+        assertEquals("blob/mime-type", prop.getXPath());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void testPath() throws Exception {
         String path = dp.get("file").get("fileName").getPath();
         assertEquals("/book:file/fileName", path);

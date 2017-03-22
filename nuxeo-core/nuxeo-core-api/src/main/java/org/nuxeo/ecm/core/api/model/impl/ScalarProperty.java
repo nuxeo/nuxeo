@@ -149,8 +149,8 @@ public class ScalarProperty extends AbstractProperty {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + getPath().substring(1) + (isDirty() ? "*" : "") + "="
-                + String.valueOf(value) + ')';
+        return getClass().getSimpleName() + '(' + getXPath() + (isDirty() ? "*" : "") + "=" + String.valueOf(value)
+                + ')';
     }
 
 }

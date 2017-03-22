@@ -187,7 +187,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                     // Let's assume it is a blob of which content has to be stored in a string property.
                     Blob blob = readEntity(Blob.class, Blob.class, jn);
                     if (blob == null) {
-                        throw new MarshallingException("Unable to parse the property " + property.getPath());
+                        throw new MarshallingException("Unable to parse the property " + property.getXPath());
                     }
                     return blob.getString();
                 }
@@ -201,11 +201,11 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                 }
             }
             if (object == null) {
-                throw new MarshallingException("Unable to parse the property " + property.getPath());
+                throw new MarshallingException("Unable to parse the property " + property.getXPath());
             }
             value = resolver.getReference(object);
             if (value == null) {
-                throw new MarshallingException("Property " + property.getPath()
+                throw new MarshallingException("Property " + property.getXPath()
                         + " value cannot be resolved by the matching resolver " + resolver.getName());
             }
         } else {

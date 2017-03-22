@@ -225,7 +225,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     @Override
     public void setValue(Object value) throws PropertyException {
         if (isReadOnly()) {
-            throw new ReadOnlyPropertyException(getPath());
+            throw new ReadOnlyPropertyException(getXPath());
         }
         if (value == null) {
             List<Property> temp = new ArrayList<Property>(children);
@@ -244,7 +244,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         } else if (value instanceof Collection) { // collection support
             col = (Collection<?>) value;
         } else {
-            throw new InvalidPropertyValueException(getPath());
+            throw new InvalidPropertyValueException(getXPath());
         }
         clear();
         Field lfield = getType().getField();

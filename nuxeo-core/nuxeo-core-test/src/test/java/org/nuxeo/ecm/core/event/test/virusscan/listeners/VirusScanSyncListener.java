@@ -101,10 +101,10 @@ public class VirusScanSyncListener implements EventListener {
         for (Property prop : blobProperties) {
             if (onlyChangedBlob) {
                 if (prop.isDirty()) {
-                    propertiesPath.add(prop.getPath());
+                    propertiesPath.add(prop.getXPath());
                 }
             } else {
-                propertiesPath.add(prop.getPath());
+                propertiesPath.add(prop.getXPath());
             }
         }
         return propertiesPath;
